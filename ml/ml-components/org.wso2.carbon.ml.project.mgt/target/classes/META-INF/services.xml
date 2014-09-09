@@ -1,0 +1,9 @@
+<serviceGroup>
+    <service name="ProjectManagementService" scope="transportsession">
+        <transports>
+            <transport>https</transport>
+        </transports>
+        <parameter name="ServiceClass">org.wso2.carbon.ml.project.mgt.ProjectManagementService</parameter>
+    </service>
+
+</serviceGroup>
