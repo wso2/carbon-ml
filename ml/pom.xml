@@ -6,7 +6,7 @@
 
     <groupId>org.wso2.carbon</groupId>
     <artifactId>machine-learner</artifactId>
-    <version>4.2.0</version>
+    <version>0.1.0</version>
     <modules>
         <module>ml-components</module>
         <module>ml-features</module>
