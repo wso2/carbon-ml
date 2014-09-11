@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ml-components</artifactId>
+        <groupId>org.wso2.carbon</groupId>
+        <version>0.1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>org.wso2.carbon.ml.db</artifactId>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - Machine Learner Database Service Component</name>
+    <repositories>
+        <repository>
+            <id>wso2-Nexus</id>
+            <name>WSO2 Repository</name>
+            <url>http://dist.wso2.org/maven2/</url>
+        </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                 <version>2.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${pom.artifactId}</Bundle-Name>
+                        <Export-Package>org.wso2.carbon.ml.db.*</Export-Package>
+                        <Import-Package>
+                        	org.apache.commons.math3.stat.descriptive.*;version="[0.0.0,0.0.1)",
+                        	org.h2;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.logging,
+                        	org.apache.hadoop.conf,
+                        	org.apache.hadoop.fs
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
