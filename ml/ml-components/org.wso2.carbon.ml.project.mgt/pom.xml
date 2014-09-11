@@ -19,13 +19,6 @@
             <url>http://dist.wso2.org/maven2/</url>
         </repository>
     </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -42,5 +35,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

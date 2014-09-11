@@ -143,11 +143,6 @@ public class Summary {
 	}
 	
 	public void updateDatabase() throws Exception{
-		H2Connector h2Connector = H2Connector.Initialize();
-		Connection connection = h2Connector.createConnection();
-		
 		//TODO: update the h2 table with summary stats
-		
-		connection.close();
 	}
 }
