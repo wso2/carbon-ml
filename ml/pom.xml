@@ -14,5 +14,66 @@
     </modules>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner</name>
-
+    
+    <dependencies>
+     		<dependency>
+     			<groupId>org.apache.hadoop</groupId>
+     			<artifactId>hadoop-core</artifactId>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.mahout</groupId>
+     			<artifactId>mahout-core</artifactId>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.mahout</groupId>
+     			<artifactId>mahout-math</artifactId>
+     		</dependency>
+     		<dependency>
+     			<groupId>commons-logging</groupId>
+     			<artifactId>commons-logging</artifactId>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.commons</groupId>
+     			<artifactId>commons-math3</artifactId>
+     		</dependency>
+     		<dependency>
+     			<groupId>com.h2database</groupId>
+     			<artifactId>h2</artifactId>
+     		</dependency>
+     	</dependencies>
+     	
+     <dependencyManagement>
+     	<dependencies>
+     		<dependency>
+     			<groupId>org.apache.hadoop</groupId>
+     			<artifactId>hadoop-core</artifactId>
+     			<version>1.2.1</version>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.mahout</groupId>
+     			<artifactId>mahout-core</artifactId>
+     			<version>0.9</version>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.mahout</groupId>
+     			<artifactId>mahout-math</artifactId>
+     			<version>0.9</version>
+     		</dependency>
+     		<dependency>
+     			<groupId>commons-logging</groupId>
+     			<artifactId>commons-logging</artifactId>
+     			<version>1.1.1</version>
+     		</dependency>
+     		<dependency>
+     			<groupId>org.apache.commons</groupId>
+     			<artifactId>commons-math3</artifactId>
+     			<version>3.3</version>
+     		</dependency>
+     		<dependency>
+     			<groupId>com.h2database</groupId>
+     			<artifactId>h2</artifactId>
+     			<version>1.4.180</version>
+     		</dependency>
+     	</dependencies>
+     </dependencyManagement>
 </project>

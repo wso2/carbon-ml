@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ml-components</artifactId>
         <groupId>org.wso2.carbon</groupId>
-        <version>4.2.0</version>
+        <version>0.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,32 +19,25 @@
             <url>http://dist.wso2.org/maven2/</url>
         </repository>
     </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        
-     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-      <version>3.2</version>
-      <scope>compile</scope>
-    </dependency>
-
-    </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                 <version>2.5.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
                         <Export-Package>org.wso2.carbon.ml.dataset.*</Export-Package>
+                        <Import-Package>
+                        	org.apache.commons.math3.stat.descriptive.*;version="[0.0.0,0.0.1)",
+                        	org.h2;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.logging,
+                        	org.apache.hadoop.conf,
+                        	org.apache.hadoop.fs
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
