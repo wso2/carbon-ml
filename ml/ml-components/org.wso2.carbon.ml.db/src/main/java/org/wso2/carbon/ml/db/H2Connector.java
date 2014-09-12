@@ -8,9 +8,9 @@ import java.sql.DriverManager;
  */
 public class H2Connector {
 
-	private static H2Connector instance = null;
+	private static volatile H2Connector instance = null;
 	
-	public static H2Connector Initialize() {
+	public static H2Connector initialize() {
 		   if(instance == null) {
 		      synchronized(H2Connector.class) { 
 		    	  instance = new H2Connector();
@@ -25,7 +25,6 @@ public class H2Connector {
 
 	public Connection createConnection() throws Exception{
 		Class.forName("org.h2.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:h2:repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000", "wso2carbon", "wso2carbon");
-		return conn;
+		return DriverManager.getConnection("jdbc:h2:repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000", "wso2carbon", "wso2carbon");
 	}
 }

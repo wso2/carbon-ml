@@ -13,10 +13,10 @@ public class DatasetService {
 	/*
 	 * Calculate summary stats and populate the database
 	 */
-	public void generateSummaryStats(String dataSource,int noOfRecords) throws Exception{
+	public void generateSummaryStats(String dataSource,int dataSourceID,int noOfRecords, int noOfIntervals, String seperator) throws Exception {
 		Summary summary=new Summary();
-		summary.calculateSummary(dataSource, noOfRecords);
-		summary.updateDatabase();
+		summary.calculateSummary(dataSource, dataSourceID, noOfRecords, noOfIntervals, seperator);
+		summary.updateDatabase(dataSourceID);
 	}
 	
 	/*
@@ -24,7 +24,8 @@ public class DatasetService {
 	 */
 	public String getSummaryStats(String dataSource,int noOfRecords) throws IOException{
 		//TODO
-		return null;
+		String summary="";
+		return summary;
 	}
 
 	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints, String SelectionPolicy){

@@ -21,6 +21,11 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>org.wso2.carbon</groupId>
+        	<artifactId>org.wso2.carbon.ml.db</artifactId>
+        	<type>bundle</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -47,4 +52,13 @@
         </plugins>
     </build>
 
+    <dependencyManagement>
+    	<dependencies>
+    		<dependency>
+    			<groupId>org.wso2.carbon</groupId>
+    			<artifactId>org.wso2.carbon.ml.db</artifactId>
+    			<version>0.1.0</version>
+    		</dependency>
+    	</dependencies>
+    </dependencyManagement>
 </project>
