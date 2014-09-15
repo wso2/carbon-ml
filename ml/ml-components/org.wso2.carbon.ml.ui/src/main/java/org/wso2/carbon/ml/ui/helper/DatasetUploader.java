@@ -25,7 +25,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.ui.helper.DatasetUploadException;
 
 /**
  * This is a helper class use to upload data from the front-end to back-end data
