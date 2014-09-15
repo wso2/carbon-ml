@@ -17,9 +17,9 @@
  */
 package org.wso2.carbon.ml.ui.helper;
 
-public class DatasetUploadException extends Exception {
+public class DatabaseServiceClientException extends Exception {
 
-	public DatasetUploadException(String errorMessage) {
+	public DatabaseServiceClientException(String errorMessage) {
 		super(errorMessage);
 	}
 }

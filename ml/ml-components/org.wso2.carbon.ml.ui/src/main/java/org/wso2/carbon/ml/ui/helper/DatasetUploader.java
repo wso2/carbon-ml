@@ -1,20 +1,20 @@
 /*
-*  Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ *  Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.ml.ui.helper;
 
 import java.io.File;
@@ -25,22 +25,32 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.ui.helper.DatasetUploadException;
 
-/** 
- * 
- *
+/**
+ * This is a helper class use to upload data from the front-end to back-end data
+ * store
  */
 public class DatasetUploader {
 
-	// TODO: read these parameters from configuration
-	private static final String DATASET_UPLOADING_DIR = "/home/upul/temp";
-	private static final int DATASET_IN_MEM_THRESHOLD = 1024 * 1024 * 5;
-	private static final int DATASET_UPLOADING_LIMIT = 1024 * 1024 * 254;
+	private static final Log LOGGER = LogFactory.getLog(DatasetUploader.class);
+	
+	private HttpServletRequest request;
+	private String datasetUploadingDir;
+	private int datasetInMemThreshold;
+	private long datasetUploadLimit;
 
-	private static Log log = LogFactory.getLog(DatasetUploader.class);
+	public DatasetUploader(HttpServletRequest request,
+			String datasetUploadingDir, int datasetInMemThreshold,
+			long datasetUploadLimit) {
+		this.request = request;
+		this.datasetUploadingDir = datasetUploadingDir;
+		this.datasetInMemThreshold = datasetInMemThreshold;
+		this.datasetUploadLimit = datasetUploadLimit;
 
-	public boolean doUplod(HttpServletRequest request)
-			throws DatasetUploadException {
+	}
+
+	public boolean doUplod() throws DatasetUploadException {
 
 		if (ServletFileUpload.isMultipartContent(request)) {
 			try {
@@ -50,20 +60,20 @@ public class DatasetUploader {
 				DiskFileItemFactory diskFileFactory = new DiskFileItemFactory();
 
 				// above this threshold files will be stored in disk
-				diskFileFactory.setSizeThreshold(DATASET_IN_MEM_THRESHOLD);
+				diskFileFactory.setSizeThreshold(datasetInMemThreshold);
 
 				// high-level class for handling multi-part content
-				ServletFileUpload uploader = new ServletFileUpload();
-				uploader.setFileSizeMax(DATASET_UPLOADING_LIMIT);
+				ServletFileUpload uploader = new ServletFileUpload(diskFileFactory);
+				uploader.setFileSizeMax(datasetUploadLimit);
 
 				@SuppressWarnings("unchecked")
 				List<FileItem> multiparts = uploader.parseRequest(request);
 
 				for (FileItem item : multiparts) {
 					if (!item.isFormField()) {
-						
+
 						String fileName = new File(item.getName()).getName();
-						item.write(new File(DATASET_UPLOADING_DIR
+						item.write(new File(datasetUploadingDir
 								+ File.separator + fileName));
 					}
 				}
@@ -71,13 +81,14 @@ public class DatasetUploader {
 				return true;
 
 			} catch (Exception ex) {
-				String errorMessage = "Dataset uploading operation failed";
-				log.error(errorMessage, ex);
+				String errorMessage = "Dataset uploading operation failed, error message: "
+						+ ex.getMessage();
+				LOGGER.error(errorMessage, ex);
 				throw new DatasetUploadException(errorMessage);
 			}
 
 		} else {
-			log.info("Request is not a multi-part content");
+			LOGGER.info("Request is not a multi-part content");
 		}
 
 		// dataset uploading operation is unsuccessful

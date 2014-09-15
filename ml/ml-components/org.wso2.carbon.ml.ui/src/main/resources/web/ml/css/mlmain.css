@@ -1,0 +1,50 @@
+/* main template */
+.page-header{
+	background-color: #ffffff;
+	text-align: center;
+	clear: both;
+}
+
+.page-left-menu{
+	background-color: #ffffff; 
+	height: 80%; 
+	width: 15%; 
+	float: left;
+}
+
+.body{
+	background-color: #ffffff; 
+	height: 80%; 
+	width: 85%; 
+	float: left;
+}
+
+.page-footer{
+	background-color: #ffffff; 
+	clear: both; 
+	text-align: center;
+}
+
+/* top menu*/
+.topMenu{
+	padding: 8px 15px;
+}
+
+.topMenu.menuHiligher{
+	background-color:  #f3f2f5;
+}
+
+/* file upload component*/
+#uploadDataset { 
+    width: 1px; 
+    visibility: hidden;
+}
+
+#importDialog{
+	padding-top: 3%;
+}
+
+/* error messages*/
+.errorMessage{
+	color: #ff1111;
+}
