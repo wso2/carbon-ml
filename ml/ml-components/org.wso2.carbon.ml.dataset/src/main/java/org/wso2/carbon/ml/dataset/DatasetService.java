@@ -28,7 +28,7 @@ public class DatasetService {
 		return summary;
 	}
 
-	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints, String SelectionPolicy){
+	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints, String selectionPolicy){
 		//TODO
 		return null;
 	}
