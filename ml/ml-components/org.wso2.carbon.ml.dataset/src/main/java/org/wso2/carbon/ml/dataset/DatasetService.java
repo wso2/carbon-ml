@@ -14,8 +14,8 @@ public class DatasetService {
 	 * Calculate summary stats and populate the database
 	 */
 	public void generateSummaryStats(String dataSource,int dataSourceID,int noOfRecords, int noOfIntervals, String seperator) throws Exception {
-		Summary summary=new Summary();
-		summary.calculateSummary(dataSource, dataSourceID, noOfRecords, noOfIntervals, seperator);
+		DatasetSummary summary=new DatasetSummary();
+		summary.calculateSummary(dataSourceID, noOfRecords, noOfIntervals, seperator);
 		summary.updateDatabase(dataSourceID);
 	}
 	
@@ -28,7 +28,7 @@ public class DatasetService {
 		return summary;
 	}
 
-	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints, String SelectionPolicy){
+	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints, String selectionPolicy){
 		//TODO
 		return null;
 	}
