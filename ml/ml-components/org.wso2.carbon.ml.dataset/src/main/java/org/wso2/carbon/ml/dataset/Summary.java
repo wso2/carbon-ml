@@ -337,7 +337,7 @@ public class Summary {
 		H2Connector h2Connector = H2Connector.initialize();
 		Connection connection = null;
         try {
-	        connection = h2Connector.createConnection();
+	        connection = h2Connector.getConnection();
 			String summaryStat;
 			for (int column = 0; column < header.length; column++) {
 				// get the json representation of the column
