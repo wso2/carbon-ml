@@ -41,13 +41,14 @@ public class DatasetSummary {
 	 * the data view.
 	 */
 	public void calculateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
-	                             String seperator) throws Exception {
+	                             String seperator) throws DatasetServiceException {
 		try {
 			Configuration configuration = new Configuration();
 			FileSystem fileSystem = FileSystem.get(configuration);
 			configuration.addResource(new Path(fileSystem.getWorkingDirectory() +
 					"/repository/conf/advanced/hive-site.xml"));
 			fileSystem.setConf(configuration);
+			//get the uri of the data source
 			String dataSource = getDataSource(dataSourceId);
 			if (dataSource != null) {
 				LOGGER.info("Data Source: " + dataSource);
@@ -75,15 +76,16 @@ public class DatasetSummary {
 					LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
 				}
 			} else {
-				LOGGER.error("Invalid Data source ID.");
+				LOGGER.error("Data source not found.");
 			}
 		} catch (IOException e) {
-			LOGGER.error("Error occured while reading from the data source with ID: " +
-					dataSourceId);
-			throw e;
+			String msg="Error occured while reading from the data source with ID: " + dataSourceId+". "+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		} catch (Exception e) {
-			LOGGER.error("Summary Statistics calculation failed.");
-			throw e;
+			String msg="Error occured while Calculating summary statistics."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		}
 	}
 
@@ -102,9 +104,13 @@ public class DatasetSummary {
 			if (result.first()) {
 				return result.getNString("URI");
 			}
+			else {
+				LOGGER.error("Invalid data source ID.");
+			}
 		} catch (Exception e) {
-			LOGGER.error("Could not get the Data source from the database.");
-			throw e;
+			String msg="Error occured while reading the Data source from the database."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		} finally {
 			if(connection!=null){
 				connection.close();
@@ -145,7 +151,7 @@ public class DatasetSummary {
 	 * unique vales
 	 */
 	private void calculateDescriptiveStats(BufferedReader dataReader, int noOfRecords, String seperator)
-			throws IOException {
+			throws DatasetServiceException {
 		String line;
 		String[] data = new String[header.length];
 		double cellValue;
@@ -156,57 +162,67 @@ public class DatasetSummary {
 		// iterate through each row
 		for (int row = 0; row < noOfRecords; row++) {
 			//skip if the row is an empty row
-			if((line=dataReader.readLine()) != null){
-				data=line.split(seperator);
-				numericColumns = numericDataColPosstions.iterator();
-				stringColumns = stringDataColPosstions.iterator();
+			try {
+	            if((line=dataReader.readLine()) != null){
+	            	data=line.split(seperator);
+	            	numericColumns = numericDataColPosstions.iterator();
+	            	stringColumns = stringDataColPosstions.iterator();
 
-				// iterate through each numeric column in a row
-				while (numericColumns.hasNext()) {
-					currentCol = numericColumns.next();
-					// if the cell is not empty
-					if (!data[currentCol].isEmpty()) {
-						// convert the cell value to double
-						cellValue = Double.parseDouble(data[currentCol]);
+	            	// iterate through each numeric column in a row
+	            	while (numericColumns.hasNext()) {
+	            		currentCol = numericColumns.next();
+	            		// if the cell is not empty
+	            		if (!data[currentCol].isEmpty()) {
+	            			// convert the cell value to double
+	            			cellValue = Double.parseDouble(data[currentCol]);
 
-						// append the value of the cell to the descriptive-stats of
-						// the respective column
-						descriptiveStats.get(currentCol).addValue(cellValue);
+	            			// append the value of the cell to the descriptive-stats of
+	            			// the respective column
+	            			descriptiveStats.get(currentCol).addValue(cellValue);
 
-						// if the value is unique, update the unique value count of
-						// the column
-						if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
-								.contains(cellValue)) {
-							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
-						}
+	            			// if the value is unique, update the unique value count of
+	            			// the column
+	            			if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+	            					.contains(cellValue)) {
+	            				unique.set(currentCol, unique.get(currentCol).intValue() + 1);
+	            			}
 
-						// append the cell value to the respective column
-						numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
-						.add(cellValue);
-					} else {
-						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
-					}
-				}
+	            			// append the cell value to the respective column
+	            			numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+	            			.add(cellValue);
+	            		} else {
+	            			missing.set(currentCol, missing.get(currentCol).intValue() + 1);
+	            		}
+	            	}
 
-				// iterate through each string column in a row
-				while (stringColumns.hasNext()) {
-					currentCol = stringColumns.next();
-					// if the cell is not empty
-					if (currentCol < data.length && !data[currentCol].isEmpty()) {
-						// update the unique value count of the column
-						if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
-								.contains(currentCol)) {
-							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
-						}
+	            	// iterate through each string column in a row
+	            	while (stringColumns.hasNext()) {
+	            		currentCol = stringColumns.next();
+	            		// if the cell is not empty
+	            		if (currentCol < data.length && !data[currentCol].isEmpty()) {
+	            			// update the unique value count of the column
+	            			if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+	            					.contains(currentCol)) {
+	            				unique.set(currentCol, unique.get(currentCol).intValue() + 1);
+	            			}
 
-						// append the cell value to the respective column
-						stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
-						.add(data[currentCol]);
-					} else {
-						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
-					}
-				}
-			}
+	            			// append the cell value to the respective column
+	            			stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+	            			.add(data[currentCol]);
+	            		} else {
+	            			missing.set(currentCol, missing.get(currentCol).intValue() + 1);
+	            		}
+	            	}
+	            }
+            } catch (NumberFormatException e) {
+            	String msg="Error occured while reading values from the data source."+e.getMessage();
+    			LOGGER.error(msg,e);
+    			throw new DatasetServiceException(msg);
+            } catch (IOException e) {
+            	String msg="Error occured while accessing the data source."+e.getMessage();
+    			LOGGER.error(msg,e);
+    			throw new DatasetServiceException(msg);
+            }
 		}
 	}
 
@@ -271,7 +287,7 @@ public class DatasetSummary {
 	/*
 	 * Calculate the frequencies of each category of a column
 	 */
-	public void claculateCategoryFreqs(int currentCol) {
+	private void claculateCategoryFreqs(int currentCol) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
 		// count the frequencies in each category
 		// Iterate through all the rows in the column (number of rows
@@ -299,7 +315,7 @@ public class DatasetSummary {
 	/*
 	 * Calculate the frequencies of each interval of a column
 	 */
-	public void claculateIntervalFreqs(int currentCol, int intervals) {
+	private void claculateIntervalFreqs(int currentCol, int intervals) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
 
 		// initialize the frequencies of all the intervals to zero. Each
@@ -311,8 +327,7 @@ public class DatasetSummary {
 		// define the size of an interval
 		double intervalSize =
 				(descriptiveStats.get(currentCol).getMax() - descriptiveStats.get(currentCol)
-						.getMin()) /
-						intervals;
+						.getMin()) / intervals;
 		double lowerBound;
 
 		// Iterate through all the rows in the column (number of rows
@@ -344,7 +359,7 @@ public class DatasetSummary {
 	/*
 	 * find the columns with Categorical data and Numerical data
 	 */
-	private void findColumnDataType(BufferedReader dataReader, String seperator) throws IOException {
+	private void findColumnDataType(BufferedReader dataReader, String seperator) throws DatasetServiceException {
 		try {
 			//ignore header row
 			dataReader.readLine();
@@ -371,16 +386,16 @@ public class DatasetSummary {
 				}
 			}
 		} catch (IOException e) {
-			LOGGER.error("Error occured while identifying data types of columns in the data set: " +
-					dataReader);
-			throw e;
+			String msg="Error occured while identifying data types of columns in the data set: " + dataReader+"."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		}
 	}
 
 	/*
 	 * check whether a given String represents a number or not.
 	 */
-	public boolean isNumeric(String inputData) {
+	private boolean isNumeric(String inputData) {
 		return inputData.matches("[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?");
 	}
 
@@ -388,9 +403,10 @@ public class DatasetSummary {
 	 * Update the database with all the summary stats of the sample
 	 */
 	public void updateDatabase(int dataSourceId) throws Exception {
-		H2Connector h2Connector = H2Connector.initialize();
+		H2Connector h2Connector;
 		Connection connection = null;
 		try {
+			h2Connector = H2Connector.initialize();
 			connection = h2Connector.getConnection();
 			String summaryStat;
 			for (int column = 0; column < header.length; column++) {
@@ -405,11 +421,12 @@ public class DatasetSummary {
 						dataSourceId +
 						",'" +
 						type[column] +
-						"','" + summaryStat + "','IGNORE','TRUE')");
+						"','" + summaryStat + "','"+ImputeMethods.DISCARD+"','TRUE')");
 			}
 		} catch (Exception e) {
-			LOGGER.error("Failed to update the database with summary statistics of the data source: "+dataSourceId);
-			throw e;
+			String msg="Error occured while updating the database with summary statistics of the data source: "+dataSourceId+"."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		} finally{
 			if(connection!=null){
 				connection.close();
