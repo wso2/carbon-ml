@@ -32,8 +32,8 @@ public class DatasetSummary {
 	private List <Integer> unique = new ArrayList <Integer>();	//numbers of unique values in each column
 	private List <Map<String,Integer>> graphFrequencies = new ArrayList <Map<String,Integer>>();		//frequencies of each interval/category of every column
 	private String [] header;	//header names
-	private String [] type;	//data type
-	private enum dataTypes {CATEGORICAL, NUMERICAL};
+	private String [] type;	//feature type array
+	private FeatureType featureType=new FeatureType();
 
 	/*
 	 * get a summary of a sample from the given csv file, including
@@ -45,9 +45,7 @@ public class DatasetSummary {
 		try {
 			Configuration configuration = new Configuration();
 			FileSystem fileSystem = FileSystem.get(configuration);
-			configuration.addResource(new Path(fileSystem.getWorkingDirectory() +
-					"/repository/conf/advanced/hive-site.xml"));
-			fileSystem.setConf(configuration);
+			
 			//get the uri of the data source
 			String dataSource = getDataSource(dataSourceId);
 			if (dataSource != null) {
@@ -130,14 +128,14 @@ public class DatasetSummary {
 			// if the current column is in the numerical data positions list
 			if (numericDataColPosstions.contains(i)) {
 				// set the data type to numerical
-				type[i] = dataTypes.NUMERICAL.toString();
+				type[i] = featureType.numerical();
 				// add to the numerical data columns list
 				numericDataColumns.add(new ArrayList<Double>());
 				// if the current column is in the categorical data
 			} else {
 				// positions list
 				// set the data type to categorical
-				type[i] = dataTypes.CATEGORICAL.toString();
+				type[i] = featureType.categorical();
 				// add to the categorical data columns list
 				stringDataColumns.add(new ArrayList<String>());
 			}
@@ -273,7 +271,7 @@ public class DatasetSummary {
 			// than or equal to twenty)
 			if (unique.get(currentCol).intValue() <= 20) {
 				// change the data type to categorical
-				type[currentCol] = dataTypes.CATEGORICAL.toString();
+				type[currentCol] = featureType.categorical();
 				claculateCategoryFreqs(currentCol);
 
 			} else {
@@ -417,11 +415,11 @@ public class DatasetSummary {
 				connection.createStatement()
 				.execute("MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES('" +
 						header[column] +
-						"'," +
-						dataSourceId +
-						",'" +
-						type[column] +
-						"','" + summaryStat + "','"+ImputeMethods.DISCARD+"','TRUE')");
+						"'," + dataSourceId +
+						",'" + type[column] +
+						"','" + summaryStat + 
+						"','"+new ImputeOption().getMethod()+
+						"','TRUE')");
 			}
 		} catch (Exception e) {
 			String msg="Error occured while updating the database with summary statistics of the data source: "+dataSourceId+"."+e.getMessage();

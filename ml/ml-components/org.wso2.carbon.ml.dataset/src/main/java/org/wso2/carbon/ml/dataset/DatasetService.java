@@ -77,7 +77,7 @@ public class DatasetService {
 	/*
 	 * Update feature with the given details
 	 */
-	public boolean updateFeature(String name, String type, ImputeMethods imputMethod,
+	public boolean updateFeature(String name, String type, ImputeOption imputeOption,
 	                             boolean important) throws Exception {
 		H2Connector h2Connector;
 		Connection connection = null;
@@ -85,7 +85,7 @@ public class DatasetService {
 			h2Connector = H2Connector.initialize();
 			connection = h2Connector.getConnection();
 			return connection.createStatement().execute("UPDATE  ML_FEATURE SET TYPE ='" + type +
-			                                            "',IMPUTE_METHOD='" + imputMethod.toString() +
+			                                            "',IMPUTE_METHOD='" + imputeOption.getMethod() +
 			                                            "', IMPORTANT=" + important +
 			                                            " WHERE name='" + name + "';");
 		} catch (SQLException e) {
