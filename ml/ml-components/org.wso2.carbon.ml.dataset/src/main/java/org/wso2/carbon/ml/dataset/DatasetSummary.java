@@ -287,7 +287,7 @@ public class DatasetSummary {
 	/*
 	 * Calculate the frequencies of each category of a column
 	 */
-	public void claculateCategoryFreqs(int currentCol) {
+	private void claculateCategoryFreqs(int currentCol) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
 		// count the frequencies in each category
 		// Iterate through all the rows in the column (number of rows
@@ -315,7 +315,7 @@ public class DatasetSummary {
 	/*
 	 * Calculate the frequencies of each interval of a column
 	 */
-	public void claculateIntervalFreqs(int currentCol, int intervals) {
+	private void claculateIntervalFreqs(int currentCol, int intervals) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
 
 		// initialize the frequencies of all the intervals to zero. Each
@@ -421,7 +421,7 @@ public class DatasetSummary {
 						dataSourceId +
 						",'" +
 						type[column] +
-						"','" + summaryStat + "','IGNORE','TRUE')");
+						"','" + summaryStat + "','"+ImputeMethods.DISCARD+"','TRUE')");
 			}
 		} catch (Exception e) {
 			String msg="Error occured while updating the database with summary statistics of the data source: "+dataSourceId+"."+e.getMessage();
