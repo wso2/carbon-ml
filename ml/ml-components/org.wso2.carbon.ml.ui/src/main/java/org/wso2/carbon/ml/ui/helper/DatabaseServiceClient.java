@@ -17,8 +17,8 @@
  */
 package org.wso2.carbon.ml.ui.helper;
 
-import java.rmi.RemoteException;
 
+import java.rmi.RemoteException;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -26,6 +26,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.db.stub.DatabaseServiceStub;
+import org.wso2.carbon.ml.db.xsd.Feature;
 
 /**
  * 
@@ -87,6 +88,17 @@ public class DatabaseServiceClient {
 			return stub.getDatasetUploadingLimit();
 		} catch (RemoteException ex) {
 			String msg = "An error has occurred while calling getDatasetUploadingLimit() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatabaseServiceClientException(msg);
+		}
+	}
+	
+	public Feature[] getFeatures(int start, int numberOfFeatures) throws DatabaseServiceClientException{
+		try {
+			return stub.getFeatures(start, numberOfFeatures);
+		} catch (RemoteException ex) {
+			String msg = "An error has occurred while calling getFeatures() error message: "
 					+ ex.getMessage();
 			LOGGER.error(msg, ex);
 			throw new DatabaseServiceClientException(msg);

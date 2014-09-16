@@ -32,6 +32,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        <dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
+		</dependency>
          <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.db.stub</artifactId>
@@ -53,6 +58,7 @@
                             org.wso2.carbon.ml.*
                         </Export-Package>
                         <Import-Package>
+                            org.json;version="[0.0.0,0.0.1)",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>

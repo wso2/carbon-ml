@@ -8,28 +8,6 @@
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"
 	prefix="carbon"%>
 <%
-	String serverURL = CarbonUIUtil.getServerURL(config.getServletContext(), session);
-        ConfigurationContext configContext =
-                (ConfigurationContext) config.getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
-        String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
- 
-        DatabaseServiceClient client;        
- 
-        try {
-            client = new DatabaseServiceClient(configContext, serverURL, cookie);
-            
-        } catch (Exception e) {
-            CarbonUIMessage.sendCarbonUIMessage(e.getMessage(), CarbonUIMessage.ERROR, request, e);
-%>
-<script type="text/javascript">
-	location.href = "../admin/error.jsp";
-</script>
-<%
-	return;
-	}
-%>
-
-<%
   String menuPath = "./includes/wizardmenu.jsp";  
 %>
 
