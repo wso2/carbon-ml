@@ -4,9 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.wso2.carbon.ml.db.xsd.Feature;
 import org.wso2.carbon.ml.db.xsd.FeatureType;
 import org.wso2.carbon.ml.db.xsd.ImputeOperation;
@@ -15,37 +12,43 @@ public class DatatableHelper {
 
 	public void populateDatatable(HttpServletResponse response,
 			HttpServletRequest request, Feature[] features) throws IOException {
-		JSONObject jsonResponse = new JSONObject();
-		jsonResponse.put("sEcho",
-				Integer.parseInt(request.getParameter("sEcho")));
-		jsonResponse.put("iTotalRecords", features.length);
-		jsonResponse.put("iTotalDisplayRecords", features.length);		
+		StringBuilder jsonResponse = new StringBuilder();
+		System.out.println("Starting....");
+		jsonResponse.append("{");
+		jsonResponse.append("sEcho:"+Integer.parseInt(request.getParameter("sEcho"))+",");
+		jsonResponse.append("iTotalRecords:"+features.length+",");
+		jsonResponse.append("iTotalDisplayRecords:"+features.length+",");		
 		
+		jsonResponse.append("[");
 		for (Feature feature : features) {
-			JSONArray jsonArray = new JSONArray();
+			StringBuilder jsonArray = new StringBuilder();
+			jsonArray.append("[");
 
 			// adding features
-			jsonArray.put("<span class=\"feature\">" + feature.getFieldName()
-					+ "</span>");
+			jsonArray.append("<span class=\"feature\">" + feature.getFieldName()
+					+ "</span>,");
 
 			// adding include/exclude check box
-			jsonArray.put(buildInputCheckBox(feature.isInputSpecified()));
+			jsonArray.append(buildInputCheckBox(feature.isInputSpecified())+",");
 
 			// adding data type drop-down
-			jsonArray.put(buildDataTypeSectionBox(FeatureType.class.getEnumConstants(),
-					feature.getType().toString()));
+			jsonArray.append(buildDataTypeSectionBox(FeatureType.class.getEnumConstants(),
+					feature.getType().toString())+",");
 
 			// adding summary statistics
 			jsonArray
-					.put("<div class=\"summaryStatistics\">{\"graph\":{\"type\":\"bar\", \"r\":\"50\"}}</div>");
+					.append("<div class=\"summaryStatistics\">{\"graph\":{\"type\":\"bar\", \"r\":\"50\"}}</div>,");
 
 			// adding impute method
-			jsonArray.put(buildImputeSectionBox(ImputeOperation.class.getEnumConstants(),
+			jsonArray.append(buildImputeSectionBox(ImputeOperation.class.getEnumConstants(),
 					feature.getImputeOperation().toString()));
 
 			// create a JSON array with above HTML elements
-			jsonResponse.append("aaData", jsonArray);
+			jsonResponse.append("],");
+			jsonResponse.append(jsonArray.toString());
 		}
+		
+		jsonResponse.append("]");
 		response.setContentType("application/Json");
 		System.out.println(jsonResponse.toString());
 		response.getWriter().print(jsonResponse.toString());
