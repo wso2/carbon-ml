@@ -3,8 +3,6 @@ package org.wso2.carbon.ml.dataset;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.wso2.carbon.ml.db.H2Connector;
 
 public class DatasetSummary {
 	private static final Log LOGGER = LogFactory.getLog(DatasetSummary.class);
@@ -40,14 +37,15 @@ public class DatasetSummary {
 	 * descriptive-stats, missing points, unique values and etc. to display in
 	 * the data view.
 	 */
-	public void calculateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
+	public void generateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
 	                             String seperator) throws DatasetServiceException {
 		try {
 			Configuration configuration = new Configuration();
 			FileSystem fileSystem = FileSystem.get(configuration);
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			
 			//get the uri of the data source
-			String dataSource = getDataSource(dataSourceId);
+			String dataSource = dbHandler.getDataSource(dataSourceId);
 			if (dataSource != null) {
 				LOGGER.info("Data Source: " + dataSource);
 				LOGGER.info("Sample size: " + noOfRecords);
@@ -60,16 +58,24 @@ public class DatasetSummary {
 				//if the header row is not empty
 				if((firstLine=dataReader.readLine())!= null){
 					header = firstLine.split(seperator);
-					// find the columns contains String data
+					
+					// Find the columns contains String data
 					findColumnDataType(new BufferedReader(
 					                                      new InputStreamReader(
 					                                                            fileSystem.open(new Path(
 					                                                                                     dataSource)))),
 					                                                                                     seperator);
 					initilize();
+					
+					// Calculate mean,median standard deviation and skewness
 					calculateDescriptiveStats(dataReader, noOfRecords, seperator);
+					
+					// Calculate frequencies of each category/interval of the feature
 					calculateFrequencies(noOfRecords, noOfIntervals);
-					updateDatabase(dataSourceId);
+					
+					// Update the database with calculated summary statistics
+					dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
+					
 				}else{
 					LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
 				}
@@ -87,35 +93,7 @@ public class DatasetSummary {
 		}
 	}
 
-	/*
-	 * get the URI of the data source having the given ID, from the database
-	 */
-	private String getDataSource(int dataSourceId) throws Exception {
-		Connection connection = null;
-		try {
-			H2Connector h2Connector = H2Connector.initialize();
-			connection = h2Connector.getConnection();
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT URI FROM ML_DATASET WHERE ID=" +
-							dataSourceId);
-			if (result.first()) {
-				return result.getNString("URI");
-			}
-			else {
-				LOGGER.error("Invalid data source ID.");
-			}
-		} catch (Exception e) {
-			String msg="Error occured while reading the Data source from the database."+e.getMessage();
-			LOGGER.error(msg,e);
-			throw new DatasetServiceException(msg);
-		} finally {
-			if(connection!=null){
-				connection.close();
-			}
-		}
-		return null;
-	}
+	
 
 	/*
 	 * initialize the Lists and arrays
@@ -346,8 +324,7 @@ public class DatasetSummary {
 					                frequencies.get(String.valueOf(interval)) + 1);
 					break;
 				}
-				// set the lower bound to the lower bound of the next
-				// interval
+				// set the lower bound to the lower bound of the next interval
 				lowerBound = lowerBound + intervalSize;
 			}
 		}
@@ -395,65 +372,5 @@ public class DatasetSummary {
 	 */
 	private boolean isNumeric(String inputData) {
 		return inputData.matches("[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?");
-	}
-
-	/*
-	 * Update the database with all the summary stats of the sample
-	 */
-	public void updateDatabase(int dataSourceId) throws Exception {
-		H2Connector h2Connector;
-		Connection connection = null;
-		try {
-			h2Connector = H2Connector.initialize();
-			connection = h2Connector.getConnection();
-			String summaryStat;
-			for (int column = 0; column < header.length; column++) {
-				// get the json representation of the column
-				summaryStat = createJson(column);
-				// put the values to the database table. If the feature already
-				// exists, updates the row. if not, inserts as a new row.
-				connection.createStatement()
-				.execute("MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES('" +
-						header[column] +
-						"'," + dataSourceId +
-						",'" + type[column] +
-						"','" + summaryStat + 
-						"','"+new ImputeOption().getMethod()+
-						"','TRUE')");
-			}
-		} catch (Exception e) {
-			String msg="Error occured while updating the database with summary statistics of the data source: "+dataSourceId+"."+e.getMessage();
-			LOGGER.error(msg,e);
-			throw new DatasetServiceException(msg);
-		} finally{
-			if(connection!=null){
-				connection.close();
-			}
-		}
-	}
-
-
-	/*
-	 * Create the json string with summary stat for a given column
-	 */
-	private String createJson(int column) {
-		String json = "{";
-		String freqs = "[";
-		Object[] categoryNames = graphFrequencies.get(column).keySet().toArray();
-		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
-			freqs =
-					freqs + ",{range:" + categoryNames[i].toString() + ",frequency:" +
-							graphFrequencies.get(column).get(categoryNames[i].toString()) + "}";
-		}
-		freqs = freqs.replaceFirst(",", "") + "]";
-		json=json+",unique:"+unique.get(column)+
-				",missing:"+missing.get(column)+
-				",mean:"+descriptiveStats.get(column).getMean()+
-				",median:"+descriptiveStats.get(column).getPercentile(50)+
-				",std:"+descriptiveStats.get(column).getStandardDeviation()+
-				",skewness:"+descriptiveStats.get(column).getSkewness()+
-				",frequencies:"+freqs+
-				"}";
-		return json;
 	}
 }
