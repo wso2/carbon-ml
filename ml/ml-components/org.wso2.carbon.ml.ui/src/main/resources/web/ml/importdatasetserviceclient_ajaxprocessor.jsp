@@ -5,6 +5,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants"%>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
 <%@ page import="org.wso2.carbon.ml.ui.helper.DatabaseServiceClient"%>
+<%@ page import="org.wso2.carbon.ml.ui.helper.DatasetServiceClient"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"
 	prefix="carbon"%>
@@ -18,6 +19,7 @@
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
 	DatabaseServiceClient client;
+	DatasetUploader uploader;
 
 	try {
 		client = new DatabaseServiceClient(configContext, serverURL,
@@ -26,12 +28,15 @@
 		int memThreshold = client.getDatasetInMemoryThreshold();
 		String uploadingDir = client.getDatasetUploadingDir();
 		
-		DatasetUploader uploader = new DatasetUploader(request, uploadingDir, memThreshold, uploadingLimit);
+		uploader = new DatasetUploader(request, uploadingDir, memThreshold, uploadingLimit);
 		boolean result = uploader.doUplod();
 		
 		if(result){ 
 			// calling summary statistics calcution service
-			
+			DatasetServiceClient dssClient = new DatasetServiceClient(configContext, serverURL, cookie);
+			System.out.println(uploader.getDatasetName());
+			dssClient.importDataset(uploader.getDatasetName());
+						
 		}else{
 			// redirect to the error page
 		}

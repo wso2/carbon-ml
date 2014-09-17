@@ -38,6 +38,8 @@ public class DatasetUploader {
 	private String datasetUploadingDir;
 	private int datasetInMemThreshold;
 	private long datasetUploadLimit;
+	
+	private String datasetName;
 
 	public DatasetUploader(HttpServletRequest request,
 			String datasetUploadingDir, int datasetInMemThreshold,
@@ -71,9 +73,9 @@ public class DatasetUploader {
 				for (FileItem item : multiparts) {
 					if (!item.isFormField()) {
 
-						String fileName = new File(item.getName()).getName();
+						datasetName = new File(item.getName()).getName();
 						item.write(new File(datasetUploadingDir
-								+ File.separator + fileName));
+								+ File.separator + datasetName));
 					}
 				}
 				// successfully uploaded
@@ -92,5 +94,9 @@ public class DatasetUploader {
 
 		// dataset uploading operation is unsuccessful
 		return false;
+	}
+	
+	public String getDatasetName(){
+		return datasetName;
 	}
 }

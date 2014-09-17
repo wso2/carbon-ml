@@ -18,10 +18,10 @@
 		<jsp:include page="<%= menuPath%>"></jsp:include>
 
 		<div id="importDialog">
-			<form id="multiform" action="./importdatasetserviceclient.jsp" method="post"
+			<form id="multiform" action="./importdatasetserviceclient_ajaxprocessor.jsp" method="post"
 				enctype="multipart/form-data">
 
-				<input type="text" id="datasetName" /> <input type="file" size="60"
+				<input type="text" id="datasetName" name="datasetName"/> <input type="file" size="60"
 					name="uploadDataset" id="uploadDataset"> <input
 					type="button" id="datasetOpen" value="Browse" /> <input
 					type="submit" value="Import"><span id="validatorMsg"></span>
