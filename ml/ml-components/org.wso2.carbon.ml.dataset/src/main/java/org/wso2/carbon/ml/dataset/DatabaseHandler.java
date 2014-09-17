@@ -3,13 +3,17 @@ package org.wso2.carbon.ml.dataset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.wso2.carbon.ml.db.Feature;
+import org.wso2.carbon.ml.db.FeatureType;
 import org.wso2.carbon.ml.db.H2Connector;
+import org.wso2.carbon.ml.db.ImputeOperation;
 
 public class DatabaseHandler {
 	H2Connector h2Connector;
@@ -20,6 +24,8 @@ public class DatabaseHandler {
 			try {
 	            h2Connector = H2Connector.initialize();
 	            connection = h2Connector.getConnection();
+	            connection.setAutoCommit(true);
+	            
             } catch (Exception e) {
             	String msg = "Error occured while connecting to database. " + e.getMessage();
     			LOGGER.error(msg,e);
@@ -50,16 +56,14 @@ public class DatabaseHandler {
 						"','" + summaryStat + 
 						"','"+new ImputeOption().getMethod()+
 						"','TRUE')");
+				connection.commit();
 			}
+			LOGGER.info("Successfully updated the summary statistics for data source: "+dataSourceId);
 		} catch (SQLException e) {
 			String msg="Error occured while updating the database with summary statistics of the data source: "+dataSourceId+"."+e.getMessage();
 			LOGGER.error(msg,e);
 			throw new DatabaseHandlerException(msg);
-        } finally{
-			if(connection!=null){
-				connection.close();
-			}
-		}
+        }
 	}
 
 
@@ -105,14 +109,11 @@ public class DatabaseHandler {
 			else {
 				LOGGER.error("Invalid data source ID.");
 			}
+			
 		} catch (Exception e) {
 			String msg="Error occured while reading the Data source from the database."+e.getMessage();
 			LOGGER.error(msg,e);
 			throw new DatabaseHandlerException(msg);
-		} finally {
-			if(connection!=null){
-				connection.close();
-			}
 		}
 		return null;
 	}
@@ -125,7 +126,9 @@ public class DatabaseHandler {
 		try {
 	        ResultSet result = connection.createStatement().executeQuery("SELECT DATASET_UPLOADING_DIR FROM ML_CONFIGURATION");
 	        if (result.first()) {
-				return result.getNString("DATASET_UPLOADING_DIR");
+	        	String location =result.getNString("DATASET_UPLOADING_DIR");
+	        	LOGGER.info("Default upload location: "+location);
+				return location;
 	        }else {
 				LOGGER.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
 			}
@@ -138,6 +141,25 @@ public class DatabaseHandler {
 		return null;
 	}
 	
+	/*
+	 *  insert the new data set details to the the database
+	 */
+	public int insertDatasetDetails(String uri, String source){
+		Statement insert;
+        try {
+	        insert = connection.createStatement();
+	        insert.execute("INSERT INTO ML_Dataset(URI) VALUES('" + uri+"/"+source + "');");
+			
+			// get the latest auto-generated Id
+			ResultSet latestID = insert.getGeneratedKeys();
+			latestID.first();
+			return Integer.parseInt(latestID.getNString(1));
+        } catch (SQLException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		return -1;
+	}
 	
 	/*
 	 *  update details for a given feature
@@ -153,5 +175,29 @@ public class DatabaseHandler {
 			LOGGER.error(msg, e);
 			throw new DatabaseHandlerException(msg);
         }
+	}
+	
+	/*
+	 * Returns a set of features in a given range of a data set.
+	 */
+	public Feature[] getFeatures(int dataSet, int startPoint, int numberOfFeatures) throws DatabaseHandlerException{
+		Feature[] features = new Feature[numberOfFeatures];
+		try {
+			ResultSet result = connection.createStatement().executeQuery("SELECT * FROM ML_FEATURE WHERE dataset=" +50+" LIMIT "+numberOfFeatures+" OFFSET "+(startPoint-1)+"");
+			Feature [] feature = new Feature[numberOfFeatures];
+			FeatureType featureType =new FeatureType();
+			ImputeOperation imputeOperation = new ImputeOperation();
+			int i=0;
+			while(result.next()){
+				featureType.setFeatureType(result.getNString(3));
+				imputeOperation.setImputeOperation(result.getNString(5));
+				feature[i++]= new Feature(result.getNString(1), result.getBoolean(6), featureType , imputeOperation);
+			}
+        } catch (SQLException e) {
+        	String msg = "Error occured while retireving features of data set: "+dataSet+" ." + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+        }
+		return features;
 	}
 }

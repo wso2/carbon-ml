@@ -71,7 +71,7 @@ public class DatasetSummary {
 					calculateDescriptiveStats(dataReader, noOfRecords, seperator);
 					
 					// Calculate frequencies of each category/interval of the feature
-					calculateFrequencies(noOfRecords, noOfIntervals);
+					calculateFrequencies(noOfIntervals);
 					
 					// Update the database with calculated summary statistics
 					dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
@@ -206,7 +206,7 @@ public class DatasetSummary {
 	 * calculate the frequencies of each bin (i.e. each category/interval),
 	 * needed to plot bar graphs/pie charts/histograms
 	 */
-	private void calculateFrequencies(int noOfRecords, int intervals) {
+	private void calculateFrequencies(int intervals) {
 		Iterator<Integer> numericColumns = numericDataColPosstions.iterator();
 		Iterator<Integer> stringColumns = stringDataColPosstions.iterator();
 		int currentCol;

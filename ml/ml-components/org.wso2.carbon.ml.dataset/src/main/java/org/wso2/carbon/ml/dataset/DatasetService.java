@@ -1,12 +1,11 @@
 package org.wso2.carbon.ml.dataset;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.db.Feature;
 
 public class DatasetService {
 	private static final Log LOGGER = LogFactory.getLog(DatasetService.class);
@@ -19,13 +18,14 @@ public class DatasetService {
 			
 			if (uri!=null) {
 				// insert the details to the table
-				Statement insert = dbHandler.getConnection().createStatement();
-				insert.execute("INSERT INTO ML_Dataset(URI) VALUES('" + uri+"/"+source + "');");
+				int datasetId =dbHandler.insertDatasetDetails(uri, source);
+				LOGGER.info("Successfully updated the details of data set: "+uri+"/"+source);
+				LOGGER.info("Dataset ID: "+datasetId);
 				
-				// get the latest auto-generated Id
-				ResultSet latestID = insert.getGeneratedKeys();
-				latestID.first();
-				return Integer.parseInt(latestID.getNString(1));
+				//TODO: remove the following line. This line is only for the testing purpose.
+				generateSummaryStats(datasetId, 1000, 20, ",");
+				
+				return datasetId;
 			} else {
 				LOGGER.error("Default uploading location not found.");
 			}
@@ -41,13 +41,14 @@ public class DatasetService {
 	/*
 	 * Calculate summary stats and populate the database
 	 */
-	public void generateSummaryStats(String dataSource, int dataSourceID, int noOfRecords,
+	public void generateSummaryStats(int dataSourceID, int noOfRecords,
 	                                 int noOfIntervals, String seperator)
 	                                		 throws DatasetServiceException {
 		
 		try {
 			DatasetSummary summary = new DatasetSummary();
 			summary.generateSummary(dataSourceID, noOfRecords, noOfIntervals, seperator);
+			LOGGER.info("Summary statistics successfully generated. ");
 		} catch (DatasetServiceException e) {
 			String msg = "Summary Statistics calculation failed. " + e.getMessage();
 			LOGGER.error(msg, e);
@@ -66,6 +67,21 @@ public class DatasetService {
 	        return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
         } catch (DatabaseHandlerException e) {
         	String msg = "Updating feature failed. " + e.getMessage();
+			LOGGER.error(msg, e);
+	        throw new DatasetServiceException(msg);
+        }
+	}
+	
+	/*
+	 * Returns a set of features in a given range of a data set.
+	 */
+	public Feature[] getFeatures(int dataSet, int startPoint, int numberOfFeatures) throws DatasetServiceException{
+		DatabaseHandler dbHandler;
+        try {
+	        dbHandler = new DatabaseHandler();
+	        return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
+        } catch (DatabaseHandlerException e) {
+        	String msg = "Failed to retrieve features. " + e.getMessage();
 			LOGGER.error(msg, e);
 	        throw new DatasetServiceException(msg);
         }
