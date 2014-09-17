@@ -23,11 +23,10 @@
 	</tbody>
 </table>
 <script type="text/javascript">
-    	$('document').ready(function() {
-    	console.log("hello");
+    	$('document').ready(function() {    	
 	    $('#datasetTable').dataTable({
 	        "bServerSide": true,
-	        "sAjaxSource": "datasetserviceclient.jsp",
+	        "sAjaxSource": "datasetserviceclient_ajaxprocessor.jsp",
 	        "bProcessing": false,
 	        "bLengthChange": false,
 	        "bFilter": false,

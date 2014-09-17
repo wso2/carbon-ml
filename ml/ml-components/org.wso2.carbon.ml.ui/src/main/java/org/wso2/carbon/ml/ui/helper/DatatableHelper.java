@@ -4,56 +4,53 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.wso2.carbon.ml.db.xsd.Feature;
-import org.wso2.carbon.ml.db.xsd.FeatureType;
-import org.wso2.carbon.ml.db.xsd.ImputeOperation;
 
 public class DatatableHelper {
 
 	public void populateDatatable(HttpServletResponse response,
 			HttpServletRequest request, Feature[] features) throws IOException {
-		StringBuilder jsonResponse = new StringBuilder();
-		System.out.println("Starting....");
-		jsonResponse.append("{");
-		jsonResponse.append("sEcho:"+Integer.parseInt(request.getParameter("sEcho"))+",");
-		jsonResponse.append("iTotalRecords:"+features.length+",");
-		jsonResponse.append("iTotalDisplayRecords:"+features.length+",");		
 		
-		jsonResponse.append("[");
+		JSONObject jsonResponse = new JSONObject();
+		jsonResponse.put("sEcho",
+				Integer.parseInt(request.getParameter("sEcho")));
+		jsonResponse.put("iTotalRecords", features.length);
+		jsonResponse.put("iTotalDisplayRecords", features.length);
+
 		for (Feature feature : features) {
-			StringBuilder jsonArray = new StringBuilder();
-			jsonArray.append("[");
+			JSONArray jsonArray = new JSONArray();
 
 			// adding features
-			jsonArray.append("<span class=\"feature\">" + feature.getFieldName()
-					+ "</span>,");
+			jsonArray.put("<span class=\"feature\">" + feature.getFieldName()
+					+ "</span>");
 
 			// adding include/exclude check box
-			jsonArray.append(buildInputCheckBox(feature.isInputSpecified())+",");
+			jsonArray.put(buildInputCheckBox(feature.isInputSpecified()));
 
 			// adding data type drop-down
-			jsonArray.append(buildDataTypeSectionBox(FeatureType.class.getEnumConstants(),
-					feature.getType().toString())+",");
+			jsonArray.put(buildDataTypeSectionBox(new String[] { "Categorical", "Numerical" },
+					feature.getType().getFeatureType()));
 
 			// adding summary statistics
-			jsonArray
-					.append("<div class=\"summaryStatistics\">{\"graph\":{\"type\":\"bar\", \"r\":\"50\"}}</div>,");
+			jsonArray.put("Will be added later");
 
 			// adding impute method
-			jsonArray.append(buildImputeSectionBox(ImputeOperation.class.getEnumConstants(),
-					feature.getImputeOperation().toString()));
+			jsonArray.put(buildImputeSectionBox(new String[] { "Drop", "Impute with Max" },
+					feature.getImputeOperation().getImputeOperation()));
 
 			// create a JSON array with above HTML elements
-			jsonResponse.append("],");
-			jsonResponse.append(jsonArray.toString());
+			jsonResponse.append("aaData", jsonArray);
 		}
-		
-		jsonResponse.append("]");
-		response.setContentType("application/Json");
-		System.out.println(jsonResponse.toString());
-		response.getWriter().print(jsonResponse.toString());
+		response.resetBuffer();
+		response.reset();		
+		response.setContentType("application/Json");		
+		response.getWriter().print(jsonResponse.toString().trim());
 	}
-	
+
+	//TODO: 
 	private String buildInputCheckBox(boolean value) {
 		String control = "<input type=\"checkbox\" "
 				+ "class=\"includeFeature\" value=\"includeFeature\"";
@@ -68,11 +65,10 @@ public class DatatableHelper {
 	}
 
 	// TODO: replace these two with a parameterized method
-	private String buildDataTypeSectionBox(FeatureType[] types,
-			String selected) {
+	private String buildDataTypeSectionBox(String[] types, String selected) {
 		StringBuilder selection = new StringBuilder();
 		selection.append("<select class=\"fieldType\">");
-		for (FeatureType ft : types) {
+		for (String ft : types) {
 			if (ft.toString().equals(selected)) {
 				selection.append("<option selected value=\"" + ft.toString()
 						+ "\">" + ft.toString() + "</option>");
@@ -86,11 +82,11 @@ public class DatatableHelper {
 		return selection.toString();
 	}
 
-	private String buildImputeSectionBox(ImputeOperation[] types,
-			String selected) {
+	//TODO:
+	private String buildImputeSectionBox(String[] types, String selected) {
 		StringBuilder selection = new StringBuilder();
 		selection.append("<select class=\"imputeMethod\">");
-		for (ImputeOperation ft : types) {
+		for (String ft : types) {
 			if (ft.toString().equals(selected)) {
 				selection.append("<option selected value=\"" + ft.toString()
 						+ "\">" + ft.toString() + "</option>");

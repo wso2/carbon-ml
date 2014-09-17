@@ -7,12 +7,8 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
 <%@ page import="org.wso2.carbon.ml.ui.helper.DatabaseServiceClient"%>
 <%@ page import="org.wso2.carbon.ml.db.xsd.Feature" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"
-	prefix="carbon"%>
 	
-<%
-	response.resetBuffer();
+<%	
 	String serverURL = CarbonUIUtil.getServerURL(
 			config.getServletContext(), session);
 	ConfigurationContext configContext = (ConfigurationContext) config
@@ -28,14 +24,17 @@
 				cookie);
 		int start = Integer.parseInt(request.getParameter("iDisplayStart"));
 		int len = Integer.parseInt(request.getParameter("iDisplayLength"));		
+		//TODO: remove hard-coded numbers
 		Feature[] features = client.getFeatures(0,2);
 		DatatableHelper datatableHelper = new DatatableHelper();
-		datatableHelper.populateDatatable(response, request, features);
 		
+		datatableHelper.populateDatatable(response, request, features);		
 	
 	} catch (Exception e) {
 		CarbonUIMessage.sendCarbonUIMessage(e.getMessage(),
 				CarbonUIMessage.ERROR, request, e);
 	}
 %>
+
+
 

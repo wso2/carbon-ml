@@ -58,7 +58,6 @@
                             org.wso2.carbon.ml.*
                         </Export-Package>
                         <Import-Package>
-                            org.json;version="[0.0.0,0.0.1)",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>

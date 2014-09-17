@@ -15,4 +15,10 @@ public class ImputeOperation {
 	public void setImputeOperation(String imputeOperation) {
 		this.imputateOperation = imputeOperation;
 	}
+
+    //TODO: refactor this
+	public static String[] getAllmputeOperations() {
+		return new String[] { "REPLACE_WITH_MAX", "DROP_ROW",
+				"REPLACE_WITH_MEAN" };
+	}
 }
