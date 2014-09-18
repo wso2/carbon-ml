@@ -1,5 +1,6 @@
 package org.wso2.carbon.ml.dataset;
 
+//TODO: use type safe enum
 public class ImputeOption {
 /*	DISCARD,
 	REPLACE_WTH_MEAN,

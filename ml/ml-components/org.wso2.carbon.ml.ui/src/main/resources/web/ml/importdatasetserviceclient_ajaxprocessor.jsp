@@ -4,7 +4,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil"%>
 <%@ page import="org.wso2.carbon.utils.ServerConstants"%>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
-<%@ page import="org.wso2.carbon.ml.ui.helper.DatabaseServiceClient"%>
+<%@ page import="org.wso2.carbon.ml.ui.helper.DatasetServiceClient"%>
 <%@ page import="org.wso2.carbon.ml.ui.helper.DatasetServiceClient"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"
@@ -18,24 +18,23 @@
 	String cookie = (String) session
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
-	DatabaseServiceClient client;
+	DatasetServiceClient client;
 	DatasetUploader uploader;
 
 	try {
-		client = new DatabaseServiceClient(configContext, serverURL,
+		client = new DatasetServiceClient(configContext, serverURL,
 				cookie);
 		long uploadingLimit = client.getDatasetUploadingLimit();
 		int memThreshold = client.getDatasetInMemoryThreshold();
-		String uploadingDir = client.getDatasetUploadingDir();
+		String uploadingDir = client.getDatasetUploadingDir();		
 		
 		uploader = new DatasetUploader(request, uploadingDir, memThreshold, uploadingLimit);
 		boolean result = uploader.doUplod();
 		
 		if(result){ 
 			// calling summary statistics calcution service
-			DatasetServiceClient dssClient = new DatasetServiceClient(configContext, serverURL, cookie);
-			System.out.println(uploader.getDatasetName());
-			dssClient.importDataset(uploader.getDatasetName());
+			client = new DatasetServiceClient(configContext, serverURL, cookie);
+			client.importDataset(uploader.getDatasetName());
 						
 		}else{
 			// redirect to the error page

@@ -5,8 +5,8 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil"%>
 <%@ page import="org.wso2.carbon.utils.ServerConstants"%>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
-<%@ page import="org.wso2.carbon.ml.ui.helper.DatabaseServiceClient"%>
-<%@ page import="org.wso2.carbon.ml.db.xsd.Feature" %>
+<%@ page import="org.wso2.carbon.ml.ui.helper.DatasetServiceClient"%>
+<%@ page import="org.wso2.carbon.ml.dataset.xsd.Feature" %>
 	
 <%	
 	String serverURL = CarbonUIUtil.getServerURL(
@@ -17,10 +17,10 @@
 	String cookie = (String) session
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 	
-	DatabaseServiceClient client;
+	DatasetServiceClient client;
 	
 	try {
-		client = new DatabaseServiceClient(configContext, serverURL,
+		client = new DatasetServiceClient(configContext, serverURL,
 				cookie);
 		int start = Integer.parseInt(request.getParameter("iDisplayStart"));
 		int len = Integer.parseInt(request.getParameter("iDisplayLength"));		

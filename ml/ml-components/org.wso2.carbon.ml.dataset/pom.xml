@@ -20,12 +20,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>org.wso2.carbon</groupId>
-        	<artifactId>org.wso2.carbon.ml.db</artifactId>
-        	<version>0.1.0</version>        	
-        </dependency>
+        </dependency>   
     </dependencies>
     <build>
         <plugins>
@@ -44,8 +39,7 @@
                         	org.h2;version="[0.0.0,0.0.1)",
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,
-                        	org.apache.hadoop.fs,
-							org.wso2.carbon.ml.db.*
+                        	org.apache.hadoop.fs							
                         </Import-Package>
                     </instructions>
                 </configuration>

@@ -1,14 +1,15 @@
-package org.wso2.carbon.ml.db;
+package org.wso2.carbon.ml.dataset;
+
 
 public class Feature {
 
 	private String fieldName;
 	private boolean isInput;
 	private FeatureType type;
-	private ImputeOperation imputeOperation;
+	private ImputeOption imputeOperation;
 
 	public Feature(String fieldName, boolean isInput, FeatureType type,
-			ImputeOperation imputeOperation) {
+			ImputeOption imputeOperation) {
 
 		this.fieldName = fieldName;
 		this.isInput = isInput;
@@ -40,11 +41,11 @@ public class Feature {
 		this.type = type;
 	}
 
-	public ImputeOperation getImputeOperation() {
+	public ImputeOption getImputeOperation() {
 		return imputeOperation;
 	}
 
-	public void setImputeOperation(ImputeOperation imputeOperation) {
+	public void setImputeOperation(ImputeOption imputeOperation) {
 		this.imputeOperation = imputeOperation;
 	}
 }

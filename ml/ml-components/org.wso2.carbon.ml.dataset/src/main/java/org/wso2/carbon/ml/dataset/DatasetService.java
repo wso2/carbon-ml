@@ -2,13 +2,56 @@ package org.wso2.carbon.ml.dataset;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.db.Feature;
 
 public class DatasetService {
 	private static final Log LOGGER = LogFactory.getLog(DatasetService.class);
+	
+	public String getDatasetUploadingDir() throws DatasetServiceException {
+		try{
+			DatabaseHandler dbHandler = new DatabaseHandler();
+			String uri = dbHandler.getDefaultUploadLocation();
+			if(uri != null && uri.length() > 0){
+				return uri;
+			}else{
+				String msg =
+						"Dataset uploading location can't be null or empty";
+				LOGGER.error(msg);
+				throw new DatasetServiceException(msg);
+			}
+		}catch(Exception ex){
+			String msg =
+					"Error occured while reading dataset uploading location" + ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceException(msg);
+		}
+	}
+
+	//TODO: read from DB
+	public int getDatasetInMemoryThreshold() {
+		return 1024 * 1024;
+	}
+
+	//TODO: read from DB
+	public long getDatasetUploadingLimit() {
+		return 1024 * 1024 * 256;
+	}
+	
+	public Feature[] getFeatures(int start, int numOfFeatures) {
+
+		// TODO:
+		Feature f1 = new Feature("age", false, new FeatureType(),
+				new ImputeOption());
+		Feature f2 = new Feature("salary", false, new FeatureType(),
+				new ImputeOption());
+
+		Feature[] features = new Feature[2];
+		features[0] = f1;
+		features[1] = f2;
+
+		return features;
+	}
 
 	public int importData(String source) throws Exception {
 		try {

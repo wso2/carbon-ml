@@ -17,7 +17,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.wso2.carbon.ml.db.H2Connector;
 
 public class Summary {
 	private static final Log logger = LogFactory.getLog(Summary.class);

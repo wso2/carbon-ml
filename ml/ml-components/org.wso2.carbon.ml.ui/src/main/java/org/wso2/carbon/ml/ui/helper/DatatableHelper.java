@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.carbon.ml.db.xsd.Feature;
+import org.wso2.carbon.ml.dataset.xsd.Feature;
+
 
 public class DatatableHelper {
 
@@ -40,8 +41,7 @@ public class DatatableHelper {
 
 			// adding impute method
 			jsonArray.put(buildSectionBox(new String[] { "Drop",
-					"Impute with Max" }, feature.getImputeOperation()
-					.getImputeOperation(), "imputeMethod"));
+					"Impute with Max" }, feature.getImputeOperation().getMethod(), "imputeMethod"));
 
 			// create a JSON array with above HTML elements
 			jsonResponse.append("aaData", jsonArray);
