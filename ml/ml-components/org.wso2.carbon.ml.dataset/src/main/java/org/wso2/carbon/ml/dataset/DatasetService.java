@@ -37,21 +37,6 @@ public class DatasetService {
 	public long getDatasetUploadingLimit() {
 		return 1024 * 1024 * 256;
 	}
-	
-	public Feature[] getFeatures(int start, int numOfFeatures) {
-
-		// TODO:
-		Feature f1 = new Feature("age", false, new FeatureType(),
-				new ImputeOption());
-		Feature f2 = new Feature("salary", false, new FeatureType(),
-				new ImputeOption());
-
-		Feature[] features = new Feature[2];
-		features[0] = f1;
-		features[1] = f2;
-
-		return features;
-	}
 
 	public int importData(String source) throws Exception {
 		try {

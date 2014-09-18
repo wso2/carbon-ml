@@ -216,17 +216,17 @@ public class DatabaseHandler {
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet + " LIMIT "
 							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
-							+ "");
-			Feature[] feature = new Feature[numberOfFeatures];
+							+ "");			
 			FeatureType featureType = new FeatureType();
 			ImputeOption imputeOperation = new ImputeOption();
 			int i = 0;
 			while (result.next()) {
 				featureType.setFeatureType(result.getNString(3));
 				imputeOperation.setMethod(result.getNString(5));
-				feature[i++] = new Feature(result.getNString(1),
+				features[i++] = new Feature(result.getNString(1),
 						result.getBoolean(6), featureType, imputeOperation);
 			}
+			
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "
 					+ dataSet + " ." + e.getMessage();
