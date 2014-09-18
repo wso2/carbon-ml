@@ -62,8 +62,6 @@ public class DatasetService {
 			if (uri!=null) {
 				// insert the details to the table
 				int datasetId =dbHandler.insertDatasetDetails(uri, source);
-				LOGGER.info("Successfully updated the details of data set: "+uri+"/"+source);
-				LOGGER.info("Dataset ID: "+datasetId);
 				
 				//TODO: remove the following line. This line is only for the testing purpose.
 				generateSummaryStats(datasetId, 1000, 20, ",");

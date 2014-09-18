@@ -6,21 +6,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 
 public class DatabaseHandler {
-	H2Connector h2Connector;
 	Connection connection = null;
 	private static final Log LOGGER = LogFactory.getLog(DatabaseHandler.class);
 
 	public DatabaseHandler() throws DatabaseHandlerException {
 		try {
-			h2Connector = H2Connector.initialize();
-			connection = h2Connector.getConnection();
+			Context initContext = new InitialContext();
+		    DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
+		    connection = ds.getConnection();
 			connection.setAutoCommit(true);
+			LOGGER.info("Connected to the H2 database.");
 
 		} catch (Exception e) {
 			String msg = "Error occured while connecting to database. "
@@ -109,12 +115,8 @@ public class DatabaseHandler {
 	/*
 	 * get the URI of the data source having the given ID, from the database
 	 */
-	//TODO: use JDBC preparedstatement to avoid SQL injection
 	public String getDataSource(int dataSourceId) throws Exception {
-		Connection connection = null;
 		try {
-			H2Connector h2Connector = H2Connector.initialize();
-			connection = h2Connector.getConnection();
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT URI FROM ML_DATASET WHERE ID=" + dataSourceId);
 			if (result.first()) {
@@ -161,7 +163,7 @@ public class DatabaseHandler {
 	 * insert the new data set details to the the database
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
-	public int insertDatasetDetails(String uri, String source) {
+	public int insertDatasetDetails(String uri, String source) throws DatabaseHandlerException {
 		Statement insert;
 		try {
 			insert = connection.createStatement();
@@ -171,12 +173,15 @@ public class DatabaseHandler {
 			// get the latest auto-generated Id
 			ResultSet latestID = insert.getGeneratedKeys();
 			latestID.first();
-			return Integer.parseInt(latestID.getNString(1));
+			int datasetId =Integer.parseInt(latestID.getNString(1));
+			LOGGER.info("Successfully updated the details of data set: "+uri+"/"+source);
+			LOGGER.info("Dataset ID: "+datasetId);
+			return datasetId;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String msg = "Error occured while inserting data source details to the database." + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
 		}
-		return -1;
 	}
 
 	/*
@@ -209,7 +214,7 @@ public class DatabaseHandler {
 		Feature[] features = new Feature[numberOfFeatures];
 		try {
 			ResultSet result = connection.createStatement().executeQuery(
-					"SELECT * FROM ML_FEATURE WHERE dataset=" + 50 + " LIMIT "
+					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet + " LIMIT "
 							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
 							+ "");
 			Feature[] feature = new Feature[numberOfFeatures];
