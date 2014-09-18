@@ -15,27 +15,61 @@ public class DatasetService {
 			if(uri != null && uri.length() > 0){
 				return uri;
 			}else{
-				String msg =
-						"Dataset uploading location can't be null or empty";
+				String msg = "Dataset uploading location can't be null or empty. ";
 				LOGGER.error(msg);
 				throw new DatasetServiceException(msg);
 			}
 		}catch(Exception ex){
 			String msg =
-					"Error occured while reading dataset uploading location" + ex.getMessage();
+					"Failed to retrieve dataset uploading location. " + ex.getMessage();
 			LOGGER.error(msg, ex);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
+	/*
+	 * Retrieve the dataset-in-memory-threshold from the ML_CONFIGURATION database
+	 */
 	//TODO: read from DB
-	public int getDatasetInMemoryThreshold() {
-		return 1024 * 1024;
+	public int getDatasetInMemoryThreshold() throws DatasetServiceException {
+		try {
+	        DatabaseHandler dbHandler = new DatabaseHandler();
+			return dbHandler.getDatasetInMemoryThreshold();
+        } catch (DatabaseHandlerException e) {
+        	String msg = "Failed to retrieve dataset-in-memory-threshold. ";
+			LOGGER.error(msg);
+			throw new DatasetServiceException(msg);
+        }
 	}
 
+	/*
+	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
+	 */
 	//TODO: read from DB
-	public long getDatasetUploadingLimit() {
-		return 1024 * 1024 * 256;
+	public long getDatasetUploadingLimit() throws DatasetServiceException {
+		try {
+	        DatabaseHandler dbHandler = new DatabaseHandler();
+			return dbHandler.getDatasetUploadingLimit();
+        } catch (DatabaseHandlerException e) {
+        	String msg = "Failed to retrieve dataset uploading limit. ";
+			LOGGER.error(msg);
+			throw new DatasetServiceException(msg);
+        }
+	}
+	
+	public Feature[] getFeatures(int start, int numOfFeatures) {
+
+		// TODO:
+		Feature f1 = new Feature("age", false, new FeatureType(),
+				new ImputeOption());
+		Feature f2 = new Feature("salary", false, new FeatureType(),
+				new ImputeOption());
+
+		Feature[] features = new Feature[2];
+		features[0] = f1;
+		features[1] = f2;
+
+		return features;
 	}
 
 	public int importData(String source) throws Exception {
@@ -57,7 +91,7 @@ public class DatasetService {
 			}
 		} catch (Exception e) {
 			String msg =
-					"Error occured while updating the data-source details in the database. " + e.getMessage();
+					"Failed to update the data-source details in the database. " + e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -76,7 +110,7 @@ public class DatasetService {
 			summary.generateSummary(dataSourceID, noOfRecords, noOfIntervals, seperator);
 			LOGGER.info("Summary statistics successfully generated. ");
 		} catch (DatasetServiceException e) {
-			String msg = "Summary Statistics calculation failed. " + e.getMessage();
+			String msg = "Failed to calculate ummary Statistics. " + e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
