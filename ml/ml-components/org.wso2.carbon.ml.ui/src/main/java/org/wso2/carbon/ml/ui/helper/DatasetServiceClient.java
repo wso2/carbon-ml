@@ -56,7 +56,7 @@ public class DatasetServiceClient {
 			throws DatasetServiceClientException {
 		try {
 			return stub.getDatasetUploadingDir();
-		} catch (RemoteException ex) {
+		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetUploadingDir() error message: "
 					+ ex.getMessage();
 			LOGGER.error(msg, ex);
