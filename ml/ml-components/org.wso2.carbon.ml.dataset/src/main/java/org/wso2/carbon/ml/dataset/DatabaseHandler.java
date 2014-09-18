@@ -15,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-
 public class DatabaseHandler {
 	Connection connection = null;
 	private static final Log LOGGER = LogFactory.getLog(DatabaseHandler.class);
@@ -41,77 +40,74 @@ public class DatabaseHandler {
 	}
 
 	/*
-	 * Update the database with all the summary stats of the sample
+	 * get the default uploading location
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
-	public void updateSummaryStatistics(int dataSourceId, String[] header,
-			String[] type, List<Map<String, Integer>> graphFrequencies,
-			List<Integer> missing, List<Integer> unique,
-			List<DescriptiveStatistics> descriptiveStats) throws Exception {
+	public String getDefaultUploadLocation() throws DatabaseHandlerException {
+
 		try {
-			String summaryStat;
-			for (int column = 0; column < header.length; column++) {
-				// get the json representation of the column
-				summaryStat = createJson(column, graphFrequencies, missing,
-						unique, descriptiveStats);
-				// put the values to the database table. If the feature already
-				// exists, updates the row. if not, inserts as a new row.
-				connection
-						.createStatement()
-						.execute(
-								"MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES('"
-										+ header[column]
-										+ "',"
-										+ dataSourceId
-										+ ",'"
-										+ type[column]
-										+ "','"
-										+ summaryStat
-										+ "','"
-										+ new ImputeOption().getMethod()
-										+ "','TRUE')");
-				connection.commit();
+			ResultSet result = connection.createStatement().executeQuery(
+					"SELECT DATASET_UPLOADING_DIR FROM ML_CONFIGURATION");
+			if (result.first()) {
+				String location = result.getNString("DATASET_UPLOADING_DIR");
+				LOGGER.info("Default upload location: " + location);
+				return location;
+			} else {
+				LOGGER.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
 			}
-			LOGGER.info("Successfully updated the summary statistics for data source: "
-					+ dataSourceId);
 		} catch (SQLException e) {
-			String msg = "Error occured while updating the database with summary statistics of the data source: "
-					+ dataSourceId + "." + e.getMessage();
+			String msg = "Error occured while retrieving the default upload location from the database. "
+					+ e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
+		return null;
 	}
-
+	
 	/*
-	 * Create the json string with summary stat for a given column
+	 * Retrieve the dataset-in-memory-threshold from the ML_CONFIGURATION database
 	 */
-	//TODO: use JDBC preparedstatement to avoid SQL injection
-	private String createJson(int column,
-			List<Map<String, Integer>> graphFrequencies, List<Integer> missing,
-			List<Integer> unique, List<DescriptiveStatistics> descriptiveStats) {
-		String json = "{";
-		String freqs = "[";
-		Object[] categoryNames = graphFrequencies.get(column).keySet()
-				.toArray();
-		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
-			freqs = freqs
-					+ ",{range:"
-					+ categoryNames[i].toString()
-					+ ",frequency:"
-					+ graphFrequencies.get(column).get(
-							categoryNames[i].toString()) + "}";
-		}
-		freqs = freqs.replaceFirst(",", "") + "]";
-		json = json + ",unique:" + unique.get(column) + ",missing:"
-				+ missing.get(column) + ",mean:"
-				+ descriptiveStats.get(column).getMean() + ",median:"
-				+ descriptiveStats.get(column).getPercentile(50) + ",std:"
-				+ descriptiveStats.get(column).getStandardDeviation()
-				+ ",skewness:" + descriptiveStats.get(column).getSkewness()
-				+ ",frequencies:" + freqs + "}";
-		return json;
+	public int getDatasetInMemoryThreshold() throws DatabaseHandlerException {
+		try {
+	        ResultSet result = connection.createStatement().executeQuery("SELECT DATASET_IN_MEM_THRESHOLD FROM ML_CONFIGURATION");
+    		if (result.first()) {
+    			int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
+    			LOGGER.info("Dataset in memory thresholed: " + memoryThreshold+" bytes");
+    			return memoryThreshold;
+    		} else {
+    			LOGGER.error("Dataset-in-memory-threshold is not set in the ML_CONFIGURATION database table.");
+    		}
+        } catch (SQLException e) {
+        	String msg = "Error occured while retrieving the dataset-in-memory-threshold from the database. "
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+        }
+		return -1;
 	}
-
+	
+	/*
+	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
+	 */
+	public long getDatasetUploadingLimit() throws DatabaseHandlerException {
+		try {
+	        ResultSet result = connection.createStatement().executeQuery("SELECT DATASET_UPLOADING_LIMIT FROM ML_CONFIGURATION");
+    		if (result.first()) {
+    			long memoryThreshold = result.getLong("DATASET_UPLOADING_LIMIT");
+    			LOGGER.info("Dataset uploading limit: " + memoryThreshold+" bytes");
+    			return memoryThreshold;
+    		} else {
+    			LOGGER.error("Dataset uploading limit is not set in the ML_CONFIGURATION database table.");
+    		}
+        } catch (SQLException e) {
+        	String msg = "Error occured while retrieving the Dataset uploading limit from the database. "
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+        }
+		return -1;
+	}
+	
 	/*
 	 * get the URI of the data source having the given ID, from the database
 	 */
@@ -135,29 +131,7 @@ public class DatabaseHandler {
 	}
 
 	/*
-	 * get the default uploading location
-	 */
-	//TODO: use JDBC preparedstatement to avoid SQL injection
-	public String getDefaultUploadLocation() throws DatabaseHandlerException {
-
-		try {
-			ResultSet result = connection.createStatement().executeQuery(
-					"SELECT DATASET_UPLOADING_DIR FROM ML_CONFIGURATION");
-			if (result.first()) {
-				String location = result.getNString("DATASET_UPLOADING_DIR");
-				LOGGER.info("Default upload location: " + location);
-				return location;
-			} else {
-				LOGGER.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
-			}
-		} catch (SQLException e) {
-			String msg = "Error occured while retrieving the data-source details from the database. "
-					+ e.getMessage();
-			LOGGER.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-		}
-		return null;
-	}
+	
 
 	/*
 	 * insert the new data set details to the the database
@@ -205,6 +179,82 @@ public class DatabaseHandler {
 		}
 	}
 
+	
+
+	/*
+	 * Update the database with all the summary stats of the sample
+	 */
+	//TODO: use JDBC preparedstatement to avoid SQL injection
+	public void updateSummaryStatistics(int dataSourceId, String[] header,
+			String[] type, List<Map<String, Integer>> graphFrequencies,
+			List<Integer> missing, List<Integer> unique,
+			List<DescriptiveStatistics> descriptiveStats) throws Exception {
+		try {
+			String summaryStat;
+			for (int column = 0; column < header.length; column++) {
+				// get the json representation of the column
+				summaryStat = createJson(column, type,graphFrequencies, missing,
+						unique, descriptiveStats);
+				// put the values to the database table. If the feature already
+				// exists, updates the row. if not, inserts as a new row.
+				connection
+						.createStatement()
+						.execute(
+								"MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES('"
+										+ header[column]
+										+ "',"
+										+ dataSourceId
+										+ ",'"
+										+ type[column]
+										+ "','"
+										+ summaryStat
+										+ "','"
+										+ new ImputeOption().getMethod()
+										+ "','TRUE')");
+				connection.commit();
+			}
+			LOGGER.info("Successfully updated the summary statistics for data source: "
+					+ dataSourceId);
+		} catch (SQLException e) {
+			String msg = "Error occured while updating the database with summary statistics of the data source: "
+					+ dataSourceId + "." + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		}
+	}
+
+	/*
+	 * Create the json string with summary stat for a given column
+	 */
+	//TODO: use JDBC preparedstatement to avoid SQL injection
+	private String createJson(int column, String [] type,
+			List<Map<String, Integer>> graphFrequencies, List<Integer> missing,
+			List<Integer> unique, List<DescriptiveStatistics> descriptiveStats) {
+		String json = "{";
+		String freqs = "[";
+		Object[] categoryNames = graphFrequencies.get(column).keySet()
+				.toArray();
+		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
+			freqs = freqs
+					+ ",{range:"
+					+ categoryNames[i].toString()
+					+ ",frequency:"
+					+ graphFrequencies.get(column).get(
+							categoryNames[i].toString()) + "}";
+		}
+		freqs = freqs.replaceFirst(",", "") + "]";
+		json = json + "type:" + type[column]
+				+ ",unique:" + unique.get(column)
+				+ ",missing:" + missing.get(column)
+				+ ",mean:" + descriptiveStats.get(column).getMean()
+				+ ",median:" + descriptiveStats.get(column).getPercentile(50)
+				+ ",std:" + descriptiveStats.get(column).getStandardDeviation()
+				+ ",skewness:" + descriptiveStats.get(column).getSkewness()
+				+ ",frequencies:" + freqs
+				+ "}";
+		return json;
+	}
+
 	/*
 	 * Returns a set of features in a given range of a data set.
 	 */
@@ -216,7 +266,7 @@ public class DatabaseHandler {
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet + " LIMIT "
 							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
-							+ "");			
+							+ "");
 			FeatureType featureType = new FeatureType();
 			ImputeOption imputeOperation = new ImputeOption();
 			int i = 0;
@@ -226,7 +276,6 @@ public class DatabaseHandler {
 				features[i++] = new Feature(result.getNString(1),
 						result.getBoolean(6), featureType, imputeOperation);
 			}
-			
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "
 					+ dataSet + " ." + e.getMessage();
