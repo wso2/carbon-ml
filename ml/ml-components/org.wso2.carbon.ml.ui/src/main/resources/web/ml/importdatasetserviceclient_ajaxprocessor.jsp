@@ -33,7 +33,10 @@
 		if(result){ 
 			// calling summary statistics calcution service
 			int datasetId = client.importDataset(uploader.getDatasetName());
-			session.setAttribute("datasetId", datasetId);			
+			session.setAttribute("datasetId", datasetId);
+			//TODO: change this hard-coded number
+			int numOfFeatues = client.generateSummaryStatistics(datasetId, 100); 
+			session.setAttribute("numOfFeatues", numOfFeatues);
 		}else{
 			// redirect to the error page
 			//TODO: error message
