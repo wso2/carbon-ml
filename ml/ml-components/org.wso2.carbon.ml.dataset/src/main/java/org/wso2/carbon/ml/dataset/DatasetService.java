@@ -83,10 +83,6 @@ public class DatasetService {
 			if (uri!=null) {
 				// insert the details to the table
 				int datasetId =dbHandler.insertDatasetDetails(uri, source);
-				
-				//TODO: remove the following line. This line is only for the testing purpose.
-				generateSummaryStats(datasetId, 1000, 20, ",");
-				
 				return datasetId;
 			} else {
 				LOGGER.error("Default uploading location not found.");
@@ -103,19 +99,23 @@ public class DatasetService {
 	/*
 	 * Calculate summary stats and populate the database
 	 */
-	public void generateSummaryStats(int dataSourceID, int noOfRecords,
-	                                 int noOfIntervals, String seperator)
+	public int generateSummaryStats(int dataSourceID, int noOfRecords)
 	                                		 throws DatasetServiceException {
-		
 		try {
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
-			summary.generateSummary(dataSourceID, noOfRecords, noOfIntervals, seperator);
+			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeperator());
 			LOGGER.info("Summary statistics successfully generated. ");
+			return noOfFeatures;
 		} catch (DatasetServiceException e) {
-			String msg = "Failed to calculate ummary Statistics. " + e.getMessage();
+			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatasetServiceException(msg);
-		}
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to connect to database. " + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatasetServiceException(msg);
+        }
 	}
 
 	/*
@@ -149,23 +149,14 @@ public class DatasetService {
         }
 	}
 
-	/*
-	 * Get summary statistics of a data set from the database
-	 */
-	public String getSummaryStats(int dataSourceID, int noOfRecords) throws IOException {
-		// TODO
-		String summary = "";
-		return summary;
-	}
-
+	// TODO
 	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints,
 	                                    String selectionPolicy) {
-		// TODO
 		return null;
 	}
 
+	// TODO
 	public List<Object> getSampleDistribution(String feature, int noOfBins) {
-		// TODO
 		return null;
 	}
 }
