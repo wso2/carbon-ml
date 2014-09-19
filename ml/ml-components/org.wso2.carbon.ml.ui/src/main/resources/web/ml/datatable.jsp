@@ -9,6 +9,12 @@
 <%
 	response.resetBuffer();
 %>
+
+<div id="changeSampleButtons">
+	<a href=# > <button class="greenButton">Random Sample</button></a>
+	<a href=# > <button class="greenButton">Full Data Set</button></a>
+</div>
+
 <table id="datasetTable" class="display">
 	<thead>
 		<tr>
@@ -22,6 +28,12 @@
 	<tbody>
 	</tbody>
 </table>
+
+<div class="bottomNavigationButtons">
+	<a href=# > <button class="blueButton">Explore Data</button></a>
+	<a href=# > <button class="blueButton">Build Model</button></a>
+</div>
+
 <script type="text/javascript">
     	$('document').ready(function() {    	
 	    $('#datasetTable').dataTable({
@@ -113,6 +125,4 @@
 
 
 	});
-
-	
     </script>
