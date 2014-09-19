@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.ml.dataset;
 
-import java.io.IOException;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,7 +103,7 @@ public class DatasetService {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
-			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeperator());
+			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeparator());
 			LOGGER.info("Summary statistics successfully generated. ");
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {

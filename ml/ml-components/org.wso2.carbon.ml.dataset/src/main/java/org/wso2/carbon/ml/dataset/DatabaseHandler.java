@@ -151,18 +151,18 @@ public class DatabaseHandler {
 	/*
 	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
 	 */
-	public String getSeperator() throws DatabaseHandlerException {
+	public String getSeparator() throws DatabaseHandlerException {
 		try {
-	        ResultSet result = connection.createStatement().executeQuery("SELECT SEPERATOR FROM ML_CONFIGURATION");
+	        ResultSet result = connection.createStatement().executeQuery("SELECT SEPARATOR FROM ML_CONFIGURATION");
     		if (result.first()) {
-    			String seperator = result.getNString("SEPERATOR");
-    			LOGGER.info("Data points seperator: " + seperator+" bytes");
-    			return seperator;
+    			String separator = result.getNString("SEPARATOR");
+    			LOGGER.info("Data points separator: " + separator+" bytes");
+    			return separator;
     		} else {
-    			LOGGER.error("Data points seperator is not set in the ML_CONFIGURATION database table.");
+    			LOGGER.error("Data points separator is not set in the ML_CONFIGURATION database table.");
     		}
         } catch (SQLException e) {
-        	String msg = "Error occured while retrieving the Data points seperator from the database. "
+        	String msg = "Error occured while retrieving the Data points separator from the database. "
 					+ e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatabaseHandlerException(msg);
