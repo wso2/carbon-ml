@@ -27,10 +27,20 @@
 
 /* top menu*/
 .topMenu{
+	background-image: url("../images/topmenu/top_menu_default.png");
+	width:170px;
+	height:28px;
+	float: left;
+	text-align: center;
 	padding: 8px 15px;
 }
 
 .topMenu.menuHiligher{
+	background-image: url("../images/topmenu/top_menu_selected.png");
+	width:170px;
+	height:28px;
+	float: left;
+	text-align: center;
 	background-color:  #f3f2f5;
 }
 
