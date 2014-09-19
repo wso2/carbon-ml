@@ -30,14 +30,14 @@ import org.wso2.carbon.ml.dataset.xsd.Feature;
 public class DatatableHelper {
 
 	public void populateDatatable(HttpServletResponse response,
-			HttpServletRequest request, Feature[] features) throws IOException {
+			HttpServletRequest request, Feature[] features, int datasetSize) throws IOException {
 
 		JSONObject jsonResponse = new JSONObject();
 		jsonResponse.put("sEcho",
 				Integer.parseInt(request.getParameter("sEcho")));
 		//TODO: remove hard coded values
-		jsonResponse.put("iTotalRecords", 55);
-		jsonResponse.put("iTotalDisplayRecords", 55);
+		jsonResponse.put("iTotalRecords", datasetSize);
+		jsonResponse.put("iTotalDisplayRecords", datasetSize);
 
 		for (Feature feature : features) {
 			JSONArray jsonArray = new JSONArray();

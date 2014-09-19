@@ -27,11 +27,23 @@
 
 /* top menu*/
 .topMenu{
-	padding: 8px 15px;
+	background-image: url("../images/topmenu/top_menu_default.png");
+	width:170px;
+    height:28px;
+    float: left;
+    text-align: center;
 }
 
 .topMenu.menuHiligher{
-	background-color:  #f3f2f5;
+	background-image: url("../images/topmenu/top_menu_selected.png");
+	width:170px;
+    height:28px;
+    float: left;
+    text-align: center;
+}
+
+.menulink{
+	padding: 7px 50px -5px  -5px; 
 }
 
 /* file upload component*/

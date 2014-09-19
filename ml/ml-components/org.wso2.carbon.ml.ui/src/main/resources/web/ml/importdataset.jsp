@@ -9,6 +9,7 @@
 
 <%
   String menuPath = "./includes/wizardmenu.jsp";  
+  System.out.println("session id: [importdataset.jsp]: "+session.getAttribute("datasetId"));
 %>
 <div id="middle">
 	<h2>WSO2 Machine Learner</h2>

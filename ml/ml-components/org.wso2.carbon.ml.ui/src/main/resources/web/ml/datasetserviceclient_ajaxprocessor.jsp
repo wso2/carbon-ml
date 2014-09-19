@@ -33,7 +33,10 @@
 				// numbers in DataTable starts with zero and in the DB its one
 				Feature[] features = client.getFeatures(datasetId, start + 1,len);
 				DatatableHelper datatableHelper = new DatatableHelper();
-				datatableHelper.populateDatatable(response, request, features);
+				
+				//TODO: error checking
+				int numOfFeatues = (Integer)session.getAttribute("numOfFeatues");
+				datatableHelper.populateDatatable(response, request, features, numOfFeatues);
 				
 			}else{
 				// no valid datasetId, report the error
