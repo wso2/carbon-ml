@@ -54,7 +54,7 @@ public class DatasetSummary {
 	 * descriptive-stats, missing points, unique values and etc. to display in
 	 * the data view.
 	 */
-	public void generateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
+	public int generateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
 	                             String seperator) throws DatasetServiceException {
 		try {
 			Configuration configuration = new Configuration();
@@ -84,7 +84,7 @@ public class DatasetSummary {
 					                                                                                     seperator);
 					initilize();
 					
-					// Calculate mean,median standard deviation and skewness
+					// Calculate mean,median, standard deviation, skewness,missing values and unique values
 					calculateDescriptiveStats(dataReader, noOfRecords, seperator);
 					
 					// Calculate frequencies of each category/interval of the feature
@@ -92,7 +92,7 @@ public class DatasetSummary {
 					
 					// Update the database with calculated summary statistics
 					dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
-					
+					return header.length;
 				}else{
 					LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
 				}
@@ -108,6 +108,7 @@ public class DatasetSummary {
 			LOGGER.error(msg,e);
 			throw new DatasetServiceException(msg);
 		}
+		return -1;
 	}
 
 	
@@ -126,9 +127,8 @@ public class DatasetSummary {
 				type[i] = featureType.numerical();
 				// add to the numerical data columns list
 				numericDataColumns.add(new ArrayList<Double>());
-				// if the current column is in the categorical data
+			// if the current column is in the categorical data positions list
 			} else {
-				// positions list
 				// set the data type to categorical
 				type[i] = featureType.categorical();
 				// add to the categorical data columns list
@@ -234,7 +234,7 @@ public class DatasetSummary {
 		while (stringColumns.hasNext()) {
 			currentCol = stringColumns.next();
 			Map<String, Integer> frequencies = new HashMap<String, Integer>();
-			// count the frequencies in each category
+			// count the frequencies in each category.
 			// Iterate through all the rows in the column (number of rows can be
 			// different due to missing values)
 			for (int row = 0; row < stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
@@ -282,9 +282,11 @@ public class DatasetSummary {
 	 */
 	private void claculateCategoryFreqs(int currentCol) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
-		// count the frequencies in each category
-		// Iterate through all the rows in the column (number of rows
-		// can be different due to missing values)
+		/* 
+		 * count the frequencies in each category.
+		 * Iterate through all the rows in the column (number of rows
+		 * can be different due to missing values)
+		 */
 		for (int row = 0; row < numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
 				.size(); row++) {
 			// if the category has appeared before, increment the

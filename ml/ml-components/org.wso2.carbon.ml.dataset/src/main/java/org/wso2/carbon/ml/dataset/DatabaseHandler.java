@@ -127,6 +127,50 @@ public class DatabaseHandler {
 	}
 	
 	/*
+	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
+	 */
+	public int getNoOfIntervals() throws DatabaseHandlerException {
+		try {
+	        ResultSet result = connection.createStatement().executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
+    		if (result.first()) {
+    			int intervals = result.getInt("INTERVALS");
+    			LOGGER.info("Number of intervals uses to categorize numerical data: " + intervals+" bytes");
+    			return intervals;
+    		} else {
+    			LOGGER.error("Number of intervals is not set in the ML_CONFIGURATION database table.");
+    		}
+        } catch (SQLException e) {
+        	String msg = "Error occured while retrieving the Number of intervals from the database. "
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+        }
+		return -1;
+	}
+	
+	/*
+	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
+	 */
+	public String getSeperator() throws DatabaseHandlerException {
+		try {
+	        ResultSet result = connection.createStatement().executeQuery("SELECT SEPERATOR FROM ML_CONFIGURATION");
+    		if (result.first()) {
+    			String seperator = result.getNString("SEPERATOR");
+    			LOGGER.info("Data points seperator: " + seperator+" bytes");
+    			return seperator;
+    		} else {
+    			LOGGER.error("Data points seperator is not set in the ML_CONFIGURATION database table.");
+    		}
+        } catch (SQLException e) {
+        	String msg = "Error occured while retrieving the Data points seperator from the database. "
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+        }
+		return null;
+	}
+	
+	/*
 	 * get the URI of the data source having the given ID, from the database
 	 */
 	public String getDataSource(int dataSourceId) throws Exception {
