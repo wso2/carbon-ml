@@ -22,8 +22,7 @@
 	DatasetUploader uploader;
 
 	try {
-		client = new DatasetServiceClient(configContext, serverURL,
-				cookie);
+		client = new DatasetServiceClient(configContext, serverURL,cookie);
 		long uploadingLimit = client.getDatasetUploadingLimit();
 		int memThreshold = client.getDatasetInMemoryThreshold();
 		String uploadingDir = client.getDatasetUploadingDir();		
@@ -33,8 +32,8 @@
 		
 		if(result){ 
 			// calling summary statistics calcution service
-			client.importDataset(uploader.getDatasetName());
-						
+			int datasetId = client.importDataset(uploader.getDatasetName());
+			session.setAttribute("datasetId", datasetId);			
 		}else{
 			// redirect to the error page
 			//TODO: error message

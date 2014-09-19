@@ -85,7 +85,7 @@ public class DatasetServiceClient {
 			throws DatasetServiceClientException {
 		try {
 			return stub.getDatasetInMemoryThreshold();
-		} catch (RemoteException ex) {
+		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetInMemoryThreshold() error message: "
 					+ ex.getMessage();
 			LOGGER.error(msg, ex);
@@ -97,7 +97,7 @@ public class DatasetServiceClient {
 			throws DatasetServiceClientException {
 		try {
 			return stub.getDatasetUploadingLimit();
-		} catch (RemoteException ex) {
+		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetUploadingLimit() error message: "
 					+ ex.getMessage();
 			LOGGER.error(msg, ex);
@@ -105,10 +105,10 @@ public class DatasetServiceClient {
 		}
 	}
 
-	public Feature[] getFeatures(int start, int numberOfFeatures)
+	public Feature[] getFeatures(int datsetId, int start, int numberOfFeatures)
 			throws DatasetServiceClientException {
 		try {
-			return stub.getFeatures(1, start, numberOfFeatures);
+			return stub.getFeatures(datsetId, start, numberOfFeatures);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getFeatures() error message: "
 					+ ex.getMessage();
@@ -116,4 +116,16 @@ public class DatasetServiceClient {
 			throw new DatasetServiceClientException(msg);
 		}
 	}
+	
+//	public int generateSummaryStatistics(){
+//		hrows DatasetServiceClientException {
+//			try {
+//				//return stub.getSummaryStats(arg0, arg1)
+//			} catch (Exception ex) {
+//				String msg = "An error has occurred while calling getFeatures() error message: "
+//						+ ex.getMessage();
+//				LOGGER.error(msg, ex);
+//				throw new DatasetServiceClientException(msg);
+//			}
+//	}
 }
