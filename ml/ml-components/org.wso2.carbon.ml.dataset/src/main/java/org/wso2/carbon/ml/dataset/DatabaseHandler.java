@@ -322,7 +322,7 @@ public class DatabaseHandler {
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
 	public Feature[] getFeatures(int dataSet, int startPoint,
-			int numberOfFeatures) throws DatabaseHandlerException {
+		int numberOfFeatures) throws DatabaseHandlerException {
 		List<Feature> features = new ArrayList<Feature>();
 		try {
 			ResultSet result = connection.createStatement().executeQuery(
@@ -345,7 +345,7 @@ public class DatabaseHandler {
 				}			
 				
 				features.add(new Feature(result.getNString(1),
-						result.getBoolean(6), featureType, imputeOperation));
+						result.getBoolean(6), featureType, imputeOperation, result.getNString(4)));
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "
@@ -353,7 +353,6 @@ public class DatabaseHandler {
 			LOGGER.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
-		
 		return features.toArray(new Feature[features.size()]);
 	}
 }
