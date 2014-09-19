@@ -24,14 +24,16 @@ public class Feature {
 	private boolean isInput;
 	private FeatureType type;
 	private ImputeOption imputeOperation;
+	private String summaryStats;
 
 	public Feature(String fieldName, boolean isInput, FeatureType type,
-			ImputeOption imputeOperation) {
+			ImputeOption imputeOperation, String summaryStats) {
 
 		this.fieldName = fieldName;
 		this.isInput = isInput;
 		this.type = type;
 		this.imputeOperation = imputeOperation;
+		this.summaryStats = summaryStats;
 	}
 
 	public String getFieldName() {
@@ -40,6 +42,14 @@ public class Feature {
 
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
+	}
+	
+	public String getSummaryStats() {
+		return summaryStats;
+	}
+
+	public void setSummaryStats(String summaryStats) {
+		this.summaryStats = summaryStats;
 	}
 
 	public boolean isInput() {
