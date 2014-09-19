@@ -103,7 +103,7 @@ public class DatasetService {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
-			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeperator());
+			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeparator());
 			LOGGER.info("Summary statistics successfully generated. ");
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
