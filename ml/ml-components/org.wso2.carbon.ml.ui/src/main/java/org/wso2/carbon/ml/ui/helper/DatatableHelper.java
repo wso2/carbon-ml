@@ -18,8 +18,9 @@ public class DatatableHelper {
 		JSONObject jsonResponse = new JSONObject();
 		jsonResponse.put("sEcho",
 				Integer.parseInt(request.getParameter("sEcho")));
-		jsonResponse.put("iTotalRecords", features.length);
-		jsonResponse.put("iTotalDisplayRecords", features.length);
+		//TODO: remove hard coded values
+		jsonResponse.put("iTotalRecords", 55);
+		jsonResponse.put("iTotalDisplayRecords", 55);
 
 		for (Feature feature : features) {
 			JSONArray jsonArray = new JSONArray();

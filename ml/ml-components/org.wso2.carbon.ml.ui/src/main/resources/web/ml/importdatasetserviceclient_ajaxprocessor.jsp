@@ -33,11 +33,11 @@
 		
 		if(result){ 
 			// calling summary statistics calcution service
-			client = new DatasetServiceClient(configContext, serverURL, cookie);
 			client.importDataset(uploader.getDatasetName());
 						
 		}else{
 			// redirect to the error page
+			//TODO: error message
 		}
 		
 

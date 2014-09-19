@@ -91,7 +91,7 @@ public class DatasetServiceClient {
 	public Feature[] getFeatures(int start, int numberOfFeatures)
 			throws DatasetServiceClientException {
 		try {
-			return stub.getFeatures(1, 1, 10);
+			return stub.getFeatures(1, start, numberOfFeatures);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getFeatures() error message: "
 					+ ex.getMessage();

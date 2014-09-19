@@ -23,9 +23,10 @@
 		client = new DatasetServiceClient(configContext, serverURL,
 				cookie);
 		int start = Integer.parseInt(request.getParameter("iDisplayStart"));
-		int len = Integer.parseInt(request.getParameter("iDisplayLength"));		
-		//TODO: remove hard-coded numbers
-		Feature[] features = client.getFeatures(0,2);
+		int len = Integer.parseInt(request.getParameter("iDisplayLength"));	
+		System.out.println("start:"+start+" end:"+len);
+		// numbers in DataTable starts with zero and in the DB its one
+		Feature[] features = client.getFeatures(start+1,len);
 		DatatableHelper datatableHelper = new DatatableHelper();
 		
 		datatableHelper.populateDatatable(response, request, features);		

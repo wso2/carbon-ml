@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -261,20 +262,21 @@ public class DatabaseHandler {
 	//TODO: use JDBC preparedstatement to avoid SQL injection
 	public Feature[] getFeatures(int dataSet, int startPoint,
 			int numberOfFeatures) throws DatabaseHandlerException {
-		Feature[] features = new Feature[numberOfFeatures];
+		List<Feature> features = new ArrayList<Feature>();
 		try {
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet + " LIMIT "
 							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
 							+ "");
+			
 			FeatureType featureType = new FeatureType();
 			ImputeOption imputeOperation = new ImputeOption();
-			int i = 0;
+			
 			while (result.next()) {
 				featureType.setFeatureType(result.getNString(3));
 				imputeOperation.setMethod(result.getNString(5));
-				features[i++] = new Feature(result.getNString(1),
-						result.getBoolean(6), featureType, imputeOperation);
+				features.add(new Feature(result.getNString(1),
+						result.getBoolean(6), featureType, imputeOperation));
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "
@@ -282,6 +284,7 @@ public class DatabaseHandler {
 			LOGGER.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
-		return features;
+		
+		return features.toArray(new Feature[features.size()]);
 	}
 }
