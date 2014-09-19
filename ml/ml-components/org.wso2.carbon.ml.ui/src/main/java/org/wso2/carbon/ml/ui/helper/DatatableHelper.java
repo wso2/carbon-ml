@@ -30,12 +30,13 @@ import org.wso2.carbon.ml.dataset.xsd.Feature;
 public class DatatableHelper {
 
 	public void populateDatatable(HttpServletResponse response,
-			HttpServletRequest request, Feature[] features, int datasetSize) throws IOException {
+			HttpServletRequest request, Feature[] features, int datasetSize)
+			throws IOException {
 
 		JSONObject jsonResponse = new JSONObject();
 		jsonResponse.put("sEcho",
 				Integer.parseInt(request.getParameter("sEcho")));
-		//TODO: remove hard coded values
+		// TODO: remove hard coded values
 		jsonResponse.put("iTotalRecords", datasetSize);
 		jsonResponse.put("iTotalDisplayRecords", datasetSize);
 
@@ -44,22 +45,25 @@ public class DatatableHelper {
 
 			// adding features
 			jsonArray.put("<span class=\"feature\">" + feature.getFieldName()
-					+ "</span>");
+					+ "</span>");			
 
 			// adding include/exclude check box
 			jsonArray.put(buildInputCheckBox(feature.isInputSpecified()));
 
 			// adding data type drop-down
-			jsonArray.put(buildSectionBox(new String[] { "Categorical",
-					"Numerical" }, feature.getType().toString(),
+			jsonArray.put(buildSectionBox(new String[] { "CATEGORICAL",
+					"NUMERICAL" }, feature.getType().getFeatureName(),
 					"fieldType"));
-
+			
 			// adding summary statistics
-			jsonArray.put("Will be added later");
+			jsonArray.put(feature.getSummaryStats());
 
 			// adding impute method
-			jsonArray.put(buildSectionBox(new String[] { "Drop",
-					"Impute with Max" }, feature.getImputeOperation().toString(), "imputeMethod"));
+			jsonArray
+					.put(buildSectionBox(new String[] { "DISCARD",
+							"REPLACE_WTH_MEAN", "REGRESSION_IMPUTATION" },
+							feature.getImputeOperation().getImputeOptionName(),
+							"imputeMethod"));
 
 			// create a JSON array with above HTML elements
 			jsonResponse.append("aaData", jsonArray);
@@ -109,7 +113,7 @@ public class DatatableHelper {
 		StringBuilder selection = new StringBuilder();
 		selection.append("<select class=\"" + cssClass + "\">");
 		for (String ft : types) {
-			if (selectedOption.equals(ft)) {
+			if (selectedOption.equalsIgnoreCase(ft)) {
 				selection.append("<option selected value=\"" + ft.toString()
 						+ "\">" + ft.toString() + "</option>");
 			} else {

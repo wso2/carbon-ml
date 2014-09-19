@@ -288,7 +288,7 @@ public class DatabaseHandler {
 	/*
 	 * Create the json string with summary stat for a given column
 	 */
-	//TODO: use JDBC preparedstatement to avoid SQL injection
+	//TODO: Please use StringBuilder
 	private String createJson(int column, FeatureType[] type,
 			List<Map<String, Integer>> graphFrequencies, List<Integer> missing,
 			List<Integer> unique, List<DescriptiveStatistics> descriptiveStats) {
@@ -298,21 +298,21 @@ public class DatabaseHandler {
 				.toArray();
 		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
 			freqs = freqs
-					+ ",{range:"
+					+ ",{\"range\":"
 					+ categoryNames[i].toString()
-					+ ",frequency:"
+					+ ",\"frequency\":"
 					+ graphFrequencies.get(column).get(
 							categoryNames[i].toString()) + "}";
 		}
 		freqs = freqs.replaceFirst(",", "") + "]";
-		json = json + "type:" + type[column].toString()
-				+ ",unique:" + unique.get(column)
-				+ ",missing:" + missing.get(column)
-				+ ",mean:" + descriptiveStats.get(column).getMean()
-				+ ",median:" + descriptiveStats.get(column).getPercentile(50)
-				+ ",std:" + descriptiveStats.get(column).getStandardDeviation()
-				+ ",skewness:" + descriptiveStats.get(column).getSkewness()
-				+ ",frequencies:" + freqs
+		json = json + "\"type\":\"" + type[column].toString()+"\""
+				+ ",\"unique\":" + unique.get(column)
+				+ ",\"missing\":" + missing.get(column)
+				+ ",\"mean\":" + descriptiveStats.get(column).getMean()
+				+ ",\"median\":" + descriptiveStats.get(column).getPercentile(50)
+				+ ",\"std\":" + descriptiveStats.get(column).getStandardDeviation()
+				+ ",\"skewness\":" + descriptiveStats.get(column).getSkewness()
+				+ ",\"frequencies\":" + freqs
 				+ "}";
 		return json;
 	}
@@ -322,30 +322,30 @@ public class DatabaseHandler {
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
 	public Feature[] getFeatures(int dataSet, int startPoint,
-		int numberOfFeatures) throws DatabaseHandlerException {
+			int numberOfFeatures) throws DatabaseHandlerException {
 		List<Feature> features = new ArrayList<Feature>();
 		try {
 			ResultSet result = connection.createStatement().executeQuery(
-					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet + " LIMIT "
-							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
-							+ "");
-			
-			FeatureType featureType = FeatureType.NUMERICAL;
-			ImputeOption imputeOperation = ImputeOption.DISCARD;
-			
+					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet
+							+ " LIMIT " + numberOfFeatures + " OFFSET "
+							+ (startPoint - 1) + "");
+
 			while (result.next()) {
-				if ("CATEGORICAL".equals(result.getNString(3))){
+				FeatureType featureType = FeatureType.NUMERICAL;
+				if ("CATEGORICAL".equals(result.getNString(3))) {
 					featureType = FeatureType.CATEGORICAL;
 				}
-				
-				if("REPLACE_WTH_MEAN".equals(result.getNString(5))){
+
+				ImputeOption imputeOperation = ImputeOption.DISCARD;
+				if ("REPLACE_WTH_MEAN".equals(result.getNString(5))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-				}else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))){
+				} else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-				}			
-				
-				features.add(new Feature(result.getNString(1),
-						result.getBoolean(6), featureType, imputeOperation, result.getNString(4)));
+				}
+
+				features.add(new Feature(result.getNString(1), result
+						.getBoolean(6), featureType, imputeOperation, result
+						.getNString(4)));
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "

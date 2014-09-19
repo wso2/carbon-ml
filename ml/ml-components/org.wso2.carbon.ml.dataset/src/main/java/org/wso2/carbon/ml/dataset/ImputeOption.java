@@ -19,25 +19,24 @@ package org.wso2.carbon.ml.dataset;
 
 //TODO: use type safe enum
 public class ImputeOption {
-/*	DISCARD,
-	REPLACE_WTH_MEAN,
-	REGRESSION_IMPUTATION
-*/
-//	private String method;
-	
-	//default impute method
-//	public ImputeOption(){
-//		this.method="DISCARD";
-//	}
-//	
-//	public void setMethod(String type){
-//		this.method=type;
-//	}
-//	
-//	public String getMethod(){
-//		return this.method;
-//	}
-	
+	/*
+	 * DISCARD, REPLACE_WTH_MEAN, REGRESSION_IMPUTATION
+	 */
+	// private String method;
+
+	// default impute method
+	// public ImputeOption(){
+	// this.method="DISCARD";
+	// }
+	//
+	// public void setMethod(String type){
+	// this.method=type;
+	// }
+	//
+	// public String getMethod(){
+	// return this.method;
+	// }
+
 	private final String option;
 
 	private ImputeOption(String option) {
@@ -47,9 +46,15 @@ public class ImputeOption {
 	public String toString() {
 		return option;
 	}
-	
+
+	public String getImputeOptionName() {
+		return option;
+	}
+
 	public static final ImputeOption DISCARD = new ImputeOption("DISCARD");
-	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption("REPLACE_WTH_MEAN");
-	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption("REGRESSION_IMPUTATION");
-	
+	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption(
+			"REPLACE_WTH_MEAN");
+	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption(
+			"REGRESSION_IMPUTATION");
+
 }

@@ -56,5 +56,9 @@ public class FeatureType {
 
 	public String toString() {
 		return featureType;
-	}	
+	}
+	
+	public String getFeatureName(){
+		return featureType;
+	}
 }
