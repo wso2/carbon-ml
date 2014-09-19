@@ -32,7 +32,6 @@
 	height:28px;
 	float: left;
 	text-align: center;
-	padding: 8px 15px;
 }
 
 .topMenu.menuHiligher{
@@ -41,7 +40,6 @@
 	height:28px;
 	float: left;
 	text-align: center;
-	background-color:  #f3f2f5;
 }
 
 /* Buttons in UI */
@@ -74,7 +72,7 @@
 
 .bottomNavigationButtons{
 	float: right;
-	padding: 10px 20px 10px;
+	padding: 25px 20px 0px;
 }
 
 /* file upload component*/
