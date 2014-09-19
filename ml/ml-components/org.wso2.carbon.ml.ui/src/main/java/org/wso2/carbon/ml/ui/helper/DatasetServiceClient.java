@@ -117,15 +117,15 @@ public class DatasetServiceClient {
 		}
 	}
 	
-//	public int generateSummaryStatistics(){
-//		hrows DatasetServiceClientException {
-//			try {
-//				//return stub.getSummaryStats(arg0, arg1)
-//			} catch (Exception ex) {
-//				String msg = "An error has occurred while calling getFeatures() error message: "
-//						+ ex.getMessage();
-//				LOGGER.error(msg, ex);
-//				throw new DatasetServiceClientException(msg);
-//			}
-//	}
+	public int generateSummaryStatistics(int dataSrcId, int numOfRecords)
+			throws DatasetServiceClientException {
+		try {
+			return stub.generateSummaryStats(dataSrcId, numOfRecords);
+		} catch (Exception ex) {
+			String msg = "An error has occurred while calling getFeatures() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceClientException(msg);
+		}
+	}
 }
