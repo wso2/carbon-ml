@@ -230,7 +230,7 @@ public class DatabaseHandler {
 		try {
 			return connection.createStatement().execute(
 					"UPDATE  ML_FEATURE SET TYPE ='" + type
-							+ "',IMPUTE_METHOD='" + imputeOption.getMethod()
+							+ "',IMPUTE_METHOD='" + imputeOption.toString()
 							+ "', IMPORTANT=" + important + " WHERE name='"
 							+ name + "' AND Dataset=" + dataSet + ";");
 		} catch (SQLException e) {
@@ -248,7 +248,7 @@ public class DatabaseHandler {
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
 	public void updateSummaryStatistics(int dataSourceId, String[] header,
-			String[] type, List<Map<String, Integer>> graphFrequencies,
+			FeatureType[] type, List<Map<String, Integer>> graphFrequencies,
 			List<Integer> missing, List<Integer> unique,
 			List<DescriptiveStatistics> descriptiveStats) throws Exception {
 		try {
@@ -271,7 +271,7 @@ public class DatabaseHandler {
 										+ "','"
 										+ summaryStat
 										+ "','"
-										+ new ImputeOption().getMethod()
+										+ ImputeOption.DISCARD
 										+ "','TRUE')");
 				connection.commit();
 			}
@@ -289,7 +289,7 @@ public class DatabaseHandler {
 	 * Create the json string with summary stat for a given column
 	 */
 	//TODO: use JDBC preparedstatement to avoid SQL injection
-	private String createJson(int column, String [] type,
+	private String createJson(int column, FeatureType[] type,
 			List<Map<String, Integer>> graphFrequencies, List<Integer> missing,
 			List<Integer> unique, List<DescriptiveStatistics> descriptiveStats) {
 		String json = "{";
@@ -305,7 +305,7 @@ public class DatabaseHandler {
 							categoryNames[i].toString()) + "}";
 		}
 		freqs = freqs.replaceFirst(",", "") + "]";
-		json = json + "type:" + type[column]
+		json = json + "type:" + type[column].toString()
 				+ ",unique:" + unique.get(column)
 				+ ",missing:" + missing.get(column)
 				+ ",mean:" + descriptiveStats.get(column).getMean()
@@ -330,12 +330,20 @@ public class DatabaseHandler {
 							+ numberOfFeatures + " OFFSET " + (startPoint - 1)
 							+ "");
 			
-			FeatureType featureType = new FeatureType();
-			ImputeOption imputeOperation = new ImputeOption();
+			FeatureType featureType = FeatureType.NUMERICAL;
+			ImputeOption imputeOperation = ImputeOption.DISCARD;
 			
 			while (result.next()) {
-				featureType.setFeatureType(result.getNString(3));
-				imputeOperation.setMethod(result.getNString(5));
+				if ("CATEGORICAL".equals(result.getNString(3))){
+					featureType = FeatureType.CATEGORICAL;
+				}
+				
+				if("REPLACE_WTH_MEAN".equals(result.getNString(5))){
+					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
+				}else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))){
+					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
+				}			
+				
 				features.add(new Feature(result.getNString(1),
 						result.getBoolean(6), featureType, imputeOperation));
 			}

@@ -46,8 +46,8 @@ public class DatasetSummary {
 	private List <Integer> unique = new ArrayList <Integer>();	//numbers of unique values in each column
 	private List <Map<String,Integer>> graphFrequencies = new ArrayList <Map<String,Integer>>();		//frequencies of each interval/category of every column
 	private String [] header;	//header names
-	private String [] type;	//feature type array
-	private FeatureType featureType=new FeatureType();
+	private FeatureType [] type;	//feature type array
+	//private FeatureType featureType=new FeatureType();
 
 	/*
 	 * get a summary of a sample from the given csv file, including
@@ -117,20 +117,20 @@ public class DatasetSummary {
 	 * initialize the Lists and arrays
 	 */
 	private void initilize() {
-		type = new String[header.length];
+		type = new FeatureType[header.length];
 		for (int i = 0; i < header.length; i++) {
 			descriptiveStats.add(new DescriptiveStatistics());
 			graphFrequencies.add(new HashMap<String, Integer>());
 			// if the current column is in the numerical data positions list
 			if (numericDataColPosstions.contains(i)) {
 				// set the data type to numerical
-				type[i] = featureType.numerical();
+				type[i] = FeatureType.NUMERICAL;
 				// add to the numerical data columns list
 				numericDataColumns.add(new ArrayList<Double>());
 			// if the current column is in the categorical data positions list
 			} else {
 				// set the data type to categorical
-				type[i] = featureType.categorical();
+				type[i] = FeatureType.CATEGORICAL;
 				// add to the categorical data columns list
 				stringDataColumns.add(new ArrayList<String>());
 			}
@@ -266,7 +266,7 @@ public class DatasetSummary {
 			// than or equal to twenty)
 			if (unique.get(currentCol).intValue() <= 20) {
 				// change the data type to categorical
-				type[currentCol] = featureType.categorical();
+				type[currentCol] = FeatureType.CATEGORICAL;
 				claculateCategoryFreqs(currentCol);
 
 			} else {

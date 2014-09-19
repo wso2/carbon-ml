@@ -51,7 +51,7 @@ public class DatatableHelper {
 
 			// adding data type drop-down
 			jsonArray.put(buildSectionBox(new String[] { "Categorical",
-					"Numerical" }, feature.getType().getFeatureType(),
+					"Numerical" }, feature.getType().toString(),
 					"fieldType"));
 
 			// adding summary statistics
@@ -59,7 +59,7 @@ public class DatatableHelper {
 
 			// adding impute method
 			jsonArray.put(buildSectionBox(new String[] { "Drop",
-					"Impute with Max" }, feature.getImputeOperation().getMethod(), "imputeMethod"));
+					"Impute with Max" }, feature.getImputeOperation().toString(), "imputeMethod"));
 
 			// create a JSON array with above HTML elements
 			jsonResponse.append("aaData", jsonArray);
