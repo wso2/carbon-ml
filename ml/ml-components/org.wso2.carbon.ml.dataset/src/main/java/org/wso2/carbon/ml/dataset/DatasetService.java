@@ -17,7 +17,9 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import java.io.File;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,7 +48,6 @@ public class DatasetService {
 	/*
 	 * Retrieve the dataset-in-memory-threshold from the ML_CONFIGURATION database
 	 */
-	//TODO: read from DB
 	public int getDatasetInMemoryThreshold() throws DatasetServiceException {
 		try {
 	        DatabaseHandler dbHandler = new DatabaseHandler();
@@ -61,7 +62,6 @@ public class DatasetService {
 	/*
 	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
 	 */
-	//TODO: read from DB
 	public long getDatasetUploadingLimit() throws DatasetServiceException {
 		try {
 	        DatabaseHandler dbHandler = new DatabaseHandler();
@@ -80,9 +80,13 @@ public class DatasetService {
 			String uri = dbHandler.getDefaultUploadLocation();
 			
 			if (uri!=null) {
-				// insert the details to the table
-				int datasetId =dbHandler.insertDatasetDetails(uri, source);
-				return datasetId;
+				if(isValidFile(source)){
+					// insert the details to the table
+					int datasetId =dbHandler.insertDatasetDetails(uri, source);
+					return datasetId;
+				}else{
+					LOGGER.error("Invalid input file: "+source);
+				}
 			} else {
 				LOGGER.error("Default uploading location not found.");
 			}
@@ -157,5 +161,17 @@ public class DatasetService {
 	// TODO
 	public List<Object> getSampleDistribution(String feature, int noOfBins) {
 		return null;
+	}
+	
+
+	private boolean isValidFile(String path) {
+		File file = new File(path);
+		//check whether the file exists
+		if (file.exists() && !file.isDirectory()) {
+			//check whether it has the csv extension
+			return path.matches("(.)+(\\."+FileFormats.CSV.toString()+")");
+		} else {
+			return false;
+		}
 	}
 }

@@ -33,7 +33,7 @@
 	<a href=# > <button class="blueButton">Explore Data</button></a>
 	<a href=# > <button class="blueButton">Build Model</button></a>
 </div>
-
+<div style="clear:both"></div>
 <script type="text/javascript">
     	$('document').ready(function() {    	
 	    $('#datasetTable').dataTable({

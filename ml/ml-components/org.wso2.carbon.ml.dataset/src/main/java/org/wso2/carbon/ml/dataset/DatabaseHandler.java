@@ -43,8 +43,6 @@ public class DatabaseHandler {
 		    DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
 		    connection = ds.getConnection();
 			connection.setAutoCommit(true);
-			LOGGER.info("Connected to the H2 database.");
-
 		} catch (Exception e) {
 			String msg = "Error occured while connecting to database. "
 					+ e.getMessage();

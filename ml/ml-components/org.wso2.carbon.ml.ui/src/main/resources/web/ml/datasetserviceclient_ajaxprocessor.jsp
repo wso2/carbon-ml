@@ -28,8 +28,7 @@
 					.getParameter("iDisplayLength"));			
 			
 			Integer datasetId = (Integer)session.getAttribute("datasetId");
-			if( datasetId != null && datasetId > 0){
-				
+			if( datasetId != null && datasetId.intValue() > 0){
 				// numbers in DataTable starts with zero and in the DB its one
 				Feature[] features = client.getFeatures(datasetId, start + 1,len);
 				DatatableHelper datatableHelper = new DatatableHelper();
