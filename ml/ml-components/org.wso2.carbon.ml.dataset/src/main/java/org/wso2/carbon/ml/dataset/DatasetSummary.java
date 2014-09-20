@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.dataset;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -67,35 +68,36 @@ public class DatasetSummary {
 				LOGGER.info("Data Source: " + dataSource);
 				LOGGER.info("Sample size: " + noOfRecords);
 
-				// read the csv file
-				FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
-				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
+					// read the input data file
+					FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
+					BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
 
-				String firstLine;
-				//if the header row is not empty
-				if((firstLine=dataReader.readLine())!= null){
-					header = firstLine.split(seperator);
-					
-					// Find the columns contains String data
-					findColumnDataType(new BufferedReader(
-					                                      new InputStreamReader(
-					                                                            fileSystem.open(new Path(
-					                                                                                     dataSource)))),
-					                                                                                     seperator);
-					initilize();
-					
-					// Calculate mean,median, standard deviation, skewness,missing values and unique values
-					calculateDescriptiveStats(dataReader, noOfRecords, seperator);
-					
-					// Calculate frequencies of each category/interval of the feature
-					calculateFrequencies(noOfIntervals);
-					
-					// Update the database with calculated summary statistics
-					dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
-					return header.length;
-				}else{
-					LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
-				}
+					String firstLine;
+					//if the header row is not empty
+					if((firstLine=dataReader.readLine())!= null){
+						header = firstLine.split(seperator);
+						
+						// Find the columns contains String data
+						findColumnDataType(new BufferedReader(
+						                                      new InputStreamReader(
+						                                                            fileSystem.open(new Path(
+						                                                                                     dataSource)))),
+						                                                                                     seperator);
+						initilize();
+						
+						// Calculate mean,median, standard deviation, skewness,missing values and unique values
+						calculateDescriptiveStats(dataReader, noOfRecords, seperator);
+						
+						// Calculate frequencies of each category/interval of the feature
+						calculateFrequencies(noOfIntervals);
+						
+						// Update the database with calculated summary statistics
+						dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
+						return header.length;
+					}else{
+						LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
+					}
+
 			} else {
 				LOGGER.error("Data source not found.");
 			}
@@ -110,8 +112,6 @@ public class DatasetSummary {
 		}
 		return -1;
 	}
-
-	
 
 	/*
 	 * initialize the Lists and arrays

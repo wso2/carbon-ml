@@ -16,6 +16,7 @@
 	<div id="workArea">
 		<jsp:include
 			page="<%= menuPath%>"></jsp:include>
+			<div style="clear:both"></div>
 	</div>
 </div>
 

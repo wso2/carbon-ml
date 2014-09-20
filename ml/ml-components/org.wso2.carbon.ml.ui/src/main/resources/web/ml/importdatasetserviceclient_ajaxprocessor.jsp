@@ -34,15 +34,19 @@
 			// calling summary statistics calcution service
 			int datasetId = client.importDataset(uploader.getDatasetName());
 			session.setAttribute("datasetId", datasetId);
-			//TODO: change this hard-coded number
-			int numOfFeatues = client.generateSummaryStatistics(datasetId, 100); 
-			session.setAttribute("numOfFeatues", numOfFeatues);
+			// if the import is successfull
+			if(datasetId>=0){
+				//calling summary statistics calcution service
+				//TODO: change this hard-coded number
+				int numOfFeatues = client.generateSummaryStatistics(datasetId, 100);
+				session.setAttribute("numOfFeatues", numOfFeatues);
+			}else{
+				//TODO: error message
+			}
 		}else{
 			// redirect to the error page
 			//TODO: error message
 		}
-		
-
 	} catch (Exception e) {
 		CarbonUIMessage.sendCarbonUIMessage(e.getMessage(),
 				CarbonUIMessage.ERROR, request, e);
