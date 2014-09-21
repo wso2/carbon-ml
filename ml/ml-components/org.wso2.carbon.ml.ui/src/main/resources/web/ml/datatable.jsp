@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.css">
 <script src="./js/jquery.js"></script>
 <script src="./js/jquery.dataTables.js"></script>
+<script src="./js/d3.min.js"></script>
 
 <%
 	response.resetBuffer();
@@ -44,26 +45,80 @@
 	        "bFilter": false,
 	    });
 
-	    $('#datasetTable').on('draw.dt', function() {	        
-
-	        $('.summaryStatistics').each(function() {
-	            var json = $(this).text();
-	            json = JSON.parse(json);
+	    $('#datasetTable').on('draw.dt', function() {
+	    	
+	    	$('.summaryStatistics').each(function() {
+	            var jsonText = $(this).text();
+	            console.log(jsonText);
+	            var jsonObj  = JSON.parse(jsonText);
 	            $(this).text("");
-	            console.log(json["graph"]["type"]);
-	            var svg = d3.select(this).append("svg").attr("width", 200).attr("height", 50);
+	            
+	            var type = jsonObj.type;
+	            var frequencies = jsonObj.frequencies;
+	            var dataArray = $.map(frequencies, function(value, index) {
+            		return [value.frequency];
+            	});
+	            
+	            if (type == 'CATEGORICAL'){
+	            	
+	            	
+	            	var w = 40;
+	            	var h = 40;
+	            	var pie = d3.layout.pie();
+	            	
+	            	var outerRadius = w / 2;
+	            	var innerRadius = 0;
+	            	var arc = d3.svg.arc()
+	            	                .innerRadius(innerRadius)
+	            	                .outerRadius(outerRadius);
 
-	            var circle = svg.append("circle").
-	            			attr("cx", 30).
-	            			attr("cy", 30).
-	            			attr("r", 20).
-	            			style("fill","purple");
-	            var rectangle = svg.append("rect")
-	                              .attr("x", 60)
-	                              .attr("y", 10)
-	                              .attr("width", 300)
-	                              .attr("height", 50)
-	                              .style("fill","purple");
+	            	  var svg = d3.select(this)
+	            	            .append("svg")
+	            	            .attr("width", w)
+	            	            .attr("height", h);
+
+	            	  var arcs = svg.selectAll("g.arc")
+	            	        .data(pie(dataArray))
+	            	        .enter()
+	            	        .append("g")
+	            	        .attr("class", "arc")
+	            	        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
+
+	            	  var color = d3.scale.category20c();
+	            	  arcs.append("path")
+	            	    .attr("fill", function(d, i) {
+	            	        return color(i);
+	            	    })
+	            	    .attr("d", arc);
+	            	
+	            }else{
+	            	
+	            	var w = 200;
+	            	var h = 40;
+	            	
+	            	var barPadding = 1;
+	            	
+	            	var svg = d3.select(this)
+	                .append("svg")
+	                .attr("width", w)
+	                .attr("height", h);
+	            	
+	            	svg.selectAll("rect")
+	 			   		.data(dataArray)
+	 			   		.enter()
+	 			   		.append("rect")
+	 			   		.attr("x", function(d, i) {
+	 			   			return i * (w / dataArray.length);
+	 			   		})
+	 			   		.attr("y", function(d) {
+	 			   			return h - (d * 4);
+	 			   		})
+	 			   		.attr("width", w / dataArray.length - barPadding)
+	 			   		.attr("height", function(d) {
+	 			   			return d * 4;
+	 			   		})
+	 			   		.attr("fill", '#2b8cab');
+	            }
 	        });
 	        
             // TODO: AJAX call per change in the data-table is an overhead

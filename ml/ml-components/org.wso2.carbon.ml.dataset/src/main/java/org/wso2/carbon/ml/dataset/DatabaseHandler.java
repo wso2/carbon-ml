@@ -244,7 +244,7 @@ public class DatabaseHandler {
 	/*
 	 * Update the database with all the summary stats of the sample
 	 */
-	//TODO: use JDBC preparedstatement to avoid SQL injection
+	//TODO: use JDBC preparedstatement to avoid SQL injection	
 	public void updateSummaryStatistics(int dataSourceId, String[] header,
 			FeatureType[] type, List<Map<String, Integer>> graphFrequencies,
 			List<Integer> missing, List<Integer> unique,
@@ -287,6 +287,7 @@ public class DatabaseHandler {
 	 * Create the json string with summary stat for a given column
 	 */
 	//TODO: Please use StringBuilder
+	//TODO: don't send NaN for int fields, that will throw error in parsing JSON
 	private String createJson(int column, FeatureType[] type,
 			List<Map<String, Integer>> graphFrequencies, List<Integer> missing,
 			List<Integer> unique, List<DescriptiveStatistics> descriptiveStats) {
@@ -309,7 +310,7 @@ public class DatabaseHandler {
 				+ ",\"mean\":" + descriptiveStats.get(column).getMean()
 				+ ",\"median\":" + descriptiveStats.get(column).getPercentile(50)
 				+ ",\"std\":" + descriptiveStats.get(column).getStandardDeviation()
-				+ ",\"skewness\":" + descriptiveStats.get(column).getSkewness()
+				//+ ",\"skewness\":" + descriptiveStats.get(column).getSkewness()
 				+ ",\"frequencies\":" + freqs
 				+ "}";
 		return json;

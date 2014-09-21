@@ -26,8 +26,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.dataset.xsd.Feature;
 
-
 public class DatatableHelper {
+
+	private final String[] IMPUTE_OPTIONS = new String[] { UIConstants.DISCARD,
+			UIConstants.REGRESSION_IMPUTATION, UIConstants.REPLACE_WTH_MEAN };
+
+	private static final String[] FEATURE_TYPES = new String[] {
+			UIConstants.NUMERICAL, UIConstants.CATEGORICAL };
 
 	public void populateDatatable(HttpServletResponse response,
 			HttpServletRequest request, Feature[] features, int datasetSize)
@@ -45,31 +50,29 @@ public class DatatableHelper {
 
 			// adding features
 			jsonArray.put("<span class=\"feature\">" + feature.getFieldName()
-					+ "</span>");			
+					+ "</span>");
 
 			// adding include/exclude check box
 			jsonArray.put(buildInputCheckBox(feature.isInputSpecified()));
 
 			// adding data type drop-down
-			jsonArray.put(buildSectionBox(new String[] { "CATEGORICAL",
-					"NUMERICAL" }, feature.getType().getFeatureName(),
-					"fieldType"));
-			
+			jsonArray.put(buildSectionBox(FEATURE_TYPES, feature.getType()
+					.getFeatureName(), "fieldType"));
+
 			// adding summary statistics
-			jsonArray.put(feature.getSummaryStats());
+			jsonArray.put("<div class=\"summaryStatistics\">"
+					+ feature.getSummaryStats() + "</div>");
 
 			// adding impute method
 			jsonArray
-					.put(buildSectionBox(new String[] { "DISCARD",
-							"REPLACE_WTH_MEAN", "REGRESSION_IMPUTATION" },
-							feature.getImputeOperation().getImputeOptionName(),
+					.put(buildSectionBox(IMPUTE_OPTIONS, feature
+							.getImputeOperation().getImputeOptionName(),
 							"imputeMethod"));
 
 			// create a JSON array with above HTML elements
 			jsonResponse.append("aaData", jsonArray);
 		}
-		response.resetBuffer();
-		response.reset();
+		;
 		response.setContentType("application/Json");
 		response.getWriter().print(jsonResponse.toString().trim());
 	}
