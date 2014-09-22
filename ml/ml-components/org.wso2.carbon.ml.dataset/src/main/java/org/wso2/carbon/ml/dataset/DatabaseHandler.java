@@ -88,7 +88,7 @@ public class DatabaseHandler {
 	        ResultSet result = connection.createStatement().executeQuery("SELECT DATASET_IN_MEM_THRESHOLD FROM ML_CONFIGURATION");
     		if (result.first()) {
     			int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
-    			LOGGER.info("Dataset in memory thresholed: " + memoryThreshold+" bytes");
+    			LOGGER.info("Dataset in memory threshold: " + memoryThreshold+" bytes");
     			return memoryThreshold;
     		} else {
     			LOGGER.error("Dataset-in-memory-threshold is not set in the ML_CONFIGURATION database table.");
@@ -132,7 +132,7 @@ public class DatabaseHandler {
 	        ResultSet result = connection.createStatement().executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
     		if (result.first()) {
     			int intervals = result.getInt("INTERVALS");
-    			LOGGER.info("Number of intervals uses to categorize numerical data: " + intervals+" bytes");
+    			LOGGER.info("Number of intervals uses to categorize numerical data: " + intervals);
     			return intervals;
     		} else {
     			LOGGER.error("Number of intervals is not set in the ML_CONFIGURATION database table.");
@@ -154,7 +154,7 @@ public class DatabaseHandler {
 	        ResultSet result = connection.createStatement().executeQuery("SELECT SEPARATOR FROM ML_CONFIGURATION");
     		if (result.first()) {
     			String separator = result.getNString("SEPARATOR");
-    			LOGGER.info("Data points separator: " + separator+" bytes");
+    			LOGGER.info("Data points separator: " + separator);
     			return separator;
     		} else {
     			LOGGER.error("Data points separator is not set in the ML_CONFIGURATION database table.");

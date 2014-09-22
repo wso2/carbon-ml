@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class DatasetService {
 	private static final Log LOGGER = LogFactory.getLog(DatasetService.class);
-	
+
 	public String getDatasetUploadingDir() throws DatasetServiceException {
 		try{
 			DatabaseHandler dbHandler = new DatabaseHandler();
@@ -50,13 +50,13 @@ public class DatasetService {
 	 */
 	public int getDatasetInMemoryThreshold() throws DatasetServiceException {
 		try {
-	        DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.getDatasetInMemoryThreshold();
-        } catch (DatabaseHandlerException e) {
-        	String msg = "Failed to retrieve dataset-in-memory-threshold. ";
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve dataset-in-memory-threshold. ";
 			LOGGER.error(msg);
 			throw new DatasetServiceException(msg);
-        }
+		}
 	}
 
 	/*
@@ -64,13 +64,13 @@ public class DatasetService {
 	 */
 	public long getDatasetUploadingLimit() throws DatasetServiceException {
 		try {
-	        DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.getDatasetUploadingLimit();
-        } catch (DatabaseHandlerException e) {
-        	String msg = "Failed to retrieve dataset uploading limit. ";
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve dataset uploading limit. ";
 			LOGGER.error(msg);
 			throw new DatasetServiceException(msg);
-        }
+		}
 	}
 
 	public int importData(String source) throws Exception {
@@ -78,7 +78,7 @@ public class DatasetService {
 			// get the uri of the file
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			String uri = dbHandler.getDefaultUploadLocation();
-			
+
 			if (uri!=null) {
 				if(isValidFile(uri+"/"+source)){
 					// insert the details to the table
@@ -100,10 +100,10 @@ public class DatasetService {
 	}
 
 	/*
-	 * Calculate summary stats and populate the database
+	 * Calculate summary stats  from a sample of given size and populate the database
 	 */
 	public int generateSummaryStats(int dataSourceID, int noOfRecords)
-	                                		 throws DatasetServiceException {
+			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
@@ -118,8 +118,22 @@ public class DatasetService {
 			String msg = "Failed to connect to database. " + e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatasetServiceException(msg);
+		}
+	}
+
+	/*
+	 * Calculate summary stats from the complete data set and populate the database
+	 */
+	public int generateFullDataSummaryStats(int dataSourceID) throws DatasetServiceException {
+		try {
+	        return generateSummaryStats(dataSourceID, -1);
+        } catch (DatasetServiceException e) {
+        	String msg = "Failed to calculate summary statistics using the complete data set. " + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatasetServiceException(msg);
         }
 	}
+
 
 	/*
 	 * Update feature with the given details
@@ -127,18 +141,18 @@ public class DatasetService {
 	public boolean updateFeature(String name, int dataSet, String type, ImputeOption imputeOption,
 	                             boolean important) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
-        try {
-	        dbHandler = new DatabaseHandler();
-	        return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
-        } catch (DatabaseHandlerException e) {
-        	String msg = "Updating feature failed. " + e.getMessage();
+		try {
+			dbHandler = new DatabaseHandler();
+			return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Updating feature failed. " + e.getMessage();
 			LOGGER.error(msg, e);
-	        throw new DatasetServiceException(msg);
-        }
+			throw new DatasetServiceException(msg);
+		}
 	}
-	
+
 	public boolean updateDataType(String featureName, int datasetId,
-			String featureType) throws DatasetServiceException {
+	                              String featureType) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
 			dbHandler = new DatabaseHandler();
@@ -152,12 +166,12 @@ public class DatasetService {
 	}
 
 	public boolean updateImputeOption(String featureName, int datasetId,
-			String imputeOption) throws DatasetServiceException {
+	                                  String imputeOption) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
 			dbHandler = new DatabaseHandler();
 			return dbHandler.updateImputeOption(featureName, datasetId,
-					imputeOption);
+			                                    imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			LOGGER.error(msg, e);
@@ -166,32 +180,32 @@ public class DatasetService {
 	}
 
 	public boolean updateIsIncludedFeature(String featureName, int datasetId,
-			boolean isInput) throws DatasetServiceException {
+	                                       boolean isInput) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
 			dbHandler = new DatabaseHandler();
 			return dbHandler.updateIsIncludedFeature(featureName, datasetId,
-					isInput);
+			                                         isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			LOGGER.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
-	
+
 	/*
 	 * Returns a set of features in a given range of a data set.
 	 */
 	public Feature[] getFeatures(int dataSet, int startPoint, int numberOfFeatures) throws DatasetServiceException{
 		DatabaseHandler dbHandler;
-        try {
-	        dbHandler = new DatabaseHandler();
-	        return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
-        } catch (DatabaseHandlerException e) {
-        	String msg = "Failed to retrieve features. " + e.getMessage();
+		try {
+			dbHandler = new DatabaseHandler();
+			return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve features. " + e.getMessage();
 			LOGGER.error(msg, e);
-	        throw new DatasetServiceException(msg);
-        }
+			throw new DatasetServiceException(msg);
+		}
 	}
 
 	/*
