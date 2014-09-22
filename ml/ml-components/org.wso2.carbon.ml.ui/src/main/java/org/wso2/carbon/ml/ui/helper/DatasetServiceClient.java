@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.ui.helper;
 
+import java.rmi.RemoteException;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -26,9 +28,12 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.dataset.stub.DatasetServiceStub;
 import org.wso2.carbon.ml.dataset.xsd.Feature;
 import org.wso2.carbon.ml.dataset.xsd.ImputeOption;
+import org.wso2.carbon.ml.dataset.xsd.FeatureType;
+
+
 
 public class DatasetServiceClient {
-	private static final Log LOGGER = LogFactory
+	private final Log logger = LogFactory
 			.getLog(DatasetServiceClient.class);
 
 	private DatasetServiceStub stub;
@@ -49,34 +54,23 @@ public class DatasetServiceClient {
 		} catch (AxisFault ex) {
 			String msg = "An error has occurred while initilizing the DatasetServiceStub, error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 
-	/**
-	 * Import dataset to the server
-	 * @param datasetName: dataset name
-	 * @return: Id is assigned to this dataset
-	 * @throws DatasetServiceClientException
-	 */
-	public int importDataset(String datasetName)
+	public String importDataset(String datasetName)
 			throws DatasetServiceClientException {
 		try {
-			return stub.importData(datasetName);
+			return stub.updateDatasetDetails(datasetName);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling importData() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 
-	/**
-	 * 
-	 * @return : the uploaded directory in the server
-	 * @throws DatasetServiceClientException
-	 */
 	public String getDatasetUploadingDir()
 			throws DatasetServiceClientException {
 		try {
@@ -84,16 +78,11 @@ public class DatasetServiceClient {
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetUploadingDir() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 
-	/**
-	 * 
-	 * @return : 
-	 * @throws DatasetServiceClientException
-	 */
 	public int getDatasetInMemoryThreshold()
 			throws DatasetServiceClientException {
 		try {
@@ -101,16 +90,11 @@ public class DatasetServiceClient {
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetInMemoryThreshold() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 
-	/**
-	 * 
-	 * @return : maximum uploading limit in bytes
-	 * @throws DatasetServiceClientException
-	 */
 	public long getDatasetUploadingLimit()
 			throws DatasetServiceClientException {
 		try {
@@ -118,52 +102,37 @@ public class DatasetServiceClient {
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getDatasetUploadingLimit() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 
-	/**
-	 * 
-	 * @param datsetId : dataset ID
-	 * @param start : starting location for extracting featues
-	 * @param numberOfFeatures : number of features want to return
-	 * @return : an array of featues
-	 * @throws DatasetServiceClientException
-	 */
-	public Feature[] getFeatures(int datsetId, int start, int numberOfFeatures)
+	public Feature[] getFeatures(String datsetId, int start, int numberOfFeatures)
 			throws DatasetServiceClientException {
 		try {
 			return stub.getFeatures(datsetId, start, numberOfFeatures);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling getFeatures() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 	
-	/**
-	 * 
-	 * @param dataSrcId
-	 * @param numOfRecords
-	 * @return
-	 * @throws DatasetServiceClientException
-	 */
-	public int generateSummaryStatistics(int dataSrcId, int numOfRecords)
+	public int generateSummaryStatistics(String dataSrcId, int numOfRecords)
 			throws DatasetServiceClientException {
 		try {
 			return stub.generateSummaryStats(dataSrcId, numOfRecords);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling generateSummaryStatistics() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 	
 	//TODO: instead of "String type", use should use "FeatureType type"
-	public boolean updateFeature(String featureName, int datasetId, String dataType,
+	public boolean updateFeature(String featureName, String datasetId, String dataType,
 			ImputeOption imputeOption, boolean isFeatureIncludedInTheModel)
 			throws DatasetServiceClientException {
 		try {
@@ -172,67 +141,43 @@ public class DatasetServiceClient {
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateFeature() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 	
-	/**
-	 * 
-	 * @param featureName : feature name
-	 * @param datasetId : Id of the dataset
-	 * @param featureType : type of the feature
-	 * @return : indicates whether this operation successful or not 
-	 * @throws DatasetServiceClientException
-	 */
-	public boolean updateDataType(String featureName, int datasetId,
+	public boolean updateDataType(String featureName, String datasetId,
 			String featureType) throws DatasetServiceClientException {
 		try {
 			return stub.updateDataType(featureName, datasetId, featureType);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateDataType() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 	
-	/**
-	 * 
-	 * @param featureName
-	 * @param datasetId
-	 * @param imputeOption
-	 * @return
-	 * @throws DatasetServiceClientException
-	 */
-	public boolean updateImputeOption(String featureName, int datasetId,
+	public boolean updateImputeOption(String featureName, String datasetId,
 			String imputeOption) throws DatasetServiceClientException{
 		try {
 			return stub.updateImputeOption(featureName, datasetId, imputeOption);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateImputeOption() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
 	
-	/**
-	 * 
-	 * @param featureName : name of the feature
-	 * @param datasetId : id if the dataset
-	 * @param isInput : 
-	 * @return
-	 * @throws DatasetServiceClientException
-	 */
-	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+	public boolean updateIsIncludedFeature(String featureName, String datasetId,
 			boolean isInput) throws DatasetServiceClientException{
 		try {			
 			return stub.updateIsIncludedFeature(featureName, datasetId, isInput);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateIsIncludedFeature() error message: "
 					+ ex.getMessage();
-			LOGGER.error(msg, ex);
+			logger.error(msg, ex);
 			throw new DatasetServiceClientException(msg);
 		}
 	}
