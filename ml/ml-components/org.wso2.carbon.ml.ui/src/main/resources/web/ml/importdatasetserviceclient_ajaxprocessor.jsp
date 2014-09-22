@@ -35,23 +35,16 @@
 
 		if (result) {
 			// calling summary statistics calcution service
-			int datasetId = client.importDataset(uploader
+			String datasetId = client.importDataset(uploader
 					.getDatasetName());
 			session.setAttribute("datasetId", datasetId);
 			session.setMaxInactiveInterval(UIConstants.MAX_SESSION_LIFE_TIME);
-
-			// if the import is successfull
-			if (datasetId > 0) {
 				//calling summary statistics calcution service
 				int numOfFeatues = client.generateSummaryStatistics(
 						datasetId,
 						UIConstants.DATA_SAMPLE_SIZE_FOR_SUMMARY_STATS);
 				session.setAttribute("numOfFeatues", numOfFeatues);
 				session.setMaxInactiveInterval(UIConstants.MAX_SESSION_LIFE_TIME);
-
-			} else {
-				//TODO: error message
-			}
 		} else {
 			// redirect to the error page
 			//TODO: error message

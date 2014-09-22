@@ -60,10 +60,10 @@ public class DatasetServiceClient {
 	 * @return: Id is assigned to this dataset
 	 * @throws DatasetServiceClientException
 	 */
-	public int importDataset(String datasetName)
+	public String importDataset(String datasetName)
 			throws DatasetServiceClientException {
 		try {
-			return stub.importData(datasetName);
+			return stub.updateDatasetDetails(datasetName);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling importData() error message: "
 					+ ex.getMessage();
@@ -131,7 +131,7 @@ public class DatasetServiceClient {
 	 * @return : an array of featues
 	 * @throws DatasetServiceClientException
 	 */
-	public Feature[] getFeatures(int datsetId, int start, int numberOfFeatures)
+	public Feature[] getFeatures(String datsetId, int start, int numberOfFeatures)
 			throws DatasetServiceClientException {
 		try {
 			return stub.getFeatures(datsetId, start, numberOfFeatures);
@@ -150,7 +150,7 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public int generateSummaryStatistics(int dataSrcId, int numOfRecords)
+	public int generateSummaryStatistics(String dataSrcId, int numOfRecords)
 			throws DatasetServiceClientException {
 		try {
 			return stub.generateSummaryStats(dataSrcId, numOfRecords);
@@ -163,7 +163,7 @@ public class DatasetServiceClient {
 	}
 	
 	//TODO: instead of "String type", use should use "FeatureType type"
-	public boolean updateFeature(String featureName, int datasetId, String dataType,
+	public boolean updateFeature(String featureName, String datasetId, String dataType,
 			ImputeOption imputeOption, boolean isFeatureIncludedInTheModel)
 			throws DatasetServiceClientException {
 		try {
@@ -185,7 +185,7 @@ public class DatasetServiceClient {
 	 * @return : indicates whether this operation successful or not 
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateDataType(String featureName, int datasetId,
+	public boolean updateDataType(String featureName, String datasetId,
 			String featureType) throws DatasetServiceClientException {
 		try {
 			return stub.updateDataType(featureName, datasetId, featureType);
@@ -205,7 +205,7 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateImputeOption(String featureName, int datasetId,
+	public boolean updateImputeOption(String featureName, String datasetId,
 			String imputeOption) throws DatasetServiceClientException{
 		try {
 			return stub.updateImputeOption(featureName, datasetId, imputeOption);
@@ -225,7 +225,7 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+	public boolean updateIsIncludedFeature(String featureName, String datasetId,
 			boolean isInput) throws DatasetServiceClientException{
 		try {			
 			return stub.updateIsIncludedFeature(featureName, datasetId, isInput);

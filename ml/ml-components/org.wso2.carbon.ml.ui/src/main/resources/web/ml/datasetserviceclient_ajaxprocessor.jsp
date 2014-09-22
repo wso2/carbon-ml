@@ -25,15 +25,13 @@
 			int len = Integer.parseInt(request
 					.getParameter("iDisplayLength"));			
 			
-			Integer datasetId = (Integer)session.getAttribute("datasetId");
-			if( datasetId != null && datasetId.intValue() > 0){
+			String datasetId = (String)session.getAttribute("datasetId");
+			if( datasetId != null){
 				// numbers in DataTable starts with zero and in the DB its one
 				Feature[] features = client.getFeatures(datasetId, start + 1,len);
 				DatatableHelper datatableHelper = new DatatableHelper();
-				
 				int numOfFeatues = (Integer)session.getAttribute("numOfFeatues");
 				datatableHelper.populateDatatable(response, request, features, numOfFeatues);
-				
 			}else{
 				// no valid datasetId, report the error
 				// TODO: error message

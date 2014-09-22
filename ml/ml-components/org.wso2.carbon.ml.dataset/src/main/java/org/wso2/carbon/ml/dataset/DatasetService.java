@@ -24,8 +24,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class DatasetService {
-	private static final Log LOGGER = LogFactory.getLog(DatasetService.class);
+	private final Log log = LogFactory.getLog(DatasetService.class);
 
+	/*
+	 * Retrieve the file uploading directory from the database
+	 */
 	public String getDatasetUploadingDir() throws DatasetServiceException {
 		try{
 			DatabaseHandler dbHandler = new DatabaseHandler();
@@ -34,13 +37,13 @@ public class DatasetService {
 				return uri;
 			}else{
 				String msg = "Dataset uploading location can't be null or empty. ";
-				LOGGER.error(msg);
+				log.error(msg);
 				throw new DatasetServiceException(msg);
 			}
 		}catch(Exception ex){
 			String msg =
 					"Failed to retrieve dataset uploading location. " + ex.getMessage();
-			LOGGER.error(msg, ex);
+			log.error(msg, ex);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -54,7 +57,7 @@ public class DatasetService {
 			return dbHandler.getDatasetInMemoryThreshold();
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve dataset-in-memory-threshold. ";
-			LOGGER.error(msg);
+			log.error(msg);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -68,77 +71,69 @@ public class DatasetService {
 			return dbHandler.getDatasetUploadingLimit();
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve dataset uploading limit. ";
-			LOGGER.error(msg);
+			log.error(msg);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
-	public int importData(String source) throws Exception {
+	/*
+	 * Update the database with the imported data set details
+	 */
+	public String updateDatasetDetails(String source) throws Exception {
+		String message;
 		try {
 			// get the uri of the file
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			String uri = dbHandler.getDefaultUploadLocation();
-
 			if (uri!=null) {
+				// check whether the file is a valid one
 				if(isValidFile(uri+"/"+source)){
 					// insert the details to the table
-					int datasetId =dbHandler.insertDatasetDetails(uri, source);
+					String datasetId =dbHandler.insertDatasetDetails(uri, source);
 					return datasetId;
 				}else{
-					LOGGER.error("Invalid input file: "+source);
+					message="Invalid input file: "+source;
 				}
 			} else {
-				LOGGER.error("Default uploading location not found.");
+				message="Default uploading location not found.";
 			}
 		} catch (Exception e) {
 			String msg =
 					"Failed to update the data-source details in the database. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
-		return -1;
+		log.error(message);
+		throw new DatasetServiceException(message);
 	}
 
 	/*
-	 * Calculate summary stats  from a sample of given size and populate the database
+	 * Calculate summary stats  from a sample of given size and populate the database.
+	 * Value of -1  for noOfRecords will generate summary statistics using the whole data set.
 	 */
-	public int generateSummaryStats(int dataSourceID, int noOfRecords)
+	public int generateSummaryStats(String dataSourceID, int noOfRecords)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
 			int noOfFeatures = summary.generateSummary(dataSourceID, noOfRecords, dbHandler.getNoOfIntervals(), dbHandler.getSeparator());
-			LOGGER.info("Summary statistics successfully generated. ");
+			log.info("Summary statistics successfully generated. ");
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
 			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to connect to database. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
 	/*
-	 * Calculate summary stats from the complete data set and populate the database
-	 */
-	public int generateFullDataSummaryStats(int dataSourceID) throws DatasetServiceException {
-		try {
-	        return generateSummaryStats(dataSourceID, -1);
-        } catch (DatasetServiceException e) {
-        	String msg = "Failed to calculate summary statistics using the complete data set. " + e.getMessage();
-			LOGGER.error(msg, e);
-			throw new DatasetServiceException(msg);
-        }
-	}
-
-
-	/*
 	 * Update feature with the given details
 	 */
-	public boolean updateFeature(String name, int dataSet, String type, ImputeOption imputeOption,
+	public boolean updateFeature(String name, String dataSet, String type, ImputeOption imputeOption,
 	                             boolean important) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
@@ -146,12 +141,15 @@ public class DatasetService {
 			return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature failed. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
-	public boolean updateDataType(String featureName, int datasetId,
+	/*
+	 * Update the data type of a given feature
+	 */
+	public boolean updateDataType(String featureName, String datasetId,
 	                              String featureType) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
@@ -160,12 +158,15 @@ public class DatasetService {
 					.updateDataType(featureName, datasetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature type failed. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
-	public boolean updateImputeOption(String featureName, int datasetId,
+	/*
+	 * Update the impute method option of a given feature
+	 */
+	public boolean updateImputeOption(String featureName, String datasetId,
 	                                  String imputeOption) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
@@ -174,12 +175,15 @@ public class DatasetService {
 			                                    imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
 
-	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+	/*
+	 * change whether a feature should be included as an input or not.
+	 */
+	public boolean updateIsIncludedFeature(String featureName, String datasetId,
 	                                       boolean isInput) throws DatasetServiceException {
 		DatabaseHandler dbHandler;
 		try {
@@ -188,7 +192,7 @@ public class DatasetService {
 			                                         isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -196,14 +200,14 @@ public class DatasetService {
 	/*
 	 * Returns a set of features in a given range of a data set.
 	 */
-	public Feature[] getFeatures(int dataSet, int startPoint, int numberOfFeatures) throws DatasetServiceException{
+	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures) throws DatasetServiceException{
 		DatabaseHandler dbHandler;
 		try {
 			dbHandler = new DatabaseHandler();
 			return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
-			LOGGER.error(msg, e);
+			log.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -215,7 +219,7 @@ public class DatasetService {
 		File file = new File(path);
 		//check whether the file exists
 		if (file.exists() && !file.isDirectory()) {
-			//check whether it has the csv extension
+			//check whether it has the .csv extension
 			return path.matches("(.)+(\\."+FileFormats.CSV.toString()+")");
 		} else {
 			return false;
