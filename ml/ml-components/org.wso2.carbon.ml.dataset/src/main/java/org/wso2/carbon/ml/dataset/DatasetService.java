@@ -80,7 +80,7 @@ public class DatasetService {
 			String uri = dbHandler.getDefaultUploadLocation();
 			
 			if (uri!=null) {
-				if(isValidFile(source)){
+				if(isValidFile(uri+"/"+source)){
 					// insert the details to the table
 					int datasetId =dbHandler.insertDatasetDetails(uri, source);
 					return datasetId;
@@ -194,6 +194,20 @@ public class DatasetService {
         }
 	}
 
+	/*
+	 * Check whether the given file is valid
+	 */
+	private boolean isValidFile(String path) {
+		File file = new File(path);
+		//check whether the file exists
+		if (file.exists() && !file.isDirectory()) {
+			//check whether it has the csv extension
+			return path.matches("(.)+(\\."+FileFormats.CSV.toString()+")");
+		} else {
+			return false;
+		}
+	}
+
 	// TODO
 	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints,
 	                                    String selectionPolicy) {
@@ -203,10 +217,5 @@ public class DatasetService {
 	// TODO
 	public List<Object> getSampleDistribution(String feature, int noOfBins) {
 		return null;
-	}
-	
-    //TODO: 
-	private boolean isValidFile(String path) {
-		return true;
 	}
 }
