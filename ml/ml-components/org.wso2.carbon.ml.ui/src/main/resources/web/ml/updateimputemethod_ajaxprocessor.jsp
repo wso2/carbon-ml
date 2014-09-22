@@ -19,10 +19,8 @@
 	String cookie = (String) session
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
-	DatasetServiceClient client;
-
 	try {
-		client = new DatasetServiceClient(configContext, serverURL,
+		DatasetServiceClient client = new DatasetServiceClient(configContext, serverURL,
 				cookie);
 		Integer datasetId = (Integer) session.getAttribute("datasetId");
 		if (datasetId != null && datasetId > 0) {

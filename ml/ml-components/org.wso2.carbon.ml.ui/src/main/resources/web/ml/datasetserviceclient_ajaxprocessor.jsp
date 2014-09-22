@@ -15,12 +15,10 @@
 		.getServletContext().getAttribute(
 				CarbonConstants.CONFIGURATION_CONTEXT);
 		String cookie = (String) session
-		.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
-		
-		DatasetServiceClient client;
-		
+		.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);		
+
 		try {
-			client = new DatasetServiceClient(configContext, serverURL,
+			DatasetServiceClient client = new DatasetServiceClient(configContext, serverURL,
 					cookie);
 			int start = Integer.parseInt(request
 					.getParameter("iDisplayStart"));
@@ -33,7 +31,6 @@
 				Feature[] features = client.getFeatures(datasetId, start + 1,len);
 				DatatableHelper datatableHelper = new DatatableHelper();
 				
-				//TODO: error checking
 				int numOfFeatues = (Integer)session.getAttribute("numOfFeatues");
 				datatableHelper.populateDatatable(response, request, features, numOfFeatues);
 				

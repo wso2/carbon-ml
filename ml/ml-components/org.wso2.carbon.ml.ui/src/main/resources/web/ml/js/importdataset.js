@@ -32,6 +32,7 @@ $('document').ready(function() {
 				}
 			});
 		} else {
+			// if dataset name is empty, an error messages is displayed 
 			$('#validatorMsg').html("<span class=\"errorMessage\">File name is empty!</span>");
 		}
 

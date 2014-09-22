@@ -19,18 +19,18 @@
 	String cookie = (String) session
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
-	DatasetServiceClient client;
-	DatasetUploader uploader;
-
 	try {
-		client = new DatasetServiceClient(configContext, serverURL,
-				cookie);
+		// creates service client
+		DatasetServiceClient client = new DatasetServiceClient(
+				configContext, serverURL, cookie);
+		
 		long uploadingLimit = client.getDatasetUploadingLimit();
 		int memThreshold = client.getDatasetInMemoryThreshold();
 		String uploadingDir = client.getDatasetUploadingDir();
 
-		uploader = new DatasetUploader(request, uploadingDir,
-				memThreshold, uploadingLimit);
+		// creates uploader 
+		DatasetUploader uploader = new DatasetUploader(request,
+				uploadingDir, memThreshold, uploadingLimit);
 		boolean result = uploader.doUplod();
 
 		if (result) {
@@ -41,7 +41,7 @@
 			session.setMaxInactiveInterval(UIConstants.MAX_SESSION_LIFE_TIME);
 
 			// if the import is successfull
-			if (datasetId >= 0) {
+			if (datasetId > 0) {
 				//calling summary statistics calcution service
 				int numOfFeatues = client.generateSummaryStatistics(
 						datasetId,

@@ -17,8 +17,6 @@
  */
 package org.wso2.carbon.ml.ui.helper;
 
-import java.rmi.RemoteException;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -28,9 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.dataset.stub.DatasetServiceStub;
 import org.wso2.carbon.ml.dataset.xsd.Feature;
 import org.wso2.carbon.ml.dataset.xsd.ImputeOption;
-import org.wso2.carbon.ml.dataset.xsd.FeatureType;
-
-
 
 public class DatasetServiceClient {
 	private static final Log LOGGER = LogFactory
@@ -59,6 +54,12 @@ public class DatasetServiceClient {
 		}
 	}
 
+	/**
+	 * Import dataset to the server
+	 * @param datasetName: dataset name
+	 * @return: Id is assigned to this dataset
+	 * @throws DatasetServiceClientException
+	 */
 	public int importDataset(String datasetName)
 			throws DatasetServiceClientException {
 		try {
@@ -71,6 +72,11 @@ public class DatasetServiceClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @return : the uploaded directory in the server
+	 * @throws DatasetServiceClientException
+	 */
 	public String getDatasetUploadingDir()
 			throws DatasetServiceClientException {
 		try {
@@ -83,6 +89,11 @@ public class DatasetServiceClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @return : 
+	 * @throws DatasetServiceClientException
+	 */
 	public int getDatasetInMemoryThreshold()
 			throws DatasetServiceClientException {
 		try {
@@ -95,6 +106,11 @@ public class DatasetServiceClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @return : maximum uploading limit in bytes
+	 * @throws DatasetServiceClientException
+	 */
 	public long getDatasetUploadingLimit()
 			throws DatasetServiceClientException {
 		try {
@@ -107,6 +123,14 @@ public class DatasetServiceClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @param datsetId : dataset ID
+	 * @param start : starting location for extracting featues
+	 * @param numberOfFeatures : number of features want to return
+	 * @return : an array of featues
+	 * @throws DatasetServiceClientException
+	 */
 	public Feature[] getFeatures(int datsetId, int start, int numberOfFeatures)
 			throws DatasetServiceClientException {
 		try {
@@ -119,6 +143,13 @@ public class DatasetServiceClient {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param dataSrcId
+	 * @param numOfRecords
+	 * @return
+	 * @throws DatasetServiceClientException
+	 */
 	public int generateSummaryStatistics(int dataSrcId, int numOfRecords)
 			throws DatasetServiceClientException {
 		try {
@@ -146,6 +177,14 @@ public class DatasetServiceClient {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param featureName : feature name
+	 * @param datasetId : Id of the dataset
+	 * @param featureType : type of the feature
+	 * @return : indicates whether this operation successful or not 
+	 * @throws DatasetServiceClientException
+	 */
 	public boolean updateDataType(String featureName, int datasetId,
 			String featureType) throws DatasetServiceClientException {
 		try {
@@ -158,6 +197,14 @@ public class DatasetServiceClient {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param featureName
+	 * @param datasetId
+	 * @param imputeOption
+	 * @return
+	 * @throws DatasetServiceClientException
+	 */
 	public boolean updateImputeOption(String featureName, int datasetId,
 			String imputeOption) throws DatasetServiceClientException{
 		try {
@@ -170,6 +217,14 @@ public class DatasetServiceClient {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param featureName : name of the feature
+	 * @param datasetId : id if the dataset
+	 * @param isInput : 
+	 * @return
+	 * @throws DatasetServiceClientException
+	 */
 	public boolean updateIsIncludedFeature(String featureName, int datasetId,
 			boolean isInput) throws DatasetServiceClientException{
 		try {			

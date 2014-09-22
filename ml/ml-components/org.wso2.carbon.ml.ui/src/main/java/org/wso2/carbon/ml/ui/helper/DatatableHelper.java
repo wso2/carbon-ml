@@ -28,9 +28,11 @@ import org.wso2.carbon.ml.dataset.xsd.Feature;
 
 public class DatatableHelper {
 
+	// impute options
 	private final String[] IMPUTE_OPTIONS = new String[] { UIConstants.DISCARD,
 			UIConstants.REGRESSION_IMPUTATION, UIConstants.REPLACE_WTH_MEAN };
 
+	// feature types
 	private static final String[] FEATURE_TYPES = new String[] {
 			UIConstants.NUMERICAL, UIConstants.CATEGORICAL };
 
@@ -55,7 +57,7 @@ public class DatatableHelper {
 			jsonArray.put(buildInputCheckBox(feature.getInput()));
 
 			// adding data type drop-down
-			jsonArray.put(buildSectionBox(FEATURE_TYPES, feature.getType()
+			jsonArray.put(buildSelectionBox(FEATURE_TYPES, feature.getType()
 					.getFeatureName(), "fieldType"));
 
 			// adding summary statistics
@@ -64,14 +66,13 @@ public class DatatableHelper {
 
 			// adding impute method
 			jsonArray
-					.put(buildSectionBox(IMPUTE_OPTIONS, feature
+					.put(buildSelectionBox(IMPUTE_OPTIONS, feature
 							.getImputeOperation().getImputeOptionName(),
 							"imputeMethod"));
 
 			// create a JSON array with above HTML elements
 			jsonResponse.append("aaData", jsonArray);
-		}
-		;
+		}		
 		response.setContentType("application/Json");
 		response.getWriter().print(jsonResponse.toString().trim());
 	}
@@ -102,7 +103,7 @@ public class DatatableHelper {
 	 * {@link #populateDatatable(HttpServletResponse, HttpServletRequest, Feature[])}
 	 * method build selected boxes.
 	 * 
-	 * @param types
+	 * @param featureTypes
 	 *            :
 	 * @param selectedOption
 	 *            : already selected option
@@ -110,17 +111,17 @@ public class DatatableHelper {
 	 *            : css class assigned to this selection buttons.
 	 * @return: HTML code for rendering this selection boxes
 	 */
-	private String buildSectionBox(String[] types, String selectedOption,
+	private String buildSelectionBox(String[] featureTypes, String selectedOption,
 			String cssClass) {
 		StringBuilder selection = new StringBuilder();
 		selection.append("<select class=\"" + cssClass + "\">");
-		for (String ft : types) {
-			if (selectedOption.equalsIgnoreCase(ft)) {
-				selection.append("<option selected value=\"" + ft.toString()
-						+ "\">" + ft.toString() + "</option>");
+		for (String featureType : featureTypes) {
+			if (selectedOption.equalsIgnoreCase(featureType)) {
+				selection.append("<option selected value=\"" + featureType.toString()
+						+ "\">" + featureType.toString() + "</option>");
 			} else {
-				selection.append("<option value=\"" + ft.toString() + "\">"
-						+ ft.toString() + "</option>");
+				selection.append("<option value=\"" + featureType.toString() + "\">"
+						+ featureType.toString() + "</option>");
 			}
 
 		}

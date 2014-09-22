@@ -239,6 +239,7 @@ public class DatabaseHandler {
 		}
 	}
 	
+	//TODO: JDBC preparedstatement to avoid SQL injection
 	public boolean updateDataType(String featureName, int datasetId,
 			String featureType) throws DatabaseHandlerException {
 
@@ -256,6 +257,7 @@ public class DatabaseHandler {
 		}
 	}
 	
+	//TODO: JDBC preparedstatement to avoid SQL injection
 	public boolean updateImputeOption(String featureName, int datasetId,
 			String imputeOption) throws DatabaseHandlerException {
 
@@ -274,6 +276,7 @@ public class DatabaseHandler {
 		}
 	}
 	
+	//TODO: JDBC preparedstatement to avoid SQL injection
 	public boolean updateIsIncludedFeature(String featureName, int datasetId,
 			boolean isInput) throws DatabaseHandlerException {
 		String sqlStmt = "UPDATE  ML_FEATURE SET IMPORTANT =" + isInput

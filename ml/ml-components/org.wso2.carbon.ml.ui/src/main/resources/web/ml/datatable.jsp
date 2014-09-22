@@ -49,12 +49,16 @@
 	    	
 	    	$('.summaryStatistics').each(function() {
 	            var jsonText = $(this).text();
-	            console.log(jsonText);
+	            // TODO: handle JSON parsing errors
 	            var jsonObj  = JSON.parse(jsonText);
+	            
+	            // clear text in this cell and draw graphs
 	            $(this).text("");
 	            
-	            var type = jsonObj.type;
+	            var type = jsonObj.type; // either CATEGORICAL or NUMERICAL
 	            var frequencies = jsonObj.frequencies;
+	            
+	            // transform dataset
 	            var dataArray = $.map(frequencies, function(value, index) {
             		return [value.frequency];
             	});
@@ -95,6 +99,8 @@
 	            	var w = 200;
 	            	var h = 40;	            	
 	            	var barPadding = 1;
+	            	
+	            	// scaling this y-axis using a linear scaler 
 	            	var yScale = d3.scale.linear()
 	                			  .domain([0, d3.max(dataArray, function(d) {
 	                    			 return d;
@@ -125,7 +131,7 @@
 	        });
 	        
             // TODO: AJAX call per change in the data-table is an overhead
-            // findout a better approach
+            // use the AJAX methods given by the datatable and improve this section
 	        $('.fieldType').on('change', function(e) {
 	            var closestTr = $(this).closest('tr');
 	            var selectedFeature = closestTr.find('.feature').text();

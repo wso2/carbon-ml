@@ -61,7 +61,7 @@ public class DatasetUploader {
 				// either in memory or disk
 				DiskFileItemFactory diskFileFactory = new DiskFileItemFactory();
 
-				// above this threshold files will be stored in disk
+				// the size threshold beyond which files are written directly to disk
 				diskFileFactory.setSizeThreshold(datasetInMemThreshold);
 
 				// high-level class for handling multi-part content

@@ -17,12 +17,10 @@
 			.getServletContext().getAttribute(
 					CarbonConstants.CONFIGURATION_CONTEXT);
 	String cookie = (String) session
-			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
-
-	DatasetServiceClient client;
+			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE); 
 
 	try {
-		client = new DatasetServiceClient(configContext, serverURL,
+		DatasetServiceClient client = new DatasetServiceClient(configContext, serverURL,
 				cookie);
 		Integer datasetId = (Integer) session.getAttribute("datasetId");
 		if (datasetId != null && datasetId > 0) {
