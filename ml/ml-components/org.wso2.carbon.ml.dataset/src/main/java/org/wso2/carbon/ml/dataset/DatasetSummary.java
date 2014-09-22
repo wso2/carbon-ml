@@ -56,47 +56,46 @@ public class DatasetSummary {
 	 * the data view.
 	 */
 	public int generateSummary(int dataSourceId, int noOfRecords, int noOfIntervals,
-	                             String seperator) throws DatasetServiceException {
+	                           String seperator) throws DatasetServiceException {
 		try {
 			Configuration configuration = new Configuration();
 			FileSystem fileSystem = FileSystem.get(configuration);
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			
+
 			//get the uri of the data source
 			String dataSource = dbHandler.getDataSource(dataSourceId);
 			if (dataSource != null) {
 				LOGGER.info("Data Source: " + dataSource);
-				LOGGER.info("Sample size: " + noOfRecords);
 
-					// read the input data file
-					FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
-					BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
+				// read the input data file
+				FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
+				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
 
-					String firstLine;
-					//if the header row is not empty
-					if((firstLine=dataReader.readLine())!= null){
-						header = firstLine.split(seperator);
-						
-						// Find the columns contains String data
-						findColumnDataType(new BufferedReader(
-						                                      new InputStreamReader(
-						                                                            fileSystem.open(new Path(
-						                                                                                     dataSource)))),
-						                                                                                     seperator);
-						initilize();
-						
-						// Calculate mean,median, standard deviation, skewness,missing values and unique values
-						calculateDescriptiveStats(dataReader, noOfRecords, seperator);
-						
-						// Calculate frequencies of each category/interval of the feature
-						calculateFrequencies(noOfIntervals);
-						
-						// Update the database with calculated summary statistics
-						dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
-						return header.length;
-					}else{
-						LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
-					}
+				String firstLine;
+				//if the header row is not empty
+				if((firstLine=dataReader.readLine())!= null){
+					header = firstLine.split(seperator);
+
+					// Find the columns contains String data
+					findColumnDataType(new BufferedReader(
+					                                      new InputStreamReader(
+					                                                            fileSystem.open(new Path(
+					                                                                                     dataSource)))),
+					                                                                                     seperator);
+					initilize();
+
+					// Calculate mean,median, standard deviation, skewness,missing values and unique values
+					calculateDescriptiveStats(dataReader, noOfRecords, seperator);
+
+					// Calculate frequencies of each category/interval of the feature
+					calculateFrequencies(noOfIntervals);
+
+					// Update the database with calculated summary statistics
+					dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies, missing, unique, descriptiveStats);
+					return header.length;
+				}else{
+					LOGGER.error("Header row of the data source: "+dataSource+" is empty.");
+				}
 
 			} else {
 				LOGGER.error("Data source not found.");
@@ -127,7 +126,7 @@ public class DatasetSummary {
 				type[i] = FeatureType.NUMERICAL;
 				// add to the numerical data columns list
 				numericDataColumns.add(new ArrayList<Double>());
-			// if the current column is in the categorical data positions list
+				// if the current column is in the categorical data positions list
 			} else {
 				// set the data type to categorical
 				type[i] = FeatureType.CATEGORICAL;
@@ -153,71 +152,73 @@ public class DatasetSummary {
 		int currentCol;
 
 		// iterate through each row
-		for (int row = 0; row < noOfRecords; row++) {
-			//skip if the row is an empty row
-			try {
-	            if((line=dataReader.readLine()) != null){
-	            	data=line.split(seperator);
-	            	numericColumns = numericDataColPosstions.iterator();
-	            	stringColumns = stringDataColPosstions.iterator();
+		int row = 0;
+		try {
+			while ((line=dataReader.readLine())!= null && (noOfRecords==-1 || row < noOfRecords)) {
+				data=line.split(seperator);
+				numericColumns = numericDataColPosstions.iterator();
+				stringColumns = stringDataColPosstions.iterator();
 
-	            	// iterate through each numeric column in a row
-	            	while (numericColumns.hasNext()) {
-	            		currentCol = numericColumns.next();
-	            		// if the cell is not empty
-	            		if (!data[currentCol].isEmpty()) {
-	            			// convert the cell value to double
-	            			cellValue = Double.parseDouble(data[currentCol]);
+				// iterate through each numeric column in a row
+				while (numericColumns.hasNext()) {
+					currentCol = numericColumns.next();
+					// if the cell is not empty
+					if (!data[currentCol].isEmpty()) {
+						// convert the cell value to double
+						cellValue = Double.parseDouble(data[currentCol]);
 
-	            			// append the value of the cell to the descriptive-stats of
-	            			// the respective column
-	            			descriptiveStats.get(currentCol).addValue(cellValue);
+						// append the value of the cell to the descriptive-stats of
+						// the respective column
+						descriptiveStats.get(currentCol).addValue(cellValue);
 
-	            			// if the value is unique, update the unique value count of
-	            			// the column
-	            			if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
-	            					.contains(cellValue)) {
-	            				unique.set(currentCol, unique.get(currentCol).intValue() + 1);
-	            			}
+						// if the value is unique, update the unique value count of
+						// the column
+						if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+								.contains(cellValue)) {
+							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
+						}
 
-	            			// append the cell value to the respective column
-	            			numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
-	            			.add(cellValue);
-	            		} else {
-	            			missing.set(currentCol, missing.get(currentCol).intValue() + 1);
-	            		}
-	            	}
+						// append the cell value to the respective column
+						numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+						.add(cellValue);
+					} else {
+						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
+					}
+				}
 
-	            	// iterate through each string column in a row
-	            	while (stringColumns.hasNext()) {
-	            		currentCol = stringColumns.next();
-	            		// if the cell is not empty
-	            		if (currentCol < data.length && !data[currentCol].isEmpty()) {
-	            			// update the unique value count of the column
-	            			if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
-	            					.contains(currentCol)) {
-	            				unique.set(currentCol, unique.get(currentCol).intValue() + 1);
-	            			}
+				// iterate through each string column in a row
+				while (stringColumns.hasNext()) {
+					currentCol = stringColumns.next();
+					// if the cell is not empty
+					if (currentCol < data.length && !data[currentCol].isEmpty()) {
+						// update the unique value count of the column
+						if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+								.contains(currentCol)) {
+							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
+						}
 
-	            			// append the cell value to the respective column
-	            			stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
-	            			.add(data[currentCol]);
-	            		} else {
-	            			missing.set(currentCol, missing.get(currentCol).intValue() + 1);
-	            		}
-	            	}
-	            }
-            } catch (NumberFormatException e) {
-            	String msg="Error occured while reading values from the data source."+e.getMessage();
-    			LOGGER.error(msg,e);
-    			throw new DatasetServiceException(msg);
-            } catch (IOException e) {
-            	String msg="Error occured while accessing the data source."+e.getMessage();
-    			LOGGER.error(msg,e);
-    			throw new DatasetServiceException(msg);
-            }
+						// append the cell value to the respective column
+						stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+						.add(data[currentCol]);
+					} else {
+						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
+					}
+				}
+				row++;
+			}
+			LOGGER.info("Sample size: " + row);
+		} catch (NumberFormatException e) {
+			String msg="Error occured while reading values from the data source."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
+		} catch (IOException e) {
+			String msg="Error occured while accessing the data source."+e.getMessage();
+			LOGGER.error(msg,e);
+			throw new DatasetServiceException(msg);
 		}
 	}
+	
+	
 
 	/*
 	 * calculate the frequencies of each bin (i.e. each category/interval),
@@ -282,7 +283,7 @@ public class DatasetSummary {
 	 */
 	private void claculateCategoryFreqs(int currentCol) {
 		Map<String, Integer> frequencies = new HashMap<String, Integer>();
-		/* 
+		/*
 		 * count the frequencies in each category.
 		 * Iterate through all the rows in the column (number of rows
 		 * can be different due to missing values)
