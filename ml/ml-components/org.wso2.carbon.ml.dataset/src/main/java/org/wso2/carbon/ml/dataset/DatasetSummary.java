@@ -36,7 +36,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 public class DatasetSummary {
-	private final Log log = LogFactory.getLog(DatasetSummary.class);
+	private final Log logger = LogFactory.getLog(DatasetSummary.class);
 	private List<Integer> numericDataColPosstions = new ArrayList<Integer>();
 	private List<Integer> stringDataColPosstions = new ArrayList<Integer>();
 	private List<List<Double>> numericDataColumns = new ArrayList<List<Double>>();
@@ -55,7 +55,7 @@ public class DatasetSummary {
 	 */
 	public int generateSummary(String dataSourceId, int noOfRecords,
 			int noOfIntervals, String seperator) throws DatasetServiceException {
-		String message;
+		String msg;
 		try {
 			Configuration configuration = new Configuration();
 			FileSystem fileSystem = FileSystem.get(configuration);
@@ -64,7 +64,7 @@ public class DatasetSummary {
 			// get the uri of the data source
 			String dataSource = dbHandler.getDataSource(dataSourceId);
 			if (dataSource != null) {
-				log.info("Data Source: " + dataSource);
+				logger.info("Data Source: " + dataSource);
 
 				// read the input data file
 				FSDataInputStream dataStream = fileSystem.open(new Path(
@@ -101,27 +101,28 @@ public class DatasetSummary {
 								descriptiveStats);
 						return header.length;
 					} else {
-						message="Error occured while Calculating summary statistics.";
+						msg = "Error occured while Calculating summary statistics.";
 					}
 				} else {
-					message="Header row of the data source: " + dataSource + " is empty.";
+					msg = "Header row of the data source: " + dataSource
+							+ " is empty.";
 				}
 			} else {
-				message="Data source not found.";
+				msg = "Data source not found.";
 			}
 		} catch (IOException e) {
-			String msg = "Error occured while reading from the data source with ID: "
+			msg = "Error occured while reading from the data source with ID: "
 					+ dataSourceId + ". " + e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (Exception e) {
-			String msg = "Error occured while Calculating summary statistics."
+			msg = "Error occured while Calculating summary statistics."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
-		log.error(message);
-		throw new DatasetServiceException(message);
+		logger.error(msg);
+		throw new DatasetServiceException(msg);
 	}
 
 	/*
@@ -230,16 +231,16 @@ public class DatasetSummary {
 				}
 				row++;
 			}
-			log.info("Sample size: " + row);
+			logger.info("Sample size: " + row);
 		} catch (NumberFormatException e) {
 			String msg = "Error occured while reading values from the data source."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (IOException e) {
 			String msg = "Error occured while accessing the data source."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -409,12 +410,12 @@ public class DatasetSummary {
 					return true;
 				}
 			}
-			log.error("Data set does not contain any non-empty rows.");
+			logger.error("Data set does not contain any non-empty rows.");
 			return false;
 		} catch (IOException e) {
 			String msg = "Error occured while identifying data types of columns in the data set: "
 					+ dataReader + "." + e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
 	}

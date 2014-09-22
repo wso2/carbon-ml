@@ -35,7 +35,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 public class DatabaseHandler {
 	Connection connection = null;
-	private final Log log = LogFactory.getLog(DatabaseHandler.class);
+	private final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
 	public DatabaseHandler() throws DatabaseHandlerException {
 		try {
@@ -47,7 +47,7 @@ public class DatabaseHandler {
 		} catch (Exception e) {
 			String msg = "Error occured while connecting to database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -67,15 +67,15 @@ public class DatabaseHandler {
 					"SELECT DATASET_UPLOADING_DIR FROM ML_CONFIGURATION");
 			if (result.first()) {
 				String location = result.getNString("DATASET_UPLOADING_DIR");
-				log.info("Default upload location: " + location);
+				logger.info("Default upload location: " + location);
 				return location;
 			} else {
-				log.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
+				logger.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retrieving the default upload location from the database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 		return null;
@@ -91,16 +91,16 @@ public class DatabaseHandler {
 					"SELECT DATASET_IN_MEM_THRESHOLD FROM ML_CONFIGURATION");
 			if (result.first()) {
 				int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
-				log.info("Dataset in memory threshold: " + memoryThreshold
+				logger.info("Dataset in memory threshold: " + memoryThreshold
 						+ " bytes");
 				return memoryThreshold;
 			} else {
-				log.error("Dataset-in-memory-threshold is not set in the ML_CONFIGURATION database table.");
+				logger.error("Dataset-in-memory-threshold is not set in the ML_CONFIGURATION database table.");
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retrieving the dataset-in-memory-threshold from the database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 		return -1;
@@ -116,16 +116,16 @@ public class DatabaseHandler {
 			if (result.first()) {
 				long memoryThreshold = result
 						.getLong("DATASET_UPLOADING_LIMIT");
-				log.info("Dataset uploading limit: " + memoryThreshold
+				logger.info("Dataset uploading limit: " + memoryThreshold
 						+ " bytes");
 				return memoryThreshold;
 			} else {
-				log.error("Dataset uploading limit is not set in the ML_CONFIGURATION database table.");
+				logger.error("Dataset uploading limit is not set in the ML_CONFIGURATION database table.");
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retrieving the Dataset uploading limit from the database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 		return -1;
@@ -140,18 +140,18 @@ public class DatabaseHandler {
 					"SELECT INTERVALS FROM ML_CONFIGURATION");
 			if (result.first()) {
 				int intervals = result.getInt("INTERVALS");
-				log.info("Number of intervals uses to categorize numerical data: "
+				logger.info("Number of intervals uses to categorize numerical data: "
 						+ intervals);
 				return intervals;
 			} else {
 				String message = "Number of intervals is not set in the ML_CONFIGURATION database table.";
-				log.error(message);
+				logger.error(message);
 				throw new DatabaseHandlerException(message);
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retrieving the Number of intervals from the database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -165,17 +165,17 @@ public class DatabaseHandler {
 					"SELECT SEPARATOR FROM ML_CONFIGURATION");
 			if (result.first()) {
 				String separator = result.getNString("SEPARATOR");
-				log.info("Data points separator: " + separator);
+				logger.info("Data points separator: " + separator);
 				return separator;
 			} else {
 				String message = "Data points separator is not set in the ML_CONFIGURATION database table.";
-				log.error(message);
+				logger.error(message);
 				throw new DatabaseHandlerException(message);
 			}
 		} catch (SQLException e) {
 			String msg = "Error occured while retrieving the Data points separator from the database. "
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -191,14 +191,14 @@ public class DatabaseHandler {
 			if (result.first()) {
 				return result.getNString("URI");
 			} else {
-				String message = "Invalid data source ID.";
-				log.error(message);
-				throw new DatabaseHandlerException(message);
+				String msg = "Invalid data source ID.";
+				logger.error(msg);
+				throw new DatabaseHandlerException(msg);
 			}
 		} catch (Exception e) {
 			String msg = "Error occured while reading the Data source from the database."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -214,30 +214,29 @@ public class DatabaseHandler {
 			statement = connection.createStatement();
 
 			// get the latest auto-generated Id
-			log.info("HERE 1");
 			ResultSet latestID = statement
 					.executeQuery("SELECT ID FROM ML_DATASET order by ID");
-			log.info("HERE 2");
-			log.info("HERE 3");
 			String newID;
+			// If there are datasets already in the table
 			if (latestID.last()) {
+				// get the letest dataset ID and increment by one
 				newID = String
 						.valueOf(Integer.parseInt(latestID.getNString(1)) + 1);
-				log.info("Dataset ID: " + newID);
 			} else {
+				// else, set the new dataset ID to one
 				newID = String.valueOf(1);
-				log.info("Dataset ID: " + newID);
 			}
+			// insert the dataset details to the database
 			statement.execute("INSERT INTO ML_Dataset(ID,URI) VALUES('" + newID
 					+ "','" + uri + "/" + source + "');");
-			log.info("Successfully updated the details of data set: " + uri
+			logger.info("Successfully updated the details of data set: " + uri
 					+ "/" + source);
-			log.info("Dataset ID: " + newID);
+			logger.info("Dataset ID: " + newID);
 			return newID;
 		} catch (SQLException e) {
 			String msg = "Error occured while inserting data source details to the database."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -250,6 +249,7 @@ public class DatabaseHandler {
 			ImputeOption imputeOption, boolean important)
 					throws DatabaseHandlerException {
 		try {
+			// update database table with the new details 
 			return connection.createStatement().execute(
 					"UPDATE  ML_FEATURE SET TYPE ='" + type
 					+ "',IMPUTE_METHOD='" + imputeOption.toString()
@@ -258,7 +258,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			String msg = "Error occured while updating the feature : " + name
 					+ " of data set: " + dataSet + " ." + e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -268,17 +268,16 @@ public class DatabaseHandler {
 	 */
 	public boolean updateDataType(String featureName, String datasetId,
 			String featureType) throws DatabaseHandlerException {
-
-		String sqlStmt = "UPDATE  ML_FEATURE SET TYPE ='" + featureType
-				+ "' WHERE name='" + featureName + "' AND Dataset='"
-				+ datasetId + "';";
 		try {
-			return connection.createStatement().execute(sqlStmt);
+			// update the database and return whether the query successfully executed or not
+			return connection.createStatement().execute("UPDATE  ML_FEATURE SET TYPE ='" + featureType
+					+ "' WHERE name='" + featureName + "' AND Dataset='"
+					+ datasetId + "';");
 		} catch (SQLException e) {
 			String msg = "Error occured while updating the feature : "
 					+ featureName + " of dataset ID: " + datasetId + " ."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -288,18 +287,16 @@ public class DatabaseHandler {
 	 */
 	public boolean updateImputeOption(String featureName, String datasetId,
 			String imputeOption) throws DatabaseHandlerException {
-
-		String sqlStmt = "UPDATE  ML_FEATURE SET IMPUTE_METHOD ='"
-				+ imputeOption + "' WHERE name='" + featureName
-				+ "' AND Dataset='" + datasetId + "';";
-
 		try {
-			return connection.createStatement().execute(sqlStmt);
+			// update the database and return whether the query successfully executed or not
+			return connection.createStatement().execute("UPDATE  ML_FEATURE SET IMPUTE_METHOD ='"
+					+ imputeOption + "' WHERE name='" + featureName
+					+ "' AND Dataset='" + datasetId + "';");
 		} catch (SQLException e) {
 			String msg = "Error occured while updating the feature : "
 					+ featureName + " of dataset ID: " + datasetId + " ."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -309,16 +306,16 @@ public class DatabaseHandler {
 	 */
 	public boolean updateIsIncludedFeature(String featureName,
 			String datasetId, boolean isInput) throws DatabaseHandlerException {
-		String sqlStmt = "UPDATE  ML_FEATURE SET IMPORTANT =" + isInput
-				+ " WHERE name='" + featureName + "' AND Dataset='" + datasetId
-				+ "';";
 		try {
-			return connection.createStatement().execute(sqlStmt);
+			// update the database and return whether the query successfully executed or not
+			return connection.createStatement().execute("UPDATE  ML_FEATURE SET IMPORTANT =" + isInput
+					+ " WHERE name='" + featureName + "' AND Dataset='" + datasetId
+					+ "';");
 		} catch (SQLException e) {
 			String msg = "Error occured while updating the feature : "
 					+ featureName + " of dataset ID: " + datasetId + " ."
 					+ e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -354,12 +351,12 @@ public class DatabaseHandler {
 												+ ImputeOption.DISCARD + "','TRUE')");
 				connection.commit();
 			}
-			log.info("Successfully updated the summary statistics for data source: "
+			logger.info("Successfully updated the summary statistics for data source: "
 					+ dataSourceId);
 		} catch (SQLException e) {
 			String msg = "Error occured while updating the database with summary statistics of the data source: "
 					+ dataSourceId + "." + e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 	}
@@ -406,6 +403,7 @@ public class DatabaseHandler {
 			int numberOfFeatures) throws DatabaseHandlerException {
 		List<Feature> features = new ArrayList<Feature>();
 		try {
+			// get the set of features starting from @startPoint
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT * FROM ML_FEATURE WHERE dataset='" + dataSet
 					+ "' ORDER BY NAME LIMIT " + numberOfFeatures
@@ -430,7 +428,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			String msg = "Error occured while retireving features of data set: "
 					+ dataSet + " ." + e.getMessage();
-			log.error(msg, e);
+			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
 		return features.toArray(new Feature[features.size()]);
