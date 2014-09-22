@@ -375,7 +375,7 @@ public class DatabaseHandler {
 		try {
 			ResultSet result = connection.createStatement().executeQuery(
 					"SELECT * FROM ML_FEATURE WHERE dataset=" + dataSet
-							+ " LIMIT " + numberOfFeatures + " OFFSET "
+							+ "ORDER BY NAME LIMIT " + numberOfFeatures + " OFFSET "
 							+ (startPoint - 1) + "");
 
 			while (result.next()) {
