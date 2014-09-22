@@ -41,7 +41,6 @@ public class DatatableHelper {
 		JSONObject jsonResponse = new JSONObject();
 		jsonResponse.put("sEcho",
 				Integer.parseInt(request.getParameter("sEcho")));
-		// TODO: remove hard coded values
 		jsonResponse.put("iTotalRecords", datasetSize);
 		jsonResponse.put("iTotalDisplayRecords", datasetSize);
 
@@ -53,7 +52,7 @@ public class DatatableHelper {
 					+ "</span>");
 
 			// adding include/exclude check box
-			jsonArray.put(buildInputCheckBox(feature.isInputSpecified()));
+			jsonArray.put(buildInputCheckBox(feature.getInput()));
 
 			// adding data type drop-down
 			jsonArray.put(buildSectionBox(FEATURE_TYPES, feature.getType()

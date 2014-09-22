@@ -137,6 +137,48 @@ public class DatasetService {
         }
 	}
 	
+	public boolean updateDataType(String featureName, int datasetId,
+			String featureType) throws DatasetServiceException {
+		DatabaseHandler dbHandler;
+		try {
+			dbHandler = new DatabaseHandler();
+			return dbHandler
+					.updateDataType(featureName, datasetId, featureType);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Updating feature type failed. " + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
+
+	public boolean updateImputeOption(String featureName, int datasetId,
+			String imputeOption) throws DatasetServiceException {
+		DatabaseHandler dbHandler;
+		try {
+			dbHandler = new DatabaseHandler();
+			return dbHandler.updateImputeOption(featureName, datasetId,
+					imputeOption);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Updating impute option failed. " + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
+
+	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+			boolean isInput) throws DatasetServiceException {
+		DatabaseHandler dbHandler;
+		try {
+			dbHandler = new DatabaseHandler();
+			return dbHandler.updateIsIncludedFeature(featureName, datasetId,
+					isInput);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Updating impute option failed. " + e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
+	
 	/*
 	 * Returns a set of features in a given range of a data set.
 	 */
@@ -163,15 +205,8 @@ public class DatasetService {
 		return null;
 	}
 	
-
+    //TODO: 
 	private boolean isValidFile(String path) {
-		File file = new File(path);
-		//check whether the file exists
-		if (file.exists() && !file.isDirectory()) {
-			//check whether it has the csv extension
-			return path.matches("(.)+(\\."+FileFormats.CSV.toString()+")");
-		} else {
-			return false;
-		}
+		return true;
 	}
 }

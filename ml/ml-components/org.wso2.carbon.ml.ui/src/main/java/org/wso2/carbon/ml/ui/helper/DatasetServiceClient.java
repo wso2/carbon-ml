@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.dataset.stub.DatasetServiceStub;
 import org.wso2.carbon.ml.dataset.xsd.Feature;
+import org.wso2.carbon.ml.dataset.xsd.ImputeOption;
+import org.wso2.carbon.ml.dataset.xsd.FeatureType;
 
 
 
@@ -122,7 +124,58 @@ public class DatasetServiceClient {
 		try {
 			return stub.generateSummaryStats(dataSrcId, numOfRecords);
 		} catch (Exception ex) {
-			String msg = "An error has occurred while calling getFeatures() error message: "
+			String msg = "An error has occurred while calling generateSummaryStatistics() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceClientException(msg);
+		}
+	}
+	
+	//TODO: instead of "String type", use should use "FeatureType type"
+	public boolean updateFeature(String featureName, int datasetId, String dataType,
+			ImputeOption imputeOption, boolean isFeatureIncludedInTheModel)
+			throws DatasetServiceClientException {
+		try {
+			return stub.updateFeature(featureName, datasetId, dataType, imputeOption,
+					isFeatureIncludedInTheModel);
+		} catch (Exception ex) {
+			String msg = "An error has occurred while calling updateFeature() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceClientException(msg);
+		}
+	}
+	
+	public boolean updateDataType(String featureName, int datasetId,
+			String featureType) throws DatasetServiceClientException {
+		try {
+			return stub.updateDataType(featureName, datasetId, featureType);
+		} catch (Exception ex) {
+			String msg = "An error has occurred while calling updateDataType() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceClientException(msg);
+		}
+	}
+	
+	public boolean updateImputeOption(String featureName, int datasetId,
+			String imputeOption) throws DatasetServiceClientException{
+		try {
+			return stub.updateImputeOption(featureName, datasetId, imputeOption);
+		} catch (Exception ex) {
+			String msg = "An error has occurred while calling updateImputeOption() error message: "
+					+ ex.getMessage();
+			LOGGER.error(msg, ex);
+			throw new DatasetServiceClientException(msg);
+		}
+	}
+	
+	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+			boolean isInput) throws DatasetServiceClientException{
+		try {			
+			return stub.updateIsIncludedFeature(featureName, datasetId, isInput);
+		} catch (Exception ex) {
+			String msg = "An error has occurred while calling updateIsIncludedFeature() error message: "
 					+ ex.getMessage();
 			LOGGER.error(msg, ex);
 			throw new DatasetServiceClientException(msg);

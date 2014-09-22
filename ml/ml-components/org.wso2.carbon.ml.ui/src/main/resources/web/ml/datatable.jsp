@@ -59,8 +59,7 @@
             		return [value.frequency];
             	});
 	            
-	            if (type == 'CATEGORICAL'){
-	            	
+	            if (type == 'CATEGORICAL'){       	
 	            	
 	            	var w = 40;
 	            	var h = 40;
@@ -84,7 +83,7 @@
 	            	        .attr("class", "arc")
 	            	        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
 
-	            	  var color = d3.scale.category20c();
+	            	  var color = d3.scale.category20();
 	            	  arcs.append("path")
 	            	    .attr("fill", function(d, i) {
 	            	        return color(i);
@@ -94,9 +93,13 @@
 	            }else{
 	            	
 	            	var w = 200;
-	            	var h = 40;
-	            	
+	            	var h = 40;	            	
 	            	var barPadding = 1;
+	            	var yScale = d3.scale.linear()
+	                			  .domain([0, d3.max(dataArray, function(d) {
+	                    			 return d;
+	                			   })])
+	                			   .range([0,h]);
 	            	
 	            	var svg = d3.select(this)
 	                .append("svg")
@@ -111,11 +114,11 @@
 	 			   			return i * (w / dataArray.length);
 	 			   		})
 	 			   		.attr("y", function(d) {
-	 			   			return h - (d * 4);
+	 			   			return h - yScale(d);
 	 			   		})
 	 			   		.attr("width", w / dataArray.length - barPadding)
 	 			   		.attr("height", function(d) {
-	 			   			return d * 4;
+	 			   			return yScale(d);
 	 			   		})
 	 			   		.attr("fill", '#2b8cab');
 	            }
@@ -125,56 +128,53 @@
             // findout a better approach
 	        $('.fieldType').on('change', function(e) {
 	            var closestTr = $(this).closest('tr');
-	            var selectedRow = closestTr.find('.feature').text();
-	            var selectedDataType = this.options[e.target.selectedIndex].text;
+	            var selectedFeature = closestTr.find('.feature').text();
+	            
+	            var selectedFeatureType = this.options[e.target.selectedIndex].text;
 
 	            $.ajax({
 	                type: "POST",
-	                url: "/machinelearner/DatatableBackendService",
+	                url: "./updatefeaturetype_ajaxprocessor.jsp",
 	                data: {
-	                    'FIELD_PROP_NAME': 'selectedDataType',
-	                    'FIELD_PROP_VALUE': selectedDataType,
-	                    'FIELD_NAME': selectedRow
+	                    'FEATURE_TYPE': selectedFeatureType,
+	                    'FEATURE_NAME': selectedFeature
 	                }
 	            });
 	        });
 
 	        $('.includeFeature').on('change', function(e) {
 	            var closestTr = $(this).closest('tr');
-	            var selectedRow = closestTr.find('.feature').text();
-	            var selectedFlag = 'false';
+	            var selectedFeature = closestTr.find('.feature').text();
+	            var selectionFlag = 'false';
 
 	            if (this.checked) {
-	                selectionFlag = 'true';
+	            	selectionFlag = 'true';
 	            }
-
+				console.log("selectionFlag: "+selectionFlag);
 	            $.ajax({
 	                type: "POST",
-	                url: "/machinelearner/DatatableBackendService",
+	                url: "./updateinput_ajaxprocessor.jsp",
 	                data: {
-	                    'FIELD_PROP_NAME': 'isSelected',
-	                    'FIELD_PROP_VALUE': selectionFlag,
-	                    'FIELD_NAME': selectedRow
+	                    'IS_FEATURE_SELECTED': selectionFlag,
+	                    'FEATURE_NAME': selectedFeature
 	                }
 	            });
 	        });
 
 	        $('.imputeMethod').on('change', function(e) {
 	            var closestTr = $(this).closest('tr');
-	            var selectedRow = closestTr.find('.feature').text();
+	            var selectedFeature = closestTr.find('.feature').text();
 	            var imputedMethod = this.options[e.target.selectedIndex].text;
 
 	            $.ajax({
 	                type: "POST",
-	                url: "/machinelearner/DatatableBackendService",
+	                url: "./updateimputemethod_ajaxprocessor.jsp",
 	                data: {
-	                    'FIELD_PROP_NAME': 'fieldImputeMethod',
-	                    'FIELD_PROP_VALUE': imputedMethod,
-	                    'FIELD_NAME': selectedRow
+	                    'IMPUTE_OPTION': imputedMethod,
+	                    'FEATURE_NAME': selectedFeature
 	                }
 	            });
 	        });
-
 
 	    });
 

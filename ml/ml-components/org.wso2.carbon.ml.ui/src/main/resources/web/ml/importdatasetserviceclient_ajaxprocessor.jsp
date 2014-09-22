@@ -1,3 +1,4 @@
+<%@page import="org.wso2.carbon.ml.ui.helper.UIConstants"%>
 <%@page import="org.wso2.carbon.ml.ui.helper.DatasetUploader"%>
 <%@ page import="org.apache.axis2.context.ConfigurationContext"%>
 <%@ page import="org.wso2.carbon.CarbonConstants"%>
@@ -22,28 +23,36 @@
 	DatasetUploader uploader;
 
 	try {
-		client = new DatasetServiceClient(configContext, serverURL,cookie);
+		client = new DatasetServiceClient(configContext, serverURL,
+				cookie);
 		long uploadingLimit = client.getDatasetUploadingLimit();
 		int memThreshold = client.getDatasetInMemoryThreshold();
-		String uploadingDir = client.getDatasetUploadingDir();		
-		
-		uploader = new DatasetUploader(request, uploadingDir, memThreshold, uploadingLimit);
+		String uploadingDir = client.getDatasetUploadingDir();
+
+		uploader = new DatasetUploader(request, uploadingDir,
+				memThreshold, uploadingLimit);
 		boolean result = uploader.doUplod();
-		
-		if(result){ 
+
+		if (result) {
 			// calling summary statistics calcution service
-			int datasetId = client.importDataset(uploader.getDatasetName());
+			int datasetId = client.importDataset(uploader
+					.getDatasetName());
 			session.setAttribute("datasetId", datasetId);
+			session.setMaxInactiveInterval(UIConstants.MAX_SESSION_LIFE_TIME);
+
 			// if the import is successfull
-			if(datasetId>=0){
+			if (datasetId >= 0) {
 				//calling summary statistics calcution service
-				//TODO: change this hard-coded number
-				int numOfFeatues = client.generateSummaryStatistics(datasetId, 100);
+				int numOfFeatues = client.generateSummaryStatistics(
+						datasetId,
+						UIConstants.DATA_SAMPLE_SIZE_FOR_SUMMARY_STATS);
 				session.setAttribute("numOfFeatues", numOfFeatues);
-			}else{
+				session.setMaxInactiveInterval(UIConstants.MAX_SESSION_LIFE_TIME);
+
+			} else {
 				//TODO: error message
 			}
-		}else{
+		} else {
 			// redirect to the error page
 			//TODO: error message
 		}

@@ -238,8 +238,57 @@ public class DatabaseHandler {
 			throw new DatabaseHandlerException(msg);
 		}
 	}
-
 	
+	public boolean updateDataType(String featureName, int datasetId,
+			String featureType) throws DatabaseHandlerException {
+
+		String sqlStmt = "UPDATE  ML_FEATURE SET TYPE ='" + featureType
+				+ "' WHERE name='" + featureName + "' AND Dataset=" + datasetId
+				+ ";";
+		try {
+			return connection.createStatement().execute(sqlStmt);
+		} catch (SQLException e) {
+			String msg = "Error occured while updating the feature : "
+					+ featureName + " of dataset ID: " + datasetId + " ."
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		}
+	}
+	
+	public boolean updateImputeOption(String featureName, int datasetId,
+			String imputeOption) throws DatabaseHandlerException {
+
+		String sqlStmt = "UPDATE  ML_FEATURE SET IMPUTE_METHOD ='"
+				+ imputeOption + "' WHERE name='" + featureName
+				+ "' AND Dataset=" + datasetId + ";";
+
+		try {
+			return connection.createStatement().execute(sqlStmt);
+		} catch (SQLException e) {
+			String msg = "Error occured while updating the feature : "
+					+ featureName + " of dataset ID: " + datasetId + " ."
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		}
+	}
+	
+	public boolean updateIsIncludedFeature(String featureName, int datasetId,
+			boolean isInput) throws DatabaseHandlerException {
+		String sqlStmt = "UPDATE  ML_FEATURE SET IMPORTANT =" + isInput
+				+ " WHERE name='" + featureName + "' AND Dataset=" + datasetId
+				+ ";";		
+		try {
+			return connection.createStatement().execute(sqlStmt);
+		} catch (SQLException e) {
+			String msg = "Error occured while updating the feature : "
+					+ featureName + " of dataset ID: " + datasetId + " ."
+					+ e.getMessage();
+			LOGGER.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		}
+	}
 
 	/*
 	 * Update the database with all the summary stats of the sample
@@ -340,8 +389,7 @@ public class DatabaseHandler {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
 				} else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-				}
-
+				}				
 				features.add(new Feature(result.getNString(1), result
 						.getBoolean(6), featureType, imputeOperation, result
 						.getNString(4)));
