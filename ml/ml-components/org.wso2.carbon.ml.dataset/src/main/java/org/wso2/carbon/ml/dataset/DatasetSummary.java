@@ -1,17 +1,17 @@
 /*
- *  Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -53,8 +53,8 @@ public class DatasetSummary {
 	 * descriptive-stats, missing points, unique values and etc. to display in
 	 * the data view.
 	 */
-	public int generateSummary(String dataSourceId, int noOfRecords,
-			int noOfIntervals, String seperator) throws DatasetServiceException {
+	public int generateSummary(String dataSourceId, int noOfRecords, int noOfIntervals,
+	                           String seperator) throws DatasetServiceException {
 		String msg;
 		try {
 			Configuration configuration = new Configuration();
@@ -67,10 +67,8 @@ public class DatasetSummary {
 				logger.info("Data Source: " + dataSource);
 
 				// read the input data file
-				FSDataInputStream dataStream = fileSystem.open(new Path(
-						dataSource));
-				BufferedReader dataReader = new BufferedReader(
-						new InputStreamReader(dataStream));
+				FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
+				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
 
 				String firstLine;
 				// if the header row is not empty
@@ -78,46 +76,44 @@ public class DatasetSummary {
 					header = firstLine.split(seperator);
 
 					// Find the columns contains String data
-					if (findColumnDataType(
-							new BufferedReader(new InputStreamReader(
-									fileSystem.open(new Path(dataSource)))),
-									seperator)) {
+					if (findColumnDataType(new BufferedReader(
+					                                          new InputStreamReader(
+					                                                                fileSystem.open(new Path(
+					                                                                                         dataSource)))),
+					                                                                                         seperator)) {
 						// initialze the lists
 						initilize();
 
 						// Calculate mean,median, standard deviation,
-						// skewness,missing values and unique values
-						calculateDescriptiveStats(dataReader, noOfRecords,
-								seperator);
+						// skewness, missing values and unique values
+						calculateDescriptiveStats(dataReader, noOfRecords, seperator);
 
 						// Calculate frequencies of each category/interval of
 						// the feature
 						calculateFrequencies(noOfIntervals);
 
-						// Update the database with calculated summary
-						// statistics
-						dbHandler.updateSummaryStatistics(dataSourceId, header,
-								type, graphFrequencies, missing, unique,
-								descriptiveStats);
+						// Update the database with calculated summary statistics
+						dbHandler.updateSummaryStatistics(dataSourceId, header, type,
+						                                  graphFrequencies, missing, unique,
+						                                  descriptiveStats);
 						return header.length;
 					} else {
 						msg = "Error occured while Calculating summary statistics.";
 					}
 				} else {
-					msg = "Header row of the data source: " + dataSource
-							+ " is empty.";
+					msg = "Header row of the data source: " + dataSource + " is empty.";
 				}
 			} else {
 				msg = "Data source not found.";
 			}
 		} catch (IOException e) {
-			msg = "Error occured while reading from the data source with ID: "
-					+ dataSourceId + ". " + e.getMessage();
+			msg =
+					"Error occured while reading from the data source with ID: " + dataSourceId +
+					". " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (Exception e) {
-			msg = "Error occured while Calculating summary statistics."
-					+ e.getMessage();
+			msg = "Error occured while Calculating summary statistics." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -156,8 +152,8 @@ public class DatasetSummary {
 	 * Read from the csv file and find descriptive stats, missing values and
 	 * unique vales
 	 */
-	private void calculateDescriptiveStats(BufferedReader dataReader,
-			int noOfRecords, String seperator) throws DatasetServiceException {
+	private void calculateDescriptiveStats(BufferedReader dataReader, int noOfRecords,
+	                                       String seperator) throws DatasetServiceException {
 		String line;
 		String[] data = new String[header.length];
 		double cellValue;
@@ -168,8 +164,7 @@ public class DatasetSummary {
 		// iterate through each row
 		int row = 0;
 		try {
-			while ((line = dataReader.readLine()) != null
-					&& (noOfRecords == -1 || row < noOfRecords)) {
+			while ((line = dataReader.readLine()) != null && row != noOfRecords) {
 				data = line.split(seperator);
 				numericColumns = numericDataColPosstions.iterator();
 				stringColumns = stringDataColPosstions.iterator();
@@ -190,20 +185,16 @@ public class DatasetSummary {
 						// if the value is unique, update the unique value count
 						// of
 						// the column
-						if (!numericDataColumns.get(
-								numericDataColPosstions.indexOf(currentCol))
+						if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
 								.contains(cellValue)) {
-							unique.set(currentCol, unique.get(currentCol)
-									.intValue() + 1);
+							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
 						}
 
 						// append the cell value to the respective column
-						numericDataColumns.get(
-								numericDataColPosstions.indexOf(currentCol))
-								.add(cellValue);
+						numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+						.add(cellValue);
 					} else {
-						missing.set(currentCol, missing.get(currentCol)
-								.intValue() + 1);
+						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
 					}
 				}
 
@@ -213,33 +204,29 @@ public class DatasetSummary {
 					// if the cell is not empty
 					if (currentCol < data.length && !data[currentCol].isEmpty()) {
 						// update the unique value count of the column
-						if (!stringDataColumns.get(
-								stringDataColPosstions.indexOf(currentCol))
+						if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
 								.contains(currentCol)) {
-							unique.set(currentCol, unique.get(currentCol)
-									.intValue() + 1);
+							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
 						}
 
 						// append the cell value to the respective column
-						stringDataColumns.get(
-								stringDataColPosstions.indexOf(currentCol))
-								.add(data[currentCol]);
+						stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+						.add(data[currentCol]);
 					} else {
-						missing.set(currentCol, missing.get(currentCol)
-								.intValue() + 1);
+						missing.set(currentCol, missing.get(currentCol).intValue() + 1);
 					}
 				}
 				row++;
 			}
 			logger.info("Sample size: " + row);
 		} catch (NumberFormatException e) {
-			String msg = "Error occured while reading values from the data source."
-					+ e.getMessage();
+			String msg =
+					"Error occured while reading values from the data source." +
+							e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (IOException e) {
-			String msg = "Error occured while accessing the data source."
-					+ e.getMessage();
+			String msg = "Error occured while accessing the data source." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -263,26 +250,20 @@ public class DatasetSummary {
 			// count the frequencies in each category.
 			// Iterate through all the rows in the column (number of rows can be
 			// different due to missing values)
-			for (int row = 0; row < stringDataColumns.get(
-					stringDataColPosstions.indexOf(currentCol)).size(); row++) {
+			for (int row = 0; row < stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+					.size(); row++) {
 				// if the category has appeared before, increment the frequency
-				if (frequencies.containsKey(stringDataColumns.get(
-						stringDataColPosstions.indexOf(currentCol)).get(row))) {
-					frequencies.put(
-							stringDataColumns.get(
-									stringDataColPosstions.indexOf(currentCol))
-									.get(row), frequencies
-									.get(stringDataColumns.get(
-											stringDataColPosstions
-											.indexOf(currentCol)).get(
-													row)) + 1);
+				if (frequencies.containsKey(stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+				                            .get(row))) {
+					frequencies.put(stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+					                .get(row),
+					                frequencies.get(stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+					                                .get(row)) + 1);
 				} else {
 					// if the category appeared for the first time, set the
 					// frequency to one
-					frequencies.put(
-							stringDataColumns.get(
-									stringDataColPosstions.indexOf(currentCol))
-									.get(row), 1);
+					frequencies.put(stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
+					                .get(row), 1);
 				}
 			}
 			graphFrequencies.set(currentCol, frequencies);
@@ -318,23 +299,21 @@ public class DatasetSummary {
 		 * count the frequencies in each category. Iterate through all the rows
 		 * in the column (number of rows can be different due to missing values)
 		 */
-		for (int row = 0; row < numericDataColumns.get(
-				numericDataColPosstions.indexOf(currentCol)).size(); row++) {
+		for (int row = 0; row < numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+				.size(); row++) {
 			// if the category has appeared before, increment the
 			// frequency
-			if (frequencies.containsKey(String.valueOf(numericDataColumns.get(
-					numericDataColPosstions.indexOf(currentCol)).get(row)))) {
-				frequencies.put(String.valueOf(numericDataColumns.get(
-						numericDataColPosstions.indexOf(currentCol)).get(row)),
-						frequencies.get(String.valueOf(numericDataColumns.get(
-								numericDataColPosstions.indexOf(currentCol))
-								.get(row))) + 1);
+			if (frequencies.containsKey(String.valueOf(numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+			                                           .get(row)))) {
+				frequencies.put(String.valueOf(numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+				                               .get(row)),
+				                               frequencies.get(String.valueOf(numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+				                                                              .get(row))) + 1);
 			} else {
 				// if the category appeared for the first time, set the
 				// frequency to one
-				frequencies.put(String.valueOf(numericDataColumns.get(
-						numericDataColPosstions.indexOf(currentCol)).get(row)),
-						1);
+				frequencies.put(String.valueOf(numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+				                               .get(row)), 1);
 			}
 		}
 		graphFrequencies.set(currentCol, frequencies);
@@ -353,27 +332,28 @@ public class DatasetSummary {
 		}
 
 		// define the size of an interval
-		double intervalSize = (descriptiveStats.get(currentCol).getMax() - descriptiveStats
-				.get(currentCol).getMin()) / intervals;
+		double intervalSize =
+				(descriptiveStats.get(currentCol).getMax() - descriptiveStats.get(currentCol)
+						.getMin()) /
+						intervals;
 		double lowerBound;
 
 		// Iterate through all the rows in the column (number of rows
 		// can be different due to missing values)
-		for (int row = 0; row < numericDataColumns.get(
-				numericDataColPosstions.indexOf(currentCol)).size(); row++) {
+		for (int row = 0; row < numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+				.size(); row++) {
 			// set the initial lower bound to the data-minimum
 			lowerBound = descriptiveStats.get(currentCol).getMin();
 			// check to which interval does the data point belongs
 			for (int interval = 0; interval < intervals; interval++) {
 				// if found
-				if (lowerBound <= numericDataColumns.get(
-						numericDataColPosstions.indexOf(currentCol)).get(row)
-						&& numericDataColumns.get(
-								numericDataColPosstions.indexOf(currentCol))
-								.get(row) < lowerBound + intervalSize) {
+				if (lowerBound <= numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
+						.get(row) &&
+						numericDataColumns.get(numericDataColPosstions.indexOf(currentCol)).get(row) < lowerBound +
+						intervalSize) {
 					// increase the frequency of that interval by one
 					frequencies.put(String.valueOf(interval),
-							frequencies.get(String.valueOf(interval)) + 1);
+					                frequencies.get(String.valueOf(interval)) + 1);
 					break;
 				}
 				// set the lower bound to the lower bound of the next interval
@@ -386,8 +366,8 @@ public class DatasetSummary {
 	/*
 	 * find the columns with Categorical data and Numerical data
 	 */
-	private boolean findColumnDataType(BufferedReader dataReader,
-			String seperator) throws DatasetServiceException {
+	private boolean findColumnDataType(BufferedReader dataReader, String seperator)
+			throws DatasetServiceException {
 		try {
 			// ignore header row
 			dataReader.readLine();
@@ -413,8 +393,9 @@ public class DatasetSummary {
 			logger.error("Data set does not contain any non-empty rows.");
 			return false;
 		} catch (IOException e) {
-			String msg = "Error occured while identifying data types of columns in the data set: "
-					+ dataReader + "." + e.getMessage();
+			String msg =
+					"Error occured while identifying data types of columns in the data set: " +
+							dataReader + "." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
