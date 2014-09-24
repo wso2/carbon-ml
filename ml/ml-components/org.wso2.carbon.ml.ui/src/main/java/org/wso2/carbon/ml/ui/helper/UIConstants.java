@@ -21,7 +21,7 @@ package org.wso2.carbon.ml.ui.helper;
 /**
  * This class contains a set of constants used by the UI components
  */
-public class UIConstants {
+public final class UIConstants {
 	
 	// data types related constants
 	public static final String CATEGORICAL = "CATEGORICAL";
