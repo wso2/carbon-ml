@@ -44,7 +44,8 @@
                         	org.h2;version="[0.0.0,0.0.1)",
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,
-                        	org.apache.hadoop.fs							
+                        	org.apache.hadoop.fs,
+                        	org.json.*							
                         </Import-Package>
                     </instructions>
                 </configuration>
