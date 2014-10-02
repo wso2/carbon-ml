@@ -33,6 +33,7 @@ public class DatasetService {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			String uri = dbHandler.getDefaultUploadLocation();
+			// if the uri is not null or empty
 			if (uri != null && uri.length() > 0) {
 				return uri;
 			} else {
@@ -57,7 +58,7 @@ public class DatasetService {
 			return dbHandler.getDatasetInMemoryThreshold();
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve dataset-in-memory-threshold. ";
-			logger.error(msg);
+			logger.error(msg,e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -71,7 +72,7 @@ public class DatasetService {
 			return dbHandler.getDatasetUploadingLimit();
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve dataset uploading limit. ";
-			logger.error(msg);
+			logger.error(msg,e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -139,9 +140,8 @@ public class DatasetService {
 	public boolean updateFeature(String name, String dataSet, String type,
 	                             ImputeOption imputeOption, boolean important)
 	                            		 throws DatasetServiceException {
-		DatabaseHandler dbHandler;
 		try {
-			dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature failed. " + e.getMessage();
@@ -155,9 +155,8 @@ public class DatasetService {
 	 */
 	public boolean updateDataType(String featureName, String datasetId, String featureType)
 			throws DatasetServiceException {
-		DatabaseHandler dbHandler;
 		try {
-			dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.updateDataType(featureName, datasetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature type failed. " + e.getMessage();
@@ -171,9 +170,8 @@ public class DatasetService {
 	 */
 	public boolean updateImputeOption(String featureName, String datasetId, String imputeOption)
 			throws DatasetServiceException {
-		DatabaseHandler dbHandler;
 		try {
-			dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.updateImputeOption(featureName, datasetId, imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
@@ -187,9 +185,8 @@ public class DatasetService {
 	 */
 	public boolean updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
 			throws DatasetServiceException {
-		DatabaseHandler dbHandler;
 		try {
-			dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.updateIsIncludedFeature(featureName, datasetId, isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
@@ -203,9 +200,8 @@ public class DatasetService {
 	 */
 	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures)
 			throws DatasetServiceException {
-		DatabaseHandler dbHandler;
 		try {
-			dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
