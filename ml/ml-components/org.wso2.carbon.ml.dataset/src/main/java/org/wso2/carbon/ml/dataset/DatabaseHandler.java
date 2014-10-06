@@ -62,7 +62,7 @@ public class DatabaseHandler {
 	/*
 	 * get the default uploading location
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection
+	// TODO: use JDBC preparedstatement to avoid SQL injection	
 	public String getDefaultUploadLocation() throws DatabaseHandlerException {
 
 		try {
@@ -263,6 +263,7 @@ public class DatabaseHandler {
 	 * update details for a given feature
 	 */
 	// TODO: use JDBC preparedstatement to avoid SQL injection
+	// TODO: use database transaction
 	public boolean updateFeature(String name, String dataSet, String type,
 	                             ImputeOption imputeOption, boolean important)
 	                            		 throws DatabaseHandlerException {
@@ -286,6 +287,8 @@ public class DatabaseHandler {
 	/*
 	 * Update the data type of a given feature
 	 */
+	// TODO: use database transaction
+	// TODO: use JDBC preparedstatement to avoid SQL injection
 	public boolean updateDataType(String featureName, String datasetId, String featureType)
 			throws DatabaseHandlerException {
 		try {
@@ -307,6 +310,8 @@ public class DatabaseHandler {
 	/*
 	 * Update the impute method option of a given feature
 	 */
+	// TODO: use database transaction
+	// TODO: use JDBC preparedstatement to avoid SQL injection
 	public boolean updateImputeOption(String featureName, String datasetId, String imputeOption)
 			throws DatabaseHandlerException {
 		try {
@@ -328,6 +333,8 @@ public class DatabaseHandler {
 	/*
 	 * change whether a feature should be included as an input or not.
 	 */
+	// TODO: use database transaction
+	// TODO: use JDBC preparedstatement to avoid SQL injection
 	public boolean updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
 			throws DatabaseHandlerException {
 		try {
@@ -349,6 +356,7 @@ public class DatabaseHandler {
 	 * Update the database with all the summary stats of the sample
 	 */
 	// TODO: use JDBC preparedstatement to avoid SQL injection
+	// TODO: use database transaction
 	public void updateSummaryStatistics(String dataSourceId, String[] header, FeatureType[] type,
 	                                    List<Map<String, Integer>> graphFrequencies,
 	                                    List<Integer> missing, List<Integer> unique,
@@ -391,6 +399,7 @@ public class DatabaseHandler {
 	 * Create the json string with summary stat for a given column
 	 */
 	// TODO: don't send NaN for int fields, that will throw error in parsing
+	// TODO: use database transaction
 	private JSONObject createJson(int column, FeatureType[] type,
 	                              List<Map<String, Integer>> graphFrequencies,
 	                              List<Integer> missing, List<Integer> unique,
@@ -421,6 +430,7 @@ public class DatabaseHandler {
 	 * Returns a set of features in a given range of a data set.
 	 */
 	// TODO: use JDBC preparedstatement to avoid SQL injection
+	// TODO: use database transaction
 	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures)
 			throws DatabaseHandlerException {
 		List<Feature> features = new ArrayList<Feature>();
