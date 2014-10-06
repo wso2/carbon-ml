@@ -405,7 +405,7 @@ public class DatabaseHandler {
 			temp.put("frequency", graphFrequencies.get(column).get(categoryNames[i].toString()));
 			freqs.put(temp);
 		}
-		// put the statistics to an json object
+		// put the statistics to a json object
 		json.put("type", type[column].toString());
 		json.put("unique", unique.get(column));
 		json.put("missing", missing.get(column));
@@ -443,7 +443,7 @@ public class DatabaseHandler {
 				if ("REPLACE_WTH_MEAN".equals(result.getNString(5))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
 				} else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))) {
-					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
+					imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
 				}
 				features.add(new Feature(result.getNString(1), result.getBoolean(6), featureType,
 				                         imputeOperation, result.getNString(4)));

@@ -19,6 +19,9 @@ package org.wso2.carbon.ml.dataset;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +33,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 
 public class DatasetSummary {
 	private final Log logger = LogFactory.getLog(DatasetSummary.class);
@@ -45,8 +44,8 @@ public class DatasetSummary {
 	private List<Integer> missing = new ArrayList<Integer>();
 	private List<Integer> unique = new ArrayList<Integer>();
 	private List<Map<String, Integer>> graphFrequencies = new ArrayList<Map<String, Integer>>();
-	private String[] header; // header names
-	private FeatureType[] type; // feature type array
+	private String[] header;
+	private FeatureType[] type;
 
 	/*
 	 * get a summary of a sample from the given csv file, including
@@ -57,8 +56,6 @@ public class DatasetSummary {
 	                           String seperator) throws DatasetServiceException {
 		String msg;
 		try {
-			Configuration configuration = new Configuration();
-			FileSystem fileSystem = FileSystem.get(configuration);
 			DatabaseHandler dbHandler = new DatabaseHandler();
 
 			// get the uri of the data source
@@ -67,7 +64,7 @@ public class DatasetSummary {
 				logger.info("Data Source: " + dataSource);
 
 				// read the input data file
-				FSDataInputStream dataStream = fileSystem.open(new Path(dataSource));
+				InputStream dataStream = new FileInputStream(new File(dataSource));
 				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
 
 				String firstLine;
@@ -75,12 +72,8 @@ public class DatasetSummary {
 				if ((firstLine = dataReader.readLine()) != null) {
 					header = firstLine.split(seperator);
 
-					// Find the columns contains String data
-					if (findColumnDataType(new BufferedReader(
-					                                          new InputStreamReader(
-					                                                                fileSystem.open(new Path(
-					                                                                                         dataSource)))),
-					                                                                                         seperator)) {
+					// Find the columns contains String data. If its successfull
+					if (findColumnDataType(dataSource, seperator)) {
 						// initialze the lists
 						initilize();
 
@@ -92,7 +85,8 @@ public class DatasetSummary {
 						// the feature
 						calculateFrequencies(noOfIntervals);
 
-						// Update the database with calculated summary statistics
+						// Update the database with calculated summary
+						// statistics
 						dbHandler.updateSummaryStatistics(dataSourceId, header, type,
 						                                  graphFrequencies, missing, unique,
 						                                  descriptiveStats);
@@ -100,9 +94,11 @@ public class DatasetSummary {
 					} else {
 						msg = "Error occured while Calculating summary statistics.";
 					}
+
 				} else {
 					msg = "Header row of the data source: " + dataSource + " is empty.";
 				}
+				dataReader.close();
 			} else {
 				msg = "Data source not found.";
 			}
@@ -166,6 +162,7 @@ public class DatasetSummary {
 		try {
 			while ((line = dataReader.readLine()) != null && row != noOfRecords) {
 				data = line.split(seperator);
+				// create two iterators for two types of data columns
 				numericColumns = numericDataColPosstions.iterator();
 				stringColumns = stringDataColPosstions.iterator();
 
@@ -178,18 +175,15 @@ public class DatasetSummary {
 						cellValue = Double.parseDouble(data[currentCol]);
 
 						// append the value of the cell to the descriptive-stats
-						// of
-						// the respective column
+						// of the respective column
 						descriptiveStats.get(currentCol).addValue(cellValue);
 
 						// if the value is unique, update the unique value count
-						// of
-						// the column
+						// of the column
 						if (!numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
 								.contains(cellValue)) {
 							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
 						}
-
 						// append the cell value to the respective column
 						numericDataColumns.get(numericDataColPosstions.indexOf(currentCol))
 						.add(cellValue);
@@ -203,12 +197,12 @@ public class DatasetSummary {
 					currentCol = stringColumns.next();
 					// if the cell is not empty
 					if (currentCol < data.length && !data[currentCol].isEmpty()) {
-						// update the unique value count of the column
+						// if the value is unique, update the unique value count
+						// of the column
 						if (!stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
 								.contains(currentCol)) {
 							unique.set(currentCol, unique.get(currentCol).intValue() + 1);
 						}
-
 						// append the cell value to the respective column
 						stringDataColumns.get(stringDataColPosstions.indexOf(currentCol))
 						.add(data[currentCol]);
@@ -366,9 +360,13 @@ public class DatasetSummary {
 	/*
 	 * find the columns with Categorical data and Numerical data
 	 */
-	private boolean findColumnDataType(BufferedReader dataReader, String seperator)
-			throws DatasetServiceException {
+	private boolean findColumnDataType(String dataSource, String seperator) throws Exception {
+		InputStream dataStream;
+		BufferedReader dataReader = null;
 		try {
+			dataStream = new FileInputStream(new File(dataSource));
+			dataReader = new BufferedReader(new InputStreamReader(dataStream));
+
 			// ignore header row
 			dataReader.readLine();
 			String[] data;
@@ -394,10 +392,14 @@ public class DatasetSummary {
 			return false;
 		} catch (IOException e) {
 			String msg =
-					"Error occured while identifying data types of columns in the data set: " +
-							dataReader + "." + e.getMessage();
+					"Error occured while reading from the file: " + dataSource + "." +
+							e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
+		} finally {
+			if(dataReader!=null){
+				dataReader.close();
+			}
 		}
 	}
 
