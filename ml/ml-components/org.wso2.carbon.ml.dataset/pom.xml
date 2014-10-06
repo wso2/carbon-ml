@@ -20,13 +20,19 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
-        </dependency> 
+        </dependency>
         <dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20140107</version>
 		</dependency>     
     </dependencies>
+    
     <build>
         <plugins>
             <plugin>
@@ -38,6 +44,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
+                        <Bundle-Activator>org.wso2.carbon.ml.dataset.DatasetServiceActivator</Bundle-Activator>
                         <Export-Package>org.wso2.carbon.ml.dataset.*</Export-Package>
                         <Import-Package>
                         	org.apache.commons.math3.stat.descriptive.*;version="[0.0.0,0.0.1)",
@@ -45,7 +52,8 @@
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,
                         	org.apache.hadoop.fs,
-                        	org.json.*							
+                        	org.json.*,
+                        	*;resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>
