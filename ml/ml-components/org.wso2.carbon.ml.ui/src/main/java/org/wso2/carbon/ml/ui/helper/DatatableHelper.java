@@ -29,7 +29,7 @@ import org.wso2.carbon.ml.dataset.xsd.Feature;
 public class DatatableHelper {
 
 	// impute options
-	private final String[] IMPUTE_OPTIONS = new String[] { UIConstants.DISCARD,
+	private static final String[] IMPUTE_OPTIONS = new String[] { UIConstants.DISCARD,
 			UIConstants.REGRESSION_IMPUTATION, UIConstants.REPLACE_WTH_MEAN };
 
 	// feature types

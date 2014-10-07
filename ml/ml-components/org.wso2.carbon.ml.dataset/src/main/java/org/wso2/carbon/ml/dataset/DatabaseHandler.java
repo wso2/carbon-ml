@@ -18,8 +18,10 @@
 package org.wso2.carbon.ml.dataset;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +38,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DatabaseHandler {
-	Connection connection = null;
-	private final Log logger = LogFactory.getLog(DatabaseHandler.class);
+	
+	private final Connection connection;
+	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
 	public DatabaseHandler() throws DatabaseHandlerException {
 		try {
@@ -58,97 +61,67 @@ public class DatabaseHandler {
 	public Connection getConnection() {
 		return this.connection;
 	}
-
-	/*
-	 * get the default uploading location
+	
+	/**
+	 * This method reads configurations from the database
+	 * 
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection	
-	public String getDefaultUploadLocation() throws DatabaseHandlerException {
-
+	public DatasetConfig getDatasetConfig() throws DatabaseHandlerException {
+		ResultSet result = null;
+		Statement stmt = null;
 		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT DATASET_UPLOADING_DIR FROM ML_CONFIGURATION");
-			// if the default uploading location is set
+			stmt = connection.createStatement();
+			result = stmt.executeQuery(SQLQueries.GET_DATASET_CONFIG);
 			if (result.first()) {
-				String location = result.getNString("DATASET_UPLOADING_DIR");
-				logger.info("Default upload location: " + location);
-				return location;
-			} else {
-				logger.error("Default uploading location is not set in the ML_CONFIGURATION database table.");
-			}
-		} catch (SQLException e) {
-			String msg =
-					"Error occured while retrieving the default upload location from the database. " +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-		}
-		return null;
-	}
-
-	/*
-	 * Retrieve the dataset-in-memory-threshold from the ML_CONFIGURATION
-	 * database
-	 */
-	public int getDatasetInMemoryThreshold() throws DatabaseHandlerException {
-		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT DATASET_IN_MEM_THRESHOLD FROM ML_CONFIGURATION");
-			// if the dataset-in-memory-threshold is set
-			if (result.first()) {
+				String uploadingDir = result.getString("DATASET_UPLOADING_DIR");
 				int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
-				logger.info("Dataset in memory threshold: " + memoryThreshold + " bytes");
-				return memoryThreshold;
-			} else {
-				logger.error("Dataset-in-memory-threshold is not set in the ML_CONFIGURATION database table.");
-			}
-		} catch (SQLException e) {
-			String msg =
-					"Error occured while retrieving the dataset-in-memory-threshold from the database. " +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-		}
-		return -1;
-	}
+				long maxUploding = result.getLong("DATASET_UPLOADING_LIMIT");
 
-	/*
-	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
-	 */
-	public long getDatasetUploadingLimit() throws DatabaseHandlerException {
-		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT DATASET_UPLOADING_LIMIT FROM ML_CONFIGURATION");
-			// if the uploading limit is set
-			if (result.first()) {
-				long memoryThreshold = result.getLong("DATASET_UPLOADING_LIMIT");
-				logger.info("Dataset uploading limit: " + memoryThreshold + " bytes");
-				return memoryThreshold;
-			} else {
-				logger.error("Dataset uploading limit is not set in the ML_CONFIGURATION database table.");
-			}
-		} catch (SQLException e) {
-			String msg =
-					"Error occured while retrieving the Dataset uploading limit from the database. " +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-		}
-		return -1;
-	}
+				if (uploadingDir == null || uploadingDir.length() == 0) {
+					String msg = "DATASET_UPLOADING_DIR directory can not be null or empty";
+					logger.error(msg);
+					throw new DatabaseHandlerException(msg);
+				}
 
+				if (memoryThreshold == 0 || maxUploding == 0) {
+					String msg = "DATASET_IN_MEM_THRESHOLD and/or DATASET_IN_MEM_THRESHOLD can't be empty";
+					logger.error(msg);
+					throw new DatabaseHandlerException(msg);
+				}
+
+				return new DatasetConfig(uploadingDir, memoryThreshold,
+						maxUploding);
+			} else {
+				String msg = "An error has occurred while reading dataset config details";
+				logger.error(msg);
+				throw new DatabaseHandlerException(msg);
+			}
+
+		} catch (SQLException ex) {
+			String msg = "Error occured while retrieving the default upload location from the database. "
+					+ ex.getMessage();
+			logger.error(msg, ex);
+			throw new DatabaseHandlerException(msg);
+			
+		} finally {
+			MLDatabaseUtil.closeResultSet(result);
+			MLDatabaseUtil.closeStatement(stmt);
+		}
+	}
+	
 	/*
 	 * Retrieve the number of intervals to be used from the ML_CONFIGURATION
 	 * database
 	 */
-	public int getNoOfIntervals() throws DatabaseHandlerException {
+	public int getNumberOfBucketsInHistogram() throws DatabaseHandlerException {
+		
+		ResultSet result = null;
+		Statement stmt = null; 
 		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
+			stmt = connection.createStatement();
+			result = stmt.executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
 			// if the number of intervals is set
 			if (result.first()) {
 				int intervals = result.getInt("INTERVALS");
@@ -166,6 +139,9 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		}finally{
+			MLDatabaseUtil.closeResultSet(result);
+			MLDatabaseUtil.closeStatement(stmt);
 		}
 	}
 
@@ -173,10 +149,11 @@ public class DatabaseHandler {
 	 * Retrieve the separator from the ML_CONFIGURATION database
 	 */
 	public String getSeparator() throws DatabaseHandlerException {
+		ResultSet result=null;
+		Statement stmt = null;
 		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT SEPARATOR FROM ML_CONFIGURATION");
+			stmt = connection.createStatement();
+			result = stmt.executeQuery(SQLQueries.GET_SEP);
 			// if the separator is set
 			if (result.first()) {
 				String separator = result.getNString("SEPARATOR");
@@ -194,18 +171,24 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		}finally{
+			MLDatabaseUtil.closeResultSet(result);
+			MLDatabaseUtil.closeStatement(stmt);
 		}
 	}
 
 	/*
 	 * get the URI of the data source having the given ID, from the database
 	 */
-	public String getDataSource(String dataSourceId) throws Exception {
+	public String getDataSource(String dataSourceId) throws DatabaseHandlerException {
+		
+		ResultSet result = null;
+		PreparedStatement stmt = null;
 		try {
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT URI FROM ML_DATASET WHERE ID='" +
-							dataSourceId + "';");
+			stmt = connection.prepareStatement(SQLQueries.GET_DATASET_LOC);
+			stmt.setString(1, dataSourceId);
+			result = stmt.executeQuery();
+			
 			// if the URi for the given dataset exists
 			if (result.first()) {
 				return result.getNString("URI");
@@ -220,42 +203,64 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		}finally{
+			MLDatabaseUtil.closeResultSet(result);
+			MLDatabaseUtil.closeStatement(stmt);
 		}
 	}
 
 	/*
 	 * insert the new data set details to the the database
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	public String insertDatasetDetails(String uri, String source) throws DatabaseHandlerException {
-		Statement statement;
+	public String insertDatasetDetails(String uri, String source)
+			throws DatabaseHandlerException {
+
+		PreparedStatement stmtDSId = null;
+		PreparedStatement stmtInsertDS = null;
+		ResultSet resultSet = null;
 		try {
-			statement = connection.createStatement();
+			stmtDSId = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
 
 			// get the latest auto-generated Id
-			ResultSet latestID =
-					statement.executeQuery("SELECT ID FROM ML_DATASET order by CAST(ID AS INTEGER)");
+			resultSet = stmtDSId.executeQuery();
 			String newID;
+
 			// If there are datasets already in the table
-			if (latestID.last()) {
+			if (resultSet.last()) {
 				// get the latest dataset ID and increment by one
-				newID = String.valueOf(Integer.parseInt(latestID.getNString(1)) + 1);
+				newID = String.valueOf(Integer.parseInt(resultSet
+						.getString("Id")) + 1);
 			} else {
-				// else, set the new dataset ID to one
-				newID = String.valueOf(1);
+				// new dataset id is 1
+				newID = "1";
 			}
 			// insert the dataset details to the database
-			statement.execute("INSERT INTO ML_Dataset(ID,URI) VALUES('" + newID + "','" + uri +
-			                  "/" + source + "');");
-			logger.info("Successfully updated the details of data set: " + uri + "/" + source);
+
+			connection.setAutoCommit(false);
+			stmtInsertDS = connection
+					.prepareStatement(SQLQueries.INSERT_DATASET);
+			stmtInsertDS.setString(1, newID);
+			stmtInsertDS.setString(2, uri + "/" + source);
+			stmtInsertDS.execute();
+			connection.commit();
+
+			logger.info("Successfully updated the details of data set: " + uri
+					+ "/" + source);
 			logger.info("Dataset ID: " + newID);
 			return newID;
+
 		} catch (SQLException e) {
-			String msg =
-					"Error occured while inserting data source details to the database." +
-							e.getMessage();
+			MLDatabaseUtil.rollBack(connection);
+			String msg = "Error occured while inserting data source details to the database."
+					+ e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+
+		} finally {
+			MLDatabaseUtil.enableAutoCommit(connection);
+			MLDatabaseUtil.closeResultSet(resultSet);
+			MLDatabaseUtil.closeStatement(stmtDSId);
+			MLDatabaseUtil.closeStatement(stmtInsertDS);
 		}
 	}
 
@@ -333,22 +338,31 @@ public class DatabaseHandler {
 	/*
 	 * change whether a feature should be included as an input or not.
 	 */
-	// TODO: use database transaction
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	public boolean updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
-			throws DatabaseHandlerException {
+	public boolean updateIsIncludedFeature(String featureName,
+			String datasetId, boolean isInput) throws DatabaseHandlerException {
+		PreparedStatement stmt = null;
 		try {
-			// update the database and return whether the query successfully executed or not
-			return connection.createStatement().execute("UPDATE  ML_FEATURE SET IMPORTANT =" +
-					isInput + " WHERE name='" +
-					featureName + "' AND Dataset='" +
-					datasetId + "';");
+			connection.setAutoCommit(false);
+
+			stmt = connection.prepareStatement(SQLQueries.UPDATE_IS_INCLUDED);
+			stmt.setBoolean(1, isInput);
+			stmt.setString(2, featureName);
+			stmt.setString(3, datasetId);
+			
+			boolean result = stmt.execute();
+			connection.commit();
+			return result;
 		} catch (SQLException e) {
-			String msg =
-					"Error occured while updating the feature : " + featureName +
-					" of dataset ID: " + datasetId + " ." + e.getMessage();
+
+			MLDatabaseUtil.rollBack(connection);
+			String msg = "Error occured while updating the feature : "
+					+ featureName + " of dataset ID: " + datasetId + " ."
+					+ e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		} finally {
+			MLDatabaseUtil.enableAutoCommit(connection);
+			MLDatabaseUtil.closeStatement(stmt);
 		}
 	}
 
@@ -426,45 +440,63 @@ public class DatabaseHandler {
 		return json;
 	}
 
-	/*
-	 * Returns a set of features in a given range of a data set.
+	/**
+	 * This method reads ( a given number of features ) from ML_FEATURE 
+	 * and creates a list of Feature  
+	 * @param dataSetName
+	 * @param startingPoint
+	 * @param numberOfFeatures
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	// TODO: use database transaction
-	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures)
+	public Feature[] getFeatures(String dataSetName, int startingPoint, int numberOfFeatures)
 			throws DatabaseHandlerException {
+		
 		List<Feature> features = new ArrayList<Feature>();
+		PreparedStatement getFeatues = null;
+		ResultSet result = null;
 		try {
-			// get the set of features starting from @startPoint
-			ResultSet result =
-					connection.createStatement()
-					.executeQuery("SELECT * FROM ML_FEATURE WHERE dataset='" +
-							dataSet + "' ORDER BY NAME LIMIT " +
-							numberOfFeatures + " OFFSET " +
-							(startPoint - 1) + "");
-
+			// create a prepared statement and extract dataset configurations
+			getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
+			getFeatues.setString(1, dataSetName);
+			getFeatues.setInt(2, numberOfFeatures);
+			getFeatues.setInt(3, startingPoint);
+			result = getFeatues.executeQuery();
+			
 			while (result.next()) {
 				FeatureType featureType = FeatureType.NUMERICAL;
-				if ("CATEGORICAL".equals(result.getNString(3))) {
+				if ("CATEGORICAL".equals(result.getString("Type"))) {
 					featureType = FeatureType.CATEGORICAL;
 				}
 
 				ImputeOption imputeOperation = ImputeOption.DISCARD;
-				if ("REPLACE_WTH_MEAN".equals(result.getNString(5))) {
+				if ("REPLACE_WTH_MEAN".equals(result.getString("Impute_Method"))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-				} else if ("REGRESSION_IMPUTATION".equals(result.getNString(5))) {
+				
+				} else if ("REGRESSION_IMPUTATION".equals(result.getString("Impute_Method"))) {
 					imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
 				}
-				features.add(new Feature(result.getNString(1), result.getBoolean(6), featureType,
-				                         imputeOperation, result.getNString(4)));
+				
+				String featureName = result.getString("Name");				
+				boolean isImportantFeature = result.getBoolean("Important");
+				String summaryStat = result.getString("summary");
+				
+				features.add(new Feature(featureName, isImportantFeature, featureType,
+				                         imputeOperation, summaryStat));
 			}
-		} catch (SQLException e) {
+		} catch (SQLException e) {			
 			String msg =
-					"Error occured while retireving features of data set: " + dataSet + " ." +
+					"Error occured while retireving features of the data set: " + dataSetName + " Error message: " +
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+			
+		}finally{
+			MLDatabaseUtil.closeStatement(getFeatues);
+			MLDatabaseUtil.closeResultSet(result);
+			
 		}
+		
 		return features.toArray(new Feature[features.size()]);
 	}
 }

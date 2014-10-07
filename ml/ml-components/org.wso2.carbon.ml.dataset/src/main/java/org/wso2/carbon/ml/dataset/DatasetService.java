@@ -25,54 +25,19 @@ import org.apache.commons.logging.LogFactory;
 
 public class DatasetService {
 	private final Log logger = LogFactory.getLog(DatasetService.class);
-
-	/*
-	 * Retrieve the file uploading directory from the database
+	
+	/**
+	 * This method extract dataset configurations from the database
+	 * @return
+	 * @throws DatasetServiceException
 	 */
-	public String getDatasetUploadingDir() throws DatasetServiceException {
+	public DatasetConfig getDatasetConfig() throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
-			String uri = dbHandler.getDefaultUploadLocation();
-			// if the uri is not null or empty
-			if (uri != null && uri.length() > 0) {
-				return uri;
-			} else {
-				String msg = "Dataset uploading location can't be null or empty. ";
-				logger.error(msg);
-				throw new DatasetServiceException(msg);
-			}
-		} catch (Exception ex) {
-			String msg = "Failed to retrieve dataset uploading location. " + ex.getMessage();
+			DatabaseHandler handler = new DatabaseHandler();
+			return handler.getDatasetConfig();
+		} catch (DatabaseHandlerException ex) {
+			String msg = "Error has occurred while reading dataset config from database";
 			logger.error(msg, ex);
-			throw new DatasetServiceException(msg);
-		}
-	}
-
-	/*
-	 * Retrieve the dataset-in-memory-threshold from the ML_CONFIGURATION
-	 * database
-	 */
-	public int getDatasetInMemoryThreshold() throws DatasetServiceException {
-		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.getDatasetInMemoryThreshold();
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve dataset-in-memory-threshold. ";
-			logger.error(msg,e);
-			throw new DatasetServiceException(msg);
-		}
-	}
-
-	/*
-	 * Retrieve the Dataset uploading limit from the ML_CONFIGURATION database
-	 */
-	public long getDatasetUploadingLimit() throws DatasetServiceException {
-		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.getDatasetUploadingLimit();
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve dataset uploading limit. ";
-			logger.error(msg,e);
 			throw new DatasetServiceException(msg);
 		}
 	}
@@ -80,17 +45,19 @@ public class DatasetService {
 	/*
 	 * Update the database with the imported data set details
 	 */
-	public String updateDatasetDetails(String source) throws Exception {
+	public String updateDatasetDetails(String source)
+			throws DatasetServiceException {
 		String msg;
 		try {
 			// get the uri of the file
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			String uri = dbHandler.getDefaultUploadLocation();
+			String uri = dbHandler.getDatasetConfig().getDatasetUploadingLoc();
 			if (uri != null) {
 				// check whether the file is a valid one
 				if (isValidFile(uri + "/" + source)) {
 					// insert the details to the table
-					String datasetId = dbHandler.insertDatasetDetails(uri, source);
+					String datasetId = dbHandler.insertDatasetDetails(uri,
+							source);
 					return datasetId;
 				} else {
 					msg = "Invalid input file: " + source;
@@ -98,8 +65,9 @@ public class DatasetService {
 			} else {
 				msg = "Default uploading location not found.";
 			}
-		} catch (Exception e) {
-			msg = "Failed to update the data-source details in the database. " + e.getMessage();
+		} catch (DatabaseHandlerException e) {
+			msg = "Failed to update the data-source details in the database. "
+					+ e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -119,7 +87,7 @@ public class DatasetService {
 			DatasetSummary summary = new DatasetSummary();
 			int noOfFeatures =
 					summary.generateSummary(dataSourceID, noOfRecords,
-					                        dbHandler.getNoOfIntervals(),
+					                        dbHandler.getNumberOfBucketsInHistogram(),
 					                        dbHandler.getSeparator());
 			logger.info("Summary statistics successfully generated. ");
 			return noOfFeatures;

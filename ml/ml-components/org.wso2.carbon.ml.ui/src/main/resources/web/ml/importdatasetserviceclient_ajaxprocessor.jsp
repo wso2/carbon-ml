@@ -24,10 +24,9 @@
 		DatasetServiceClient client = new DatasetServiceClient(
 				configContext, serverURL, cookie);
 		
-		long uploadingLimit = client.getDatasetUploadingLimit();
-		int memThreshold = client.getDatasetInMemoryThreshold();
-		String uploadingDir = client.getDatasetUploadingDir();
-
+		long uploadingLimit = client.getDatasetConfig().getUploadingLimit();
+		int memThreshold = client.getDatasetConfig().getMemoryThreshold();
+		String uploadingDir = client.getDatasetConfig().getDatasetUploadingLoc();
 		// creates uploader 
 		DatasetUploader uploader = new DatasetUploader(request,
 				uploadingDir, memThreshold, uploadingLimit);

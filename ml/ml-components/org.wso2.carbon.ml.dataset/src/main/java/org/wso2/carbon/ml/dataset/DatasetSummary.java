@@ -46,11 +46,17 @@ public class DatasetSummary {
 	private List<Map<String, Integer>> graphFrequencies = new ArrayList<Map<String, Integer>>();
 	private String[] header;
 	private FeatureType[] type;
-
-	/*
+	
+	/**
 	 * get a summary of a sample from the given csv file, including
 	 * descriptive-stats, missing points, unique values and etc. to display in
-	 * the data view.
+	 * the data view. 
+	 * @param dataSourceId
+	 * @param noOfRecords
+	 * @param noOfIntervals
+	 * @param seperator
+	 * @return
+	 * @throws DatasetServiceException
 	 */
 	public int generateSummary(String dataSourceId, int noOfRecords, int noOfIntervals,
 	                           String seperator) throws DatasetServiceException {
@@ -151,7 +157,7 @@ public class DatasetSummary {
 	private void calculateDescriptiveStats(BufferedReader dataReader, int noOfRecords,
 	                                       String seperator) throws DatasetServiceException {
 		String line;
-		String[] data = new String[header.length];
+		String[] data;
 		double cellValue;
 		Iterator<Integer> numericColumns;
 		Iterator<Integer> stringColumns;

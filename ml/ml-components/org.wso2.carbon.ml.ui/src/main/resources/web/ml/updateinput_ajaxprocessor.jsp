@@ -20,15 +20,15 @@
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 	try {
 		// create client
-		DatasetServiceClient client = new DatasetServiceClient(configContext, serverURL,
-				cookie);
-		Integer datasetId = (Integer) session.getAttribute("datasetId");
-		
-		if (datasetId != null && datasetId > 0) {
+		DatasetServiceClient client = new DatasetServiceClient(
+				configContext, serverURL, cookie);
+		String datasetId = (String) session.getAttribute("datasetId");
+
+		if (datasetId != null && datasetId.length() > 0) {
 			boolean isSelection = Boolean.parseBoolean(request
 					.getParameter("IS_FEATURE_SELECTED"));
 			String featureName = request.getParameter("FEATURE_NAME");
-			
+
 			// update Dabase using the dataset service
 			client.updateIsIncludedFeature(featureName, datasetId,
 					isSelection);

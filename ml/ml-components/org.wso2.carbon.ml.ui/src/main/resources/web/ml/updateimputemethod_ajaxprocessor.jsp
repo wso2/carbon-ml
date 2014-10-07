@@ -20,10 +20,10 @@
 			.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
 	try {
-		DatasetServiceClient client = new DatasetServiceClient(configContext, serverURL,
-				cookie);
-		Integer datasetId = (Integer) session.getAttribute("datasetId");
-		if (datasetId != null && datasetId > 0) {
+		DatasetServiceClient client = new DatasetServiceClient(
+				configContext, serverURL, cookie);
+		String datasetId = (String) session.getAttribute("datasetId");
+		if (datasetId != null && datasetId.length() > 0) {
 			String imputeOption = request.getParameter("IMPUTE_OPTION");
 			String featureName = request.getParameter("FEATURE_NAME");
 			client.updateImputeOption(featureName, datasetId,

@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DatasetUploader {
 
-	private static final Log LOGGER = LogFactory.getLog(DatasetUploader.class);
+	private static final Log logger = LogFactory.getLog(DatasetUploader.class);
 	
 	private HttpServletRequest request;
 	private String datasetUploadingDir;
@@ -85,12 +85,12 @@ public class DatasetUploader {
 			} catch (Exception ex) {
 				String errorMessage = "Dataset uploading operation failed, error message: "
 						+ ex.getMessage();
-				LOGGER.error(errorMessage, ex);
+				logger.error(errorMessage, ex);
 				throw new DatasetUploadException(errorMessage);
 			}
 
 		} else {
-			LOGGER.info("Request is not a multi-part content");
+			logger.info("Request is not a multi-part content");
 		}
 
 		// dataset uploading operation is unsuccessful
