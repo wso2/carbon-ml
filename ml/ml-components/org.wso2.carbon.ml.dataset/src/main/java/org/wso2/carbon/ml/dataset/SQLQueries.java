@@ -19,8 +19,9 @@ package org.wso2.carbon.ml.dataset;
 
 public class SQLQueries {
 
-	public static final String GET_DATASET_CONFIG = "SELECT DATASET_UPLOADING_DIR, DATASET_IN_MEM_THRESHOLD, "
-			+ "DATASET_UPLOADING_LIMIT FROM ML_CONFIGURATION";
+	public static final String GET_DATASET_CONFIG =
+			"SELECT DATASET_UPLOADING_DIR, DATASET_IN_MEM_THRESHOLD, "
+					+ "DATASET_UPLOADING_LIMIT FROM ML_CONFIGURATION";
 
 	public static final String GET_FEATURES = "SELECT * FROM ML_FEATURE WHERE "
 			+ "DATASET= ? ORDER BY NAME LIMIT ? OFFSET ? ";
@@ -32,9 +33,21 @@ public class SQLQueries {
 
 	public static final String UPDATE_IS_INCLUDED = "UPDATE  ML_FEATURE SET IMPORTANT = ? "
 			+ "WHERE NAME=? AND DATASET=?";
-	
-	public static final String GET_SEP = "SELECT SEPARATOR FROM ML_CONFIGURATION";
-	
-	public static final String GET_DATASET_LOC = "SELECT URI FROM ML_DATASET WHERE ID=?"; 
+
+	public static final String GET_SEPARATOR = "SELECT SEPARATOR FROM ML_CONFIGURATION";
+
+	public static final String GET_DATASET_LOCATION = "SELECT URI FROM ML_DATASET WHERE ID=?";
+
+	public static final String UPDATE_FEATURE =
+			"UPDATE  ML_FEATURE SET TYPE =?, IMPUTE_METHOD=?, IMPORTANT=? WHERE name=? AND Dataset=?";
+
+	public static final String UPDATE_DATA_TYPE =
+			"UPDATE ML_FEATURE SET TYPE =? WHERE name=? AND Dataset=?";
+
+	public static final String UPDATE_IMPUTE_METHOD =
+			"UPDATE  ML_FEATURE SET IMPUTE_METHOD=? WHERE name=? AND Dataset=?";
+
+	public static final String UPDATE_SUMMARY_STATS =
+			"MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES(?,?,?,?,?,TRUE)";
 
 }
