@@ -25,9 +25,10 @@ import org.apache.commons.logging.LogFactory;
 
 public class DatasetService {
 	private final Log logger = LogFactory.getLog(DatasetService.class);
-	
+
 	/**
 	 * This method extract dataset configurations from the database
+	 *
 	 * @return
 	 * @throws DatasetServiceException
 	 */
@@ -42,11 +43,14 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Update the database with the imported data set details
+	 * 
+	 * @param source
+	 * @return
+	 * @throws DatasetServiceException
 	 */
-	public String updateDatasetDetails(String source)
-			throws DatasetServiceException {
+	public String updateDatasetDetails(String source) throws DatasetServiceException {
 		String msg;
 		try {
 			// get the uri of the file
@@ -56,8 +60,7 @@ public class DatasetService {
 				// check whether the file is a valid one
 				if (isValidFile(uri + "/" + source)) {
 					// insert the details to the table
-					String datasetId = dbHandler.insertDatasetDetails(uri,
-							source);
+					String datasetId = dbHandler.insertDatasetDetails(uri, source);
 					return datasetId;
 				} else {
 					msg = "Invalid input file: " + source;
@@ -66,8 +69,7 @@ public class DatasetService {
 				msg = "Default uploading location not found.";
 			}
 		} catch (DatabaseHandlerException e) {
-			msg = "Failed to update the data-source details in the database. "
-					+ e.getMessage();
+			msg = "Failed to update the data-source details in the database. " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -75,10 +77,15 @@ public class DatasetService {
 		throw new DatasetServiceException(msg);
 	}
 
-	/*
+	/**
 	 * Calculate summary stats from a sample of given size and populate the
 	 * database. Value of -1 for noOfRecords will generate summary statistics
 	 * using the whole data set.
+	 * 
+	 * @param dataSourceID
+	 * @param noOfRecords
+	 * @return
+	 * @throws DatasetServiceException
 	 */
 	public int generateSummaryStats(String dataSourceID, int noOfRecords)
 			throws DatasetServiceException {
@@ -102,15 +109,21 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Update feature with the given details
+	 * 
+	 * @param name
+	 * @param dataSet
+	 * @param type
+	 * @param imputeOption
+	 * @param important
+	 * @throws DatasetServiceException
 	 */
-	public boolean updateFeature(String name, String dataSet, String type,
-	                             ImputeOption imputeOption, boolean important)
-	                            		 throws DatasetServiceException {
+	public void updateFeature(String name, String dataSet, String type, ImputeOption imputeOption,
+	                          boolean important) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
+			dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -118,14 +131,19 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Update the data type of a given feature
+	 * 
+	 * @param featureName
+	 * @param datasetId
+	 * @param featureType
+	 * @throws DatasetServiceException
 	 */
-	public boolean updateDataType(String featureName, String datasetId, String featureType)
+	public void updateDataType(String featureName, String datasetId, String featureType)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.updateDataType(featureName, datasetId, featureType);
+			dbHandler.updateDataType(featureName, datasetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature type failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -133,14 +151,19 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Update the impute method option of a given feature
+	 * 
+	 * @param featureName
+	 * @param datasetId
+	 * @param imputeOption
+	 * @throws DatasetServiceException
 	 */
-	public boolean updateImputeOption(String featureName, String datasetId, String imputeOption)
+	public void updateImputeOption(String featureName, String datasetId, String imputeOption)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.updateImputeOption(featureName, datasetId, imputeOption);
+			dbHandler.updateImputeOption(featureName, datasetId, imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -148,14 +171,19 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * change whether a feature should be included as an input or not.
+	 * 
+	 * @param featureName
+	 * @param datasetId
+	 * @param isInput
+	 * @throws DatasetServiceException
 	 */
-	public boolean updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
+	public void updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.updateIsIncludedFeature(featureName, datasetId, isInput);
+			dbHandler.updateIsIncludedFeature(featureName, datasetId, isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -163,8 +191,14 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Returns a set of features in a given range of a data set.
+	 * 
+	 * @param dataSet
+	 * @param startPoint
+	 * @param numberOfFeatures
+	 * @return
+	 * @throws DatasetServiceException
 	 */
 	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures)
 			throws DatasetServiceException {
@@ -178,8 +212,11 @@ public class DatasetService {
 		}
 	}
 
-	/*
+	/**
 	 * Check whether the given file is valid
+	 * 
+	 * @param path
+	 * @return
 	 */
 	private boolean isValidFile(String path) {
 		File file = new File(path);

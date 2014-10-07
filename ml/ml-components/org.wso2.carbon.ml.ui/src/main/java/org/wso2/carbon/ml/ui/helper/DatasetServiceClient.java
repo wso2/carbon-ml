@@ -140,12 +140,12 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateFeature(String featureName, String datasetId,
+	public void updateFeature(String featureName, String datasetId,
 			String dataType, ImputeOption imputeOption,
 			boolean isFeatureIncludedInTheModel)
 			throws DatasetServiceClientException {
 		try {
-			return stub.updateFeature(featureName, datasetId, dataType,
+			stub.updateFeature(featureName, datasetId, dataType,
 					imputeOption, isFeatureIncludedInTheModel);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateFeature() error message: "
@@ -163,10 +163,10 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateDataType(String featureName, String datasetId,
+	public void updateDataType(String featureName, String datasetId,
 			String featureType) throws DatasetServiceClientException {
 		try {
-			return stub.updateDataType(featureName, datasetId, featureType);
+			stub.updateDataType(featureName, datasetId, featureType);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateDataType() error message: "
 					+ ex.getMessage();
@@ -183,11 +183,10 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateImputeOption(String featureName, String datasetId,
+	public void updateImputeOption(String featureName, String datasetId,
 			String imputeOption) throws DatasetServiceClientException {
 		try {
-			return stub
-					.updateImputeOption(featureName, datasetId, imputeOption);
+			stub.updateImputeOption(featureName, datasetId, imputeOption);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateImputeOption() error message: "
 					+ ex.getMessage();
@@ -204,12 +203,11 @@ public class DatasetServiceClient {
 	 * @return
 	 * @throws DatasetServiceClientException
 	 */
-	public boolean updateIsIncludedFeature(String featureName,
+	public void updateIsIncludedFeature(String featureName,
 			String datasetId, boolean isInput)
 			throws DatasetServiceClientException {
 		try {
-			return stub
-					.updateIsIncludedFeature(featureName, datasetId, isInput);
+			stub.updateIsIncludedFeature(featureName, datasetId, isInput);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling updateIsIncludedFeature() error message: "
 					+ ex.getMessage();

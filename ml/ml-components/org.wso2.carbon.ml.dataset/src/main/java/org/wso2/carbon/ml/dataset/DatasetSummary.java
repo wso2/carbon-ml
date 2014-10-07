@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,11 +47,12 @@ public class DatasetSummary {
 	private List<Map<String, Integer>> graphFrequencies = new ArrayList<Map<String, Integer>>();
 	private String[] header;
 	private FeatureType[] type;
-	
+
 	/**
 	 * get a summary of a sample from the given csv file, including
 	 * descriptive-stats, missing points, unique values and etc. to display in
-	 * the data view. 
+	 * the data view.
+	 *
 	 * @param dataSourceId
 	 * @param noOfRecords
 	 * @param noOfIntervals
@@ -71,7 +73,7 @@ public class DatasetSummary {
 
 				// read the input data file
 				InputStream dataStream = new FileInputStream(new File(dataSource));
-				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream));
+				BufferedReader dataReader = new BufferedReader(new InputStreamReader(dataStream,Charset.defaultCharset()));
 
 				String firstLine;
 				// if the header row is not empty
@@ -100,7 +102,6 @@ public class DatasetSummary {
 					} else {
 						msg = "Error occured while Calculating summary statistics.";
 					}
-
 				} else {
 					msg = "Header row of the data source: " + dataSource + " is empty.";
 				}
@@ -371,7 +372,7 @@ public class DatasetSummary {
 		BufferedReader dataReader = null;
 		try {
 			dataStream = new FileInputStream(new File(dataSource));
-			dataReader = new BufferedReader(new InputStreamReader(dataStream));
+			dataReader = new BufferedReader(new InputStreamReader(dataStream,Charset.defaultCharset()));
 
 			// ignore header row
 			dataReader.readLine();
@@ -403,7 +404,7 @@ public class DatasetSummary {
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} finally {
-			if(dataReader!=null){
+			if (dataReader != null) {
 				dataReader.close();
 			}
 		}

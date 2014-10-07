@@ -7,14 +7,14 @@ import org.osgi.framework.BundleContext;
 
 public class DatasetServiceActivator implements BundleActivator {
 
-		public void start(BundleContext context) throws Exception {
+		public void start(BundleContext context) {
 			final Log logger = LogFactory.getLog(DatasetServiceActivator.class);
 			DatasetService datasetService = new DatasetService();
 			context.registerService(DatasetService.class.getName(), datasetService, null);
 			logger.info("Dataset Service activated.");
         }
 		
-		public void stop(BundleContext context) throws Exception {
+		public void stop(BundleContext context) {
 	        // TODO Auto-generated method stub
         }
 }

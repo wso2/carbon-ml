@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 
 public class MLDatabaseUtil {
-	private static final Log log = LogFactory.getLog(MLDatabaseUtil.class);
+	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
 
 	/**
 	 * 
@@ -53,7 +53,7 @@ public class MLDatabaseUtil {
 			try {
 				dbConnection.close();
 			} catch (SQLException e) {
-				log.error(
+				logger.error(
 						"Database error. Could not close statement."
 								+ e.getMessage(), e);
 			}
@@ -69,7 +69,7 @@ public class MLDatabaseUtil {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				log.error(
+				logger.error(
 						"Database error. Could not close result set  - "
 								+ e.getMessage(), e);
 			}
@@ -85,7 +85,7 @@ public class MLDatabaseUtil {
 			try {
 				statement.close();
 			} catch (SQLException e) {
-				log.error(
+				logger.error(
 						"Database error. Could not close statement. Continuing with others. - "
 								+ e.getMessage(), e);
 			}
@@ -102,7 +102,7 @@ public class MLDatabaseUtil {
 				dbConnection.rollback();
 			}
 		} catch (SQLException e1) {
-			log.error("An error occurred while rolling back transactions. ", e1);
+			logger.error("An error occurred while rolling back transactions. ", e1);
 		}
 	}
 	
@@ -116,7 +116,7 @@ public class MLDatabaseUtil {
 				dbConnection.setAutoCommit(true);
 			}
 		} catch (SQLException e1) {
-			log.error("An error occurred while setting autocommit to true. ", e1);
+			logger.error("An error occurred while enabling autocommit. ", e1);
 		}
 	}
 }

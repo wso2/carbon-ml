@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DatabaseHandler {
-	
+
 	private final Connection connection;
 	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
@@ -61,19 +60,19 @@ public class DatabaseHandler {
 	public Connection getConnection() {
 		return this.connection;
 	}
-	
+
 	/**
 	 * This method reads configurations from the database
-	 * 
+	 *
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
 	public DatasetConfig getDatasetConfig() throws DatabaseHandlerException {
 		ResultSet result = null;
-		Statement stmt = null;
+		Statement getStatement = null;
 		try {
-			stmt = connection.createStatement();
-			result = stmt.executeQuery(SQLQueries.GET_DATASET_CONFIG);
+			getStatement = connection.createStatement();
+			result = getStatement.executeQuery(SQLQueries.GET_DATASET_CONFIG);
 			if (result.first()) {
 				String uploadingDir = result.getString("DATASET_UPLOADING_DIR");
 				int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
@@ -86,13 +85,13 @@ public class DatabaseHandler {
 				}
 
 				if (memoryThreshold == 0 || maxUploding == 0) {
-					String msg = "DATASET_IN_MEM_THRESHOLD and/or DATASET_IN_MEM_THRESHOLD can't be empty";
+					String msg =
+							"DATASET_IN_MEM_THRESHOLD and/or DATASET_IN_MEM_THRESHOLD can't be empty";
 					logger.error(msg);
 					throw new DatabaseHandlerException(msg);
 				}
 
-				return new DatasetConfig(uploadingDir, memoryThreshold,
-						maxUploding);
+				return new DatasetConfig(uploadingDir, memoryThreshold, maxUploding);
 			} else {
 				String msg = "An error has occurred while reading dataset config details";
 				logger.error(msg);
@@ -100,28 +99,33 @@ public class DatabaseHandler {
 			}
 
 		} catch (SQLException ex) {
-			String msg = "Error occured while retrieving the default upload location from the database. "
-					+ ex.getMessage();
+			String msg =
+					"Error occured while retrieving the default upload location from the database. " +
+							ex.getMessage();
 			logger.error(msg, ex);
 			throw new DatabaseHandlerException(msg);
-			
 		} finally {
+			// close the database resources
 			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(stmt);
+			MLDatabaseUtil.closeStatement(getStatement);
 		}
 	}
-	
-	/*
+
+	/**
 	 * Retrieve the number of intervals to be used from the ML_CONFIGURATION
 	 * database
+	 *
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
+
 	public int getNumberOfBucketsInHistogram() throws DatabaseHandlerException {
-		
+
 		ResultSet result = null;
-		Statement stmt = null; 
+		Statement selectStatement = null;
 		try {
-			stmt = connection.createStatement();
-			result = stmt.executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
+			selectStatement = connection.createStatement();
+			result = selectStatement.executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
 			// if the number of intervals is set
 			if (result.first()) {
 				int intervals = result.getInt("INTERVALS");
@@ -139,21 +143,25 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
-		}finally{
+		} finally {
+			// close the database resources
 			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(stmt);
+			MLDatabaseUtil.closeStatement(selectStatement);
 		}
 	}
 
-	/*
+	/**
 	 * Retrieve the separator from the ML_CONFIGURATION database
+	 *
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
 	public String getSeparator() throws DatabaseHandlerException {
-		ResultSet result=null;
-		Statement stmt = null;
+		ResultSet result = null;
+		Statement getStatement = null;
 		try {
-			stmt = connection.createStatement();
-			result = stmt.executeQuery(SQLQueries.GET_SEP);
+			getStatement = connection.createStatement();
+			result = getStatement.executeQuery(SQLQueries.GET_SEPARATOR);
 			// if the separator is set
 			if (result.first()) {
 				String separator = result.getNString("SEPARATOR");
@@ -171,24 +179,28 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
-		}finally{
+		} finally {
+			// close the database resources
 			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(stmt);
+			MLDatabaseUtil.closeStatement(getStatement);
 		}
 	}
 
-	/*
+	/**
 	 * get the URI of the data source having the given ID, from the database
+	 *
+	 * @param dataSourceId
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
 	public String getDataSource(String dataSourceId) throws DatabaseHandlerException {
-		
 		ResultSet result = null;
-		PreparedStatement stmt = null;
+		PreparedStatement getStatement = null;
 		try {
-			stmt = connection.prepareStatement(SQLQueries.GET_DATASET_LOC);
-			stmt.setString(1, dataSourceId);
-			result = stmt.executeQuery();
-			
+			getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_LOCATION);
+			getStatement.setString(1, dataSourceId);
+			result = getStatement.executeQuery();
+
 			// if the URi for the given dataset exists
 			if (result.first()) {
 				return result.getNString("URI");
@@ -203,179 +215,235 @@ public class DatabaseHandler {
 							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
-		}finally{
+		} finally {
+			// close the database resources
 			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(stmt);
+			MLDatabaseUtil.closeStatement(getStatement);
 		}
 	}
 
-	/*
+	/**
 	 * insert the new data set details to the the database
+	 *
+	 * @param uri
+	 * @param source
+	 * @return
+	 * @throws DatabaseHandlerException
 	 */
-	public String insertDatasetDetails(String uri, String source)
-			throws DatabaseHandlerException {
-
-		PreparedStatement stmtDSId = null;
-		PreparedStatement stmtInsertDS = null;
+	public String insertDatasetDetails(String uri, String source) throws DatabaseHandlerException {
+		PreparedStatement getStatement = null;
+		PreparedStatement insertStatement = null;
 		ResultSet resultSet = null;
 		try {
-			stmtDSId = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
+			getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
 
 			// get the latest auto-generated Id
-			resultSet = stmtDSId.executeQuery();
+			resultSet = getStatement.executeQuery();
 			String newID;
 
-			// If there are datasets already in the table
+			// If there are data-sets already in the table
 			if (resultSet.last()) {
-				// get the latest dataset ID and increment by one
-				newID = String.valueOf(Integer.parseInt(resultSet
-						.getString("Id")) + 1);
+				// get the latest data set ID and increment by one
+				newID = String.valueOf(Integer.parseInt(resultSet.getString("Id")) + 1);
 			} else {
-				// new dataset id is 1
+				// new data-set id is 1
 				newID = "1";
 			}
-			// insert the dataset details to the database
-
+			// insert the data-set details to the database
 			connection.setAutoCommit(false);
-			stmtInsertDS = connection
-					.prepareStatement(SQLQueries.INSERT_DATASET);
-			stmtInsertDS.setString(1, newID);
-			stmtInsertDS.setString(2, uri + "/" + source);
-			stmtInsertDS.execute();
+			insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
+			insertStatement.setString(1, newID);
+			insertStatement.setString(2, uri + "/" + source);
+			insertStatement.execute();
 			connection.commit();
 
-			logger.info("Successfully updated the details of data set: " + uri
-					+ "/" + source);
+			logger.info("Successfully updated the details of data set: " + uri + "/" + source);
 			logger.info("Dataset ID: " + newID);
 			return newID;
 
 		} catch (SQLException e) {
+			// rollback the changes
 			MLDatabaseUtil.rollBack(connection);
-			String msg = "Error occured while inserting data source details to the database."
-					+ e.getMessage();
+			String msg =
+					"Error occured while inserting data source details to the database." +
+							e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 
 		} finally {
+			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
 			MLDatabaseUtil.closeResultSet(resultSet);
-			MLDatabaseUtil.closeStatement(stmtDSId);
-			MLDatabaseUtil.closeStatement(stmtInsertDS);
+			MLDatabaseUtil.closeStatement(getStatement);
+			MLDatabaseUtil.closeStatement(insertStatement);
 		}
 	}
 
-	/*
+	/**
 	 * update details for a given feature
+	 *
+	 * @param name
+	 * @param dataSet
+	 * @param type
+	 * @param imputeOption
+	 * @param important
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	// TODO: use database transaction
-	public boolean updateFeature(String name, String dataSet, String type,
-	                             ImputeOption imputeOption, boolean important)
-	                            		 throws DatabaseHandlerException {
+	public void updateFeature(String name, String dataSet, String type, ImputeOption imputeOption,
+	                          boolean important) throws DatabaseHandlerException {
+		PreparedStatement updateStatement = null;
 		try {
 			// update database table with the new details
-			return connection.createStatement().execute("UPDATE  ML_FEATURE SET TYPE ='" + type +
-			                                            "',IMPUTE_METHOD='" +
-			                                            imputeOption.toString() +
-			                                            "', IMPORTANT=" + important +
-			                                            " WHERE name='" + name +
-			                                            "' AND Dataset='" + dataSet + "';");
+			connection.setAutoCommit(false);
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_FEATURE);
+			updateStatement.setString(1, type);
+			updateStatement.setString(2, imputeOption.toString());
+			updateStatement.setBoolean(3, important);
+			updateStatement.setString(4, name);
+			updateStatement.setString(5, dataSet);
+			updateStatement.execute();
+			connection.commit();
 		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
 			String msg =
 					"Error occured while updating the feature : " + name + " of data set: " +
 							dataSet + " ." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
 
-	/*
+	/**
 	 * Update the data type of a given feature
+	 *
+	 * @param featureName
+	 * @param datasetId
+	 * @param featureType
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use database transaction
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	public boolean updateDataType(String featureName, String datasetId, String featureType)
+	public void updateDataType(String featureName, String datasetId, String featureType)
 			throws DatabaseHandlerException {
+		PreparedStatement updateStatement = null;
 		try {
-			// update the database and return whether the query successfully
-			// executed or not
-			return connection.createStatement().execute("UPDATE  ML_FEATURE SET TYPE ='" +
-					featureType + "' WHERE name='" +
-					featureName + "' AND Dataset='" +
-					datasetId + "';");
+			// update the database with data type
+			connection.setAutoCommit(false);
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_FEATURE);
+			updateStatement.setString(1, featureType);
+			updateStatement.setString(2, featureName);
+			updateStatement.setString(3, datasetId);
+			updateStatement.execute();
+			connection.commit();
 		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
 			String msg =
-					"Error occured while updating the feature : " + featureName +
+					"Error occured while updating the data type of feature : " + featureName +
 					" of dataset ID: " + datasetId + " ." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
 
-	/*
+	/**
 	 * Update the impute method option of a given feature
+	 *
+	 * @param featureName
+	 * @param datasetId
+	 * @param imputeOption
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use database transaction
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	public boolean updateImputeOption(String featureName, String datasetId, String imputeOption)
+	public void updateImputeOption(String featureName, String datasetId, String imputeOption)
 			throws DatabaseHandlerException {
+		PreparedStatement updateStatement = null;
 		try {
-			// update the database and return whether the query successfully
-			// executed or not
-			return connection.createStatement().execute("UPDATE  ML_FEATURE SET IMPUTE_METHOD ='" +
-					imputeOption + "' WHERE name='" +
-					featureName + "' AND Dataset='" +
-					datasetId + "';");
+			// update the database
+			connection.setAutoCommit(false);
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_IMPUTE_METHOD);
+			updateStatement.setString(1, imputeOption);
+			updateStatement.setString(2, featureName);
+			updateStatement.setString(3, datasetId);
+			updateStatement.execute();
+			connection.commit();
 		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
 			String msg =
 					"Error occured while updating the feature : " + featureName +
 					" of dataset ID: " + datasetId + " ." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
 
-	/*
+	/**
 	 * change whether a feature should be included as an input or not.
+	 *
+	 * @param featureName
+	 * @param datasetId
+	 * @param isInput
+	 * @throws DatabaseHandlerException
 	 */
-	public boolean updateIsIncludedFeature(String featureName,
-			String datasetId, boolean isInput) throws DatabaseHandlerException {
-		PreparedStatement stmt = null;
+	public void updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
+			throws DatabaseHandlerException {
+		PreparedStatement updateStatement = null;
 		try {
 			connection.setAutoCommit(false);
-
-			stmt = connection.prepareStatement(SQLQueries.UPDATE_IS_INCLUDED);
-			stmt.setBoolean(1, isInput);
-			stmt.setString(2, featureName);
-			stmt.setString(3, datasetId);
-			
-			boolean result = stmt.execute();
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_IS_INCLUDED);
+			updateStatement.setBoolean(1, isInput);
+			updateStatement.setString(2, featureName);
+			updateStatement.setString(3, datasetId);
+			updateStatement.execute();
 			connection.commit();
-			return result;
 		} catch (SQLException e) {
-
+			// rollback the changes
 			MLDatabaseUtil.rollBack(connection);
-			String msg = "Error occured while updating the feature : "
-					+ featureName + " of dataset ID: " + datasetId + " ."
-					+ e.getMessage();
+			String msg =
+					"Error occured while updating the feature : " + featureName +
+					" of dataset ID: " + datasetId + " ." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		} finally {
 			MLDatabaseUtil.enableAutoCommit(connection);
-			MLDatabaseUtil.closeStatement(stmt);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
 
-	/*
+	/**
 	 * Update the database with all the summary stats of the sample
+	 *
+	 * @param dataSourceId
+	 * @param header
+	 * @param type
+	 * @param graphFrequencies
+	 * @param missing
+	 * @param unique
+	 * @param descriptiveStats
+	 * @throws DatabaseHandlerException
 	 */
-	// TODO: use JDBC preparedstatement to avoid SQL injection
-	// TODO: use database transaction
 	public void updateSummaryStatistics(String dataSourceId, String[] header, FeatureType[] type,
 	                                    List<Map<String, Integer>> graphFrequencies,
 	                                    List<Integer> missing, List<Integer> unique,
 	                                    List<DescriptiveStatistics> descriptiveStats)
-	                                    		throws Exception {
+	                                    		throws DatabaseHandlerException {
+		PreparedStatement updateStatement = null;
 		try {
 			JSONObject summaryStat;
 			for (int column = 0; column < header.length; column++) {
@@ -383,37 +451,49 @@ public class DatabaseHandler {
 				summaryStat =
 						createJson(column, type, graphFrequencies, missing, unique,
 						           descriptiveStats);
+
 				// put the values to the database table. If the feature already
 				// exists, updates the row. if not, inserts as a new row.
-				connection.createStatement()
-				.execute("MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES('" +
-						header[column] +
-						"','" +
-						dataSourceId +
-						"','" +
-						type[column] +
-						"','" +
-						summaryStat.toString() +
-						"','" +
-						ImputeOption.DISCARD + "','TRUE')");
+				connection.setAutoCommit(false);
+				updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
+				updateStatement.setString(1, header[column]);
+				updateStatement.setString(2, dataSourceId);
+				updateStatement.setString(3, type[column].toString());
+				updateStatement.setString(4, summaryStat.toString());
+				updateStatement.setString(5, ImputeOption.DISCARD.toString());
+				updateStatement.execute();
 				connection.commit();
 			}
 			logger.info("Successfully updated the summary statistics for data source: " +
 					dataSourceId);
 		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
 			String msg =
 					"Error occured while updating the database with summary statistics of the data source: " +
 							dataSourceId + "." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
 
-	/*
+	/**
 	 * Create the json string with summary stat for a given column
+	 *
+	 * @param column
+	 * @param type
+	 * @param graphFrequencies
+	 * @param missing
+	 * @param unique
+	 * @param descriptiveStats
+	 * @return
 	 */
 	// TODO: don't send NaN for int fields, that will throw error in parsing
-	// TODO: use database transaction
 	private JSONObject createJson(int column, FeatureType[] type,
 	                              List<Map<String, Integer>> graphFrequencies,
 	                              List<Integer> missing, List<Integer> unique,
@@ -441,8 +521,10 @@ public class DatabaseHandler {
 	}
 
 	/**
-	 * This method reads ( a given number of features ) from ML_FEATURE 
-	 * and creates a list of Feature  
+	 * This method reads ( a given number of features ) from ML_FEATURE
+	 *
+	 * and creates a list of Feature
+	 *
 	 * @param dataSetName
 	 * @param startingPoint
 	 * @param numberOfFeatures
@@ -451,7 +533,7 @@ public class DatabaseHandler {
 	 */
 	public Feature[] getFeatures(String dataSetName, int startingPoint, int numberOfFeatures)
 			throws DatabaseHandlerException {
-		
+
 		List<Feature> features = new ArrayList<Feature>();
 		PreparedStatement getFeatues = null;
 		ResultSet result = null;
@@ -462,41 +544,42 @@ public class DatabaseHandler {
 			getFeatues.setInt(2, numberOfFeatures);
 			getFeatues.setInt(3, startingPoint);
 			result = getFeatues.executeQuery();
-			
+
 			while (result.next()) {
 				FeatureType featureType = FeatureType.NUMERICAL;
-				if ("CATEGORICAL".equals(result.getString("Type"))) {
+				if (FeatureType.CATEGORICAL.toString().equalsIgnoreCase(result.getString("Type"))) {
 					featureType = FeatureType.CATEGORICAL;
 				}
 
+				// set the impute option
 				ImputeOption imputeOperation = ImputeOption.DISCARD;
-				if ("REPLACE_WTH_MEAN".equals(result.getString("Impute_Method"))) {
+				if (ImputeOption.REPLACE_WTH_MEAN.toString()
+						.equalsIgnoreCase(result.getString("Impute_Method"))) {
 					imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-				
-				} else if ("REGRESSION_IMPUTATION".equals(result.getString("Impute_Method"))) {
+				} else if (ImputeOption.REGRESSION_IMPUTATION.toString()
+						.equalsIgnoreCase(result.getString("Impute_Method"))) {
 					imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
 				}
-				
-				String featureName = result.getString("Name");				
+
+				String featureName = result.getString("Name");
 				boolean isImportantFeature = result.getBoolean("Important");
 				String summaryStat = result.getString("summary");
-				
+
 				features.add(new Feature(featureName, isImportantFeature, featureType,
 				                         imputeOperation, summaryStat));
 			}
-		} catch (SQLException e) {			
+			return features.toArray(new Feature[features.size()]);
+		} catch (SQLException e) {
 			String msg =
-					"Error occured while retireving features of the data set: " + dataSetName + " Error message: " +
-							e.getMessage();
+					"Error occured while retireving features of the data set: " + dataSetName +
+					" Error message: " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
-			
-		}finally{
+
+		} finally {
+			// close the database resources
 			MLDatabaseUtil.closeStatement(getFeatues);
 			MLDatabaseUtil.closeResultSet(result);
-			
 		}
-		
-		return features.toArray(new Feature[features.size()]);
 	}
 }
