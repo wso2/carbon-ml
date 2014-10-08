@@ -20,6 +20,8 @@ package org.wso2.carbon.ml.dataset;
 public class FeatureType {
 
 	private final String featureType;
+	public static final FeatureType NUMERICAL = new FeatureType("NUMERICAL");
+	public static final FeatureType CATEGORICAL = new FeatureType("CATEGORICAL");
 
 	private FeatureType(String featureType) {
 		this.featureType = featureType;
@@ -32,7 +34,4 @@ public class FeatureType {
 	public String getFeatureName() {
 		return featureType;
 	}
-	
-	public static final FeatureType NUMERICAL = new FeatureType("NUMERICAL");
-	public static final FeatureType CATEGORICAL = new FeatureType("CATEGORICAL");
 }

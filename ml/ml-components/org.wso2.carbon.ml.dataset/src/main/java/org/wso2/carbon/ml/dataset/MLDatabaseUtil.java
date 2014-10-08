@@ -26,7 +26,6 @@ import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 public class MLDatabaseUtil {
 	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
 
