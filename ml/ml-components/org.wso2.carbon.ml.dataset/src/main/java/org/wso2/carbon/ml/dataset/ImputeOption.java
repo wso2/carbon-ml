@@ -18,8 +18,12 @@
 package org.wso2.carbon.ml.dataset;
 
 public class ImputeOption {
-
 	private final String option;
+	public static final ImputeOption DISCARD = new ImputeOption("DISCARD");
+	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption(
+			"REPLACE_WTH_MEAN");
+	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption(
+			"REGRESSION_IMPUTATION");
 
 	private ImputeOption(String option) {
 		this.option = option;
@@ -32,11 +36,4 @@ public class ImputeOption {
 	public String getImputeOptionName() {
 		return option;
 	}
-
-	public static final ImputeOption DISCARD = new ImputeOption("DISCARD");
-	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption(
-			"REPLACE_WTH_MEAN");
-	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption(
-			"REGRESSION_IMPUTATION");
-
 }

@@ -41,6 +41,11 @@ public class DatabaseHandler {
 	private final Connection connection;
 	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
+	/**
+	 * Constructor method.
+	 * Creates a connection to the database.
+	 * @throws DatabaseHandlerException
+	 */
 	public DatabaseHandler() throws DatabaseHandlerException {
 		try {
 			// load the carbon data source configurations of the H2 database
@@ -57,6 +62,10 @@ public class DatabaseHandler {
 		}
 	}
 
+	/**
+	 * Returns a database connection object.
+	 * @return
+	 */
 	public Connection getConnection() {
 		return this.connection;
 	}
@@ -118,7 +127,6 @@ public class DatabaseHandler {
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-
 	public int getNumberOfBucketsInHistogram() throws DatabaseHandlerException {
 
 		ResultSet result = null;
@@ -129,7 +137,7 @@ public class DatabaseHandler {
 			// if the number of intervals is set
 			if (result.first()) {
 				int intervals = result.getInt("INTERVALS");
-				logger.info("Number of intervals uses to categorize numerical data: " + intervals);
+				logger.debug("Number of intervals uses to categorize numerical data: " + intervals);
 				return intervals;
 			} else {
 				String message =
@@ -165,7 +173,7 @@ public class DatabaseHandler {
 			// if the separator is set
 			if (result.first()) {
 				String separator = result.getNString("SEPARATOR");
-				logger.info("Data points separator: " + separator);
+				logger.debug("Data points separator: " + separator);
 				return separator;
 			} else {
 				String message =
@@ -225,12 +233,12 @@ public class DatabaseHandler {
 	/**
 	 * insert the new data set details to the the database
 	 *
-	 * @param uri
+	 * @param filePath
 	 * @param source
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-	public String insertDatasetDetails(String uri, String source) throws DatabaseHandlerException {
+	public String insertDatasetDetails(String filePath, String description) throws DatabaseHandlerException {
 		PreparedStatement getStatement = null;
 		PreparedStatement insertStatement = null;
 		ResultSet resultSet = null;
@@ -253,12 +261,11 @@ public class DatabaseHandler {
 			connection.setAutoCommit(false);
 			insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
 			insertStatement.setString(1, newID);
-			insertStatement.setString(2, uri + "/" + source);
+			insertStatement.setString(2, description);
+			insertStatement.setString(3, filePath);
 			insertStatement.execute();
 			connection.commit();
-
-			logger.info("Successfully updated the details of data set: " + uri + "/" + source);
-			logger.info("Dataset ID: " + newID);
+			logger.debug("Successfully updated the details of data set: " + filePath + ". Dataset ID" + newID);
 			return newID;
 
 		} catch (SQLException e) {
@@ -440,7 +447,7 @@ public class DatabaseHandler {
 	 */
 	public void updateSummaryStatistics(String dataSourceId, String[] header, FeatureType[] type,
 	                                    List<Map<String, Integer>> graphFrequencies,
-	                                    List<Integer> missing, List<Integer> unique,
+	                                    int[] missing, int[] unique,
 	                                    List<DescriptiveStatistics> descriptiveStats)
 	                                    		throws DatabaseHandlerException {
 		PreparedStatement updateStatement = null;
@@ -464,7 +471,7 @@ public class DatabaseHandler {
 				updateStatement.execute();
 				connection.commit();
 			}
-			logger.info("Successfully updated the summary statistics for data source: " +
+			logger.debug("Successfully updated the summary statistics for data source: " +
 					dataSourceId);
 		} catch (SQLException e) {
 			// rollback the changes
@@ -496,7 +503,7 @@ public class DatabaseHandler {
 	// TODO: don't send NaN for int fields, that will throw error in parsing
 	private JSONObject createJson(int column, FeatureType[] type,
 	                              List<Map<String, Integer>> graphFrequencies,
-	                              List<Integer> missing, List<Integer> unique,
+	                              int[] missing, int[] unique,
 	                              List<DescriptiveStatistics> descriptiveStats) {
 		JSONObject json = new JSONObject();
 		JSONArray freqs = new JSONArray();
@@ -510,13 +517,14 @@ public class DatabaseHandler {
 		}
 		// put the statistics to a json object
 		json.put("type", type[column].toString());
-		json.put("unique", unique.get(column));
-		json.put("missing", missing.get(column));
-		json.put("mean", descriptiveStats.get(column).getMean());
-		json.put("median", descriptiveStats.get(column).getPercentile(50));
-		json.put("std", descriptiveStats.get(column).getStandardDeviation());
+		json.put("unique", unique[column]);
+		json.put("missing", missing[column]);
+		if(descriptiveStats.get(0).getN()!=0){
+			json.put("mean", descriptiveStats.get(column).getMean());
+			json.put("median", descriptiveStats.get(column).getPercentile(50));
+			json.put("std", descriptiveStats.get(column).getStandardDeviation());
+		}
 		json.put("frequencies", freqs);
-
 		return json;
 	}
 
@@ -526,12 +534,12 @@ public class DatabaseHandler {
 	 * and creates a list of Feature
 	 *
 	 * @param dataSetName
-	 * @param startingPoint
+	 * @param startIndex
 	 * @param numberOfFeatures
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-	public Feature[] getFeatures(String dataSetName, int startingPoint, int numberOfFeatures)
+	public Feature[] getFeatures(String dataSetName, int startIndex, int numberOfFeatures)
 			throws DatabaseHandlerException {
 
 		List<Feature> features = new ArrayList<Feature>();
@@ -542,7 +550,7 @@ public class DatabaseHandler {
 			getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
 			getFeatues.setString(1, dataSetName);
 			getFeatues.setInt(2, numberOfFeatures);
-			getFeatues.setInt(3, startingPoint);
+			getFeatues.setInt(3, startIndex);
 			result = getFeatues.executeQuery();
 
 			while (result.next()) {
@@ -550,7 +558,6 @@ public class DatabaseHandler {
 				if (FeatureType.CATEGORICAL.toString().equalsIgnoreCase(result.getString("Type"))) {
 					featureType = FeatureType.CATEGORICAL;
 				}
-
 				// set the impute option
 				ImputeOption imputeOperation = ImputeOption.DISCARD;
 				if (ImputeOption.REPLACE_WTH_MEAN.toString()

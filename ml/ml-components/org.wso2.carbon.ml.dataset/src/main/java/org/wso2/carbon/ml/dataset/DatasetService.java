@@ -24,10 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class DatasetService {
-	private final Log logger = LogFactory.getLog(DatasetService.class);
+	private static final Log logger = LogFactory.getLog(DatasetService.class);
 
 	/**
-	 * This method extract dataset configurations from the database
+	 * This method extract data-set configurations from the database
 	 *
 	 * @return
 	 * @throws DatasetServiceException
@@ -46,24 +46,26 @@ public class DatasetService {
 	/**
 	 * Update the database with the imported data set details
 	 * 
-	 * @param source
+	 * @param name
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public String updateDatasetDetails(String source) throws DatasetServiceException {
+	//TODO:register data-set, arguments : name+description
+	public String registerDataset(String name) throws DatasetServiceException {
 		String msg;
+		String description="";
 		try {
-			// get the uri of the file
+			// get the default upload location of the file
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			String uri = dbHandler.getDatasetConfig().getDatasetUploadingLoc();
-			if (uri != null) {
+			String uploadDir = dbHandler.getDatasetConfig().getDatasetUploadingLoc();
+			if (uploadDir != null) {
 				// check whether the file is a valid one
-				if (isValidFile(uri + "/" + source)) {
+				if (isValidFile(uploadDir + "/" + name)) {
 					// insert the details to the table
-					String datasetId = dbHandler.insertDatasetDetails(uri, source);
+					String datasetId = dbHandler.insertDatasetDetails(uploadDir + "/" + name, description);
 					return datasetId;
 				} else {
-					msg = "Invalid input file: " + source;
+					msg = "Invalid input file: " + name;
 				}
 			} else {
 				msg = "Default uploading location not found.";
@@ -78,7 +80,7 @@ public class DatasetService {
 	}
 
 	/**
-	 * Calculate summary stats from a sample of given size and populate the
+	 * Calculate summary statistics from a sample of given size and populate the
 	 * database. Value of -1 for noOfRecords will generate summary statistics
 	 * using the whole data set.
 	 * 
@@ -87,6 +89,7 @@ public class DatasetService {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
+	//TODO : use debug logger
 	public int generateSummaryStats(String dataSourceID, int noOfRecords)
 			throws DatasetServiceException {
 		try {
@@ -96,7 +99,7 @@ public class DatasetService {
 					summary.generateSummary(dataSourceID, noOfRecords,
 					                        dbHandler.getNumberOfBucketsInHistogram(),
 					                        dbHandler.getSeparator());
-			logger.info("Summary statistics successfully generated. ");
+			logger.debug("Summary statistics successfully generated. ");
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
 			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
@@ -195,16 +198,16 @@ public class DatasetService {
 	 * Returns a set of features in a given range of a data set.
 	 * 
 	 * @param dataSet
-	 * @param startPoint
+	 * @param startIndex
 	 * @param numberOfFeatures
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public Feature[] getFeatures(String dataSet, int startPoint, int numberOfFeatures)
+	public Feature[] getFeatures(String dataSet, int startIndex, int numberOfFeatures)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.getFeatures(dataSet, startPoint, numberOfFeatures);
+			return dbHandler.getFeatures(dataSet, startIndex, numberOfFeatures);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
 			logger.error(msg, e);
@@ -232,11 +235,6 @@ public class DatasetService {
 	// TODO
 	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints,
 	                                    String selectionPolicy) {
-		return null;
-	}
-
-	// TODO
-	public List<Object> getSampleDistribution(String feature, int noOfBins) {
 		return null;
 	}
 }

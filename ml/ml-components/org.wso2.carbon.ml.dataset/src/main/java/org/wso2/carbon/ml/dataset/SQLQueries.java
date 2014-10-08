@@ -29,7 +29,7 @@ public class SQLQueries {
 	public static final String GET_DATASET_ID = "SELECT ID FROM ML_DATASET ORDER BY "
 			+ " CAST(ID AS INTEGER)";
 
-	public static final String INSERT_DATASET = "INSERT INTO ML_Dataset(ID,URI) VALUES( ?, ?)";
+	public static final String INSERT_DATASET = "INSERT INTO ML_Dataset(ID,DESCRIPTION,URI) VALUES(?,?,?)";
 
 	public static final String UPDATE_IS_INCLUDED = "UPDATE  ML_FEATURE SET IMPORTANT = ? "
 			+ "WHERE NAME=? AND DATASET=?";
@@ -49,5 +49,4 @@ public class SQLQueries {
 
 	public static final String UPDATE_SUMMARY_STATS =
 			"MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES(?,?,?,?,?,TRUE)";
-
 }

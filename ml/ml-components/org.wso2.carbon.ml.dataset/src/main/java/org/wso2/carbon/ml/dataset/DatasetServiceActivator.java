@@ -6,9 +6,12 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class DatasetServiceActivator implements BundleActivator {
-
+		private static final Log logger = LogFactory.getLog(DatasetServiceActivator.class);
+		
+		/**
+		 * Creates an instance of DatasetService OSGI service
+		 */
 		public void start(BundleContext context) {
-			final Log logger = LogFactory.getLog(DatasetServiceActivator.class);
 			DatasetService datasetService = new DatasetService();
 			context.registerService(DatasetService.class.getName(), datasetService, null);
 			logger.info("Dataset Service activated.");
