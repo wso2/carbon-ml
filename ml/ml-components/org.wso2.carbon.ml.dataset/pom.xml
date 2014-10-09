@@ -48,6 +48,7 @@
                         <Export-Package>org.wso2.carbon.ml.dataset.*</Export-Package>
                         <Import-Package>
                         	org.apache.commons.math3.stat.descriptive.*;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.math3.random.*;version="[0.0.0,0.0.1)",
                         	org.h2;version="[0.0.0,0.0.1)",
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,
