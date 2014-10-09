@@ -33,7 +33,7 @@ public final class UIConstants {
 	public static final String REGRESSION_IMPUTATION = "REGRESSION_IMPUTATION";
 	
 	// data sample related
-	public static final int DATA_SAMPLE_SIZE_FOR_SUMMARY_STATS = 1000;
+	public static final int DATA_SAMPLE_SIZE_FOR_SUMMARY_STATS = 10000;
 	
 	// session related data
 	public static final int MAX_SESSION_LIFE_TIME = 60*120;

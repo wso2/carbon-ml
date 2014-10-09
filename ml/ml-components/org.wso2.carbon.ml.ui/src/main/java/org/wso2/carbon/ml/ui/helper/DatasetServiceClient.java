@@ -64,7 +64,7 @@ public class DatasetServiceClient {
 	public String importDataset(String datasetName)
 			throws DatasetServiceClientException {
 		try {
-			return stub.updateDatasetDetails(datasetName);
+			return stub.registerDataset(datasetName);
 		} catch (Exception ex) {
 			String msg = "An error has occurred while calling importData() error message: "
 					+ ex.getMessage();
