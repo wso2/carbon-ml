@@ -22,12 +22,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -45,7 +45,7 @@ public class DatasetSummary {
 	private List<Integer> stringDataColPosstions = new ArrayList<Integer>();
 	private List<List<String>> columnData = new ArrayList<List<String>>();
 	private List<DescriptiveStatistics> descriptiveStats = new ArrayList<DescriptiveStatistics>();
-	private List<Map<String, Integer>> graphFrequencies = new ArrayList<Map<String, Integer>>();
+	private List<SortedMap<?, Integer>> graphFrequencies = new ArrayList<SortedMap<?, Integer>>();
 	private EmpiricalDistribution[] histogram;
 	private int[] missing;
 	private int[] unique;
@@ -129,7 +129,7 @@ public class DatasetSummary {
 		histogram = new EmpiricalDistribution[noOfFeatures];
 		for (int i = 0; i < noOfFeatures; i++) {
 			descriptiveStats.add(new DescriptiveStatistics());
-			graphFrequencies.add(new HashMap<String, Integer>());
+			graphFrequencies.add(new TreeMap<String, Integer>());
 			columnData.add(new ArrayList<String>());
 		}
 	}
@@ -210,7 +210,7 @@ public class DatasetSummary {
 		//Iterate through all Columns with String data
 		while (stringColumns.hasNext()) {
 			currentCol = stringColumns.next();
-			Map<String, Integer> frequencies = new HashMap<String, Integer>();
+			SortedMap<String, Integer> frequencies = new TreeMap<String, Integer>();
 			// create a unique set from the column
 			Set<String> uniqueSet =	new HashSet<String>(columnData.get(currentCol));
 			// count the frequencies in each unique value
@@ -244,9 +244,9 @@ public class DatasetSummary {
 	 * Calculate the frequencies of each category of a column
 	 */
 	private void claculateCategoryFreqs(int currentCol, Set<String> uniqueSet) {
-		Map<String, Integer> frequencies = new HashMap<String, Integer>();
+		SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
 		for (String uniqueValue : uniqueSet) {
-			frequencies.put(uniqueValue.toString(),Collections.frequency(columnData.get(currentCol), uniqueValue));
+			frequencies.put(Double.parseDouble(uniqueValue),Collections.frequency(columnData.get(currentCol), uniqueValue));
 		}
 		graphFrequencies.set(currentCol, frequencies);
 	}
@@ -255,7 +255,7 @@ public class DatasetSummary {
 	 * Calculate the frequencies of each interval of a column
 	 */
 	private void claculateIntervalFreqs(int currentCol, int intervals) {
-		Map<String, Integer> frequencies = new HashMap<String, Integer>();
+		SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
 		double [] data = new double[columnData.get(currentCol).size()];
 		
 		//create an array from the column data
@@ -271,7 +271,7 @@ public class DatasetSummary {
 		// get the frequency of each partition
 		int bin = 0;
 		for (SummaryStatistics stats : histogram[currentCol].getBinStats()) {
-			frequencies.put(String.valueOf(bin++), (int) stats.getN());
+			frequencies.put((bin++)*1.0, (int) stats.getN());
 		}
 		graphFrequencies.set(currentCol, frequencies);
 	}
