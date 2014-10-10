@@ -24,13 +24,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -447,7 +446,7 @@ public class DatabaseHandler {
 	 * @throws DatabaseHandlerException
 	 */
 	public void updateSummaryStatistics(String dataSourceId, String [] header, FeatureType[] type,
-	                                    List<Map<String, Integer>> graphFrequencies,
+	                                    List<SortedMap<?, Integer>> graphFrequencies,
 	                                    int[] missing, int[] unique,
 	                                    List<DescriptiveStatistics> descriptiveStats)
 	                                    		throws DatabaseHandlerException {
@@ -503,7 +502,7 @@ public class DatabaseHandler {
 	 */
 	// TODO: don't send NaN for int fields, that will throw error in parsing
 	private JSONObject createJson(int column, FeatureType[] type,
-	                              List<Map<String, Integer>> graphFrequencies,
+	                              List<SortedMap<?, Integer>> graphFrequencies,
 	                              int[] missing, int[] unique,
 	                              List<DescriptiveStatistics> descriptiveStats) {
 		JSONObject json = new JSONObject();
@@ -513,7 +512,7 @@ public class DatabaseHandler {
 		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
 			JSONObject temp = new JSONObject();
 			temp.put("range", categoryNames[i].toString());
-			temp.put("frequency", graphFrequencies.get(column).get(categoryNames[i].toString()));
+			temp.put("frequency", String.valueOf(graphFrequencies.get(column).get(categoryNames[i])));
 			freqs.put(temp);
 		}
 		// put the statistics to a json object
@@ -522,7 +521,7 @@ public class DatabaseHandler {
 		json.put("missing", missing[column]);
 		
 		//TODO: change this to check only NaN
-		if(type[column]==FeatureType.NUMERICAL){
+		if(descriptiveStats.get(column).getN()!=0){
 			json.put("mean", descriptiveStats.get(column).getMean());
 			json.put("median", descriptiveStats.get(column).getPercentile(50));
 			json.put("std", descriptiveStats.get(column).getStandardDeviation());
