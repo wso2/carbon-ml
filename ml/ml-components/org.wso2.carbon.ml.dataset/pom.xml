@@ -30,7 +30,18 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20140107</version>
-		</dependency>     
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+		    <artifactId>commons-csv</artifactId>
+		    <version>1.0</version>
+	    </dependency>
+	    <dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+	    
     </dependencies>
     
     <build>
@@ -49,6 +60,8 @@
                         <Import-Package>
                         	org.apache.commons.math3.stat.descriptive.*;version="[0.0.0,0.0.1)",
                         	org.apache.commons.math3.random.*;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.csv.*;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.lang.math.*;version="[0.0.0,0.0.1)",
                         	org.h2;version="[0.0.0,0.0.1)",
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,

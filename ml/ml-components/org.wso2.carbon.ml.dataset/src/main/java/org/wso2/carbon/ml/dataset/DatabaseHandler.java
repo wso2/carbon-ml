@@ -30,6 +30,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -341,7 +342,7 @@ public class DatabaseHandler {
 		try {
 			// update the database with data type
 			connection.setAutoCommit(false);
-			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_FEATURE);
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_DATA_TYPE);
 			updateStatement.setString(1, featureType);
 			updateStatement.setString(2, featureName);
 			updateStatement.setString(3, datasetId);
@@ -445,7 +446,7 @@ public class DatabaseHandler {
 	 * @param descriptiveStats
 	 * @throws DatabaseHandlerException
 	 */
-	public void updateSummaryStatistics(String dataSourceId, String[] header, FeatureType[] type,
+	public void updateSummaryStatistics(String dataSourceId, String [] header, FeatureType[] type,
 	                                    List<Map<String, Integer>> graphFrequencies,
 	                                    int[] missing, int[] unique,
 	                                    List<DescriptiveStatistics> descriptiveStats)
@@ -519,7 +520,9 @@ public class DatabaseHandler {
 		json.put("type", type[column].toString());
 		json.put("unique", unique[column]);
 		json.put("missing", missing[column]);
-		if(descriptiveStats.get(0).getN()!=0){
+		
+		//TODO: change this to check only NaN
+		if(type[column]==FeatureType.NUMERICAL){
 			json.put("mean", descriptiveStats.get(column).getMean());
 			json.put("median", descriptiveStats.get(column).getPercentile(50));
 			json.put("std", descriptiveStats.get(column).getStandardDeviation());
