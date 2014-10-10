@@ -61,9 +61,8 @@ public class DatasetService {
 			if (uploadDir != null) {
 				// check whether the file is a valid one
 				if (isValidFile(uploadDir + "/" + name)) {
-					// insert the details to the table
-					String datasetId = dbHandler.insertDatasetDetails(uploadDir + "/" + name, description);
-					return datasetId;
+					// insert the details to the table and return the ID
+					return dbHandler.insertDatasetDetails(uploadDir + "/" + name, description);
 				} else {
 					msg = "Invalid input file: " + name;
 				}
@@ -89,7 +88,6 @@ public class DatasetService {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	//TODO : use debug logger
 	public int generateSummaryStats(String dataSourceID, int noOfRecords)
 			throws DatasetServiceException {
 		try {
