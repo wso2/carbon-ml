@@ -594,6 +594,49 @@ public class DatabaseHandler {
 	}
 
 	/**
+	 * Retrieve and returns the names of the features having the given type
+	 * (Categorical/Numerical) of a given data set
+	 *
+	 * @param datasetId
+	 * @param featureType
+	 * @return
+	 * @throws DatabaseHandlerException
+	 */
+	public String[] getFeatureNames(String datasetId, String featureType)
+			throws DatabaseHandlerException {
+		PreparedStatement getFeatureNamesStatement = null;
+		ResultSet result = null;
+		List<String> featureNames = new ArrayList<String>();
+		try {
+			// create a prepared statement and extract data-set configurations
+			getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES);
+			getFeatureNamesStatement.setString(1, datasetId);
+			// select the data type
+			if (featureType.equalsIgnoreCase(FeatureType.CATEGORICAL.toString())) {
+				getFeatureNamesStatement.setString(2, FeatureType.CATEGORICAL.toString());
+			} else {
+				getFeatureNamesStatement.setString(2, FeatureType.NUMERICAL.toString());
+			}
+			result = getFeatureNamesStatement.executeQuery();
+			// convert the result in to a string array to e returned
+			while (result.next()) {
+				featureNames.add(result.getString("Name"));
+			}
+			return featureNames.toArray(new String[featureNames.size()]);
+		} catch (SQLException e) {
+			String msg =
+					"Error occured while retireving feature names of the data set: " +
+							datasetId + " Error message: " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		} finally {
+			// close the database resources
+			MLDatabaseUtil.closeStatement(getFeatureNamesStatement);
+			MLDatabaseUtil.closeResultSet(result);
+		}
+	}
+
+	/**
 	 * Retrieve and returns the Summary statistics for a given feature of a
 	 * given data-set, from the database.
 	 *

@@ -25,13 +25,18 @@ public class SQLQueries {
 
 	public static final String GET_FEATURES = "SELECT * FROM ML_FEATURE WHERE "
 			+ "DATASET= ? ORDER BY NAME LIMIT ? OFFSET ? ";
-	
-	public static final String GET_SUMMARY_STATS = "SELECT SUMMARY FROM ML_FEATURE WHERE NAME=? AND DATASET=?";
+
+	public static final String GET_FEATURE_NAMES =
+			"SELECT NAME FROM ML_FEATURE WHERE DATASET=? AND TYPE=?";
+
+	public static final String GET_SUMMARY_STATS =
+			"SELECT SUMMARY FROM ML_FEATURE WHERE NAME=? AND DATASET=?";
 
 	public static final String GET_DATASET_ID = "SELECT ID FROM ML_DATASET ORDER BY "
 			+ " CAST(ID AS INTEGER)";
 
-	public static final String INSERT_DATASET = "INSERT INTO ML_Dataset(ID,DESCRIPTION,URI) VALUES(?,?,?)";
+	public static final String INSERT_DATASET =
+			"INSERT INTO ML_Dataset(ID,DESCRIPTION,URI) VALUES(?,?,?)";
 
 	public static final String UPDATE_IS_INCLUDED = "UPDATE  ML_FEATURE SET IMPORTANT = ? "
 			+ "WHERE NAME=? AND DATASET=?";
