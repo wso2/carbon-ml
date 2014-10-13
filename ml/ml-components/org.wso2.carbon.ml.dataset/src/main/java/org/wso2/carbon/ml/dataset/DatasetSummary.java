@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -49,10 +50,10 @@ public class DatasetSummary {
 	private EmpiricalDistribution[] histogram;
 	private int[] missing;
 	private int[] unique;
-	private String [] header;
+	private Map<String, Integer> headerMap;
 	private FeatureType[] type;
 	private static final int CATEGORY_THRESHOLD = 20;
-	private int recordsCount=0;
+	private int recordsCount = 0;
 
 	/**
 	 * get a summary of a sample from the given csv file, including
@@ -77,11 +78,13 @@ public class DatasetSummary {
 				logger.debug("Data Source: " + dataSource);
 				// read the input data file
 				File csvData = new File(dataSource);
-				CSVParser parser = CSVParser.parse(csvData,Charset.defaultCharset(), CSVFormat.RFC4180.withHeader());
-				Iterator<CSVRecord> datasetIterator= parser.iterator();
+				CSVParser parser =
+						CSVParser.parse(csvData, Charset.defaultCharset(),
+						                CSVFormat.RFC4180.withHeader());
+				Iterator<CSVRecord> datasetIterator = parser.iterator();
 
 				// get the header
-				header =  parser.getHeaderMap().keySet().toArray(new String[parser.getHeaderMap().keySet().size()]);
+				headerMap = parser.getHeaderMap();
 
 				// Initialize the lists
 				initilize();
@@ -96,10 +99,12 @@ public class DatasetSummary {
 				calculateFrequencies(noOfIntervals);
 
 				// Update the database with calculated summary stats
-				dbHandler.updateSummaryStatistics(dataSourceId, header, type,
-				                                  graphFrequencies, missing, unique,
-				                                  descriptiveStats);
-				return header.length;
+				String[] header =
+						headerMap.keySet().toArray(new String[parser.getHeaderMap()
+						                                      .keySet().size()]);
+				dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies,
+				                                  missing, unique, descriptiveStats);
+				return headerMap.size();
 			} else {
 				msg = "Data source not found.";
 				logger.error(msg);
@@ -122,7 +127,7 @@ public class DatasetSummary {
 	 * initialize the Lists and arrays
 	 */
 	private void initilize() {
-		int noOfFeatures = header.length;
+		int noOfFeatures = headerMap.size();
 		missing = new int[noOfFeatures];
 		unique = new int[noOfFeatures];
 		type = new FeatureType[noOfFeatures];
@@ -140,32 +145,34 @@ public class DatasetSummary {
 	 */
 	private void findColumnDataType(Iterator<CSVRecord> datasetIterator, int noOfRecords) {
 		CSVRecord row;
-		int [] stringCellCount = new int[header.length];
-		while (datasetIterator.hasNext()  && recordsCount != noOfRecords ) {
+		int[] stringCellCount = new int[headerMap.size()];
+		while (datasetIterator.hasNext() && recordsCount != noOfRecords) {
 			row = datasetIterator.next();
 			// for each cell in the row
-			for (int currentCol = 0; currentCol < header.length; currentCol++) {
-				if(! "".equalsIgnoreCase(row.get(currentCol))){
+			for (int currentCol = 0; currentCol < headerMap.size(); currentCol++) {
+				if (!"".equalsIgnoreCase(row.get(currentCol))) {
 					// count the number of cell contain strings
-					if(!NumberUtils.isNumber(row.get(currentCol))){
+					if (!NumberUtils.isNumber(row.get(currentCol))) {
 						stringCellCount[currentCol]++;
 					}
-					// append the cell to the respective column
-					columnData.get(currentCol).add(row.get(currentCol));
-				}else{
+
+				} else {
 					// if the cell is empty, increase the missing value count
 					missing[currentCol]++;
 				}
+				// append the cell to the respective column
+				columnData.get(currentCol).add(row.get(currentCol));
 			}
 			recordsCount++;
 		}
 		logger.debug("Sample size: " + recordsCount);
 
-		/* 
-		 * If atleast one cell contains strings, then the cell is considered to has string data.
+		/*
+		 * If atleast one cell contains strings, then the cell is considered to
+		 * has string data.
 		 */
-		for (int col = 0; col < header.length; col++) {
-			if (stringCellCount[col]>0) {
+		for (int col = 0; col < headerMap.size(); col++) {
+			if (stringCellCount[col] > 0) {
 				stringDataColPosstions.add(col);
 				type[col] = FeatureType.CATEGORICAL;
 			} else {
@@ -175,23 +182,24 @@ public class DatasetSummary {
 		}
 	}
 
-	
 	/*
 	 * Calculate descriptive statistics for Numerical columns
 	 */
-	private void calculateDescriptiveStats(Iterator<CSVRecord>  datasetIterator,
-	                                       String seperator) {
+	private void calculateDescriptiveStats(Iterator<CSVRecord> datasetIterator, String seperator) {
 		double cellValue;
 		int currentCol;
 
 		// iterate through each column
-		for(currentCol=0 ; currentCol<header.length ; currentCol++){
+		for (currentCol = 0; currentCol < headerMap.size(); currentCol++) {
 			// if the column is numerical
-			if(numericDataColPosstions.contains(currentCol)){
-				// convert each cell value to double and append to the descriptive-stats object
-				for ( int row = 0 ; row<columnData.get(currentCol).size() ; row++) {
-					cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
-					descriptiveStats.get(currentCol).addValue(cellValue);
+			if (numericDataColPosstions.contains(currentCol)) {
+				// convert each cell value to double and append to the
+				// descriptive-stats object
+				for (int row = 0; row < columnData.get(currentCol).size(); row++) {
+					if (!columnData.get(currentCol).get(row).isEmpty()) {
+						cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
+						descriptiveStats.get(currentCol).addValue(cellValue);
+					}
 				}
 			}
 		}
@@ -207,34 +215,37 @@ public class DatasetSummary {
 		Iterator<Integer> stringColumns = stringDataColPosstions.iterator();
 		int currentCol;
 
-		//Iterate through all Columns with String data
+		// Iterate through all Columns with String data
 		while (stringColumns.hasNext()) {
 			currentCol = stringColumns.next();
 			SortedMap<String, Integer> frequencies = new TreeMap<String, Integer>();
 			// create a unique set from the column
-			Set<String> uniqueSet =	new HashSet<String>(columnData.get(currentCol));
+			Set<String> uniqueSet = new HashSet<String>(columnData.get(currentCol));
 			// count the frequencies in each unique value
 			unique[currentCol] = uniqueSet.size();
 			for (String uniqueValue : uniqueSet) {
-				frequencies.put(uniqueValue.toString(),Collections.frequency(columnData.get(currentCol),uniqueValue));
+				frequencies.put(uniqueValue.toString(),
+				                Collections.frequency(columnData.get(currentCol), uniqueValue));
 			}
 			graphFrequencies.set(currentCol, frequencies);
 		}
 
-		//Iterate through all Columns with Numerical data
+		// Iterate through all Columns with Numerical data
 		while (numericColumns.hasNext()) {
 			currentCol = numericColumns.next();
 			// create a unique set from the column
 			Set<String> uniqueSet = new HashSet<String>(columnData.get(currentCol));
-			// if the unique values are less than or equal to maximum-category-limit
+			// if the unique values are less than or equal to
+			// maximum-category-limit
 			unique[currentCol] = uniqueSet.size();
 			if (unique[currentCol] <= CATEGORY_THRESHOLD) {
 				// change the data type to categorical
 				type[currentCol] = FeatureType.CATEGORICAL;
-				//calculate the category frequencies
+				// calculate the category frequencies
 				claculateCategoryFreqs(currentCol, uniqueSet);
 			} else {
-				// if the  unique values are more than twenty, calculate interval frequencies
+				// if the unique values are more than twenty, calculate interval
+				// frequencies
 				claculateIntervalFreqs(currentCol, noOfIntervals);
 			}
 		}
@@ -246,7 +257,8 @@ public class DatasetSummary {
 	private void claculateCategoryFreqs(int currentCol, Set<String> uniqueSet) {
 		SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
 		for (String uniqueValue : uniqueSet) {
-			frequencies.put(Double.parseDouble(uniqueValue),Collections.frequency(columnData.get(currentCol), uniqueValue));
+			frequencies.put(Double.parseDouble(uniqueValue),
+			                Collections.frequency(columnData.get(currentCol), uniqueValue));
 		}
 		graphFrequencies.set(currentCol, frequencies);
 	}
@@ -256,23 +268,37 @@ public class DatasetSummary {
 	 */
 	private void claculateIntervalFreqs(int currentCol, int intervals) {
 		SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
-		double [] data = new double[columnData.get(currentCol).size()];
-		
-		//create an array from the column data
-		for(int row=0 ; row<columnData.get(currentCol).size() ; row++){
-			if(!columnData.get(currentCol).get(row).isEmpty()){
-				data[row]=Double.parseDouble(columnData.get(currentCol).get(row));
+		double[] data = new double[columnData.get(currentCol).size()];
+
+		// create an array from the column data
+		for (int row = 0; row < columnData.get(currentCol).size(); row++) {
+			if (!columnData.get(currentCol).get(row).isEmpty()) {
+				data[row] = Double.parseDouble(columnData.get(currentCol).get(row));
 			}
 		}
 		// create equal partitions
 		histogram[currentCol] = new EmpiricalDistribution(intervals);
 		histogram[currentCol].load(data);
-		
+
 		// get the frequency of each partition
 		int bin = 0;
 		for (SummaryStatistics stats : histogram[currentCol].getBinStats()) {
-			frequencies.put((bin++)*1.0, (int) stats.getN());
+			frequencies.put(bin++ * 1.0, (int) stats.getN());
 		}
 		graphFrequencies.set(currentCol, frequencies);
+	}
+
+	/*
+	 * returns the raw-data of the sample
+	 */
+	protected List<List<String>> getDataSample() {
+		return columnData;
+	}
+
+	/*
+	 * returns the header names and their positions in the data-set
+	 */
+	protected Map<String, Integer> getHeader() {
+		return headerMap;
 	}
 }

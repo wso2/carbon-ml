@@ -44,6 +44,7 @@ public class DatabaseHandler {
 	/**
 	 * Constructor method.
 	 * Creates a connection to the database.
+	 *
 	 * @throws DatabaseHandlerException
 	 */
 	public DatabaseHandler() throws DatabaseHandlerException {
@@ -64,6 +65,7 @@ public class DatabaseHandler {
 
 	/**
 	 * Returns a database connection object.
+	 *
 	 * @return
 	 */
 	public Connection getConnection() {
@@ -238,7 +240,8 @@ public class DatabaseHandler {
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-	public String insertDatasetDetails(String filePath, String description) throws DatabaseHandlerException {
+	public String insertDatasetDetails(String filePath, String description)
+			throws DatabaseHandlerException {
 		PreparedStatement getStatement = null;
 		PreparedStatement insertStatement = null;
 		ResultSet resultSet = null;
@@ -265,7 +268,8 @@ public class DatabaseHandler {
 			insertStatement.setString(3, filePath);
 			insertStatement.execute();
 			connection.commit();
-			logger.debug("Successfully updated the details of data set: " + filePath + ". Dataset ID" + newID);
+			logger.debug("Successfully updated the details of data set: " + filePath +
+			             ". Dataset ID" + newID);
 			return newID;
 
 		} catch (SQLException e) {
@@ -427,6 +431,7 @@ public class DatabaseHandler {
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		} finally {
+			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
 			MLDatabaseUtil.closeStatement(updateStatement);
@@ -436,7 +441,7 @@ public class DatabaseHandler {
 	/**
 	 * Update the database with all the summary stats of the sample
 	 *
-	 * @param dataSourceId
+	 * @param datasetId
 	 * @param header
 	 * @param type
 	 * @param graphFrequencies
@@ -445,7 +450,7 @@ public class DatabaseHandler {
 	 * @param descriptiveStats
 	 * @throws DatabaseHandlerException
 	 */
-	public void updateSummaryStatistics(String dataSourceId, String [] header, FeatureType[] type,
+	public void updateSummaryStatistics(String datasetId, String[] header, FeatureType[] type,
 	                                    List<SortedMap<?, Integer>> graphFrequencies,
 	                                    int[] missing, int[] unique,
 	                                    List<DescriptiveStatistics> descriptiveStats)
@@ -464,7 +469,7 @@ public class DatabaseHandler {
 				connection.setAutoCommit(false);
 				updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
 				updateStatement.setString(1, header[column]);
-				updateStatement.setString(2, dataSourceId);
+				updateStatement.setString(2, datasetId);
 				updateStatement.setString(3, type[column].toString());
 				updateStatement.setString(4, summaryStat.toString());
 				updateStatement.setString(5, ImputeOption.DISCARD.toString());
@@ -472,13 +477,13 @@ public class DatabaseHandler {
 				connection.commit();
 			}
 			logger.debug("Successfully updated the summary statistics for data source: " +
-					dataSourceId);
+					datasetId);
 		} catch (SQLException e) {
 			// rollback the changes
 			MLDatabaseUtil.rollBack(connection);
 			String msg =
 					"Error occured while updating the database with summary statistics of the data source: " +
-							dataSourceId + "." + e.getMessage();
+							datasetId + "." + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		} finally {
@@ -500,11 +505,9 @@ public class DatabaseHandler {
 	 * @param descriptiveStats
 	 * @return
 	 */
-	// TODO: don't send NaN for int fields, that will throw error in parsing
 	private JSONObject createJson(int column, FeatureType[] type,
-	                              List<SortedMap<?, Integer>> graphFrequencies,
-	                              int[] missing, int[] unique,
-	                              List<DescriptiveStatistics> descriptiveStats) {
+	                              List<SortedMap<?, Integer>> graphFrequencies, int[] missing,
+	                              int[] unique, List<DescriptiveStatistics> descriptiveStats) {
 		JSONObject json = new JSONObject();
 		JSONArray freqs = new JSONArray();
 		Object[] categoryNames = graphFrequencies.get(column).keySet().toArray();
@@ -512,16 +515,15 @@ public class DatabaseHandler {
 		for (int i = 0; i < graphFrequencies.get(column).size(); i++) {
 			JSONObject temp = new JSONObject();
 			temp.put("range", categoryNames[i].toString());
-			temp.put("frequency", String.valueOf(graphFrequencies.get(column).get(categoryNames[i])));
+			temp.put("frequency", graphFrequencies.get(column).get(categoryNames[i]));
 			freqs.put(temp);
 		}
 		// put the statistics to a json object
 		json.put("type", type[column].toString());
 		json.put("unique", unique[column]);
 		json.put("missing", missing[column]);
-		
-		//TODO: change this to check only NaN
-		if(descriptiveStats.get(column).getN()!=0){
+
+		if (descriptiveStats.get(column).getN() != 0) {
 			json.put("mean", descriptiveStats.get(column).getMean());
 			json.put("median", descriptiveStats.get(column).getPercentile(50));
 			json.put("std", descriptiveStats.get(column).getStandardDeviation());
@@ -535,13 +537,13 @@ public class DatabaseHandler {
 	 *
 	 * and creates a list of Feature
 	 *
-	 * @param dataSetName
+	 * @param datasetId
 	 * @param startIndex
 	 * @param numberOfFeatures
 	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-	public Feature[] getFeatures(String dataSetName, int startIndex, int numberOfFeatures)
+	public Feature[] getFeatures(String datasetId, int startIndex, int numberOfFeatures)
 			throws DatabaseHandlerException {
 
 		List<Feature> features = new ArrayList<Feature>();
@@ -550,7 +552,7 @@ public class DatabaseHandler {
 		try {
 			// create a prepared statement and extract dataset configurations
 			getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
-			getFeatues.setString(1, dataSetName);
+			getFeatues.setString(1, datasetId);
 			getFeatues.setInt(2, numberOfFeatures);
 			getFeatues.setInt(3, startIndex);
 			result = getFeatues.executeQuery();
@@ -580,15 +582,50 @@ public class DatabaseHandler {
 			return features.toArray(new Feature[features.size()]);
 		} catch (SQLException e) {
 			String msg =
-					"Error occured while retireving features of the data set: " + dataSetName +
+					"Error occured while retireving features of the data set: " + datasetId +
 					" Error message: " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
-
 		} finally {
 			// close the database resources
 			MLDatabaseUtil.closeStatement(getFeatues);
 			MLDatabaseUtil.closeResultSet(result);
 		}
+	}
+
+	/**
+	 * Retrieve and returns the Summary statistics for a given feature of a
+	 * given data-set, from the database.
+	 *
+	 * @param datasetId
+	 * @param featureName
+	 * @return
+	 * @throws DatabaseHandlerException
+	 */
+	public JSONObject getSummaryStats(String datasetId, String featureName)
+			throws DatabaseHandlerException {
+		PreparedStatement getSummaryStatement = null;
+		ResultSet result = null;
+		JSONObject summary = null;
+		try {
+			getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS);
+			getSummaryStatement.setString(1, featureName);
+			getSummaryStatement.setString(2, datasetId);
+			result = getSummaryStatement.executeQuery();
+			result.first();
+			summary = new JSONObject(result.getString(1));
+		} catch (SQLException e) {
+			String msg =
+					"Error occured while retireving summary statistics for the feature: " +
+							featureName + " of the data set: " + datasetId +
+							" Error message: " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		} finally {
+			// close the database resources
+			MLDatabaseUtil.closeStatement(getSummaryStatement);
+			MLDatabaseUtil.closeResultSet(result);
+		}
+		return summary;
 	}
 }
