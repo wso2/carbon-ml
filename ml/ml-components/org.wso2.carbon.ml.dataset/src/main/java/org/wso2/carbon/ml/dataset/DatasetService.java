@@ -291,7 +291,7 @@ public class DatasetService {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			return dbHandler.getSummaryStats(dataSet, feature);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve features. " + e.getMessage();
+			String msg = "Failed to retrieve summary statistics. " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
