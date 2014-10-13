@@ -18,13 +18,21 @@
 package org.wso2.carbon.ml.dataset;
 
 import java.io.File;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class DatasetService {
 	private static final Log logger = LogFactory.getLog(DatasetService.class);
+	private Map<String, List<List<String>>> dataSamples =
+			new Hashtable<String, List<List<String>>>();
+	private Map<String, Map<String, Integer>> dataHeaders =
+			new Hashtable<String, Map<String, Integer>>();
 
 	/**
 	 * This method extract data-set configurations from the database
@@ -45,15 +53,15 @@ public class DatasetService {
 
 	/**
 	 * Update the database with the imported data set details
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	//TODO:register data-set, arguments : name+description
+	// TODO:register data-set, arguments : name+description
 	public String registerDataset(String name) throws DatasetServiceException {
 		String msg;
-		String description="";
+		String description = "";
 		try {
 			// get the default upload location of the file
 			DatabaseHandler dbHandler = new DatabaseHandler();
@@ -82,7 +90,7 @@ public class DatasetService {
 	 * Calculate summary statistics from a sample of given size and populate the
 	 * database. Value of -1 for noOfRecords will generate summary statistics
 	 * using the whole data set.
-	 * 
+	 *
 	 * @param dataSourceID
 	 * @param noOfRecords
 	 * @return
@@ -98,6 +106,10 @@ public class DatasetService {
 					                        dbHandler.getNumberOfBucketsInHistogram(),
 					                        dbHandler.getSeparator());
 			logger.debug("Summary statistics successfully generated. ");
+
+			// put the sample points and header names to a hash table.
+			dataSamples.put(dataSourceID, summary.getDataSample());
+			dataHeaders.put(dataSourceID, summary.getHeader());
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
 			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
@@ -112,7 +124,7 @@ public class DatasetService {
 
 	/**
 	 * Update feature with the given details
-	 * 
+	 *
 	 * @param name
 	 * @param dataSet
 	 * @param type
@@ -134,7 +146,7 @@ public class DatasetService {
 
 	/**
 	 * Update the data type of a given feature
-	 * 
+	 *
 	 * @param featureName
 	 * @param datasetId
 	 * @param featureType
@@ -154,7 +166,7 @@ public class DatasetService {
 
 	/**
 	 * Update the impute method option of a given feature
-	 * 
+	 *
 	 * @param featureName
 	 * @param datasetId
 	 * @param imputeOption
@@ -174,7 +186,7 @@ public class DatasetService {
 
 	/**
 	 * change whether a feature should be included as an input or not.
-	 * 
+	 *
 	 * @param featureName
 	 * @param datasetId
 	 * @param isInput
@@ -194,7 +206,7 @@ public class DatasetService {
 
 	/**
 	 * Returns a set of features in a given range of a data set.
-	 * 
+	 *
 	 * @param dataSet
 	 * @param startIndex
 	 * @param numberOfFeatures
@@ -215,7 +227,7 @@ public class DatasetService {
 
 	/**
 	 * Check whether the given file is valid
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -230,9 +242,58 @@ public class DatasetService {
 		}
 	}
 
-	// TODO
-	public List<Object> getSamplePoints(String feature1, String feature2, int maxNoOfPoints,
-	                                    String selectionPolicy) {
-		return null;
+	/**
+	 * Returns data point of the selected sample,needed for the scatter plot
+	 * feature1 : x-Axis
+	 * feature2 : Y-Axis
+	 * feature3 : feature to be grouped by (color code)
+	 *
+	 * @param dataSet
+	 * @param feature1
+	 * @param feature2
+	 * @return
+	 */
+	public JSONObject getSamplePoints(String dataSet, String feature1, String feature2,
+	                                  String feature3) {
+		List<List<String>> columnData = dataSamples.get(dataSet);
+		JSONObject samplePointsJson = new JSONObject();
+		JSONArray samplePointsArray = new JSONArray();
+		int firstFeatureColumn = dataHeaders.get(dataSet).get(feature1);
+		int secondFeatureColumn = dataHeaders.get(dataSet).get(feature2);
+		int thirdFeatureColumn = dataHeaders.get(dataSet).get(feature3);
+
+		for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
+			if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
+					!columnData.get(secondFeatureColumn).get(row).isEmpty() &&
+					!columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
+				JSONObject point = new JSONObject();
+				point.put("x", Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
+				point.put("y", Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
+				point.put("label", Double.parseDouble(columnData.get(thirdFeatureColumn).get(row)));
+				samplePointsArray.put(point);
+			}
+		}
+		samplePointsJson.put("points", samplePointsArray);
+		return samplePointsJson;
+	}
+
+	/**
+	 * Returns the summary statistics for a given feature of a given data-set
+	 *
+	 * @param dataSet
+	 * @param feature
+	 * @return
+	 * @throws DatasetServiceException
+	 */
+	public JSONObject getSummaryStats(String dataSet, String feature)
+			throws DatasetServiceException {
+		try {
+			DatabaseHandler dbHandler = new DatabaseHandler();
+			return dbHandler.getSummaryStats(dataSet, feature);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve features. " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
 	}
 }
