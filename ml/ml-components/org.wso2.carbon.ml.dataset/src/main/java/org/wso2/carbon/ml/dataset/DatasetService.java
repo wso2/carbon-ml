@@ -91,25 +91,25 @@ public class DatasetService {
 	 * database. Value of -1 for noOfRecords will generate summary statistics
 	 * using the whole data set.
 	 *
-	 * @param dataSourceID
+	 * @param dataSetId
 	 * @param noOfRecords
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public int generateSummaryStats(String dataSourceID, int noOfRecords)
+	public int generateSummaryStats(String dataSetId, int noOfRecords)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
 			int noOfFeatures =
-					summary.generateSummary(dataSourceID, noOfRecords,
+					summary.generateSummary(dataSetId, noOfRecords,
 					                        dbHandler.getNumberOfBucketsInHistogram(),
 					                        dbHandler.getSeparator());
 			logger.debug("Summary statistics successfully generated. ");
 
 			// put the sample points and header names to a hash table.
-			dataSamples.put(dataSourceID, summary.getDataSample());
-			dataHeaders.put(dataSourceID, summary.getHeader());
+			dataSamples.put(dataSetId, summary.getDataSample());
+			dataHeaders.put(dataSetId, summary.getHeader());
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
 			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
@@ -126,17 +126,18 @@ public class DatasetService {
 	 * Update feature with the given details
 	 *
 	 * @param name
-	 * @param dataSet
+	 * @param dataSetId
 	 * @param type
 	 * @param imputeOption
 	 * @param important
 	 * @throws DatasetServiceException
 	 */
-	public void updateFeature(String name, String dataSet, String type, ImputeOption imputeOption,
-	                          boolean important) throws DatasetServiceException {
+	public void updateFeature(String name, String dataSetId, String type,
+	                          ImputeOption imputeOption, boolean important)
+	                        		  throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			dbHandler.updateFeature(name, dataSet, type, imputeOption, important);
+			dbHandler.updateFeature(name, dataSetId, type, imputeOption, important);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -148,15 +149,15 @@ public class DatasetService {
 	 * Update the data type of a given feature
 	 *
 	 * @param featureName
-	 * @param datasetId
+	 * @param dataSetId
 	 * @param featureType
 	 * @throws DatasetServiceException
 	 */
-	public void updateDataType(String featureName, String datasetId, String featureType)
+	public void updateDataType(String featureName, String dataSetId, String featureType)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			dbHandler.updateDataType(featureName, datasetId, featureType);
+			dbHandler.updateDataType(featureName, dataSetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature type failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -168,15 +169,15 @@ public class DatasetService {
 	 * Update the impute method option of a given feature
 	 *
 	 * @param featureName
-	 * @param datasetId
+	 * @param dataSetId
 	 * @param imputeOption
 	 * @throws DatasetServiceException
 	 */
-	public void updateImputeOption(String featureName, String datasetId, String imputeOption)
+	public void updateImputeOption(String featureName, String dataSetId, String imputeOption)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			dbHandler.updateImputeOption(featureName, datasetId, imputeOption);
+			dbHandler.updateImputeOption(featureName, dataSetId, imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -188,15 +189,15 @@ public class DatasetService {
 	 * change whether a feature should be included as an input or not.
 	 *
 	 * @param featureName
-	 * @param datasetId
+	 * @param dataSetId
 	 * @param isInput
 	 * @throws DatasetServiceException
 	 */
-	public void updateIsIncludedFeature(String featureName, String datasetId, boolean isInput)
+	public void updateIsIncludedFeature(String featureName, String dataSetId, boolean isInput)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			dbHandler.updateIsIncludedFeature(featureName, datasetId, isInput);
+			dbHandler.updateIsIncludedFeature(featureName, dataSetId, isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
 			logger.error(msg, e);
@@ -207,17 +208,38 @@ public class DatasetService {
 	/**
 	 * Returns a set of features in a given range of a data set.
 	 *
-	 * @param dataSet
+	 * @param dataSetId
 	 * @param startIndex
 	 * @param numberOfFeatures
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public Feature[] getFeatures(String dataSet, int startIndex, int numberOfFeatures)
+	public Feature[] getFeatures(String dataSetId, int startIndex, int numberOfFeatures)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.getFeatures(dataSet, startIndex, numberOfFeatures);
+			return dbHandler.getFeatures(dataSetId, startIndex, numberOfFeatures);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve features. " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
+
+	/**
+	 * Returns the names of the features having the given type
+	 * (Categorical/Numerical) of a given data set
+	 *
+	 * @param dataSetId
+	 * @param featureType
+	 * @return
+	 * @throws DatasetServiceException
+	 */
+	public String[] getFeatureNames(String dataSetId, String featureType)
+			throws DatasetServiceException {
+		try {
+			DatabaseHandler dbHandler = new DatabaseHandler();
+			return dbHandler.getFeatureNames(dataSetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
 			logger.error(msg, e);
@@ -248,19 +270,19 @@ public class DatasetService {
 	 * feature2 : Y-Axis
 	 * feature3 : feature to be grouped by (color code)
 	 *
-	 * @param dataSet
+	 * @param dataSetId
 	 * @param feature1
 	 * @param feature2
 	 * @return
 	 */
-	public JSONObject getSamplePoints(String dataSet, String feature1, String feature2,
+	public JSONObject getSamplePoints(String dataSetId, String feature1, String feature2,
 	                                  String feature3) {
-		List<List<String>> columnData = dataSamples.get(dataSet);
+		List<List<String>> columnData = dataSamples.get(dataSetId);
 		JSONObject samplePointsJson = new JSONObject();
 		JSONArray samplePointsArray = new JSONArray();
-		int firstFeatureColumn = dataHeaders.get(dataSet).get(feature1);
-		int secondFeatureColumn = dataHeaders.get(dataSet).get(feature2);
-		int thirdFeatureColumn = dataHeaders.get(dataSet).get(feature3);
+		int firstFeatureColumn = dataHeaders.get(dataSetId).get(feature1);
+		int secondFeatureColumn = dataHeaders.get(dataSetId).get(feature2);
+		int thirdFeatureColumn = dataHeaders.get(dataSetId).get(feature3);
 
 		for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
 			if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
@@ -280,16 +302,16 @@ public class DatasetService {
 	/**
 	 * Returns the summary statistics for a given feature of a given data-set
 	 *
-	 * @param dataSet
+	 * @param dataSetId
 	 * @param feature
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public JSONObject getSummaryStats(String dataSet, String feature)
+	public JSONObject getSummaryStats(String dataSetId, String feature)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = new DatabaseHandler();
-			return dbHandler.getSummaryStats(dataSet, feature);
+			return dbHandler.getSummaryStats(dataSetId, feature);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve summary statistics. " + e.getMessage();
 			logger.error(msg, e);
