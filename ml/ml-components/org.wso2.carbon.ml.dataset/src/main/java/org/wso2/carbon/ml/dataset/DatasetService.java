@@ -288,10 +288,10 @@ public class DatasetService {
 			if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
 					!columnData.get(secondFeatureColumn).get(row).isEmpty() &&
 					!columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
-				JSONObject point = new JSONObject();
-				point.put("x", Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
-				point.put("y", Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
-				point.put("label", Double.parseDouble(columnData.get(thirdFeatureColumn).get(row)));
+				JSONArray point = new JSONArray();
+				point.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
+				point.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
+				point.put(columnData.get(thirdFeatureColumn).get(row));
 				samplePointsArray.put(point);
 			}
 		}
