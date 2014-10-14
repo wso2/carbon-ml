@@ -275,10 +275,9 @@ public class DatasetService {
 	 * @param feature2
 	 * @return
 	 */
-	public JSONObject getSamplePoints(String dataSetId, String feature1, String feature2,
+	public JSONArray getSamplePoints(String dataSetId, String feature1, String feature2,
 	                                  String feature3) {
 		List<List<String>> columnData = dataSamples.get(dataSetId);
-		JSONObject samplePointsJson = new JSONObject();
 		JSONArray samplePointsArray = new JSONArray();
 		int firstFeatureColumn = dataHeaders.get(dataSetId).get(feature1);
 		int secondFeatureColumn = dataHeaders.get(dataSetId).get(feature2);
@@ -295,8 +294,7 @@ public class DatasetService {
 				samplePointsArray.put(point);
 			}
 		}
-		samplePointsJson.put("points", samplePointsArray);
-		return samplePointsJson;
+		return samplePointsArray;
 	}
 
 	/**
