@@ -1,0 +1,25 @@
+.model_type_button{
+	background-image: url("../../../images/model_type.png");
+    height:28px;
+    width:160px;
+    text-align: left;
+    line-height: 27px;
+    margin-top: 30px;
+}
+
+#wizzardSteps{
+	margin-top: 2%;
+	margin-left: 5%;
+}
+
+#model_type{
+	margin-left: 8%;
+}
+
+table, th, td {
+    padding: 10px;
+}
+
+input.algoName {
+        margin-top: 20px;
+}

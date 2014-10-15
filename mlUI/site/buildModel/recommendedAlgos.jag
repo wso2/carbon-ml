@@ -1,0 +1,9 @@
+<div class="recommendedAlgos">
+	<h3>Recommended Algorithms</h3>
+	<form id=algorithms>
+		<input type="radio" class="algoName" name="algorithms" value="RandomForest">Random Forest ☆☆☆☆☆<br>
+		<input type="radio" class="algoName" name="algorithms" value="DecisionTree">Decision Tree<br>
+		<input type="radio" class="algoName" name="algorithms" value="LogiticRegression">Logitic Regression<br>
+		<input type="radio" class="algoName" name="algorithms" value="Naive Bayes">Naive Bayes<br>
+	</form>
+</div>

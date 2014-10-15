@@ -1,0 +1,36 @@
+<div class="questions">
+	<h3>Help us to select an optimal algorithm
+	<button id="back" onclick="loadAllAlgos()" class="greenButton">Skip > ></button>
+	</h3> 
+	<table>
+		<tr>
+			<td>How important is the interpretability of the model? </td>
+			<td> <select>
+					<option value="1">Very Important</option>
+					<option value="2">Somewhat Important</option>
+					<option value="3">Not Important</option>
+				</select>
+			<td>
+		</tr>
+		<tr>
+			<td>How big is your dataset?</td>
+			<td>
+				<select>
+					<option value="1">Less than 10,000 instances</option>
+					<option value="2">10,000 - 100,000 instances</option>
+					<option value="3"> 100,000 - 1 Million instances</option>
+					<option value="4">More than 1 Million instances</option>
+				</select>
+			<td>
+		</tr>
+		<tr>
+			<td>Is this a textual dataset?</td>
+			<td>
+				<select>
+					<option value="Yes">Yes</option>
+					<option value="No">No</option>
+				</select>
+			<td>
+		</tr>
+	</table>
+</div>
