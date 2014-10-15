@@ -42,7 +42,7 @@ public class DatasetService {
 	 */
 	public DatasetConfig getDatasetConfig() throws DatasetServiceException {
 		try {
-			DatabaseHandler handler = new DatabaseHandler();
+			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getDatasetConfig();
 		} catch (DatabaseHandlerException ex) {
 			String msg = "Error has occurred while reading dataset config from database";
@@ -64,7 +64,7 @@ public class DatasetService {
 		String description = "";
 		try {
 			// get the default upload location of the file
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			String uploadDir = dbHandler.getDatasetConfig().getDatasetUploadingLoc();
 			if (uploadDir != null) {
 				// check whether the file is a valid one
@@ -99,7 +99,7 @@ public class DatasetService {
 	public int generateSummaryStats(String dataSetId, int noOfRecords)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			DatasetSummary summary = new DatasetSummary();
 			int noOfFeatures =
 					summary.generateSummary(dataSetId, noOfRecords,
@@ -136,7 +136,7 @@ public class DatasetService {
 	                          ImputeOption imputeOption, boolean important)
 	                        		  throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateFeature(name, dataSetId, type, imputeOption, important);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature failed. " + e.getMessage();
@@ -156,7 +156,7 @@ public class DatasetService {
 	public void updateDataType(String featureName, String dataSetId, String featureType)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateDataType(featureName, dataSetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating feature type failed. " + e.getMessage();
@@ -176,7 +176,7 @@ public class DatasetService {
 	public void updateImputeOption(String featureName, String dataSetId, String imputeOption)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateImputeOption(featureName, dataSetId, imputeOption);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
@@ -196,7 +196,7 @@ public class DatasetService {
 	public void updateIsIncludedFeature(String featureName, String dataSetId, boolean isInput)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateIsIncludedFeature(featureName, dataSetId, isInput);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Updating impute option failed. " + e.getMessage();
@@ -217,7 +217,7 @@ public class DatasetService {
 	public Feature[] getFeatures(String dataSetId, int startIndex, int numberOfFeatures)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getFeatures(dataSetId, startIndex, numberOfFeatures);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
@@ -238,7 +238,7 @@ public class DatasetService {
 	public String[] getFeatureNames(String dataSetId, String featureType)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getFeatureNames(dataSetId, featureType);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve features. " + e.getMessage();
@@ -276,7 +276,7 @@ public class DatasetService {
 	 * @return
 	 */
 	public JSONArray getSamplePoints(String dataSetId, String feature1, String feature2,
-	                                  String feature3) {
+	                                 String feature3) {
 		List<List<String>> columnData = dataSamples.get(dataSetId);
 		JSONArray samplePointsArray = new JSONArray();
 		int firstFeatureColumn = dataHeaders.get(dataSetId).get(feature1);
@@ -308,7 +308,7 @@ public class DatasetService {
 	public JSONObject getSummaryStats(String dataSetId, String feature)
 			throws DatasetServiceException {
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getSummaryStats(dataSetId, feature);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to retrieve summary statistics. " + e.getMessage();

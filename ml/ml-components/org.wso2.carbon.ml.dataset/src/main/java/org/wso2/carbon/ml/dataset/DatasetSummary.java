@@ -71,7 +71,7 @@ public class DatasetSummary {
 	                           String seperator) throws DatasetServiceException {
 		String msg;
 		try {
-			DatabaseHandler dbHandler = new DatabaseHandler();
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			// get the file-path of the data source
 			String dataSource = dbHandler.getDataSource(dataSourceId);
 			if (dataSource != null) {
