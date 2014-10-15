@@ -22,7 +22,7 @@ $('document').ready(function() {
 				processData : false,
 				success : function(data, textStatus, jqXHR) {
 					// update the data table 
-					$('#dataTable').load('datatable.jag');
+					$('#dataTable').load('./datatable.jag');
 				},
 				error : function(jqXHR, textStatus, errorThrown) {
 					// TODO: redirect to error page 

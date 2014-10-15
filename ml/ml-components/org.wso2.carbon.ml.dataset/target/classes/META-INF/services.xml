@@ -1,9 +1,9 @@
 <serviceGroup>
-    <service name="ProjectManagementService" scope="transportsession">
+    <service name="DatasetService" scope="transportsession">
         <transports>
             <transport>https</transport>
         </transports>
-        <parameter name="ServiceClass">org.wso2.carbon.ml.project.mgt.ProjectManagementService</parameter>
+        <parameter name="ServiceClass">org.wso2.carbon.ml.dataset.DatasetService</parameter>
     </service>
     <parameter name="adminService" locked="true">true</parameter>
     <parameter name="hiddenService" locked="true">true</parameter>

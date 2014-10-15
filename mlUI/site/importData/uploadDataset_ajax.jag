@@ -1,0 +1,28 @@
+<%
+	var log = new Log();
+    include("../../includes/constants.jag");
+	var carbon = require('carbon');
+    var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService'); 
+    var datasetConfig = datasetService.getDatasetConfig();
+    var uploadingDir = datasetConfig.getDatasetUploadingLoc();
+	var sourceFile = request.getFile("uploadDataset");
+    var uploadFilePath = 'file:///'+uploadingDir+"/"+sourceFile.getName();
+    var destinationFile = new File(uploadFilePath);
+    try{
+    	sourceFile.open("r");
+    	destinationFile.open('w');
+    	destinationFile.write(sourceFile.getStream());
+    }
+    catch(e)
+    {
+        log.error("An error occured while importing file");
+    }
+    finally{
+        destinationFile.close();
+        sourceFile.close();
+    } 
+    var datasetId = datasetService.registerDataset(sourceFile.getName());
+    session.put("datasetId",datasetId);
+    var numOfFeatures = datasetService.generateSummaryStats(datasetId,NO_OF_ROWS);
+    session.put("numOfFeatures",numOfFeatures);
+%>

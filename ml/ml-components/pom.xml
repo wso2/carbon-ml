@@ -14,11 +14,7 @@
     <name>WSO2 Carbon - Machine Learner Components</name>
     <modules>
         <module>org.wso2.carbon.ml.project.mgt</module>
-        <module>org.wso2.carbon.ml.project.mgt.stub</module>
         <module>org.wso2.carbon.ml.dataset</module>
-        <module>org.wso2.carbon.ml.dataset.stub</module>
         <module>org.wso2.carbon.ml.model</module>
-        <module>org.wso2.carbon.ml.model.stub</module>
-        <module>org.wso2.carbon.ml.ui</module>
     </modules>
 </project>
