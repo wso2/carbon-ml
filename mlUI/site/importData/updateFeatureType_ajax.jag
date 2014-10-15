@@ -1,0 +1,16 @@
+<%
+   var log = new Log();
+   var carbon = require('carbon');
+   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+   try{
+   var datasetId = session.get("datasetId");
+   if (datasetId != null && datasetId.length() > 0){
+        var featureType = request.getParameter("FEATURE_TYPE");
+		var featureName = request.getParameter("FEATURE_NAME");
+		datasetService.updateDataType(featureName, datasetId, featureType);
+   }
+   }
+   catch(e){
+   	log.error("An error occured while updating feature type");
+   }
+%>

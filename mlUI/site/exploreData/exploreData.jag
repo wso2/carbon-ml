@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8">
+      <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+      <link rel="stylesheet" type="text/css" href="../../css/wso2_ml_graphs.css">
+      <script src="../../js/jquery.js"></script>
+      <script src="../../js/home.js"></script> 
+      <script type="text/javascript" src="../../js/d3.js"></script>
+      <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
+   </head>
+<body>
+<%
+  var carbon = require('carbon');
+  var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+  var menuPath = "../../includes/wizardmenu.jag";
+  var header = "../../includes/header.jag";
+  var datasetId = session.get("datasetId");
+   if (datasetId != null){
+    var numericalFeatureNames = datasetService.getFeatureNames(datasetId,"NUMERICAL");
+    var categoricalFeatureNames = datasetService.getFeatureNames(datasetId,"CATEGORICAL");
+    var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"numFeaturesDropdown1");
+    var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[1],"numFeaturesDropdown2");
+    var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"catFeaturesDropdown");
+   }
+
+  function listSelectionRenderer(featureNames, selectedOption, cssClass){
+     var selection = "<select class=" + cssClass + ">";
+     for (var i=0; i<featureNames.length; i++){
+      if (selectedOption.toUpperCase() == featureNames[i].toUpperCase()){
+        selection += "<option selected value=" + featureNames[i]
+            + ">" + featureNames[i] + "</option>";
+      }
+      else{
+        selection += "<option value=" + featureNames[i] + ">"
+            + featureNames[i] + "</option>";
+      }
+     }
+     selection += "</select>";
+     return selection;
+   }
+%>
+
+<div id="middle">
+	<%include(header);%>
+	<div id="workArea">
+		<%include(menuPath);%>
+		<div style="clear:both"></div>
+	</div>
+</div>
+<div id="leftColumn" class="half-width-column">
+<div id="scatterPlotTitle" align="center"></div>
+<div id="scatter"></div>
+<div id="scatterPlotFeatures">
+<%
+if (datasetId != null){
+print(numFeaturesDropdown1);
+print(numFeaturesDropdown2);
+print(catFeaturesDropdown);
+}
+%>
+</div>
+</div>
+<div id="rightColumn" class="half-width-column">
+<div id="histogram1Title" align="center"></div>
+<div id="histogram1"></div>
+<div id="numFeature1Summary" align="center"></div>
+<div id="histogram2Title" align="center"></div>
+<div id="histogram2"></div>
+<div id="numFeature2Summary" align="center"></div>
+</div>
+<script type="text/javascript">
+         drawPlotsAjax();
+
+// redraw upon numerical features list 1 selection
+$( ".numFeaturesDropdown1" ).change(function() {
+   drawPlotsAjax();
+});
+
+// redraw upon numerical features list 2 selection
+$( ".numFeaturesDropdown2" ).change(function() {
+   drawPlotsAjax();
+});
+
+// redraw upon categorical features list selection
+$( ".catFeaturesDropdown" ).change(function() {
+   drawPlotsAjax();
+});
+
+function drawPlotsAjax(){
+  var numFeature1 = $(".numFeaturesDropdown1").val();
+  var numFeature2 = $(".numFeaturesDropdown2").val();
+  var catFeature = $(".catFeaturesDropdown").val();
+              
+              $.ajax({
+                  type: "POST",
+                  url: "./fetchSamplePoints_ajax.jag",
+                  data: {
+                      'numFeature1': numFeature1,
+                      'numFeature2': numFeature2,
+                      'catFeature': catFeature
+                  },
+                  success : function(data){
+                    $("#scatterPlotTitle").empty();
+                    $("#scatterPlotTitle").append(numFeature1+" Vs. "+numFeature2);
+                    drawScatterPlot(JSON.parse(data),"#scatter",numFeature1,numFeature2);
+                  }
+              });
+
+              $.ajax({
+                  type: "POST",
+                  url: "./fetchSummaryStatistics_ajax.jag",
+                  data: {
+                      'numFeature': numFeature1
+                  },
+                  success : function(data){
+                    var jsonObj  = JSON.parse(data);
+                    var summary = "Mean: "+jsonObj.mean+ " Median: "+jsonObj.median+ " Std: "+jsonObj.std+ " Unique: "+jsonObj.unique+" Missing: "+jsonObj.missing;
+                    $("#histogram1Title").empty();
+                    $("#histogram1Title").append(numFeature1);
+                    $("#numFeature1Summary").empty();
+                    $("#numFeature1Summary").append(summary);
+                    var frequencies = jsonObj.frequencies;       
+                    // transform dataset
+                  var data = $.map(frequencies, function(value, index) {
+                       return [value.frequency];
+                      });
+                  var bucketNames = $.map(frequencies, function(value, index) {
+                       return [value.range];
+                      });
+                  drawHistogram(data,bucketNames,"#histogram1");
+                  }
+              });
+
+              $.ajax({
+                  type: "POST",
+                  url: "./fetchSummaryStatistics_ajax.jag",
+                  data: {
+                      'numFeature': numFeature2
+                  },
+                  success : function(data){
+                    var jsonObj  = JSON.parse(data);
+                    var summary = "Mean: "+jsonObj.mean+ " Median: "+jsonObj.median+ " Std: "+jsonObj.std+ " Unique: "+jsonObj.unique+" Missing: "+jsonObj.missing;
+                    $("#histogram2Title").empty();
+                    $("#histogram2Title").append(numFeature2);
+                    $("#numFeature2Summary").empty();
+                    $("#numFeature2Summary").append(summary);
+                    var frequencies = jsonObj.frequencies;       
+                    // transform dataset
+                  var data = $.map(frequencies, function(value, index) {
+                       return [value.frequency];
+                      });
+                  var bucketNames = $.map(frequencies, function(value, index) {
+                       return [value.range];
+                      });
+                  drawHistogram(data,bucketNames,"#histogram2");
+                  }
+              });
+
+}
+
+// drawing a simple scatter graph
+function drawScatterPlot(data,cssClass,xLabel,yLabel){
+         var sg = scatterPlot()
+             .data(data)
+             .width(600)
+             .height(500)
+             .markerSize(2)
+             .xLabel(xLabel)
+             .yLabel(yLabel)
+             .exploreTwoFeatures(true); 
+      $(cssClass).empty(); 
+      d3.select(cssClass).call(sg);
+};
+
+function drawHistogram(data,bucketNames,cssClass){
+           var hg = histogramUsingCalculatedFrequencies()
+                     .data(data)
+                     .bucketNames(bucketNames)
+                     .width(600)
+                     .height(180)
+                     .yLabel('Frequencies')
+                     .displayAxises(true);
+        $(cssClass).empty(); 
+         d3.select(cssClass).call(hg);
+}
+
+</script>
+     
+</body>
+</html>
