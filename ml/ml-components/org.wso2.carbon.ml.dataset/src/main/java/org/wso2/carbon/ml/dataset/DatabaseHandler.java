@@ -38,38 +38,44 @@ import org.json.JSONObject;
 
 public class DatabaseHandler {
 
-	private final Connection connection;
+	private static volatile DatabaseHandler databaseHandler = null;
+	private Connection connection;
 	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
+	/*
+	 * private Constructor to prevent any other class from instantiating.
+	 */
+	private DatabaseHandler() {
+	}
+
 	/**
-	 * Constructor method.
-	 * Creates a connection to the database.
+	 * Creates a singleton DatabaseHandler instance and returns it.
 	 *
+	 * @return
 	 * @throws DatabaseHandlerException
 	 */
-	public DatabaseHandler() throws DatabaseHandlerException {
+	public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
 		try {
-			// load the carbon data source configurations of the H2 database
-			Context initContext = new InitialContext();
-			DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
-			connection = ds.getConnection();
-
-			// enable auto commit
-			connection.setAutoCommit(true);
+			if (databaseHandler == null) {
+				synchronized (DatabaseHandler.class) {
+					if (databaseHandler == null) {
+						databaseHandler = new DatabaseHandler();
+						// load the carbon data source configurations of the H2
+						// database
+						Context initContext = new InitialContext();
+						DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
+						databaseHandler.connection = ds.getConnection();
+						// enable auto commit
+						databaseHandler.connection.setAutoCommit(true);
+					}
+				}
+			}
+			return databaseHandler;
 		} catch (Exception e) {
 			String msg = "Error occured while connecting to database. " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatabaseHandlerException(msg);
 		}
-	}
-
-	/**
-	 * Returns a database connection object.
-	 *
-	 * @return
-	 */
-	public Connection getConnection() {
-		return this.connection;
 	}
 
 	/**
