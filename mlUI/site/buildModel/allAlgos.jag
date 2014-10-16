@@ -1,0 +1,11 @@
+<div class="allAlgos">
+	<h3>Available Algorithms</h3>
+	<form id=algorithms>
+		<input type="radio" class="algoName" name="algorithms" value="RandomForest">Random Forest<br>
+		<input type="radio" class="algoName" name="algorithms" value="DecisionTree">Decision Tree<br>
+		<input type="radio" class="algoName" name="algorithms" value="LogiticRegression">Logitic Regression<br>
+		<input type="radio" class="algoName" name="algorithms" value="Naive Bayes">Naive Bayes<br>
+		<input type="radio" class="algoName" name="algorithms" value="MultilayerPerceptron">Multilayer Perceptron<br>
+		<input type="radio" class="algoName" name="algorithms" value="LinearRegression">Linear Regression<br>
+	</form>
+</div>

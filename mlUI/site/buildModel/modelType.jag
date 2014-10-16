@@ -1,0 +1,7 @@
+<h3> Model Name : <input type="text" name="modelName"></h3>
+<h3> Select a Model type:</h3>
+<div id="model_type">
+	<div class="model_type_button"><a id="numerical_prediction" onclick="loadQuestions()">Numerical Prediction</a></div>
+	<div class="model_type_button"><a id="classification">Classification</a></div>
+	<div class="model_type_button"><a id="clustering">Clustering</a></div>
+</div>
