@@ -1,3 +1,5 @@
 <div class="page-header">
-	<h2>WSO2 Machine Learner</h2>
+	<img src="../../images/wso2_logo.png" id="logo" alt="WSO2 logo">
+	<h2 id="hader-name">Machine Learner</h2>
+	<div id="page-header-line"> </div>
 </div>

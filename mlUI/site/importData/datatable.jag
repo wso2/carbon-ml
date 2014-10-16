@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <html>	
 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
 <link rel="stylesheet" type="text/css" href="../../css/jquery.dataTables.css">
-<script src="../../js/d3.js"></script>
+<script type="text/javascript" src="../../js/d3.js"></script>
 <script src="../../js/jquery.js"></script>
 <script src="../../js/jquery.dataTables.js"></script>
 
