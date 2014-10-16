@@ -530,13 +530,14 @@ public class DatabaseHandler {
 		json.put("unique", unique[column]);
 		json.put("missing", missing[column]);
 
-		DecimalFormat decimalFormat = new DecimalFormat("#.###");
-		
+		DecimalFormat decimalFormat = new DecimalFormat("#.###");		
 		if (descriptiveStats.get(column).getN() != 0) {
 			json.put("mean", decimalFormat.format(descriptiveStats.get(column).getMean()));
 			json.put("median", decimalFormat.format(descriptiveStats.get(column).getPercentile(50)));
 			json.put("std", decimalFormat.format(descriptiveStats.get(column).getStandardDeviation()));
-			json.put("skewness", decimalFormat.format(descriptiveStats.get(column).getSkewness()));
+			if(type[column].equals(FeatureType.NUMERICAL)){
+				json.put("skewness", decimalFormat.format(descriptiveStats.get(column).getSkewness()));
+			}
 		}
 		json.put("frequencies", freqs);
 		return json;
