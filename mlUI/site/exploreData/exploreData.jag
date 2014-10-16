@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <html>
    <head>
       <meta charset="utf-8">
@@ -6,9 +7,9 @@
       <link rel="stylesheet" type="text/css" href="../../css/wso2_ml_graphs.css">
       <link rel="stylesheet" type="text/css" href="./css/exploreData.css">
       <script type="text/javascript" src="../../js/d3.js"></script>
-      <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
       <script src="../../js/jquery.js"></script>
-      <script src="./js/exploreDataset.js"></script> 
+      <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
+      <script src="./js/exploreDataset.js"></script>
    </head>
 <body>
 <%
