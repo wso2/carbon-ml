@@ -47,11 +47,11 @@
      var selection = "<select class=" + cssClass + ">";
      for (var i=0; i<featureTypes.length; i++){
       if (selectedOption.toUpperCase() == featureTypes[i].toUpperCase()){
-        selection += "<option selected value=" + featureTypes[i]
-            + ">" + featureTypes[i] + "</option>";
+        selection += "<option selected value=\"" + featureTypes[i]
+            + "\">" + featureTypes[i] + "</option>";
       }
       else{
-        selection += "<option value=" + featureTypes[i] + ">"
+        selection += "<option value=\"" + featureTypes[i] + "\">"
             + featureTypes[i] + "</option>";
       }
      }

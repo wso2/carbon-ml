@@ -13,6 +13,7 @@
    </head>
 <body>
 <%
+  var log = new Log();
   var carbon = require('carbon');
   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
   var menuPath = "../../includes/wizardmenu.jag";
@@ -24,17 +25,17 @@
     var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"numFeaturesDropdown1");
     var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[1],"numFeaturesDropdown2");
     var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"catFeaturesDropdown");
-   }
+    }
 
   function listSelectionRenderer(featureNames, selectedOption, cssClass){
      var selection = "<select class=" + cssClass + ">";
      for (var i=0; i<featureNames.length; i++){
       if (selectedOption.toUpperCase() == featureNames[i].toUpperCase()){
-        selection += "<option selected value=" + featureNames[i]
-            + ">" + featureNames[i] + "</option>";
+        selection += "<option selected value=\"" + featureNames[i]
+            + "\">" + featureNames[i] + "</option>";
       }
       else{
-        selection += "<option value=" + featureNames[i] + ">"
+        selection += "<option value=\"" + featureNames[i] + "\">"
             + featureNames[i] + "</option>";
       }
      }
@@ -103,9 +104,9 @@ function drawPlotsAjax(){
                       'catFeature': catFeature
                   },
                   success : function(data){
-                    $("#scatterPlotTitle").empty();
-                    $("#scatterPlotTitle").append(numFeature1+" Vs. "+numFeature2);
                     drawScatterPlot(JSON.parse(data),"#scatter",numFeature1,numFeature2);
+                    $("#scatterPlotTitle").empty();
+                    $("#scatterPlotTitle").append(numFeature1+" Vs. "+numFeature2);            
                   }
               });
 
