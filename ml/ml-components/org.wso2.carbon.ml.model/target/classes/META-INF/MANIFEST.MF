@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1413350422330
+Bnd-LastModified: 1413457044414
 Build-Jdk: 1.7.0_67
 Built-By: lochana
 Bundle-ManifestVersion: 2
@@ -7,6 +7,9 @@ Bundle-Name: org.wso2.carbon.ml.model
 Bundle-SymbolicName: org.wso2.carbon.ml.model
 Bundle-Version: 0.1.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: org.wso2.carbon.ml.model;version="0.1.0"
+Export-Package: org.wso2.carbon.ml.model;uses:="org.osgi.framework";vers
+ ion="0.1.0"
+Import-Package: org.apache.commons.logging,org.osgi.framework;version="[
+ 1.5,2)"
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.5))"
 Tool: Bnd-2.3.0.201405100607
