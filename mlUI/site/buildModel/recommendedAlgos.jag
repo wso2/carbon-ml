@@ -6,4 +6,8 @@
 		<input type="radio" class="algoName" name="algorithms" value="LogiticRegression">Logitic Regression<br>
 		<input type="radio" class="algoName" name="algorithms" value="Naive Bayes">Naive Bayes<br>
 	</form>
+	<div class="bottomNavigationButtons">
+		<button id="recommendedAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
+		<button id="recommendedAlgos_continue" class="blueButton" onclick="loadHyperParameters();">Continue</button>
+	<div>
 </div>
