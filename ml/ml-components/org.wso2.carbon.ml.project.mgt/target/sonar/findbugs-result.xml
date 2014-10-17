@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="2.0.3" sequence="0" timestamp="1413457042000" analysisTimestamp="1413512770218" release="">
+  <Project>
+    <Jar>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/target/classes/org/wso2/carbon/ml/project/mgt/ProjectManagementService.class</Jar>
+    <AuxClasspathEntry>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/target/classes</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/lochana/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/target/sonar/findbugs/annotations.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/target/sonar/findbugs/jsr305.jar</AuxClasspathEntry>
+    <SrcDir>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/src/main/java</SrcDir>
+    <WrkDir>/Users/lochana/product-ml/ml/ml-components/org.wso2.carbon.ml.project.mgt/target</WrkDir>
+  </Project>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Thu, 16 Oct 2014 16:27:22 +0530" total_classes="1" referenced_classes="9" total_bugs="0" total_size="3" num_packages="1" vm_version="24.65-b04" cpu_seconds="3.79" clock_seconds="1.30" peak_mbytes="428.28" alloc_mbytes="3641.00" gc_seconds="0.00">
+    <FileStats path="org/wso2/carbon/ml/project/mgt/ProjectManagementService.java" bugCount="0" size="3"/>
+    <PackageStats package="org.wso2.carbon.ml.project.mgt" total_bugs="0" total_types="1" total_size="3">
+      <ClassStats class="org.wso2.carbon.ml.project.mgt.ProjectManagementService" sourceFile="ProjectManagementService.java" interface="false" size="3" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="232" invocations="275" avgMicrosecondsPerInvocation="846" maxMicrosecondsPerInvocation="15673" standardDeviationMircosecondsPerInvocation="1623"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="67" invocations="9" avgMicrosecondsPerInvocation="7520" maxMicrosecondsPerInvocation="23204" standardDeviationMircosecondsPerInvocation="8013"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="51" invocations="30" avgMicrosecondsPerInvocation="1727" maxMicrosecondsPerInvocation="6092" standardDeviationMircosecondsPerInvocation="1379"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="32" invocations="276" avgMicrosecondsPerInvocation="117" maxMicrosecondsPerInvocation="605" standardDeviationMircosecondsPerInvocation="54"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="32" invocations="244" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="1298" standardDeviationMircosecondsPerInvocation="206"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="30" invocations="1" avgMicrosecondsPerInvocation="30966" maxMicrosecondsPerInvocation="30966" standardDeviationMircosecondsPerInvocation="0"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="23" invocations="9" avgMicrosecondsPerInvocation="2573" maxMicrosecondsPerInvocation="8689" standardDeviationMircosecondsPerInvocation="3153"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="22" invocations="12" avgMicrosecondsPerInvocation="1892" maxMicrosecondsPerInvocation="12969" standardDeviationMircosecondsPerInvocation="3522"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="20" invocations="9" avgMicrosecondsPerInvocation="2253" maxMicrosecondsPerInvocation="5761" standardDeviationMircosecondsPerInvocation="2168"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
