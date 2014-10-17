@@ -8,4 +8,8 @@
 		<input type="radio" class="algoName" name="algorithms" value="MultilayerPerceptron">Multilayer Perceptron<br>
 		<input type="radio" class="algoName" name="algorithms" value="LinearRegression">Linear Regression<br>
 	</form>
+	<div class="bottomNavigationButtons">
+		<button id="allAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
+		<button id="allAlgos_continue" class="blueButton" onclick="loadHyperParameters();">Continue</button>
+	<div>
 </div>

@@ -57,9 +57,9 @@
 <div id="scatterPlotFeatures">
 <%
 if (datasetId != null){
-print(numFeaturesDropdown1);
-print(numFeaturesDropdown2);
-print(catFeaturesDropdown);
+print("X-Axis:&emsp;"+numFeaturesDropdown1+"<br><br>");
+print("Y-Axis:&emsp;"+numFeaturesDropdown2+"<br><br>");
+print("Group By:&emsp;"+catFeaturesDropdown+"<br><br>");
 }
 %>
 </div>

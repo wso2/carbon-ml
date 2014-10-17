@@ -1,0 +1,50 @@
+#new_project{
+	float:left;
+	padding-top: 50px;
+	padding-left: 10%;
+}
+
+#new_project_img{
+	width:50px;
+	height:50px;
+	float:left;
+}
+
+#new_project_text{
+	float:left;
+	padding-top: 10px;
+}
+
+#open_project{
+	float:left;
+	padding-top: 50px;
+	padding-left: 10%;
+}
+
+#open_project_img{
+	width:50px;
+	height:50px;
+	float:left;
+}
+
+#open_project_text{
+	float:left;
+	padding-top: 10px;
+}
+
+#help{
+	float:left;
+	padding-top: 50px;
+	padding-left: 10%;
+}
+
+#help_img{
+	width:50px;
+	height:50px;
+	float:left;
+}
+
+#help_text{
+	float:left;
+	padding-top: 10px;
+}
