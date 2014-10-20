@@ -1,15 +1,23 @@
-<div class="allAlgos">
+<html>
+<head>
+<script src="./js/buildModel.js"></script> 
+</head>
 	<h3>Available Algorithms</h3>
-	<form id=algorithms>
-		<input type="radio" class="algoName" name="algorithms" value="RandomForest">Random Forest<br>
-		<input type="radio" class="algoName" name="algorithms" value="DecisionTree">Decision Tree<br>
-		<input type="radio" class="algoName" name="algorithms" value="LogiticRegression">Logitic Regression<br>
-		<input type="radio" class="algoName" name="algorithms" value="Naive Bayes">Naive Bayes<br>
-		<input type="radio" class="algoName" name="algorithms" value="MultilayerPerceptron">Multilayer Perceptron<br>
-		<input type="radio" class="algoName" name="algorithms" value="LinearRegression">Linear Regression<br>
-	</form>
+	<div class="algorithms">
+		<%
+		  	var carbon = require('carbon');
+		  	var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+		  	var algorithms = modelService.getAlgorithms();
+		  	for(var i=0 ; i<algorithms.length ; i++){
+		  		print("<input type=\"radio\" class=\"algoName\" name=\"algorithm\" value=\""+algorithms[i]+"\">"+algorithms[i]+"<br>");
+		  	}
+		%>
+	</div>
+	<div id="hyperParameters"> </div>
+
+	<div style="clear:both"></div>
 	<div class="bottomNavigationButtons">
 		<button id="allAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
-		<button id="allAlgos_continue" class="blueButton" onclick="loadHyperParameters();">Continue</button>
+		<button id="algorithms_continue" class="blueButton">Continue</button>
 	<div>
-</div>
+</html>
