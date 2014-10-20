@@ -1,44 +1,19 @@
-<!DOCTYPE html>
 <html>
-<head></head>
+	<body>
 
-<body>
-<%
-  var menuPath = "../../includes/wizardmenu.jag";
-  var header = "../../includes/header.jag";
-%>
-
-<div id="middle">
-	<%include(header);%>
-
-	<div id="workArea">
-		<%include(menuPath);%>
-		<div style="clear:both"></div>
-		<div id="new_project">
-			<a href="../importData/importDataset.jag">
-				<img src="../../images/new_project.png" id="new_project_img" alt="New Project">
-			</a><br><br>
-			<p id="new_project-text">New Project</p>
-		</div>
-		<div id="open_project">
-			<img src="../../images/open_project.png" id="open_project_img" alt="Open Project"><br><br>
-			<p id="open_project-text">Open Project</p>
-		</div>
-		<div id="help">
-			<a href="https://docs.wso2.com/display/ML010/Machine+Learner+0.1.0+Documentation" target="_blank"> 
-				<img src="../../images/help.png" id="help_img" alt="Help">
-			</a><br><br>
-			<p id="help-text">Help</p>
-		</div>
-	</div>
-</div>
-
-<link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
-<link rel="stylesheet" type="text/css" href="./css/home.css">
-<script src="../../js/jquery.js"></script>
-<script src="./js/home.js"></script> 
-</body>
-
+		<form method="POST" action="login.jag">
+		    <div class="login">
+			<p>
+			<input type="text" name="username" placeholder="Username"> 
+			</p>
+			<p>
+			<input type="password" name="password" placeholder="Password"> 
+			</p>
+			<p>
+			<input type="submit" class="submit" value="Login">
+			</p>
+			</div>
+		</form>
+	</body>
+	<link rel="stylesheet" type="text/css" href="./css/index.css">
 </html>
-
-

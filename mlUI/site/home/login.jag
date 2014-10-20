@@ -1,0 +1,22 @@
+  <%
+  var log = new Log();
+  var username = request.getParameter("username");
+  var password = request.getParameter("password");
+  var carbon=require('carbon');
+  var server=new carbon.server.Server("https://localhost:9443/admin");
+  try{
+  var success=server.authenticate(username,password);
+  if (success === true)
+  {
+    response.sendRedirect("home.jag");
+  }
+  else{
+    response.sendRedirect("index.jag");
+    log.info("Invalid Authentication");
+  }
+  }
+  catch(e){
+  	log.error("Authentication information not found");
+    response.sendRedirect("index.jag");
+  }
+  %>
