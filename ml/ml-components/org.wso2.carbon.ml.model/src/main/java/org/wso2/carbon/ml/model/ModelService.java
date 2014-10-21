@@ -26,25 +26,25 @@ public class ModelService {
 	
 	private static final Log logger = LogFactory.getLog(ModelService.class);
     
-	public JSONObject getHyperParameters(String algorithm) throws Exception{
+	public JSONObject getHyperParameters(String algorithm) throws ModelServiceException{
 		try {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getHyperParameters(algorithm);
 		} catch (DatabaseHandlerException ex) {
 			String msg = "Error has occurred while retrieving hyper parameters";
 			logger.error(msg, ex);
-			throw new Exception(msg);
+			throw new ModelServiceException(msg);
 		}
 	}
 	
-	public String[] getAlgorithms() throws Exception{
+	public String[] getAlgorithms() throws ModelServiceException{
 		try {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getAlgorithms();
 		} catch (DatabaseHandlerException ex) {
 			String msg = "Error has occurred while retrieving algorithm names";
 			logger.error(msg, ex);
-			throw new Exception(msg);
+			throw new ModelServiceException(msg);
 		}
 	}
 }
