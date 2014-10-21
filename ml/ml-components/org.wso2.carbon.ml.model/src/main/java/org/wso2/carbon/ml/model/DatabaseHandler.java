@@ -23,7 +23,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -76,22 +78,17 @@ public class DatabaseHandler {
 		}
 	}
 	
-	/*public String[] getHyperParameters(String algorithm) throws DatabaseHandlerException{
-		String [] parameters = null;
+	public Map<String,Double> getHyperParameters(String algorithm) throws DatabaseHandlerException{
 		ResultSet result = null;
+        Map<String,Double> hyperParameters = new HashMap<String, Double>();
 		PreparedStatement getStatement = null;
 		try {
 	        getStatement = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS);
 			getStatement.setString(1, algorithm);
 			result = getStatement.executeQuery();
-	        if (result.first() && result.getString(1)!=null) {
-	        	JSONObject json = new JSONObject(result.getString(1));
-	        	JSONArray array = new JSONArray(json.getString("parameters"));
-	        	parameters =new String[array.length()];
-	        	for(int i=0 ; i<array.length() ; i++){
-	        		parameters[i]=array.getString(i);
-	        	}
-	        }
+	        while(result.next()){
+                hyperParameters.put(result.getString(1),result.getDouble(2));
+            }
         } catch (SQLException e) {
         	String msg = "Error occured while getting hyper parameters of algorithm: "+algorithm+".\n" + e.getMessage();
 			logger.error(msg, e);
@@ -101,52 +98,29 @@ public class DatabaseHandler {
 			MLDatabaseUtil.closeResultSet(result);
 			MLDatabaseUtil.closeStatement(getStatement);
 		}
-		return parameters;
-	}*/
-	
-	public JSONObject getHyperParameters(String algorithm) throws DatabaseHandlerException{
-		JSONObject parameters = null;
-		ResultSet result = null;
-		PreparedStatement getStatement = null;
-		try {
-	        getStatement = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS);
-			getStatement.setString(1, algorithm);
-			result = getStatement.executeQuery();
-	        if (result.first() && result.getString(1)!=null) {
-	        	parameters = new JSONObject(result.getString(1));
-	        }
-        } catch (SQLException e) {
-        	String msg = "Error occured while getting hyper parameters of algorithm: "+algorithm+".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-        }finally {
-			// close the database resources
-			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(getStatement);
-		}
-		return parameters;
+		return hyperParameters;
 	}
-	
-	
-	public String[] getAlgorithms() throws DatabaseHandlerException{
-		List<String> algorithms = new ArrayList<String>();
-		ResultSet result = null;
-		PreparedStatement getStatement = null;
-		try {
-	        getStatement = connection.prepareStatement(SQLQueries.GET_ALGORITHMS);
-			result = getStatement.executeQuery();
-	        while (result.next()) {
-	        	algorithms.add(result.getString(1));
-	        }
+
+    public String[] getAlgorithms(String algorithmType) throws DatabaseHandlerException{
+        List<String> algorithms = new ArrayList<String>();
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            getStatement = connection.prepareStatement(SQLQueries.GET_ALGORITHMS_BY_TYPE);
+            getStatement.setString(1, algorithmType);
+            result = getStatement.executeQuery();
+            while (result.next()) {
+                algorithms.add(result.getString(1));
+            }
         } catch (SQLException e) {
-        	String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+            String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
         }finally {
-			// close the database resources
-			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(getStatement);
-		}
-		return algorithms.toArray(new String[algorithms.size()]);
-	}
+            // close the database resources
+            MLDatabaseUtil.closeResultSet(result);
+            MLDatabaseUtil.closeStatement(getStatement);
+        }
+        return algorithms.toArray(new String[algorithms.size()]);
+    }
 }
