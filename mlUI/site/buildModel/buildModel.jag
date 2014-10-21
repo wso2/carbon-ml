@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head></head>
+<head>
+<link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+<link rel="stylesheet" type="text/css" href="./css/buildModel.css">
+<script src="../../js/jquery.js"></script>
+<script src="./js/buildModel.js"></script> 
+</head>
 
 <body>
 <%
@@ -16,15 +21,11 @@
 		<div style="clear:both"></div>
 
 		<div id="wizzardSteps">
-			<!-- Steps of the wizzard comes here-->
+			<% include('modelType.jag'); %>
 		</div>
 	</div>
 </div>
 
-<link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
-<link rel="stylesheet" type="text/css" href="./css/buildModel.css">
-<script src="../../js/jquery.js"></script>
-<script src="./js/buildModel.js"></script> 
 </body>
 
 </html>

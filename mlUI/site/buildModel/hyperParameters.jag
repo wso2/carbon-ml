@@ -1,16 +1,20 @@
-<div class="allAlgos">
 	<%
-		include("./algorithm_parameters.jag");
-		var algo_name=ALGORITHMS.LOGISTIC_REGRESSION;
-		print("<h3> Logistic Regression </h3><table>");
-		for (var i=0; i<algo_name.length; i++){
-			print("<tr><td>"+algo_name[i]+"</td>");
-			print("<td><input type=\"text\" name=\""+algo_name[i]+"\"></td></tr>");
-		}
-	%>
-	</table>
-	<div class="bottomNavigationButtons">
-		<button id="allAlgos_back" class="blueButton" onclick="loadRecommendedAlgos();">Go Back</button>
-		<button id="allAlgos_continue" class="blueButton">Continue</button>
-	<div>
-</div>
+		var carbon = require('carbon');
+		var algoName=request.getParameter("algorithm");
+		var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+		var hyperParameters = modelService.getHyperParameters(algoName);
+				if(hyperParameters!=null){
+					print("<p> Hyper-Parameters for "+algoName+"</p><div id=\"parameters\"><div id=\"names_block\">");
+					var parametersArray=hyperParameters.getJSONArray("parameters");
+					for (var i=0; i<parametersArray.length(); i++){
+						print("<div class=\"parameter_name\">"+parametersArray.getJSONObject(i).get('parameter')+": </div>");
+
+					}
+					print("</div><div id=\"values_block\">");
+					for (var i=0; i<parametersArray.length(); i++){
+						print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\""+parametersArray.getJSONObject(i).get('parameter')+"\" value=\""+parametersArray.getJSONObject(i).get('value')+"\"></div>");
+					}
+				}
+	%>	
+	</div>
+	</div>

@@ -1,0 +1,6 @@
+	<%
+		Session["algorithm"] = "bbbbbb";
+		var sessionValue = "'"+Session["algorithm"]+"'";
+		//var log=new Log();
+		//log.info(sessionValue);
+	%>

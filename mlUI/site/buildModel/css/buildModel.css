@@ -23,3 +23,67 @@ table, th, td {
 input.algoName {
         margin-top: 20px;
 }
+
+
+
+/* Questions*/
+#questions_content{
+    margin-left: 40px;
+}
+#questions_block{
+    float:left;
+}
+
+.question{
+    margin-top: 20px;
+}
+
+#options_block{
+    float:left;
+    margin-left: 20px;
+}
+
+.option{
+    margin-top: 20px;
+}
+
+
+
+/* Algorithms */
+
+.algorithms{
+    float:left;
+    margin-left: 40px;
+}
+
+
+
+/*Hyper parameters*/
+
+#hyperParameters{
+    float:left;
+    margin-top: -30px;
+    margin-left: 30%;
+}
+
+#parameters{
+    float;left;
+    margin-left: 40px;
+}
+
+#names_block{
+    float:left;
+}
+
+.parameter_name{
+    margin-top: 25px;
+}
+
+#values_block{
+    float:left;
+    margin-left: 20px;
+}
+
+.parameter_value{
+    margin-top: 22px;
+}

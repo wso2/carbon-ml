@@ -1,13 +1,30 @@
-<div class="recommendedAlgos">
+<html>
+<head>
+<script src="./js/buildModel.js"></script> 
+</head>
+<body>
 	<h3>Recommended Algorithms</h3>
-	<form id=algorithms>
-		<input type="radio" class="algoName" name="algorithms" value="RandomForest">Random Forest ☆☆☆☆☆<br>
-		<input type="radio" class="algoName" name="algorithms" value="DecisionTree">Decision Tree<br>
-		<input type="radio" class="algoName" name="algorithms" value="LogiticRegression">Logitic Regression<br>
-		<input type="radio" class="algoName" name="algorithms" value="Naive Bayes">Naive Bayes<br>
-	</form>
+	<div class="algorithms">
+		<form>
+			<input type="radio" class="algoName" name="algorithm" value="RANDOM_FOREST">Random Forest ☆☆☆☆☆<br>
+			<input type="radio" class="algoName" name="algorithm" value="DECISION_TREE">Decision Tree<br>
+			<input type="radio" class="algoName" name="algorithm" value="LOGISTIC_REGRESSION">Logistic Regression<br>
+			<input type="radio" class="algoName" name="algorithm" value="NAIVE_BAYES">Naive Bayes<br>
+		</form>
+	</div>
+
+	<div id="hyperParameters"> </div>
+	<%
+		Session["algorithm"] = "bbbbbb";
+		var sessionValue = "'"+Session["algorithm"]+"'";
+		//var log=new Log();
+		//log.info(sessionValue);
+	%>
+
+	<div style="clear:both"></div>
 	<div class="bottomNavigationButtons">
 		<button id="recommendedAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
-		<button id="recommendedAlgos_continue" class="blueButton" onclick="loadHyperParameters();">Continue</button>
+		<button id="algorithms_continue" class="blueButton">Continue</button>
 	<div>
-</div>
+</body>
+</html>

@@ -15,11 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.ml.model;
 
-public class ModelServiceException extends Exception {
-    public ModelServiceException(String message) {
-        super(message);
-    }
+public class SQLQueries {
+
+	public static final String GET_ALGORITHMS= "SELECT NAME FROM ML_ALGORITHM";
+	
+	public static final String GET_HYPER_PARAMETERS = "SELECT HYPER_PARAMETERS FROM ML_ALGORITHM WHERE NAME=?";
 }
