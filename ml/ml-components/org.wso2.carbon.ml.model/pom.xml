@@ -29,10 +29,10 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
+	<dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+	</dependency>
     </dependencies>
     <build>
         <plugins>
@@ -44,6 +44,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
+                        <Bundle-Activator>org.wso2.carbon.ml.model.ModelServiceActivator</Bundle-Activator>
                         <Export-Package>org.wso2.carbon.ml.model.*</Export-Package>
                     </instructions>
                 </configuration>
