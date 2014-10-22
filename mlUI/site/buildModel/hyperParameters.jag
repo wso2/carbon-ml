@@ -3,18 +3,23 @@
 		var algoName=request.getParameter("algorithm");
 		var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
 		var hyperParameters = modelService.getHyperParameters(algoName);
-				if(hyperParameters!=null){
-					print("<p> Hyper-Parameters for "+algoName+"</p><div id=\"parameters\"><div id=\"names_block\">");
-					var parametersArray=hyperParameters.getJSONArray("parameters");
-					for (var i=0; i<parametersArray.length(); i++){
-						print("<div class=\"parameter_name\">"+parametersArray.getJSONObject(i).get('parameter')+": </div>");
-
-					}
-					print("</div><div id=\"values_block\">");
-					for (var i=0; i<parametersArray.length(); i++){
-						print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\""+parametersArray.getJSONObject(i).get('parameter')+"\" value=\""+parametersArray.getJSONObject(i).get('value')+"\"></div>");
-					}
-				}
-	%>	
-	</div>
+		if(hyperParameters!=null){
+	%>
+	<p> Hyper-Parameters for <%=algoName%> </p>
+	<div id="parameters\">
+			<div id="names_block">
+	<%
+			var parametersArray=hyperParameters.getJSONArray("parameters");
+			for (var i=0; i<parametersArray.length(); i++){
+				var parameter=parametersArray.getJSONObject(i).get('parameter');
+				print("<div class=\"parameter_name\" id=\""+parameter+"\">"+parameter+": </div>");
+			}
+			print("</div><div id=\"values_block\">");
+			for (var i=0; i<parametersArray.length(); i++){
+				print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\""+parametersArray.getJSONObject(i).get('parameter')+"\" value=\""+parametersArray.getJSONObject(i).get('value')+"\"></div>");					
+			}
+		}
+	%>
+			</div>
+		</form>
 	</div>
