@@ -38,70 +38,70 @@ import org.json.JSONObject;
 
 public class DatabaseHandler {
 
-	private static volatile DatabaseHandler databaseHandler = null;
-	private Connection connection;
-	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
+    private static volatile DatabaseHandler databaseHandler = null;
+    private Connection connection;
+    private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
-	/*
-	 * private Constructor to prevent any other class from instantiating.
-	 */
-	private DatabaseHandler() {
-	}
+    /*
+     * private Constructor to prevent any other class from instantiating.
+     */
+    private DatabaseHandler() {
+    }
 
-	/**
-	 * Creates a singleton DatabaseHandler instance and returns it.
-	 *
-	 * @return
-	 * @throws DatabaseHandlerException
-	 */
-	public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
-		try {
-			if (databaseHandler == null) {
-				synchronized (DatabaseHandler.class) {
-					if (databaseHandler == null) {
-						databaseHandler = new DatabaseHandler();
-						// load the carbon data source configurations of the H2
-						// database
-						Context initContext = new InitialContext();
-						DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
-						databaseHandler.connection = ds.getConnection();
-						// enable auto commit
-						databaseHandler.connection.setAutoCommit(true);
-					}
-				}
-			}
-			return databaseHandler;
-		} catch (Exception e) {
-			String msg = "Error occured while connecting to database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-		}
-	}
-	
-	public Map<String,Double> getHyperParameters(String algorithm) throws DatabaseHandlerException{
-		ResultSet result = null;
-        Map<String,Double> hyperParameters = new HashMap<String, Double>();
-		PreparedStatement getStatement = null;
-		try {
-	        getStatement = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS);
-			getStatement.setString(1, algorithm);
-			result = getStatement.executeQuery();
-	        while(result.next()){
-                hyperParameters.put(result.getString(1),result.getDouble(2));
+    /**
+     * Creates a singleton DatabaseHandler instance and returns it.
+     *
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
+        try {
+            if (databaseHandler == null) {
+                synchronized (DatabaseHandler.class) {
+                    if (databaseHandler == null) {
+                        databaseHandler = new DatabaseHandler();
+                        // load the carbon data source configurations of the H2
+                        // database
+                        Context initContext = new InitialContext();
+                        DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2CarbonDB");
+                        databaseHandler.connection = ds.getConnection();
+                        // enable auto commit
+                        databaseHandler.connection.setAutoCommit(true);
+                    }
+                }
+            }
+            return databaseHandler;
+        } catch (Exception e) {
+            String msg = "Error occured while connecting to database. " + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        }
+    }
+
+    public JSONObject getHyperParameters(String algorithm) throws DatabaseHandlerException {
+        JSONObject parameters = null;
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            getStatement = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS);
+            getStatement.setString(1, algorithm);
+            result = getStatement.executeQuery();
+            if (result.first() && result.getString(1) != null) {
+                parameters = new JSONObject(result.getString(1));
             }
         } catch (SQLException e) {
-        	String msg = "Error occured while getting hyper parameters of algorithm: "+algorithm+".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
-        }finally {
-			// close the database resources
-			MLDatabaseUtil.closeResultSet(result);
-			MLDatabaseUtil.closeStatement(getStatement);
-		}
-		return hyperParameters;
-	}
+            String msg = "Error occured while getting hyper parameters of algorithm: " + algorithm + ".\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        } finally {
+            // close the database resources
+            MLDatabaseUtil.closeResultSet(result);
+            MLDatabaseUtil.closeStatement(getStatement);
+        }
+        return parameters;
+    }
 
-    public String[] getAlgorithms(String algorithmType) throws DatabaseHandlerException{
+    public String[] getAlgorithms(String algorithmType) throws DatabaseHandlerException {
         List<String> algorithms = new ArrayList<String>();
         ResultSet result = null;
         PreparedStatement getStatement = null;
@@ -116,7 +116,7 @@ public class DatabaseHandler {
             String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
-        }finally {
+        } finally {
             // close the database resources
             MLDatabaseUtil.closeResultSet(result);
             MLDatabaseUtil.closeStatement(getStatement);

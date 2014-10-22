@@ -22,8 +22,8 @@ public class SQLQueries {
     public static final String GET_ALGORITHMS_BY_TYPE = "SELECT NAME FROM ML_ALGORITHM WHERE " +
                                                         "TYPE=?";
 
-    public static final String GET_HYPER_PARAMETERS = "SELECT NAME," +
-                                                      "VALUE FROM ML_HYPERPARAMETER WHERE " +
+    public static final String GET_HYPER_PARAMETERS = "SELECT HYPERPARAMETERS FROM " +
+                                                      "ML_HYPERPARAMETER WHERE " +
                                                       "ALGORITHM=?";
 
 }
