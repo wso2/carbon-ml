@@ -1,4 +1,9 @@
-<script src="./js/buildModel.js"></script> 
+<%
+	var log=new Log();
+	if(request.getParameter("modelType")!=undefined){
+		session.put('modelType',request.getParameter("modelType"));
+	}
+%>
 
 	<h3>Help us to select an optimal algorithm
 	<button id="back" onclick="loadAllAlgos()" class="greenButton">Skip > ></button>
@@ -32,9 +37,11 @@
 				</select>
 			</div>
 		</div>
+
 	</div>
 	<div style="clear:both"></div>
 	<div class="bottomNavigationButtons">
 		<button id="questions_back" onclick="loadModelTypes();" class="blueButton">Go Back</button>
 		<button id="questions_continue" class="blueButton">Continue</button>
 	<div>
+<script src="./js/buildModel.js"></script> 
