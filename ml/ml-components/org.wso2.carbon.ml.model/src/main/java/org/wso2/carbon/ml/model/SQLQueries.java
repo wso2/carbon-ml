@@ -19,14 +19,14 @@ package org.wso2.carbon.ml.model;
 
 public class SQLQueries {
 
-	public static final String GET_ALGORITHMS_BY_TYPE = "SELECT NAME FROM ML_ALGORITHM WHERE "
-			+ "TYPE=?";
+    public static final String GET_ALGORITHMS_BY_TYPE = "SELECT NAME FROM ML_ALGORITHM WHERE " +
+                                                        "TYPE=?";
 
-	public static final String GET_HYPER_PARAMETERS = "SELECT HYPERPARAMETERS FROM "
-			+ "ML_ALGORITHM WHERE " + "NAME=?";
+    public static final String GET_HYPER_PARAMETERS = "SELECT HYPERPARAMETERS FROM " +
+                                                      "ML_ALGORITHM WHERE " +
+                                                      "NAME=?";
 
-	public static final String GET_ALGORITHM_RATINGS = "SELECT NAME,INTERPRETABILITY,SCALABILITY,"
-			+ "MULTICOLLINEARITY,"
-			+ "DIMENSIONALITY FROM ML_ALGORITHM WHERE "
-			+ "TYPE=?";
+    public static final String GET_ALGORITHM_RATINGS = "SELECT NAME,INTERPRETABILITY,SCALABILITY," +
+                                                      "DIMENSIONALITY FROM ML_ALGORITHM WHERE " +
+                                                      "TYPE=?";
 }

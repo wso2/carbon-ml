@@ -123,4 +123,33 @@ public class DatabaseHandler {
         }
         return algorithms.toArray(new String[algorithms.size()]);
     }
+
+    public Map<String,List<Integer>> getAlgorithmRatings(String algorithmType) throws
+                                                                    DatabaseHandlerException {
+        Map<String,List<Integer>> algorithmRatings = new HashMap<String, List<Integer>>();
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            getStatement = connection.prepareStatement(SQLQueries.GET_ALGORITHM_RATINGS);
+            getStatement.setString(1, algorithmType);
+            result = getStatement.executeQuery();
+            List<Integer> value;
+            while (result.next()) {
+                value = new ArrayList();
+                value.add(result.getInt(2));
+                value.add(result.getInt(3));
+                value.add(result.getInt(4));
+                algorithmRatings.put(result.getString(1),value);
+            }
+        } catch (SQLException e) {
+            String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        } finally {
+            // close the database resources
+            MLDatabaseUtil.closeResultSet(result);
+            MLDatabaseUtil.closeStatement(getStatement);
+        }
+        return algorithmRatings;
+    }
 }

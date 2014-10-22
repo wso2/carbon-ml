@@ -22,54 +22,93 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class ModelService {
-	
-	private static final Log logger = LogFactory.getLog(ModelService.class);
-    
-	public JSONObject getHyperParameters(String algorithm) throws ModelServiceException{
-		try {
-			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-			return handler.getHyperParameters(algorithm);
-		} catch (DatabaseHandlerException ex) {
-			String msg = "Error has occurred while retrieving hyper parameters";
-			logger.error(msg, ex);
-			throw new ModelServiceException(msg);
-		}
-	}
-	
-	public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException{
-		try {
-			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-			return handler.getAlgorithms(algorithmType);
-		} catch (DatabaseHandlerException ex) {
-			String msg = "Error has occurred while retrieving algorithm names";
-			logger.error(msg, ex);
-			throw new ModelServiceException(msg);
-		}
-	}
+
+    private static final Log logger = LogFactory.getLog(ModelService.class);
+
+    public JSONObject getHyperParameters(String algorithm) throws ModelServiceException {
+        try {
+            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+            return handler.getHyperParameters(algorithm);
+        } catch (DatabaseHandlerException ex) {
+            String msg = "Error has occurred while retrieving hyper parameters";
+            logger.error(msg, ex);
+            throw new ModelServiceException(msg);
+        }
+    }
+
+    public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException {
+        try {
+            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+            return handler.getAlgorithms(algorithmType);
+        } catch (DatabaseHandlerException ex) {
+            String msg = "Error has occurred while retrieving algorithm names";
+            logger.error(msg, ex);
+            throw new ModelServiceException(msg);
+        }
+    }
 
 
-    public Map<String,Double> getRecommendedAlgorithms(String algorithmType,
-                                                       String userResponseJson)
-            throws ModelServiceException
-    {
-     Map<String,Double> recommendations = new HashMap<String, Double>();
-     try
-     {
-       DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-       String[] algorithms = handler.getAlgorithms(algorithmType);
+    public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
+                                                        String userResponseJson)
+            throws ModelServiceException {
+        Map<String, Double> recommendations = new HashMap<String, Double>();
+        try {
+            JSONObject userResponse = new JSONObject(userResponseJson);
+            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+            Map<String, List<Integer>> algorithmRatings = handler.getAlgorithmRatings(algorithmType);
+            for (Map.Entry<String, List<Integer>> pair : algorithmRatings.entrySet()) {
+                if ("high".equals(userResponse.get("interpretability"))) {
+                    pair.getValue().set(0, (pair.getValue().get(0) * 5));
+                } else if ("medium".equals(userResponse.get("interpretability"))) {
+                    pair.getValue().set(0, (pair.getValue().get(0) * 3));
+                } else {
+                    pair.getValue().set(0, 5);
+                }
+                if ("large".equals(userResponse.get("datasetSize"))) {
+                    pair.getValue().set(1, (pair.getValue().get(1) * 5));
+                } else if ("medium".equals(userResponse.get("datasetSize"))) {
+                    pair.getValue().set(1, (pair.getValue().get(1) * 3));
+                } else if ("small".equals(userResponse.get("datasetSize"))) {
+                    pair.getValue().set(1, 5);
+                }
+                if ("Yes".equals(userResponse.get("textual"))) {
+                    pair.getValue().set(2, (pair.getValue().get(2) * 3));
+                } else {
+                    pair.getValue().set(2, 5);
+                }
+            }
 
-     }
-     catch(Exception e)
-     {
-         String msg = "An error occurred while retrieving recommended algorithms";
-         logger.error(msg, e);
-         throw new ModelServiceException(msg);
-     }
-      return recommendations;
+            for (Map.Entry<String, List<Integer>> pair : algorithmRatings.entrySet()) {
+                recommendations.put(pair.getKey(), sum(pair.getValue()));
+            }
+            Double max = Collections.max(recommendations.values());
+            Double min = Collections.min(recommendations.values());
+            Double scaledRating;
+            for (Map.Entry<String, Double> pair : recommendations.entrySet()) {
+                scaledRating = ((pair.getValue()) / max) * 5;
+                recommendations.put(pair.getKey(), scaledRating);
+            }
+        } catch (Exception e) {
+            String msg = "An error occurred while retrieving recommended algorithms";
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
+        return recommendations;
+    }
+
+    private Double sum(List<Integer> ratings) {
+        Double sum = 0.0;
+        for (Integer rating : ratings) {
+            sum = sum + rating;
+        }
+        return sum;
     }
 
 
