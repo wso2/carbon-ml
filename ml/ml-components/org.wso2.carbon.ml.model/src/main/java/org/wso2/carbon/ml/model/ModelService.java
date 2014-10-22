@@ -29,7 +29,7 @@ public class ModelService {
 	
 	private static final Log logger = LogFactory.getLog(ModelService.class);
     
-	public JSONObject getHyperParameters(String algorithm) throws ModelServiceException{
+	public Map<String,Double> getHyperParameters(String algorithm) throws ModelServiceException{
 		try {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getHyperParameters(algorithm);
@@ -59,15 +59,9 @@ public class ModelService {
      Map<String,Double> recommendations = new HashMap<String, Double>();
      try
      {
-       if ("Classification".equals(algorithmType)){
+       DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+       String[] algorithms = handler.getAlgorithms(algorithmType);
 
-       }
-       else if ("Clustering".equals(algorithmType)){
-
-       }
-       else if ("Numerical_Prediction".equals(algorithmType)){
-
-       }
      }
      catch(Exception e)
      {
