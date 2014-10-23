@@ -3,6 +3,7 @@
 	<html>
 	<head>
 	 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+	 <link rel="stylesheet" type="text/css" href="./css/importData.css">
 	 <script type="text/javascript" src="../../js/d3.js"></script>
 	 <script src="../../js/jquery.js"></script>
 	 <script src="./js/importDataset.js"></script>
@@ -20,7 +21,7 @@
 			<div id="importDialog">
 				<form id="multiform" action="./uploadDataset_ajax.jag" method="post"
 					enctype="multipart/form-data">
-					<input type="text" id="datasetName" name="datasetName" disabled/> 
+					Data Source: <input type="text" id="datasetName" name="datasetName" disabled/> 
 					<input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
 					<input type="button" id="datasetOpen" value="Browse" /> 
 					<input type="submit" value="Import">
