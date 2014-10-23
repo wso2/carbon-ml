@@ -5,7 +5,7 @@
 		var hyperParameters = modelService.getHyperParameters(algoName);
 		if(hyperParameters!=null){
 	%>
-	<div id="parameters" class="glass_effect">
+	<div id="parameters">
 	<p> Hyper-Parameters for <%=algoName%> </p>
 			<div id="names_block">
 	<%
@@ -21,5 +21,34 @@
 		}
 	%>
 			</div>
-		</form>
+
+
+	<%
+		print("<div style=\"clear:both\"></div>");
+		var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+		var datasetId = session.get("datasetId");
+		if(session.get("modelType")=="Classification"){
+			var categoricalFeatureNames = datasetService.getFeatureNames(datasetId,"CATEGORICAL");
+			var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"responseDropdown");
+			print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
+		}else if(session.get("modelType")=="Numerical_Prediction"){
+			var numericalFeatureNames = datasetService.getFeatureNames(datasetId,"NUMERICAL");
+			var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"responseDropdown");
+			print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
+		}
+
+		function listSelectionRenderer(featureNames, selectedOption, cssClass){
+			var selection = "<select class=" + cssClass + ">";
+			for (var i=0; i<featureNames.length; i++){
+				if (selectedOption.toUpperCase() == featureNames[i].toUpperCase()){
+					selection += "<option selected value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+				}
+				else{
+					selection += "<option value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+				}
+			}
+			selection += "</select>";
+			return selection;
+		}
+	%>
 	</div>

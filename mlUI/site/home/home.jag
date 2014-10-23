@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head></head>
 <body>
 <%
   var menuPath = "../../includes/wizardmenu.jag";

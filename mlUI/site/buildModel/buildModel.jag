@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
 <link rel="stylesheet" type="text/css" href="./css/buildModel.css">
 <script src="../../js/jquery.js"></script>
 <script src="./js/buildModel.js"></script> 
-</head>
 
 <body>
 <%
