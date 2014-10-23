@@ -1,51 +1,42 @@
 /* main template */
 
-body{
+html,body,head{
   background:#FAFAFA;
+	width: 100%;
+	margin:0;
+    padding:0;
 }
 
 /* Header*/
+
 .page-header{
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
 	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
 	background-color:#E6E6E6;
-	height:100px;
-	width: 101%;
+	height:7em;
 	text-align: left;
-	margin-top: -35px;
-	margin-left: -0.5%;
-	margin-right: -0.5%;
+	margin-top:-2em;
 }
 
 #page-header-line{
 	background-color: #2E64FE;
-	height:2px;
-	width: 101%;
-	margin-left: -0.5%;
-	margin-right: -0.5%;
+	height:0.1em;
 }
 
 #logo{
-	width:160px;
-	height:70px;
+	width:11em;
+	height:5em;
 	float:left;
-	padding-top: 15px;
-	padding-left: 5px;
+	padding-top: 1em;
+	padding-left: 0.5em;
 }
 
 #hader-name{
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 40px;
-	padding-top: 25px;
-	padding-left: 200px;
-}
-
-.body{
-	background-color: #ffffff; 
-	height: 80%; 
-	width: 100%; 
-	float: left;
+	padding-top: 0.7em;
+	padding-left: 5.5em;
 }
 
 .page-footer{
@@ -61,30 +52,30 @@ body{
 	padding: 7px 10px -5px -5px;
 }
 .topMenu{
-	margin-left: 15%;
-	margin-top: -10px;
-	margin-bottom: 1%;
+	margin-top: -1em;
+	margin-bottom: 1em;
+	width: 78em;
+  	margin-left: auto ;
+  	margin-right: auto ;
 }
 
 
 .top_Menu_button {
   margin: 5px 0;
   padding: 0;
-  position: relative;
-  margin-left: 2%;
+  margin-left: 1em;
   float:left;
 }
 
 .menulink{
   float: left;
-  width:170px;
-  height:36px;
-  line-height: 36px;
+  width:10em;
+  height:2.4em;
+  line-height: 2.4em;
   position: relative;
   margin: 0;
-  padding: 0 10px 0 36px;
+  padding: 0em 2.4em 0 2.4em;
   color: #fff;
-/*  font-size: 12px;*/
   text-decoration: none; 
   	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
 	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
@@ -95,7 +86,7 @@ body{
 	font-style:normal;
 	text-align:center;
 	color:#000000;
-	text-indent: -40px;
+	text-indent: auto;
     -webkit-transform: rotate(360deg);
 	-moz-transform: rotate(360deg);
 	-ms-transform: rotate(360deg);
@@ -110,9 +101,9 @@ body{
     height: 0;
     top: 0;
     right: 0;
-    border-top: 18px solid #FAFAFA;
-    border-left: 20px solid transparent;
-    border-bottom: 18px solid #FAFAFA;
+    border-top: 1.2em solid #FAFAFA;
+    border-left: 1.2em solid transparent;
+    border-bottom: 1.3em solid #FAFAFA;
     position: absolute;
 
 }
@@ -126,7 +117,7 @@ body{
   height: 0;
   border-color: transparent transparent transparent #FAFAFA;
   border-style: solid;
-  border-width: 18px 0 18px 18px;
+  border-width: 1.2em 0 1.2em 1.2em;
 }
 
 .top_Menu_button.menuHiligher{
@@ -166,77 +157,18 @@ body{
 
 }
 
-.model_type_button{
-	margin-top: 100px;
-}
-
-.modelTypeButton {
-	float: left;
-	width:170px;
-	height:36px;
-	line-height: 36px;
-	position: absolute;
-	margin: 0;
-	padding: 0 10px 0 36px;
-	color: #fff;
-	text-decoration: none; 
-  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
-	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
-	background-color:#E6E6E6;
-	font-family:arial;
-	font-size:15px;
-	font-style:normal;
-	text-align:center;
-	color:#000000;
-	text-indent: -40px;
-    -webkit-transform: rotate(360deg);
-	-moz-transform: rotate(360deg);
-	-ms-transform: rotate(360deg);
-	-o-transform: rotate(360deg);
-	transform: rotate(360deg);
-}
-
-.modelTypeButton:after{
-	content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    top: 0;
-    right: 0;
-    border-top: 18px solid #FAFAFA;
-    border-left: 20px solid transparent;
-    border-bottom: 18px solid #FAFAFA;
-    position: absolute;
-}
-.modelTypeButton:hover {
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #349ee0), color-stop(1, #2d7db3) );
-	background:-moz-linear-gradient( center top, #349ee0 5%, #2d7db3 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#349ee0', endColorstr='#2d7db3');
-	background-color:#349ee0;
-	color:#ffffff;
-}
-.modelTypeButton:active {
-	position:relative;
-	top:1px;
-}
 
 #changeSampleButtons{
 	float: right;
-	padding: 10px 20px 10px;
+	padding: 1em 2em 1em;
 }
 
 .bottomNavigationButtons{
 	float: right;
-	padding: 25px 20px 0px;
+	padding: 2.5em 2em 2.5em;
 }
 
 /* error messages*/
 .errorMessage{
 	color: #ff1111;
-}
-
-.half-width-column{
-	float: left;
-	width: 50%;	
 }

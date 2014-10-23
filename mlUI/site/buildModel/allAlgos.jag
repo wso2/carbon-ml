@@ -2,7 +2,7 @@
 <head>
 <script src="./js/buildModel.js"></script> 
 </head>
-	<div class="algorithms glass_effect">
+	<div class="algorithms">
 		<h3>Available Algorithms</h3>
 		<%
 			var log =new Log();

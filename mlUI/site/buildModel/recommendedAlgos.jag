@@ -9,8 +9,8 @@
 
 <html>
 <body>
-	<h3>Recommended Algorithms</h3>
 	<div class="algorithms">
+		<h3>Recommended Algorithms</h3>
 		<form id="recomendedAlgoForm" action="#" method="post" enctype="multipart/form-data">
 			<%	
 				var carbon = require('carbon');

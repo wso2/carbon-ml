@@ -28,11 +28,15 @@ $('#algorithms_continue').click(function () {
 	var algoName=$('input[name=algorithm]:checked')[0];
     var parameters=$(".parameter_name");
     var values=$(".parameter_value>input");
+    var response=$('.responseDropdown option:selected').text();
 	var i=0;
 	if(algoName==undefined){
 		alert("Please select an algorithm before continue.");
 	}else{
 		var hyperParametersData='algoName='+algoName.value;
+		if(response!=""){
+			hyperParametersData=hyperParametersData+'&response='+response;
+		}
 		while(parameters[i]!=undefined){
 			hyperParametersData=hyperParametersData+'&'+parameters[i].id+'='+values[i].value;
 			i++;

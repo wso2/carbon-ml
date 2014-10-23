@@ -52,6 +52,7 @@
 	</div>
 </div>
 <div id="leftColumn" class="half-width-column">
+  <div id="scatterPlot">
 <div id="scatterPlotTitle" class="graphtitle" align="center"></div>
 <div id="scatter"></div>
 <div id="scatterPlotFeatures">
@@ -64,13 +65,17 @@ print("Group By:&emsp;"+catFeaturesDropdown+"<br><br>");
 %>
 </div>
 </div>
+</div>
+
 <div id="rightColumn" class="half-width-column">
+<div id="histograms" class="graph">
 <div id="histogram1Title" class="graphtitle"></div>
 <div id="histogram1" class="graph"></div>
 <div id="numFeature1Summary" class="graphSumarry"></div>
 <div id="histogram2Title" class="graphtitle"></div>
 <div id="histogram2" class="graph"></div>
 <div id="numFeature2Summary" class="graphSumarry"></div>
+</div>
 </div>
 <script type="text/javascript">
          drawPlotsAjax();
