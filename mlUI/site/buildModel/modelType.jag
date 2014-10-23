@@ -2,9 +2,9 @@
 <h3> Model Name : <input type="text" name="modelName"></h3>
 <h3> Select a Model type:</h3>
 <div id="model_type">
-	<div class="model_type_button"><button class="modelTypeButton" id="numerical_prediction">Numerical Prediction</button></div>
-	<div class="model_type_button"><button class="modelTypeButton" id="classification">Classification</button></div>
-	<div class="model_type_button"><button class="modelTypeButton" id="clustering">Clustering</button></div>
+	<div class="model_type_button"><button class="modelTypeButton" id="Numerical_Prediction">Numerical Prediction</button></div>
+	<div class="model_type_button"><button class="modelTypeButton" id="Classification">Classification</button></div>
+	<div class="model_type_button"><button class="modelTypeButton" id="Clustering">Clustering</button></div>
 </div>
 
 <script src="./js/buildModel.js"></script> 

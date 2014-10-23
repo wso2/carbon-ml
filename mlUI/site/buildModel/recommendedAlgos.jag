@@ -16,7 +16,8 @@
 				var carbon = require('carbon');
 				var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
 				try{
-					algorithmType=session.get("modelType");
+					//algorithmType=session.get("modelType");
+					algorithmType="Classification";
 					userResponseJson='{"interpretability":"'+session.get("interpretability")+'","datasetSize":"'+session.get("datasetSize")+
          '","textual":"'+session.get("textual")+'"}';
                     log.info(userResponseJson);
