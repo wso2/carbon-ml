@@ -1,19 +1,21 @@
 <html>
 	<body>
-
+		<% include("../../includes/header.jag"); %>
 		<form method="POST" action="login.jag">
 		    <div class="login">
+		    <p id="login_title"> Login :</p>
 			<p>
-			<input type="text" name="username" placeholder="Username"> 
+			Username : <input type="text" name="username" placeholder="Username"> 
 			</p>
 			<p>
-			<input type="password" name="password" placeholder="Password"> 
+			Password : <input type="password" name="password" placeholder="Password"> 
 			</p>
 			<p>
-			<input type="submit" class="submit" value="Login">
+			<input class="blueButton" type="submit" class="submit" value="Login">
 			</p>
 			</div>
 		</form>
 	</body>
-	<link rel="stylesheet" type="text/css" href="./css/index.css">
+	<link rel="stylesheet" type="text/css" href="./css/home.css">
+	<link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
 </html>

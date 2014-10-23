@@ -5,8 +5,8 @@
 		var hyperParameters = modelService.getHyperParameters(algoName);
 		if(hyperParameters!=null){
 	%>
+	<div id="parameters" class="glass_effect">
 	<p> Hyper-Parameters for <%=algoName%> </p>
-	<div id="parameters\">
 			<div id="names_block">
 	<%
 			var parametersArray=hyperParameters.getJSONArray("parameters");

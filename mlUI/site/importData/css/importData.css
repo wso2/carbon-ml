@@ -1,0 +1,16 @@
+#datasetTable{
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+
+/* file upload component*/
+#uploadDataset { 
+    width: 1px; 
+    visibility: hidden;
+}
+
+#importDialog{
+	padding-left: 50px;
+	padding-top: 80px;
+}

@@ -2,12 +2,14 @@
 <head>
 <script src="./js/buildModel.js"></script> 
 </head>
-	<h3>Available Algorithms</h3>
-	<div class="algorithms">
+	<div class="algorithms glass_effect">
+		<h3>Available Algorithms</h3>
 		<%
+			var log =new Log();
 		  	var carbon = require('carbon');
 		  	var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
-		  	var algorithms = modelService.getAlgorithms();
+		  	log.info(session.get("modelType"));
+		  	var algorithms = modelService.getAlgorithmsByType(session.get("modelType"));
 		  	for(var i=0 ; i<algorithms.length ; i++){
 		  		print("<input type=\"radio\" class=\"algoName\" name=\"algorithm\" value=\""+algorithms[i]+"\">"+algorithms[i]+"<br>");
 		  	}

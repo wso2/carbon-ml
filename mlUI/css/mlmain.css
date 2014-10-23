@@ -1,8 +1,15 @@
 /* main template */
 
+body{
+  background:#FAFAFA;
+}
+
 /* Header*/
 .page-header{
-	background-color: #E6E6E6;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+	background-color:#E6E6E6;
 	height:100px;
 	width: 101%;
 	text-align: left;
@@ -51,30 +58,85 @@
 /* top menu*/
 .menulink{
 	text-decoration:none;
-	padding: 7px 50px -5px -5px;
+	padding: 7px 10px -5px -5px;
 }
 .topMenu{
-	margin-top: 1%;
+	margin-left: 15%;
+	margin-top: -10px;
 	margin-bottom: 1%;
 }
-.top_Menu_button{
-	background-image: url("../images/topmenu/top_menu_default.png");
-	width:170px;
-    height:28px;
-    float: left;
-    text-align: center;
-    line-height: 27px;
-	margin-left: 1%;
+
+
+.top_Menu_button {
+  margin: 5px 0;
+  padding: 0;
+  position: relative;
+  margin-left: 2%;
+  float:left;
+}
+
+.menulink{
+  float: left;
+  width:170px;
+  height:36px;
+  line-height: 36px;
+  position: relative;
+  margin: 0;
+  padding: 0 10px 0 36px;
+  color: #fff;
+/*  font-size: 12px;*/
+  text-decoration: none; 
+  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+	background-color:#E6E6E6;
+	font-family:arial;
+	font-size:15px;
+	font-style:normal;
+	text-align:center;
+	color:#000000;
+	text-indent: -40px;
+    -webkit-transform: rotate(360deg);
+	-moz-transform: rotate(360deg);
+	-ms-transform: rotate(360deg);
+	-o-transform: rotate(360deg);
+	transform: rotate(360deg);
+}
+
+.menulink:after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    top: 0;
+    right: 0;
+    border-top: 18px solid #FAFAFA;
+    border-left: 20px solid transparent;
+    border-bottom: 18px solid #FAFAFA;
+    position: absolute;
+
+}
+
+.menulink:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-color: transparent transparent transparent #FAFAFA;
+  border-style: solid;
+  border-width: 18px 0 18px 18px;
 }
 
 .top_Menu_button.menuHiligher{
-	background-image: url("../images/topmenu/top_menu_selected.png");
-	width:170px;
-	height:28px;
-	float: left;
-	text-align: center;
-	line-height: 27px;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #349ee0), color-stop(1, #2d7db3));
+	background:-moz-linear-gradient( center top, #349ee0 5%, #2d7db3 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#349ee0', endColorstr='#2d7db3');
+	background-color:#349ee0;
+	color:#ffffff;
 }
+
 
 /* Buttons in UI */
 .greenButton{
@@ -91,54 +153,70 @@
 .blueButton{
 	padding: 5px 5px;
 	color:white;
-	background: #75A3FF;
+	/*background: #75A3FF;*/
+	background-color:#349ee0;
+	font-family:arial;
+	font-size:15px;
+	font-style:normal;
 	width: 130px;
 	border-radius: 5px;
 	border: 1px solid #57D6C7;
 	cursor: pointer;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+
+}
+
+.model_type_button{
+	margin-top: 100px;
 }
 
 .modelTypeButton {
-	-moz-box-shadow:inset 0px 1px 0px 0px #00a6ff;
-	-webkit-box-shadow:inset 0px 1px 0px 0px #00a6ff;
-	box-shadow:inset 0px 1px 0px 0px #00a6ff;
+	float: left;
+	width:170px;
+	height:36px;
+	line-height: 36px;
+	position: absolute;
+	margin: 0;
+	padding: 0 10px 0 36px;
+	color: #fff;
+	text-decoration: none; 
+  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+	background-color:#E6E6E6;
+	font-family:arial;
+	font-size:15px;
+	font-style:normal;
+	text-align:center;
+	color:#000000;
+	text-indent: -40px;
+    -webkit-transform: rotate(360deg);
+	-moz-transform: rotate(360deg);
+	-ms-transform: rotate(360deg);
+	-o-transform: rotate(360deg);
+	transform: rotate(360deg);
+}
+
+.modelTypeButton:after{
+	content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    top: 0;
+    right: 0;
+    border-top: 18px solid #FAFAFA;
+    border-left: 20px solid transparent;
+    border-bottom: 18px solid #FAFAFA;
+    position: absolute;
+}
+.modelTypeButton:hover {
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #349ee0), color-stop(1, #2d7db3) );
 	background:-moz-linear-gradient( center top, #349ee0 5%, #2d7db3 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#349ee0', endColorstr='#2d7db3');
 	background-color:#349ee0;
-	-webkit-border-top-left-radius:0px;
-	-moz-border-radius-topleft:0px;
-	border-top-left-radius:0px;
-	-webkit-border-top-right-radius:38px;
-	-moz-border-radius-topright:38px;
-	border-top-right-radius:38px;
-	-webkit-border-bottom-right-radius:38px;
-	-moz-border-radius-bottomright:38px;
-	border-bottom-right-radius:38px;
-	-webkit-border-bottom-left-radius:0px;
-	-moz-border-radius-bottomleft:0px;
-	border-bottom-left-radius:0px;
-	text-indent:0;
-	border:1px solid #75a3ff;
-	display:inline-block;
 	color:#ffffff;
-	font-family:arial;
-	font-size:15px;
-	font-style:normal;
-	height:30px;
-	line-height:30px;
-	width:200px;
-	text-decoration:none;
-	text-align:left;
-	text-shadow:0px 0px 0px #ffffff;
 }
-.modelTypeButton:hover {
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #2d7db3), color-stop(1, #349ee0) );
-	background:-moz-linear-gradient( center top, #2d7db3 5%, #349ee0 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2d7db3', endColorstr='#349ee0');
-	background-color:#2d7db3;
-}.modelTypeButton:active {
+.modelTypeButton:active {
 	position:relative;
 	top:1px;
 }
@@ -153,16 +231,6 @@
 	padding: 25px 20px 0px;
 }
 
-/* file upload component*/
-#uploadDataset { 
-    width: 1px; 
-    visibility: hidden;
-}
-
-#importDialog{
-	padding-top: 3%;
-}
-
 /* error messages*/
 .errorMessage{
 	color: #ff1111;
@@ -172,4 +240,3 @@
 	float: left;
 	width: 50%;	
 }
-
