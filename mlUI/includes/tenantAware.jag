@@ -1,0 +1,12 @@
+<%
+user = jagg.getUser();
+
+(function () {
+    isTenantAllowed();
+    if (!user) {
+        response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
+        return;
+    }
+}());
+
+%>

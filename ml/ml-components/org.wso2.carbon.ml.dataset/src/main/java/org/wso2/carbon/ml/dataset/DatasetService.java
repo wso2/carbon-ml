@@ -50,6 +50,41 @@ public class DatasetService {
 			throw new DatasetServiceException(msg);
 		}
 	}
+	
+	/**
+	 * Returns a absolute uri of a given data source
+	 * 
+	 * @param dataSourceId
+	 * @return
+	 * @throws DatasetServiceException
+	 */
+	public String getDataSource(String dataSourceId) throws DatasetServiceException {
+		try {
+			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+			return handler.getDataSource(dataSourceId);
+		} catch (DatabaseHandlerException ex) {
+			String msg = "Error has occurred while reading dataset config from database";
+			logger.error(msg, ex);
+			throw new DatasetServiceException(msg);
+		}
+	}
+	
+	/**
+	 * Returns the separator for the input file
+	 * 
+	 * @return
+	 * @throws DatasetServiceException
+	 */
+	public String getSeparator() throws DatasetServiceException {
+		try {
+			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
+			return handler.getSeparator();
+		} catch (DatabaseHandlerException ex) {
+			String msg = "Error has occurred while reading dataset config from database";
+			logger.error(msg, ex);
+			throw new DatasetServiceException(msg);
+		}
+	}
 
 	/**
 	 * Update the database with the imported data set details
@@ -70,7 +105,7 @@ public class DatasetService {
 				// check whether the file is a valid one
 				if (isValidFile(uploadDir + "/" + name)) {
 					// insert the details to the table and return the ID
-					return dbHandler.insertDatasetDetails(uploadDir + "/" + name, description);
+					return dbHandler.insertDatasetDetails(uploadDir+"/"+name, description);
 				} else {
 					msg = "Invalid input file: " + name;
 				}

@@ -7,7 +7,7 @@
 	%>
 	<div id="parameters">
 	<p> Hyper-Parameters for <%=algoName%> </p>
-			<div id="names_block">
+		<div id="names_block">
 	<%
 			var parametersArray=hyperParameters.getJSONArray("parameters");
 			for (var i=0; i<parametersArray.length(); i++){
@@ -20,11 +20,14 @@
 			}
 		}
 	%>
-			</div>
+		</div>
+	</div>
 
-
+	<div id="optionalParameters">
+		<p id="trainProportionLabel">Training Data Propotion:&emsp;<label maxlength="3" size="3" id="ratioVal"></label> </p>
+		<div id="trainRatio"></div>
+	 	
 	<%
-		print("<div style=\"clear:both\"></div>");
 		var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
 		var datasetId = session.get("datasetId");
 		if(session.get("modelType")=="Classification"){
@@ -52,3 +55,17 @@
 		}
 	%>
 	</div>
+<script>
+
+$(function() {
+	$("#trainRatio").slider( {
+		orientation:"horizontal",
+		value:70,
+		slide: function( event, ui ) {
+			$("#ratioVal").val( ui.value );
+			$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
+		}	
+	});
+	$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
+});
+</script> 

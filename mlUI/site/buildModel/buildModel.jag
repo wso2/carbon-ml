@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+<link href="../../css/jquery-ui.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="./css/buildModel.css">
 <script src="../../js/jquery.js"></script>
+<script src="../../js/jquery-ui.js"></script>
 <script src="./js/buildModel.js"></script> 
 
 <body>
-<%
-  var menuPath = "../../includes/wizardmenu.jag";
-  var header = "../../includes/header.jag";
-%>
-
 <div id="middle">
-	<%include(header);%>
+	<%
+	    include("../../includes/header.jag");
+	    include("../../includes/tenantAware.jag");
+	%>
 
 	<div id="workArea">
-		<%include(menuPath);%>
+		<%include("../../includes/wizardmenu.jag");%>
 		<div style="clear:both"></div>
 
 		<div id="wizzardSteps">

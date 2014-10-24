@@ -23,17 +23,17 @@ $('input[name=algorithm]').change(function () {
     $('#hyperParameters').load('hyperParameters.jag','algorithm='+algoName);
 });
 
-
 $('#algorithms_continue').click(function () {
 	var algoName=$('input[name=algorithm]:checked')[0];
     var parameters=$(".parameter_name");
     var values=$(".parameter_value>input");
     var response=$('.responseDropdown option:selected').text();
+    var trainDataRatio=$("#trainRatio").slider("value");
 	var i=0;
 	if(algoName==undefined){
 		alert("Please select an algorithm before continue.");
 	}else{
-		var hyperParametersData='algoName='+algoName.value;
+		var hyperParametersData='algoName='+algoName.value+'&trainDataRatio='+trainDataRatio;
 		if(response!=""){
 			hyperParametersData=hyperParametersData+'&response='+response;
 		}
@@ -56,14 +56,12 @@ $('#algorithms_continue').click(function () {
 	}
 });
 
-
 $('.modelTypeButton').click(function () {
 	//get the id of the clicked button
     var modelType=this.id;
 	var data='modelType='+modelType;
 	loadQuestions(data);
 });
-
 
 $('#questions_continue').click(function () {
 	var interpretability=$('#interpretability>option:checked')[0].value;
