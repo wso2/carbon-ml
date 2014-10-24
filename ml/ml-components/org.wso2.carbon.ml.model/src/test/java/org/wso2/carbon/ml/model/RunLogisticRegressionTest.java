@@ -14,8 +14,7 @@ public class RunLogisticRegressionTest {
     public void testLogisticRegression() throws Exception {
         String jsonString= "{\"response\" : \"Cover_Type\"," +
                            "\"algoName\" : \"LOGISTIC_REGRESSION\"," +
-                           "\"datasetURL\" : \"ml-components/org.wso2.carbon.ml" +
-                           ".model/src/test/resources/pIndiansDiabetes.csv\"," +
+                           "\"datasetURL\" : \"src/test/resources/pIndiansDiabetes.csv\"," +
                            "\"columnSeparator\" : \",\"," +
                            "\"Iterations\" : \"100\"," +
                            "\"Reg_Type\" : \"L1\"," +

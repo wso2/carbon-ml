@@ -41,7 +41,7 @@ public class RunLogisticRegression implements Callable<LogisticRegressionModel> 
         Pattern COMMA = Pattern.compile(json.getString("columnSeparator"));
         LineToTokens lineToTokens = new LineToTokens(COMMA);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
-        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(9);
+        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
         JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
         JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,0.7,11L);
         JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
