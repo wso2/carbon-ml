@@ -42,7 +42,6 @@ public class RunLogisticRegression implements Callable<LogisticRegressionModel> 
         LineToTokens lineToTokens = new LineToTokens(COMMA);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
         TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
-        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(9);
         JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
         JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,0.7,11L);
         JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
