@@ -15,8 +15,6 @@ public class RunLogisticRegressionTest {
         String jsonString= "{\"response\" : \"Cover_Type\"," +
                            "\"algoName\" : \"LOGISTIC_REGRESSION\"," +
                            "\"datasetURL\" : \"src/test/resources/pIndiansDiabetes.csv\"," +
-                           "\"datasetURL\" : \"ml-components/org.wso2.carbon.ml" +
-                           ".model/src/test/resources/pIndiansDiabetes.csv\"," +
                            "\"columnSeparator\" : \",\"," +
                            "\"Iterations\" : \"100\"," +
                            "\"Reg_Type\" : \"L1\"," +
