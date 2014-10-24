@@ -1,6 +1,6 @@
 <div class="topMenu">
 	<div class="top_Menu_button">
-		<a id="home" class="menulink" href="../home/index.jag">Home</a>
+		<a id="home" class="menulink" href="../home/home.jag">Home</a>
 	</div>
 	<div class="top_Menu_button">
 		<a id="importData" class="menulink" href="../importData/importDataset.jag">Import Data</a>

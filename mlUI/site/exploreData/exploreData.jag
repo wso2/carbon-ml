@@ -16,8 +16,6 @@
   var log = new Log();
   var carbon = require('carbon');
   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
-  var menuPath = "../../includes/wizardmenu.jag";
-  var header = "../../includes/header.jag";
   var datasetId = session.get("datasetId");
    if (datasetId != null){
     var numericalFeatureNames = datasetService.getFeatureNames(datasetId,"NUMERICAL");
@@ -45,9 +43,12 @@
 %>
 
 <div id="middle">
-	<%include(header);%>
+	<%
+	    include("../../includes/header.jag");
+	    include("../../includes/tenantAware.jag");
+	%>
 	<div id="workArea">
-		<%include(menuPath);%>
+		<%include("../../includes/wizardmenu.jag");%>
 		<div style="clear:both"></div>
 	</div>
 </div>

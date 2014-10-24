@@ -113,11 +113,12 @@ input.algoName {
 #hyperParameters{
     float:left;
     margin-top: 2em;
-    margin-left: 30%;
+    margin-left: 10%;
 }
 
+
 #parameters{
-    float;left;
+    float:left;
     margin-left: 4em;
 }
 
@@ -140,6 +141,18 @@ input.algoName {
     margin-top: 2em;
 }
 
+/* Optional parameters*/
+
+#optionalParameters{
+    float:left;
+    margin-left: 12em;
+}
+
 #responseDropdown{
-    margin-top: 2em;
+    float: left;
+    margin-top: 3em;
+}
+
+#parameters, #optionalParameters{
+    display:inline;
 }
