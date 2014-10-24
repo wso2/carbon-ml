@@ -239,14 +239,13 @@ public class DatabaseHandler {
 		}
 	}
 
-	/**
-	 * insert the new data set details to the the database
-	 *
-	 * @param filePath
-	 * @param source
-	 * @return
-	 * @throws DatabaseHandlerException
-	 */
+    /**
+     * insert the new data set details to the the database
+     * @param filePath
+     * @param description
+     * @return
+     * @throws DatabaseHandlerException
+     */
 	public String insertDatasetDetails(String filePath, String description)
 			throws DatabaseHandlerException {
 		PreparedStatement getStatement = null;

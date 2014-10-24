@@ -24,14 +24,21 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service class for machine learning model building related tasks
+ */
 public class ModelService {
 
     private static final Log logger = LogFactory.getLog(ModelService.class);
 
+    /**
+     * @param algorithm Name of the machine learning algorithm
+     * @return Json object containing hyper parameters
+     * @throws ModelServiceException
+     */
     public JSONObject getHyperParameters(String algorithm) throws ModelServiceException {
         try {
             DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
@@ -43,6 +50,11 @@ public class ModelService {
         }
     }
 
+    /**
+     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
+     * @return List of algorithm names
+     * @throws ModelServiceException
+     */
     public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException {
         try {
             DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
@@ -54,7 +66,13 @@ public class ModelService {
         }
     }
 
-
+    /**
+     * @param algorithmType    Type of the machine learning algorithm - e.g. Classification
+     * @param userResponseJson User's response to a questionnaire about machine learning task
+     * @return Map containing names of recommended machine learning algorithms and
+     * recommendation scores (out of 5) for each algorithm
+     * @throws ModelServiceException
+     */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
                                                         String userResponseJson)
             throws ModelServiceException {
@@ -89,7 +107,6 @@ public class ModelService {
                 recommendations.put(pair.getKey(), sum(pair.getValue()));
             }
             Double max = Collections.max(recommendations.values());
-            Double min = Collections.min(recommendations.values());
             Double scaledRating;
             for (Map.Entry<String, Double> pair : recommendations.entrySet()) {
                 scaledRating = ((pair.getValue()) / max) * 5;
@@ -103,6 +120,10 @@ public class ModelService {
         return recommendations;
     }
 
+    /**
+     * @param ratings List of integer scores
+     * @return Sum of the list of scores as a double
+     */
     private Double sum(List<Integer> ratings) {
         Double sum = 0.0;
         for (Integer rating : ratings) {
