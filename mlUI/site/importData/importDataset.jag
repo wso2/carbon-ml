@@ -9,37 +9,31 @@
 	 <script src="./js/importDataset.js"></script>
 	</head>
 	<body>
-	<%
-	  var dataTable = "./datatable.jag";
-	%>
 	<div id="middle">
 	<%
 	    include("../../includes/header.jag");
 	    include("../../includes/tenantAware.jag");
+	    session.put("datasetId",undefined);
+	    session.put("projectId",undefined);
 	%>
 		<div id="workArea">
 			<%include("../../includes/wizardmenu.jag");%>
 			<div id="importDialog">
-				<form id="multiform" action="./uploadDataset_ajax.jag" method="post"
+				<form id="dataImportForm" action="./uploadDataset_ajax.jag" method="post"
 					enctype="multipart/form-data">
-					Data Source: <input type="text" id="datasetName" name="datasetName" disabled/> 
+					Project Name: <input type="text" name="projectName" id="projectName"/> 
+					<br><br>
+					Project Description: 
+					<br><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea>
+					<br><br>
+					Data Source: <input type="text" id="datasetName" name="datasetName" disabled/>
 					<input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
 					<input type="button" id="datasetOpen" value="Browse" /> 
+					<br><br>
 					<input type="submit" value="Import">
 					<span id="validatorMsg"></span>
 				</form>
 			</div>
-			<div id="dataTable">
-				<%
-				    // load most recent dataset
-			        var datasetId = session.get("datasetId");
-			        if (datasetId != null)
-			      	{
-			    		include(dataTable);
-			      	}
-			    %>
-			</div>
-		</div>
 	</div>
 	</body>
 	</html>

@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.UUID;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -246,37 +247,24 @@ public class DatabaseHandler {
      * @return
      * @throws DatabaseHandlerException
      */
-	public String insertDatasetDetails(String filePath, String description)
+	public UUID insertDatasetDetails(String filePath, String description,UUID projectID)
 			throws DatabaseHandlerException {
-		PreparedStatement getStatement = null;
 		PreparedStatement insertStatement = null;
-		ResultSet resultSet = null;
 		try {
-			getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
+			UUID datasetId = UUID.randomUUID();
 
-			// get the latest auto-generated Id
-			resultSet = getStatement.executeQuery();
-			String newID;
-
-			// If there are data-sets already in the table
-			if (resultSet.last()) {
-				// get the latest data set ID and increment by one
-				newID = String.valueOf(Integer.parseInt(resultSet.getString("Id")) + 1);
-			} else {
-				// new data-set id is 1
-				newID = "1";
-			}
 			// insert the data-set details to the database
 			connection.setAutoCommit(false);
 			insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
-			insertStatement.setString(1, newID);
+			insertStatement.setObject(1, datasetId);
 			insertStatement.setString(2, description);
 			insertStatement.setString(3, filePath);
+			insertStatement.setObject(4, projectID);
 			insertStatement.execute();
 			connection.commit();
 			logger.debug("Successfully updated the details of data set: " + filePath +
-			             ". Dataset ID" + newID);
-			return newID;
+			             ". Dataset ID" + datasetId);
+			return datasetId;
 
 		} catch (SQLException e) {
 			// rollback the changes
@@ -291,8 +279,6 @@ public class DatabaseHandler {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeResultSet(resultSet);
-			MLDatabaseUtil.closeStatement(getStatement);
 			MLDatabaseUtil.closeStatement(insertStatement);
 		}
 	}
