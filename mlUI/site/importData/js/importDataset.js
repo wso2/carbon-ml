@@ -3,11 +3,16 @@ $('document').ready(function() {
 	// highlight "import data" menu
 	$('#importData').addClass('top_Menu_button menuHiligher');
 
-	$("#multiform").submit(function(e) {
-
+	$("#dataImportForm").submit(function(e) {
 		var fileName = $('#datasetName').val();
+		var projectName = $('#projectName').val();
 
-		if (fileName) {
+		if(!projectName){
+			$('#validatorMsg').html("<span class=\"errorMessage\">Project name is empty!</span>");
+		}else if(!fileName) {
+			// if dataset name is empty, an error messages is displayed 
+			$('#validatorMsg').html("<span class=\"errorMessage\">Data Source is empty!</span>");
+		} else {
 			var formObj = $(this);
 			var formURL = formObj.attr("action");
 			var formData = new FormData(this);
@@ -21,16 +26,12 @@ $('document').ready(function() {
 				cache : false,
 				processData : false,
 				success : function(data, textStatus, jqXHR) {
-					// update the data table 
-					$('#dataTable').load('./datatable.jag');
+					window.location.href = "./datatable.jag";
 				},
 				error : function(jqXHR, textStatus, errorThrown) {
 					// TODO: redirect to error page 
 				}
 			});
-		} else {
-			// if dataset name is empty, an error messages is displayed 
-			$('#validatorMsg').html("<span class=\"errorMessage\">File name is empty!</span>");
 		}
 
 		e.preventDefault(); //Prevent Default action.

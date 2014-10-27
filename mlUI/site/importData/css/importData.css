@@ -1,8 +1,14 @@
-#datasetTable{
-	padding-left: 50px;
-	padding-right: 50px;
+#datasetTable,#summary{
+
+	padding-left: 3em;
+	padding-right: 3em;
+
 }
 
+#summary{
+	padding-top: 2em;
+	color: #585858;
+}
 
 /* file upload component*/
 #uploadDataset { 

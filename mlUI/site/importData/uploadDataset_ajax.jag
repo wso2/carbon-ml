@@ -2,6 +2,13 @@
 	var log = new Log();
     include("../../includes/constants.jag");
 	var carbon = require('carbon');
+
+    var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+    var projectDescription=request.getParameter("projectDescription");
+    var projectName=request.getParameter("projectName");
+    var projectId=projectManagementService.createProject(projectName,projectDescription);
+    session.put("projectId",projectId);
+
     var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService'); 
     var datasetConfig = datasetService.getDatasetConfig();
     var uploadingDir = datasetConfig.getDatasetUploadingLoc();
@@ -20,9 +27,11 @@
     finally{
         destinationFile.close();
         sourceFile.close();
-    } 
-    var datasetId = datasetService.registerDataset(sourceFile.getName());
+    }
+
+    var datasetId = datasetService.registerDataset(sourceFile.getName(),projectId);
     session.put("datasetId",datasetId);
+    session.put("datasetName",sourceFile.getName());
     var numOfFeatures = datasetService.generateSummaryStats(datasetId,NO_OF_ROWS);
     session.put("numOfFeatures",numOfFeatures);
 %>

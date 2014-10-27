@@ -113,3 +113,32 @@ input[type=submit] {
   font-family: "Trebuchet MS", Helvetica, sans-serif;
   padding-bottom: 10px;
 }
+
+
+
+/* Message Box*/
+
+.ui-widget-header,.ui-state-default{
+            background:#E6E6E6;
+            border: 1px solid #E6E6E6;
+            color: #FFFFFF;
+}
+
+.ui-widget-content{
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+    background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+    background-color:#E6E6E6;
+    border: 1px solid #E6E6E6;
+    color: #000000;
+  }
+
+.ui-dialog-titlebar,.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover,
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #349ee0), color-stop(1, #2d7db3));
+    background:-moz-linear-gradient( center top, #349ee0 5%, #2d7db3 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#349ee0', endColorstr='#2d7db3');
+    background-color:#349ee0;
+    color:#ffffff;
+  }
+

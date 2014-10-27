@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class DatasetService {
 	private static final Log logger = LogFactory.getLog(DatasetService.class);
@@ -63,7 +64,7 @@ public class DatasetService {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getDataSource(dataSourceId);
 		} catch (DatabaseHandlerException ex) {
-			String msg = "Error has occurred while reading dataset config from database";
+			String msg = "Error has occurred while reading dataset URL from database";
 			logger.error(msg, ex);
 			throw new DatasetServiceException(msg);
 		}
@@ -80,7 +81,7 @@ public class DatasetService {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
 			return handler.getSeparator();
 		} catch (DatabaseHandlerException ex) {
-			String msg = "Error has occurred while reading dataset config from database";
+			String msg = "Error has occurred while reading dataset column separator from database";
 			logger.error(msg, ex);
 			throw new DatasetServiceException(msg);
 		}
@@ -94,7 +95,7 @@ public class DatasetService {
 	 * @throws DatasetServiceException
 	 */
 	// TODO:register data-set, arguments : name+description
-	public String registerDataset(String name) throws DatasetServiceException {
+	public UUID registerDataset(String name,UUID projectID) throws DatasetServiceException {
 		String msg;
 		String description = "";
 		try {
@@ -105,7 +106,7 @@ public class DatasetService {
 				// check whether the file is a valid one
 				if (isValidFile(uploadDir + "/" + name)) {
 					// insert the details to the table and return the ID
-					return dbHandler.insertDatasetDetails(uploadDir+"/"+name, description);
+					return dbHandler.insertDatasetDetails(uploadDir+"/"+name, description,projectID);
 				} else {
 					msg = "Invalid input file: " + name;
 				}
