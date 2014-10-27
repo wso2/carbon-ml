@@ -44,9 +44,13 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
-                        <Bundle-Activator>org.wso2.carbon.ml.model.ModelServiceActivator
-                        </Bundle-Activator>
+                        <Bundle-Activator>org.wso2.carbon.ml.model.ModelServiceActivator</Bundle-Activator>
                         <Export-Package>org.wso2.carbon.ml.model.*</Export-Package>
+                         <Import-Package>
+                        	org.h2;version="[0.0.0,0.0.1)",
+                        	org.apache.commons.logging,
+                        	*;resolution:=optional
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
