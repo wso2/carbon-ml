@@ -52,7 +52,7 @@ public class ModelService {
 
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @return List of algorithm names
+     * @return Array of algorithm names
      * @throws ModelServiceException
      */
     public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException {

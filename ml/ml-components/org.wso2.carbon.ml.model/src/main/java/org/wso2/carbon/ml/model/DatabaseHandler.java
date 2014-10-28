@@ -17,24 +17,21 @@
  */
 package org.wso2.carbon.ml.model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseHandler {
 
@@ -51,7 +48,7 @@ public class DatabaseHandler {
     /**
      * Creates a singleton DatabaseHandler instance and returns it.
      *
-     * @return
+     * @return DatabaseHandler instance
      * @throws DatabaseHandlerException
      */
     public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
@@ -78,6 +75,12 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     *
+     * @param algorithm Name of the machine learning algorithm
+     * @return Json object containing hyper parameters
+     * @throws DatabaseHandlerException
+     */
     public JSONObject getHyperParameters(String algorithm) throws DatabaseHandlerException {
         JSONObject parameters = null;
         ResultSet result = null;
@@ -101,6 +104,12 @@ public class DatabaseHandler {
         return parameters;
     }
 
+    /**
+     *
+     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
+     * @return Array of algorithm names
+     * @throws DatabaseHandlerException
+     */
     public String[] getAlgorithms(String algorithmType) throws DatabaseHandlerException {
         List<String> algorithms = new ArrayList<String>();
         ResultSet result = null;
@@ -124,6 +133,12 @@ public class DatabaseHandler {
         return algorithms.toArray(new String[algorithms.size()]);
     }
 
+    /**
+     *
+     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
+     * @return Map containing algorithm names and recommendation scores
+     * @throws DatabaseHandlerException
+     */
     public Map<String,List<Integer>> getAlgorithmRatings(String algorithmType) throws
                                                                     DatabaseHandlerException {
         Map<String,List<Integer>> algorithmRatings = new HashMap<String, List<Integer>>();
