@@ -28,6 +28,12 @@ import org.apache.commons.logging.LogFactory;
 
 public class MLDatabaseUtil {
 	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
+	
+	/*
+	 * private Constructor to prevent any other class from instantiating.
+	 */
+	private MLDatabaseUtil() {
+	  }
 
 	/**
 	 * 

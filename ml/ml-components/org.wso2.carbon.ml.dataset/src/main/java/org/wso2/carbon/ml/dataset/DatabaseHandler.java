@@ -138,7 +138,6 @@ public class DatabaseHandler {
 	 * @throws DatabaseHandlerException
 	 */
 	public int getNumberOfBucketsInHistogram() throws DatabaseHandlerException {
-
 		ResultSet result = null;
 		Statement selectStatement = null;
 		try {
@@ -247,7 +246,7 @@ public class DatabaseHandler {
      * @return
      * @throws DatabaseHandlerException
      */
-	public UUID insertDatasetDetails(String filePath, String description,UUID projectID)
+	public UUID insertDatasetDetails(String filePath, UUID projectID, List<List<String>> dataSamples)
 			throws DatabaseHandlerException {
 		PreparedStatement insertStatement = null;
 		try {
@@ -257,7 +256,7 @@ public class DatabaseHandler {
 			connection.setAutoCommit(false);
 			insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
 			insertStatement.setObject(1, datasetId);
-			insertStatement.setString(2, description);
+			insertStatement.setObject(2, dataSamples);
 			insertStatement.setString(3, filePath);
 			insertStatement.setObject(4, projectID);
 			insertStatement.execute();
@@ -485,6 +484,61 @@ public class DatabaseHandler {
 			MLDatabaseUtil.closeStatement(updateStatement);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param dataSamples
+	 * @throws DatabaseHandlerException 
+	 */
+	public void updateDatasetSample(String datasetId,SamplePoints datasetSample) throws DatabaseHandlerException{
+		PreparedStatement updateStatement = null;
+		try {
+			connection.setAutoCommit(false);
+			updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
+			updateStatement.setObject(1, datasetSample);
+			updateStatement.setString(2, datasetId);
+			updateStatement.execute();
+			connection.commit();
+		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
+			String msg =
+					"Error occured while updating the sample points of dataset : " + datasetId + "." + e.getMessage();
+			logger.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
+		}
+	}
+	
+	public SamplePoints getDatasetSample(String datasetId) throws DatabaseHandlerException{
+		PreparedStatement updateStatement = null;
+		ResultSet result = null;
+		SamplePoints samplePoints=null;
+		try {
+			updateStatement = connection.prepareStatement(SQLQueries.GET_SAMPLE_POINTS);
+			updateStatement.setString(1, datasetId);
+			result=updateStatement.executeQuery();
+			if (result.first()){
+				samplePoints=(SamplePoints) result.getObject(1);
+			}
+			return samplePoints;
+		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
+			String msg =
+					"Error occured while retrieving the sample points of dataset : " + datasetId + "." + e.getMessage();
+			logger.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		} finally {
+			// close the database resources
+			MLDatabaseUtil.closeStatement(updateStatement);
+		}
+	}
+
 
 	/**
 	 * Create the json string with summary stat for a given column

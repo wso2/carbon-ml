@@ -187,19 +187,47 @@ public class DatabaseHandler {
         	result.last();
         	int size=result.getRow();
         	if(size>0){
-            	projects=new String[2][size];
+            	projects=new String[3][size];
             	result.beforeFirst();
             	//put the result set to the string array
         		for(int i=0 ; i<size ; i++){
         			result.next();
-        			projects[0][i]=result.getString(1);
-        			projects[1][i]=result.getDate(2).toString();
+        			projects[0][i]=result.getObject(1).toString();
+        			projects[1][i]=result.getString(2);
+        			projects[2][i]=result.getDate(3).toString();
             	}
         	}
         	return projects;
         } catch (SQLException e) {
         	MLDatabaseUtil.rollBack(connection);
             String msg = "Error occured while retrieving the projects of user: " + username + ".\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        } finally {
+            // close the database resources
+            MLDatabaseUtil.closeStatement(addUserStatement);
+        }
+    }
+    
+    /**
+     *  Returns the ID of the dataset associated with the project
+     *  
+     * @param projectId
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public UUID getDatasetId(String projectId) throws DatabaseHandlerException{
+    	PreparedStatement addUserStatement = null;
+    	ResultSet result = null;
+    	try {
+        	addUserStatement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
+        	addUserStatement.setObject(1, projectId);
+        	result=addUserStatement.executeQuery();
+        	result.first();
+        	return UUID.fromString(result.getObject(1).toString());
+        } catch (SQLException e) {
+        	MLDatabaseUtil.rollBack(connection);
+            String msg = "Error occured while retrieving the Dataset Id of project: " + projectId + ".\n" + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {

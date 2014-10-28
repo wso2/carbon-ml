@@ -444,7 +444,7 @@ CONSTRAINT fk_Project_User FOREIGN KEY(Project) REFERENCES ML_Project(ID) ON UPD
 --**Dataset***
 CREATE TABLE IF NOT EXISTS ML_Dataset(
 Id UUID NOT NULL,
-Description VARCHAR(100),
+SAMPLE_POINTS OTHER,
 Uri VARCHAR(300),
 Project UUID,
 CONSTRAINT pk_Dataset PRIMARY KEY(Id),
@@ -454,7 +454,7 @@ CONSTRAINT fk_Project_Dataset FOREIGN KEY(Project) REFERENCES ML_Project(ID) ON 
 
 --**Feature**
 CREATE TABLE IF NOT EXISTS ML_Feature(
-Name VARCHAR(100) ,
+Name VARCHAR(100),
 Dataset UUID,
 Type VARCHAR(20),
 summary CLOB,
@@ -523,6 +523,7 @@ dimensionality INTEGER,
 hyperparameters VARCHAR(500),
 CONSTRAINT pk_Algorithm PRIMARY KEY(name)
 );
+
 
 INSERT INTO  ML_Algorithm VALUES 
 ('LINEAR_REGRESSION','Numerical_Prediction',5,5,1,5,'{"parameters":[{"parameter":"Iterations","value":100}]}'),

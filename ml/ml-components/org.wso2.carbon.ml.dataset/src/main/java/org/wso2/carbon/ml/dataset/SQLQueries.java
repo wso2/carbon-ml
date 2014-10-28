@@ -18,7 +18,7 @@
 package org.wso2.carbon.ml.dataset;
 
 public class SQLQueries {
-
+	
 	public static final String GET_DATASET_CONFIG =
 			"SELECT DATASET_UPLOADING_DIR, DATASET_IN_MEM_THRESHOLD, "
 					+ "DATASET_UPLOADING_LIMIT FROM ML_CONFIGURATION";
@@ -33,7 +33,7 @@ public class SQLQueries {
 			"SELECT SUMMARY FROM ML_FEATURE WHERE NAME=? AND DATASET=?";
 
 	public static final String INSERT_DATASET =
-			"INSERT INTO ML_Dataset(ID,DESCRIPTION,URI,PROJECT) VALUES(?,?,?,?)";
+			"INSERT INTO ML_Dataset(ID,SAMPLE_POINTS,URI,PROJECT) VALUES(?,?,?,?)";
 
 	public static final String UPDATE_IS_INCLUDED = "UPDATE  ML_FEATURE SET IMPORTANT = ? "
 			+ "WHERE NAME=? AND DATASET=?";
@@ -53,4 +53,15 @@ public class SQLQueries {
 
 	public static final String UPDATE_SUMMARY_STATS =
 			"MERGE INTO ML_FEATURE(NAME,DATASET,TYPE,SUMMARY,IMPUTE_METHOD,IMPORTANT) VALUES(?,?,?,?,?,TRUE)";
+	
+	public static final String UPDATE_SAMPLE_POINTS = "UPDATE ML_DATASET SET SAMPLE_POINTS=? where ID=?";
+	
+	public static final String GET_SAMPLE_POINTS ="SELECT SAMPLE_POINTS FROM ML_DATASET WHERE ID=?";
+	
+
+	/*
+	 * private Constructor to prevent any other class from instantiating.
+	 */
+	private SQLQueries() {
+	  }
 }
