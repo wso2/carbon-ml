@@ -6,11 +6,16 @@
         <artifactId>machine-learner</artifactId>
         <groupId>org.wso2.carbon</groupId>
         <version>0.1.0</version>
+        <relativePath>pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>machine-learner-features</artifactId>
+    <artifactId>ml-features</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner Features</name>
-
+    <modules>
+        <module>org.wso2.carbon.ml.dataset.feature</module>
+        <module>org.wso2.carbon.ml.model.feature</module>
+        <module>org.wso2.carbon.ml.project.mgt.feature</module>
+    </modules>
 </project>

@@ -29,4 +29,8 @@ public class SQLQueries {
     public static final String GET_ALGORITHM_RATINGS = "SELECT NAME,INTERPRETABILITY,SCALABILITY," +
                                                       "DIMENSIONALITY FROM ML_ALGORITHM WHERE " +
                                                       "TYPE=?";
+
+    public static final String INSERT_MODEL =
+            "INSERT INTO ML_Model(ID,PROCESS,ACCURACY,HYPERPARAMETERS," +
+            "FEATURE_IMPORTANCE) VALUES(?,?,?,?,?)";
 }
