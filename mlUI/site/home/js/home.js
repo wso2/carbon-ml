@@ -36,7 +36,7 @@ $('document').ready(function(){
 	$('.open_project').click(function() {
 		var projectId=$('#'+this.id+'hiddenField').val();
 		$.ajax({
-			url : "./getDatasetId.jag",
+			url : "./openProject.jag",
 			type : 'POST',
 			data : 'projectId='+projectId,
 			success : function(data, textStatus, jqXHR) {

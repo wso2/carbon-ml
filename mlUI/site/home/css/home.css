@@ -2,6 +2,7 @@
 	float:left;
 	padding-top: 50px;
 	padding-left: 10%;
+  margin-left: 10%
 }
 
 #new_project_img{
@@ -148,6 +149,7 @@ input[type=submit] {
   margin-left: 50%;
 }
 #projectsTable{
+  font-size: 0.9em;
   margin-top: 4em;
   width: 35em;
   border-style: groove;

@@ -58,6 +58,7 @@ public class SQLQueries {
 	
 	public static final String GET_SAMPLE_POINTS ="SELECT SAMPLE_POINTS FROM ML_DATASET WHERE ID=?";
 	
+	public static final String GET_FEATURE_COUNT = "SELECT COUNT(NAME) FROM ML_FEATURE WHERE DATASET=?";
 
 	/*
 	 * private Constructor to prevent any other class from instantiating.
