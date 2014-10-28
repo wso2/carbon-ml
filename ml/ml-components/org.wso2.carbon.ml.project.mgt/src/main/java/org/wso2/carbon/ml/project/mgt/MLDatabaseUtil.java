@@ -29,6 +29,10 @@ import org.apache.commons.logging.LogFactory;
 public class MLDatabaseUtil {
 	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
 
+	// private constructor
+	private MLDatabaseUtil(){
+	}
+	
 	/**
 	 * 
 	 * @param dbConnection

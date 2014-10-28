@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +31,6 @@ import java.util.UUID;
 
 public class DatasetService {
 	private static final Log logger = LogFactory.getLog(DatasetService.class);
-	private Map<String, List<List<String>>> dataSamples =
-			new Hashtable<String, List<List<String>>>();
-	private Map<String, Map<String, Integer>> dataHeaders =
-			new Hashtable<String, Map<String, Integer>>();
 
 	/**
 	 * This method extract data-set configurations from the database
@@ -94,10 +91,8 @@ public class DatasetService {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	// TODO:register data-set, arguments : name+description
 	public UUID registerDataset(String name,UUID projectID) throws DatasetServiceException {
 		String msg;
-		String description = "";
 		try {
 			// get the default upload location of the file
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
@@ -106,7 +101,7 @@ public class DatasetService {
 				// check whether the file is a valid one
 				if (isValidFile(uploadDir + "/" + name)) {
 					// insert the details to the table and return the ID
-					return dbHandler.insertDatasetDetails(uploadDir+"/"+name, description,projectID);
+					return dbHandler.insertDatasetDetails(uploadDir+"/"+name, projectID,null);
 				} else {
 					msg = "Invalid input file: " + name;
 				}
@@ -142,10 +137,9 @@ public class DatasetService {
 					                        dbHandler.getNumberOfBucketsInHistogram(),
 					                        dbHandler.getSeparator());
 			logger.debug("Summary statistics successfully generated. ");
-
-			// put the sample points and header names to a hash table.
-			dataSamples.put(dataSetId, summary.getDataSample());
-			dataHeaders.put(dataSetId, summary.getHeader());
+			
+			//update the dataset table with sample points
+			updateDatasetSample(dataSetId,summary.samplePoints());
 			return noOfFeatures;
 		} catch (DatasetServiceException e) {
 			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
@@ -153,6 +147,22 @@ public class DatasetService {
 			throw new DatasetServiceException(msg);
 		} catch (DatabaseHandlerException e) {
 			String msg = "Failed to connect to database. " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param dataSamples
+	 * @throws DatasetServiceException 
+	 */
+	public void updateDatasetSample(String datasetId, SamplePoints dataSamples) throws DatasetServiceException{
+		try {
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			dbHandler.updateDatasetSample(datasetId, dataSamples);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Updating feature failed. " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		}
@@ -310,14 +320,18 @@ public class DatasetService {
 	 * @param feature1
 	 * @param feature2
 	 * @return
+	 * @throws DatabaseHandlerException 
 	 */
 	public JSONArray getSamplePoints(String dataSetId, String feature1, String feature2,
-	                                 String feature3) {
-		List<List<String>> columnData = dataSamples.get(dataSetId);
+	                                 String feature3) throws DatabaseHandlerException {
+		DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+		SamplePoints sample=dbHandler.getDatasetSample(dataSetId);
+		List<List<String>> columnData = sample.getSamplePoints();
+		Map<String, Integer>  dataHeaders = sample.getHeader();
 		JSONArray samplePointsArray = new JSONArray();
-		int firstFeatureColumn = dataHeaders.get(dataSetId).get(feature1);
-		int secondFeatureColumn = dataHeaders.get(dataSetId).get(feature2);
-		int thirdFeatureColumn = dataHeaders.get(dataSetId).get(feature3);
+		int firstFeatureColumn = dataHeaders.get(feature1);
+		int secondFeatureColumn = dataHeaders.get(feature2);
+		int thirdFeatureColumn = dataHeaders.get(feature3);
 
 		for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
 			if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&

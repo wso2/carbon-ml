@@ -149,8 +149,9 @@ input[type=submit] {
 }
 #projectsTable{
   margin-top: 4em;
-  border: 1px solid black;
   width: 35em;
+  border-style: groove;
+  border-color: #FAFAFA;
 }
 
 #projectsTable td,th{

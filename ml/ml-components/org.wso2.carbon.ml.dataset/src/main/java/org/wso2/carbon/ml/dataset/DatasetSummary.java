@@ -291,14 +291,10 @@ public class DatasetSummary {
 	/*
 	 * returns the raw-data of the sample
 	 */
-	protected List<List<String>> getDataSample() {
-		return columnData;
-	}
-
-	/*
-	 * returns the header names and their positions in the data-set
-	 */
-	protected Map<String, Integer> getHeader() {
-		return headerMap;
+	protected SamplePoints samplePoints() {
+		SamplePoints samplPoints= new SamplePoints();
+		samplPoints.setHeader(headerMap);
+		samplPoints.setSamplePoints(columnData);
+		return samplPoints;
 	}
 }

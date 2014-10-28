@@ -97,4 +97,22 @@ public class ProjectManagementService {
 			throw new ProjectManagementServiceException(msg);
 		}
 	}
+	
+	/**
+	 * Returns the ID of the dataset associated with the project
+	 * 
+	 * @param projectId
+	 * @return
+	 * @throws ProjectManagementServiceException
+	 */
+	public UUID getDatasetId(String projectId) throws ProjectManagementServiceException{
+		try {
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			return dbHandler.getDatasetId(projectId);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
+			logger.error(msg, e);
+			throw new ProjectManagementServiceException(msg);
+		}
+	}
 }

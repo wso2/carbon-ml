@@ -1,0 +1,9 @@
+<% 
+
+	var carbon = require('carbon');
+	var projectId=request.getParameter('projectId');
+	var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+	var datasetId=projectManagementService.getDatasetId(projectId);
+	session.put('datasetId',datasetId);
+	session.put('projectId',projectId);
+%>

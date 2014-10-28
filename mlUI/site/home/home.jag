@@ -45,9 +45,10 @@
 	    			<caption>Projects of <a href="#"><%=user%></a> :</caption>	    		
 	    		<%	    				
 	    				if(projects!=null){
-	    					print('<th>Project Name</th><th>Created Date</th>');
+	    					print('<th>Project Name</th><th>Created Date</th><th>Actions</th>');
 	    					for(var i=0 ; i<projects[0].length ; i++){
-	    						print('<tr><td style="width:50%">'+projects[0][i]+'</td><td>'+projects[1][i]+'</td><td><a class="open_project blueButton">Open</a></td></tr>');
+	    						print('<tr><td style="width:40%">'+projects[1][i]+'</td><td>'+projects[2][i]+'</td><td><a id="project'+i+'" class="open_project blueButton">Open</a> <a id="project'+i+'" class="delete_project blueButton">Delete</a></td>');
+	    						print('<td style="display:none"><input type="hidden" id="project'+i+'hiddenField" name="project'+i+'" value="'+projects[0][i]+'"></td></tr>');
 	    					}
 	    				}else{
 	    					print('<tr><td><i>No projects available</i></td></tr>');
