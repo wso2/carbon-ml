@@ -10,6 +10,7 @@
     <modules>
         <module>ml-components</module>
         <module>ml-features</module>
+        <module>ml-repository</module>
     </modules>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner</name>
