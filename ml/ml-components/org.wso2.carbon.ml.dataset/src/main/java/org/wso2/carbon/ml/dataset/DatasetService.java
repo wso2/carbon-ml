@@ -366,4 +366,16 @@ public class DatasetService {
 			throw new DatasetServiceException(msg);
 		}
 	}
+	
+	public int getFeatureCount(String dataSetId)
+			throws DatasetServiceException {
+		try {
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			return dbHandler.getFeatureCount(dataSetId);
+		} catch (DatabaseHandlerException e) {
+			String msg = "Failed to retrieve the feature count. " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatasetServiceException(msg);
+		}
+	}
 }

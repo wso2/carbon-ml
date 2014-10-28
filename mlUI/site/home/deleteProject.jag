@@ -5,6 +5,7 @@
     var projectId=request.getParameter("projectId");
     projectManagementService.deleteProject(projectId);
 
+    // if the deleted project is the cureent project, remove it from session
     if(session.get("projectId")==projectId){
     	session.put("projectId",undefined);
     	session.put("datasetId",undefined);

@@ -16,28 +16,22 @@
 				var carbon = require('carbon');
 				var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
 				try{
-					//algorithmType=session.get("modelType");
-					algorithmType="Classification";
+					algorithmType=session.get("modelType");
 					userResponseJson='{"interpretability":"'+session.get("interpretability")+'","datasetSize":"'+session.get("datasetSize")+
          '","textual":"'+session.get("textual")+'"}';
-                    log.info(userResponseJson);
 					var recommendedAlgorithms=datasetService.getRecommendedAlgorithms(algorithmType,userResponseJson);
                     var iterator= recommendedAlgorithms.entrySet().iterator();
                     while(iterator.hasNext())
                     {
                     	var pair = iterator.next();
-                    	log.info(pair.getKey()+" : "+pair.getValue());
+                    	print('<input type="radio" class="algoName" name="algorithm" value="'+pair.getKey()+'">'+pair.getKey()+' ('+pair.getValue()+')<br>');
+
                     }
-					//TODO: remove the log. only for testing.
 				}
 				catch(e){
 					log.error("An error occured while getting recommended algorithms"+e);
 				}
 			%>
-			<input type="radio" class="algoName" name="algorithm" value="RANDOM_FOREST">Random Forest ☆☆☆☆☆<br>
-			<input type="radio" class="algoName" name="algorithm" value="DECISION_TREE">Decision Tree<br>
-			<input type="radio" class="algoName" name="algorithm" value="LOGISTIC_REGRESSION">Logistic Regression<br>
-			<input type="radio" class="algoName" name="algorithm" value="NAIVE_BAYES">Naive Bayes<br>
 		</form>
 	</div>
 

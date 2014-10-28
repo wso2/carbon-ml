@@ -1,9 +1,14 @@
 <% 
-
 	var carbon = require('carbon');
 	var projectId=request.getParameter('projectId');
+
 	var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
 	var datasetId=projectManagementService.getDatasetId(projectId);
+
+	var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+	var featureCount=datasetService.getFeatureCount(datasetId);
+
 	session.put('datasetId',datasetId);
 	session.put('projectId',projectId);
+	session.put("numOfFeatures",featureCount);
 %>

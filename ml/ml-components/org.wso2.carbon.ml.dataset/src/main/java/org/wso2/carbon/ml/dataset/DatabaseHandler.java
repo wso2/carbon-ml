@@ -721,4 +721,30 @@ public class DatabaseHandler {
 		}
 		return summary;
 	}
+	
+	public int getFeatureCount(String datasetId) throws DatabaseHandlerException{
+		PreparedStatement getFeatues = null;
+		ResultSet result = null;
+		int featureCount = 0;
+		try {
+			// create a prepared statement and extract dataset configurations
+			getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURE_COUNT);
+			getFeatues.setString(1, datasetId);
+			result = getFeatues.executeQuery();
+			if(result.first()){
+				featureCount=result.getInt(1);
+			}
+			return featureCount;
+		} catch (SQLException e) {
+			String msg =
+					"Error occured while retireving feature count of the data set: " + datasetId +
+					" Error message: " + e.getMessage();
+			logger.error(msg, e);
+			throw new DatabaseHandlerException(msg);
+		} finally {
+			// close the database resources
+			MLDatabaseUtil.closeStatement(getFeatues);
+			MLDatabaseUtil.closeResultSet(result);
+		}
+	}
 }

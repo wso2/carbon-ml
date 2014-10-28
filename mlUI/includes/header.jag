@@ -1,6 +1,6 @@
 <%
-include("./title.jag");
 include("/jagg/jagg.jag");
+include("./title.jag");
 
 var getRedirectPathForNonAuthenticatedUser = function () {
    var requestedPage = request.getRequestURI();

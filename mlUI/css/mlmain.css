@@ -5,6 +5,7 @@ html,body,head{
 	width: 100%;
 	margin:0;
     padding:0;
+    font-family: arial;
 }
 
 #wizzardSteps{
@@ -41,12 +42,19 @@ html,body,head{
 	font-size: 40px;
 	padding-top: 0.7em;
 	padding-left: 5.5em;
+	margin-bottom: 0em;
 }
 
 .page-footer{
 	background-color: #ffffff; 
 	clear: both; 
 	text-align: center;
+}
+
+#loggedUser{
+	float: right;
+	margin-right: 1em;
+	font-size: 0.9em;
 }
 
 
