@@ -19,7 +19,11 @@ package org.wso2.carbon.ml.project.mgt;
 
 public class SQLQueries {
 
-    public static final String CREATE_PROJECT = "INSERT INTO ML_Project(ID,NAME,DESCRIPTION) VALUES(?,?,?)";
+    public static final String CREATE_PROJECT = "INSERT INTO ML_PROJECT(ID,NAME,DESCRIPTION,CREATED_TIME) VALUES(?,?,?,CURRENT_TIMESTAMP())";
     
     public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE ID=?";
+    
+    public static final String ADD_USER_TO_PROJECT = "INSERT INTO ML_USER_PROJECTS(USERNAME,PROJECT) VALUES(?,?)";
+    
+    public static final String GET_USER_PROJECTS = "SELECT NAME,CREATED_TIME FROM ML_PROJECT WHERE ID IN (SELECT PROJECT FROM ML_USER_PROJECTS WHERE USERNAME=?)";
 }

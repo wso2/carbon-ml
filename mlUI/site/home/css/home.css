@@ -142,3 +142,23 @@ input[type=submit] {
     color:#ffffff;
   }
 
+
+/*Projects*/
+#currentProjects{
+  margin-left: 50%;
+}
+#projectsTable{
+  margin-top: 4em;
+  border: 1px solid black;
+  width: 35em;
+}
+
+#projectsTable td,th{
+  padding: 15px;
+  text-align: left;
+}
+
+#projectsTable caption{
+  text-align: left;
+  padding: 0em 1em 1em 0em;
+}

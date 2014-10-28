@@ -3,8 +3,8 @@ $('document').ready(function(){
 	$('#home').addClass('top_Menu_button menuHiligher');
 });
 
-function newProject(currentProjectId){  
-	if(currentProjectId){
+function newProject(currentProjectId){
+	if(currentProjectId!=""){
 		$(function() {
 		    $('<div id="dialog-confirm" title="Confirm"><p>Do you want to save the current project?</p></div>').dialog({
 		    	resizable: true,
@@ -21,9 +21,9 @@ function newProject(currentProjectId){
 		    			$.ajax({
 							url : "./deleteProject.jag",
 							type : 'POST',
-							data : 'prijectId='+currentProjectId.toString(),
+							data : 'projectId='+currentProjectId,
 							success : function(data, textStatus, jqXHR) {
-								// TODO
+								window.location.href = "../importData/importDataset.jag";
 							},
 							error : function(jqXHR, textStatus, errorThrown) {
 								// TODO: redirect to error page 
