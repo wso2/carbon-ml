@@ -15,10 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.ml.project.mgt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -71,6 +73,14 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Creates a new project
+     * 
+     * @param projectName
+     * @param description
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public UUID createProject(String projectName, String description) throws DatabaseHandlerException {
     	UUID projectId = UUID.randomUUID();
         PreparedStatement createProjectStatement = null;
@@ -83,7 +93,7 @@ public class DatabaseHandler {
         	createProjectStatement.execute();
 			connection.commit();
 			logger.debug("Successfully inserted details of project: " + projectName+
-			             ". Project ID" + projectId);
+			             ". Project ID" + projectId.toString());
 			return projectId;
         } catch (SQLException e) {
         	MLDatabaseUtil.rollBack(connection);
@@ -91,18 +101,27 @@ public class DatabaseHandler {
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
+        	// enable auto commit
+        	MLDatabaseUtil.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtil.closeStatement(createProjectStatement);
         }
     }
     
     
-    public void deleteProject(UUID projectId) throws DatabaseHandlerException {
+    /**
+     * Delete details of a given project from the database
+     * 
+     * @param projectId
+     * @throws DatabaseHandlerException
+     */
+    public void deleteProject(String projectId) throws DatabaseHandlerException {
         PreparedStatement deleteProjectStatement = null;
+        UUID projectUUID = UUID.fromString(projectId);
         try {
         	connection.setAutoCommit(false);
         	deleteProjectStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
-        	deleteProjectStatement.setObject(1, projectId);
+        	deleteProjectStatement.setObject(1, projectUUID);
         	deleteProjectStatement.execute();
 			connection.commit();
 			logger.debug("Successfully deleted the project: " + projectId);
@@ -112,8 +131,80 @@ public class DatabaseHandler {
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
+        	// enable auto commit
+        	MLDatabaseUtil.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtil.closeStatement(deleteProjectStatement);
+        }
+    }
+    
+    /**
+     * Assign a user to a given project
+     * 
+     * @param username
+     * @param projectId
+     * @throws DatabaseHandlerException
+     */
+    public void addUserToProject(String username,UUID projectId) throws DatabaseHandlerException{
+    	PreparedStatement addUserStatement = null;
+    	try {
+        	connection.setAutoCommit(false);
+        	addUserStatement = connection.prepareStatement(SQLQueries.ADD_USER_TO_PROJECT);
+        	addUserStatement.setString(1, username);
+        	addUserStatement.setObject(2, projectId);
+        	addUserStatement.execute();
+			connection.commit();
+			logger.debug("Successfully added the user: " + username+ " to the project: "+projectId);
+        } catch (SQLException e) {
+        	MLDatabaseUtil.rollBack(connection);
+            String msg = "Error occured while adding the user: " + username+ " to the project: "+projectId + ".\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        } finally {
+        	// enable auto commit
+        	MLDatabaseUtil.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtil.closeStatement(addUserStatement);
+        }
+    }
+    
+    /**
+     * Get the project names and created dates, that a user is assigned to
+     * 
+     * @param username
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public String[][] getUserProjects(String username) throws DatabaseHandlerException{
+    	PreparedStatement addUserStatement = null;
+    	ResultSet result = null;
+    	String [][]projects = null;
+    	try {
+        	addUserStatement = connection.prepareStatement(SQLQueries.GET_USER_PROJECTS,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        	addUserStatement.setString(1, username);
+        	result=addUserStatement.executeQuery();
+        	// create a 2-d string array having the size of the result set
+        	result.last();
+        	int size=result.getRow();
+        	if(size>0){
+            	projects=new String[2][size];
+            	result.beforeFirst();
+            	//put the result set to the string array
+        		for(int i=0 ; i<size ; i++){
+        			result.next();
+        			projects[0][i]=result.getString(1);
+        			projects[1][i]=result.getDate(2).toString();
+            	}
+        	}
+        	return projects;
+        } catch (SQLException e) {
+        	MLDatabaseUtil.rollBack(connection);
+            String msg = "Error occured while retrieving the projects of user: " + username + ".\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new DatabaseHandlerException(msg);
+        } finally {
+            // close the database resources
+            MLDatabaseUtil.closeStatement(addUserStatement);
         }
     }
 }

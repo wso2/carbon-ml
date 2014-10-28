@@ -14,16 +14,17 @@
 		<div style="clear:both"></div>
 		<div id="new_project">
 			<%
-				var currentProjectId=session.get("projectId");
+				var currentProjectId;
+				if(session.get("projectId")){
+					currentProjectId=session.get("projectId").toString();
+				}else{
+					currentProjectId="";
+				}
 			%>
-			<a id="newProject" onclick="newProject(<%=currentProjectId%>)">
+			<a id="newProject" onclick="newProject('<%=currentProjectId%>')">
 				<img src="../../images/new_project.png" id="new_project_img" alt="New Project">
 			</a><br><br>
 			<p id="new_project-text">New Project</p>
-		</div>
-		<div id="open_project">
-			<img src="../../images/open_project.png" id="open_project_img" alt="Open Project"><br><br>
-			<p id="open_project-text">Open Project</p>
 		</div>
 		<div id="help">
 			<a href="https://docs.wso2.com/display/ML010/Machine+Learner+0.1.0+Documentation" target="_blank"> 
@@ -31,6 +32,30 @@
 			</a><br><br>
 			<p id="help-text">Help</p>
 		</div>
+
+			<div id="currentProjects"> 
+				<% 
+					var user=jagg.getUser();
+					if(user){
+						var carbon = require('carbon');
+	    				var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+	    				var projects=projectManagementService.getUserProjects(user);
+	    		%>
+	    		<table id="projectsTable">
+	    			<caption>Projects of <a href="#"><%=user%></a> :</caption>	    		
+	    		<%	    				
+	    				if(projects!=null){
+	    					print('<th>Project Name</th><th>Created Date</th>');
+	    					for(var i=0 ; i<projects[0].length ; i++){
+	    						print('<tr><td style="width:50%">'+projects[0][i]+'</td><td>'+projects[1][i]+'</td><td><a class="open_project blueButton">Open</a></td></tr>');
+	    					}
+	    				}else{
+	    					print('<tr><td><i>No projects available</i></td></tr>');
+	    				}
+					}
+				%>
+				</table>
+			</div>
 	</div>
 </div>
 

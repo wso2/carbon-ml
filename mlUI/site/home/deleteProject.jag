@@ -1,4 +1,10 @@
 <%
 	var log=new Log();
-	log.info("************************");
+	var carbon = require('carbon');
+    var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+    var projectId=request.getParameter("projectId");
+
+    projectManagementService.deleteProject(projectId);
+    session.put("projectId",undefined);
+    session.put("datasetId",undefined);
 %>

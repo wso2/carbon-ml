@@ -45,7 +45,6 @@ $('document').ready(function() {
 	});
 
 	$("#uploadDataset").change(function() {
-
 		$("#datasetName").val($('#uploadDataset').val());
 	});
 

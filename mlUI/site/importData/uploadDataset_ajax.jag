@@ -1,13 +1,19 @@
 <%
+    include("/jagg/jagg.jag");
+    
 	var log = new Log();
     include("../../includes/constants.jag");
 	var carbon = require('carbon');
 
+    // Create a project
     var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
     var projectDescription=request.getParameter("projectDescription");
     var projectName=request.getParameter("projectName");
     var projectId=projectManagementService.createProject(projectName,projectDescription);
     session.put("projectId",projectId);
+
+    // Add the user to the project
+    projectManagementService.addUserToProject(jagg.getUser(),projectId);
 
     var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService'); 
     var datasetConfig = datasetService.getDatasetConfig();
@@ -19,12 +25,10 @@
     	sourceFile.open("r");
     	destinationFile.open('w');
     	destinationFile.write(sourceFile.getStream());
-    }
-    catch(e)
+    }catch(e)
     {
         log.error("An error occured while importing file");
-    }
-    finally{
+    }finally{
         destinationFile.close();
         sourceFile.close();
     }
