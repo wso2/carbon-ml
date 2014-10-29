@@ -39,6 +39,10 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
     
     <build>
@@ -59,7 +63,7 @@
                         	org.apache.commons.math3.random.*;version="[0.0.0,0.0.1)",
                         	org.apache.commons.csv.*;version="[0.0.0,0.0.1)",
                         	org.apache.commons.lang.math.*;version="[0.0.0,0.0.1)",
-                        	org.h2;version="[0.0.0,0.0.1)",
+                        	org.h2;version="[0.0.0,1.4.81)",
                         	org.apache.commons.logging,
                         	org.apache.hadoop.conf,
                         	org.apache.hadoop.fs,
