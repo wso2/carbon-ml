@@ -17,6 +17,10 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
+	<dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -29,9 +33,13 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>
                         <Bundle-Activator>org.wso2.carbon.ml.project.mgt.ProjectManagementServiceActivator</Bundle-Activator>
-                        <Export-Package>org.wso2.carbon.ml.project.mgt.*</Export-Package>
+                        <Export-Package>
+				org.wso2.carbon.ml.project.mgt.*,
+				org.h2.*,
+				org.apache.commons.logging
+			</Export-Package>
                         <Import-Package>
-                        	org.h2;version="[0.0.0,0.0.1)",
+                        	org.h2;version="[0.0.0,1.4.81)",
                         	org.apache.commons.logging,
                         	*;resolution:=optional
                         </Import-Package>
