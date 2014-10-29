@@ -3,6 +3,9 @@ $('document').ready(function() {
 	// highlight "import data" menu
 	$('#importData').addClass('top_Menu_button menuHiligher');
 
+	// disable the other wizard menu links
+	disableEvaluation();
+
 	$("#dataImportForm").submit(function(e) {
 		var fileName = $('#datasetName').val();
 		var projectName = $('#projectName').val();
@@ -49,3 +52,19 @@ $('document').ready(function() {
 	});
 
 });
+
+function disableEvaluation(){
+	var color='#848484';
+	$('#evaluate').css('color',color);
+	$('#evaluate').removeAttr("href");
+};
+
+function disableWizardMenu(){
+	var color='#848484';
+	$('#exploreData').css('color',color);
+	$('#exploreData').removeAttr("href");
+	$('#buildModel').css('color',color);
+	$('#buildModel').removeAttr("href");
+	$('#evaluate').css('color',color);
+	$('#evaluate').removeAttr("href");
+};

@@ -87,3 +87,18 @@ function newProject(currentProjectId){
 		window.location.href = "../importData/importDataset.jag";
 	}
 };
+
+function disableWizardMenu(){
+	var color='#848484';
+	$('#exploreData').css('color',color);
+	$('#exploreData').removeAttr("href");
+	$('#buildModel').css('color',color);
+	$('#buildModel').removeAttr("href");
+	$('#evaluate').css('color',color);
+	$('#evaluate').removeAttr("href");
+};
+
+function enableWizardMenu(){
+	$('#evaluate').css('color',"#848484");
+	$('#evaluate').removeAttr("href");
+};

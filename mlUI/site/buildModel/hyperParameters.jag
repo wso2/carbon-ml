@@ -30,6 +30,7 @@
 	<%
 		var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
 		var datasetId = session.get("datasetId");
+		
 		if(session.get("modelType")=="Classification"){
 			var categoricalFeatureNames = datasetService.getFeatureNames(datasetId,"CATEGORICAL");
 			var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"responseDropdown");
@@ -55,8 +56,8 @@
 		}
 	%>
 	</div>
-<script>
 
+<script>
 $(function() {
 	$("#trainRatio").slider( {
 		orientation:"horizontal",
