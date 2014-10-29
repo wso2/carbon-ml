@@ -16,8 +16,10 @@
 	    session.put("datasetId",undefined);
 	    session.put("projectId",undefined);
 	%>
+
 		<div id="workArea">
 			<%include("../../includes/wizardmenu.jag");%>
+			<script>disableWizardMenu();</script>
 			<div id="importDialog">
 				<form id="dataImportForm" action="./uploadDataset_ajax.jag" method="post"
 					enctype="multipart/form-data">

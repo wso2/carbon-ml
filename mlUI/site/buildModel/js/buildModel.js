@@ -1,5 +1,16 @@
 
-$('#buildModel').addClass('top_Menu_button menuHiligher');
+$('document').ready(function(){
+	
+	$('#buildModel').addClass('top_Menu_button menuHiligher');
+
+	disableWizardMenu();
+});
+
+function disableWizardMenu(){
+	var color='#848484';
+	$('#evaluate').css('color',color);
+	$('#evaluate').removeAttr("href");
+};
 
 function loadModelTypes(){
 	$('#wizzardSteps').load('modelType.jag');
@@ -28,7 +39,7 @@ $('#algorithms_continue').click(function () {
     var parameters=$(".parameter_name");
     var values=$(".parameter_value>input");
     var response=$('.responseDropdown option:selected').text();
-    var trainDataRatio=$("#trainRatio").slider("value");
+    var trainDataRatio=$("#trainRatio").slider("value")/100;
 	var i=0;
 	if(algoName==undefined){
 		alert("Please select an algorithm before continue.");
