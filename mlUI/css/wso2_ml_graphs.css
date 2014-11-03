@@ -21,7 +21,7 @@
 }
 .singleBar
 {
-	fill: #4682B4;
+	fill: #E3C519;
 	fill-opacity: .9;
 }
 .bar.x.axis path
@@ -36,7 +36,7 @@
 }
 .histogram rect
 {
-	fill: #4682B4;
+	fill: #E3C519;
 	shape-rendering: crispEdges;
 }
 .histogram .his text

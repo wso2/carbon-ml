@@ -1,0 +1,7 @@
+<%
+	include("/jagg/jagg.jag");
+	jagg.setUser(null);
+	session.remove("datasetId");
+	session.remove("projectId");
+	response.sendRedirect("../home/login.jag");
+%>

@@ -6,6 +6,8 @@ $('document').ready(function(){
 	disableWizardMenu();
 });
 
+
+
 function disableWizardMenu(){
 	var color='#848484';
 	$('#evaluate').css('color',color);
@@ -13,28 +15,34 @@ function disableWizardMenu(){
 };
 
 function loadModelTypes(){
+	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('modelType.jag');
 };
 	
-function loadQuestions(data){  
+function loadQuestions(data){
+	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('questions.jag',data);
 };
 
-function loadRecommendedAlgos(data){  
+function loadRecommendedAlgos(data){
+	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('recommendedAlgos.jag',data);
 };
 
 function loadAllAlgos(){  
+	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('allAlgos.jag');
 };
 
 
 $('input[name=algorithm]').change(function () {
+	jagg.sessionAwareJs();
 	var algoName=$('input[name=algorithm]:checked')[0].value;
     $('#hyperParameters').load('hyperParameters.jag','algorithm='+algoName);
 });
 
 $('#algorithms_continue').click(function () {
+	jagg.sessionAwareJs();
 	var algoName=$('input[name=algorithm]:checked')[0];
     var parameters=$(".parameter_name");
     var values=$(".parameter_value>input");
@@ -68,6 +76,7 @@ $('#algorithms_continue').click(function () {
 });
 
 $('.modelTypeButton').click(function () {
+	jagg.sessionAwareJs();
 	//get the id of the clicked button
     var modelType=this.id;
 	var data='modelType='+modelType;
@@ -75,6 +84,7 @@ $('.modelTypeButton').click(function () {
 });
 
 $('#questions_continue').click(function () {
+	jagg.sessionAwareJs();
 	var interpretability=$('#interpretability>option:checked')[0].value;
     var datasetSize=$('#datasetSize>option:checked')[0].value;
     var textual=$('#textual>option:checked')[0].value;

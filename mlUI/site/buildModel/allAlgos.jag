@@ -1,5 +1,6 @@
 <html>
 <head>
+<script src="../../session/userCheck.js"></script>
 <script src="./js/buildModel.js"></script> 
 </head>
 	<div class="algorithms">

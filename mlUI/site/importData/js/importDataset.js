@@ -3,7 +3,7 @@ $('document').ready(function() {
 	// highlight "import data" menu
 	$('#importData').addClass('top_Menu_button menuHiligher');
 
-	// disable the other wizard menu links
+	// disable the evaluation link on wizard menu
 	disableEvaluation();
 
 	$("#dataImportForm").submit(function(e) {
@@ -65,6 +65,4 @@ function disableWizardMenu(){
 	$('#exploreData').removeAttr("href");
 	$('#buildModel').css('color',color);
 	$('#buildModel').removeAttr("href");
-	$('#evaluate').css('color',color);
-	$('#evaluate').removeAttr("href");
 };

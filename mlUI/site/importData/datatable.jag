@@ -11,14 +11,14 @@
 
 <div id="middle">
 	<%
-	    include("../../includes/header.jag");
 	    include("../../includes/tenantAware.jag");
+	    include("../../includes/title.jag");
 	%>
 		<div id="workArea">
 			<%
 				include("../../includes/wizardmenu.jag");
 
-				if(!session.get("datasetId")){
+				if(jagg.getUser() && !session.get("datasetId")){
 					response.sendRedirect("./importDataset.jag");
 				}
 			%>
@@ -104,7 +104,11 @@
 				            	        .attr("class", "arc")
 				            	        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
 
-				            	  var color = d3.scale.category20();
+				            	  //var color = d3.scale.category20();
+				            	   var color = d3.scale.ordinal().range(["#D59C0C","#3C2B02",'#614705','#FFD64A','#7A5C0F',
+								            '#FFF869','#A8801C','#F0D74C','#D9AE21','#FFC400','#D9A90A','#BFB011','#B29E47',
+								            '#FFD64A','#C6B902','#C68202','#95773B','#8F6908','#4F3903','#FFDA00']);
+				            	   
 				            	  arcs.append("path")
 				            	    .attr("fill", function(d, i) {
 				            	        return color(i);
@@ -143,7 +147,7 @@
 				 			   		.attr("height", function(d) {
 				 			   			return yScale(d);
 				 			   		})
-				 			   		.attr("fill", '#2b8cab');
+				 			   		.attr("fill", '#D59C0C');
 				            }
 				        });
 				        

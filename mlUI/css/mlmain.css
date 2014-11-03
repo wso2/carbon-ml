@@ -21,20 +21,22 @@ html,body,head{
 	background-color:#E6E6E6;
 	height:7em;
 	text-align: left;
-	margin-top:-2em;
+	margin-top:auto;
 }
 
 #page-header-line{
-	background-color: #2E64FE;
+	background-color: #DAA520;
 	height:0.1em;
 }
 
 #logo{
-	width:11em;
-	height:5em;
+	width:19em;
+	height:3em;
 	float:left;
-	padding-top: 1em;
-	padding-left: 0.5em;
+	margin-top: 2em;
+	margin-left: 1em;
+/*	padding-top: 1em;
+	padding-left: 0.5em;*/
 }
 
 #hader-name{
@@ -133,10 +135,10 @@ html,body,head{
 }
 
 .top_Menu_button.menuHiligher{
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #349ee0), color-stop(1, #2d7db3));
-	background:-moz-linear-gradient( center top, #349ee0 5%, #2d7db3 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#349ee0', endColorstr='#2d7db3');
-	background-color:#349ee0;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614));
+	background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
+	background-color:#FFD700;
 	color:#ffffff;
 }
 
@@ -157,13 +159,16 @@ html,body,head{
 	padding: 5px 5px;
 	color:white;
 	/*background: #75A3FF;*/
-	background-color:#349ee0;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614));
+	background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
+	background-color:#FFD700;
 	font-family:arial;
 	font-size:15px;
 	font-style:normal;
 	width: 130px;
 	border-radius: 5px;
-	border: 1px solid #57D6C7;
+	border: 1px solid #DAA520;
 	cursor: pointer;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
 

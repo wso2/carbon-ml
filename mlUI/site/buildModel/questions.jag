@@ -1,5 +1,7 @@
 <%
 	var log=new Log();
+
+	// if not coming backwards
 	if(request.getParameter("modelType")!=undefined){
 		session.put('modelType',request.getParameter("modelType"));
 	}

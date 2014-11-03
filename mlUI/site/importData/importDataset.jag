@@ -11,28 +11,29 @@
 	<body>
 	<div id="middle">
 	<%
-	    include("../../includes/header.jag");
 	    include("../../includes/tenantAware.jag");
-	    session.put("datasetId",undefined);
-	    session.put("projectId",undefined);
+	    include("../../includes/title.jag");
+	    session.remove("datasetId");
+	    session.remove("projectId");
 	%>
 
 		<div id="workArea">
 			<%include("../../includes/wizardmenu.jag");%>
+
 			<script>disableWizardMenu();</script>
 			<div id="importDialog">
 				<form id="dataImportForm" action="./uploadDataset_ajax.jag" method="post"
 					enctype="multipart/form-data">
-					Project Name: <input type="text" name="projectName" id="projectName"/> 
-					<br><br>
-					Project Description: 
-					<br><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea>
-					<br><br>
-					Data Source: <input type="text" id="datasetName" name="datasetName" disabled/>
-					<input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
-					<input type="button" id="datasetOpen" value="Browse" /> 
-					<br><br>
-					<input type="submit" value="Import">
+					<div> Project Name:</div>
+					<div><input type="text" name="projectName" id="projectName"/> </div> 
+					<div> Project Description:</div>
+					<div><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea> </div> 
+					<div> Data Source:</div>
+						<div><input type="text" id="datasetName" name="datasetName" disabled/>
+						<input type="button" id="datasetOpen" value="Browse" /> 
+						<input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
+					</div> 
+					<div> <input type="submit" value="Import"></div> 
 					<span id="validatorMsg"></span>
 				</form>
 			</div>

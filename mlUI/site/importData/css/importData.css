@@ -11,12 +11,13 @@
 }
 
 /* file upload component*/
-#uploadDataset { 
+#uploadDataset{ 
     width: 1px; 
     visibility: hidden;
+    padding-left: 10%;
 }
 
 #importDialog{
-	padding-left: 50px;
-	padding-top: 80px;
+	padding-left: 10%;
+	padding-top: 5%;
 }
