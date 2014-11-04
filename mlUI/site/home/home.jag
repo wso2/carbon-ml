@@ -5,11 +5,12 @@
 <link rel="stylesheet" type="text/css" href="./css/home.css">
 
 	<%
-	    include("../../includes/header.jag");
 	    include("../../includes/tenantAware.jag");
+	    include("/includes/title.jag");
 	%>
 <script src="../../js/jquery.js"></script>
 <script src="../../js/jquery-ui.js"></script>
+<script src="../../session/sessionCheck.js"></script>
 <script src="./js/home.js"></script> 
 <body>
 <div id="middle">

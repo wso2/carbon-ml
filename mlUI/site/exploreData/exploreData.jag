@@ -44,8 +44,8 @@
 
 <div id="middle">
 	<%
-	    include("../../includes/header.jag");
 	    include("../../includes/tenantAware.jag");
+      include("../../includes/title.jag");
 	%>
 	<div id="workArea">
 		<%include("../../includes/wizardmenu.jag");%>

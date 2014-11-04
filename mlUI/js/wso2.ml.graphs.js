@@ -111,7 +111,12 @@ function scatterPlot() {
             .style("text-anchor", "end")
             .text(yLabel);
 
-        var color = d3.scale.category10();
+        var color = d3.scale.category20();
+
+/*        var color = d3.scale.ordinal().range(["#D59C0C","#3C2B02",'#614705','#FFD64A','#7A5C0F',
+            '#FFF869','#A8801C','#F0D74C','#D9AE21','#FFC400','#D9A90A','#BFB011','#B29E47',
+            '#FFD64A','#C6B902','#C68202','#95773B','#8F6908','#4F3903','#FFDA00']);
+*/
 
         svg.selectAll(".dot")
             .data(data)
@@ -368,7 +373,7 @@ function histogramUsingCalculatedFrequencies() {
 
     var barPadding = 1; // padding between two bars
     var displayAxises = true; // this flag is used to enable/disable axises  
-    var barColor = '#4682F4'
+    var barColor = '#D59C0C'
 
     var formatValue = d3.format(".2s");
 

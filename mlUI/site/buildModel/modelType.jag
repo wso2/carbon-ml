@@ -7,4 +7,5 @@
 	<div class="model_type_button"><a class="modelTypeButton" id="Clustering">Clustering</a></div>
 </div>
 
+<script src="../../session/sessionCheck.js"></script>
 <script src="./js/buildModel.js"></script> 

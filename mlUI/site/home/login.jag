@@ -1,14 +1,14 @@
 <html>
 	<body>
 		<% 
-		include("../../includes/header.jag");
-		(function () {
-			isTenantAllowed();
-			if (session.get("logged.user")) {
-				response.sendRedirect("./home.jag");
-				return;
-			}
-		}());
+			include("../../includes/header.jag");
+			include("../../includes/title.jag");
+			(function () {
+				if (session.get("logged.user")) {
+					response.sendRedirect("./home.jag");
+					return;
+				}
+			}());
 		%>
 		<form method="POST" action="authenticate.jag">
 		    <div class="login">

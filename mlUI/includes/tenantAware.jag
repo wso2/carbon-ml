@@ -1,12 +1,12 @@
 <%
-user = jagg.getUser();
+	include("./header.jag");
+	user = jagg.getUser();
 
-(function () {
-    isTenantAllowed();
-    if (!user) {
-        response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
-        return;
-    }
-}());
+	(function () {
+	    if (!user) {
+	        response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
+	        return;
+	    }
+	}());
 
 %>

@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<%
+	include("../../includes/tenantAware.jag");
+%>
+
 <html>
 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
 <link href="../../css/jquery-ui.css" rel="stylesheet">
@@ -10,8 +13,7 @@
 <body>
 <div id="middle">
 	<%
-	    include("../../includes/header.jag");
-	    include("../../includes/tenantAware.jag");
+		include("../../includes/title.jag");
 	%>
 
 	<div id="workArea">

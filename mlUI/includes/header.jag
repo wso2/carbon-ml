@@ -1,16 +1,16 @@
 <%
 include("/jagg/jagg.jag");
-include("./title.jag");
+var site = require("/site/conf/site.json");
 
 var getRedirectPathForNonAuthenticatedUser = function () {
    var requestedPage = request.getRequestURI();
     var tenantParam="";
     if (request.getQueryString() != null) {
-        requestedPage = requestedPage + '?' + encodeURIComponent(request.getQueryString());
-       var tenantDomain=getTenantDomain();
-       if(tenantDomain!=null){
-       tenantParam="&tenant="+tenantDomain;
-       }
+      requestedPage = requestedPage + '?' + encodeURIComponent(request.getQueryString());
+      var tenantDomain=getTenantDomain();
+      if(tenantDomain!=null){
+        tenantParam="&tenant="+tenantDomain;
+      }
     }
     var redirectPath = jagg.getAbsoluteUrl("/?requestedPage=" + requestedPage+tenantParam);
     return redirectPath;
@@ -19,33 +19,6 @@ var getRedirectPathForNonAuthenticatedUser = function () {
 var getTenantDomain=function(){
 	return request.getParameter("tenant");
 };
-
-var isTenantAllowed=function(){
- 	var user = jagg.getUser(),username;
-	var userInSession = session.get("LOGGED_IN_USER");
-	var hasAccess= session.get("hasAccess");
-	var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-   	
-	if(userInSession != null && request.getParameter("tenant") != null){
-		var domainName = MultitenantUtils.getTenantDomain(userInSession);
-	   
-	    	if(domainName == request.getParameter("tenant")){
-				jagg.setUser({username:userInSession, cookie:null, hasAccess:hasAccess});
-	    	}
-	    
-	}
-
-   /*if(user!=null){
-   	username=user.username;
-   	if(request.getParameter("tenant")!=null){
-   		if(user.username.split("@")[1]!=request.getParameter("tenant")){
-   			jagg.setUser(null);
-   			response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
-   			return;
-   		}
-   	}
-   }*/
-   };
 
 // 1  Filter out tenant parameter
     var request_tenant = request.getParameter("tenant");

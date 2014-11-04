@@ -3,6 +3,7 @@ $('document').ready(function(){
 	$('#home').addClass('top_Menu_button menuHiligher');
 
 	$('.delete_project').click(function() {
+		jagg.sessionAwareJs();
 		var projectId=$('#'+this.id+'hiddenField').val();
 		$(function() {
 		    $('<div id="dialog-confirm" title="Confirm"><p>Are you sure want to delete this project?</p></div>').dialog({
@@ -34,6 +35,7 @@ $('document').ready(function(){
 	});
 
 	$('.open_project').click(function() {
+		jagg.sessionAwareJs();
 		var projectId=$('#'+this.id+'hiddenField').val();
 		$.ajax({
 			url : "./openProject.jag",
@@ -51,6 +53,7 @@ $('document').ready(function(){
 });
 
 function newProject(currentProjectId){
+	jagg.sessionAwareJs();
 	if(currentProjectId!=""){
 		$(function() {
 		    $('<div id="dialog-confirm" title="Confirm"><p>Do you want to save the current project?</p></div>').dialog({
