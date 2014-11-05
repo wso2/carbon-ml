@@ -30,7 +30,11 @@ public class SQLQueries {
                                                       "DIMENSIONALITY FROM ML_ALGORITHM WHERE " +
                                                       "TYPE=?";
 
+    public static final String INSERT_EXECUTION =
+            "INSERT INTO ML_EXECUTION(ID,WORKFLOW" +
+            ") VALUES(?,?)";
+
     public static final String INSERT_MODEL =
-            "INSERT INTO ML_Model(ID,PROCESS,ACCURACY,HYPERPARAMETERS," +
-            "FEATURE_IMPORTANCE) VALUES(?,?,?,?,?)";
+            "INSERT INTO ML_MODEL(ID,EXECUTION,MODEL,MODEL_SUMMARY" +
+            ") VALUES(?,?,?,?)";
 }
