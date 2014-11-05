@@ -1,0 +1,11 @@
+
+<h3> Model Name : <input type="text" name="modelName"></h3>
+<h3> Select a Model type:</h3>
+<div id="model_type">
+	<div class="model_type_button"><a class="modelTypeButton" id="Numerical_Prediction">Numerical Prediction</a></div>
+	<div class="model_type_button"><a class="modelTypeButton" id="Classification">Classification</a></div>
+	<div class="model_type_button"><a class="modelTypeButton" id="Clustering">Clustering</a></div>
+</div>
+
+<script src="../../session/sessionCheck.js"></script>
+<script src="./js/buildModel.js"></script> 

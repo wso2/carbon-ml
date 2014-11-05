@@ -1,0 +1,72 @@
+	<%
+		var carbon = require('carbon');
+		var algoName=request.getParameter("algorithm");
+		var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+		var hyperParameters = modelService.getHyperParameters(algoName);
+		if(hyperParameters!=null){
+	%>
+	<div id="parameters">
+	<p> Hyper-Parameters for <%=algoName%> </p>
+		<div id="names_block">
+	<%
+			var parametersArray=hyperParameters.getJSONArray("parameters");
+			for (var i=0; i<parametersArray.length(); i++){
+				var parameter=parametersArray.getJSONObject(i).get('parameter');
+				print("<div class=\"parameter_name\" id=\""+parameter+"\">"+parameter+": </div>");
+			}
+			print("</div><div id=\"values_block\">");
+			for (var i=0; i<parametersArray.length(); i++){
+				print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\""+parametersArray.getJSONObject(i).get('parameter')+"\" value=\""+parametersArray.getJSONObject(i).get('value')+"\"></div>");					
+			}
+		}
+	%>
+		</div>
+	</div>
+
+	<div id="optionalParameters">
+		<p id="trainProportionLabel">Training Data Propotion:&emsp;<label maxlength="3" size="3" id="ratioVal"></label> </p>
+		<div id="trainRatio"></div>
+	 	
+	<%
+		var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+		var datasetId = session.get("datasetId");
+		
+		if(session.get("modelType")=="Classification"){
+			var categoricalFeatureNames = datasetService.getFeatureNames(datasetId,"CATEGORICAL");
+			var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"responseDropdown");
+			print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
+		}else if(session.get("modelType")=="Numerical_Prediction"){
+			var numericalFeatureNames = datasetService.getFeatureNames(datasetId,"NUMERICAL");
+			var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"responseDropdown");
+			print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
+		}
+
+		function listSelectionRenderer(featureNames, selectedOption, cssClass){
+			var selection = "<select class=" + cssClass + ">";
+			for (var i=0; i<featureNames.length; i++){
+				if (selectedOption.toUpperCase() == featureNames[i].toUpperCase()){
+					selection += "<option selected value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+				}
+				else{
+					selection += "<option value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+				}
+			}
+			selection += "</select>";
+			return selection;
+		}
+	%>
+	</div>
+
+<script>
+$(function() {
+	$("#trainRatio").slider( {
+		orientation:"horizontal",
+		value:70,
+		slide: function( event, ui ) {
+			$("#ratioVal").val( ui.value );
+			$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
+		}	
+	});
+	$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
+});
+</script> 

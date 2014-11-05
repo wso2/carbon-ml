@@ -1,0 +1,55 @@
+.scatter .axis path,.scatter .axis line
+{
+	fill: none;
+	shape-rendering: crispEdges;
+	stroke: #000;
+	stroke-widh: 1000;
+}
+.scatter .dot
+{
+	stroke: #000;
+}
+.bar
+{
+	font: 10px sans-serif;
+	position: relative;
+	width: 960px;
+}
+.axis .text
+{
+	font: 1px sans-serif;
+}
+.singleBar
+{
+	fill: #E3C519;
+	fill-opacity: .9;
+}
+.bar.x.axis path
+{
+	display: none;
+}
+.bar.label
+{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+.histogram rect
+{
+	fill: #E3C519;
+	shape-rendering: crispEdges;
+}
+.histogram .his text
+{
+	fill: #fff;
+}
+.scatter,.histogram
+{
+	font: 10px sans-serif;
+}
+.axis path,.axis line,.histogram .axis path,.axis line
+{
+	fill: none;
+	shape-rendering: crispEdges;
+	stroke: #000;
+}

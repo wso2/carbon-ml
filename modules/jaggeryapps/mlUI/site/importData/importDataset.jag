@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<html>
+	<head>
+	 <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+	 <link rel="stylesheet" type="text/css" href="./css/importData.css">
+	 <script type="text/javascript" src="../../js/d3.js"></script>
+	 <script src="../../js/jquery.js"></script>
+	 <script src="./js/importDataset.js"></script>
+	</head>
+	<body>
+	<div id="middle">
+	<%
+	    include("../../includes/tenantAware.jag");
+	    include("../../includes/title.jag");
+	    session.remove("datasetId");
+	    session.remove("projectId");
+	%>
+
+		<div id="workArea">
+			<%include("../../includes/wizardmenu.jag");%>
+
+			<script>disableWizardMenu();</script>
+			<div id="importDialog">
+				<form id="dataImportForm" action="./uploadDataset_ajax.jag" method="post"
+					enctype="multipart/form-data">
+					<div> Project Name:</div>
+					<div><input type="text" name="projectName" id="projectName"/> </div> 
+					<div> Project Description:</div>
+					<div><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea> </div> 
+					<div> Data Source:</div>
+						<div><input type="text" id="datasetName" name="datasetName" disabled/>
+						<input type="button" id="datasetOpen" value="Browse" /> 
+						<input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
+					</div> 
+					<div> <input type="submit" value="Import"></div> 
+					<span id="validatorMsg"></span>
+				</form>
+			</div>
+	</div>
+	</body>
+	</html>

@@ -1,0 +1,12 @@
+<%
+	include("./header.jag");
+	user = jagg.getUser();
+
+	(function () {
+	    if (!user) {
+	        response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
+	        return;
+	    }
+	}());
+
+%>

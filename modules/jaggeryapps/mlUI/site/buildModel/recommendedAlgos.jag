@@ -1,0 +1,47 @@
+<%
+	var log=new Log();
+	if(request.getParameter("interpretability")!=undefined && request.getParameter("datasetSize")!=undefined && request.getParameter("textual")!=undefined){
+		session.put('interpretability',request.getParameter("interpretability"));
+   		session.put('datasetSize',request.getParameter("datasetSize"));
+   		session.put('textual',request.getParameter("textual"));
+	}
+%>
+
+<html>
+<body>
+	<div class="algorithms">
+		<h3>Recommended Algorithms</h3>
+		<form id="recomendedAlgoForm" action="#" method="post" enctype="multipart/form-data">
+			<%	
+				var carbon = require('carbon');
+				var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+				try{
+					algorithmType=session.get("modelType");
+					userResponseJson='{"interpretability":"'+session.get("interpretability")+'","datasetSize":"'+session.get("datasetSize")+
+         '","textual":"'+session.get("textual")+'"}';
+					var recommendedAlgorithms=datasetService.getRecommendedAlgorithms(algorithmType,userResponseJson);
+                    var iterator= recommendedAlgorithms.entrySet().iterator();
+                    while(iterator.hasNext())
+                    {
+                    	var pair = iterator.next();
+                    	print('<input type="radio" class="algoName" name="algorithm" value="'+pair.getKey()+'">'+pair.getKey()+' ('+pair.getValue()+')<br>');
+
+                    }
+				}
+				catch(e){
+					log.error("An error occured while getting recommended algorithms"+e);
+				}
+			%>
+		</form>
+	</div>
+
+	<div id="hyperParameters"> </div>
+
+	<div style="clear:both"></div>
+	<div class="bottomNavigationButtons">
+		<button id="recommendedAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
+		<button id="algorithms_continue" class="blueButton">Continue</button>
+	<div>
+</body>
+<script src="./js/buildModel.js"></script> 
+</html

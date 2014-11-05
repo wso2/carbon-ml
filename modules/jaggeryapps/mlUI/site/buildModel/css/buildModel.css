@@ -1,0 +1,158 @@
+
+.model_type_button{
+    margin-top: 2.5em;
+    height:3em;
+    width:10em;
+    text-align: left;
+    line-height: 2.7em;
+}
+
+.modelTypeButton {
+    float: left;
+    width:12em;
+    height:3em;
+    line-height: 3em;
+    position: absolute;
+    margin: 0;
+    padding: 0 10px 0 3em;
+    color: #fff;
+    text-decoration: none; 
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+    background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+    background-color:#E6E6E6;
+    font-family:arial;
+    font-size:15px;
+    font-style:normal;
+    text-align:left;
+    color:#000000;
+    text-indent: 0.01em;
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+}
+
+.modelTypeButton:after{
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    top: 0;
+    right: 0;
+    border-top: 1.5em solid #FAFAFA;
+    border-left: 2em solid transparent;
+    border-bottom: 1.6em solid #FAFAFA;
+    position: absolute;
+}
+.modelTypeButton:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614) );
+    background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
+    background-color:#FFD700;
+    color:#ffffff;
+}
+.modelTypeButton:active {
+    position:relative;
+    top:1px;
+}
+
+#wizzardSteps{
+	margin-top: 2%;
+	margin-left: 5%;
+}
+
+#model_type{
+	margin-left: 8%;
+}
+
+table, th, td {
+    padding: 1em;
+}
+
+input.algoName {
+        margin-top: 2em;
+}
+
+
+
+/* Questions*/
+#questions_content{
+    margin-left: 4em;
+}
+#questions_block{
+    float:left;
+}
+
+.question{
+    margin-top: 2em;
+}
+
+#options_block{
+    float:left;
+    margin-left: 2em;
+}
+
+.option{
+    margin-top: 2em;
+}
+
+
+
+/* Algorithms */
+
+.algorithms{
+    float:left;
+    margin-left: 4em;
+}
+
+
+/*Hyper parameters*/
+
+#hyperParameters{
+    float:left;
+    margin-top: 2em;
+    margin-left: 10%;
+}
+
+
+#parameters{
+    float:left;
+    margin-left: 4em;
+}
+
+#names_block{
+    float:left;
+    margin-top: -1em;
+}
+
+.parameter_name{
+    margin-top: 2.2em;
+}
+
+#values_block{
+    float:left;
+    margin-left: 2em;
+    margin-top: -1em;
+}
+
+.parameter_value{
+    margin-top: 2em;
+}
+
+/* Optional parameters*/
+
+#optionalParameters{
+    float:left;
+    margin-left: 12em;
+}
+
+#responseDropdown{
+    float: left;
+    margin-top: 3em;
+}
+
+#parameters, #optionalParameters{
+    display:inline;
+}

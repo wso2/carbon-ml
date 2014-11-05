@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<assembly>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
+            <outputDirectory>wso2ml-${pom.version}</outputDirectory>
+            <excludes>
+                <exclude>**/wso2server.sh</exclude>
+                <exclude>**/log4j.properties</exclude>
+                <exclude>**/repository/services/version/**</exclude>
+                <exclude>**/version.txt</exclude>
+                <exclude>**/wso2server.bat</exclude>
+                <exclude>**/README.txt</exclude>
+                <exclude>**/LICENSE.txt</exclude>
+                <exclude>**/INSTALL.txt</exclude>
+                <exclude>**/user-mgt.xml</exclude>
+                <exclude>**/carbon.xml</exclude>
+                <exclude>**/cache.xml</exclude>
+                <exclude>**/master-datasources.xml</exclude>
+                <exclude>**/WSO2CARBON_DB.h2.db</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/modules</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/modules/</outputDirectory>
+            <includes>
+                <include>*/**</include>
+            </includes>
+        </fileSet>
+        <!--copying runtimes-->
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/lib/runtimes</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib/runtimes/</outputDirectory>
+            <includes>
+                <include>*/**</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/wso2carbon-core-${carbon.platform.version}</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <excludes>
+                <exclude>**/wso2server.bat</exclude>
+                <exclude>**/wso2server.sh</exclude>
+            </excludes>
+            <includes>
+                <include>**/*.sh</include>
+            </includes>
+            <fileMode>755</fileMode>
+        </fileSet>
+
+        <!--copying registry dbscripts-->
+        <fileSet>
+            <directory>target/wso2carbon-core-${carbon.kernel.version}/dbscripts</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
+            <!-- Changes related to Carbon kernel 4.2.0 patches -->
+            <excludes>
+                <exclude>db2.sql</exclude>
+                <exclude>mysql.sql</exclude>
+                <exclude>mysql_cluster.sql</exclude>
+            </excludes>
+            <!-- End - Changes related to Carbon kernel 4.2.0 patches -->
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <includes>
+                <include>**/identity.xml</include>
+            </includes>
+            <excludes>
+                <exclude>**/catalina-server.xml</exclude>
+                <exclude>**/log4j.properties</exclude>
+                <exclude>**/user-mgt.xml</exclude>
+                <exclude>**/master-datasources.xml</exclude>
+                <exclude>**/embedded-ldap.xml</exclude>
+                <exclude>**/krb5.conf</exclude>
+            </excludes>
+        </fileSet>
+
+        <!--Multitenancy related file -->
+        <fileSet>
+            <directory>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/multitenancy/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/multitenancy</outputDirectory>
+            <includes>
+                <include>**/stratos.xml</include>
+                <include>**/multitenancy-packages.xml</include>
+                <include>**/usage-throttling-agent-config.xml</include>
+                <include>**/cloud-services-desc.xml</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
+            <includes>
+                <include>**/bam.xml</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity
+            </directory>
+            <outputDirectory>wso2ml-${pom.version}/dbscripts/identity</outputDirectory>
+            <includes>
+                <include>**/**.sql</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>src/main/resources/dbscripts</directory>
+            <outputDirectory>wso2ml-${pom.version}/dbscripts/ml</outputDirectory>
+            <includes>
+                <include>**/**.sql</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../jaggeryapps</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps</outputDirectory>
+            <includes>
+                <include>**/**</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>wso2ml-${pom.version}/repository/components/lib</outputDirectory>
+            <includes>
+                <include>org.apache.commons:commons-math3:jar</include>
+                <include>org.apache.spark:spark-mllib_2.10:jar</include>
+                <include>org.apache.spark:spark-core_2.10:jar</include>
+                <include>org.json:json:jar</include>
+                <include>org.apache.commons:commons-csv:jar</include>
+                <include>commons-lang:commons-lang:jar</include>
+                <include>commons-logging:commons-logging:jar</include>
+                <include>com.h2database:h2:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <file>
+            <source>src/main/conf/log4j.properties</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/conf</outputDirectory>
+            <destName>log4j.properties</destName>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/user-mgt.xml</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/embedded-ldap.xml</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/cache.xml</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/conf/etc</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/krb5.conf</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>LICENSE.txt</source>
+            <outputDirectory>wso2ml-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>README.txt</source>
+            <outputDirectory>wso2ml-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>INSTALL.txt</source>
+            <outputDirectory>wso2ml-${pom.version}</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/bin/README.txt</source>
+            <outputDirectory>wso2ml-${pom.version}/bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/bin/version.txt</source>
+            <outputDirectory>wso2ml-${pom.version}/bin/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+
+        <file>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/logging-config.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/multitenancy/tenant-mgt.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+        </file>
+        <file>
+            <source>
+                src/main/conf/master-datasources.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/datasources/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/identity.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/data/is-default-schema.zip
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/data</outputDirectory>
+        </file>
+        <file>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/claim-config.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/bin/wso2server.sh</source>
+            <outputDirectory>wso2ml-${pom.version}/bin</outputDirectory>
+            <destName>wso2server.sh</destName>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/bin/wso2server.bat</source>
+            <outputDirectory>wso2ml-${pom.version}/bin</outputDirectory>
+            <destName>wso2server.bat</destName>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/security/cipher-text.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/resources/security/cipher-tool.properties</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
+        </file>
+
+	<file>
+            <source>target/database/WSO2ML_DB.h2.db</source>
+            <outputDirectory>wso2ml-${pom.version}/repository/database</outputDirectory>
+            <!--filtered>true</filtered-->
+            <fileMode>666</fileMode>
+        </file>
+    </files>
+</assembly>

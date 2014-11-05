@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ml-parent</artifactId>
+        <groupId>org.wso2.carbon</groupId>
+        <version>0.1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ml-features</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Machine Learner Features</name>
+    <modules>
+        <module>org.wso2.carbon.ml.dataset.feature</module>
+        <module>org.wso2.carbon.ml.model.feature</module>
+        <module>org.wso2.carbon.ml.project.mgt.feature</module>
+        <module>org.wso2.carbon.ml.feature</module>
+    </modules>
+</project>

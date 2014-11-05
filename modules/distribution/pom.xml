@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~  Copyright (c) 2005-2012, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~
+  ~  WSO2 Inc. licenses this file to you under the Apache License,
+  ~  Version 2.0 (the "License"); you may not use this file except
+  ~  in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>ml-parent</artifactId>
+        <version>0.1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>wso2ml</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Machine Learner - Distribution</name>
+    <url>http://www.wso2.org/projects/ml/java</url>
+    <description>WSO2 Machine Learner Distribution</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
+            <version>${version.h2.engine}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.10</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_2.10</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-wso2carbon</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wso2.carbon</groupId>
+                                    <artifactId>wso2carbon-core</artifactId>
+                                    <version>${carbon.kernel.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>extract-docs-from-components</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="tempdir" value="target/docs-temp"/>
+                                <mkdir dir="${tempdir}"/>
+                                <unzip dest="${tempdir}">
+                                    <fileset dir="target">
+                                        <include name="${project.artifactId}-${project.version}.zip"/>
+                                    </fileset>
+                                </unzip>
+
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
+                                      overwrite="false">
+                                    <fileset
+                                            dir="${tempdir}/${project.artifactId}-${project.version}/repository/components/">
+                                    </fileset>
+                                </copy>
+                                <delete file="target/${project.artifactId}-${project.version}.zip"/>
+                                <delete dir="${tempdir}"/>
+                                <mkdir dir="${tempdir}"/>
+                                <unzip dest="${tempdir}">
+                                    <fileset
+                                            dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
+                                        <include name="*.ui*.jar"/>
+                                    </fileset>
+                                </unzip>
+                                <move todir="${tempdir}/web/" includeemptydirs="false">
+                                    <fileset dir="${tempdir}/web/">
+                                        <exclude name="**/_demo/**"/>
+                                        -SNAPSHOT
+                                        <exclude name="**/_docs/**"/>
+                                        <exclude name="**/yui/**"/>
+                                        <exclude name="**/ajax/**"/>
+                                        <exclude name="**/editarea/**"/>
+                                        <exclude name="**/codepress/**"/>
+                                        <exclude name="**/WEB-INF/**"/>
+                                        <include name="**/*.html"/>
+                                    </fileset>
+                                    <mapper type="glob" from="*.html" to="*.xml"/>
+                                </move>
+                                <mkdir dir="src/site/xdoc"/>
+                                <copy todir="src/site/xdoc" overwrite="false" includeemptydirs="false">
+                                    <fileset dir="${tempdir}/web">
+                                        <exclude name="**/_demo/**"/>
+                                        <exclude name="**/_docs/**"/>
+                                        <exclude name="**/yui/**"/>
+                                        <exclude name="**/ajax/**"/>
+                                        <exclude name="**/WEB-INF/**"/>
+                                        <exclude name="**/*.html"/>
+                                        <exclude name="**/*.js"/>
+                                        <exclude name="**/*.jsp"/>
+                                        <exclude name="**/*.xsl"/>
+                                        <exclude name="*.*"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="src/site" overwrite="false" includeemptydirs="false">
+                                    <fileset dir="../../docs">
+                                    </fileset>
+                                </copy>
+                                <copy todir="target/site/" overwrite="false" includeemptydirs="false">
+                                    <fileset dir="src/site/xdoc/">
+                                        <include name="**/images/*.*"/>
+                                    </fileset>
+                                </copy>
+                                <delete dir="${tempdir}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>clean_target</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="target/archive-tmp"/>
+                                <delete dir="target/dependency-maven-plugin-markers"/>
+                                <delete dir="target/maven-archiver"/>
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
+                                <delete dir="target/sources"/>
+                                <delete dir="target/site"/>
+                                <delete dir="target/database"/>
+                                <delete dir="src/site"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+		     <execution>
+                        <id>Create-ML-Database</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <path id="h2.classpath">
+                                    <path refid="maven.compile.classpath"/>
+                                </path>
+                                <echo
+                                        message="########### Creating Machine Learner Database ##############"/>
+                                <sql
+                                        driver="org.h2.Driver"
+                                        url="jdbc:h2:${basedir}/target/database/WSO2ML_DB"
+                                        userid="wso2carbon" password="wso2carbon" autocommit="true"
+                                        onerror="continue">
+                                    <classpath>
+                                        <path refid="h2.classpath"/>
+                                    </classpath>
+                                    <fileset file="${basedir}/src/main/resources/dbscripts/h2.sql"/>
+                                </sql>
+                                <echo
+                                        message="##################### END ########################"/>
+                            </tasks>
+                        </configuration>
+                    </execution> 
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.4</version>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>index</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>pre_dist</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dist</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${basedir}/src/main/assembly/filter.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
