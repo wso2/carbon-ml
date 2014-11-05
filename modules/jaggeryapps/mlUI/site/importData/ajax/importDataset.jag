@@ -1,0 +1,64 @@
+<%
+   var log = new Log();
+   var mlConfigs=require("/includes/ml.json");
+   var carbon = require('carbon');
+   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+   var start = parseInt(request.getParameter("iDisplayStart"));
+   var length = parseInt(request.getParameter("iDisplayLength"));
+   var datasetID = session.get("datasetId");
+   if (datasetID != null){
+     var features = datasetService.getFeatures(datasetID,start+1,length);
+     var json = {};
+     json['sEcho'] = request.getParameter("sEcho");
+     json['iTotalRecords'] = session.get("numOfFeatures");
+     json['iTotalDisplayRecords'] = session.get("numOfFeatures");
+
+     var pageContentAsJson = [];
+     for(var i=0; i<features.length; i++){
+        var feature = features[i];
+     
+        var featureAsJson = [];
+
+        featureAsJson.push('<span class="feature">' + feature.getFieldName()
+                    + '</span>');
+        featureAsJson.push(checkboxRenderer(feature.isInput()));
+        featureAsJson.push(listSelectionRenderer(mlConfigs.featureTypes,feature.getType().getFeatureName(),"fieldType"));
+        featureAsJson.push('<div class="summaryStatistics">' + feature.getSummaryStats() + "</div>");
+        featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions,feature.getImputeOperation().getImputeOptionName(),"imputeMethod"));
+        pageContentAsJson.push(featureAsJson);      
+       
+     }
+     response.contentType = "application/Json";
+     json['aaData'] = pageContentAsJson;
+     response.content = JSON.stringify(json);
+   }  
+
+   function checkboxRenderer(value){
+     var checkboxControl = '<input type="checkbox"' + 'class="includeFeature" value="includeFeature"';
+        if (value){      
+         checkboxControl += "checked />";
+    } else {
+      checkboxControl += "/>";
+    }
+    return checkboxControl;
+   }; 
+
+   function listSelectionRenderer(list, selectedOption, cssClass){
+     var selection = "<select class=" + cssClass + ">";
+     for (var item in list){
+      if (selectedOption.toUpperCase() == list[item].toUpperCase()){
+        selection += "<option selected value=\"" + list[item]
+            + "\">" + list[item] + "</option>";
+      }
+      else{
+        selection += "<option value=\"" + list[item] + "\">"
+            + list[item] + "</option>";
+      }
+     }
+     selection += "</select>";
+     return selection;
+   }
+%>
+
+
+

@@ -1,5 +1,4 @@
 <%
-
 //TODO : remove this when log configs are implemented
 Log.prototype.isDebugEnabled = function () {
     return false;
@@ -21,17 +20,6 @@ var context = context || {
 var site = require("/site/conf/site.json");
 
 var jagg = jagg || (function () {
-    var ctx = context;
-
-    var modules = {};
-
-    var requirs = {};
-
-    var templates = {};
-
-    var initializers = {};
-
-    var bloks = {};
 
     var data;
 

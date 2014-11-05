@@ -15,7 +15,7 @@ $('document').ready(function(){
 		    		Yes: function() {
 		    			$( this ).dialog("close");
 		    			$.ajax({
-							url : "./deleteProject.jag",
+							url : "./ajax/deleteProject.jag",
 							type : 'POST',
 							data : 'projectId='+projectId,
 							success : function(data, textStatus, jqXHR) {
@@ -38,7 +38,7 @@ $('document').ready(function(){
 		jagg.sessionAwareJs();
 		var projectId=$('#'+this.id+'hiddenField').val();
 		$.ajax({
-			url : "./openProject.jag",
+			url : "./ajax/openProject.jag",
 			type : 'POST',
 			data : 'projectId='+projectId,
 			success : function(data, textStatus, jqXHR) {
@@ -69,7 +69,7 @@ function newProject(currentProjectId){
 		    		Delete: function() {
 		    			$( this ).dialog("close");
 		    			$.ajax({
-							url : "./deleteProject.jag",
+							url : "./ajax/deleteProject.jag",
 							type : 'POST',
 							data : 'projectId='+currentProjectId,
 							success : function(data, textStatus, jqXHR) {

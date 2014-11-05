@@ -10,7 +10,7 @@
 				}
 			}());
 		%>
-		<form method="POST" action="authenticate.jag">
+		<form id="loginForm" method="POST" action="./ajax/authenticate.jag">
 		    <div class="login">
 		    <p id="login_title"> Login :</p>
 			<p>
@@ -22,6 +22,7 @@
 			<p>
 			<input class="blueButton" type="submit" class="submit" value="Login">
 			</p>
+			<input type="hidden" id="redirect" name="redirect" value="<%=request.getParameter("redirect")%>">
 			</div>
 		</form>
 	</body>

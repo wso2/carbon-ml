@@ -1,4 +1,3 @@
-
 <h3> Model Name : <input type="text" name="modelName"></h3>
 <h3> Select a Model type:</h3>
 <div id="model_type">

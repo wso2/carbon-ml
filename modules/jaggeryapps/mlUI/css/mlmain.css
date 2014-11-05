@@ -35,8 +35,6 @@ html,body,head{
 	float:left;
 	margin-top: 2em;
 	margin-left: 1em;
-/*	padding-top: 1em;
-	padding-left: 0.5em;*/
 }
 
 #hader-name{
@@ -60,7 +58,7 @@ html,body,head{
 }
 
 
-/* top menu*/
+/* wizard menu*/
 .menulink{
 	text-decoration:none;
 	padding: 7px 10px -5px -5px;
@@ -171,7 +169,6 @@ html,body,head{
 	border: 1px solid #DAA520;
 	cursor: pointer;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
-
 }
 
 

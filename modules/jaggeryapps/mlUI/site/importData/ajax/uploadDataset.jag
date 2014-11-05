@@ -1,8 +1,7 @@
 <%
     include("/jagg/jagg.jag");
-    
+    var mlConfigs=require("/includes/ml.json");
 	var log = new Log();
-    include("../../includes/constants.jag");
 	var carbon = require('carbon');
 
     // Create a project
@@ -36,6 +35,7 @@
     var datasetId = datasetService.registerDataset(sourceFile.getName(),projectId);
     session.put("datasetId",datasetId);
     session.put("datasetName",sourceFile.getName());
-    var numOfFeatures = datasetService.generateSummaryStats(datasetId,NO_OF_ROWS);
+
+    var numOfFeatures = datasetService.generateSummaryStats(datasetId,mlConfigs.NO_OF_ROWS);
     session.put("numOfFeatures",numOfFeatures);
 %>
