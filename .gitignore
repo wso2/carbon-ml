@@ -21,5 +21,4 @@ hs_err_pid*
 .project
 .prefs
 sonar-pom.xml
-log4j.properties
 ._*
