@@ -67,7 +67,6 @@ public class ModelTrainer implements Callable<String> {
                     (scoresAndLabels);
             LogisticRegressionModelSummary logisticRegressionModelSummary = new
                     LogisticRegressionModelSummary();
-            logisticRegressionModelSummary.setUserResponse(userResponse);
             logisticRegressionModelSummary.setAuc(metrics.areaUnderROC());
             List<Tuple2<Object,Object>> rocData = metrics.roc().toJavaRDD().collect();
             JSONArray rocPoints = new JSONArray();
