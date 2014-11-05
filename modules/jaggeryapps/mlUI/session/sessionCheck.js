@@ -1,12 +1,8 @@
+/* Session check function for UI button clicks */
+
 var jagg = jagg || {};
 
 (function () {
-	jagg.post = function () {
-	        var args = Array.prototype.slice.call(arguments);
-	        args[0] = this.site.context + args[0];
-	        $.post.apply(this, args);
-	    };
-
 	jagg.syncPost = function(url, data, callback, type) {
 	        return jQuery.ajax({
 	                               type: "POST",
@@ -36,5 +32,4 @@ var jagg = jagg || {};
 			window.location.href = "../home/login.jag";
 		}
 	};
-
 }());

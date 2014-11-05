@@ -18,7 +18,7 @@ function loadModelTypes(){
 	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('modelType.jag');
 };
-	
+
 function loadQuestions(data){
 	jagg.sessionAwareJs();
 	$('#wizzardSteps').load('questions.jag',data);
@@ -41,6 +41,24 @@ $('input[name=algorithm]').change(function () {
     $('#hyperParameters').load('hyperParameters.jag','algorithm='+algoName);
 });
 
+$('.modelTypeButton').click(function () {
+	jagg.sessionAwareJs();
+	//get the id of the clicked button
+    var modelType=this.id;
+	var data='modelType='+modelType;
+	loadQuestions(data);
+});
+
+$('#questions_continue').click(function () {
+	jagg.sessionAwareJs();
+	var interpretability=$('#interpretability>option:checked')[0].value;
+    var datasetSize=$('#datasetSize>option:checked')[0].value;
+    var textual=$('#textual>option:checked')[0].value;
+	var data = 'interpretability='+interpretability+'&datasetSize='+datasetSize+'&textual='+textual;
+	loadRecommendedAlgos(data);
+});
+
+
 $('#algorithms_continue').click(function () {
 	jagg.sessionAwareJs();
 	var algoName=$('input[name=algorithm]:checked')[0];
@@ -61,33 +79,13 @@ $('#algorithms_continue').click(function () {
 			i++;
 		}
 		$.ajax({
-				url : "./submit.jag",
+				url : "./ajax/submit.jag",
 				type : 'POST',
 				data : hyperParametersData,
-				success : function(data, textStatus, jqXHR) {
-					// TODO
-				},
 				error : function(jqXHR, textStatus, errorThrown) {
 					// TODO: redirect to error page 
 				}
 			});
 
 	}
-});
-
-$('.modelTypeButton').click(function () {
-	jagg.sessionAwareJs();
-	//get the id of the clicked button
-    var modelType=this.id;
-	var data='modelType='+modelType;
-	loadQuestions(data);
-});
-
-$('#questions_continue').click(function () {
-	jagg.sessionAwareJs();
-	var interpretability=$('#interpretability>option:checked')[0].value;
-    var datasetSize=$('#datasetSize>option:checked')[0].value;
-    var textual=$('#textual>option:checked')[0].value;
-	var data = 'interpretability='+interpretability+'&datasetSize='+datasetSize+'&textual='+textual;
-	loadRecommendedAlgos(data);
 });

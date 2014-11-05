@@ -1,7 +1,7 @@
 <%
 	var log=new Log();
 
-	// if not coming backwards
+	// read the model type from the request, if not coming to the page using back button
 	if(request.getParameter("modelType")!=undefined){
 		session.put('modelType',request.getParameter("modelType"));
 	}

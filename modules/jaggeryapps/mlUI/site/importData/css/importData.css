@@ -1,8 +1,6 @@
 #datasetTable,#summary{
-
 	padding-left: 3em;
 	padding-right: 3em;
-
 }
 
 #summary{
@@ -11,13 +9,29 @@
 }
 
 /* file upload component*/
-#uploadDataset{ 
-    width: 1px; 
+#uploadDataset{
+    width: 1px;
     visibility: hidden;
     padding-left: 10%;
 }
 
 #importDialog{
-	padding-left: 10%;
-	padding-top: 5%;
+	float: left;
+	display:table;
+	vertical-align: top;
+	margin-left: 10%;
+}
+
+.cell{
+	display:table-cell;
+	vertical-align: top;
+	padding: 2em 1em 0 0;
+}
+
+.row{
+	display:table-row;
+}
+
+#projectDescription, #projectName{
+	width:20em;
 }

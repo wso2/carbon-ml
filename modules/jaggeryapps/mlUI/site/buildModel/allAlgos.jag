@@ -1,26 +1,23 @@
-<html>
-<head>
-<script src="../../session/userCheck.js"></script>
-<script src="./js/buildModel.js"></script> 
-</head>
-	<div class="algorithms">
-		<h3>Available Algorithms</h3>
-		<%
-			var log =new Log();
-		  	var carbon = require('carbon');
-		  	var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
-		  	log.info(session.get("modelType"));
-		  	var algorithms = modelService.getAlgorithmsByType(session.get("modelType"));
-		  	for(var i=0 ; i<algorithms.length ; i++){
-		  		print("<input type=\"radio\" class=\"algoName\" name=\"algorithm\" value=\""+algorithms[i]+"\">"+algorithms[i]+"<br>");
-		  	}
-		%>
-	</div>
-	<div id="hyperParameters"> </div>
+<script src="../../session/sessionCheck.js"></script>
 
-	<div style="clear:both"></div>
-	<div class="bottomNavigationButtons">
-		<button id="allAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
-		<button id="algorithms_continue" class="blueButton">Continue</button>
-	<div>
-</html>
+<div class="algorithms">
+	<h3>Available Algorithms</h3>
+	<%
+		var log =new Log();
+		var carbon = require('carbon');
+		var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+		var algorithms = modelService.getAlgorithmsByType(session.get("modelType"));
+		for(var i=0 ; i<algorithms.length ; i++){
+			print('<input type="radio" class="algoName" name="algorithm" value="'+algorithms[i]+'">'+algorithms[i]+'<br>');
+		}
+	%>
+</div>
+
+<div id="hyperParameters"> </div>
+
+<div style="clear:both"></div>
+<div class="bottomNavigationButtons">
+	<button id="allAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
+	<button id="algorithms_continue" class="blueButton">Continue</button>
+<div>
+<script src="./js/buildModel.js"></script> 

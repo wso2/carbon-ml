@@ -1,4 +1,6 @@
 <%
+// Redirects to the login page if the user has not signed-in
+
 	include("./header.jag");
 	user = jagg.getUser();
 
@@ -8,5 +10,4 @@
 	        return;
 	    }
 	}());
-
 %>
