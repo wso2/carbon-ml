@@ -10,8 +10,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <name>ML Admin-Clients Module</name>
-    <artifactId>org.wso2.carbon.ml.integration.common.clients</artifactId>
-    <packaging>jar</packaging>
-
+    <name>ML Test Artifact Module</name>
+    <artifactId>org.wso2.carbon.ml.integration.common.test.artifacts</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+    </modules>
 </project>
