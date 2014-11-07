@@ -174,7 +174,6 @@ public class DatabaseHandler {
         PreparedStatement insertStatement = null;
         try {
             UUID modelId = UUID.randomUUID();
-            // insert the data-set details to the database
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
             insertStatement.setObject(1, modelId);
