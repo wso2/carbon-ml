@@ -23,8 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +30,9 @@ import java.util.UUID;
 public class DatasetService {
 	private static final Log logger = LogFactory.getLog(DatasetService.class);
 
-	/**
+
+    //TODO" this should go to an xml config file
+    /**
 	 * This method extract data-set configurations from the database
 	 *
 	 * @return

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -82,21 +83,21 @@ public class ModelService {
             DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
             Map<String, List<Integer>> algorithmRatings = handler.getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
-                if ("high".equals(userResponse.get("interpretability"))) {
+                if (MLConstants.HIGH.equals(userResponse.get(MLConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, (rating.getValue().get(0) * 5));
-                } else if ("medium".equals(userResponse.get("interpretability"))) {
+                } else if (MLConstants.MEDIUM.equals(userResponse.get(MLConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, (rating.getValue().get(0) * 3));
                 } else {
                     rating.getValue().set(0, 5);
                 }
-                if ("large".equals(userResponse.get("datasetSize"))) {
+                if (MLConstants.LARGE.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, (rating.getValue().get(1) * 5));
-                } else if ("medium".equals(userResponse.get("datasetSize"))) {
+                } else if (MLConstants.MEDIUM.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, (rating.getValue().get(1) * 3));
-                } else if ("small".equals(userResponse.get("datasetSize"))) {
+                } else if (MLConstants.SMALL.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, 5);
                 }
-                if ("Yes".equals(userResponse.get("textual"))) {
+                if (MLConstants.YES.equals(userResponse.get(MLConstants.TEXTUAL))) {
                     rating.getValue().set(2, (rating.getValue().get(2) * 3));
                 } else {
                     rating.getValue().set(2, 5);
@@ -107,10 +108,12 @@ public class ModelService {
                 recommendations.put(pair.getKey(), sum(pair.getValue()));
             }
             Double max = Collections.max(recommendations.values());
+            DecimalFormat ratingNumberFormat = new DecimalFormat("#.00");
             Double scaledRating;
-            for (Map.Entry<String, Double> pair : recommendations.entrySet()) {
-                scaledRating = ((pair.getValue()) / max) * 5;
-                recommendations.put(pair.getKey(), scaledRating);
+            for (Map.Entry<String, Double> recommendation : recommendations.entrySet()) {
+                scaledRating = ((recommendation.getValue()) / max) * 5;
+                scaledRating = Double.valueOf(ratingNumberFormat.format(scaledRating));
+                recommendations.put(recommendation.getKey(), scaledRating);
             }
         } catch (Exception e) {
             String msg = "An error occurred while retrieving recommended algorithms";
