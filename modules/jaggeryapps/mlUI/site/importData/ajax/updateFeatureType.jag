@@ -3,11 +3,11 @@
    var carbon = require('carbon');
    var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
    try{
-      var datasetId = session.get("datasetId");
-      if (datasetId != null){
+      var workflowId = session.get("workflowId");
+      if (workflowId != null){
          var featureType = request.getParameter("FEATURE_TYPE");
    		var featureName = request.getParameter("FEATURE_NAME");
-   		datasetService.updateDataType(featureName, datasetId, featureType);
+   		datasetService.updateDataType(featureName, workflowId, featureType);
       }
    }catch(e){
    	log.error("An error occured while updating feature type",e);

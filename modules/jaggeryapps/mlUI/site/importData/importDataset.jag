@@ -24,7 +24,7 @@
 			<div id="importDialog">
 				<form id="dataImportForm" action="./ajax/uploadDataset.jag" method="post"
 					enctype="multipart/form-data">
-					<div id="name" class="row">
+					<div class="row">
 						<div class="cell"> Project Name:</div>
 						<div class="cell"><input type="text" name="projectName" id="projectName"/> </div> 
 					</div>
@@ -32,7 +32,12 @@
 						<div class="cell"> Project Description:</div>
 						<div class="cell" ><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea> </div>
 					</div>
-
+					
+					<div class="row">
+						<div class="cell"> Workflow Name:</div>
+						<div class="cell"><input type="text" name="workflowName" id="workflowName"/> </div> 
+					</div>
+					
 					<div id="dataSource" class="row">
 						<div class="cell" > Data Source:</div>
 						<div class="cell">

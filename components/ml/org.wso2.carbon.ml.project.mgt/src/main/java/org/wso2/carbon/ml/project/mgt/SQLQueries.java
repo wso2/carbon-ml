@@ -18,17 +18,33 @@
 package org.wso2.carbon.ml.project.mgt;
 
 public class SQLQueries {
-	
-	public static final String CREATE_PROJECT = "INSERT INTO ML_PROJECT(ID,NAME,DESCRIPTION,CREATED_TIME) VALUES(?,?,?,CURRENT_TIMESTAMP())";
-    
-    public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE ID=?";
-    
-    public static final String ADD_USER_TO_PROJECT = "INSERT INTO ML_USER_PROJECTS(USERNAME,PROJECT) VALUES(?,?)";
-    
-    public static final String GET_USER_PROJECTS = "SELECT ID,NAME,CREATED_TIME FROM ML_PROJECT WHERE ID IN (SELECT PROJECT FROM ML_USER_PROJECTS WHERE USERNAME=?)";
 
-    public static final String GET_DATASET_ID = "SELECT ID FROM ML_DATASET WHERE PROJECT=?";
+	public static final String CREATE_PROJECT = "INSERT INTO ML_PROJECT(PROJECT_ID,NAME," +
+                                                "DESCRIPTION,CREATED_TIME) VALUES(?,?,?,CURRENT_TIMESTAMP())";
+
+    public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE PROJECT_ID=?";
+
+    public static final String ADD_TENANT_TO_PROJECT = "INSERT INTO ML_TENANT_PROJECTS" +
+                                                       "(TENANT_ID," +
+                                                     "PROJECT_ID) VALUES(?,?)";
     
+    public static final String GET_TENANT_PROJECTS = "SELECT PROJECT_ID,NAME," +
+                                                   "CREATED_TIME FROM ML_PROJECT WHERE PROJECT_ID" +
+                                                   " IN (SELECT PROJECT_ID FROM " +
+                                                   "ML_TENANT_PROJECTS " +
+                                                   "WHERE TENANT_ID=?)";
+
+    public static final String GET_DATASET_ID = "SELECT DATASET_ID FROM ML_DATASET WHERE " +
+                                                "PROJECT_ID=?";
+
+    public static final String CREATE_NEW_WORKFLOW = "INSERT INTO ML_WORKFLOW" +
+                                                     "(WORKFLOW_ID,PARENT_WORKFLOW_ID,PROJECT_ID," +
+                                                     "DATASET_ID,NAME) VALUES(?,?,?,?,?)";
+    
+    public static final String DELETE_WORKFLOW = "DELETE FROM ML_WORKFLOW WHERE WORKFLOW_ID=?";
+    
+    public static final String GET_PROJECT_WORKFLOWS = "SELECT WORKFLOW_ID,NAME FROM ML_WORKFLOW WHERE PROJECT_ID=?";
+
     //private Constructor to prevent class from instantiating.
 	private SQLQueries() {
 	  }

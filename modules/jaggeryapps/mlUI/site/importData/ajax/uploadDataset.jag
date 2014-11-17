@@ -8,12 +8,15 @@
     var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
     var projectDescription=request.getParameter("projectDescription");
     var projectName=request.getParameter("projectName");
-    var projectId=projectManagementService.createProject(projectName,projectDescription);
+    var uuid = require('uuid');
+    var projectId=uuid.generate();
+	projectManagementService.createProject(projectId,projectName,projectDescription);
     session.put("projectId",projectId);
 
     // Add the user to the project
-    projectManagementService.addUserToProject(jagg.getUser(),projectId);
+    projectManagementService.addTenantToProject(jagg.getUser(),projectId);
 
+    // Upload Dataset
     var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService'); 
     var datasetConfig = datasetService.getDatasetConfig();
     var uploadingDir = datasetConfig.getDatasetUploadingLoc();
@@ -24,18 +27,29 @@
     	sourceFile.open("r");
     	destinationFile.open('w');
     	destinationFile.write(sourceFile.getStream());
-    }catch(e)
-    {
+    }catch(e){
         log.error("An error occured while importing file");
     }finally{
         destinationFile.close();
         sourceFile.close();
     }
 
-    var datasetId = datasetService.registerDataset(sourceFile.getName(),projectId);
+    //insert dataset details
+    var datasetId=uuid.generate();
+    datasetService.registerDataset(datasetId,sourceFile.getName(),projectId);
     session.put("datasetId",datasetId);
     session.put("datasetName",sourceFile.getName());
 
-    var numOfFeatures = datasetService.generateSummaryStats(datasetId,mlConfigs.NO_OF_ROWS);
+    //calculate summary stats
+    var numOfFeatures = datasetService.generateSummaryStats(datasetId,mlConfigs.NO_OF_ROWS,Boolean(true));
     session.put("numOfFeatures",numOfFeatures);
+    
+    //create a new workflow
+    var workflowId=uuid.generate();
+    var workflowName=request.getParameter("workflowName");
+    projectManagementService.createNewWorkflow(workflowId,workflowId,projectId,datasetId,workflowName);
+    session.put("workflowId",workflowId);
+
+   // load default feature settings
+   datasetService.setDefaultFeatureSettings(datasetId,workflowId);
 %>

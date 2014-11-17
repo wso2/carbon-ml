@@ -6,8 +6,9 @@
    var start = parseInt(request.getParameter("iDisplayStart"));
    var length = parseInt(request.getParameter("iDisplayLength"));
    var datasetID = session.get("datasetId");
+   var workflowId = session.get("workflowId");
    if (datasetID != null){
-     var features = datasetService.getFeatures(datasetID,start+1,length);
+     var features = datasetService.getFeatures(datasetID,workflowId,start+1,length);
      var json = {};
      json['sEcho'] = request.getParameter("sEcho");
      json['iTotalRecords'] = session.get("numOfFeatures");
@@ -24,6 +25,7 @@
         featureAsJson.push(checkboxRenderer(feature.isInput()));
         featureAsJson.push(listSelectionRenderer(mlConfigs.featureTypes,feature.getType().getFeatureName(),"fieldType"));
         featureAsJson.push('<div class="summaryStatistics">' + feature.getSummaryStats() + "</div>");
+        
         featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions,feature.getImputeOperation().getImputeOptionName(),"imputeMethod"));
         pageContentAsJson.push(featureAsJson);      
        

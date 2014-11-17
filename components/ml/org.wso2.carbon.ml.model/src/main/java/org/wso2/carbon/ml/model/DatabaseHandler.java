@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class DatabaseHandler {
 
@@ -167,71 +166,5 @@ public class DatabaseHandler {
             MLDatabaseUtil.closeStatement(getStatement);
         }
         return algorithmRatings;
-    }
-
-    public <T,S>UUID insertModelDetails(UUID executionID, T model,S modelSummary)
-            throws DatabaseHandlerException {
-        PreparedStatement insertStatement = null;
-        try {
-            UUID modelId = UUID.randomUUID();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
-            insertStatement.setObject(1, modelId);
-            insertStatement.setObject(2, executionID);
-            insertStatement.setObject(3, model);
-            insertStatement.setObject(4, modelSummary);
-            insertStatement.execute();
-            connection.commit();
-            logger.debug("Successfully updated the details of model: Model ID" + modelId);
-            return modelId;
-
-        } catch (SQLException e) {
-            // rollback the changes
-            MLDatabaseUtil.rollBack(connection);
-            String msg =
-                    "Error occured while inserting model details to the database." +
-                    e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-
-        } finally {
-            // enable auto commit
-            MLDatabaseUtil.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtil.closeStatement(insertStatement);
-        }
-    }
-
-    public UUID insertExecutionDetails(UUID workflowID)
-            throws DatabaseHandlerException {
-        PreparedStatement insertStatement = null;
-        try {
-            UUID executionId = UUID.randomUUID();
-            // insert the data-set details to the database
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_EXECUTION);
-            insertStatement.setObject(1, executionId);
-            insertStatement.setObject(2, workflowID);
-            insertStatement.execute();
-            connection.commit();
-            logger.debug("Successfully updated the details of model execution: Execution ID" +
-                         executionId);
-            return executionId;
-
-        } catch (SQLException e) {
-            // rollback the changes
-            MLDatabaseUtil.rollBack(connection);
-            String msg =
-                    "Error occured while inserting model details to the database." +
-                    e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-
-        } finally {
-            // enable auto commit
-            MLDatabaseUtil.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtil.closeStatement(insertStatement);
-        }
     }
 }

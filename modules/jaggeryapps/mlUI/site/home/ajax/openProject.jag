@@ -1,11 +1,30 @@
 <% 
 	var carbon = require('carbon');
+	var uuid = require('uuid');
 	var projectId=request.getParameter('projectId');
-
-	var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-	var datasetId=projectManagementService.getDatasetId(projectId);
+	var action=request.getParameter('action');
 
 	var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+	var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+	var datasetId=projectManagementService.getdatasetID(projectId);
+
+	// create a new worflow
+	if(action=='newWorkflow'){
+		var workflowId=uuid.generate();
+	    var workflowName=request.getParameter("workflowName");
+	    projectManagementService.createNewWorkflow(workflowId,workflowId,projectId,datasetId,workflowName);
+	    session.put("workflowId",workflowId);
+
+	    // load default feature settings
+   		datasetService.setDefaultFeatureSettings(datasetId,workflowId);
+	}else if(action=='openWorkflow'){
+		var workflowId=request.getParameter('workflowId');
+		var workflowName=request.getParameter("workflowName");
+		session.put("workflowId",workflowId);
+	}else{
+		alert('Invalid action');
+	}
+
 	var featureCount=datasetService.getFeatureCount(datasetId);
 
 	session.put('datasetId',datasetId);

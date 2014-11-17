@@ -83,21 +83,21 @@ public class ModelService {
             DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
             Map<String, List<Integer>> algorithmRatings = handler.getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
-                if (MLConstants.HIGH.equals(userResponse.get(MLConstants.INTERPRETABILITY))) {
+                if (MLModelConstants.HIGH.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, (rating.getValue().get(0) * 5));
-                } else if (MLConstants.MEDIUM.equals(userResponse.get(MLConstants.INTERPRETABILITY))) {
+                } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, (rating.getValue().get(0) * 3));
                 } else {
                     rating.getValue().set(0, 5);
                 }
-                if (MLConstants.LARGE.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
+                if (MLModelConstants.LARGE.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, (rating.getValue().get(1) * 5));
-                } else if (MLConstants.MEDIUM.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
+                } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, (rating.getValue().get(1) * 3));
-                } else if (MLConstants.SMALL.equals(userResponse.get(MLConstants.DATASET_SIZE))) {
+                } else if (MLModelConstants.SMALL.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, 5);
                 }
-                if (MLConstants.YES.equals(userResponse.get(MLConstants.TEXTUAL))) {
+                if (MLModelConstants.YES.equals(userResponse.get(MLModelConstants.TEXTUAL))) {
                     rating.getValue().set(2, (rating.getValue().get(2) * 3));
                 } else {
                     rating.getValue().set(2, 5);
