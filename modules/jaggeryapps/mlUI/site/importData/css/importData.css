@@ -32,6 +32,6 @@
 	display:table-row;
 }
 
-#projectDescription, #projectName{
+#projectDescription, #projectName, #workflowName{
 	width:20em;
 }

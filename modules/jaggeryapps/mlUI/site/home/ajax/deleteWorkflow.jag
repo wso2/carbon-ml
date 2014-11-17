@@ -1,12 +1,12 @@
 <%
 	var carbon = require('carbon');
     var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-    var projectId=request.getParameter("projectId");
-    projectManagementService.deleteProject(projectId);
+    var workflowId=request.getParameter("workflowId");
+    projectManagementService.deleteWorkflow(workflowId);
 
     // if the deleted project is the cureent project, remove it from session
-    if(session.get("projectId")==projectId){
-    	session.put("projectId",undefined);
+    if(session.get("workflowId")==workflowId){
+    	session.put("workflowId",undefined);
     	session.put("datasetId",undefined);
     }
 %>

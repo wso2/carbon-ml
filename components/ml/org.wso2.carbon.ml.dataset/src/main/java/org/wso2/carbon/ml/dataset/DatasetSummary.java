@@ -17,6 +17,16 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -29,16 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math3.random.EmpiricalDistribution;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class DatasetSummary {
 	private static final Log logger = LogFactory.getLog(DatasetSummary.class);
@@ -60,20 +60,20 @@ public class DatasetSummary {
 	 * descriptive-stats, missing values, unique values and etc. to display in
 	 * the data view.
 	 *
-	 * @param dataSourceId
+	 * @param datasetID
 	 * @param noOfRecords
 	 * @param noOfIntervals
 	 * @param seperator
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public int generateSummary(String dataSourceId, int noOfRecords, int noOfIntervals,
-	                           String seperator) throws DatasetServiceException {
+	public int generateSummary(String datasetID, int noOfRecords, int noOfIntervals,
+	                           String seperator, Boolean include) throws DatasetServiceException {
 		String msg;
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			// get the file-path of the data source
-			String dataSource = dbHandler.getDataSource(dataSourceId);
+			String dataSource = dbHandler.getDataSource(datasetID);
 			if (dataSource != null) {
 				logger.debug("Data Source: " + dataSource);
 				// read the input data file
@@ -102,8 +102,8 @@ public class DatasetSummary {
 				String[] header =
 						headerMap.keySet().toArray(new String[parser.getHeaderMap()
 						                                      .keySet().size()]);
-				dbHandler.updateSummaryStatistics(dataSourceId, header, type, graphFrequencies,
-				                                  missing, unique, descriptiveStats);
+				dbHandler.updateSummaryStatistics(datasetID, header, type, graphFrequencies,
+				                                  missing, unique, descriptiveStats,include);
 				return headerMap.size();
 			} else {
 				msg = "Data source not found.";
@@ -112,7 +112,7 @@ public class DatasetSummary {
 			}
 		} catch (IOException e) {
 			msg =
-					"Error occured while reading from the data source with ID: " + dataSourceId +
+					"Error occured while reading from the data source with ID: " + datasetID +
 					". " + e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);

@@ -66,6 +66,18 @@ function disableWizardMenu(){
 	$('#buildModel').removeAttr("href");
 };
 
+// Preserve pagination when refreshing datatable 
+$.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+    if(oSettings.oFeatures.bServerSide === false){
+        var before = oSettings._iDisplayStart;
+        oSettings.oApi._fnReDraw(oSettings);
+        oSettings._iDisplayStart = before;
+        oSettings.oApi._fnCalculateEnd(oSettings);
+    }
+    //draw the 'current' page
+    oSettings.oApi._fnDraw(oSettings);
+};
+
 
 /* Draw Data view table */
 function drawDataViewTable(){
@@ -86,8 +98,11 @@ function drawDataViewTable(){
 				            
 				            // clear text in this cell and draw graphs
 				            $(this).text("");
-				            
-				            var type = jsonObj.type; // either CATEGORICAL or NUMERICAL
+
+				            //get feature type
+				            var closestTr = $(this).closest('tr');
+				            var FeatureType = closestTr.find('.fieldType option:selected').text();
+
 				            var frequencies = jsonObj.frequencies;
 				            
 				            // transform dataset
@@ -95,7 +110,7 @@ function drawDataViewTable(){
 			            		return [value.frequency];
 			            	});
 				            
-				            if (type == 'CATEGORICAL'){       	
+				            if (FeatureType == 'CATEGORICAL'){       	
 				            	
 				            	var w = 40;
 				            	var h = 40;
@@ -182,6 +197,8 @@ function drawDataViewTable(){
 				                    'FEATURE_NAME': selectedFeature
 				                }
 				            });
+				            // refresh datatable, preserving the current page
+				            $('#datasetTable').dataTable().fnStandingRedraw();
 				        });
 
 				        $('.includeFeature').on('change', function(e) {

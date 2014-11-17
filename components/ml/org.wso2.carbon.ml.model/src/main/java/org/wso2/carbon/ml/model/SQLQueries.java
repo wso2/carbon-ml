@@ -29,12 +29,4 @@ public class SQLQueries {
     public static final String GET_ALGORITHM_RATINGS = "SELECT NAME,INTERPRETABILITY,SCALABILITY," +
                                                       "DIMENSIONALITY FROM ML_ALGORITHM WHERE " +
                                                       "TYPE=?";
-
-    public static final String INSERT_EXECUTION =
-            "INSERT INTO ML_EXECUTION(ID,WORKFLOW" +
-            ") VALUES(?,?)";
-
-    public static final String INSERT_MODEL =
-            "INSERT INTO ML_MODEL(ID,EXECUTION,MODEL,MODEL_SUMMARY" +
-            ") VALUES(?,?,?,?)";
 }

@@ -18,101 +18,158 @@
 
 package org.wso2.carbon.ml.project.mgt;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ProjectManagementService {
-	private static final Log logger = LogFactory.getLog(ProjectManagementService.class);
-	
-	/**
-	 * Creates a new project
-	 * 
-	 * @param projectName
-	 * @param description
-	 * @return
-	 * @throws ProjectManagementServiceException
-	 */
-	public UUID createProject(String projectName, String description) throws ProjectManagementServiceException {
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			return dbHandler.createProject(projectName, description);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new ProjectManagementServiceException(msg);
-		}
-	}
-	
-	/**
-	 * Delete details of a given project
-	 * 
-	 * @param projectId
-	 * @throws ProjectManagementServiceException
-	 */
-	public void deleteProject(String projectId) throws ProjectManagementServiceException{
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			dbHandler.deleteProject(projectId);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new ProjectManagementServiceException(msg);
-		}
-	}
-	
-	/**
-	 * Assign a user to a given project
-	 * 
-	 * @param username
-	 * @param projectId
-	 * @throws ProjectManagementServiceException
-	 */
-	public void addUserToProject(String username,UUID projectId) throws ProjectManagementServiceException{
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			dbHandler.addUserToProject(username,projectId);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new ProjectManagementServiceException(msg);
-		}
-	}
-	
-	/**
-	 * Get the project names and created dates, that a user is assigned to
-	 * 
-	 * @param username
-	 * @return
-	 * @throws ProjectManagementServiceException
-	 */
-	public String[][] getUserProjects(String username) throws ProjectManagementServiceException{
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			return dbHandler.getUserProjects(username);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new ProjectManagementServiceException(msg);
-		}
-	}
-	
-	/**
-	 * Returns the ID of the dataset associated with the project
-	 * 
-	 * @param projectId
-	 * @return
-	 * @throws ProjectManagementServiceException
-	 */
-	public UUID getDatasetId(String projectId) throws ProjectManagementServiceException{
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			return dbHandler.getDatasetId(projectId);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new ProjectManagementServiceException(msg);
-		}
-	}
+    private static final Log logger = LogFactory.getLog(ProjectManagementService.class);
+
+    /**
+     * Creates a new project
+     *
+     * @param projectName
+     * @param description
+     * @return
+     * @throws ProjectManagementServiceException
+     */
+    public void createProject(String projectID, String projectName, String description) throws
+                                                                                      ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            dbHandler.createProject(projectID, projectName, description);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to create the project. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+
+    /**
+     * Delete details of a given project
+     *
+     * @param projectId
+     * @throws ProjectManagementServiceException
+     */
+    public void deleteProject(String projectId) throws ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            dbHandler.deleteProject(projectId);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to delete the project. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+
+    /**
+     * Assign a tenant to a given project
+     *
+     * @param tenantID
+     * @param projectId
+     * @throws ProjectManagementServiceException
+     */
+    public void addTenantToProject(String tenantID, String projectId)
+            throws ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            dbHandler.addTenantToProject(tenantID, projectId);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to add the tenant to project. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+
+    /**
+     * Get the project names and created dates, that a tenant is assigned to
+     *
+     * @param tenantID
+     * @return
+     * @throws ProjectManagementServiceException
+     */
+    public String[][] getTenantProjects(String tenantID) throws ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            return dbHandler.getTenantProjects(tenantID);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to get tenant projects. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+
+    /**
+     * Returns the ID of the dataset associated with the project
+     *
+     * @param projectId
+     * @return
+     * @throws ProjectManagementServiceException
+     */
+    public String getdatasetID(String projectId) throws ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            return dbHandler.getdatasetID(projectId);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to return dataset ID. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+
+    /**
+     * Create a new machine learning workflow
+     *
+     * @param workflowID
+     * @param projectID
+     * @param workflowName
+     * @throws ProjectManagementServiceException
+     */
+    public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
+                                  String datasetID,String workflowName) throws
+                                                                        ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            dbHandler.createNewWorkflow(workflowID, parentWorkflowID, projectID, datasetID,
+                                        workflowName);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to create the workflow. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+    
+    /**
+     * Delete an existing workflow
+     * 
+     * @param workflowID
+     * @throws ProjectManagementServiceException
+     */
+    public void deleteWorkflow(String workflowID) throws ProjectManagementServiceException {
+        try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            dbHandler.deleteWorkflow(workflowID);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to delete the workflow. " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
+    
+    /**
+     * Get the array of workflows in a project
+     * 
+     * @param projectId
+     * @return
+     * @throws ProjectManagementServiceException
+     */
+    public String[][] getProjectWorkflows(String projectId) throws ProjectManagementServiceException{
+    	try {
+            DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+            return dbHandler.getProjectWorkflows(projectId);
+        } catch (DatabaseHandlerException e) {
+            String msg = "Failed to get workflows of the project "+ projectId +". " + e.getMessage();
+            logger.error(msg, e);
+            throw new ProjectManagementServiceException(msg);
+        }
+    }
 }
