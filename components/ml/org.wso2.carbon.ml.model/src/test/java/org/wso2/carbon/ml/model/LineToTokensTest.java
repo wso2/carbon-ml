@@ -14,7 +14,7 @@ public class LineToTokensTest {
     public void testCall() throws Exception {
         SparkConf conf = new SparkConf().setAppName("testLineToTokens").setMaster("local");
         JavaSparkContext sc = new JavaSparkContext(conf);
-        JavaRDD<String> lines = sc.textFile("modules/components/org.wso2.carbon.ml.model/src/test/resources/pIndiansDiabetes.csv");
+        JavaRDD<String> lines = sc.textFile("src/test/resources/pIndiansDiabetes.csv");
         Pattern pattern = Pattern.compile(",");
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = lines.map(lineToTokens);
