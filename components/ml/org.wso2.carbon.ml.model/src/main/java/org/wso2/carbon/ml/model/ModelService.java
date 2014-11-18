@@ -21,6 +21,7 @@ package org.wso2.carbon.ml.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.osgi.service.component.ComponentContext;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -29,11 +30,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @scr.component name="modelService" immediate="true"
  * Service class for machine learning model building related tasks
  */
+
 public class ModelService {
 
     private static final Log logger = LogFactory.getLog(ModelService.class);
+
+
+    protected void activate(ComponentContext context) {
+        try {
+            ModelService modelService = new ModelService();
+            context.getBundleContext().registerService(ModelService.class.getName(),
+                                                       modelService, null);
+            logger.info("ModelService started");
+        } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    protected void deactivate(ComponentContext context) {
+        logger.info("ModelService stopped");
+    }
 
     /**
      * @param algorithm Name of the machine learning algorithm

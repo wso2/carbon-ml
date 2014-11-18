@@ -20,10 +20,28 @@ package org.wso2.carbon.ml.project.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.osgi.service.component.ComponentContext;
+/**
+ * @scr.component name="projectManagementService" immediate="true"
+ */
 public class ProjectManagementService {
     private static final Log logger = LogFactory.getLog(ProjectManagementService.class);
 
+    protected void activate(ComponentContext context) {
+        try {
+            ProjectManagementService projectManagementService = new ProjectManagementService();
+            context.getBundleContext().registerService(ProjectManagementService.class.getName(),
+                                                       projectManagementService, null);
+            logger.info("ProjectManagementService started");
+            logger.info("http://localhost:9763/mlUI/");
+        } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    protected void deactivate(ComponentContext context) {
+        logger.info("ProjectManagementService stopped");
+    }
     /**
      * Creates a new project
      *

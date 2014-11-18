@@ -20,15 +20,32 @@ package org.wso2.carbon.ml.dataset;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
+import org.osgi.service.component.ComponentContext;
 
 import java.util.List;
 import java.util.Map;
+/**
+ * @scr.component name="datasetService" immediate="true"
+ */
 
 public class DatasetService {
     private static final Log logger = LogFactory.getLog(DatasetService.class);
 
 
-    //TODO" this should go to an xml config file
+    protected void activate(ComponentContext context) {
+        try {
+            DatasetService datasetService = new DatasetService();
+            context.getBundleContext().registerService(DatasetService.class.getName(),
+                                                       datasetService, null);
+            logger.info("DatasetService started");
+        } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    protected void deactivate(ComponentContext context) {
+        logger.info("DatasetService stopped");
+    }
 
     /**
      * This method extract data-set configurations from the database
