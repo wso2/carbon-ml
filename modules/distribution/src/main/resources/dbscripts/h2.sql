@@ -102,25 +102,4 @@ INTERVALS INTEGER,
 SEPARATOR VARCHAR(2)
 );
 
---ALGORITHM
-CREATE TABLE IF NOT EXISTS ML_ALGORITHM(
-NAME VARCHAR(50)  NOT NULL,
-TYPE VARCHAR(20),
-INTERPRETABILITY INTEGER,
-SCALABILITY INTEGER,
-MULTICOLLINEARITY INTEGER,
-DIMENSIONALITY INTEGER,
-HYPERPARAMETERS VARCHAR(500),
-CONSTRAINT PK_ALGORITHM PRIMARY KEY(NAME)
-);
-
-
-INSERT INTO  ML_Algorithm VALUES 
-('LINEAR_REGRESSION','Numerical_Prediction',5,5,1,5,'{"parameters":[{"parameter":"Iterations","value":100}]}'),
-('LOGISTIC_REGRESSION','Classification',3,5,1,5,'{"parameters":[{"parameter":"Iterations","value":100},{"parameter":"Learning_Rate","value":0.001},{"parameter":"Reg_Type","value":"L1"},{"parameter":"Reg_Parameter","value":0.001},{"parameter":"SGD_Data_Fraction","value":1.0}]}'),
-('SVM','Classification',1,1,5,5,'{"parameters":[{"parameter":"Iterations","value":100},{"parameter":"Reg_Parameter","value":0.001}]}'),
-('DECISION_TREE','Classification',5,4,5,3,'{"parameters":[{"parameter":"Num_Classes","value":2},{"parameter":"Max_Depth","value":5},{"parameter":"Max_Bins","value":100},{"parameter":"Impurity","value":"gini"}]}'),
-('NAIVE_BAYES','Classification',3,5,1,5,'{"parameters":[{"parameter":"Lambda","value":1.0}]}'),
-('K_MEANS','Clustering',5,2,5,2,'{"parameters":[{"parameter":"Iterations","value":20},{"parameter":"Num_Clusters","value":3}]}');
-
 INSERT INTO ML_CONFIGURATION VALUES ('/Users/lochana/temp',1024,20971520,20,',');

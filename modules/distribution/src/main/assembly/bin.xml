@@ -296,11 +296,13 @@
             <source>src/main/resources/security/cipher-tool.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
         </file>
-
-	<file>
+        <file>
+            <source>src/main/conf/etc/ml-algorithms.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/</outputDirectory>
+        </file>
+	    <file>
             <source>target/database/WSO2ML_DB.h2.db</source>
             <outputDirectory>wso2ml-${pom.version}/repository/database</outputDirectory>
-            <!--filtered>true</filtered-->
             <fileMode>666</fileMode>
         </file>
     </files>
