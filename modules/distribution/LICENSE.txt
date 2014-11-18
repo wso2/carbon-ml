@@ -630,7 +630,7 @@ apache2        Apache License Version 2.0
 icu            ICU License
                http://source.icu-project.org/repos/icu/icu/trunk/license.html
 sunbinary      Binary Code License Agreement
-               https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start?LicenseUUID=mtrACUFBzm4AAAEYkcI5AXh_&ProductUUID=zFnACUFBlVoAAAEYhxc5AXt.
+               https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewLicense-Start?LicenseString=mtrACUFBzm4AAAEYkcI5AXh_&ProductString=zFnACUFBlVoAAAEYhxc5AXt.
 bsd            Berkeley License
                http://www.opensource.org/licenses/bsd-license.php
 bouncy         Bouncy Castle License

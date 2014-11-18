@@ -308,7 +308,7 @@
         <org.json.version>20140107</org.json.version>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
-        <orbit.version.axiom>1.2.11.wso2v5-SNAPSHOT</orbit.version.axiom>
+        <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
         <axis2.wso2.version>${orbit.version.axis2}</axis2.wso2.version>
         <axiom.wso2.version>${orbit.version.axiom}</axiom.wso2.version>
         <javax.servlet.version>3.0.0.v201112011016</javax.servlet.version>
