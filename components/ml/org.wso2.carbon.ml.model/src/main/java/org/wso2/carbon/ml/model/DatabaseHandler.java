@@ -19,19 +19,11 @@ package org.wso2.carbon.ml.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DatabaseHandler {
 
@@ -73,98 +65,5 @@ public class DatabaseHandler {
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         }
-    }
-
-    /**
-     *
-     * @param algorithm Name of the machine learning algorithm
-     * @return Json object containing hyper parameters
-     * @throws DatabaseHandlerException
-     */
-    public JSONObject getHyperParameters(String algorithm) throws DatabaseHandlerException {
-        JSONObject parameters = null;
-        ResultSet result = null;
-        PreparedStatement getStatement = null;
-        try {
-            getStatement = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS);
-            getStatement.setString(1, algorithm);
-            result = getStatement.executeQuery();
-            if (result.first() && result.getString(1) != null) {
-                parameters = new JSONObject(result.getString(1));
-            }
-        } catch (SQLException e) {
-            String msg = "Error occured while getting hyper parameters of algorithm: " + algorithm + ".\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(getStatement);
-        }
-        return parameters;
-    }
-
-    /**
-     *
-     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @return Array of algorithm names
-     * @throws DatabaseHandlerException
-     */
-    public String[] getAlgorithms(String algorithmType) throws DatabaseHandlerException {
-        List<String> algorithms = new ArrayList<String>();
-        ResultSet result = null;
-        PreparedStatement getStatement = null;
-        try {
-            getStatement = connection.prepareStatement(SQLQueries.GET_ALGORITHMS_BY_TYPE);
-            getStatement.setString(1, algorithmType);
-            result = getStatement.executeQuery();
-            while (result.next()) {
-                algorithms.add(result.getString(1));
-            }
-        } catch (SQLException e) {
-            String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(getStatement);
-        }
-        return algorithms.toArray(new String[algorithms.size()]);
-    }
-
-    /**
-     *
-     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @return Map containing algorithm names and recommendation scores
-     * @throws DatabaseHandlerException
-     */
-    public Map<String,List<Integer>> getAlgorithmRatings(String algorithmType) throws
-                                                                    DatabaseHandlerException {
-        Map<String,List<Integer>> algorithmRatings = new HashMap<String, List<Integer>>();
-        ResultSet result = null;
-        PreparedStatement getStatement = null;
-        try {
-            getStatement = connection.prepareStatement(SQLQueries.GET_ALGORITHM_RATINGS);
-            getStatement.setString(1, algorithmType);
-            result = getStatement.executeQuery();
-            List<Integer> value;
-            while (result.next()) {
-                value = new ArrayList();
-                value.add(result.getInt(2));
-                value.add(result.getInt(3));
-                value.add(result.getInt(4));
-                algorithmRatings.put(result.getString(1),value);
-            }
-        } catch (SQLException e) {
-            String msg = "Error occured while getting algorithm names.\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(getStatement);
-        }
-        return algorithmRatings;
     }
 }

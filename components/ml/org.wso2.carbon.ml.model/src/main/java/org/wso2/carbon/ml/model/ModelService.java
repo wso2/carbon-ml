@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
 
@@ -38,7 +39,11 @@ public class ModelService {
 
     private static final Log logger = LogFactory.getLog(ModelService.class);
 
-
+    /**
+     * ModelService activator
+     *
+     * @param context ComponentContext
+     */
     protected void activate(ComponentContext context) {
         try {
             ModelService modelService = new ModelService();
@@ -50,20 +55,26 @@ public class ModelService {
         }
     }
 
+    /**
+     * ModelService de-activator
+     *
+     * @param context ComponentContext
+     */
     protected void deactivate(ComponentContext context) {
         logger.info("ModelService stopped");
     }
 
     /**
      * @param algorithm Name of the machine learning algorithm
-     * @return Json object containing hyper parameters
+     * @return Json array containing hyper parameters
      * @throws ModelServiceException
      */
-    public JSONObject getHyperParameters(String algorithm) throws ModelServiceException {
+    public JSONArray getHyperParameters(String algorithm) throws ModelServiceException {
         try {
-            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-            return handler.getHyperParameters(algorithm);
-        } catch (DatabaseHandlerException ex) {
+            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
+                    MLAlgorithmConfigurationParser();
+            return mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
+        } catch (MLAlgorithmConfigurationParserException ex) {
             String msg = "Error has occurred while retrieving hyper parameters";
             logger.error(msg, ex);
             throw new ModelServiceException(msg);
@@ -77,9 +88,10 @@ public class ModelService {
      */
     public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException {
         try {
-            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-            return handler.getAlgorithms(algorithmType);
-        } catch (DatabaseHandlerException ex) {
+            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
+                    MLAlgorithmConfigurationParser();
+            return mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
+        } catch (MLAlgorithmConfigurationParserException ex) {
             String msg = "Error has occurred while retrieving algorithm names";
             logger.error(msg, ex);
             throw new ModelServiceException(msg);
@@ -99,8 +111,9 @@ public class ModelService {
         Map<String, Double> recommendations = new HashMap<String, Double>();
         try {
             JSONObject userResponse = new JSONObject(userResponseJson);
-            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-            Map<String, List<Integer>> algorithmRatings = handler.getAlgorithmRatings(algorithmType);
+            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
+                    MLAlgorithmConfigurationParser();
+            Map<String, List<Integer>> algorithmRatings = mlAlgorithmConfigurationParser.getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
                 if (MLModelConstants.HIGH.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, (rating.getValue().get(0) * 5));
@@ -127,14 +140,14 @@ public class ModelService {
                 recommendations.put(pair.getKey(), sum(pair.getValue()));
             }
             Double max = Collections.max(recommendations.values());
-            DecimalFormat ratingNumberFormat = new DecimalFormat("#.00");
+            DecimalFormat ratingNumberFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
             Double scaledRating;
             for (Map.Entry<String, Double> recommendation : recommendations.entrySet()) {
                 scaledRating = ((recommendation.getValue()) / max) * 5;
                 scaledRating = Double.valueOf(ratingNumberFormat.format(scaledRating));
                 recommendations.put(recommendation.getKey(), scaledRating);
             }
-        } catch (Exception e) {
+        } catch (MLAlgorithmConfigurationParserException e) {
             String msg = "An error occurred while retrieving recommended algorithms";
             logger.error(msg, e);
             throw new ModelServiceException(msg);
