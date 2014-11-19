@@ -53,7 +53,7 @@ public class MLAlgorithmConfigurationParser {
      * @return hyper-parameters
      * @throws MLAlgorithmConfigurationParserException
      */
-    public JSONArray getHyperParameters(String algorithm)
+    protected JSONArray getHyperParameters(String algorithm)
             throws MLAlgorithmConfigurationParserException {
         try {
             JSONArray hyperparameters = null;
@@ -108,7 +108,7 @@ public class MLAlgorithmConfigurationParser {
      * @return Machine learning algorithm names
      * @throws MLAlgorithmConfigurationParserException
      */
-    public String[] getAlgorithms(String algorithmType) throws
+    protected String[] getAlgorithms(String algorithmType) throws
                                                         MLAlgorithmConfigurationParserException {
         try {
             List<String> algorithms = new ArrayList();
@@ -140,7 +140,7 @@ public class MLAlgorithmConfigurationParser {
      * @return Algorithm ratings
      * @throws MLAlgorithmConfigurationParserException
      */
-    public Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
+    protected Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
                                                                                 MLAlgorithmConfigurationParserException {
         try {
             Map<String, List<Integer>> ratings = new HashMap<String, List<Integer>>();

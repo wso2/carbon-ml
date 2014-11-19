@@ -43,7 +43,7 @@ public class DatabaseHandler {
      * @return DatabaseHandler instance
      * @throws DatabaseHandlerException
      */
-    public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
+    protected static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
         try {
             if (databaseHandler == null) {
                 synchronized (DatabaseHandler.class) {
