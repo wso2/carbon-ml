@@ -140,7 +140,7 @@ public class ModelService {
                 recommendations.put(pair.getKey(), sum(pair.getValue()));
             }
             Double max = Collections.max(recommendations.values());
-            DecimalFormat ratingNumberFormat = new DecimalFormat("#.00");
+            DecimalFormat ratingNumberFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
             Double scaledRating;
             for (Map.Entry<String, Double> recommendation : recommendations.entrySet()) {
                 scaledRating = ((recommendation.getValue()) / max) * 5;

@@ -137,11 +137,9 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.transaction.manager.feature:${carbon.platform.version}
                                 </featureArtifactDef>
-<!-- 
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.event.common.feature:${carbon.platform.version}
                                 </featureArtifactDef>
- -->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.ntask.feature:${carbon.platform.version}
                                 </featureArtifactDef>
@@ -278,12 +276,10 @@
                                     <id>org.wso2.carbon.transaction.manager.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-<!-- 
                                 <feature>
                                     <id>org.wso2.carbon.event.common.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
- -->
                                 <feature>
                                     <id>org.wso2.carbon.ntask.feature.group</id>
                                     <version>${carbon.platform.version}</version>

@@ -18,22 +18,25 @@
 package org.wso2.carbon.ml.model;
 
 public final class MLModelConstants {
-        public static final String SMALL = "small";
-        public static final String MEDIUM = "medium";
-        public static final String LARGE = "large";
-        public static final String HIGH = "high";
-        public static final String DATASET_SIZE = "datasetSize";
-        public static final String TEXTUAL = "textual";
-        public static final String YES = "yes";
-        public static final String ALGORITHMS = "algorithms";
-        public static final String ALGORITHM = "algorithm";
-        public static final String NAME = "name";
-        public static final String TYPE = "type";
-        public static final String SCALABILITY = "scalability";
-        public static final String INTERPRETABILITY = "interpretability";
-        public static final String MULTICOLLINEARITY = "multicollinearity";
-        public static final String DIMENSIONALITY = "dimensionality";
-        public static final String PARAMETERS = "parameters";
-        public static final String PARAMETER = "parameter";
-        public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
-    }
+    public static final String SMALL = "small";
+    public static final String MEDIUM = "medium";
+    public static final String LARGE = "large";
+    public static final String HIGH = "high";
+    public static final String DATASET_SIZE = "datasetSize";
+    public static final String TEXTUAL = "textual";
+    public static final String YES = "yes";
+    public static final String ALGORITHMS = "algorithms";
+    public static final String ALGORITHM = "algorithm";
+    public static final String NAME = "name";
+    public static final String TYPE = "type";
+    public static final String SCALABILITY = "scalability";
+    public static final String INTERPRETABILITY = "interpretability";
+    public static final String MULTICOLLINEARITY = "multicollinearity";
+    public static final String DIMENSIONALITY = "dimensionality";
+    public static final String PARAMETERS = "parameters";
+    public static final String PARAMETER = "parameter";
+    public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
+    public static final String DECIMAL_FORMAT = "#.00";
+    public static final String EMPTY = "";
+    public static final String NA = "NA";
+}
