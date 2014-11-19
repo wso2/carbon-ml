@@ -30,6 +30,12 @@
             <version>0.1.0</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ml.admin.feature</artifactId>
+            <version>0.1.0</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,6 +63,7 @@
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.dataset.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.model.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.project.mgt.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.admin.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

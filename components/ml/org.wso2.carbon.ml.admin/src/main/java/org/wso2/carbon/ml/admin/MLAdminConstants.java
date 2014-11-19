@@ -15,31 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
 
-public class DatasetConfig {
-	
-	private final String datasetUploadingLoc;
-	private final int memoryThreshold;
-	private final long uploadingLimit;
-	
-	public DatasetConfig(String datasetUploadingLoc, int memoryThreshold,
-			long uploadingLimit) {
-		super();
-		this.datasetUploadingLoc = datasetUploadingLoc;
-		this.memoryThreshold = memoryThreshold;
-		this.uploadingLimit = uploadingLimit;
-	}
+package org.wso2.carbon.ml.admin;
 
-	public String getDatasetUploadingLoc() {
-		return datasetUploadingLoc;
-	}
-
-	public int getMemoryThreshold() {
-		return memoryThreshold;
-	}
-
-	public long getUploadingLimit() {
-		return uploadingLimit;
-	}
+public class MLAdminConstants {
+    public static final String UPLOAD_LOCATION = "uploadLocation";
+    public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
+    public static final String UPLOAD_LIMIT = "uploadLimit";
+    public static final String ML_CONFIG_XML = "repository/conf/etc/ml-config.xml";
+    public static final String UPLOAD_SETTINGS = "dataUploadSettings";
 }
