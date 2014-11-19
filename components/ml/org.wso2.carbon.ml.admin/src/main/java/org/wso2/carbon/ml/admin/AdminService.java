@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 
+import java.io.File;
+
 /**
  * @scr.component name="mlAdminService" immediate="true"
  */
@@ -50,6 +52,23 @@ public class AdminService {
             return mlConfigurationParser.getDataUploadSettings();
         } catch (Exception ex) {
             String msg = "An error occurred while reading dataset upload settings";
+            logger.error(msg, ex);
+            throw new AdminServiceException(msg);
+        }
+    }
+
+    public void createUploadDirectory(String uploadDirectory) throws AdminServiceException
+    {
+        try
+        {
+            File uploadDir = new File(uploadDirectory);
+            if (!uploadDir.exists())
+            {
+                uploadDir.mkdirs();
+            }
+        }
+        catch (Exception ex) {
+            String msg = "An error occurred while creating upload directory";
             logger.error(msg, ex);
             throw new AdminServiceException(msg);
         }
