@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataUploadSettings>
+    <uploadLocation>USER_HOME/tempML</uploadLocation>
+    <inMemoryThreshold>1024</inMemoryThreshold>
+    <uploadLimit>20971520</uploadLimit>
+</dataUploadSettings>
