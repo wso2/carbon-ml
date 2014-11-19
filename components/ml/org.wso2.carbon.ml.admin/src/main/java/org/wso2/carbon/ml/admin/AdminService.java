@@ -57,6 +57,17 @@ public class AdminService {
         }
     }
 
+    public SummaryStatisticsSettings getSummaryStatisticsSettings() throws AdminServiceException {
+        try {
+            MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
+            return mlConfigurationParser.getSummaryStatisticsSettings();
+        } catch (Exception ex) {
+            String msg = "An error occurred while reading summary statistics settings";
+            logger.error(msg, ex);
+            throw new AdminServiceException(msg);
+        }
+    }
+
     public void createUploadDirectory(String uploadDirectory) throws AdminServiceException
     {
         try

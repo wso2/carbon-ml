@@ -31,11 +31,15 @@ public class MLConfigurationParser {
 
     private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
 
-
-    public DataUploadSettings getDataUploadSettings() throws
+    /**
+     *
+     * @return Data upload settings
+     * @throws MLConfigurationParserException
+     */
+    protected DataUploadSettings getDataUploadSettings() throws
 
                                                          MLConfigurationParserException {
-        DataUploadSettings dataUploadSettings = null;
+        DataUploadSettings dataUploadSettings = new DataUploadSettings();
         try {
             Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
             NodeList nodes = doc.getElementsByTagName(MLAdminConstants.UPLOAD_SETTINGS).item(0).getChildNodes();
@@ -44,16 +48,16 @@ public class MLConfigurationParser {
             long uploadLimit = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
                 if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LOCATION)) {
-                    uploadLocation = nodes.item(i).getTextContent();
+                    dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
                 }
                 if (nodes.item(i).getNodeName().equals(MLAdminConstants.IN_MEMORY_THRESHOLD)) {
-                    inMemoryThreshold = Integer.parseInt(nodes.item(i).getTextContent());
+                    dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
+                                                                                     .getTextContent()));
                 }
                 if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LIMIT)) {
-                    uploadLimit = Long.parseLong(nodes.item(i).getTextContent());
+                    dataUploadSettings.setUploadLimit(Long.parseLong(nodes.item(i).getTextContent
+                            ()));
                 }
-                dataUploadSettings = new DataUploadSettings(uploadLocation, inMemoryThreshold,
-                                                                               uploadLimit);
             }
         } catch (Exception e) {
             String msg = "An error occurred while parsing XML\n" + e.getMessage();
@@ -61,6 +65,41 @@ public class MLConfigurationParser {
             throw new MLConfigurationParserException(msg);
         }
         return dataUploadSettings;
+    }
+
+    /**
+     *
+     * @return Summary statistics settings
+     * @throws MLConfigurationParserException
+     */
+    protected SummaryStatisticsSettings getSummaryStatisticsSettings() throws
+
+                                                      MLConfigurationParserException {
+        SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
+        try {
+            Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
+            NodeList nodes = doc.getElementsByTagName(MLAdminConstants.SUMMARY_STATISTICS_SETTINGS).item(0)
+                    .getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                if (nodes.item(i).getNodeName().equals(MLAdminConstants.HISTOGRAM_BINS)) {
+                    summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
+                                                                                        .getTextContent()));
+                }
+                if (nodes.item(i).getNodeName().equals(MLAdminConstants.CATEGORICAL_THRESHOLD)) {
+                    summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes.item
+                            (i).getTextContent()));
+                }
+                if (nodes.item(i).getNodeName().equals(MLAdminConstants.SAMPLE_SIZE)) {
+                    summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
+                                                                                     .getTextContent()));
+                }
+            }
+        } catch (Exception e) {
+            String msg = "An error occurred while parsing XML\n" + e.getMessage();
+            logger.error(msg, e);
+            throw new MLConfigurationParserException(msg);
+        }
+        return summaryStatisticsSettings;
     }
 
     /**

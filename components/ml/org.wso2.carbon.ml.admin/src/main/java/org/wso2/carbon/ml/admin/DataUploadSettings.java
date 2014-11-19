@@ -19,26 +19,31 @@ package org.wso2.carbon.ml.admin;
 
 public class DataUploadSettings {
 	
-	private final String uploadLocation;
-	private final int inMemoryThreshold;
-	private final long uploadLimit;
-	
-	public DataUploadSettings(String uploadLocation, int inMemoryThreshold,
-                              long uploadLimit) {
-		this.uploadLocation = uploadLocation;
-		this.inMemoryThreshold = inMemoryThreshold;
-		this.uploadLimit = uploadLimit;
-	}
+	private String uploadLocation;
+	private int inMemoryThreshold;
+	private long uploadLimit;
 
-	public String getUploadLocation() {
-		return this.uploadLocation;
-	}
+    public String getUploadLocation() {
+        return uploadLocation;
+    }
 
-	public int getInMemoryThreshold() {
-		return this.inMemoryThreshold;
-	}
+    public void setUploadLocation(String uploadLocation) {
+        this.uploadLocation = uploadLocation;
+    }
 
-	public long getUploadLimit() {
-		return this.uploadLimit;
-	}
+    public int getInMemoryThreshold() {
+        return inMemoryThreshold;
+    }
+
+    public void setInMemoryThreshold(int inMemoryThreshold) {
+        this.inMemoryThreshold = inMemoryThreshold;
+    }
+
+    public long getUploadLimit() {
+        return uploadLimit;
+    }
+
+    public void setUploadLimit(long uploadLimit) {
+        this.uploadLimit = uploadLimit;
+    }
 }
