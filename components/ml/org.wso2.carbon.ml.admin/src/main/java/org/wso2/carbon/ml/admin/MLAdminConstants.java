@@ -28,4 +28,10 @@ public class MLAdminConstants {
     public static final String HISTOGRAM_BINS = "histogramBins";
     public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
     public static final String SAMPLE_SIZE = "sampleSize";
+    
+    /*
+	 * private Constructor to prevent any other class from instantiating.
+	 */
+	private MLAdminConstants() {
+	  }
 }

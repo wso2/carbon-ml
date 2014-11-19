@@ -34,7 +34,7 @@ public class ProjectManagementService {
                                                        projectManagementService, null);
             logger.info("ML Project Management Service Started");
             logger.info("http://localhost:9763/mlUI/");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }

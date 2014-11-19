@@ -24,26 +24,50 @@ public class SummaryStatisticsSettings {
     private int sampleSize;
 
 
+    /**
+     * Returns the number of bins for the histogram
+     * @return
+     */
     public int getHistogramBins() {
         return histogramBins;
     }
 
+    /**
+     * Sets the number of bins for the histogram
+     * @param histogramBins
+     */
     public void setHistogramBins(int histogramBins) {
         this.histogramBins = histogramBins;
     }
 
+    /**
+     * Returns threshold of unique values for selecting categorical data
+     * @return
+     */
     public int getCategoricalThreshold() {
         return categoricalThreshold;
     }
 
+    /**
+     * Sets threshold of unique values for selecting categorical data
+     * @param categoricalThreshold
+     */
     public void setCategoricalThreshold(int categoricalThreshold) {
         this.categoricalThreshold = categoricalThreshold;
     }
 
+    /**
+     * Returns size of the data sample
+     * @return
+     */
     public int getSampleSize() {
         return sampleSize;
     }
 
+    /**
+     * Sets size of the data sample
+     * @param sampleSize
+     */
     public void setSampleSize(int sampleSize) {
         this.sampleSize = sampleSize;
     }

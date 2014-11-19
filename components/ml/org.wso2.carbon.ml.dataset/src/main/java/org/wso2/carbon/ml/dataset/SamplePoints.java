@@ -25,11 +25,16 @@ public class SamplePoints  implements Serializable{
 		return headerMap;
 	}
 	
-	
+	/*
+	 * Set the sample points
+	 */
 	protected void setSamplePoints(List<List<String>> samplePoints) {
 		this.samplePoints=samplePoints;
 	}
 	
+	/*
+	 * Set the header of the sample points
+	 */
 	protected void setHeader(Map<String, Integer> headerMap) {
 		this.headerMap=headerMap;
 	}
