@@ -49,7 +49,7 @@ public class ModelService {
             ModelService modelService = new ModelService();
             context.getBundleContext().registerService(ModelService.class.getName(),
                                                        modelService, null);
-            logger.info("ModelService started");
+            logger.info("ML Model Service Started");
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
         }
@@ -61,7 +61,7 @@ public class ModelService {
      * @param context ComponentContext
      */
     protected void deactivate(ComponentContext context) {
-        logger.info("ModelService stopped");
+        logger.info("ML Model Service Stopped");
     }
 
     /**

@@ -37,31 +37,14 @@ public class DatasetService {
             DatasetService datasetService = new DatasetService();
             context.getBundleContext().registerService(DatasetService.class.getName(),
                                                        datasetService, null);
-            logger.info("DatasetService started");
+            logger.info("ML Dataset Service Started");
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
         }
     }
 
     protected void deactivate(ComponentContext context) {
-        logger.info("DatasetService stopped");
-    }
-
-    /**
-     * This method extract data-set configurations from the database
-     *
-     * @return
-     * @throws DatasetServiceException
-     */
-    public DatasetConfig getDatasetConfig() throws DatasetServiceException {
-        try {
-            DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-            return handler.getDatasetConfig();
-        } catch (DatabaseHandlerException ex) {
-            String msg = "Error has occurred while reading dataset config from database";
-            logger.error(msg, ex);
-            throw new DatasetServiceException(msg);
-        }
+        logger.info("Ml Dataset Service Stopped");
     }
 
     /**
@@ -106,13 +89,12 @@ public class DatasetService {
      * @return
      * @throws DatasetServiceException
      */
-    public void registerDataset(String datasetID, String name, String projectID) throws
-                                                                             DatasetServiceException {
+    public void registerDataset(String datasetID, String name, String projectID,
+                                String uploadDir) throws DatasetServiceException {
         String msg;
         try {
             // get the default upload location of the file
             DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-            String uploadDir = dbHandler.getDatasetConfig().getDatasetUploadingLoc();
             dbHandler.insertDatasetDetails(datasetID, uploadDir + "/" + name, projectID);
         } catch (DatabaseHandlerException e) {
             msg = "Failed to update the data-source details in the database. " + e.getMessage();

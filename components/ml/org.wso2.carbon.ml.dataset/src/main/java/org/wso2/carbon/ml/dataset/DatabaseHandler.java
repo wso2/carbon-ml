@@ -79,56 +79,6 @@ public class DatabaseHandler {
     }
 
     /**
-     * This method reads configurations from the database
-     *
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public DatasetConfig getDatasetConfig() throws DatabaseHandlerException {
-        ResultSet result = null;
-        Statement getStatement = null;
-        try {
-            getStatement = connection.createStatement();
-            result = getStatement.executeQuery(SQLQueries.GET_DATASET_CONFIG);
-            if (result.first()) {
-                String uploadingDir = result.getString("DATASET_UPLOADING_DIR");
-                int memoryThreshold = result.getInt("DATASET_IN_MEM_THRESHOLD");
-                long maxUploding = result.getLong("DATASET_UPLOADING_LIMIT");
-
-                if (uploadingDir == null || uploadingDir.length() == 0) {
-                    String msg = "DATASET_UPLOADING_DIR directory can not be null or empty";
-                    logger.error(msg);
-                    throw new DatabaseHandlerException(msg);
-                }
-
-                if (memoryThreshold == 0 || maxUploding == 0) {
-                    String msg =
-                            "DATASET_IN_MEM_THRESHOLD and/or DATASET_IN_MEM_THRESHOLD can't be empty";
-                    logger.error(msg);
-                    throw new DatabaseHandlerException(msg);
-                }
-
-                return new DatasetConfig(uploadingDir, memoryThreshold, maxUploding);
-            } else {
-                String msg = "An error has occurred while reading dataset config details";
-                logger.error(msg);
-                throw new DatabaseHandlerException(msg);
-            }
-
-        } catch (SQLException ex) {
-            String msg =
-                    "Error occured while retrieving the default upload location from the database. " +
-                    ex.getMessage();
-            logger.error(msg, ex);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(getStatement);
-        }
-    }
-
-    /**
      * Retrieve the number of intervals to be used from the ML_CONFIGURATION
      * database
      *
