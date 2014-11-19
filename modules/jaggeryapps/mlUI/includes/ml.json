@@ -1,6 +1,6 @@
 {
     "NO_OF_ROWS":10000,
-    "modelTypes" : {
+    "algoTypes" : {
         "classification" : "Classification",
         "numericalPrediction":"Numerical_Prediction",
         "clustering":"Clustering"

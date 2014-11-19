@@ -35,25 +35,20 @@ public class MLDatabaseUtil {
 	private MLDatabaseUtil() {
 	  }
 
-	/**
-	 * 
-	 * @param dbConnection
-	 * @param rs
-	 * @param prepStmt
+	/*
+	 * Close a given set of Database resources
 	 */
-	public static void closeAllConnections(Connection dbConnection,
+	protected static void closeAllConnections(Connection dbConnection,
 			ResultSet rs, PreparedStatement prepStmt) {
-		
 		closeResultSet(rs);
 		closeStatement(prepStmt);
 		closeConnection(dbConnection);
 	}
 
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Close a given connection
 	 */
-	public static void closeConnection(Connection dbConnection) {
+	protected static void closeConnection(Connection dbConnection) {
 		if (dbConnection != null) {
 			try {
 				dbConnection.close();
@@ -65,11 +60,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param rs
+	/*
+	 * Close a given Resultset
 	 */
-	public static void closeResultSet(ResultSet rs) {
+	protected static void closeResultSet(ResultSet rs) {
 		if (rs != null) {
 			try {
 				rs.close();
@@ -81,11 +75,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param statement
+	/*
+	 * Close a given statement
 	 */
-	public static void closeStatement(Statement statement) {
+	protected static void closeStatement(Statement statement) {
 		if (statement != null) {
 			try {
 				statement.close();
@@ -97,11 +90,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Roll-backs a connection
 	 */
-	public static void rollBack(Connection dbConnection) {
+	protected static void rollBack(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.rollback();
@@ -111,11 +103,10 @@ public class MLDatabaseUtil {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Enables the auto-commit of a connection
 	 */
-	public static void enableAutoCommit(Connection dbConnection) {
+	protected static void enableAutoCommit(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.setAutoCommit(true);

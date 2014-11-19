@@ -8,7 +8,7 @@
    var datasetID = session.get("datasetId");
    var workflowId = session.get("workflowId");
    if (datasetID != null){
-     var features = datasetService.getFeatures(datasetID,workflowId,start+1,length);
+     var features = datasetService.getFeatures(datasetID,workflowId,start,length);
      var json = {};
      json['sEcho'] = request.getParameter("sEcho");
      json['iTotalRecords'] = session.get("numOfFeatures");

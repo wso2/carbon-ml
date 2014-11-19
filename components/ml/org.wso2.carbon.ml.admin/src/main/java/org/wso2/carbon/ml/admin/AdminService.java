@@ -27,61 +27,78 @@ import java.io.File;
  * @scr.component name="mlAdminService" immediate="true"
  */
 public class AdminService {
-    private static final Log logger = LogFactory.getLog(AdminService.class);
+	private static final Log logger = LogFactory.getLog(AdminService.class);
 
+	protected void activate(ComponentContext context) {
+		try {
+			AdminService adminService = new AdminService();
+			context.getBundleContext().registerService(AdminService.class.getName(), adminService,
+			                                           null);
+			logger.info("ML Admin Service Started");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
 
-    protected void activate(ComponentContext context) {
-        try {
-            AdminService adminService = new AdminService();
-            context.getBundleContext().registerService(AdminService.class.getName(),
-                                                       adminService, null);
-            logger.info("ML Admin Service Started");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
+	protected void deactivate(ComponentContext context) {
+		logger.info("ML Admin Service Stopped");
+	}
 
-    protected void deactivate(ComponentContext context) {
-        logger.info("ML Admin Service Stopped");
-    }
+	/**
+	 * Return default settings for dataset uploading
+	 * 
+	 * @return
+	 * @throws AdminServiceException
+	 */
+	public DataUploadSettings getDataUploadSettings() throws AdminServiceException {
+		try {
+			MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
+			return mlConfigurationParser.getDataUploadSettings();
+		} catch (Exception ex) {
+			String msg = "An error occurred while reading dataset upload settings";
+			logger.error(msg, ex);
+			throw new AdminServiceException(msg);
+		}
+	}
 
+	/**
+	 * Return default settings for summary statistics generation
+	 * 
+	 * @return
+	 * @throws AdminServiceException
+	 */
+	public SummaryStatisticsSettings getSummaryStatisticsSettings() throws AdminServiceException {
+		try {
+			MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
+			return mlConfigurationParser.getSummaryStatisticsSettings();
+		} catch (Exception ex) {
+			String msg = "An error occurred while reading summary statistics settings";
+			logger.error(msg, ex);
+			throw new AdminServiceException(msg);
+		}
+	}
 
-    public DataUploadSettings getDataUploadSettings() throws AdminServiceException {
-        try {
-           MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
-            return mlConfigurationParser.getDataUploadSettings();
-        } catch (Exception ex) {
-            String msg = "An error occurred while reading dataset upload settings";
-            logger.error(msg, ex);
-            throw new AdminServiceException(msg);
-        }
-    }
-
-    public SummaryStatisticsSettings getSummaryStatisticsSettings() throws AdminServiceException {
-        try {
-            MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
-            return mlConfigurationParser.getSummaryStatisticsSettings();
-        } catch (Exception ex) {
-            String msg = "An error occurred while reading summary statistics settings";
-            logger.error(msg, ex);
-            throw new AdminServiceException(msg);
-        }
-    }
-
-    public void createUploadDirectory(String uploadDirectory) throws AdminServiceException
-    {
-        try
-        {
-            File uploadDir = new File(uploadDirectory);
-            if (!uploadDir.exists())
-            {
-                uploadDir.mkdirs();
-            }
-        }
-        catch (Exception ex) {
-            String msg = "An error occurred while creating upload directory";
-            logger.error(msg, ex);
-            throw new AdminServiceException(msg);
-        }
-    }
+	/**
+	 * Creates the dataset uploading directory
+	 * @param uploadDirectory
+	 * @throws AdminServiceException
+	 */
+	public void createUploadDirectory(String uploadDirectory) throws AdminServiceException {
+		try {
+			File uploadDir = new File(uploadDirectory);
+			if (!uploadDir.exists()) {
+				if(uploadDir.mkdirs()){
+					logger.debug("Successfully created the directory: "+uploadDirectory);
+				}else{
+					String msg = "An error occurred while creating upload directory";
+					logger.error(msg);
+					throw new AdminServiceException(msg);
+				}
+			}
+		} catch (Exception ex) {
+			String msg = "An error occurred while creating upload directory";
+			logger.error(msg, ex);
+			throw new AdminServiceException(msg);
+		}
+	}
 }

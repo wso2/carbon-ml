@@ -11,13 +11,13 @@
 	<h3>Recommended Algorithms</h3>
 	<form id="recomendedAlgoForm" action="#" method="post" enctype="multipart/form-data">
 		<%	
-			var carbon = require('carbon');
-			var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
 			try{
-				algorithmType=session.get("modelType");
+				var carbon = require('carbon');
+				var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+				algorithmType=session.get("algoType");
 				userResponseJson='{"interpretability":"'+session.get("interpretability")+'","datasetSize":"'+session.get("datasetSize")+
          '","textual":"'+session.get("textual")+'"}';
-				var recommendedAlgorithms=datasetService.getRecommendedAlgorithms(algorithmType,userResponseJson);
+				var recommendedAlgorithms=modelService.getRecommendedAlgorithms(algorithmType,userResponseJson);
                 var iterator= recommendedAlgorithms.entrySet().iterator();
                 while(iterator.hasNext())
                 {
@@ -25,7 +25,7 @@
 					print('<input type="radio" class="algoName" name="algorithm" value="'+pair.getKey()+'">'+pair.getKey()+' ('+pair.getValue()+')<br>');
 				}
 			}catch(e){
-				log.error("An error occured while getting recommended algorithms"+e);
+				log.error("An error occured while retrieving recommended algorithms", e);
 			}
 		%>
 	</form>

@@ -27,11 +27,10 @@ public class FeatureType {
 		this.featureType = featureType;
 	}
 	
+	/**
+	 * Returns the data type as a string
+	 */
 	public String toString() {
-		return featureType;
-	}
-
-	public String getFeatureName() {
 		return featureType;
 	}
 }

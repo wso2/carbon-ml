@@ -1,5 +1,5 @@
 
-.model_type_button{
+.algo_type_button{
     margin-top: 2.5em;
     height:3em;
     width:10em;
@@ -7,7 +7,7 @@
     line-height: 2.7em;
 }
 
-.modelTypeButton {
+.algoTypeButton {
     float: left;
     width:12em;
     height:3em;
@@ -34,7 +34,7 @@
     transform: rotate(360deg);
 }
 
-.modelTypeButton:after{
+.algoTypeButton:after{
     content: '';
     display: block;
     width: 0;
@@ -46,14 +46,14 @@
     border-bottom: 1.6em solid #FAFAFA;
     position: absolute;
 }
-.modelTypeButton:hover {
+.algoTypeButton:hover {
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614) );
     background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
     background-color:#FFD700;
     color:#ffffff;
 }
-.modelTypeButton:active {
+.algoTypeButton:active {
     position:relative;
     top:1px;
 }
@@ -63,7 +63,7 @@
 	margin-left: 5%;
 }
 
-#model_type{
+#algo_type{
 	margin-left: 8%;
 }
 

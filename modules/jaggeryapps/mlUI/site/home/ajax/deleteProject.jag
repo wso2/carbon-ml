@@ -1,12 +1,17 @@
 <%
+	var log = new Log();
 	var carbon = require('carbon');
-    var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-    var projectId=request.getParameter("projectId");
-    projectManagementService.deleteProject(projectId);
+	var projectId=request.getParameter("projectId");
+    try{
+	    var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+	    projectManagementService.deleteProject(projectId);
 
-    // if the deleted project is the cureent project, remove it from session
-    if(session.get("projectId")==projectId){
-    	session.put("projectId",undefined);
-    	session.put("datasetId",undefined);
-    }
+	    // if the deleted project is the cureent project, remove it from session
+	    if(session.get("projectId")==projectId){
+	    	session.put("projectId",undefined);
+	    	session.put("datasetId",undefined);
+	    }
+	}catch(e){
+		log.error("An error occured while deleting the project: "+projectId, e);
+	}
 %>

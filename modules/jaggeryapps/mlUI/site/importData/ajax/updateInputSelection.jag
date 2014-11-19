@@ -11,6 +11,6 @@
    		datasetService.updateIsIncludedFeature(featureName, workflowId, isSelected);
       }
    }catch(e){
-   	log.error("An error occured while selecting features");
+   	log.error("An error occured while selecting features",e);
    }
 %>

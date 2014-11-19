@@ -17,24 +17,25 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
 
 public class DatabaseHandler {
 
@@ -50,11 +51,10 @@ public class DatabaseHandler {
 
     /**
      * Creates a singleton DatabaseHandler instance and returns it.
-     *
      * @return
      * @throws DatabaseHandlerException
      */
-    public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
+    protected static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
         try {
             if (databaseHandler == null) {
                 synchronized (DatabaseHandler.class) {
@@ -79,86 +79,12 @@ public class DatabaseHandler {
     }
 
     /**
-     * Retrieve the number of intervals to be used from the ML_CONFIGURATION
-     * database
-     *
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public int getNumberOfBucketsInHistogram() throws DatabaseHandlerException {
-        ResultSet result = null;
-        Statement selectStatement = null;
-        try {
-            selectStatement = connection.createStatement();
-            result = selectStatement.executeQuery("SELECT INTERVALS FROM ML_CONFIGURATION");
-            // if the number of intervals is set
-            if (result.first()) {
-                int intervals = result.getInt("INTERVALS");
-                logger.debug("Number of intervals uses to categorize numerical data: " + intervals);
-                return intervals;
-            } else {
-                String message =
-                        "Number of intervals is not set in the ML_CONFIGURATION database table.";
-                logger.error(message);
-                throw new DatabaseHandlerException(message);
-            }
-        } catch (SQLException e) {
-            String msg =
-                    "Error occured while retrieving the Number of intervals from the database. " +
-                    e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(selectStatement);
-        }
-    }
-
-    /**
-     * Retrieve the separator from the ML_CONFIGURATION database
-     *
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public String getSeparator() throws DatabaseHandlerException {
-        ResultSet result = null;
-        Statement getStatement = null;
-        try {
-            getStatement = connection.createStatement();
-            result = getStatement.executeQuery(SQLQueries.GET_SEPARATOR);
-            // if the separator is set
-            if (result.first()) {
-                String separator = result.getNString("SEPARATOR");
-                logger.debug("Data points separator: " + separator);
-                return separator;
-            } else {
-                String message =
-                        "Data points separator is not set in the ML_CONFIGURATION database table.";
-                logger.error(message);
-                throw new DatabaseHandlerException(message);
-            }
-        } catch (SQLException e) {
-            String msg =
-                    "Error occured while retrieving the Data points separator from the database. " +
-                    e.getMessage();
-            logger.error(msg, e);
-            throw new DatabaseHandlerException(msg);
-        } finally {
-            // close the database resources
-            MLDatabaseUtil.closeResultSet(result);
-            MLDatabaseUtil.closeStatement(getStatement);
-        }
-    }
-
-    /**
-     * get the path of the data source having the given ID, from the database
-     *
+     * Retrieves the path of the dataset having the given ID, from the database
      * @param datasetID
      * @return
      * @throws DatabaseHandlerException
      */
-    public String getDataSource(String datasetID) throws DatabaseHandlerException {
+    protected String getDataSource(String datasetID) throws DatabaseHandlerException {
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
@@ -188,14 +114,13 @@ public class DatabaseHandler {
     }
 
     /**
-     * insert the new data set details to the the database
-     *
+     * Insert the new dataset details to the the database
      * @param filePath
      * @param projectID
      * @return
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetDetails(String datasetID, String filePath, String projectID)
+    protected void insertDatasetDetails(String datasetID, String filePath, String projectID)
             throws DatabaseHandlerException {
         PreparedStatement insertStatement = null;
         try {
@@ -209,7 +134,6 @@ public class DatabaseHandler {
             connection.commit();
             logger.debug("Successfully updated the details of data set: " + filePath +
                          ". Dataset ID" + datasetID);
-
         } catch (SQLException e) {
             // rollback the changes
             MLDatabaseUtil.rollBack(connection);
@@ -229,13 +153,12 @@ public class DatabaseHandler {
 
     /**
      * Update the data type of a given feature
-     *
      * @param featureName
      * @param workflowID
      * @param featureType
      * @throws DatabaseHandlerException
      */
-    public void updateDataType(String featureName, String workflowID, String featureType)
+    protected void updateDataType(String featureName, String workflowID, String featureType)
             throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         try {
@@ -266,13 +189,12 @@ public class DatabaseHandler {
 
     /**
      * Update the impute method option of a given feature
-     *
      * @param featureName
      * @param workflowID
      * @param imputeOption
      * @throws DatabaseHandlerException
      */
-    public void updateImputeOption(String featureName, String workflowID, String imputeOption)
+    protected void updateImputeOption(String featureName, String workflowID, String imputeOption)
             throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         try {
@@ -302,14 +224,13 @@ public class DatabaseHandler {
     }
 
     /**
-     * change whether a feature should be included as an input or not.
-     *
+     * Change whether a feature should be included as an input or not.
      * @param featureName
      * @param workflowID
      * @param isInput
      * @throws DatabaseHandlerException
      */
-    public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
+    protected void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
             throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         try {
@@ -339,7 +260,6 @@ public class DatabaseHandler {
 
     /**
      * Update the database with all the summary stats of the sample
-     *
      * @param datasetID
      * @param header
      * @param type
@@ -349,7 +269,7 @@ public class DatabaseHandler {
      * @param descriptiveStats
      * @throws DatabaseHandlerException
      */
-    public void updateSummaryStatistics(String datasetID, String[] header, FeatureType[] type,
+    protected void updateSummaryStatistics(String datasetID, String[] header, FeatureType[] type,
                                         List<SortedMap<?, Integer>> graphFrequencies,
                                         int[] missing, int[] unique,
                                         List<DescriptiveStatistics> descriptiveStats,
@@ -396,12 +316,12 @@ public class DatabaseHandler {
     }
 
     /**
-     *
+     * Update the dataset table with a dataset sample
      * @param datasetID
      * @param datasetSample
      * @throws DatabaseHandlerException
      */
-    public void updateDatasetSample(String datasetID, SamplePoints datasetSample)
+    protected void updateDatasetSample(String datasetID, SamplePoints datasetSample)
             throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         try {
@@ -427,7 +347,46 @@ public class DatabaseHandler {
         }
     }
 
-    public SamplePoints getDatasetSample(String datasetID) throws DatabaseHandlerException {
+    /**
+     * Retrieves Sample points of a given dataset as coordinates of three features
+     * @param datasetID
+     * @param feature1
+     * @param feature2
+     * @param feature3
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    protected JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
+                                     String feature3) throws DatabaseHandlerException{
+    	//get the sample from the database
+    	SamplePoints sample = getDatasetSample(datasetID);
+    	
+    	// Converts the sample to a json array
+        List<List<String>> columnData = sample.getSamplePoints();
+        Map<String, Integer> dataHeaders = sample.getHeader();
+        JSONArray samplePointsArray = new JSONArray();
+        int firstFeatureColumn = dataHeaders.get(feature1);
+        int secondFeatureColumn = dataHeaders.get(feature2);
+        int thirdFeatureColumn = dataHeaders.get(feature3);
+
+        for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
+            if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
+                !columnData.get(secondFeatureColumn).get(row).isEmpty() &&
+                !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
+                JSONArray point = new JSONArray();
+                point.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
+                point.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
+                point.put(columnData.get(thirdFeatureColumn).get(row));
+                samplePointsArray.put(point);
+            }
+        }
+        return samplePointsArray;
+    }
+    
+    /*
+     * Retrieve the SamplePoints object for a given dataset
+     */
+    private SamplePoints getDatasetSample(String datasetID) throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         ResultSet result = null;
         SamplePoints samplePoints = null;
@@ -443,7 +402,7 @@ public class DatabaseHandler {
             // rollback the changes
             MLDatabaseUtil.rollBack(connection);
             String msg =
-                    "Error occured while retrieving the sample points of dataset : " + datasetID + "." + e.getMessage();
+                    "Error occured while retrieving the sample of dataset : " + datasetID + "." + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
@@ -454,8 +413,7 @@ public class DatabaseHandler {
 
 
     /**
-     * Create the json string with summary stat for a given column
-     *
+     * Create the json string with summary statistics for a given column
      * @param column
      * @param type
      * @param graphFrequencies
@@ -496,16 +454,14 @@ public class DatabaseHandler {
 
     /**
      * This method reads ( a given number of features ) from ML_FEATURE
-     * <p/>
-     * and creates a list of Feature
-     *
+     * and creates a list of Features
      * @param datasetID
      * @param startIndex
      * @param numberOfFeatures
      * @return
      * @throws DatabaseHandlerException
      */
-    public Feature[] getFeatures(String datasetID, String workflowID, int startIndex, int numberOfFeatures)
+    protected Feature[] getFeatures(String datasetID, String workflowID, int startIndex, int numberOfFeatures)
             throws DatabaseHandlerException {
 
         List<Feature> features = new ArrayList<Feature>();
@@ -560,13 +516,12 @@ public class DatabaseHandler {
     /**
      * Retrieve and returns the names of the features having the given type
      * (Categorical/Numerical) of a given data set
-     *
      * @param workflowID
      * @param featureType
      * @return
      * @throws DatabaseHandlerException
      */
-    public String[] getFeatureNames(String workflowID, String featureType)
+    protected String[] getFeatureNames(String workflowID, String featureType)
             throws DatabaseHandlerException {
         PreparedStatement getFeatureNamesStatement = null;
         ResultSet result = null;
@@ -604,17 +559,15 @@ public class DatabaseHandler {
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set, from the database.
-     *
      * @param datasetID
      * @param featureName
      * @return
      * @throws DatabaseHandlerException
      */
-    public String getSummaryStats(String datasetID, String featureName)
+    protected String getSummaryStats(String datasetID, String featureName)
             throws DatabaseHandlerException {
         PreparedStatement getSummaryStatement = null;
         ResultSet result = null;
-        JSONObject summary = null;
         try {
             getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS);
             getSummaryStatement.setString(1, featureName);
@@ -636,7 +589,13 @@ public class DatabaseHandler {
         }
     }
 
-    public int getFeatureCount(String datasetID) throws DatabaseHandlerException {
+    /**
+     * Returns the number of features of a given dataset
+     * @param datasetID
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    protected int getFeatureCount(String datasetID) throws DatabaseHandlerException {
         PreparedStatement getFeatues = null;
         ResultSet result = null;
         int featureCount = 0;
@@ -662,7 +621,13 @@ public class DatabaseHandler {
         }
     }
 
-    public void setDefaultFeatureSettings(String datasetID, String workflowID)
+    /**
+     * Set the default values for feature properties of a given workflow
+     * @param datasetID
+     * @param workflowID
+     * @throws DatabaseHandlerException
+     */
+    protected void setDefaultFeatureSettings(String datasetID, String workflowID)
             throws DatabaseHandlerException {
         PreparedStatement insertStatement = null;
         PreparedStatement getDefaultFeatureSettings = null;
@@ -685,9 +650,6 @@ public class DatabaseHandler {
                 connection.commit();
                 logger.debug("Successfully inserted feature: "+result.getString(1));
             }
-
-
-
         } catch (SQLException e) {
             // rollback the changes
             MLDatabaseUtil.rollBack(connection);

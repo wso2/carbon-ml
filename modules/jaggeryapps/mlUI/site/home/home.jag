@@ -42,32 +42,41 @@
 		</div>
 
 		<div style="clear:both"></div>
-			<div id="currentProjects"> 
+			<div id="currentProjects">
 				<% 
+					var log=new Log();
 					var user=jagg.getUser();
+					var tenantId=session.get("tenantId");
+
+					//Display the projects and workflows of the logged-in user
 					if(user){
 						var carbon = require('carbon');
 	    				var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-	    				var projects=projectManagementService.getTenantProjects(user);
-	    				var workFlows=projectManagementService.getTenantProjects(user);
+	    				var projects=projectManagementService.getTenantProjects(tenantId);
 	    		%>
 	    		<table id="projectsTable">
 	    			<caption>Projects of <a href="#"><%=user%></a> :</caption>	    		
-	    		<%	    				
+	    		<%		
 	    				if(projects!=null){
 	    					print('<tr><th>Project Name</th><th>Created Date</th><th>Actions</th><th>workFlows</th><th>Actions</th></tr>');
 	    					for(var i=0 ; i<projects[0].length ; i++){
 	    						var workFlows=projectManagementService.getProjectWorkflows(projects[0][i]);
-	    						var noOfWorkflows=workFlows[0].length;
-	    						print('<tr><td  rowspan="'+(noOfWorkflows+1)+'">'+projects[1][i]+'</td><td rowspan="'+(noOfWorkflows+1)+'">'+projects[2][i]+'</td><td rowspan="'+(noOfWorkflows+1)+'" style="width:15em;"><a id="project'+i+'" class="new_workflow blueButton">New Workflow</a> <a id="project'+i+'"class="delete_project blueButton">Delete</a></td>');
-	    						
-	    						for(var j=0 ; j<noOfWorkflows ; j++){
-	    							
-	    							print('<tr><td>'+workFlows[1][j]+'</td><td style="width:10em;"><a id="project'+i+'workflow'+j+'" class="open_workflow blueButton">Open</a> <a id="project'+i+'workflow'+j+'"class="delete_workflow blueButton">Delete</a></td>');
-	    							print('<td style="display:none"><input type="hidden" id="project'+i+'workflow'+j+'ProjectHiddenField" name="project'+i+'" value="'+projects[0][i]+'"></td>');
-	    							print('<td style="display:none"><input type="hidden" id="project'+i+'workflow'+j+'HiddenField" name="workflow'+i+'" value="'+workFlows[0][j]+'"></td></tr>');
-	    						}
-	    					}
+	    						if(workFlows!=null){
+	    							var noOfWorkflows=workFlows[0].length;
+		    						print('<tr><td  rowspan="'+(noOfWorkflows+1)+'">'+projects[1][i]+'</td><td rowspan="'+(noOfWorkflows+1)+'">'+projects[2][i]+'</td><td rowspan="'+(noOfWorkflows+1)+'" style="width:15em;"><a id="project'+i+'" class="new_workflow blueButton">New Workflow</a> <a id="project'+i+'"class="delete_project blueButton">Delete</a></td>');
+		    						
+		    						for(var j=0 ; j<noOfWorkflows ; j++){
+		    							
+		    							print('<tr><td>'+workFlows[1][j]+'</td><td style="width:10em;"><a id="project'+i+'workflow'+j+'" class="open_workflow blueButton">Open</a> <a id="project'+i+'workflow'+j+'"class="delete_workflow blueButton">Delete</a></td>');
+		    							print('<td style="display:none"><input type="hidden" id="project'+i+'workflow'+j+'ProjectHiddenField" name="project'+i+'" value="'+projects[0][i]+'"></td>');
+		    							print('<td style="display:none"><input type="hidden" id="project'+i+'workflow'+j+'HiddenField" name="workflow'+i+'" value="'+workFlows[0][j]+'"></td></tr>');
+		    						}
+		    					}else{
+		    						print('<tr><td>'+projects[1][i]+'</td><td>'+projects[2][i]+'</td><td style="width:15em;"><a id="project'+i+'" class="new_workflow blueButton">New Workflow</a> <a id="project'+i+'"class="delete_project blueButton">Delete</a></td>');
+		    						print('<td style="display:none"><input type="hidden" id="project'+i+'workflow0ProjectHiddenField" name="project'+i+'" value="'+projects[0][i]+'"></td>');
+		    						print('<td colspan="2"><i>No workflows available</i></td></tr>');
+		    					}
+		    				}
 	    				}else{
 	    					print('<tr><td><i>No projects available</i></td></tr>');
 	    				}

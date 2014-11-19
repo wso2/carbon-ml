@@ -5,7 +5,8 @@
 	var carbon = require('carbon');
 	var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
 	paramters.datasetURL = datasetService.getDataSource(session.get("datasetId"));
-	paramters.columnSeparator = datasetService.getSeparator();
+	paramters.algorithmType=session.get("algoType");
 
+	// Only for testing purpose
 	log.info(paramters);
 %>

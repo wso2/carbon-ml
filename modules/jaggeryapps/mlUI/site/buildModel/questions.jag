@@ -1,9 +1,9 @@
 <%
 	var log=new Log();
 
-	// read the model type from the request, if not coming to the page using back button
-	if(request.getParameter("modelType")!=undefined){
-		session.put('modelType',request.getParameter("modelType"));
+	// read the algorithm type from the request, if not coming to the page using back button
+	if(request.getParameter("algoType")!=undefined){
+		session.put('algoType',request.getParameter("algoType"));
 	}
 %>
 
@@ -33,8 +33,8 @@
 			</div>
 			<div class="option">
 				<select id="textual">
-					<option value="Yes">Yes</option>
-					<option value="No">No</option>
+					<option value="yes">Yes</option>
+					<option value="no">No</option>
 				</select>
 			</div>
 		</div>
@@ -42,7 +42,7 @@
 	</div>
 	<div style="clear:both"></div>
 	<div class="bottomNavigationButtons">
-		<button id="questions_back" onclick="loadModelTypes();" class="blueButton">Go Back</button>
+		<button id="questions_back" onclick="loadAlgoTypes();" class="blueButton">Go Back</button>
 		<button id="questions_continue" class="blueButton">Continue</button>
 	<div>
 <script src="./js/buildModel.js"></script> 

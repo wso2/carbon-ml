@@ -21,7 +21,7 @@
 				<div style="clear:both"></div>
 
 				<div id="wizzardSteps">
-					<% include('modelType.jag'); %>
+					<% include('algoType.jag'); %>
 				</div>
 			</div>
 		</div>

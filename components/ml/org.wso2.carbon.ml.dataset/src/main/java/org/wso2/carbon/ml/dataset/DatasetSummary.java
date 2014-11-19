@@ -52,14 +52,12 @@ public class DatasetSummary {
 	private int[] unique;
 	private Map<String, Integer> headerMap;
 	private FeatureType[] type;
-	private static final int CATEGORY_THRESHOLD = 20;
 	private int recordsCount = 0;
 
 	/**
 	 * get a summary of a sample from the given csv file, including
 	 * descriptive-stats, missing values, unique values and etc. to display in
 	 * the data view.
-	 *
 	 * @param datasetID
 	 * @param noOfRecords
 	 * @param noOfIntervals
@@ -67,53 +65,48 @@ public class DatasetSummary {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public int generateSummary(String datasetID, int noOfRecords, int noOfIntervals,
-	                           String seperator, Boolean include) throws DatasetServiceException {
+	protected int generateSummary(String datasetID, int noOfRecords, int noOfIntervals,
+	                              int categoricalThreshold, Boolean include)
+	                            		  throws DatasetServiceException {
 		String msg;
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			// get the file-path of the data source
-			String dataSource = dbHandler.getDataSource(datasetID);
-			if (dataSource != null) {
-				logger.debug("Data Source: " + dataSource);
-				// read the input data file
-				File csvData = new File(dataSource);
-				CSVParser parser =
-						CSVParser.parse(csvData, Charset.defaultCharset(),
-						                CSVFormat.RFC4180.withHeader());
-				Iterator<CSVRecord> datasetIterator = parser.iterator();
+			String datasetURL = dbHandler.getDataSource(datasetID);
+			logger.debug("Data Source: " + datasetURL);
+			// read the input data file
+			File csvData = new File(datasetURL);
+			CSVParser parser =
+					CSVParser.parse(csvData, Charset.defaultCharset(),
+					                CSVFormat.RFC4180.withHeader());
+			Iterator<CSVRecord> datasetIterator = parser.iterator();
 
-				// get the header
-				headerMap = parser.getHeaderMap();
+			// get the header
+			headerMap = parser.getHeaderMap();
 
-				// Initialize the lists
-				initilize();
+			// Initialize the lists
+			initilize();
 
-				// Find the columns contains String data.
-				findColumnDataType(parser.iterator(), noOfRecords);
+			// Find the columns contains String data.
+			findColumnDataType(parser.iterator(), noOfRecords);
 
-				// Calculate descriptive statistics
-				calculateDescriptiveStats(datasetIterator, seperator);
+			// Calculate descriptive statistics
+			calculateDescriptiveStats(datasetIterator);
 
-				// Calculate frequencies of each bin of the features
-				calculateFrequencies(noOfIntervals);
+			// Calculate frequencies of each bin of the features
+			calculateFrequencies(noOfIntervals, categoricalThreshold);
 
-				// Update the database with calculated summary stats
-				String[] header =
-						headerMap.keySet().toArray(new String[parser.getHeaderMap()
-						                                      .keySet().size()]);
-				dbHandler.updateSummaryStatistics(datasetID, header, type, graphFrequencies,
-				                                  missing, unique, descriptiveStats,include);
-				return headerMap.size();
-			} else {
-				msg = "Data source not found.";
-				logger.error(msg);
-				throw new DatasetServiceException(msg);
-			}
+			// Update the database with calculated summary stats
+			String[] header =
+					headerMap.keySet().toArray(new String[parser.getHeaderMap().keySet()
+					                                      .size()]);
+			dbHandler.updateSummaryStatistics(datasetID, header, type, graphFrequencies, missing,
+			                                  unique, descriptiveStats, include);
+			return headerMap.size();
 		} catch (IOException e) {
 			msg =
-					"Error occured while reading from the data source with ID: " + datasetID +
-					". " + e.getMessage();
+					"Error occured while reading from the data source with ID: " + datasetID + ". " +
+							e.getMessage();
 			logger.error(msg, e);
 			throw new DatasetServiceException(msg);
 		} catch (Exception e) {
@@ -185,7 +178,7 @@ public class DatasetSummary {
 	/*
 	 * Calculate descriptive statistics for Numerical columns
 	 */
-	private void calculateDescriptiveStats(Iterator<CSVRecord> datasetIterator, String seperator) {
+	private void calculateDescriptiveStats(Iterator<CSVRecord> datasetIterator) {
 		double cellValue;
 		int currentCol;
 
@@ -210,7 +203,7 @@ public class DatasetSummary {
 	 * needed to plot bar graphs/histograms.
 	 * Calculate unique value counts.
 	 */
-	private void calculateFrequencies(int noOfIntervals) {
+	private void calculateFrequencies(int noOfIntervals, int categoricalThreshold) {
 		Iterator<Integer> numericColumns = numericDataColPosstions.iterator();
 		Iterator<Integer> stringColumns = stringDataColPosstions.iterator();
 		int currentCol;
@@ -238,7 +231,7 @@ public class DatasetSummary {
 			// if the unique values are less than or equal to
 			// maximum-category-limit
 			unique[currentCol] = uniqueSet.size();
-			if (unique[currentCol] <= CATEGORY_THRESHOLD) {
+			if (unique[currentCol] <= categoricalThreshold) {
 				// change the data type to categorical
 				type[currentCol] = FeatureType.CATEGORICAL;
 				// calculate the category frequencies
@@ -292,7 +285,7 @@ public class DatasetSummary {
 	 * returns the raw-data of the sample
 	 */
 	protected SamplePoints samplePoints() {
-		SamplePoints samplPoints= new SamplePoints();
+		SamplePoints samplPoints = new SamplePoints();
 		samplPoints.setHeader(headerMap);
 		samplPoints.setSamplePoints(columnData);
 		return samplPoints;

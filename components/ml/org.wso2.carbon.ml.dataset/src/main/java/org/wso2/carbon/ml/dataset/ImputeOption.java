@@ -29,11 +29,10 @@ public class ImputeOption {
 		this.option = option;
 	}
 
+	/**
+	 * Returns the impute option as a string
+	 */
 	public String toString() {
-		return option;
-	}
-
-	public String getImputeOptionName() {
 		return option;
 	}
 }

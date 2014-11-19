@@ -3,5 +3,7 @@
 	jagg.setUser(null);
 	session.remove("datasetId");
 	session.remove("projectId");
+	session.remove("workflowId");
+	session.remove("tenantId");
 	response.sendRedirect("../home/login.jag");
 %>

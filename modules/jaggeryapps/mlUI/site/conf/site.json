@@ -1,7 +1,4 @@
 {
-    "theme" : {
-        "base" : "fancy"
-    },
     "context" : "/mlUI",
     "hostname" : "localhost",
     "httpsport" : "9443",
@@ -23,6 +20,4 @@
         "repliesPerPage" : "5",
         "resourceIdentifier" : "common"
     }
-
-
 }

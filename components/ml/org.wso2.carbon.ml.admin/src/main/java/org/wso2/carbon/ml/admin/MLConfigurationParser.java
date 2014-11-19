@@ -29,97 +29,96 @@ import java.io.File;
 
 public class MLConfigurationParser {
 
-    private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
+	private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
 
-    /**
-     *
-     * @return Data upload settings
-     * @throws MLConfigurationParserException
-     */
-    protected DataUploadSettings getDataUploadSettings() throws
+	/**
+	 *Parse and return default file uploading settings from ml-config.xml
+	 *
+	 * @return Data upload settings
+	 * @throws MLConfigurationParserException
+	 */
+	protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
+		DataUploadSettings dataUploadSettings = new DataUploadSettings();
+		try {
+			Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
+			NodeList nodes =
+					doc.getElementsByTagName(MLAdminConstants.UPLOAD_SETTINGS).item(0)
+					.getChildNodes();
+			for (int i = 0; i < nodes.getLength(); i++) {
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LOCATION)) {
+					dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
+				}
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.IN_MEMORY_THRESHOLD)) {
+					dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
+					                                                         .getTextContent()));
+				}
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LIMIT)) {
+					dataUploadSettings.setUploadLimit(Long.parseLong(nodes.item(i).getTextContent()));
+				}
+			}
+		} catch (Exception e) {
+			String msg = "An error occurred while parsing XML\n" + e.getMessage();
+			logger.error(msg, e);
+			throw new MLConfigurationParserException(msg);
+		}
+		return dataUploadSettings;
+	}
 
-                                                         MLConfigurationParserException {
-        DataUploadSettings dataUploadSettings = new DataUploadSettings();
-        try {
-            Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLAdminConstants.UPLOAD_SETTINGS).item(0).getChildNodes();
-            String uploadLocation = "";
-            int inMemoryThreshold = 0;
-            long uploadLimit = 0;
-            for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LOCATION)) {
-                    dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
-                }
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.IN_MEMORY_THRESHOLD)) {
-                    dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
-                                                                                     .getTextContent()));
-                }
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.UPLOAD_LIMIT)) {
-                    dataUploadSettings.setUploadLimit(Long.parseLong(nodes.item(i).getTextContent
-                            ()));
-                }
-            }
-        } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLConfigurationParserException(msg);
-        }
-        return dataUploadSettings;
-    }
+	/**
+	 * Parse default summary satistics generation settings from ml-config.xml
+	 *  
+	 * @return Summary statistics settings
+	 * @throws MLConfigurationParserException
+	 */
+	protected SummaryStatisticsSettings getSummaryStatisticsSettings() throws
 
-    /**
-     *
-     * @return Summary statistics settings
-     * @throws MLConfigurationParserException
-     */
-    protected SummaryStatisticsSettings getSummaryStatisticsSettings() throws
+	MLConfigurationParserException {
+		SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
+		try {
+			Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
+			NodeList nodes =
+					doc.getElementsByTagName(MLAdminConstants.SUMMARY_STATISTICS_SETTINGS)
+					.item(0).getChildNodes();
+			for (int i = 0; i < nodes.getLength(); i++) {
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.HISTOGRAM_BINS)) {
+					summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
+					                                                            .getTextContent()));
+				}
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.CATEGORICAL_THRESHOLD)) {
+					summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes.item(i)
+					                                                                   .getTextContent()));
+				}
+				if (nodes.item(i).getNodeName().equals(MLAdminConstants.SAMPLE_SIZE)) {
+					summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
+					                                                         .getTextContent()));
+				}
+			}
+		} catch (Exception e) {
+			String msg = "An error occurred while parsing XML\n" + e.getMessage();
+			logger.error(msg, e);
+			throw new MLConfigurationParserException(msg);
+		}
+		return summaryStatisticsSettings;
+	}
 
-                                                      MLConfigurationParserException {
-        SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
-        try {
-            Document doc = getXMLDocument(MLAdminConstants.ML_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLAdminConstants.SUMMARY_STATISTICS_SETTINGS).item(0)
-                    .getChildNodes();
-            for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.HISTOGRAM_BINS)) {
-                    summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
-                                                                                        .getTextContent()));
-                }
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.CATEGORICAL_THRESHOLD)) {
-                    summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes.item
-                            (i).getTextContent()));
-                }
-                if (nodes.item(i).getNodeName().equals(MLAdminConstants.SAMPLE_SIZE)) {
-                    summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
-                                                                                     .getTextContent()));
-                }
-            }
-        } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLConfigurationParserException(msg);
-        }
-        return summaryStatisticsSettings;
-    }
-
-    /**
-     * @param xmlFilePath
-     * @return XML document
-     * @throws MLConfigurationParserException
-     */
-    private Document getXMLDocument(String xmlFilePath)
-            throws MLConfigurationParserException {
-        try {
-            File xmlFile = new File(xmlFilePath);
-            DocumentBuilderFactory dbFactory
-                    = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder;
-            dBuilder = dbFactory.newDocumentBuilder();
-            return dBuilder.parse(xmlFile);
-        } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLConfigurationParserException(msg);
-        }
-    }
+	/**
+	 * Reads from ml-config.xml
+	 * 
+	 * @param xmlFilePath
+	 * @return XML document
+	 * @throws MLConfigurationParserException
+	 */
+	private Document getXMLDocument(String xmlFilePath) throws MLConfigurationParserException {
+		try {
+			File xmlFile = new File(xmlFilePath);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder;
+			dBuilder = dbFactory.newDocumentBuilder();
+			return dBuilder.parse(xmlFile);
+		} catch (Exception e) {
+			String msg = "An error occurred while parsing XML\n" + e.getMessage();
+			logger.error(msg, e);
+			throw new MLConfigurationParserException(msg);
+		}
+	}
 }

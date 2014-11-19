@@ -36,42 +36,82 @@ public class Feature {
 		this.summaryStats = summaryStats;
 	}
 
+	/**
+	 * Returns the name of the feature
+	 * @return
+	 */
 	public String getFieldName() {
 		return fieldName;
 	}
 
+	/**
+	 * Set the name of the feature
+	 * @param fieldName
+	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
 	
+	/**
+	 * Returns the summary statistics json string
+	 * @return
+	 */
 	public String getSummaryStats() {
 		return summaryStats;
 	}
 
+	/**
+	 * Set the summary statistics json string
+	 * @param summaryStats
+	 */
 	public void setSummaryStats(String summaryStats) {
 		this.summaryStats = summaryStats;
 	}
 
+	/**
+	 * Returns whether the feature is treated as an input or not
+	 * @return
+	 */
 	public boolean isInput() {
 		return isInput;
 	}
 
+	/**
+	 * Sets whether the feature is treated as an input or not
+	 * @param isInput
+	 */
 	public void setInput(boolean isInput) {
 		this.isInput = isInput;
 	}
 
+	/**
+	 * Returns the data-type of the feature
+	 * @return
+	 */
 	public FeatureType getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the data-type of the feature
+	 * @param type
+	 */
 	public void setType(FeatureType type) {
 		this.type = type;
 	}
 
+	/**
+	 * Returns the impute method of the feature
+	 * @return
+	 */
 	public ImputeOption getImputeOperation() {
 		return imputeOperation;
 	}
 
+	/**
+	 * Sets the impute method of the feature
+	 * @param imputeOperation
+	 */
 	public void setImputeOperation(ImputeOption imputeOperation) {
 		this.imputeOperation = imputeOperation;
 	}

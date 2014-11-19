@@ -9,6 +9,9 @@ public class FileFormats {
 		this.fileFormat = fileFormat;
 	}
 
+	/**
+	 * Returns the file format as a string
+	 */
 	public String toString() {
 		return fileFormat;
 	}
