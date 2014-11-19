@@ -14,18 +14,25 @@
 <%
   var log = new Log();
   var mlConfigs=require("/includes/ml.json");
-  var carbon = require('carbon');
-  var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
   var datasetId = session.get("datasetId");
   var workflowId = session.get("workflowId");
-   if (workflowId != null){
-    var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-    var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-    var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"numFeaturesDropdown1");
-    var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[1],"numFeaturesDropdown2");
-    var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"catFeaturesDropdown");
-    }
 
+  //Retrieving feature names for the two axis
+  try{
+    var carbon = require('carbon');
+    var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    if (workflowId != null){
+      var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
+      var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
+      var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"numFeaturesDropdown1");
+      var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[1],"numFeaturesDropdown2");
+      var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"catFeaturesDropdown");
+    }
+  }catch(e){
+    log.error("An error occured while retrieving feature names of dataset: "+datasetId, e);
+  }
+  
+  // Creating the drop-down list of features
   function listSelectionRenderer(featureNames, selectedOption, cssClass){
      var selection = "<select class=" + cssClass + ">";
      for (var feature in featureNames){

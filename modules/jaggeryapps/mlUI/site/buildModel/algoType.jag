@@ -1,0 +1,10 @@
+<h3> Model Name : <input type="text" name="modelName"></h3>
+<h3> Select a Model type:</h3>
+<div id="algo_type">
+	<div class="algo_type_button"><a class="algoTypeButton" id="Numerical_Prediction">Numerical Prediction</a></div>
+	<div class="algo_type_button"><a class="algoTypeButton" id="Classification">Classification</a></div>
+	<div class="algo_type_button"><a class="algoTypeButton" id="Clustering">Clustering</a></div>
+</div>
+
+<script src="../../session/sessionCheck.js"></script>
+<script src="./js/buildModel.js"></script> 

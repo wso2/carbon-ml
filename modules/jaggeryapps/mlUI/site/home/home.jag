@@ -42,18 +42,22 @@
 		</div>
 
 		<div style="clear:both"></div>
-			<div id="currentProjects"> 
+			<div id="currentProjects">
 				<% 
+					var log=new Log();
 					var user=jagg.getUser();
+					var tenantId=session.get("tenantId");
+
+					//Display the projects and workflows of the logged-in user
 					if(user){
 						var carbon = require('carbon');
 	    				var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-	    				var projects=projectManagementService.getTenantProjects(user);
-	    				var workFlows=projectManagementService.getTenantProjects(user);
+	    				var projects=projectManagementService.getTenantProjects(tenantId);
+	    				var workFlows=projectManagementService.getTenantProjects(tenantId);
 	    		%>
 	    		<table id="projectsTable">
 	    			<caption>Projects of <a href="#"><%=user%></a> :</caption>	    		
-	    		<%	    				
+	    		<%		
 	    				if(projects!=null){
 	    					print('<tr><th>Project Name</th><th>Created Date</th><th>Actions</th><th>workFlows</th><th>Actions</th></tr>');
 	    					for(var i=0 ; i<projects[0].length ; i++){

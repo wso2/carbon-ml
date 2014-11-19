@@ -1,9 +1,9 @@
 <%
 	var carbon = require('carbon');
 	var log = new Log();
-	var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+	var datasetId = session.get("datasetId");
 	try{
-	   var datasetId = session.get("datasetId");
+	   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
 	   if (datasetId != null){
 		   var feature = request.getParameter("numFeature");
 		   var summaryStats = datasetService.getSummaryStats(datasetId,feature).toString();
@@ -11,6 +11,6 @@
 		   response.content = summaryStats;
 	   }
 	}catch(e){
-		log.error("An error occured while fetching summary statistics");
+		log.error("An error occured while fetching summary statistics for dataset: "+datasetId, e);
 	}
 %>

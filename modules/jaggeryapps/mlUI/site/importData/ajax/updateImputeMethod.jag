@@ -10,6 +10,6 @@
    		datasetService.updateImputeOption(featureName, workflowId, imputeOption);
       }
    }catch(e){
-   	log.error("An error occured while updating impute method");
+   	log.error("An error occured while updating impute method",e);
    }
 %>

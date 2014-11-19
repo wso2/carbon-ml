@@ -124,41 +124,7 @@ $('document').ready(function(){
 
 function newProject(currentProjectId){
 	jagg.sessionAwareJs();
-	if(currentProjectId!=""){
-		$(function() {
-		    $('<div id="dialog-confirm" title="Confirm"><p>Do you want to save the current project?</p></div>').dialog({
-		    	resizable: true,
-		    	height:220,
-		    	width: 500,
-		    	modal: true,
-		    	buttons: {
-		    		Save: function() {
-		    			$( this ).dialog("close");
-		    			window.location.href = "../importData/importDataset.jag";
-		    		},
-		    		Delete: function() {
-		    			$( this ).dialog("close");
-		    			$.ajax({
-							url : "./ajax/deleteProject.jag",
-							type : 'POST',
-							data : 'projectId='+currentProjectId,
-							success : function(data, textStatus, jqXHR) {
-								window.location.href = "../importData/importDataset.jag";
-							},
-							error : function(jqXHR, textStatus, errorThrown) {
-								// TODO: redirect to error page 
-							}
-						});
-		    		},
-		    		Cancel: function() {
-		    			$( this ).dialog("close");
-		    		}
-		      	}
-		    });
-  		});
-	}else{
-		window.location.href = "../importData/importDataset.jag";
-	}
+	window.location.href = "../importData/importDataset.jag";
 };
 
 function disableWizardMenu(){

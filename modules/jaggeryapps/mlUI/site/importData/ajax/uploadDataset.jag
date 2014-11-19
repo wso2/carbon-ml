@@ -13,8 +13,8 @@
 	projectManagementService.createProject(projectId,projectName,projectDescription);
     session.put("projectId",projectId);
 
-    // Add the user to the project
-    projectManagementService.addTenantToProject(jagg.getUser(),projectId);
+    // Add the tenant to the project
+    projectManagementService.addTenantToProject(session.get("tenantId"),projectId);
 
     // Upload Dataset
     var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService'); 
@@ -28,7 +28,7 @@
     	destinationFile.open('w');
     	destinationFile.write(sourceFile.getStream());
     }catch(e){
-        log.error("An error occured while importing file");
+        log.error("An error occured while importing file",e);
     }finally{
         destinationFile.close();
         sourceFile.close();
