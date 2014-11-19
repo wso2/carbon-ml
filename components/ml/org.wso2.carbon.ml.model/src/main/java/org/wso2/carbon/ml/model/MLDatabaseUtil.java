@@ -17,37 +17,38 @@
  */
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class MLDatabaseUtil {
 	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
-
-	/**
-	 * 
-	 * @param dbConnection
-	 * @param rs
-	 * @param prepStmt
+	
+	/*
+	 * private Constructor to prevent any other class from instantiating.
 	 */
-	public static void closeAllConnections(Connection dbConnection,
+	private MLDatabaseUtil() {
+	  }
+
+	/*
+	 * Close a given set of Database resources
+	 */
+	protected static void closeAllConnections(Connection dbConnection,
 			ResultSet rs, PreparedStatement prepStmt) {
-		
 		closeResultSet(rs);
 		closeStatement(prepStmt);
 		closeConnection(dbConnection);
 	}
 
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Close a given connection
 	 */
-	public static void closeConnection(Connection dbConnection) {
+	protected static void closeConnection(Connection dbConnection) {
 		if (dbConnection != null) {
 			try {
 				dbConnection.close();
@@ -59,11 +60,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param rs
+	/*
+	 * Close a given Resultset
 	 */
-	public static void closeResultSet(ResultSet rs) {
+	protected static void closeResultSet(ResultSet rs) {
 		if (rs != null) {
 			try {
 				rs.close();
@@ -75,11 +75,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param statement
+	/*
+	 * Close a given statement
 	 */
-	public static void closeStatement(Statement statement) {
+	protected static void closeStatement(Statement statement) {
 		if (statement != null) {
 			try {
 				statement.close();
@@ -91,11 +90,10 @@ public class MLDatabaseUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Roll-backs a connection
 	 */
-	public static void rollBack(Connection dbConnection) {
+	protected static void rollBack(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.rollback();
@@ -105,11 +103,10 @@ public class MLDatabaseUtil {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param dbConnection
+	/*
+	 * Enables the auto-commit of a connection
 	 */
-	public static void enableAutoCommit(Connection dbConnection) {
+	protected static void enableAutoCommit(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.setAutoCommit(true);

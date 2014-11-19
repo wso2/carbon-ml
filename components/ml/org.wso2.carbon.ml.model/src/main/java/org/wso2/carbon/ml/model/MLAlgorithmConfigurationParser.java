@@ -87,9 +87,7 @@ public class MLAlgorithmConfigurationParser {
                     {
                         JSONArray jsonArray = new JSONArray();
                         jsonArray.put(0,parameters);
-                        if (jsonArray instanceof  JSONArray) {
-                            hyperparameters = jsonArray;
-                        }
+                        hyperparameters = jsonArray;
                     }
                     break;
                 }
