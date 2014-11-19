@@ -23,10 +23,10 @@
         featureAsJson.push('<span class="feature">' + feature.getFieldName()
                     + '</span>');
         featureAsJson.push(checkboxRenderer(feature.isInput()));
-        featureAsJson.push(listSelectionRenderer(mlConfigs.featureTypes,feature.getType().getFeatureName(),"fieldType"));
+        featureAsJson.push(listSelectionRenderer(mlConfigs.featureTypes,feature.getType().toString(),"fieldType"));
         featureAsJson.push('<div class="summaryStatistics">' + feature.getSummaryStats() + "</div>");
         
-        featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions,feature.getImputeOperation().getImputeOptionName(),"imputeMethod"));
+        featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions,feature.getImputeOperation().toString(),"imputeMethod"));
         pageContentAsJson.push(featureAsJson);      
        
      }

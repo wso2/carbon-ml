@@ -10,9 +10,7 @@
     if (success === true){
       var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
       var tenantDomain = MultitenantUtils.getTenantDomain(username);
-
-      var tenantManagerService = new Packages.org.wso2.carbon.um.ws.service.TenantManagerService();
-      var tenantId = tenantManagerService.getTenantId(tenantDomain);
+      var tenantId = carbon.server.tenantId({'domain': tenantDomain});
 
       session.put("logged.user",username);
       session.put("tenantId",tenantId);
