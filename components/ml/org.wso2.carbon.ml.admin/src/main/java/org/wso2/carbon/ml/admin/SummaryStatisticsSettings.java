@@ -18,14 +18,33 @@
 
 package org.wso2.carbon.ml.admin;
 
-public class MLAdminConstants {
-    public static final String UPLOAD_LOCATION = "uploadLocation";
-    public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
-    public static final String UPLOAD_LIMIT = "uploadLimit";
-    public static final String ML_CONFIG_XML = "repository/conf/etc/ml-config.xml";
-    public static final String UPLOAD_SETTINGS = "dataUploadSettings";
-    public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
-    public static final String HISTOGRAM_BINS = "histogramBins";
-    public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
-    public static final String SAMPLE_SIZE = "sampleSize";
+public class SummaryStatisticsSettings {
+    private int histogramBins;
+    private int categoricalThreshold;
+    private int sampleSize;
+
+
+    public int getHistogramBins() {
+        return histogramBins;
+    }
+
+    public void setHistogramBins(int histogramBins) {
+        this.histogramBins = histogramBins;
+    }
+
+    public int getCategoricalThreshold() {
+        return categoricalThreshold;
+    }
+
+    public void setCategoricalThreshold(int categoricalThreshold) {
+        this.categoricalThreshold = categoricalThreshold;
+    }
+
+    public int getSampleSize() {
+        return sampleSize;
+    }
+
+    public void setSampleSize(int sampleSize) {
+        this.sampleSize = sampleSize;
+    }
 }
