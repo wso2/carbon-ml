@@ -75,7 +75,7 @@ public class ModelService {
                     MLAlgorithmConfigurationParser();
             return mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
         } catch (MLAlgorithmConfigurationParserException ex) {
-            String msg = "Error has occurred while retrieving hyper parameters";
+            String msg = "An error occurred while retrieving hyper parameters";
             logger.error(msg, ex);
             throw new ModelServiceException(msg);
         }
@@ -83,16 +83,16 @@ public class ModelService {
 
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @return Array of algorithm names
+     * @return List of algorithm names
      * @throws ModelServiceException
      */
-    public String[] getAlgorithmsByType(String algorithmType) throws ModelServiceException {
+    public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException {
         try {
             MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
                     MLAlgorithmConfigurationParser();
             return mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
         } catch (MLAlgorithmConfigurationParserException ex) {
-            String msg = "Error has occurred while retrieving algorithm names";
+            String msg = "An error occurred while retrieving algorithm names";
             logger.error(msg, ex);
             throw new ModelServiceException(msg);
         }
