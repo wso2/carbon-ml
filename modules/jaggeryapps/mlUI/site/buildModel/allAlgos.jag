@@ -10,8 +10,8 @@
 			var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
 			
 			var algorithms = modelService.getAlgorithmsByType(algoType);
-			for(var i=0 ; i<algorithms.length ; i++){
-				print('<input type="radio" class="algoName" name="algorithm" value="'+algorithms[i]+'">'+algorithms[i]+'<br>');
+			for(var i=0 ; i<algorithms.size() ; i++){
+				print('<input type="radio" class="algoName" name="algorithm" value="'+algorithms.get(i)+'">'+algorithms.get(i)+'<br>');
 			}
 		}catch(e){
 			log.error("An error occured while retrieving available algorithms of type: "+algoType, e);

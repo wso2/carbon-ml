@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -198,7 +200,7 @@ public class DatasetService {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public Feature[] getFeatures(String datasetID, String workflowID, int startIndex,
+	public List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
 	                             int numberOfFeatures) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
@@ -218,7 +220,7 @@ public class DatasetService {
 	 * @return
 	 * @throws DatasetServiceException
 	 */
-	public String[] getFeatureNames(String workflowID, String featureType)
+	public List<String> getFeatureNames(String workflowID, String featureType)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
