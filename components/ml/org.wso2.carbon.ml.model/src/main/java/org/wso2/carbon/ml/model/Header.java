@@ -18,10 +18,12 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
 
 public class Header implements Function<String, Boolean> {
-
+    public static final Log logger = LogFactory.getLog(Header.class);
     private String header;
 
     Header(String header) {
@@ -30,10 +32,17 @@ public class Header implements Function<String, Boolean> {
 
     @Override
     public Boolean call(String line) throws Exception {
-        Boolean isRow = true;
-        if (line.equals(this.header)) {
-            isRow = false;
+        try {
+            Boolean isRow = true;
+            if (line.equals(this.header)) {
+                isRow = false;
+            }
+            return isRow;
+        } catch (Exception e) {
+            String msg = "An error occurred while removing header row\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
         }
-        return isRow;
     }
 }

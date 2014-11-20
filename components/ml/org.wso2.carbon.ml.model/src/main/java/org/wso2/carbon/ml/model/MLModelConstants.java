@@ -18,6 +18,12 @@
 package org.wso2.carbon.ml.model;
 
 public final class MLModelConstants {
+    /**
+     * Private constructor to prevent any other class from instantiating.
+     */
+    private MLModelConstants() {
+    }
+
     public static final String SMALL = "small";
     public static final String MEDIUM = "medium";
     public static final String LARGE = "large";

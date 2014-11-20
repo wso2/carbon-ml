@@ -18,11 +18,14 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 
 public class KMeans {
+    public static final Log logger = LogFactory.getLog(KMeans.class);
 
     /**
      * @param data           JavaRDD containing feature vectors
@@ -32,7 +35,14 @@ public class KMeans {
      */
     public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
             throws ModelServiceException {
-        return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);
+        try {
+            return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);
+        } catch (Exception e) {
+            String msg = "An error occurred while building k-means model\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
     }
 
     /**
@@ -43,6 +53,13 @@ public class KMeans {
      */
     public JavaRDD<Integer> test(KMeansModel kMeansModel,
                                  JavaRDD<Vector> data) throws ModelServiceException {
-        return kMeansModel.predict(data);
+        try {
+            return kMeansModel.predict(data);
+        } catch (Exception e) {
+            String msg = "An error occurred while testing k-means model\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
     }
 }
