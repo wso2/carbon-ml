@@ -18,19 +18,30 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function2;
 
 public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
+    public static final Log logger = LogFactory.getLog(DiscardedRows.class);
+
     @Override
     public Boolean call(String[] tokens, Integer[] indices) throws Exception {
-        Boolean keep = true;
-        for (Integer index : indices) {
-            if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
-                    (tokens[index])) {
-                keep = false;
-                break;
+        try {
+            Boolean keep = true;
+            for (Integer index : indices) {
+                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
+                        (tokens[index])) {
+                    keep = false;
+                    break;
+                }
             }
+            return keep;
+        } catch (Exception e) {
+            String msg = "An error occurred while removing discarded rows\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
         }
-        return keep;
     }
 }

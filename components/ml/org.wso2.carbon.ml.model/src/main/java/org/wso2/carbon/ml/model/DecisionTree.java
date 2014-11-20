@@ -20,6 +20,8 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -31,6 +33,8 @@ import scala.Tuple2;
 import java.util.HashMap;
 
 public class DecisionTree {
+    public static final Log logger = LogFactory.getLog(DecisionTree.class);
+
     /**
      * @param train               Training dataset as a JavaRDD of labeled points
      * @param noOfClasses         No of classes
@@ -48,12 +52,19 @@ public class DecisionTree {
                                    int maxTreeDepth,
                                    int maxBins
     ) throws ModelServiceException {
-        return org.apache.spark.mllib.tree.DecisionTree.trainClassifier(train,
-                                                                        noOfClasses,
-                                                                        categoricalFeatures,
-                                                                        impurityCriteria,
-                                                                        maxTreeDepth,
-                                                                        maxBins);
+        try {
+            return org.apache.spark.mllib.tree.DecisionTree.trainClassifier(train,
+                                                                            noOfClasses,
+                                                                            categoricalFeatures,
+                                                                            impurityCriteria,
+                                                                            maxTreeDepth,
+                                                                            maxBins);
+        } catch (Exception e) {
+            String msg = "An error occurred while building decision tree model\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
     }
 
     /**
@@ -66,12 +77,19 @@ public class DecisionTree {
                                             JavaRDD<LabeledPoint> test)
             throws ModelServiceException {
 
-        return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
-            @Override
-            public Tuple2<Double, Double> call(LabeledPoint p) {
-                return new Tuple2<Double, Double>(model.predict(p.features()), p.label());
-            }
-        });
+        try {
+            return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
+                @Override
+                public Tuple2<Double, Double> call(LabeledPoint p) {
+                    return new Tuple2<Double, Double>(model.predict(p.features()), p.label());
+                }
+            });
+        } catch (Exception e) {
+            String msg = "An error occurred while testing decision tree model\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
 
     }
 
@@ -82,13 +100,19 @@ public class DecisionTree {
      */
     public double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
             throws ModelServiceException {
-        Double testError =
-                1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
-                    @Override
-                    public Boolean call(Tuple2<Double, Double> pl) {
-                        return !pl._1().equals(pl._2());
-                    }
-                }).count() / predictionsAndLabels.count();
-        return testError;
+        try {
+            return 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
+                    Boolean>() {
+                @Override
+                public Boolean call(Tuple2<Double, Double> pl) {
+                    return !pl._1().equals(pl._2());
+                }
+            }).count() / predictionsAndLabels.count();
+        } catch (Exception e) {
+            String msg = "An error occurred while calculating decision tree test error\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
+        }
     }
 }

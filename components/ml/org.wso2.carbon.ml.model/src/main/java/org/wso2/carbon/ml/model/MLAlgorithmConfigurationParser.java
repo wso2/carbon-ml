@@ -87,9 +87,7 @@ public class MLAlgorithmConfigurationParser {
                     {
                         JSONArray jsonArray = new JSONArray();
                         jsonArray.put(0,parameters);
-                        if (jsonArray instanceof  JSONArray) {
-                            hyperparameters = jsonArray;
-                        }
+                        hyperparameters = jsonArray;
                     }
                     break;
                 }
@@ -111,9 +109,9 @@ public class MLAlgorithmConfigurationParser {
     protected String[] getAlgorithms(String algorithmType) throws
                                                         MLAlgorithmConfigurationParserException {
         try {
-            List<String> algorithms = new ArrayList();
             Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
             NodeList nodes = doc.getElementsByTagName(MLModelConstants.TYPE);
+            String[] algorithms = new String[nodes.getLength()];
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node nNode = nodes.item(i);
                 if (nNode.getTextContent().equals(algorithmType)) {
@@ -121,12 +119,12 @@ public class MLAlgorithmConfigurationParser {
                     for (int j = 0; j < parent.getChildNodes().getLength(); j++) {
                         Node child = parent.getChildNodes().item(j);
                         if (MLModelConstants.NAME.equals(child.getNodeName())) {
-                            algorithms.add(child.getTextContent());
+                            algorithms[i] = (child.getTextContent());
                         }
                     }
                 }
             }
-            return (String[]) algorithms.toArray();
+            return algorithms;
         } catch (Exception e) {
             String msg = "An error occurred while parsing XML\n" + e.getMessage();
             logger.error(msg, e);
@@ -145,7 +143,6 @@ public class MLAlgorithmConfigurationParser {
         try {
             Map<String, List<Integer>> ratings = new HashMap<String, List<Integer>>();
             Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
-            XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList nodes = doc.getElementsByTagName(MLModelConstants.TYPE);
             String algorithm = "";
             for (int i = 0; i < nodes.getLength(); i++) {

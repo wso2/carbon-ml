@@ -18,26 +18,44 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 
 public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
-    int responseIndex;
+    private final int responseIndex;
+    private static final Log logger = LogFactory.getLog(TokensToLabeledPoints.class);
 
+    /**
+     * @param index Index of the response variable
+     */
     TokensToLabeledPoints(int index) {
         this.responseIndex = index;
     }
 
+    /**
+     * @param tokens String array of tokens
+     * @return Labeled point
+     * @throws ModelServiceException
+     */
     @Override
-    public LabeledPoint call(String[] tokens) throws Exception {
-        double y = Double.parseDouble(tokens[responseIndex]);
-        double[] x = new double[tokens.length];
-        for (int i = 0; i < tokens.length; ++i) {
-            if (responseIndex != i) {
-                x[i] = Double.parseDouble(tokens[i]);
+    public LabeledPoint call(String[] tokens) throws ModelServiceException {
+        try {
+            double y = Double.parseDouble(tokens[responseIndex]);
+            double[] x = new double[tokens.length];
+            for (int i = 0; i < tokens.length; ++i) {
+                if (responseIndex != i) {
+                    x[i] = Double.parseDouble(tokens[i]);
+                }
             }
+            return new LabeledPoint(y, Vectors.dense(x));
+        } catch (Exception e) {
+            String msg = "An error occurred while converting tokens to labeled points\n" + e
+                    .getMessage();
+            logger.error(msg, e);
+            throw new ModelServiceException(msg);
         }
-        return new LabeledPoint(y, Vectors.dense(x));
     }
 }
