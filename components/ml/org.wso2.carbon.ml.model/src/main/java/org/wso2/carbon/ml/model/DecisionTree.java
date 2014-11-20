@@ -30,10 +30,10 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import scala.Tuple2;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class DecisionTree {
-    public static final Log logger = LogFactory.getLog(DecisionTree.class);
+    private static final Log logger = LogFactory.getLog(DecisionTree.class);
 
     /**
      * @param train               Training dataset as a JavaRDD of labeled points
@@ -47,7 +47,7 @@ public class DecisionTree {
      */
     public DecisionTreeModel train(JavaRDD<LabeledPoint> train,
                                    int noOfClasses,
-                                   HashMap<Integer, Integer> categoricalFeatures,
+                                   Map<Integer, Integer> categoricalFeatures,
                                    String impurityCriteria,
                                    int maxTreeDepth,
                                    int maxBins

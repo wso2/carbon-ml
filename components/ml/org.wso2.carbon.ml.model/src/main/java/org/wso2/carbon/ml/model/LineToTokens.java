@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * This class transforms each line (line-by-line) into an array of String tokens
  */
 public class LineToTokens implements Function<String, String[]> {
-    public static final Log logger = LogFactory.getLog(LineToTokens.class);
+    private static final Log logger = LogFactory.getLog(LineToTokens.class);
     private Pattern tokenSeparator;
 
     LineToTokens(Pattern pattern) {

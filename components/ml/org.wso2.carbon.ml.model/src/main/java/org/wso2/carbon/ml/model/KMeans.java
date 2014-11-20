@@ -25,7 +25,7 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 
 public class KMeans {
-    public static final Log logger = LogFactory.getLog(KMeans.class);
+    private static final Log logger = LogFactory.getLog(KMeans.class);
 
     /**
      * @param data           JavaRDD containing feature vectors
