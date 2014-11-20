@@ -15,8 +15,8 @@
      json['iTotalDisplayRecords'] = session.get("numOfFeatures");
 
      var pageContentAsJson = [];
-     for(var i=0; i<features.length; i++){
-        var feature = features[i];
+     for(var i=0; i<features.size(); i++){
+        var feature = features.get(i);
      
         var featureAsJson = [];
 

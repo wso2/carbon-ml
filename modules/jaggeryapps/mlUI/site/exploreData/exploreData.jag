@@ -24,9 +24,9 @@
     if (workflowId != null){
       var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
       var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-      var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"numFeaturesDropdown1");
-      var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[1],"numFeaturesDropdown2");
-      var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"catFeaturesDropdown");
+      var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"numFeaturesDropdown1");
+      var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(1),"numFeaturesDropdown2");
+      var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"catFeaturesDropdown");
     }
   }catch(e){
     log.error("An error occured while retrieving feature names of dataset: "+datasetId, e);
@@ -35,14 +35,14 @@
   // Creating the drop-down list of features
   function listSelectionRenderer(featureNames, selectedOption, cssClass){
      var selection = "<select class=" + cssClass + ">";
-     for (var feature in featureNames){
-      if (selectedOption.toUpperCase() == featureNames[feature].toUpperCase()){
-        selection += "<option selected value=\"" + featureNames[feature]
-            + "\">" + featureNames[feature] + "</option>";
+     for (var i=0; i<featureNames.size(); i++){
+      if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
+        selection += "<option selected value=\"" + featureNames.get(i)
+            + "\">" + featureNames.get(i) + "</option>";
       }
       else{
-        selection += "<option value=\"" + featureNames[feature] + "\">"
-            + featureNames[feature] + "</option>";
+        selection += "<option value=\"" + featureNames.get(i) + "\">"
+            + featureNames.get(i) + "</option>";
       }
      }
      selection += "</select>";

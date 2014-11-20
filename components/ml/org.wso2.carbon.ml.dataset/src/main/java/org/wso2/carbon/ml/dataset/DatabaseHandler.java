@@ -472,7 +472,7 @@ public class DatabaseHandler {
      * @return
      * @throws DatabaseHandlerException
      */
-    protected Feature[] getFeatures(String datasetID, String workflowID, int startIndex,
+    protected List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
                                     int numberOfFeatures)
             throws DatabaseHandlerException {
 
@@ -511,7 +511,7 @@ public class DatabaseHandler {
                 features.add(new Feature(featureName, isImportantFeature, featureType,
                                          imputeOperation, summaryStat));
             }
-            return features.toArray(new Feature[features.size()]);
+            return features;
         } catch (SQLException e) {
             String msg =
                     "Error occured while retireving features of the data set: " + datasetID + e.getMessage();
@@ -533,7 +533,7 @@ public class DatabaseHandler {
      * @return
      * @throws DatabaseHandlerException
      */
-    protected String[] getFeatureNames(String workflowID, String featureType)
+    protected List<String> getFeatureNames(String workflowID, String featureType)
             throws DatabaseHandlerException {
         PreparedStatement getFeatureNamesStatement = null;
         ResultSet result = null;
@@ -553,7 +553,7 @@ public class DatabaseHandler {
             while (result.next()) {
                 featureNames.add(result.getString(1));
             }
-            return featureNames.toArray(new String[featureNames.size()]);
+            return featureNames;
         } catch (SQLException e) {
             String msg =
                     "An error occurred while retrieving feature names from the workflow " +

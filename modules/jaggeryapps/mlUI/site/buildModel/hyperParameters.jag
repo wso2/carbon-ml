@@ -39,11 +39,11 @@
 			// Retrieve and display the dropdown of candidate response variables.
 			if(session.get("algoType")==mlConfigs.algoTypes.classification){
 				var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-				var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames[0],"responseDropdown");
+				var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"responseDropdown");
 				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
 			}else if(session.get("algoType")==mlConfigs.algoTypes.numericalPrediction){
 				var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-				var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames[0],"responseDropdown");
+				var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"responseDropdown");
 				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
 			}
 		}catch(e){
@@ -53,12 +53,12 @@
 		// Creating the drop-down list
 		function listSelectionRenderer(featureNames, selectedOption, cssClass){
 			var selection = "<select class=" + cssClass + ">";
-			for (var i=0; i<featureNames.length; i++){
-				if (selectedOption.toUpperCase() == featureNames[i].toUpperCase()){
-					selection += "<option selected value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+			for (var i=0; i<featureNames.size(); i++){
+				if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
+					selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
 				}
 				else{
-					selection += "<option value=\"" + featureNames[i] + "\">" + featureNames[i] + "</option>";
+					selection += "<option value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
 				}
 			}
 			selection += "</select>";
