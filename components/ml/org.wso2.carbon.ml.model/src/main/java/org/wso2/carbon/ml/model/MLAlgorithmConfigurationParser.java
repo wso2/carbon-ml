@@ -34,8 +34,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -48,7 +46,6 @@ public class MLAlgorithmConfigurationParser {
     private static final Log logger = LogFactory.getLog(MLAlgorithmConfigurationParser.class);
 
     /**
-     *
      * @param algorithm Machine learning algorithm name
      * @return hyper-parameters
      * @throws MLAlgorithmConfigurationParserException
@@ -65,6 +62,7 @@ public class MLAlgorithmConfigurationParser {
                 Node nNode = nodes.item(i);
                 if (nNode.getTextContent().equals(algorithm)) {
                     String parameterString = "";
+                    StringBuilder stringBuilder = new StringBuilder();
                     Node parent = nNode.getParentNode();
                     for (int j = 0; j < parent.getChildNodes().getLength(); j++) {
                         Node child = parent.getChildNodes().item(j);
@@ -74,19 +72,17 @@ public class MLAlgorithmConfigurationParser {
                             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
                                                           MLModelConstants.YES);
                             transformer.transform(new DOMSource(child), xmlOutput);
-                            parameterString += xmlOutput.getWriter().toString();
+                            stringBuilder.append(xmlOutput.getWriter().toString());
                         }
                     }
+                    parameterString = stringBuilder.toString();
                     JSONObject xmlJSONObject = XML.toJSONObject(parameterString);
                     Object parameters = xmlJSONObject.get(MLModelConstants.PARAMETERS);
-                    if (parameters instanceof JSONArray)
-                    {
+                    if (parameters instanceof JSONArray) {
                         hyperparameters = (JSONArray) parameters;
-                    }
-                    else
-                    {
+                    } else {
                         JSONArray jsonArray = new JSONArray();
-                        jsonArray.put(0,parameters);
+                        jsonArray.put(0, parameters);
                         hyperparameters = jsonArray;
                     }
                     break;
@@ -94,20 +90,19 @@ public class MLAlgorithmConfigurationParser {
             }
             return hyperparameters;
         } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
+            String msg = "An error occurred while retrieving hyperparameters\n" + e.getMessage();
             logger.error(msg, e);
             throw new MLAlgorithmConfigurationParserException(msg);
         }
     }
 
     /**
-     *
      * @param algorithmType
      * @return Machine learning algorithm names
      * @throws MLAlgorithmConfigurationParserException
      */
     protected String[] getAlgorithms(String algorithmType) throws
-                                                        MLAlgorithmConfigurationParserException {
+                                                           MLAlgorithmConfigurationParserException {
         try {
             Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
             NodeList nodes = doc.getElementsByTagName(MLModelConstants.TYPE);
@@ -126,20 +121,19 @@ public class MLAlgorithmConfigurationParser {
             }
             return algorithms;
         } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
+            String msg = "An error occurred while retrieving algorithm names\n" + e.getMessage();
             logger.error(msg, e);
             throw new MLAlgorithmConfigurationParserException(msg);
         }
     }
 
     /**
-     *
      * @param algorithmType
      * @return Algorithm ratings
      * @throws MLAlgorithmConfigurationParserException
      */
     protected Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
-                                                                                MLAlgorithmConfigurationParserException {
+                                                                                   MLAlgorithmConfigurationParserException {
         try {
             Map<String, List<Integer>> ratings = new HashMap<String, List<Integer>>();
             Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
@@ -167,14 +161,13 @@ public class MLAlgorithmConfigurationParser {
             }
             return ratings;
         } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
+            String msg = "An error occurred while retrieving algorithm ratings\n" + e.getMessage();
             logger.error(msg, e);
             throw new MLAlgorithmConfigurationParserException(msg);
         }
     }
 
     /**
-     *
      * @param xmlFilePath
      * @return XML document
      * @throws MLAlgorithmConfigurationParserException

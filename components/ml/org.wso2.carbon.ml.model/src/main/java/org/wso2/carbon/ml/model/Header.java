@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
 
 public class Header implements Function<String, Boolean> {
-    public static final Log logger = LogFactory.getLog(Header.class);
+    private static final Log logger = LogFactory.getLog(Header.class);
     private String header;
 
     Header(String header) {

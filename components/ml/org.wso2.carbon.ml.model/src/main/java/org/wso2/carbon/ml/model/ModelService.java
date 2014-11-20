@@ -50,7 +50,7 @@ public class ModelService {
             context.getBundleContext().registerService(ModelService.class.getName(),
                                                        modelService, null);
             logger.info("ML Model Service Started");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
@@ -116,21 +116,21 @@ public class ModelService {
             Map<String, List<Integer>> algorithmRatings = mlAlgorithmConfigurationParser.getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
                 if (MLModelConstants.HIGH.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
-                    rating.getValue().set(0, (rating.getValue().get(0) * 5));
+                    rating.getValue().set(0, rating.getValue().get(0) * 5);
                 } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
-                    rating.getValue().set(0, (rating.getValue().get(0) * 3));
+                    rating.getValue().set(0, rating.getValue().get(0) * 3);
                 } else {
                     rating.getValue().set(0, 5);
                 }
                 if (MLModelConstants.LARGE.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
-                    rating.getValue().set(1, (rating.getValue().get(1) * 5));
+                    rating.getValue().set(1, rating.getValue().get(1) * 5);
                 } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
-                    rating.getValue().set(1, (rating.getValue().get(1) * 3));
+                    rating.getValue().set(1, rating.getValue().get(1) * 3);
                 } else if (MLModelConstants.SMALL.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, 5);
                 }
                 if (MLModelConstants.YES.equals(userResponse.get(MLModelConstants.TEXTUAL))) {
-                    rating.getValue().set(2, (rating.getValue().get(2) * 3));
+                    rating.getValue().set(2, rating.getValue().get(2) * 3);
                 } else {
                     rating.getValue().set(2, 5);
                 }

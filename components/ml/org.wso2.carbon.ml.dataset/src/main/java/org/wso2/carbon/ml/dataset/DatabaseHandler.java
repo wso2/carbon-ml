@@ -51,6 +51,7 @@ public class DatabaseHandler {
 
     /**
      * Creates a singleton DatabaseHandler instance and returns it.
+     *
      * @return
      * @throws DatabaseHandlerException
      */
@@ -80,6 +81,7 @@ public class DatabaseHandler {
 
     /**
      * Retrieves the path of the dataset having the given ID, from the database
+     *
      * @param datasetID
      * @return
      * @throws DatabaseHandlerException
@@ -115,6 +117,7 @@ public class DatabaseHandler {
 
     /**
      * Insert the new dataset details to the the database
+     *
      * @param filePath
      * @param projectID
      * @return
@@ -153,6 +156,7 @@ public class DatabaseHandler {
 
     /**
      * Update the data type of a given feature
+     *
      * @param featureName
      * @param workflowID
      * @param featureType
@@ -189,6 +193,7 @@ public class DatabaseHandler {
 
     /**
      * Update the impute method option of a given feature
+     *
      * @param featureName
      * @param workflowID
      * @param imputeOption
@@ -225,6 +230,7 @@ public class DatabaseHandler {
 
     /**
      * Change whether a feature should be included as an input or not.
+     *
      * @param featureName
      * @param workflowID
      * @param isInput
@@ -260,6 +266,7 @@ public class DatabaseHandler {
 
     /**
      * Update the database with all the summary stats of the sample
+     *
      * @param datasetID
      * @param header
      * @param type
@@ -270,10 +277,10 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     protected void updateSummaryStatistics(String datasetID, String[] header, FeatureType[] type,
-                                        List<SortedMap<?, Integer>> graphFrequencies,
-                                        int[] missing, int[] unique,
-                                        List<DescriptiveStatistics> descriptiveStats,
-                                        Boolean include)
+                                           List<SortedMap<?, Integer>> graphFrequencies,
+                                           int[] missing, int[] unique,
+                                           List<DescriptiveStatistics> descriptiveStats,
+                                           Boolean include)
             throws DatabaseHandlerException {
         PreparedStatement updateStatement = null;
         try {
@@ -317,6 +324,7 @@ public class DatabaseHandler {
 
     /**
      * Update the dataset table with a dataset sample
+     *
      * @param datasetID
      * @param datasetSample
      * @throws DatabaseHandlerException
@@ -349,6 +357,7 @@ public class DatabaseHandler {
 
     /**
      * Retrieves Sample points of a given dataset as coordinates of three features
+     *
      * @param datasetID
      * @param feature1
      * @param feature2
@@ -357,11 +366,11 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     protected JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
-                                     String feature3) throws DatabaseHandlerException{
-    	//get the sample from the database
-    	SamplePoints sample = getDatasetSample(datasetID);
-    	
-    	// Converts the sample to a json array
+                                        String feature3) throws DatabaseHandlerException {
+        //get the sample from the database
+        SamplePoints sample = getDatasetSample(datasetID);
+
+        // Converts the sample to a json array
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
         JSONArray samplePointsArray = new JSONArray();
@@ -382,7 +391,7 @@ public class DatabaseHandler {
         }
         return samplePointsArray;
     }
-    
+
     /*
      * Retrieve the SamplePoints object for a given dataset
      */
@@ -414,6 +423,7 @@ public class DatabaseHandler {
 
     /**
      * Create the json string with summary statistics for a given column
+     *
      * @param column
      * @param type
      * @param graphFrequencies
@@ -455,13 +465,15 @@ public class DatabaseHandler {
     /**
      * This method reads ( a given number of features ) from ML_FEATURE
      * and creates a list of Features
+     *
      * @param datasetID
      * @param startIndex
      * @param numberOfFeatures
      * @return
      * @throws DatabaseHandlerException
      */
-    protected Feature[] getFeatures(String datasetID, String workflowID, int startIndex, int numberOfFeatures)
+    protected Feature[] getFeatures(String datasetID, String workflowID, int startIndex,
+                                    int numberOfFeatures)
             throws DatabaseHandlerException {
 
         List<Feature> features = new ArrayList<Feature>();
@@ -471,8 +483,8 @@ public class DatabaseHandler {
             // create a prepared statement and extract dataset configurations
             getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
             getFeatues.setString(1, datasetID);
-	    getFeatues.setString(2,datasetID);
-	    getFeatues.setString(3,workflowID);
+            getFeatues.setString(2, datasetID);
+            getFeatues.setString(3, workflowID);
             getFeatues.setInt(4, numberOfFeatures);
             getFeatues.setInt(5, startIndex);
             result = getFeatues.executeQuery();
@@ -502,8 +514,7 @@ public class DatabaseHandler {
             return features.toArray(new Feature[features.size()]);
         } catch (SQLException e) {
             String msg =
-                    "Error occured while retireving features of the data set: " + datasetID +
-                    " Error message: " + e.getMessage();
+                    "Error occured while retireving features of the data set: " + datasetID + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
@@ -516,6 +527,7 @@ public class DatabaseHandler {
     /**
      * Retrieve and returns the names of the features having the given type
      * (Categorical/Numerical) of a given data set
+     *
      * @param workflowID
      * @param featureType
      * @return
@@ -546,7 +558,7 @@ public class DatabaseHandler {
             String msg =
                     "An error occurred while retrieving feature names from the workflow " +
                     "configuration: " +
-                    workflowID + " Error message: " + e.getMessage();
+                    workflowID + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
@@ -559,6 +571,7 @@ public class DatabaseHandler {
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set, from the database.
+     *
      * @param datasetID
      * @param featureName
      * @return
@@ -578,8 +591,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             String msg =
                     "Error occured while retireving summary statistics for the feature: " +
-                    featureName + " of the data set: " + datasetID +
-                    " Error message: " + e.getMessage();
+                    featureName + " of the data set: " + datasetID + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
@@ -591,6 +603,7 @@ public class DatabaseHandler {
 
     /**
      * Returns the number of features of a given dataset
+     *
      * @param datasetID
      * @return
      * @throws DatabaseHandlerException
@@ -610,8 +623,8 @@ public class DatabaseHandler {
             return featureCount;
         } catch (SQLException e) {
             String msg =
-                    "Error occured while retireving feature count of the data set: " + datasetID +
-                    " Error message: " + e.getMessage();
+                    "Error occured while retireving feature count of the data set: " + datasetID
+                    + e.getMessage();
             logger.error(msg, e);
             throw new DatabaseHandlerException(msg);
         } finally {
@@ -623,6 +636,7 @@ public class DatabaseHandler {
 
     /**
      * Set the default values for feature properties of a given workflow
+     *
      * @param datasetID
      * @param workflowID
      * @throws DatabaseHandlerException
@@ -648,7 +662,7 @@ public class DatabaseHandler {
                 insertStatement.setBoolean(5, result.getBoolean(4));
                 insertStatement.execute();
                 connection.commit();
-                logger.debug("Successfully inserted feature: "+result.getString(1));
+                logger.debug("Successfully inserted feature: " + result.getString(1));
             }
         } catch (SQLException e) {
             // rollback the changes

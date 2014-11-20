@@ -18,12 +18,6 @@
 package org.wso2.carbon.ml.model;
 
 public final class MLModelConstants {
-    /**
-     * Private constructor to prevent any other class from instantiating.
-     */
-    private MLModelConstants() {
-    }
-
     public static final String SMALL = "small";
     public static final String MEDIUM = "medium";
     public static final String LARGE = "large";
@@ -45,4 +39,10 @@ public final class MLModelConstants {
     public static final String DECIMAL_FORMAT = "#.00";
     public static final String EMPTY = "";
     public static final String NA = "NA";
+
+    /**
+     * Private constructor to prevent any other class from instantiating.
+     */
+    private MLModelConstants() {
+    }
 }
