@@ -65,7 +65,7 @@ function scatterPlot() {
 
         yScale = d3.scale.linear()
             .domain([d3.min(data, function(d){
-                return d[1]
+                return d[1];
             }), d3.max(data, function(d) {
                 return d[1];
             })])
@@ -79,13 +79,13 @@ function scatterPlot() {
 
         var x_axis = d3.svg.axis()
             .ticks(10)
-            .tickFormat(function(d) { return formatValue(d)})
+            .tickFormat(function(d) { return formatValue(d);})
             .scale(xScale)
             .orient("bottom");
 
         var y_axis = d3.svg.axis()
             .scale(yScale)
-            .tickFormat(function(d) { return formatValue(d)})
+            .tickFormat(function(d) { return formatValue(d);})
             .orient("left");
 
         // appending X and Y axises with their respective labels
@@ -112,12 +112,7 @@ function scatterPlot() {
             .text(yLabel);
 
         var color = d3.scale.category20();
-
-/*        var color = d3.scale.ordinal().range(["#D59C0C","#3C2B02",'#614705','#FFD64A','#7A5C0F',
-            '#FFF869','#A8801C','#F0D74C','#D9AE21','#FFC400','#D9A90A','#BFB011','#B29E47',
-            '#FFD64A','#C6B902','#C68202','#95773B','#8F6908','#4F3903','#FFDA00']);
-*/
-
+      
         svg.selectAll(".dot")
             .data(data)
             .enter().append("circle")
@@ -198,7 +193,7 @@ function scatterPlot() {
         if(!arguments.length) return markerSize;
         markerSize = value;
         return chart;
-    }
+    };
 
     return chart;
 }
@@ -302,7 +297,7 @@ function histogram() {
             .attr("y", -40)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(yLabel)
+            .text(yLabel);
 
     }
 
@@ -373,9 +368,11 @@ function histogramUsingCalculatedFrequencies() {
 
     var barPadding = 1; // padding between two bars
     var displayAxises = true; // this flag is used to enable/disable axises  
-    var barColor = '#D59C0C'
+    var barColor = '#D59C0C';
 
     var formatValue = d3.format(".2s");
+  
+    var printFrequenciesOnBar = false;
 
     function chart(selection) {
 
@@ -418,7 +415,7 @@ function histogramUsingCalculatedFrequencies() {
             var y_axis = d3.svg.axis()
                 .scale(yScaleForAxis)
                 .orient("left")
-                .tickFormat(function(d) { return formatValue(d)});
+                .tickFormat(function(d) { return formatValue(d);});
 
             svg.append("g")
                 .attr("class", "scatter y axis")
@@ -429,7 +426,7 @@ function histogramUsingCalculatedFrequencies() {
                 .attr("y", -40)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text(yLabel)
+                .text(yLabel);
 
             var xScale = d3.scale.ordinal()
                 .domain(bucketNames)
@@ -457,7 +454,7 @@ function histogramUsingCalculatedFrequencies() {
         if (!arguments.length) return data;
         bucketNames = value;
         return chart;
-    }
+    };
 
     chart.width = function(value) {
         if (!arguments.length) return width;
@@ -490,22 +487,22 @@ function histogramUsingCalculatedFrequencies() {
     };
 
     chart.barPadding = function(value) {
-        if (!arguments.length) return htmlTag;
+        if (!arguments.length) return barPadding;
         barPadding = value;
         return chart;
-    }
+    };
 
     chart.displayAxises = function(value) {
         if (!arguments.length) return displayAxises;
         displayAxises = value;
         return chart;
-    }
+    };
 
     chart.barColor = function(value) {
         if (!arguments.length) return barColor;
         barColor = value;
         return chart;
-    }
+    };
     
     return chart;
 }
