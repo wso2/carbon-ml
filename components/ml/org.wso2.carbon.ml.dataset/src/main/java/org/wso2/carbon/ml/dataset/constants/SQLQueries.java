@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.constants;
 
 public class SQLQueries {
 
@@ -68,6 +68,7 @@ public class SQLQueries {
             "SELECT FEATURE_NAME,TYPE,IMPUTE_METHOD,INCLUDE FROM ML_FEATURE_DEFAULTS WHERE " +
             "DATASET_ID=?" +
             " " ;
+    
 
 	/*
 	 * private Constructor to prevent any other class from instantiating.
