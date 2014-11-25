@@ -15,24 +15,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.constants;
 
-public class ImputeOption {
-	private final String option;
-	public static final ImputeOption DISCARD = new ImputeOption("DISCARD");
-	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption(
-			"REPLACE_WTH_MEAN");
-	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption(
-			"REGRESSION_IMPUTATION");
+public class FeatureType {
 
-	private ImputeOption(String option) {
-		this.option = option;
+	private final String featureType;
+	public static final FeatureType NUMERICAL = new FeatureType("NUMERICAL");
+	public static final FeatureType CATEGORICAL = new FeatureType("CATEGORICAL");
+
+	private FeatureType(String featureType) {
+		this.featureType = featureType;
 	}
-
+	
 	/**
-	 * Returns the impute option as a string
+	 * Returns the data type as a string
 	 */
 	public String toString() {
-		return option;
+		return featureType;
 	}
 }

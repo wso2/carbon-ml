@@ -18,21 +18,23 @@
 
 package org.wso2.carbon.ml.project.mgt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
+
 public class DatabaseHandler {
 
 	private static volatile DatabaseHandler databaseHandler = null;
-	private Connection connection;
+	private static DataSource dataSource;
 	private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
 
 	/*
@@ -44,7 +46,7 @@ public class DatabaseHandler {
 	/**
 	 * Creates a singleton DatabaseHandler instance and returns it.
 	 *
-	 * @return
+	 * @return A singleton DatabaseHandler instance
 	 * @throws DatabaseHandlerException
 	 */
 	public static DatabaseHandler getDatabaseHandler() throws DatabaseHandlerException {
@@ -56,33 +58,34 @@ public class DatabaseHandler {
 						// load the carbon data source configurations of the H2
 						// database
 						Context initContext = new InitialContext();
-						DataSource ds = (DataSource) initContext.lookup("jdbc/WSO2ML_DB");
-						databaseHandler.connection = ds.getConnection();
-						// enable auto commit
-						databaseHandler.connection.setAutoCommit(true);
+						dataSource = (DataSource) initContext.lookup("jdbc/WSO2ML_DB");
 					}
 				}
 			}
 			return databaseHandler;
 		} catch (Exception e) {
-			String msg = "Error occured while connecting to database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException("Error occured while connecting to database: " +
+					e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Creates a new project
+	 * Creates a new project.
 	 *
+	 * @param projectID
+	 *            Unique identifier for the project
 	 * @param projectName
+	 *            Name of the project
 	 * @param description
-	 * @return
+	 *            Description of the project
 	 * @throws DatabaseHandlerException
 	 */
 	public void createProject(String projectID, String projectName, String description)
 			throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement createProjectStatement = null;
 		try {
+			connection = dataSource.getConnection();
 			connection.setAutoCommit(false);
 			createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT);
 			createProjectStatement.setString(1, projectID);
@@ -90,99 +93,112 @@ public class DatabaseHandler {
 			createProjectStatement.setString(3, description);
 			createProjectStatement.execute();
 			connection.commit();
-			logger.debug("Successfully inserted details of project: " + projectName +
-			             ". Project ID" + projectID.toString());
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully inserted details of project: " + projectName +
+				             ". Project ID: " + projectID.toString());
+			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while inserting details of project: " + projectName +
-					" to the database.\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException(
+			                                   "Error occured while inserting details of project: " +
+			                                		   projectName +
+			                                		   " to the database: " +
+			                                		   e.getMessage(),e);
 		} finally {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeStatement(createProjectStatement);
+			MLDatabaseUtil.closeDatabaseResources(connection, createProjectStatement);
 		}
 	}
 
 	/**
-	 * Delete details of a given project from the database
+	 * Delete details of a given project from the database.
 	 *
 	 * @param projectId
+	 *            Unique identifier for the project
 	 * @throws DatabaseHandlerException
 	 */
 	public void deleteProject(String projectId) throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement deleteProjectStatement = null;
 		try {
+			connection = dataSource.getConnection();
 			connection.setAutoCommit(false);
 			deleteProjectStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
 			deleteProjectStatement.setString(1, projectId);
 			deleteProjectStatement.execute();
 			connection.commit();
-			logger.debug("Successfully deleted the project: " + projectId);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully deleted the project: " + projectId);
+			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while deleting the project: " + projectId + ".\n" +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException("Error occured while deleting the project: " +
+					projectId + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeStatement(deleteProjectStatement);
+			MLDatabaseUtil.closeDatabaseResources(connection, deleteProjectStatement);
 		}
 	}
 
 	/**
-	 * Assign a tenant to a given project
+	 * Assign a tenant to a given project.
 	 *
 	 * @param tenantID
+	 *            Unique identifier for the current tenant
 	 * @param projectID
+	 *            Unique identifier for the project
 	 * @throws DatabaseHandlerException
 	 */
 	public void addTenantToProject(String tenantID, String projectID)
 			throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement addTenantStatement = null;
 		try {
+			connection = dataSource.getConnection();
 			connection.setAutoCommit(false);
 			addTenantStatement = connection.prepareStatement(SQLQueries.ADD_TENANT_TO_PROJECT);
 			addTenantStatement.setString(1, tenantID);
 			addTenantStatement.setString(2, projectID);
 			addTenantStatement.execute();
 			connection.commit();
-			logger.debug("Successfully added the tenant: " + tenantID + " to the project: " + "" +
-					projectID);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully added the tenant: " + tenantID + " to the project: " +
+						projectID);
+			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while adding the tenant: " + tenantID +
-					" to the project: " + "" + projectID + ".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException("Error occured while adding the tenant " + tenantID +
+			                                   " to the project " + projectID + ": " +
+			                                   e.getMessage(),e);
 		} finally {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeStatement(addTenantStatement);
+			MLDatabaseUtil.closeDatabaseResources(connection, addTenantStatement);
 		}
 	}
 
 	/**
-	 * Get the project names and created dates, that a tenant is assigned to
+	 * Get the project names and created dates, that a tenant is assigned to.
 	 *
 	 * @param tenantID
-	 * @return
+	 *            Unique identifier for the tenant
+	 * @return An array of project ID, Name and the created date of the projects
+	 *         associated with a given tenant
 	 * @throws DatabaseHandlerException
 	 */
 	public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement getTenantProjectsStatement = null;
 		ResultSet result = null;
 		String[][] projects = null;
 		try {
+			connection = dataSource.getConnection();
+			connection.setAutoCommit(true);
 			getTenantProjectsStatement =
 					connection.prepareStatement(SQLQueries.GET_TENANT_PROJECTS,
 					                            ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -206,28 +222,30 @@ public class DatabaseHandler {
 			return projects;
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while retrieving the projects of user: " + tenantID +
-					".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException(
+			                                   "Error occured while retrieving the projects of user " +
+			                                		   tenantID + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
-			MLDatabaseUtil.closeStatement(getTenantProjectsStatement);
+			MLDatabaseUtil.closeDatabaseResources(connection, getTenantProjectsStatement, result);
 		}
 	}
 
 	/**
-	 * Returns the ID of the dataset associated with the project
+	 * Returns the ID of the data-set associated with the project.
 	 *
 	 * @param projectId
-	 * @return
+	 *            Unique identifier for the project
+	 * @return ID of the data-set associated with the project
 	 * @throws DatabaseHandlerException
 	 */
 	public String getdatasetID(String projectId) throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement getDatasetID = null;
 		ResultSet result = null;
 		try {
+			connection = dataSource.getConnection();
+			connection.setAutoCommit(true);
 			getDatasetID = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
 			getDatasetID.setString(1, projectId);
 			result = getDatasetID.executeQuery();
@@ -235,94 +253,114 @@ public class DatabaseHandler {
 			return result.getObject(1).toString();
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while retrieving the Dataset Id of project: " + projectId +
-					".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException(
+			                                   "Error occured while retrieving the Dataset Id of project " +
+			                                		   projectId + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
-			MLDatabaseUtil.closeStatement(getDatasetID);
+			MLDatabaseUtil.closeDatabaseResources(connection, getDatasetID, result);
 		}
 	}
 
 	/**
-	 * Creates a new work-flow
+	 * Creates a new work-flow.
 	 *
 	 * @param workflowID
+	 *            Unique identifier for the new workflow
 	 * @param parentWorkflowID
+	 *            Unique identifier for the workflow from which the current
+	 *            workflow is inherited from.
 	 * @param projectID
+	 *            Unique identifier for the project for which the workflow is
+	 *            created
 	 * @param datasetID
-	 * @param projectName
+	 *            Unique identifier for the data-set associated with the
+	 *            workflow
+	 * @param workflowName
+	 *            Name of the project
 	 * @throws DatabaseHandlerException
 	 */
 	public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
-	                              String datasetID, String projectName)
+	                              String datasetID, String workflowName)
 	                            		  throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement createNewWorkflow = null;
 		try {
+			connection = dataSource.getConnection();
 			connection.setAutoCommit(false);
 			createNewWorkflow = connection.prepareStatement(SQLQueries.CREATE_NEW_WORKFLOW);
 			createNewWorkflow.setString(1, workflowID);
 			createNewWorkflow.setString(2, parentWorkflowID);
 			createNewWorkflow.setString(3, projectID);
 			createNewWorkflow.setString(4, datasetID);
-			createNewWorkflow.setString(5, projectName);
+			createNewWorkflow.setString(5, workflowName);
 			createNewWorkflow.execute();
 			connection.commit();
-			logger.debug("Successfully created workflow: " + workflowID);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully created workflow: " + workflowID);
+			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"An error occured while creating a new workflow: " + workflowID + "\n" +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException("An error occured while creating a new workflow " +
+					workflowID + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeStatement(createNewWorkflow);
+			MLDatabaseUtil.closeDatabaseResources(connection, createNewWorkflow);
 		}
 	}
 
+	/**
+	 * Deletes a workflow.
+	 *
+	 * @param workflowID
+	 *            Unique identifier of the workflow to be deleted
+	 * @throws DatabaseHandlerException
+	 */
 	public void deleteWorkflow(String workflowID)
-	                            		  throws DatabaseHandlerException {
+			throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement deleteWorkflow = null;
 		try {
+			connection = dataSource.getConnection();
 			connection.setAutoCommit(false);
 			deleteWorkflow = connection.prepareStatement(SQLQueries.DELETE_WORKFLOW);
 			deleteWorkflow.setString(1, workflowID);
 			deleteWorkflow.execute();
 			connection.commit();
-			logger.debug("Successfully deleted workflow: " + workflowID);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully deleted workflow: " + workflowID);
+			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"An error occured while deleting workflow: " + workflowID + "\n" +
-							e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException("An error occured while deleting workflow " +
+					workflowID + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
 			MLDatabaseUtil.enableAutoCommit(connection);
 			// close the database resources
-			MLDatabaseUtil.closeStatement(deleteWorkflow);
+			MLDatabaseUtil.closeDatabaseResources(deleteWorkflow);
 		}
 	}
-	
-	
+
 	/**
-	 * 
+	 * Get a list of workflows associated with a given project.
+	 *
 	 * @param projectId
-	 * @return
+	 *            Unique identifier for the project for which the wokflows are
+	 *            needed
+	 * @return An array of workflow ID's and Names
 	 * @throws DatabaseHandlerException
 	 */
 	public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException {
+		Connection connection = null;
 		PreparedStatement getProjectWorkflows = null;
 		ResultSet result = null;
 		String[][] workFlows = null;
 		try {
+			connection = dataSource.getConnection();
+			connection.setAutoCommit(true);
 			getProjectWorkflows =
 					connection.prepareStatement(SQLQueries.GET_PROJECT_WORKFLOWS,
 					                            ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -346,14 +384,68 @@ public class DatabaseHandler {
 			return workFlows;
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			String msg =
-					"Error occured while retrieving the Dataset Id of project: " + projectId +
-					".\n" + e.getMessage();
-			logger.error(msg, e);
-			throw new DatabaseHandlerException(msg);
+			throw new DatabaseHandlerException(
+			                                   "Error occured while retrieving the Dataset Id of project " +
+			                                		   projectId + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
-			MLDatabaseUtil.closeStatement(getProjectWorkflows);
+			MLDatabaseUtil.closeDatabaseResources(connection, getProjectWorkflows, result);
+		}
+	}
+
+	/**
+	 * Set the default values for feature properties of a given workflow.
+	 *
+	 * @param datasetID
+	 *            Unique identifier of the data-set
+	 * @param workflowID
+	 *            Unique identifier of the current workflow
+	 * @throws DatabaseHandlerException
+	 */
+	protected void setDefaultFeatureSettings(String datasetID, String workflowID)
+			throws DatabaseHandlerException {
+		Connection connection = null;
+		PreparedStatement insertStatement = null;
+		PreparedStatement getDefaultFeatureSettings = null;
+		ResultSet result = null;
+		try {
+			connection = dataSource.getConnection();
+			connection.setAutoCommit(true);
+			// read default feature settings from data-set summary table
+			getDefaultFeatureSettings =
+					connection.prepareStatement(SQLQueries.GET_DEFAULT_FEATURE_SETTINGS);
+			getDefaultFeatureSettings.setString(1, datasetID);
+			result = getDefaultFeatureSettings.executeQuery();
+			// insert default feature settings into feature settings table
+			connection.setAutoCommit(false);
+			while (result.next()) {
+				insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SETTINGS);
+				insertStatement.setString(1, workflowID);
+				insertStatement.setString(2, result.getString(1));
+				insertStatement.setString(3, result.getString(2));
+				insertStatement.setString(4, result.getString(3));
+				insertStatement.setBoolean(5, result.getBoolean(4));
+				insertStatement.execute();
+				connection.commit();
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Successfully inserted feature deafults of dataset: " + datasetID +
+				             " of the workflow: " + datasetID);
+			}
+		} catch (SQLException e) {
+			// rollback the changes
+			MLDatabaseUtil.rollBack(connection);
+			throw new DatabaseHandlerException(
+			                                   "An error occured while setting details of dataset " +
+			                                		   datasetID + " of the workflow " +
+			                                		   datasetID + " to the database:" +
+			                                		   e.getMessage(), e);
+		} finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+			// close the database resources
+			MLDatabaseUtil.closeDatabaseResources(connection, insertStatement, result);
+			MLDatabaseUtil.closeDatabaseResources(getDefaultFeatureSettings);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.constants;
 
 public class FileFormats {
 	private final String fileFormat;

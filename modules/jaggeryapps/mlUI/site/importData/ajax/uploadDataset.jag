@@ -2,13 +2,12 @@
     include("/jagg/jagg.jag");
 	var log = new Log();
 	var carbon = require('carbon');
-    var process = require('process');
+    var uuid = require('uuid');
 
     // Create a project
     var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
     var projectDescription=request.getParameter("projectDescription");
     var projectName=request.getParameter("projectName");
-    var uuid = require('uuid');
     var projectId=uuid.generate();
 	projectManagementService.createProject(projectId,projectName,projectDescription);
     session.put("projectId",projectId);
@@ -16,56 +15,28 @@
     // Add the tenant to the project
     projectManagementService.addTenantToProject(session.get("tenantId"),projectId);
 
-    // Upload Dataset
     var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
-    var adminService = carbon.server.osgiService('org.wso2.carbon.ml.admin.AdminService');
-    var dataUploadSettings = adminService.getDataUploadSettings();
-    var uploadDirectory = dataUploadSettings.getUploadLocation();
-
-    //if the upload location is USER_HOME, create a MLProjects folder in the user's home directory
-    if(uploadDirectory=="USER_HOME"){
-        uploadDirectory=process.getProperty('user.home')+"/MLProjects";
-    }
-
-    // create a sub-directory having a name as the projectID
-    uploadDirectory=uploadDirectory+"/"+projectId;
-    var adminService = carbon.server.osgiService('org.wso2.carbon.ml.admin.AdminService');
-    adminService.createUploadDirectory(uploadDirectory);
-
-    //Upload the file
-	var sourceFile = request.getFile("uploadDataset");
-    var destinationFile = new File("file:///"+uploadDirectory+"/"+sourceFile.getName());
+    var sourceFile = request.getFile("uploadDataset");
     try{
-    	sourceFile.open("r");
-    	destinationFile.open('w');
-    	destinationFile.write(sourceFile.getStream());
-    }catch(e){
-        log.error("An error occured while importing file",e);
+        //insert dataset details
+        var datasetId=uuid.generate();
+        sourceFile.open("r");
+        var inputStream=sourceFile.getStream();
+        datasetService.uploadDataset(inputStream.getStream(),datasetId,sourceFile.getName(),projectId);
+        session.put("datasetId",datasetId);
+        session.put("datasetName",sourceFile.getName());
+    } catch(e){
+        log.error("An error occured while uploading file "+sourceFile.getName()+ " of user "+session.get("logged.user"),e);
     }finally{
-        destinationFile.close();
         sourceFile.close();
     }
-
-    //insert dataset details
-    var datasetId=uuid.generate();
-    datasetService.registerDataset(datasetId,sourceFile.getName(),projectId,uploadDirectory);
-    session.put("datasetId",datasetId);
-    session.put("datasetName",sourceFile.getName());
-
-    //calculate summary stats
-    var summaryStatSettings=adminService.getSummaryStatisticsSettings();
-    var sampleSize=summaryStatSettings.getSampleSize();
-    var histogramBins=summaryStatSettings.getHistogramBins();
-    var categoricalThreshold=summaryStatSettings.getCategoricalThreshold();
-    var numOfFeatures = datasetService.generateSummaryStats(datasetId,sampleSize,histogramBins,categoricalThreshold,Boolean(true));
-    session.put("numOfFeatures",numOfFeatures);
-    
+ 
     //create a new workflow
     var workflowId=uuid.generate();
     var workflowName=request.getParameter("workflowName");
     projectManagementService.createNewWorkflow(workflowId,workflowId,projectId,datasetId,workflowName);
     session.put("workflowId",workflowId);
-
-   // load default feature settings
-   datasetService.setDefaultFeatureSettings(datasetId,workflowId);
+    
+    // load default feature settings 
+    projectManagementService.setDefaultFeatureSettings(datasetId,workflowId);
 %>

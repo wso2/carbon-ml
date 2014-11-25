@@ -15,10 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.exceptions;
 
-public class DatasetServiceException extends Exception {
-    public DatasetServiceException(String message) {
-        super(message);
+public class DatabaseHandlerException extends Exception {
+	
+	public DatabaseHandlerException(String message) {
+		super(message);
+	}
+	
+	public DatabaseHandlerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

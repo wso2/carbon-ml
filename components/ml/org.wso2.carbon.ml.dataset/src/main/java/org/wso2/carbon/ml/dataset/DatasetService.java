@@ -17,26 +17,42 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
+import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 
 /**
+ * Class contains the services related to importing and exploring a data-set.
+ *
  * @scr.component name="datasetService" immediate="true"
  */
-
-public class DatasetService {
+public class DatasetService implements AbstractDatasetService {
 	private static final Log logger = LogFactory.getLog(DatasetService.class);
+	private DataUploadSettings dataUploadSettings;
+	private SummaryStatisticsSettings summaryStatSettings;
 
 	/*
-	 * Activates the Dataset Service
+	 * Activates the Data-set Service.
 	 */
 	protected void activate(ComponentContext context) {
 		try {
+			// Read data-set settings from ml-config.xml file.
+			MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
 			DatasetService datasetService = new DatasetService();
+			datasetService.dataUploadSettings = mlConfigurationParser.getDataUploadSettings();
+			datasetService.summaryStatSettings =
+					mlConfigurationParser.getSummaryStatisticsSettings();
+			// Register the service.
 			context.getBundleContext().registerService(DatasetService.class.getName(),
 			                                           datasetService, null);
 			logger.info("ML Dataset Service Started");
@@ -46,267 +62,281 @@ public class DatasetService {
 	}
 
 	/*
-	 * Deactivate the Dataset Service
+	 * Deactivates the Data-set Service.
 	 */
 	protected void deactivate(ComponentContext context) {
 		logger.info("Ml Dataset Service Stopped");
 	}
 
 	/**
-	 * Returns a absolute uri of a given data source
+	 * Returns a absolute path of a given data source.
+	 *
 	 * @param datasetID
-	 * @return
+	 *            Unique Identifier of the data-set
+	 * @return Absolute path of a given data-set
 	 * @throws DatasetServiceException
 	 */
-	public String getDataSource(String datasetID) throws DatasetServiceException {
+	@Override
+	public String getDatasetUrl(String datasetID) throws DatasetServiceException {
 		try {
 			DatabaseHandler handler = DatabaseHandler.getDatabaseHandler();
-			return handler.getDataSource(datasetID);
-		} catch (DatabaseHandlerException ex) {
-			String msg = "Error has occurred while reading dataset path from database";
-			logger.error(msg, ex);
-			throw new DatasetServiceException(msg);
-		}
-	}
-
-	/**
-	 * Update the database with the imported data set details
-	 * @param fileName
-	 * @return
-	 * @throws DatasetServiceException
-	 */
-	public void registerDataset(String datasetID, String fileName, String projectID, String uploadDir)
-			throws DatasetServiceException {
-		String msg;
-		try {
-			// get the default upload location of the file
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			dbHandler.insertDatasetDetails(datasetID, uploadDir + "/" + fileName, projectID);
+			return handler.getDatasetUrl(datasetID);
 		} catch (DatabaseHandlerException e) {
-			msg = "Failed to update the data-source details in the database. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to read dataset path from database: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to read dataset path from database: " +
+					e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Calculate summary statistics from a sample of given size and populate the
-	 * database. Value of -1 for noOfRecords will generate summary statistics
-	 * using the whole data set.
+	 * Upload the data file and calculate summary statistics.
+	 *
+	 * @param sourceInputStream
+	 *            Input Stream of the source data file
 	 * @param datasetID
-	 * @param sampleSize
-	 * @return
+	 *            Unique Identifier of the data-set
+	 * @param fileName
+	 *            Name of the uploading file
+	 * @param projectID
+	 *            Unique Identifier of the project
+	 * @return Number of features in the data-set
 	 * @throws DatasetServiceException
+	 * @throws IOException
 	 */
-	public int generateSummaryStats(String datasetID, int sampleSize, int histogramBins,
-	                                int categoricalThreshold, Boolean includeDefault)
-	                                		throws DatasetServiceException {
+	@Override
+	public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
+	                         String projectID)
+	                        		 throws DatasetServiceException, IOException {
+		String uploadDir = dataUploadSettings.getUploadLocation();
 		try {
-			DatasetSummary summary = new DatasetSummary();
-			int noOfFeatures =
-					summary.generateSummary(datasetID, sampleSize, histogramBins,
-					                        categoricalThreshold, includeDefault);
-			logger.debug("Summary statistics successfully generated.");
-
-			// update the dataset table with sample points
-			updateDatasetSample(datasetID, summary.samplePoints());
-			return noOfFeatures;
-		} catch (DatasetServiceException e) {
-			String msg = "Failed to calculate summary Statistics. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
-		}
-	}
-
-	/**
-	 * Update the dataset table with a dataset sample
-	 * @param dataSample
-	 * @throws DatasetServiceException
-	 */
-	public void updateDatasetSample(String datasetID, SamplePoints dataSample)
-			throws DatasetServiceException {
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			dbHandler.updateDatasetSample(datasetID, dataSample);
+			if (FilePathValidator.isValid(uploadDir)) {
+				// Upload the file.
+				File targetFile = new File(uploadDir + "/" + projectID + "/" + fileName);
+				FileUtils.copyInputStreamToFile(sourceInputStream, targetFile);
+				// Insert details of the file to the database.
+				DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+				dbHandler.insertDatasetDetails(datasetID, targetFile.getPath(), projectID);
+				// Generate summary statistics.
+				DatasetSummary summary = new DatasetSummary(targetFile, datasetID);
+				int noOfFeatures =
+						summary.generateSummary(summaryStatSettings.getSampleSize(),
+						                        summaryStatSettings.getHistogramBins(),
+						                        summaryStatSettings.getCategoricalThreshold(),
+						                        true);
+				// Update the database with the data-set sample.
+				dbHandler.updateDatasetSample(datasetID, summary.samplePoints());
+				return noOfFeatures;
+			} else {
+				logger.error("Invalid Uploading directory " + uploadDir);
+				throw new DatasetServiceException("Invalid Uploading directory " + uploadDir);
+			}
+		} catch (DatasetSummaryException e) {
+			logger.error("Failed to generate summary statistics for dataset " + datasetID + " : " +
+					e.getMessage(), e);
+			throw new DatasetServiceException("Failed to generate summary statistics for dataset " +
+					datasetID + " : " + e.getMessage(), e);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Updating feature failed. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to update sample points of the dataset " + datasetID + " : " +
+					e.getMessage(), e);
+			throw new DatasetServiceException("Failed to update sample points of the dataset " +
+					datasetID + " : " + e.getMessage(), e);
+		} catch (IOException e) {
+			throw new DatasetServiceException("Failed to upload the file " + fileName + " : " +
+					e.getMessage(), e);
+		} finally {
+			sourceInputStream.close();
 		}
 	}
 
 	/**
-	 * Update the data type of a given feature
+	 * Update the data type of a given feature.
+	 *
 	 * @param featureName
+	 *            Name of the feature to be updated
 	 * @param workflowID
+	 *            Unique identifier of the current workflow
 	 * @param featureType
+	 *            Updated type of the feature
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public void updateDataType(String featureName, String workflowID, String featureType)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateDataType(featureName, workflowID, featureType);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Updating feature type failed. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to update feature type: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to update feature type: " + e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Update the impute method option of a given feature
+	 * Update the impute option of a given feature.
+	 *
 	 * @param featureName
+	 *            Name of the feature to be updated
 	 * @param workflowID
+	 *            Unique identifier of the current workflow
 	 * @param imputeOption
+	 *            Updated impute option of the feature
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public void updateImputeOption(String featureName, String workflowID, String imputeOption)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateImputeOption(featureName, workflowID, imputeOption);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Updating impute option failed. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to update impute option: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to update impute option: " + e.getMessage(),
+			                                  e);
 		}
 	}
 
 	/**
 	 * change whether a feature should be included as an input or not.
+	 *
 	 * @param featureName
+	 *            Name of the feature to be updated
 	 * @param workflowID
+	 *            Unique identifier of the current workflow
 	 * @param isInput
+	 *            Boolean value indicating whether the feature is an input or
+	 *            not
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			dbHandler.updateIsIncludedFeature(featureName, workflowID, isInput);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Updating impute option failed. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to update included option: " + e.getMessage(), e);
+			throw new DatasetServiceException(
+			                                  "Failed to update included option: " + e.getMessage(),
+			                                  e);
 		}
 	}
 
 	/**
-	 * Returns a set of features in a given range of a data set.
+	 * Returns a set of features in a given range, from the alphabetically
+	 * ordered set of features, of a data-set.
+	 *
 	 * @param datasetID
+	 *            Unique Identifier of the data-set
 	 * @param startIndex
+	 *            Starting index of the set of features needed
 	 * @param numberOfFeatures
-	 * @return
+	 *            Number of features needed, from the starting index
+	 * @return A list of Feature objects
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
-	                             int numberOfFeatures) throws DatasetServiceException {
+	                                 int numberOfFeatures) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getFeatures(datasetID, workflowID, startIndex, numberOfFeatures);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve features. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to retrieve features: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to retrieve features: " + e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Returns the names of the features having the given type
-	 * (Categorical/Numerical) of a given data set
+	 * Returns the names of the features, belongs to a particular data-type
+	 * (Categorical/Numerical), of the work-flow.
+	 *
 	 * @param workflowID
+	 *            Unique identifier of the current work-flow
 	 * @param featureType
-	 * @return
+	 *            Data-type of the feature
+	 * @return A list of feature names
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public List<String> getFeatureNames(String workflowID, String featureType)
 			throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getFeatureNames(workflowID, featureType);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve features. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to retrieve feature names: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to retrieve feature names: " + e.getMessage(), e);
 		}
 	}
 
 	/**
 	 * Returns data points of the selected sample as coordinates of three
-	 * features, needed for the scatter plot
-	 * feature1 : x-Axis
-	 * feature2 : Y-Axis
-	 * feature3 : feature to be grouped by (color code)
+	 * features, needed for the scatter plot.
+	 *
 	 * @param datasetID
+	 *            Unique Identifier of the data-set
 	 * @param feature1
+	 *            Name of the feature to use as the x-axis
 	 * @param feature2
-	 * @return
-	 * @throws DatabaseHandlerException
+	 *            Name of the feature to use as the y-axis
+	 * @param feature3
+	 *            Name of the feature to be grouped by (color code)
+	 * @return A JSON array of data points
+	 * @throws DatasetServiceException
 	 */
+	@Override
 	public JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
 	                                 String feature3) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getSamplePoints(datasetID, feature1, feature2, feature3);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve sample points. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to retrieve sample points: " + e.getMessage(), e);
+			throw new DatasetServiceException(
+			                                  "Failed to retrieve sample points: " + e.getMessage(),
+			                                  e);
 		}
 	}
 
 	/**
 	 * Returns the summary statistics for a given feature of a given data-set
+	 *
 	 * @param datasetID
+	 *            Unique Identifier of the data-set
 	 * @param feature
-	 * @return
+	 *            Name of the feature of which summary statistics are needed
+	 * @return JSON string containing the summary statistics
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getSummaryStats(datasetID, feature);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve summary statistics. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to retrieve summary statistics: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to retrieve summary statistics: " +
+					e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Returns the number of features of a given dataset
+	 * Returns the number of features of a given data-set.
+	 *
 	 * @param datasetID
-	 * @return
+	 *            Unique Identifier of the data-set
+	 * @return Number of features in the data-set
 	 * @throws DatasetServiceException
 	 */
+	@Override
 	public int getFeatureCount(String datasetID) throws DatasetServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
 			return dbHandler.getFeatureCount(datasetID);
 		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to retrieve the feature count. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
-		}
-	}
-
-	/**
-	 * Set the default values for feature properties of a given workflow
-	 *
-	 * @param datasetID
-	 * @param workflowID
-	 * @throws DatasetServiceException
-	 */
-	public void setDefaultFeatureSettings(String datasetID, String workflowID)
-			throws DatasetServiceException {
-		try {
-			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
-			dbHandler.setDefaultFeatureSettings(datasetID, workflowID);
-		} catch (DatabaseHandlerException e) {
-			String msg = "Failed to set default feature settings. " + e.getMessage();
-			logger.error(msg, e);
-			throw new DatasetServiceException(msg);
+			logger.error("Failed to retrieve the feature count: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to retrieve the feature count: " +
+					e.getMessage(), e);
 		}
 	}
 }
