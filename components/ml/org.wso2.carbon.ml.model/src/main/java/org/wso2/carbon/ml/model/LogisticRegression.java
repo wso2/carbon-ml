@@ -33,6 +33,7 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -53,7 +54,7 @@ public class LogisticRegression implements Serializable {
      * @param regularizationParameter     Regularization parameter
      * @param dataFractionPerSGDIteration Data fraction per SGD iteration
      * @return Logistic regression model
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
                                          double initialLearningRate,

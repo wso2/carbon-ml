@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 
 public class SparkConfigurationParser {
     private static final Log logger = LogFactory.getLog(SparkConfigurationParser.class);
@@ -32,7 +33,7 @@ public class SparkConfigurationParser {
      * spark-config.xml
      *
      * @return Spark configuration
-     * @throws SparkConfigurationParserException
+     * @throws org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException
      */
     SparkConf getSparkConfiguration() throws SparkConfigurationParserException {
         try {

@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -70,7 +72,7 @@ public class ModelService {
     /**
      * @param algorithm Name of the machine learning algorithm
      * @return Json array containing hyper parameters
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     public JSONArray getHyperParameters(String algorithm) throws ModelServiceException {
         try {

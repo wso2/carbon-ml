@@ -25,15 +25,13 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -108,7 +106,7 @@ public class SupervisedModel implements Runnable {
      * @param trainingData Training data
      * @param testingData  Testing data
      * @param workflow     Machine learning workflow
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     private void buildLogisticRegressionModel(JavaRDD<LabeledPoint> trainingData,
                                               JavaRDD<LabeledPoint> testingData,

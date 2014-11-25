@@ -18,11 +18,10 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 public class KMeans {
 
@@ -30,7 +29,7 @@ public class KMeans {
      * @param data           JavaRDD containing feature vectors
      * @param noOfClusters   No of clusters
      * @param noOfIterations No of iterations
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
             throws ModelServiceException {

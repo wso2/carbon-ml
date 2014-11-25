@@ -20,14 +20,13 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -43,7 +42,7 @@ public class DecisionTree implements Serializable {
      * @param maxTreeDepth        Maximum tree depth
      * @param maxBins             Maximum no of bins
      * @return Decision tree model
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     DecisionTreeModel train(JavaRDD<LabeledPoint> train,
                             int noOfClasses,

@@ -18,11 +18,10 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
     private final int responseIndex;
@@ -39,7 +38,7 @@ public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
      *
      * @param tokens String array of tokens
      * @return Labeled point
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     @Override
     public LabeledPoint call(String[] tokens) throws ModelServiceException {

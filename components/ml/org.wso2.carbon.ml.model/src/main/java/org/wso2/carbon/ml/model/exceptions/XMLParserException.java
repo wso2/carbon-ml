@@ -16,10 +16,10 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.exceptions;
 
-public class ModelServiceException extends Exception {
-    public ModelServiceException(String message, Throwable throwable) {
+public class XMLParserException extends Exception {
+    public XMLParserException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

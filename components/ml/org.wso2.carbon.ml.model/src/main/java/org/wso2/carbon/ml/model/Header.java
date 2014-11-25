@@ -18,9 +18,8 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 public class Header implements Function<String, Boolean> {
     private String header;

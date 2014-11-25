@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+
 public class MLModelUtils {
     /**
      * Private constructor to prevent any other class from instantiating.

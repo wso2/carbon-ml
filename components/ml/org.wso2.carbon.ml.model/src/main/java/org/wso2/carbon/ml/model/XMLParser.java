@@ -18,9 +18,8 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.wso2.carbon.ml.model.exceptions.XMLParserException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,7 +32,7 @@ public class XMLParser {
      *
      * @param xmlFilePath XML file path
      * @return XML document
-     * @throws MLAlgorithmConfigurationParserException
+     * @throws org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException
      */
     Document getXMLDocument(String xmlFilePath) throws XMLParserException {
         try {
