@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
@@ -109,6 +110,10 @@ public class DatasetService implements AbstractDatasetService {
 	                        		 throws DatasetServiceException, IOException {
 		String uploadDir = dataUploadSettings.getUploadLocation();
 		try {
+			// get user home, if the uploading directory is set to USER_HOME
+			if(uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)){
+				uploadDir=System.getProperty("user.home")+"/MLProjects";
+			}
 			if (FilePathValidator.isValid(uploadDir)) {
 				// Upload the file.
 				File targetFile = new File(uploadDir + "/" + projectID + "/" + fileName);
@@ -131,16 +136,15 @@ public class DatasetService implements AbstractDatasetService {
 				throw new DatasetServiceException("Invalid Uploading directory " + uploadDir);
 			}
 		} catch (DatasetSummaryException e) {
-			logger.error("Failed to generate summary statistics for dataset " + datasetID + " : " +
+			logger.error("Failed to generate summary statistics: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to generate summary statistics: " +
 					e.getMessage(), e);
-			throw new DatasetServiceException("Failed to generate summary statistics for dataset " +
-					datasetID + " : " + e.getMessage(), e);
 		} catch (DatabaseHandlerException e) {
-			logger.error("Failed to update sample points of the dataset " + datasetID + " : " +
-					e.getMessage(), e);
-			throw new DatasetServiceException("Failed to update sample points of the dataset " +
-					datasetID + " : " + e.getMessage(), e);
+			logger.error("Failed to update sample points: " + e.getMessage(), e);
+			throw new DatasetServiceException("Failed to update sample points: " + e.getMessage(),
+			                                  e);
 		} catch (IOException e) {
+			logger.error("Failed to upload the file " + fileName + " : " + e.getMessage(), e);
 			throw new DatasetServiceException("Failed to upload the file " + fileName + " : " +
 					e.getMessage(), e);
 		} finally {
@@ -265,7 +269,9 @@ public class DatasetService implements AbstractDatasetService {
 			return dbHandler.getFeatureNames(workflowID, featureType);
 		} catch (DatabaseHandlerException e) {
 			logger.error("Failed to retrieve feature names: " + e.getMessage(), e);
-			throw new DatasetServiceException("Failed to retrieve feature names: " + e.getMessage(), e);
+			throw new DatasetServiceException(
+			                                  "Failed to retrieve feature names: " + e.getMessage(),
+			                                  e);
 		}
 	}
 
