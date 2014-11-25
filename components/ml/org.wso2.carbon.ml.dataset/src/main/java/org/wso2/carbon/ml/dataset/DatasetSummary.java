@@ -67,7 +67,7 @@ public class DatasetSummary {
 	private int[] unique;
 	// Array containing data-type of each feature in the data-set.
 	private FeatureType[] type;
-	// Map containing indices and names of features in the data-set.
+	// Map containing indices and names of features of the data-set.
 	private Map<String, Integer> headerMap;
 
 	private String datasetID;

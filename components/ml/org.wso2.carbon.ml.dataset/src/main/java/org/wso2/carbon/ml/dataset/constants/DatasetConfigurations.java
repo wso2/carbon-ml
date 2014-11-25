@@ -28,6 +28,7 @@ public class DatasetConfigurations {
     public static final String HISTOGRAM_BINS = "histogramBins";
     public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
     public static final String SAMPLE_SIZE = "sampleSize";
+    public static final String USER_HOME= "USER_HOME";
     
     /*
 	 * private Constructor to prevent any other class from instantiating.

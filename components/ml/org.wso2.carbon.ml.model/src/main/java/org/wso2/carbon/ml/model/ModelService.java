@@ -47,7 +47,7 @@ public class ModelService {
      *
      * @param context ComponentContext
      */
-    void activate(ComponentContext context) {
+    protected void activate(ComponentContext context) {
         try {
             ModelService modelService = new ModelService();
             modelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser();
@@ -65,7 +65,7 @@ public class ModelService {
      *
      * @param context ComponentContext
      */
-    void deactivate(ComponentContext context) {
+    protected void deactivate(ComponentContext context) {
         logger.info("ML Model Service Stopped");
     }
 
