@@ -15,35 +15,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.admin;
 
-public class DataUploadSettings {
-	
-	private String uploadLocation;
-	private int inMemoryThreshold;
-	private long uploadLimit;
+package org.wso2.carbon.ml.model;
 
-    public String getUploadLocation() {
-        return uploadLocation;
+public class PredictedVsActual {
+    private double predicted;
+    private double actual;
+
+    public double getPredicted() {
+        return predicted;
     }
 
-    public void setUploadLocation(String uploadLocation) {
-        this.uploadLocation = uploadLocation;
+    public void setPredicted(double predicted) {
+        this.predicted = predicted;
     }
 
-    public int getInMemoryThreshold() {
-        return inMemoryThreshold;
+    public double getActual() {
+        return actual;
     }
 
-    public void setInMemoryThreshold(int inMemoryThreshold) {
-        this.inMemoryThreshold = inMemoryThreshold;
-    }
-
-    public long getUploadLimit() {
-        return uploadLimit;
-    }
-
-    public void setUploadLimit(long uploadLimit) {
-        this.uploadLimit = uploadLimit;
+    public void setActual(double actual) {
+        this.actual = actual;
     }
 }

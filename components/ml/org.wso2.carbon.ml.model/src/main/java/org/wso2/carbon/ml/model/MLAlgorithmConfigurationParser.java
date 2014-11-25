@@ -18,23 +18,19 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,19 +39,30 @@ import java.util.Map;
 
 public class MLAlgorithmConfigurationParser {
 
-    private static final Log logger = LogFactory.getLog(MLAlgorithmConfigurationParser.class);
+    private Document mlAlgorithmsConfig;
+
+    MLAlgorithmConfigurationParser() throws MLAlgorithmConfigurationParserException {
+        try {
+            XMLParser xmlParser = new XMLParser();
+            mlAlgorithmsConfig = xmlParser.getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
+        } catch (Exception e) {
+            throw new MLAlgorithmConfigurationParserException("An error occured while parsing " +
+                                                              MLModelConstants
+                                                                      .ML_ALGORITHMS_CONFIG_XML +
+                                                              ": " + e.getMessage(), e);
+        }
+    }
 
     /**
      * @param algorithm Machine learning algorithm name
      * @return hyper-parameters
      * @throws MLAlgorithmConfigurationParserException
      */
-    protected JSONArray getHyperParameters(String algorithm)
+    JSONArray getHyperParameters(String algorithm)
             throws MLAlgorithmConfigurationParserException {
         try {
             JSONArray hyperparameters = null;
-            Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLModelConstants.NAME);
+            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.NAME);
             StreamResult xmlOutput;
             Transformer transformer;
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -90,9 +97,9 @@ public class MLAlgorithmConfigurationParser {
             }
             return hyperparameters;
         } catch (Exception e) {
-            String msg = "An error occurred while retrieving hyperparameters\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLAlgorithmConfigurationParserException(msg);
+            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
+                                                              " hyperparameters : " + e
+                    .getMessage(), e);
         }
     }
 
@@ -101,12 +108,11 @@ public class MLAlgorithmConfigurationParser {
      * @return Machine learning algorithm names
      * @throws MLAlgorithmConfigurationParserException
      */
-    protected List<String> getAlgorithms(String algorithmType) throws
-                                                               MLAlgorithmConfigurationParserException {
+    List<String> getAlgorithms(String algorithmType) throws
+                                                     MLAlgorithmConfigurationParserException {
         try {
             List<String> algorithms = new ArrayList();
-            Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLModelConstants.TYPE);
+            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.TYPE);
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node nNode = nodes.item(i);
                 if (nNode.getTextContent().equals(algorithmType)) {
@@ -121,9 +127,9 @@ public class MLAlgorithmConfigurationParser {
             }
             return algorithms;
         } catch (Exception e) {
-            String msg = "An error occurred while retrieving algorithm names\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLAlgorithmConfigurationParserException(msg);
+            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
+                                                              " algorithm names: " + e.getMessage
+                    (), e);
         }
     }
 
@@ -132,12 +138,11 @@ public class MLAlgorithmConfigurationParser {
      * @return Algorithm ratings
      * @throws MLAlgorithmConfigurationParserException
      */
-    protected Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
-                                                                                   MLAlgorithmConfigurationParserException {
+    Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
+                                                                         MLAlgorithmConfigurationParserException {
         try {
             Map<String, List<Integer>> ratings = new HashMap<String, List<Integer>>();
-            Document doc = getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLModelConstants.TYPE);
+            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.TYPE);
             String algorithm = "";
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node nNode = nodes.item(i);
@@ -161,30 +166,9 @@ public class MLAlgorithmConfigurationParser {
             }
             return ratings;
         } catch (Exception e) {
-            String msg = "An error occurred while retrieving algorithm ratings\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLAlgorithmConfigurationParserException(msg);
-        }
-    }
-
-    /**
-     * @param xmlFilePath
-     * @return XML document
-     * @throws MLAlgorithmConfigurationParserException
-     */
-    private Document getXMLDocument(String xmlFilePath)
-            throws MLAlgorithmConfigurationParserException {
-        try {
-            File xmlFile = new File(xmlFilePath);
-            DocumentBuilderFactory dbFactory
-                    = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder;
-            dBuilder = dbFactory.newDocumentBuilder();
-            return dBuilder.parse(xmlFile);
-        } catch (Exception e) {
-            String msg = "An error occurred while parsing XML\n" + e.getMessage();
-            logger.error(msg, e);
-            throw new MLAlgorithmConfigurationParserException(msg);
+            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
+                                                              " algorithm ratings: " + e
+                    .getMessage(), e);
         }
     }
 }

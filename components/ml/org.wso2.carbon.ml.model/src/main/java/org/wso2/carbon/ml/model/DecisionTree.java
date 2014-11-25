@@ -20,20 +20,19 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class DecisionTree {
-    private static final Log logger = LogFactory.getLog(DecisionTree.class);
+public class DecisionTree implements Serializable {
 
     /**
      * @param train               Training dataset as a JavaRDD of labeled points
@@ -43,14 +42,14 @@ public class DecisionTree {
      * @param maxTreeDepth        Maximum tree depth
      * @param maxBins             Maximum no of bins
      * @return Decision tree model
-     * @throws ModelServiceException
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    public DecisionTreeModel train(JavaRDD<LabeledPoint> train,
-                                   int noOfClasses,
-                                   Map<Integer, Integer> categoricalFeatures,
-                                   String impurityCriteria,
-                                   int maxTreeDepth,
-                                   int maxBins
+    DecisionTreeModel train(JavaRDD<LabeledPoint> train,
+                            int noOfClasses,
+                            Map<Integer, Integer> categoricalFeatures,
+                            String impurityCriteria,
+                            int maxTreeDepth,
+                            int maxBins
     ) throws ModelServiceException {
         try {
             return org.apache.spark.mllib.tree.DecisionTree.trainClassifier(train,
@@ -60,10 +59,7 @@ public class DecisionTree {
                                                                             maxTreeDepth,
                                                                             maxBins);
         } catch (Exception e) {
-            String msg = "An error occurred while building decision tree model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -73,8 +69,8 @@ public class DecisionTree {
      * @return JavaPairRDD containing predictions and labels
      * @throws ModelServiceException
      */
-    public JavaPairRDD<Double, Double> test(final DecisionTreeModel model,
-                                            JavaRDD<LabeledPoint> test)
+    JavaPairRDD<Double, Double> test(final DecisionTreeModel model,
+                                     JavaRDD<LabeledPoint> test)
             throws ModelServiceException {
 
         try {
@@ -85,10 +81,7 @@ public class DecisionTree {
                 }
             });
         } catch (Exception e) {
-            String msg = "An error occurred while testing decision tree model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
 
     }
@@ -98,7 +91,7 @@ public class DecisionTree {
      * @return Test error
      * @throws ModelServiceException
      */
-    public double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
+    double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
             throws ModelServiceException {
         try {
             return 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
@@ -109,10 +102,7 @@ public class DecisionTree {
                 }
             }).count() / predictionsAndLabels.count();
         } catch (Exception e) {
-            String msg = "An error occurred while calculating decision tree test error\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }

@@ -20,9 +20,12 @@ package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
 
+import java.util.List;
+
 public class LogisticRegressionModelSummary {
     private JSONArray roc;
     private double auc;
+    private List<PredictedVsActual> predictedVsActuals;
 
     public JSONArray getRoc() {
         return roc;
@@ -38,5 +41,13 @@ public class LogisticRegressionModelSummary {
 
     public void setAuc(double auc) {
         this.auc = auc;
+    }
+
+    public List<PredictedVsActual> getPredictedVsActuals() {
+        return predictedVsActuals;
+    }
+
+    public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
+        this.predictedVsActuals = predictedVsActuals;
     }
 }

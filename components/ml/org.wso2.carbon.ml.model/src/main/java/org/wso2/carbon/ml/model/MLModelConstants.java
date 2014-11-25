@@ -18,31 +18,60 @@
 package org.wso2.carbon.ml.model;
 
 public final class MLModelConstants {
-    public static final String SMALL = "small";
-    public static final String MEDIUM = "medium";
-    public static final String LARGE = "large";
-    public static final String HIGH = "high";
-    public static final String DATASET_SIZE = "datasetSize";
-    public static final String TEXTUAL = "textual";
-    public static final String YES = "yes";
-    public static final String ALGORITHMS = "algorithms";
-    public static final String ALGORITHM = "algorithm";
-    public static final String NAME = "name";
-    public static final String TYPE = "type";
-    public static final String SCALABILITY = "scalability";
-    public static final String INTERPRETABILITY = "interpretability";
-    public static final String MULTICOLLINEARITY = "multicollinearity";
-    public static final String DIMENSIONALITY = "dimensionality";
-    public static final String PARAMETERS = "parameters";
-    public static final String PARAMETER = "parameter";
-    public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
-    public static final String DECIMAL_FORMAT = "#.00";
-    public static final String EMPTY = "";
-    public static final String NA = "NA";
+    static final String SMALL = "small";
+    static final String MEDIUM = "medium";
+    static final String LARGE = "large";
+    static final String HIGH = "high";
+    static final String DATASET_SIZE = "datasetSize";
+    static final String TEXTUAL = "textual";
+    static final String YES = "yes";
+    static final String ALGORITHMS = "algorithms";
+    static final String ALGORITHM = "algorithm";
+    static final String NAME = "name";
+    static final String TYPE = "type";
+    static final String SCALABILITY = "scalability";
+    static final String INTERPRETABILITY = "interpretability";
+    static final String MULTICOLLINEARITY = "multicollinearity";
+    static final String DIMENSIONALITY = "dimensionality";
+    static final String PARAMETERS = "parameters";
+    static final String PARAMETER = "parameter";
+    static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
+    static final String SPARK_CONFIG_XML = "repository/conf/etc/spark-config.xml";
+    static final String DECIMAL_FORMAT = "#.00";
+    static final String EMPTY = "";
+    static final String NA = "NA";
+    static final String PROPERTY = "property";
+    static final String MODEL_ID = "modelID";
+    static final String DATASET_URL = "datasetURL";
+    static final String TRAIN_DATA_FRACTION = "trainDataFraction";
+    static final String CSV = ".csv";
+    static final String TSV = ".tsv";
+    static final String RESPONSE = "responseVariable";
+    static final Long RANDOM_SEED = 11L;
+    static final String LEARNING_RATE = "Learning_Rate";
+    static final String ITERATIONS = "Iterations";
+    static final String REGULARIZATION_TYPE = "Reg_Type";
+    static final String REGULARIZATION_PARAMETER = "Reg_Parameter";
+    static final String SGD_DATA_FRACTION = "SGD_Data_Fraction";
+    static final String NUM_CLASSES = "Num_Classes";
+    static final String MAX_DEPTH = "Max_Depth";
+    static final String MAX_BINS = "Max_Bins";
+    static final String IMPURITY = "Impurity";
+    static final String L1 = "L1";
+    static final String L2 = "L2";
+
+    enum SUPERVISED_ALGORITHM {
+        LOGISTIC_REGRESSION, SVM, DECISION_TREE, NAIVE_BAYES
+    }
+
+    enum UNSUPERVISED_ALGORITHM {
+        K_MEANS
+    }
 
     /**
      * Private constructor to prevent any other class from instantiating.
      */
     private MLModelConstants() {
+        //
     }
 }

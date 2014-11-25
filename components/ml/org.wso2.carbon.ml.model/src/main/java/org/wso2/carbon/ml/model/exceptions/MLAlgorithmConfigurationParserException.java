@@ -16,10 +16,10 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.admin;
+package org.wso2.carbon.ml.model.exceptions;
 
-public class MLConfigurationParserException extends Exception {
-    public MLConfigurationParserException(String message) {
-        super(message);
+public class MLAlgorithmConfigurationParserException extends Exception {
+    public MLAlgorithmConfigurationParserException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

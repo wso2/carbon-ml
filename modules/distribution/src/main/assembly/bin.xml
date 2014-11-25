@@ -304,6 +304,10 @@
             <source>src/main/conf/etc/ml-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/</outputDirectory>
         </file>
+        <file>
+            <source>src/main/conf/etc/spark-config.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/</outputDirectory>
+        </file>
 	    <file>
             <source>target/database/WSO2ML_DB.h2.db</source>
             <outputDirectory>wso2ml-${pom.version}/repository/database</outputDirectory>

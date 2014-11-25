@@ -18,12 +18,10 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 public class Header implements Function<String, Boolean> {
-    private static final Log logger = LogFactory.getLog(Header.class);
     private String header;
 
     Header(String header) {
@@ -39,10 +37,7 @@ public class Header implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            String msg = "An error occurred while removing header row\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }

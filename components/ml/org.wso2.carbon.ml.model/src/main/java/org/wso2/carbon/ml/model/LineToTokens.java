@@ -18,9 +18,8 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.regex.Pattern;
 
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
  * This class transforms each line (line-by-line) into an array of String tokens
  */
 public class LineToTokens implements Function<String, String[]> {
-    private static final Log logger = LogFactory.getLog(LineToTokens.class);
     private Pattern tokenSeparator;
 
     LineToTokens(Pattern pattern) {
@@ -40,10 +38,7 @@ public class LineToTokens implements Function<String, String[]> {
         try {
             return tokenSeparator.split(line);
         } catch (Exception e) {
-            String msg = "An error occurred while converting line to tokens\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }
