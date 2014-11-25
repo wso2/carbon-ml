@@ -15,22 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.exceptions;
 
-public class FeatureType {
-
-	private final String featureType;
-	public static final FeatureType NUMERICAL = new FeatureType("NUMERICAL");
-	public static final FeatureType CATEGORICAL = new FeatureType("CATEGORICAL");
-
-	private FeatureType(String featureType) {
-		this.featureType = featureType;
-	}
+public class DatasetSummaryException extends Exception {
 	
-	/**
-	 * Returns the data type as a string
-	 */
-	public String toString() {
-		return featureType;
-	}
+    public DatasetSummaryException(String message) {
+        super(message);
+    }
+    
+    public DatasetSummaryException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

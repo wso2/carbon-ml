@@ -1,23 +1,28 @@
 /*
- *  Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
 package org.wso2.carbon.ml.dataset;
 
+import org.wso2.carbon.ml.dataset.constants.FeatureType;
+import org.wso2.carbon.ml.dataset.constants.ImputeOption;
 
+/**
+ * Feature Class.
+ */
 public class Feature {
 
 	private String fieldName;
@@ -27,7 +32,7 @@ public class Feature {
 	private String summaryStats;
 
 	public Feature(String fieldName, boolean isInput, FeatureType type,
-			ImputeOption imputeOperation, String summaryStats) {
+	               ImputeOption imputeOperation, String summaryStats) {
 
 		this.fieldName = fieldName;
 		this.isInput = isInput;
@@ -37,80 +42,97 @@ public class Feature {
 	}
 
 	/**
-	 * Returns the name of the feature
-	 * @return
+	 * Returns the name of the feature.
+	 *
+	 * @return Name of the feature
 	 */
 	public String getFieldName() {
 		return fieldName;
 	}
 
 	/**
-	 * Set the name of the feature
+	 * Set the name of the feature.
+	 *
 	 * @param fieldName
+	 *            Name of the feature
 	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
-	
+
 	/**
-	 * Returns the summary statistics json string
-	 * @return
+	 * Returns the summary statistics json string.
+	 *
+	 * @return Summary statistics json string
 	 */
 	public String getSummaryStats() {
 		return summaryStats;
 	}
 
 	/**
-	 * Set the summary statistics json string
+	 * Set the summary statistics json string.
+	 *
 	 * @param summaryStats
+	 *            Summary statistics json string
 	 */
 	public void setSummaryStats(String summaryStats) {
 		this.summaryStats = summaryStats;
 	}
 
 	/**
-	 * Returns whether the feature is treated as an input or not
-	 * @return
+	 * Returns whether the feature is treated as an input or not.
+	 *
+	 * @return boolean value indicating whether the feature is treated as an
+	 *         input or not
 	 */
 	public boolean isInput() {
 		return isInput;
 	}
 
 	/**
-	 * Sets whether the feature is treated as an input or not
+	 * Sets whether the feature is treated as an input or not.
+	 *
 	 * @param isInput
+	 *            boolean value indicating whether the feature is treated as an
+	 *            input or not
 	 */
 	public void setInput(boolean isInput) {
 		this.isInput = isInput;
 	}
 
 	/**
-	 * Returns the data-type of the feature
-	 * @return
+	 * Returns the data-type of the feature.
+	 *
+	 * @return Data-type of the feature
 	 */
 	public FeatureType getType() {
 		return type;
 	}
 
 	/**
-	 * Sets the data-type of the feature
+	 * Sets the data-type of the feature.
+	 *
 	 * @param type
+	 *            Data-type of the feature
 	 */
 	public void setType(FeatureType type) {
 		this.type = type;
 	}
 
 	/**
-	 * Returns the impute method of the feature
-	 * @return
+	 * Returns the impute method of the feature.
+	 *
+	 * @return Impute method of the feature
 	 */
 	public ImputeOption getImputeOperation() {
 		return imputeOperation;
 	}
 
 	/**
-	 * Sets the impute method of the feature
+	 * Sets the impute method of the feature.
+	 *
 	 * @param imputeOperation
+	 *            impute method of the feature
 	 */
 	public void setImputeOperation(ImputeOption imputeOperation) {
 		this.imputeOperation = imputeOperation;

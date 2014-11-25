@@ -21,105 +21,123 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ *Class contains utility methods for handling database resources.
+ */
 public class MLDatabaseUtil {
 	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
 
-	// private constructor
-	private MLDatabaseUtil(){
-	}
-	
-	/**
-	 * 
-	 * @param dbConnection
-	 * @param rs
-	 * @param prepStmt
+	/*
+	 * private Constructor to prevent any other class from instantiating.
 	 */
-	public static void closeAllConnections(Connection dbConnection,
-			ResultSet rs, PreparedStatement prepStmt) {
-		
-		closeResultSet(rs);
-		closeStatement(prepStmt);
-		closeConnection(dbConnection);
+	private MLDatabaseUtil() {
 	}
 
 	/**
-	 * 
-	 * @param dbConnection
+	 * Close a given set of database resources.
+	 *
+	 * @param connection
+	 *            Connection to be closed
+	 * @param preparedStatement
+	 *            PeparedStatement to be closed
+	 * @param resultSet
+	 *            ResultSet to be closed
 	 */
-	public static void closeConnection(Connection dbConnection) {
-		if (dbConnection != null) {
+	protected static void closeDatabaseResources(Connection connection,
+	                                             PreparedStatement preparedStatement,
+	                                             ResultSet resultSet) {
+		// Close the resultSet
+		if (resultSet != null) {
 			try {
-				dbConnection.close();
+				resultSet.close();
 			} catch (SQLException e) {
-				logger.error(
-						"Database error. Could not close statement."
-								+ e.getMessage(), e);
+				logger.error("Could not close result set: " + e.getMessage(), e);
+			}
+		}
+		// Close the connection
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.error("Database error. Could not close statement: " + e.getMessage(), e);
+			}
+		}
+		// Close the statement
+		if (preparedStatement != null) {
+			try {
+				preparedStatement.close();
+			} catch (SQLException e) {
+				logger.error("Database error. Could not close statement: " + e.getMessage(), e);
 			}
 		}
 	}
 
 	/**
-	 * 
-	 * @param rs
+	 * Close a given set of database resources.
+	 *
+	 * @param connection
+	 *            Connection to be closed
+	 * @param preparedStatement
+	 *            PeparedStatement to be closed
 	 */
-	public static void closeResultSet(ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				logger.error(
-						"Database error. Could not close result set  - "
-								+ e.getMessage(), e);
-			}
-		}
+	protected static void closeDatabaseResources(Connection connection,
+	                                             PreparedStatement preparedStatement) {
+		closeDatabaseResources(connection, preparedStatement, null);
 	}
 
 	/**
-	 * 
-	 * @param statement
+	 * Close a given set of database resources.
+	 *
+	 * @param connection
+	 *            Connection to be closed
 	 */
-	public static void closeStatement(Statement statement) {
-		if (statement != null) {
-			try {
-				statement.close();
-			} catch (SQLException e) {
-				logger.error(
-						"Database error. Could not close statement. Continuing with others. - "
-								+ e.getMessage(), e);
-			}
-		}
+	protected static void closeDatabaseResources(Connection connection) {
+		closeDatabaseResources(connection, null, null);
 	}
 
 	/**
-	 * 
+	 * Close a given set of database resources.
+	 *
+	 * @param preparedStatement
+	 *            PeparedStatement to be closed
+	 */
+	protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
+		closeDatabaseResources(null, preparedStatement, null);
+	}
+
+	/**
+	 * Roll-backs a connection.
+	 *
 	 * @param dbConnection
+	 *            Connection to be rolled-back
 	 */
-	public static void rollBack(Connection dbConnection) {
+	protected static void rollBack(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.rollback();
 			}
-		} catch (SQLException e1) {
-			logger.error("An error occurred while rolling back transactions. ", e1);
+		} catch (SQLException e) {
+			logger.error("An error occurred while rolling back transactions: ", e);
 		}
 	}
-	
+
 	/**
-	 * 
+	 * Enables the auto-commit of a connection.
+	 *
 	 * @param dbConnection
+	 *            Connection of which the auto-commit should be enabled
 	 */
-	public static void enableAutoCommit(Connection dbConnection) {
+	protected static void enableAutoCommit(Connection dbConnection) {
 		try {
 			if (dbConnection != null) {
 				dbConnection.setAutoCommit(true);
 			}
-		} catch (SQLException e1) {
-			logger.error("An error occurred while enabling autocommit. ", e1);
+		} catch (SQLException e) {
+			logger.error("An error occurred while enabling autocommit: ", e);
 		}
 	}
 }
