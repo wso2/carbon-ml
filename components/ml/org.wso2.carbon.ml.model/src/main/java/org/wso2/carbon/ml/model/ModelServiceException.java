@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.model;
 
 public class ModelServiceException extends Exception {
-    public ModelServiceException(String message) {
-        super(message);
+    public ModelServiceException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

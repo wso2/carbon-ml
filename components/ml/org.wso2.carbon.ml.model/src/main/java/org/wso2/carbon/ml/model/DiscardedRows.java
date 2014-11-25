@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.function.Function2;
 
 public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
-    private static final Log logger = LogFactory.getLog(DiscardedRows.class);
 
     @Override
     public Boolean call(String[] tokens, Integer[] indices) throws Exception {
@@ -38,10 +37,7 @@ public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
             }
             return keep;
         } catch (Exception e) {
-            String msg = "An error occurred while removing discarded rows\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }

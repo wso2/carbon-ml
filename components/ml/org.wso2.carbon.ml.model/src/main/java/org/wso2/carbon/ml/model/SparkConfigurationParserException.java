@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.ml.model;
 
-public class MLAlgorithmConfigurationParserException extends Exception {
-    public MLAlgorithmConfigurationParserException(String message, Throwable throwable) {
+public class SparkConfigurationParserException extends Exception {
+    public SparkConfigurationParserException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

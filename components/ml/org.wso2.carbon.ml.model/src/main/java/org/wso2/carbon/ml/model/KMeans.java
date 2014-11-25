@@ -25,7 +25,6 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 
 public class KMeans {
-    private static final Log logger = LogFactory.getLog(KMeans.class);
 
     /**
      * @param data           JavaRDD containing feature vectors
@@ -33,15 +32,12 @@ public class KMeans {
      * @param noOfIterations No of iterations
      * @throws ModelServiceException
      */
-    public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
+    KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
             throws ModelServiceException {
         try {
             return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);
         } catch (Exception e) {
-            String msg = "An error occurred while building k-means model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -51,15 +47,12 @@ public class KMeans {
      * @return JavaRDD containing cluster centers
      * @throws ModelServiceException
      */
-    public JavaRDD<Integer> test(KMeansModel kMeansModel,
-                                 JavaRDD<Vector> data) throws ModelServiceException {
+    JavaRDD<Integer> test(KMeansModel kMeansModel,
+                          JavaRDD<Vector> data) throws ModelServiceException {
         try {
             return kMeansModel.predict(data);
         } catch (Exception e) {
-            String msg = "An error occurred while testing k-means model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }

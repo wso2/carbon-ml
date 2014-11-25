@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparkSettings>
+    <property name="spark.master">localhost</property>
+    <property name="spark.executor.memory">2g</property>
+    <property name="spark.serializer">org.apache.spark.serializer.JavaSerializer</property>
+    <property name="spark.local.dir">/tmp</property>
+</sparkSettings>

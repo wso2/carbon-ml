@@ -18,10 +18,9 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
@@ -33,13 +32,16 @@ import org.apache.spark.mllib.optimization.LogisticGradient;
 import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
+import org.json.JSONArray;
 import scala.Tuple2;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
-public class LogisticRegression {
-    private static final Log logger = LogFactory.getLog(LogisticRegression.class);
+public class LogisticRegression implements Serializable {
 
     /**
      * This method uses SGD to train a logistic regression model for a given dataset
@@ -53,29 +55,26 @@ public class LogisticRegression {
      * @return Logistic regression model
      * @throws ModelServiceException
      */
-    public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
-                                                double initialLearningRate,
-                                                int noOfIterations,
-                                                String regularizationType,
-                                                double regularizationParameter,
-                                                double dataFractionPerSGDIteration) throws
-                                                                                    ModelServiceException {
+    LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
+                                         double initialLearningRate,
+                                         int noOfIterations,
+                                         String regularizationType,
+                                         double regularizationParameter,
+                                         double dataFractionPerSGDIteration) throws
+                                                                             ModelServiceException {
         try {
             LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate,
                                                                             noOfIterations,
                                                                             regularizationParameter, dataFractionPerSGDIteration);
-            if ("L1".equals(regularizationType)) {
+            if (MLModelConstants.L1.equals(regularizationType)) {
                 lrSGD.optimizer().setUpdater(new L1Updater());
-            } else if ("L2".equals(regularizationType)) {
+            } else if (MLModelConstants.L2.equals(regularizationType)) {
                 lrSGD.optimizer().setUpdater(new SquaredL2Updater());
             }
             lrSGD.setIntercept(true);
             return lrSGD.run(trainingDataset.rdd());
         } catch (Exception e) {
-            String msg = "An error occurred while building logistic regression model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -90,11 +89,11 @@ public class LogisticRegression {
      * @return Logistic regression model
      * @throws ModelServiceException
      */
-    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
-                                                  int noOfCorrections,
-                                                  double convergenceTolerance,
-                                                  int noOfIterations,
-                                                  double regularizationParameter)
+    LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
+                                           int noOfCorrections,
+                                           double convergenceTolerance,
+                                           int noOfIterations,
+                                           double regularizationParameter)
             throws ModelServiceException {
         try {
             int numFeatures = trainingDataset.take(1).get(0).features().size();
@@ -120,10 +119,7 @@ public class LogisticRegression {
                     Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(), weightsWithIntercept.size() - 1)),
                     (weightsWithIntercept.toArray())[weightsWithIntercept.size() - 1]);
         } catch (Exception e) {
-            String msg = "An error occurred while building logistic regression model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -135,8 +131,8 @@ public class LogisticRegression {
      * @return Tuple2 containing scores and labels
      * @throws ModelServiceException
      */
-    public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
-                                                JavaRDD<LabeledPoint> testingDataset)
+    JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
+                                         JavaRDD<LabeledPoint> testingDataset)
             throws ModelServiceException {
         try {
             return testingDataset.map(
@@ -148,29 +144,53 @@ public class LogisticRegression {
                     }
             );
         } catch (Exception e) {
-            String msg = "An error occurred while testing logistic regression model\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
     /**
-     * This method calculates performance metrics for a given set of test scores and labels
+     * This method generates a summary for logistic regression
      *
-     * @param scoreAndLabels Scores and labels
-     * @return Binary classification metrics
+     * @param scoresAndLabels Scores and labels
+     * @return Logistic regression model summary
      * @throws ModelServiceException
      */
-    public BinaryClassificationMetrics getEvaluationMetrics(
-            JavaRDD<Tuple2<Object, Object>> scoreAndLabels) throws ModelServiceException {
+    LogisticRegressionModelSummary getModelSummary(JavaRDD<Tuple2<Object,
+            Object>> scoresAndLabels) throws ModelServiceException {
         try {
-            return new BinaryClassificationMetrics(JavaRDD.toRDD(scoreAndLabels));
+            // create a logistic regression model summary object
+            LogisticRegressionModelSummary logisticRegressionModelSummary = new
+                    LogisticRegressionModelSummary();
+            // store predicted vs actual results
+            final List<PredictedVsActual> predictedVsActuals = new ArrayList();
+            scoresAndLabels.foreach(new VoidFunction<Tuple2<Object, Object>>() {
+                @Override
+                public void call(Tuple2<Object, Object> scoreAndLabel) throws Exception {
+                    PredictedVsActual predictedVsActual = new PredictedVsActual();
+                    predictedVsActual.setPredicted((Double) scoreAndLabel._1());
+                    predictedVsActual.setActual((Double) scoreAndLabel._2());
+                    predictedVsActuals.add(predictedVsActual);
+                }
+            });
+            logisticRegressionModelSummary.setPredictedVsActuals(predictedVsActuals);
+            // generate binary classification metrics
+            BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD
+                    (scoresAndLabels));
+            // store AUC
+            logisticRegressionModelSummary.setAuc(metrics.areaUnderROC());
+            // store ROC data points
+            List<Tuple2<Object, Object>> rocData = metrics.roc().toJavaRDD().collect();
+            JSONArray rocPoints = new JSONArray();
+            for (int i = 0; i < rocData.size(); i += 1) {
+                JSONArray point = new JSONArray();
+                point.put(rocData.get(i)._1());
+                point.put(rocData.get(i)._2());
+                rocPoints.put(point);
+            }
+            logisticRegressionModelSummary.setRoc(rocPoints);
+            return logisticRegressionModelSummary;
         } catch (Exception e) {
-            String msg = "An error occurred while generating binary evaluation metrics\n" + e
-                    .getMessage();
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 }

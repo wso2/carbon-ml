@@ -38,20 +38,23 @@ import java.util.Map;
 public class ModelService {
 
     private static final Log logger = LogFactory.getLog(ModelService.class);
+    private MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser;
 
     /**
      * ModelService activator
      *
      * @param context ComponentContext
      */
-    protected void activate(ComponentContext context) {
+    void activate(ComponentContext context) {
         try {
             ModelService modelService = new ModelService();
+            modelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser();
             context.getBundleContext().registerService(ModelService.class.getName(),
                                                        modelService, null);
             logger.info("ML Model Service Started");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("An error occured while activating model service: " + e
+                    .getMessage(), e);
         }
     }
 
@@ -60,7 +63,7 @@ public class ModelService {
      *
      * @param context ComponentContext
      */
-    protected void deactivate(ComponentContext context) {
+    void deactivate(ComponentContext context) {
         logger.info("ML Model Service Stopped");
     }
 
@@ -71,13 +74,11 @@ public class ModelService {
      */
     public JSONArray getHyperParameters(String algorithm) throws ModelServiceException {
         try {
-            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
-                    MLAlgorithmConfigurationParser();
-            return mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
-        } catch (MLAlgorithmConfigurationParserException ex) {
-            String msg = "An error occurred while retrieving hyper parameters";
-            logger.error(msg, ex);
-            throw new ModelServiceException(msg);
+
+            return this.mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
+        } catch (MLAlgorithmConfigurationParserException e) {
+            logger.error("An error occurred while retrieving hyper parameters :" + e.getMessage(), e);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -88,13 +89,10 @@ public class ModelService {
      */
     public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException {
         try {
-            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
-                    MLAlgorithmConfigurationParser();
-            return mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
-        } catch (MLAlgorithmConfigurationParserException ex) {
-            String msg = "An error occurred while retrieving algorithm names";
-            logger.error(msg, ex);
-            throw new ModelServiceException(msg);
+            return this.mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
+        } catch (MLAlgorithmConfigurationParserException e) {
+            logger.error("An error occurred while retrieving algorithm names: " + e.getMessage(), e);
+            throw new ModelServiceException(e.getMessage(), e);
         }
     }
 
@@ -111,9 +109,8 @@ public class ModelService {
         Map<String, Double> recommendations = new HashMap<String, Double>();
         try {
             JSONObject userResponse = new JSONObject(userResponseJson);
-            MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser = new
-                    MLAlgorithmConfigurationParser();
-            Map<String, List<Integer>> algorithmRatings = mlAlgorithmConfigurationParser.getAlgorithmRatings(algorithmType);
+            Map<String, List<Integer>> algorithmRatings = this.mlAlgorithmConfigurationParser
+                    .getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
                 if (MLModelConstants.HIGH.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, rating.getValue().get(0) * 5);
@@ -135,7 +132,6 @@ public class ModelService {
                     rating.getValue().set(2, 5);
                 }
             }
-
             for (Map.Entry<String, List<Integer>> pair : algorithmRatings.entrySet()) {
                 recommendations.put(pair.getKey(), sum(pair.getValue()));
             }
@@ -148,9 +144,8 @@ public class ModelService {
                 recommendations.put(recommendation.getKey(), scaledRating);
             }
         } catch (MLAlgorithmConfigurationParserException e) {
-            String msg = "An error occurred while retrieving recommended algorithms";
-            logger.error(msg, e);
-            throw new ModelServiceException(msg);
+            logger.error("An error occurred while retrieving recommended algorithms: " + e.getMessage(), e);
+            throw new ModelServiceException(e.getMessage(), e);
         }
         return recommendations;
     }
@@ -166,6 +161,4 @@ public class ModelService {
         }
         return sum;
     }
-
-
 }

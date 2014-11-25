@@ -18,8 +18,23 @@
 
 package org.wso2.carbon.ml.model;
 
-public class MLAlgorithmConfigurationParserException extends Exception {
-    public MLAlgorithmConfigurationParserException(String message, Throwable throwable) {
-        super(message, throwable);
+public class PredictedVsActual {
+    private double predicted;
+    private double actual;
+
+    public double getPredicted() {
+        return predicted;
+    }
+
+    public void setPredicted(double predicted) {
+        this.predicted = predicted;
+    }
+
+    public double getActual() {
+        return actual;
+    }
+
+    public void setActual(double actual) {
+        this.actual = actual;
     }
 }

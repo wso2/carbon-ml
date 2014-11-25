@@ -20,5 +20,6 @@ public class TokensToLabeledPointsTest {
         JavaRDD<String[]> tokens = lines.map(lineToTokens);
         TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
         JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
+        sc.stop();
     }
 }

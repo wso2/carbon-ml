@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <algorithms>
     <algorithm>
-        <name>Linear_Regression</name>
+        <name>LINEAR_REGRESSION</name>
         <type>Numerical_Prediction</type>
         <interpretability>5</interpretability>
         <scalability>5</scalability>
@@ -13,7 +13,7 @@
         </parameters>
     </algorithm>
     <algorithm>
-        <name>Logistic_Regression</name>
+        <name>LOGISTIC_REGRESSION</name>
         <type>Classification</type>
         <interpretability>3</interpretability>
         <scalability>5</scalability>
@@ -57,7 +57,7 @@
         </parameters>
     </algorithm>
     <algorithm>
-        <name>Decision_Tree</name>
+        <name>DECISION_TREE</name>
         <type>Classification</type>
         <interpretability>5</interpretability>
         <scalability>4</scalability>
@@ -81,7 +81,7 @@
         </parameters>
     </algorithm>
     <algorithm>
-        <name>Naive_Bayes</name>
+        <name>NAIVE_BAYES</name>
         <type>Classification</type>
         <interpretability>3</interpretability>
         <scalability>5</scalability>
@@ -93,7 +93,7 @@
         </parameters>
     </algorithm>
     <algorithm>
-        <name>K-Means</name>
+        <name>K_MEANS</name>
         <type>Clustering</type>
         <interpretability>5</interpretability>
         <scalability>2</scalability>
