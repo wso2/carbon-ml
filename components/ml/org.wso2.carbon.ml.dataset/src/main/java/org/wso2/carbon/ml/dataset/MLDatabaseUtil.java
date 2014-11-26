@@ -26,118 +26,108 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *Class contains utility methods for database resources.
+ * Class contains utility methods for database resources.
  */
 public class MLDatabaseUtil {
-	private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
+    private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
 
-	/*
-	 * private Constructor to prevent any other class from instantiating.
-	 */
-	private MLDatabaseUtil() {
-	}
+    /*
+     * private Constructor to prevent any other class from instantiating.
+     */
+    private MLDatabaseUtil() {
+    }
 
-	/**
-	 * Close a given set of database resources.
-	 *
-	 * @param connection
-	 *            Connection to be closed
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
-	 * @param resultSet
-	 *            ResultSet to be closed
-	 */
-	protected static void closeDatabaseResources(Connection connection,
-	                                             PreparedStatement preparedStatement,
-	                                             ResultSet resultSet) {
-		// Close the resultSet
-		if (resultSet != null) {
-			try {
-				resultSet.close();
-			} catch (SQLException e) {
-				logger.error("Could not close result set: " + e.getMessage(), e);
-			}
-		}
-		// Close the connection
-		if (connection != null) {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				logger.error("Database error. Could not close statement: " + e.getMessage(), e);
-			}
-		}
-		// Close the statement
-		if (preparedStatement != null) {
-			try {
-				preparedStatement.close();
-			} catch (SQLException e) {
-				logger.error("Database error. Could not close statement: " + e.getMessage(), e);
-			}
-		}
-	}
+    /**
+     * Close a given set of database resources.
+     *
+     * @param connection Connection to be closed
+     * @param preparedStatement PeparedStatement to be closed
+     * @param resultSet ResultSet to be closed
+     */
+    protected static void closeDatabaseResources(Connection connection,
+            PreparedStatement preparedStatement, ResultSet resultSet) {
+        // Close the resultSet
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                logger.error("Could not close result set: " + e.getMessage(), e);
+            }
+        }
+        // Close the connection
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
+            }
+        }
+        // Close the statement
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
+            }
+        }
+    }
 
-	/**
-	 * Close a given set of database resources.
-	 *
-	 * @param connection
-	 *            Connection to be closed
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
-	 */
-	protected static void closeDatabaseResources(Connection connection,
-	                                             PreparedStatement preparedStatement) {
-		closeDatabaseResources(connection, preparedStatement, null);
-	}
+    /**
+     * Close a given set of database resources.
+     *
+     * @param connection Connection to be closed
+     * @param preparedStatement PeparedStatement to be closed
+     */
+    protected static void closeDatabaseResources(Connection connection,
+            PreparedStatement preparedStatement) {
+        closeDatabaseResources(connection, preparedStatement, null);
+    }
 
-	/**
-	 * Close a given set of database resources.
-	 *
-	 * @param connection
-	 *            Connection to be closed
-	 */
-	protected static void closeDatabaseResources(Connection connection) {
-		closeDatabaseResources(connection, null, null);
-	}
+    /**
+     * Close a given set of database resources.
+     *
+     * @param connection Connection to be closed
+     */
+    protected static void closeDatabaseResources(Connection connection) {
+        closeDatabaseResources(connection, null, null);
+    }
 
-	/**
-	 * Close a given set of database resources.
-	 *
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
-	 */
-	protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
-		closeDatabaseResources(null, preparedStatement, null);
-	}
+    /**
+     * Close a given set of database resources.
+     *
+     * @param preparedStatement PeparedStatement to be closed
+     */
+    protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
+        closeDatabaseResources(null, preparedStatement, null);
+    }
 
-	/**
-	 * Roll-backs a connection.
-	 *
-	 * @param dbConnection
-	 *            Connection to be rolled-back
-	 */
-	protected static void rollBack(Connection dbConnection) {
-		try {
-			if (dbConnection != null) {
-				dbConnection.rollback();
-			}
-		} catch (SQLException e) {
-			logger.error("An error occurred while rolling back transactions: ", e);
-		}
-	}
+    /**
+     * Roll-backs a connection.
+     *
+     * @param dbConnection Connection to be rolled-back
+     */
+    protected static void rollBack(Connection dbConnection) {
+        try {
+            if (dbConnection != null) {
+                dbConnection.rollback();
+            }
+        } catch (SQLException e) {
+            logger.error("An error occurred while rolling back transactions: ", e);
+        }
+    }
 
-	/**
-	 * Enables the auto-commit of a connection.
-	 *
-	 * @param dbConnection
-	 *            Connection of which the auto-commit should be enabled
-	 */
-	protected static void enableAutoCommit(Connection dbConnection) {
-		try {
-			if (dbConnection != null) {
-				dbConnection.setAutoCommit(true);
-			}
-		} catch (SQLException e) {
-			logger.error("An error occurred while enabling autocommit: ", e);
-		}
-	}
+    /**
+     * Enables the auto-commit of a connection.
+     *
+     * @param dbConnection Connection of which the auto-commit should be enabled
+     */
+    protected static void enableAutoCommit(Connection dbConnection) {
+        try {
+            if (dbConnection != null) {
+                dbConnection.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            logger.error("An error occurred while enabling autocommit: ", e);
+        }
+    }
 }

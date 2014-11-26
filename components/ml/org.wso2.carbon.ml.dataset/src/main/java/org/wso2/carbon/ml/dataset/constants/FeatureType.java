@@ -18,19 +18,12 @@
 package org.wso2.carbon.ml.dataset.constants;
 
 public class FeatureType {
-
-	private final String featureType;
-	public static final FeatureType NUMERICAL = new FeatureType("NUMERICAL");
-	public static final FeatureType CATEGORICAL = new FeatureType("CATEGORICAL");
-
-	private FeatureType(String featureType) {
-		this.featureType = featureType;
-	}
+	public static final String NUMERICAL = "NUMERICAL";
+	public static final String CATEGORICAL = "CATEGORICAL";
 	
-	/**
-	 * Returns the data type as a string
-	 */
-	public String toString() {
-		return featureType;
-	}
+	/*
+     * private Constructor to prevent any other class from instantiating.
+     */
+    private FeatureType() {
+    }
 }

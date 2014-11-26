@@ -31,96 +31,97 @@ import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
- * Class contains methods for parsing configurations from ml-config xml file.
+ * Class contains methods for parsing configurations from ml-config XML file.
  */
 public class MLConfigurationParser {
 
-	private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
-	private Document document;
+    private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
+    private Document document;
 
-	MLConfigurationParser() throws MLConfigurationParserException {
-		try {
-			File xmlFile = new File(DatasetConfigurations.ML_CONFIG_XML);
-			if (xmlFile.exists()) {
-				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder dBuilder;
-				dBuilder = dbFactory.newDocumentBuilder();
-				this.document = dBuilder.parse(xmlFile);
-			}
-		} catch (Exception e) {
-			throw new MLConfigurationParserException("An error occurred while parsing " +
-					DatasetConfigurations.ML_CONFIG_XML +
-					" : " + e.getMessage(), e);
-		}
-	}
+    MLConfigurationParser() throws MLConfigurationParserException {
+        try {
+            File xmlFile = new File(DatasetConfigurations.ML_CONFIG_XML);
+            if (xmlFile.exists()) {
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder;
+                dBuilder = dbFactory.newDocumentBuilder();
+                this.document = dBuilder.parse(xmlFile);
+            }
+        } catch (Exception e) {
+            throw new MLConfigurationParserException("An error occurred while parsing " +
+                DatasetConfigurations.ML_CONFIG_XML + " : " + e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Parse and return default file uploading settings from ml-config.xml.
-	 *
-	 * @return Data upload settings
-	 * @throws MLConfigurationParserException
-	 */
-	protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
-		DataUploadSettings dataUploadSettings = new DataUploadSettings();
-		try {
-			NodeList nodes =
-					this.document.getElementsByTagName(DatasetConfigurations.UPLOAD_SETTINGS)
-					.item(0)
-					.getChildNodes();
-			for (int i = 0; i < nodes.getLength(); i++) {
-				if (nodes.item(i).getNodeName()
-						.equals(DatasetConfigurations.UPLOAD_LOCATION)) {
-					dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
-					logger.info(nodes.item(i).getTextContent());
-				} else if (nodes.item(i).getNodeName()
-						.equals(DatasetConfigurations.IN_MEMORY_THRESHOLD)) {
-					dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
-					                                                         .getTextContent()));
-				} else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.UPLOAD_LIMIT)) {
-					dataUploadSettings.setUploadLimit(Long.parseLong(nodes.item(i).getTextContent()));
-				}
-			}
-		} catch (Exception e) {
-			throw new MLConfigurationParserException(
-			                                         "An error occurred while retrieving data upload settings: " +
-			                                        		 e.getMessage(), e);
-		}
-		return dataUploadSettings;
-	}
+    /**
+     * Parse and return default file uploading settings from ml-config.xml.
+     *
+     * @return Data upload settings
+     * @throws MLConfigurationParserException
+     */
+    protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
+        DataUploadSettings dataUploadSettings = new DataUploadSettings();
+        try {
+            NodeList nodes = this.document.getElementsByTagName(DatasetConfigurations
+                .UPLOAD_SETTINGS).item(0) .getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                if (nodes.item(i).getNodeName().equals(DatasetConfigurations.UPLOAD_LOCATION)) {
+                    dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
+                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations
+                    .IN_MEMORY_THRESHOLD)) {
+                        dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
+                            .getTextContent()));
+                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.UPLOAD_LIMIT)) {
+                    dataUploadSettings.setUploadLimit(Long .parseLong(nodes.item(i)
+                        .getTextContent()));
+                }
+            }
+            if(logger.isDebugEnabled()){
+                logger.info("Successfully parsed data uploading settings.");
+            }
+        } catch (Exception e) {
+            throw new MLConfigurationParserException( "An error occurred while retrieving data " +
+                "upload settings: " + e.getMessage(), e);
+        }
+        return dataUploadSettings;
+    }
 
-	/**
-	 * Parse default summary statistics generation settings from ml-config.xml.
-	 *
-	 * @return Summary statistics settings
-	 * @throws MLConfigurationParserException
-	 */
-	protected SummaryStatisticsSettings getSummaryStatisticsSettings() throws
-
-	MLConfigurationParserException {
-		SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
-		try {
-			NodeList nodes =
-					this.document.getElementsByTagName(DatasetConfigurations.SUMMARY_STATISTICS_SETTINGS)
-					.item(0).getChildNodes();
-			for (int i = 0; i < nodes.getLength(); i++) {
-				if (nodes.item(i).getNodeName()
-						.equals(DatasetConfigurations.HISTOGRAM_BINS)) {
-					summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
-					                                                            .getTextContent()));
-				} else if (nodes.item(i).getNodeName()
-						.equals(DatasetConfigurations.CATEGORICAL_THRESHOLD)) {
-					summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes.item(i)
-					                                                                   .getTextContent()));
-				} else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.SAMPLE_SIZE)) {
-					summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
-					                                                         .getTextContent()));
-				}
-			}
-		} catch (Exception e) {
-			throw new MLConfigurationParserException(
-			                                         "An error occurred while retrieving summary statistics settings\n" +
-			                                        		 e.getMessage(), e);
-		}
-		return summaryStatisticsSettings;
-	}
+    /**
+     * Parse default summary statistics generation settings from ml-config.xml.
+     *
+     * @return Summary statistics settings
+     * @throws MLConfigurationParserException
+     */
+    protected SummaryStatisticsSettings getSummaryStatisticsSettings() 
+            throws MLConfigurationParserException {
+        SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
+        try {
+            NodeList nodes = this.document .getElementsByTagName(DatasetConfigurations
+                .SUMMARY_STATISTICS_SETTINGS).item(0).getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                if (nodes.item(i).getNodeName().equals(DatasetConfigurations.HISTOGRAM_BINS)) {
+                    summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
+                        .getTextContent()));
+                } else if (nodes.item(i).getNodeName()
+                        .equals(DatasetConfigurations.CATEGORICAL_THRESHOLD)) {
+                    summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes
+                        .item(i).getTextContent()));
+                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.SAMPLE_SIZE)) {
+                    summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
+                        .getTextContent()));
+                }
+            }
+            if(logger.isDebugEnabled()){
+                logger.info("Successfully parsed summary statistics settings.");
+            }
+        } catch (Exception e) {
+            throw new MLConfigurationParserException( "An error occurred while retrieving summary " +
+                "statistics settings\n" + e.getMessage(), e);
+        }
+        return summaryStatisticsSettings;
+    }
+    
+    protected String getDatabaseName(){
+        return this.document.getElementsByTagName(DatasetConfigurations.DATABASE).item(0).getTextContent();
+    }
 }

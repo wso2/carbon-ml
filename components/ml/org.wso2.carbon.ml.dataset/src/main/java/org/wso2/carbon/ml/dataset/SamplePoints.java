@@ -32,8 +32,7 @@ public class SamplePoints implements Serializable {
 	/**
 	 * Set the sample points.
 	 *
-	 * @param samplePoints
-	 *            A list of data columns of the sample
+	 * @param samplePoints A list of data columns of the sample
 	 */
 	protected void setSamplePoints(List<List<String>> samplePoints) {
 		this.samplePoints = samplePoints;
@@ -42,8 +41,7 @@ public class SamplePoints implements Serializable {
 	/**
 	 * Set the header of the sample points.
 	 *
-	 * @param headerMap
-	 *            header names and their positions in the data-set as a Map
+	 * @param headerMap header names and their positions in the data-set as a Map
 	 */
 	protected void setHeader(Map<String, Integer> headerMap) {
 		this.headerMap = headerMap;

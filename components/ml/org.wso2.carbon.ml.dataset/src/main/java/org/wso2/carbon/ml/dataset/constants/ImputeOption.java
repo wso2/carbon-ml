@@ -18,21 +18,13 @@
 package org.wso2.carbon.ml.dataset.constants;
 
 public class ImputeOption {
-	private final String option;
-	public static final ImputeOption DISCARD = new ImputeOption("DISCARD");
-	public static final ImputeOption REPLACE_WTH_MEAN = new ImputeOption(
-			"REPLACE_WTH_MEAN");
-	public static final ImputeOption REGRESSION_IMPUTATION = new ImputeOption(
-			"REGRESSION_IMPUTATION");
-
-	private ImputeOption(String option) {
-		this.option = option;
-	}
-
-	/**
-	 * Returns the impute option as a string
-	 */
-	public String toString() {
-		return option;
-	}
+	public static final String DISCARD = "DISCARD";
+	public static final String REPLACE_WTH_MEAN = "REPLACE_WTH_MEAN";
+	public static final String REGRESSION_IMPUTATION = "REGRESSION_IMPUTATION";
+	
+	/*
+     * private Constructor to prevent any other class from instantiating.
+     */
+    private ImputeOption() {
+    }
 }
