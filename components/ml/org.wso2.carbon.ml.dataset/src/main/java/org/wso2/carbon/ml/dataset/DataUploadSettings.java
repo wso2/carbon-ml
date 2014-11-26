@@ -18,7 +18,6 @@
 package org.wso2.carbon.ml.dataset;
 
 public class DataUploadSettings {
-
 	private String uploadLocation;
 	private int inMemoryThreshold;
 	private long uploadLimit;
@@ -35,8 +34,7 @@ public class DataUploadSettings {
 	/**
 	 * Sets the data upload directory.
 	 *
-	 * @param uploadLocation
-	 *            Absolute path of the data uploading directory
+	 * @param uploadLocation Absolute path of the data uploading directory
 	 */
 	public void setUploadLocation(String uploadLocation) {
 		this.uploadLocation = uploadLocation;
@@ -54,8 +52,7 @@ public class DataUploadSettings {
 	/**
 	 * Sets In-Memory-Threshold.
 	 *
-	 * @param inMemoryThreshold
-	 *            Memory threshold in bytes
+	 * @param inMemoryThreshold Memory threshold in bytes
 	 */
 	public void setInMemoryThreshold(int inMemoryThreshold) {
 		this.inMemoryThreshold = inMemoryThreshold;
@@ -73,8 +70,7 @@ public class DataUploadSettings {
 	/**
 	 * Sets maximum allowed size of a data set.
 	 *
-	 * @param uploadLimit
-	 *            Maximum allowed size of a data set in bytes
+	 * @param uploadLimit Maximum allowed size of a data set in bytes
 	 */
 	public void setUploadLimit(long uploadLimit) {
 		this.uploadLimit = uploadLimit;

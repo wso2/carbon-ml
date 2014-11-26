@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mlSettings>
+    <database>jdbc/WSO2ML_DB</database>
     <dataUploadSettings>
         <uploadLocation>USER_HOME</uploadLocation>
         <inMemoryThreshold>1024</inMemoryThreshold>

@@ -35,8 +35,7 @@ public class SummaryStatisticsSettings {
 	/**
 	 * Sets the number of bins for the histogram.
 	 *
-	 * @param histogramBins
-	 *            Number of bins for the histogram
+	 * @param histogramBins Number of bins for the histogram
 	 */
 	public void setHistogramBins(int histogramBins) {
 		this.histogramBins = histogramBins;
@@ -54,8 +53,7 @@ public class SummaryStatisticsSettings {
 	/**
 	 * Sets threshold of unique values for selecting categorical data.
 	 *
-	 * @param categoricalThreshold
-	 *            Threshold of unique values for selecting categorical data
+	 * @param categoricalThreshold Threshold of unique values for selecting categorical data
 	 */
 	public void setCategoricalThreshold(int categoricalThreshold) {
 		this.categoricalThreshold = categoricalThreshold;
@@ -73,8 +71,7 @@ public class SummaryStatisticsSettings {
 	/**
 	 * Sets size of the data sample.
 	 *
-	 * @param sampleSize
-	 *            Size of the data sample
+	 * @param sampleSize Size of the data sample
 	 */
 	public void setSampleSize(int sampleSize) {
 		this.sampleSize = sampleSize;
