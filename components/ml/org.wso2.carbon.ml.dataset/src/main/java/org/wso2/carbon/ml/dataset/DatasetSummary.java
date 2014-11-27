@@ -40,6 +40,7 @@ import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.ml.dataset.constants.FeatureType;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 
@@ -61,8 +62,7 @@ public class DatasetSummary {
     private List<SortedMap<?, Integer>> graphFrequencies = new ArrayList<SortedMap<?, Integer>>();
     // Array containing histograms of each feature in the data-set.
     private EmpiricalDistribution[] histogram;
-    // Array containing number of missing values of each feature in the
-    // data-set.
+    // Array containing number of missing values of each feature in the data-set.
     private int[] missing;
     // Array containing number of unique values of each feature in the data-set.
     private int[] unique;
@@ -138,9 +138,8 @@ public class DatasetSummary {
             }
             return this.headerMap.size();
         } catch (DatabaseHandlerException e) {
-            throw new DatasetSummaryException(
-                "Error occured while Calculating summary statistics for dataset " + this.datasetID +
-                ": " + e.getMessage(), e);
+            throw new DatasetSummaryException("Error occured while Calculating summary statistics " +
+                "for dataset " + this.datasetID + ": " + e.getMessage(), e);
         }
     }
 

@@ -28,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
+import org.wso2.carbon.ml.dataset.dto.DataUploadSettings;
+import org.wso2.carbon.ml.dataset.dto.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
@@ -115,13 +117,24 @@ public class MLConfigurationParser {
                 logger.info("Successfully parsed summary statistics settings.");
             }
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving summary " +
-                "statistics settings\n" + e.getMessage(), e);
+            throw new MLConfigurationParserException( "An error occurred while retrieving " +
+                "summary statistics settings: " + e.getMessage(), e);
         }
         return summaryStatisticsSettings;
     }
     
-    protected String getDatabaseName(){
-        return this.document.getElementsByTagName(DatasetConfigurations.DATABASE).item(0).getTextContent();
+    /**
+     * Parse the JNDI lookup name of the ML database from the ml-config.xml file
+     * @return JNDI lookup name of the ML database
+     * @throws MLConfigurationParserException 
+     */
+    protected String getDatabaseName() throws MLConfigurationParserException{
+        try{
+            return this.document.getElementsByTagName(DatasetConfigurations.DATABASE).item(0)
+                    .getTextContent();
+        } catch(Exception e){
+            throw new MLConfigurationParserException( "An error occurred while retrieving ML " +
+                "database name: " + e.getMessage(), e);
+        }
     }
 }

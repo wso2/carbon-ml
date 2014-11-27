@@ -3,10 +3,10 @@
 	var log = new Log();
 	var datasetId = session.get("datasetId");
 	try{
-	   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+	   var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
 	   if (datasetId != null){
 		   var feature = request.getParameter("numFeature");
-		   var summaryStats = datasetService.getSummaryStats(datasetId,feature).toString();
+		   var summaryStats = mlDatasetService.getSummaryStats(datasetId,feature).toString();
 		   response.contentType = "application/Json";
 		   response.content = summaryStats;
 	   }

@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class SamplePoints implements Serializable {
 	 *
 	 * @return A list of data columns of the sample
 	 */
-	protected List<List<String>> getSamplePoints() {
+	public List<List<String>> getSamplePoints() {
 		return samplePoints;
 	}
 
@@ -25,7 +25,7 @@ public class SamplePoints implements Serializable {
 	 *
 	 * @return header names and their positions in the data-set as a Map
 	 */
-	protected Map<String, Integer> getHeader() {
+	public Map<String, Integer> getHeader() {
 		return headerMap;
 	}
 
@@ -34,7 +34,7 @@ public class SamplePoints implements Serializable {
 	 *
 	 * @param samplePoints A list of data columns of the sample
 	 */
-	protected void setSamplePoints(List<List<String>> samplePoints) {
+	public void setSamplePoints(List<List<String>> samplePoints) {
 		this.samplePoints = samplePoints;
 	}
 
@@ -43,7 +43,7 @@ public class SamplePoints implements Serializable {
 	 *
 	 * @param headerMap header names and their positions in the data-set as a Map
 	 */
-	protected void setHeader(Map<String, Integer> headerMap) {
+	public void setHeader(Map<String, Integer> headerMap) {
 		this.headerMap = headerMap;
 	}
 }

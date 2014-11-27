@@ -1,13 +1,13 @@
 <%
    var log = new Log();
    var carbon = require('carbon');
-   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+   var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
    try{
       var workflowId = session.get("workflowId");
       if (workflowId != null){
          var imputeOption = request.getParameter("IMPUTE_OPTION");
    		var featureName = request.getParameter("FEATURE_NAME");
-   		datasetService.updateImputeOption(featureName, workflowId, imputeOption);
+   		mlDatasetService.updateImputeOption(featureName, workflowId, imputeOption);
       }
    }catch(e){
    	log.error("An error occured while updating impute method",e);

@@ -28,13 +28,13 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Class contains utility methods for database resources.
  */
-public class MLDatabaseUtil {
-    private static final Log logger = LogFactory.getLog(MLDatabaseUtil.class);
+public class MLDatabaseUtils {
+    private static final Log logger = LogFactory.getLog(MLDatabaseUtils.class);
 
     /*
      * private Constructor to prevent any other class from instantiating.
      */
-    private MLDatabaseUtil() {
+    private MLDatabaseUtils() {
     }
 
     /**

@@ -39,6 +39,8 @@ import org.json.JSONObject;
 import org.wso2.carbon.ml.dataset.constants.FeatureType;
 import org.wso2.carbon.ml.dataset.constants.ImputeOption;
 import org.wso2.carbon.ml.dataset.constants.SQLQueries;
+import org.wso2.carbon.ml.dataset.dto.Feature;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 
 /**
@@ -84,7 +86,6 @@ public class DatabaseHandler {
             getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_LOCATION);
             getStatement.setString(1, datasetID);
             result = getStatement.executeQuery();
-
             if (result.first()) {
                 return result.getNString(1);
             } else {
@@ -93,10 +94,10 @@ public class DatabaseHandler {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occured while reading the Dataset " +
-                datasetID + " from the database: " + e.getMessage(), e);
+                    datasetID + " from the database: " + e.getMessage(), e);
         } finally {
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, getStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
         }
     }
 
@@ -123,20 +124,20 @@ public class DatabaseHandler {
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the details of data set " + filePath +
+                logger.debug("Successfully inserted the details of data set " + filePath +
                     ". Dataset ID " + datasetID);
             }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
                 "An error occured while inserting details of dataset " + datasetID +
                 " to the database: " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, insertStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }
 
@@ -162,17 +163,21 @@ public class DatabaseHandler {
             updateStatement.setString(3, workflowID);
             updateStatement.execute();
             connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the data-type of feature" + featureName +
+                    " of workflow " + workflowID);
+            }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
                 "An error occured while updating the data type of feature \"" + featureName +
                 "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 
@@ -198,16 +203,20 @@ public class DatabaseHandler {
             updateStatement.setString(3, workflowID);
             updateStatement.execute();
             connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the impute-option of feature" + featureName +
+                    " of workflow " + workflowID);
+            }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occured while updating the feature \"" +
-                featureName + "\" of workflow " + workflowID + ": " + e.getMessage(), e);
+                    featureName + "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 
@@ -232,17 +241,21 @@ public class DatabaseHandler {
             updateStatement.setString(3, workflowID);
             updateStatement.execute();
             connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the include-option of feature" + featureName +
+                    "of workflow " + workflowID);
+            }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
                 "An error occured while updating the feature included option of feature \"" +
-                    featureName + "\" of workflow " + workflowID + ": " + e, e);
+                        featureName + "\" of workflow " + workflowID + ": " + e, e);
         } finally {
             // Enable auto commit
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 
@@ -260,9 +273,9 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     protected void updateSummaryStatistics(String datasetID, String[] header, String[] type,
-            List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
-            List<DescriptiveStatistics> descriptiveStats, Boolean include)
-            throws DatabaseHandlerException {
+        List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
+        List<DescriptiveStatistics> descriptiveStats, Boolean include)
+                throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
@@ -274,7 +287,7 @@ public class DatabaseHandler {
                 summaryStat = createJson(type[column], graphFrequencies.get(column), missing[column],
                     unique[column], descriptiveStats.get(column));
 
-                // Put the values to the database table. If the feature already exists, updates 
+                // Put the values to the database table. If the feature already exists, updates
                 // the row. If not, inserts as a new row.
                 updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
                 updateStatement.setString(1, header[column]);
@@ -291,17 +304,17 @@ public class DatabaseHandler {
             }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occured while updating the database " +
-                "with summary statistics of the dataset " + datasetID + ": " + e.getMessage(), e);
+                    "with summary statistics of the dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
-    
+
     /**
      * Create the JSON string with summary statistics for a column.
      *
@@ -313,7 +326,7 @@ public class DatabaseHandler {
      * @return JSON representation of the summary statistics of the column
      */
     private JSONObject createJson(String type, SortedMap<?, Integer> graphFrequencies,
-            int missing, int unique, DescriptiveStatistics descriptiveStats) {
+        int missing, int unique, DescriptiveStatistics descriptiveStats) {
         JSONObject json = new JSONObject();
         JSONArray freqs = new JSONArray();
         Object[] categoryNames = graphFrequencies.keySet().toArray();
@@ -360,16 +373,19 @@ public class DatabaseHandler {
             updateStatement.setString(2, datasetID);
             updateStatement.execute();
             connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the sample of dataset " + datasetID);
+            }
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException( "An error occurred while updating the sample " +
-                "points of dataset " + datasetID + ": " + e.getMessage(), e);
+                    "points of dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
-            MLDatabaseUtil.enableAutoCommit(connection);
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 
@@ -385,11 +401,11 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     protected JSONArray getSamplePoints(String datasetID, String xAxisFeature, String yAxisFeature,
-            String groupByFeature) throws DatabaseHandlerException {
+        String groupByFeature) throws DatabaseHandlerException {
         // Get the sample from the database.
         SamplePoints sample = getDatasetSample(datasetID);
 
-        // Converts the sample to a json array.
+        // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
         JSONArray samplePointsArray = new JSONArray();
@@ -434,17 +450,17 @@ public class DatabaseHandler {
             return samplePoints;
         } catch (SQLException e) {
             // Roll-back the changes.
-            MLDatabaseUtil.rollBack(connection);
+            MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occured while retrieving the sample of " +
-                "dataset " + datasetID + ": " + e.getMessage(), e);
+                    "dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, updateStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement, result);
         }
     }
 
     /**
-     * Returns a set of features in a given range, from the alphabetically ordered set 
+     * Returns a set of features in a given range, from the alphabetically ordered set
      * of features, of a data-set.
      *
      * @param datasetID Unique Identifier of the data-set
@@ -454,7 +470,7 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     protected List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
-            int numberOfFeatures) throws DatabaseHandlerException {
+        int numberOfFeatures) throws DatabaseHandlerException {
         List<Feature> features = new ArrayList<Feature>();
         Connection connection = null;
         PreparedStatement getFeatues = null;
@@ -481,7 +497,7 @@ public class DatabaseHandler {
                     imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
                 } else if (ImputeOption.REGRESSION_IMPUTATION.equalsIgnoreCase(
                     result.getString(5))) {
-                        imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
+                    imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
                 }
                 String featureName = result.getString(1);
                 boolean isImportantFeature = result.getBoolean(4);
@@ -493,10 +509,10 @@ public class DatabaseHandler {
             return features;
         } catch (SQLException e) {
             throw new DatabaseHandlerException( "An error occured while retrieving features of " +
-                "the data set: " + datasetID + ": " + e.getMessage(), e);
+                    "the data set: " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, getFeatues, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
         }
     }
 
@@ -535,10 +551,10 @@ public class DatabaseHandler {
             return featureNames;
         } catch (SQLException e) {
             throw new DatabaseHandlerException( "An error occurred while retrieving feature " +
-                "names of the dataset for workflow: " + workflowID + ": " + e.getMessage(), e);
+                    "names of the dataset for workflow: " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
-            MLDatabaseUtil.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
         }
     }
 
@@ -567,11 +583,11 @@ public class DatabaseHandler {
             return result.getString(1);
         } catch (SQLException e) {
             throw new DatabaseHandlerException( "An error occured while retireving summary " +
-                "statistics for the feature \"" + featureName + "\" of the data set " + 
-                datasetID + ": " + e.getMessage(), e);
+                    "statistics for the feature \"" + featureName + "\" of the data set " +
+                    datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
-            MLDatabaseUtil.closeDatabaseResources(connection, getSummaryStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
         }
     }
 
@@ -604,7 +620,7 @@ public class DatabaseHandler {
                 ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
-            MLDatabaseUtil.closeDatabaseResources(connection, getFeatues, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
         }
     }
 }
