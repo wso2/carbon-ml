@@ -20,155 +20,115 @@ package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.XML;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.HyperParameter;
+import org.wso2.carbon.ml.model.dto.MLAlgorithm;
+import org.wso2.carbon.ml.model.dto.MLAlgorithms;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MLAlgorithmConfigurationParser {
+    private MLAlgorithms mlAlgorithms;
 
-    private Document mlAlgorithmsConfig;
-
-    MLAlgorithmConfigurationParser() throws MLAlgorithmConfigurationParserException {
+    /**
+     * @param xmlFilePath File path of ml-algorithms.xml file
+     * @throws MLAlgorithmConfigurationParserException
+     */
+    MLAlgorithmConfigurationParser(String xmlFilePath) throws
+            MLAlgorithmConfigurationParserException {
         try {
-            XMLParser xmlParser = new XMLParser();
-            mlAlgorithmsConfig = xmlParser.getXMLDocument(MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
+            File file = new File(xmlFilePath);
+            JAXBContext jaxbContext = JAXBContext.newInstance(MLAlgorithms.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            this.mlAlgorithms = (MLAlgorithms) jaxbUnmarshaller.unmarshal(file);
         } catch (Exception e) {
-            throw new MLAlgorithmConfigurationParserException("An error occured while parsing " +
-                                                              MLModelConstants
-                                                                      .ML_ALGORITHMS_CONFIG_XML +
-                                                              ": " + e.getMessage(), e);
+            throw new MLAlgorithmConfigurationParserException(
+                    "An error occured while parsing " + MLModelConstants.ML_ALGORITHMS_CONFIG_XML
+                    + ": " + e.getMessage(), e);
         }
     }
 
     /**
      * @param algorithm Machine learning algorithm name
-     * @return hyper-parameters
+     * @return Json array of hyper-parameters
      * @throws MLAlgorithmConfigurationParserException
      */
     JSONArray getHyperParameters(String algorithm)
             throws MLAlgorithmConfigurationParserException {
         try {
-            JSONArray hyperparameters = null;
-            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.NAME);
-            StreamResult xmlOutput;
-            Transformer transformer;
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node nNode = nodes.item(i);
-                if (nNode.getTextContent().equals(algorithm)) {
-                    String parameterString = "";
-                    StringBuilder stringBuilder = new StringBuilder();
-                    Node parent = nNode.getParentNode();
-                    for (int j = 0; j < parent.getChildNodes().getLength(); j++) {
-                        Node child = parent.getChildNodes().item(j);
-                        if (MLModelConstants.PARAMETERS.equals(child.getNodeName())) {
-                            xmlOutput = new StreamResult(new StringWriter());
-                            transformer = TransformerFactory.newInstance().newTransformer();
-                            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-                                                          MLModelConstants.YES);
-                            transformer.transform(new DOMSource(child), xmlOutput);
-                            stringBuilder.append(xmlOutput.getWriter().toString());
-                        }
-                    }
-                    parameterString = stringBuilder.toString();
-                    JSONObject xmlJSONObject = XML.toJSONObject(parameterString);
-                    Object parameters = xmlJSONObject.get(MLModelConstants.PARAMETERS);
-                    if (parameters instanceof JSONArray) {
-                        hyperparameters = (JSONArray) parameters;
-                    } else {
-                        JSONArray jsonArray = new JSONArray();
-                        jsonArray.put(0, parameters);
-                        hyperparameters = jsonArray;
+            JSONArray jsonArray = new JSONArray();
+            for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()) {
+                if (algorithm.equals(mlAlgorithm.getName())) {
+                    List<HyperParameter> hyperParameters = mlAlgorithm.getParameters();
+                    for (HyperParameter hyperParameter : hyperParameters) {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("parameter", hyperParameter.getParameter());
+                        jsonObject.put("value", hyperParameter.getValue());
+                        jsonArray.put(jsonObject);
                     }
                     break;
                 }
             }
-            return hyperparameters;
+            return jsonArray;
         } catch (Exception e) {
-            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
-                                                              " hyperparameters : " + e
-                    .getMessage(), e);
+            throw new MLAlgorithmConfigurationParserException(
+                    "An error occurred while retrieving hyperparameters : " + e.getMessage(), e);
         }
     }
 
     /**
-     * @param algorithmType
+     * @param algorithmType Machine learning algorithm type - e.g. Classification
      * @return Machine learning algorithm names
      * @throws MLAlgorithmConfigurationParserException
      */
     List<String> getAlgorithms(String algorithmType) throws
-                                                     MLAlgorithmConfigurationParserException {
+            MLAlgorithmConfigurationParserException {
         try {
             List<String> algorithms = new ArrayList();
-            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.TYPE);
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node nNode = nodes.item(i);
-                if (nNode.getTextContent().equals(algorithmType)) {
-                    Node parent = nNode.getParentNode();
-                    for (int j = 0; j < parent.getChildNodes().getLength(); j++) {
-                        Node child = parent.getChildNodes().item(j);
-                        if (MLModelConstants.NAME.equals(child.getNodeName())) {
-                            algorithms.add(child.getTextContent());
-                        }
-                    }
+            for (MLAlgorithm algorithm : mlAlgorithms.getAlgorithms()) {
+                if (algorithmType.equals(algorithm.getType())) {
+                    algorithms.add(algorithm.getName());
                 }
             }
             return algorithms;
         } catch (Exception e) {
-            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
-                                                              " algorithm names: " + e.getMessage
-                    (), e);
+            throw new MLAlgorithmConfigurationParserException(
+                    "An error occurred while retrieving algorithm names: " + e.getMessage(), e);
         }
     }
 
     /**
-     * @param algorithmType
+     * @param algorithmType Machine learning algorithm type - e.g. Classification
      * @return Algorithm ratings
      * @throws MLAlgorithmConfigurationParserException
      */
-    Map<String, List<Integer>> getAlgorithmRatings(String algorithmType) throws
-                                                                         MLAlgorithmConfigurationParserException {
+    Map<String, List<Integer>> getAlgorithmRatings(String algorithmType)
+            throws MLAlgorithmConfigurationParserException {
         try {
             Map<String, List<Integer>> ratings = new HashMap<String, List<Integer>>();
-            NodeList nodes = mlAlgorithmsConfig.getElementsByTagName(MLModelConstants.TYPE);
-            String algorithm = "";
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node nNode = nodes.item(i);
-                if (nNode.getTextContent().equals(algorithmType)) {
-                    Node parent = nNode.getParentNode();
+            for (MLAlgorithm algorithm : mlAlgorithms.getAlgorithms()) {
+                if (algorithmType.equals(algorithm.getType())) {
                     List<Integer> scores = new ArrayList<Integer>();
-                    for (int j = 0; j < parent.getChildNodes().getLength(); j++) {
-                        Node child = parent.getChildNodes().item(j);
-                        if (MLModelConstants.NAME.equals(child.getNodeName())) {
-                            algorithm = child.getTextContent();
-                        }
-                        if (MLModelConstants.INTERPRETABILITY.equals(child.getNodeName()) ||
-                            MLModelConstants.SCALABILITY.equals(child.getNodeName()) ||
-                            MLModelConstants.MULTICOLLINEARITY.equals(child.getNodeName()) ||
-                            MLModelConstants.DIMENSIONALITY.equals(child.getNodeName())) {
-                            scores.add(Integer.parseInt(child.getTextContent()));
-                        }
-                    }
-                    ratings.put(algorithm, scores);
+                    scores.add(algorithm.getInterpretability());
+                    scores.add(algorithm.getScalability());
+                    scores.add(algorithm.getMulticollinearity());
+                    scores.add(algorithm.getDimensionality());
+                    ratings.put(algorithm.getName(), scores);
                 }
             }
             return ratings;
         } catch (Exception e) {
-            throw new MLAlgorithmConfigurationParserException("An error occurred while retrieving" +
-                                                              " algorithm ratings: " + e
-                    .getMessage(), e);
+            throw new MLAlgorithmConfigurationParserException(
+                    "An error occurred while retrieving algorithm ratings: " + e.getMessage(), e);
         }
     }
 }

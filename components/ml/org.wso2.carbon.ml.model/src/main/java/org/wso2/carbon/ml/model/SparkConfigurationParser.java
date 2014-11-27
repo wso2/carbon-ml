@@ -21,9 +21,13 @@ package org.wso2.carbon.ml.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import org.wso2.carbon.ml.model.dto.SparkProperty;
+import org.wso2.carbon.ml.model.dto.SparkSettings;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 
 public class SparkConfigurationParser {
     private static final Log logger = LogFactory.getLog(SparkConfigurationParser.class);
@@ -35,19 +39,17 @@ public class SparkConfigurationParser {
      * @return Spark configuration
      * @throws org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException
      */
-    SparkConf getSparkConfiguration() throws SparkConfigurationParserException {
+    public SparkConf getSparkConfiguration(String xmlFilePath) throws SparkConfigurationParserException {
         try {
             SparkConf sparkConf = new SparkConf();
-            XMLParser xmlParser = new XMLParser();
-            Document doc = xmlParser.getXMLDocument(MLModelConstants.SPARK_CONFIG_XML);
-            NodeList nodes = doc.getElementsByTagName(MLModelConstants.PROPERTY);
-            for (int i = 0; i < nodes.getLength(); i++) {
-                String key = nodes.item(i).getAttributes().getNamedItem(MLModelConstants.NAME)
-                        .getTextContent();
-                String value = nodes.item(i).getTextContent();
-                sparkConf.set(key, value);
+            File file = new File(xmlFilePath);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SparkSettings.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            SparkSettings sparkSettings = (SparkSettings) jaxbUnmarshaller.unmarshal(file);
+            for (SparkProperty sparkProperty : sparkSettings.getProperties())
+            {
+                sparkConf.set(sparkProperty.getName(),sparkProperty.getProperty());
             }
-
             return sparkConf;
         } catch (Exception e) {
             logger.error("An error occurred while generating spark configuration: " + e

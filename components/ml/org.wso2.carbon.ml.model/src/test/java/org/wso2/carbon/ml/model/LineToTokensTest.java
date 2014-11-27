@@ -5,6 +5,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 
 import java.util.regex.Pattern;
 

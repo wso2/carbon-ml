@@ -16,10 +16,25 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.exceptions;
+package org.wso2.carbon.ml.model.dto;
 
-public class XMLParserException extends Exception {
-    public XMLParserException(String message, Throwable cause) {
-        super(message, cause);
+public class PredictedVsActual {
+    private double predicted;
+    private double actual;
+
+    public double getPredicted() {
+        return predicted;
+    }
+
+    public void setPredicted(double predicted) {
+        this.predicted = predicted;
+    }
+
+    public double getActual() {
+        return actual;
+    }
+
+    public void setActual(double actual) {
+        this.actual = actual;
     }
 }

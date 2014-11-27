@@ -15,11 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.ml.model.exceptions;
 
-public class XMLParserException extends Exception {
-    public XMLParserException(String message, Throwable cause) {
+public class DatabaseHandlerException extends Exception {
+	
+	public DatabaseHandlerException(String message) {
+		super(message);
+	}
+	
+	public DatabaseHandlerException(String message, Throwable cause) {
         super(message, cause);
     }
 }

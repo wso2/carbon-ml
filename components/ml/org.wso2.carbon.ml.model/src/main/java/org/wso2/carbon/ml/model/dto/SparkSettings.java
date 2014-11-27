@@ -16,10 +16,25 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.exceptions;
+package org.wso2.carbon.ml.model.dto;
 
-public class XMLParserException extends Exception {
-    public XMLParserException(String message, Throwable cause) {
-        super(message, cause);
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+
+@XmlRootElement(name="sparkSettings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SparkSettings {
+    @XmlElement(name="property")
+    private List<SparkProperty> properties;
+
+    public List<SparkProperty> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<SparkProperty> properties) {
+        this.properties = properties;
     }
 }

@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.model.exceptions;
 
 public class MLAlgorithmConfigurationParserException extends Exception {
-    public MLAlgorithmConfigurationParserException(String message, Throwable throwable) {
-        super(message, throwable);
+    public MLAlgorithmConfigurationParserException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
