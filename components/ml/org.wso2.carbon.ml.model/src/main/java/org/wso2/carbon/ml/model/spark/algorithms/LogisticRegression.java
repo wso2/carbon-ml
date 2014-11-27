@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -33,6 +33,9 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
+import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
+import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
@@ -56,7 +59,7 @@ public class LogisticRegression implements Serializable {
      * @return Logistic regression model
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
+    public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
                                          double initialLearningRate,
                                          int noOfIterations,
                                          String regularizationType,
@@ -90,7 +93,7 @@ public class LogisticRegression implements Serializable {
      * @return Logistic regression model
      * @throws ModelServiceException
      */
-    LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
+    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
                                            int noOfCorrections,
                                            double convergenceTolerance,
                                            int noOfIterations,
@@ -132,7 +135,7 @@ public class LogisticRegression implements Serializable {
      * @return Tuple2 containing scores and labels
      * @throws ModelServiceException
      */
-    JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
+    public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
                                          JavaRDD<LabeledPoint> testingDataset)
             throws ModelServiceException {
         try {
@@ -156,7 +159,7 @@ public class LogisticRegression implements Serializable {
      * @return Logistic regression model summary
      * @throws ModelServiceException
      */
-    LogisticRegressionModelSummary getModelSummary(JavaRDD<Tuple2<Object,
+    public LogisticRegressionModelSummary getModelSummary(JavaRDD<Tuple2<Object,
             Object>> scoresAndLabels) throws ModelServiceException {
         try {
             // create a logistic regression model summary object

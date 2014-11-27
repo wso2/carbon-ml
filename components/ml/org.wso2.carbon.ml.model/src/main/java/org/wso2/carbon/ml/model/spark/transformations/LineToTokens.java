@@ -16,25 +16,27 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.transformations;
 
-import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
+import java.util.regex.Pattern;
+
+/**
+ * This class transforms each line (line-by-line) into an array of String tokens
+ */
+public class LineToTokens implements Function<String, String[]> {
+    private Pattern tokenSeparator;
+
+    public LineToTokens(Pattern pattern) {
+        this.tokenSeparator = pattern;
+    }
 
     @Override
-    public Boolean call(String[] tokens, Integer[] indices) throws Exception {
+    public String[] call(String line) throws Exception {
         try {
-            Boolean keep = true;
-            for (Integer index : indices) {
-                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
-                        (tokens[index])) {
-                    keep = false;
-                    break;
-                }
-            }
-            return keep;
+            return tokenSeparator.split(line);
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
         }

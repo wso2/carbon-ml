@@ -15,29 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.model.exceptions;
 
-package org.wso2.carbon.ml.model;
-
-import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-
-public class Header implements Function<String, Boolean> {
-    private String header;
-
-    Header(String header) {
-        this.header = header;
-    }
-
-    @Override
-    public Boolean call(String line) throws Exception {
-        try {
-            Boolean isRow = true;
-            if (line.equals(this.header)) {
-                isRow = false;
-            }
-            return isRow;
-        } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
-        }
+public class DatabaseHandlerException extends Exception {
+	
+	public DatabaseHandlerException(String message) {
+		super(message);
+	}
+	
+	public DatabaseHandlerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

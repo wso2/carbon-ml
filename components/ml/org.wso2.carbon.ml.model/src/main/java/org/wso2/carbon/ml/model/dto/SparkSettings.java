@@ -16,38 +16,25 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.dto;
 
-import org.json.JSONArray;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-public class LogisticRegressionModelSummary {
-    private JSONArray roc;
-    private double auc;
-    private List<PredictedVsActual> predictedVsActuals;
+@XmlRootElement(name="sparkSettings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SparkSettings {
+    @XmlElement(name="property")
+    private List<SparkProperty> properties;
 
-    public JSONArray getRoc() {
-        return roc;
+    public List<SparkProperty> getProperties() {
+        return properties;
     }
 
-    public void setRoc(JSONArray roc) {
-        this.roc = roc;
-    }
-
-    public double getAuc() {
-        return auc;
-    }
-
-    public void setAuc(double auc) {
-        this.auc = auc;
-    }
-
-    public List<PredictedVsActual> getPredictedVsActuals() {
-        return predictedVsActuals;
-    }
-
-    public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
-        this.predictedVsActuals = predictedVsActuals;
+    public void setProperties(List<SparkProperty> properties) {
+        this.properties = properties;
     }
 }

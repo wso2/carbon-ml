@@ -18,7 +18,15 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.w3c.dom.Document;
+import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.exceptions.XMLParserException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.util.List;
 
 public class MLModelUtils {
     /**
@@ -28,9 +36,9 @@ public class MLModelUtils {
         //
     }
 
-    static int getResponseIndex(String response, String headerRow,
-                                String columnSeparator) throws
-                                                        ModelServiceException {
+    public static int getResponseIndex(String response, String headerRow,
+            String columnSeparator) throws
+            ModelServiceException {
         try {
             int responseIndex = 0;
             String[] headerItems = headerRow.split(columnSeparator);
@@ -46,8 +54,8 @@ public class MLModelUtils {
         }
     }
 
-    static String getColumnSeparator(String datasetURL) throws
-                                                        ModelServiceException {
+    public static String getColumnSeparator(String datasetURL) throws
+            ModelServiceException {
         try {
             if (datasetURL.endsWith(MLModelConstants.CSV)) {
                 return ",";
@@ -59,6 +67,18 @@ public class MLModelUtils {
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * @param values List of integer values
+     * @return Sum of the list of values as a double
+     */
+    public static Double sum(List<Integer> values) {
+        Double sum = 0.0;
+        for (Integer value : values) {
+            sum = sum + value;
+        }
+        return sum;
     }
 
 

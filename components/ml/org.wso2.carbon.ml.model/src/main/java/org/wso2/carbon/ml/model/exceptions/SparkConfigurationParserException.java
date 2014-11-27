@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.model.exceptions;
 
 public class SparkConfigurationParserException extends Exception {
-    public SparkConfigurationParserException(String message, Throwable throwable) {
-        super(message, throwable);
+    public SparkConfigurationParserException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

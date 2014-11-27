@@ -16,14 +16,16 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-public class KMeans {
+import java.io.Serializable;
+
+public class KMeans implements Serializable {
 
     /**
      * @param data           JavaRDD containing feature vectors
@@ -31,10 +33,11 @@ public class KMeans {
      * @param noOfIterations No of iterations
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
+    public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations)
             throws ModelServiceException {
         try {
-            return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);
+            return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters,
+                                                                  noOfIterations);
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
         }
@@ -46,7 +49,7 @@ public class KMeans {
      * @return JavaRDD containing cluster centers
      * @throws ModelServiceException
      */
-    JavaRDD<Integer> test(KMeansModel kMeansModel,
+    public JavaRDD<Integer> test(KMeansModel kMeansModel,
                           JavaRDD<Vector> data) throws ModelServiceException {
         try {
             return kMeansModel.predict(data);

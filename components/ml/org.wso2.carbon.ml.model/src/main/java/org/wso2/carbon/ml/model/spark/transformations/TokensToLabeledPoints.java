@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -29,7 +29,7 @@ public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
     /**
      * @param index Index of the response variable
      */
-    TokensToLabeledPoints(int index) {
+    public TokensToLabeledPoints(int index) {
         this.responseIndex = index;
     }
 

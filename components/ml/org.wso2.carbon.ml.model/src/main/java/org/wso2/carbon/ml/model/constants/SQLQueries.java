@@ -15,11 +15,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.model.constants;
 
-package org.wso2.carbon.ml.model.exceptions;
+public class SQLQueries {
 
-public class XMLParserException extends Exception {
-    public XMLParserException(String message, Throwable cause) {
-        super(message, cause);
+    public static final String INSERT_MODEL_SETTINGS =
+            "INSERT INTO MODEL_SETTINGS(MODEL_SETTINGS_ID,WORKFLOW_ID,ALGORITHM_CLASS," +
+            "ALGORITHM_NAME,RESPONSE,TRAIN_DATA_FRACTION,HYPERPARAMETERS) VALUES(?,?,?,?,?,?,?)";
+
+    public static final String INSERT_ML_MODEL = "";
+
+    /*
+     * private Constructor to prevent any other class from instantiating.
+     */
+    private SQLQueries() {
     }
 }

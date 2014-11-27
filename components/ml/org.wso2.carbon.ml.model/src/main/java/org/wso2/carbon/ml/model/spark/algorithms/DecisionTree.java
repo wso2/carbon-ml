@@ -18,7 +18,7 @@
  *
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class DecisionTree implements Serializable {
-
+// make errors more descriptive
     /**
      * @param train               Training dataset as a JavaRDD of labeled points
      * @param noOfClasses         No of classes
@@ -44,7 +44,7 @@ public class DecisionTree implements Serializable {
      * @return Decision tree model
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    DecisionTreeModel train(JavaRDD<LabeledPoint> train,
+    public DecisionTreeModel train(JavaRDD<LabeledPoint> train,
                             int noOfClasses,
                             Map<Integer, Integer> categoricalFeatures,
                             String impurityCriteria,
@@ -69,7 +69,7 @@ public class DecisionTree implements Serializable {
      * @return JavaPairRDD containing predictions and labels
      * @throws ModelServiceException
      */
-    JavaPairRDD<Double, Double> test(final DecisionTreeModel model,
+    public JavaPairRDD<Double, Double> test(final DecisionTreeModel model,
                                      JavaRDD<LabeledPoint> test)
             throws ModelServiceException {
 
@@ -91,7 +91,7 @@ public class DecisionTree implements Serializable {
      * @return Test error
      * @throws ModelServiceException
      */
-    double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
+    public double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
             throws ModelServiceException {
         try {
             return 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,

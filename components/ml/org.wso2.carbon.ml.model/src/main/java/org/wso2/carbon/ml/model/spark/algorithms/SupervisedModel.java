@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +28,13 @@ import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.json.JSONObject;
+import org.wso2.carbon.ml.model.spark.transformations.Header;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
+import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.MLModelUtils;
+import org.wso2.carbon.ml.model.SparkConfigurationParser;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 
@@ -48,10 +55,11 @@ public class SupervisedModel implements Runnable {
 
     @Override
     public void run() {
+        // parse filter
         try {
             // create a new spark configuration
             SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser();
-            SparkConf sparkConf = sparkConfigurationParser.getSparkConfiguration();
+            SparkConf sparkConf = sparkConfigurationParser.getSparkConfiguration(MLModelConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName(workflow.getString(MLModelConstants.MODEL_ID));
             // create a new java spark context
             JavaSparkContext sc = new JavaSparkContext(sparkConf);

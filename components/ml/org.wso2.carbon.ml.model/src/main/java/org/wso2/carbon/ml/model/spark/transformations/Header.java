@@ -16,25 +16,28 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.transformations;
 
-public class PredictedVsActual {
-    private double predicted;
-    private double actual;
+import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-    public double getPredicted() {
-        return predicted;
+public class Header implements Function<String, Boolean> {
+    private String header;
+
+    public Header(String header) {
+        this.header = header;
     }
 
-    public void setPredicted(double predicted) {
-        this.predicted = predicted;
-    }
-
-    public double getActual() {
-        return actual;
-    }
-
-    public void setActual(double actual) {
-        this.actual = actual;
+    @Override
+    public Boolean call(String line) throws Exception {
+        try {
+            Boolean isRow = true;
+            if (line.equals(this.header)) {
+                isRow = false;
+            }
+            return isRow;
+        } catch (Exception e) {
+            throw new ModelServiceException(e.getMessage(), e);
+        }
     }
 }

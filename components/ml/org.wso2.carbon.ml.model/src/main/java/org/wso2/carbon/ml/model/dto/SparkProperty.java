@@ -16,29 +16,30 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.dto;
 
-import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
-import java.util.regex.Pattern;
+public class SparkProperty {
+    private String property;
+    private String name;
 
-/**
- * This class transforms each line (line-by-line) into an array of String tokens
- */
-public class LineToTokens implements Function<String, String[]> {
-    private Pattern tokenSeparator;
-
-    LineToTokens(Pattern pattern) {
-        this.tokenSeparator = pattern;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String[] call(String line) throws Exception {
-        try {
-            return tokenSeparator.split(line);
-        } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
-        }
+    @XmlAttribute
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    @XmlValue
+    public void setProperty(String property) {
+        this.property = property;
     }
 }
