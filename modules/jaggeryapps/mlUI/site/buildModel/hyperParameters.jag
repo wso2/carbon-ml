@@ -33,16 +33,16 @@
 
 	<%
 			var mlConfigs=require("/includes/ml.json");
-			var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+			var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
 			var workflowId = session.get("workflowId");
 
 			// Retrieve and display the dropdown of candidate response variables.
 			if(session.get("algoType")==mlConfigs.algoTypes.classification){
-				var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
+				var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
 				var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"responseDropdown");
 				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
 			}else if(session.get("algoType")==mlConfigs.algoTypes.numericalPrediction){
-				var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
+				var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
 				var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"responseDropdown");
 				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
 			}

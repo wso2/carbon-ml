@@ -2,13 +2,13 @@
    var log = new Log();
    var mlConfigs=require("/includes/ml.json");
    var carbon = require('carbon');
-   var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+   var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
    var start = parseInt(request.getParameter("iDisplayStart"));
    var length = parseInt(request.getParameter("iDisplayLength"));
    var datasetID = session.get("datasetId");
    var workflowId = session.get("workflowId");
    if (datasetID != null){
-     var features = datasetService.getFeatures(datasetID,workflowId,start,length);
+     var features = mlDatasetService.getFeatures(datasetID,workflowId,start,length);
      var json = {};
      json['sEcho'] = request.getParameter("sEcho");
      json['iTotalRecords'] = session.get("numOfFeatures");

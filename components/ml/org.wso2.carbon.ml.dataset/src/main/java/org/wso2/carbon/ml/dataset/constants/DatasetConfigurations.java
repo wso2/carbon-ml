@@ -21,22 +21,25 @@ package org.wso2.carbon.ml.dataset.constants;
 public class DatasetConfigurations {
     public static final String ML_CONFIG_XML = "repository/conf/etc/ml-config.xml";
     
+    // Data-set upload configurations    
     public static final String UPLOAD_SETTINGS = "dataUploadSettings";
     public static final String UPLOAD_LOCATION = "uploadLocation";
     public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
     public static final String UPLOAD_LIMIT = "uploadLimit";
     
+    // Summary statistic calculation configurations  
     public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
     public static final String HISTOGRAM_BINS = "histogramBins";
     public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
     public static final String SAMPLE_SIZE = "sampleSize";
     
+    // System property names
+    public static final String HOME = "user.home";
+    public static final String FILE_SEPARATOR = "file.separator";
+    
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
-    
-    public static final String HOME = "user.home";
     public static final String ML_PROJECTS = "MLProjects";
-    public static final String FILE_SEPARATOR = "file.separator";
     
     /*
 	 * private Constructor to prevent any other class from instantiating.

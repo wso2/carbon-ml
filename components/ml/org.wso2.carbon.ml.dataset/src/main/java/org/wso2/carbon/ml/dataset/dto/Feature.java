@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.dto;
 
 /**
  * Feature Class.

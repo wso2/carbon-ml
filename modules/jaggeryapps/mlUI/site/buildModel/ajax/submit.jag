@@ -3,8 +3,8 @@
 	var paramters = request.getAllParameters("UTF-8");
 
 	var carbon = require('carbon');
-	var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
-	paramters.datasetURL = datasetService.getDatasetUrl(session.get("datasetId"));
+	var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+	paramters.datasetURL = mlDatasetService.getDatasetUrl(session.get("datasetId"));
 	paramters.algorithmType=session.get("algoType");
 
 	// Only for testing purpose

@@ -17,58 +17,19 @@
  */
 package org.wso2.carbon.ml.dataset;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
-import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.dataset.dto.Feature;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
-import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 
 /**
- * Class contains the services related to importing and exploring a data-set.
- *
- * @scr.component name="datasetService" immediate="true"
+ * Interface contains the services related to importing and exploring a
+ * data-set.
  */
-public class DatasetService implements AbstractDatasetService {
-    private static final Log logger = LogFactory.getLog(DatasetService.class);
-    private DataUploadSettings dataUploadSettings;
-    private SummaryStatisticsSettings summaryStatSettings;
-    private String mlDatabaseName;
-
-    /*
-     * Activates the Data-set Service.
-     */
-    protected void activate(ComponentContext context) {
-        try {
-            // Read data-set settings from ml-config.xml file.
-            MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
-            DatasetService datasetService = new DatasetService();
-            datasetService.dataUploadSettings = mlConfigurationParser.getDataUploadSettings();
-            datasetService.summaryStatSettings = mlConfigurationParser.getSummaryStatisticsSettings();
-            datasetService.mlDatabaseName=mlConfigurationParser.getDatabaseName();
-            // Register the service.
-            context.getBundleContext().registerService(DatasetService.class.getName(),
-                datasetService, null);
-            logger.info("ML Dataset Service Started");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    /*
-     * Deactivates the Data-set Service.
-     */
-    protected void deactivate(ComponentContext context) {
-        logger.info("Ml Dataset Service Stopped");
-    }
+public interface DatasetService {
 
     /**
      * Returns a absolute path of a given data source.
@@ -77,16 +38,7 @@ public class DatasetService implements AbstractDatasetService {
      * @return Absolute path of a given data-set
      * @throws DatasetServiceException
      */
-    @Override
-    public String getDatasetUrl(String datasetID) throws DatasetServiceException {
-        try {
-            DatabaseHandler handler = new DatabaseHandler(mlDatabaseName);
-            return handler.getDatasetUrl(datasetID);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to read dataset path from database: " +
-                e.getMessage(), e);
-        }
-    }
+    public String getDatasetUrl(String datasetID) throws DatasetServiceException;
 
     /**
      * Upload the data file and calculate summary statistics.
@@ -99,48 +51,8 @@ public class DatasetService implements AbstractDatasetService {
      * @throws DatasetServiceException
      * @throws IOException
      */
-    @Override
     public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
-        String projectID) throws DatasetServiceException {
-        String uploadDir = dataUploadSettings.getUploadLocation();
-        try {
-            String fileSeparator = System.getProperty(DatasetConfigurations.FILE_SEPARATOR);
-            
-            // Get user home, if the uploading directory is set to USER_HOME
-            if (uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)) {
-                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator+
-                    DatasetConfigurations.ML_PROJECTS;
-            }
-            
-            if (FilePathValidator.isValid(uploadDir)) {
-                // Upload the file.
-                File targetFile = new File(uploadDir + fileSeparator + projectID + fileSeparator +
-                    fileName);
-                FileUtils.copyInputStreamToFile(sourceInputStream, targetFile);
-                // Insert details of the file to the database.
-                DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-                dbHandler.insertDatasetDetails(datasetID, targetFile.getPath(), projectID);
-                // Generate summary statistics.
-                DatasetSummary summary = new DatasetSummary(targetFile, datasetID);
-                int noOfFeatures = summary.generateSummary(summaryStatSettings.getSampleSize(),
-                    summaryStatSettings.getHistogramBins(), summaryStatSettings
-                    .getCategoricalThreshold(), true, mlDatabaseName);
-                // Update the database with the data-set sample.
-                dbHandler.updateDatasetSample(datasetID, summary.samplePoints());
-                return noOfFeatures;
-            } else {
-                throw new DatasetServiceException("Invalid Uploading directory " + uploadDir);
-            }
-        } catch (DatasetSummaryException e) {
-            throw new DatasetServiceException("Failed to generate summary statistics: " +
-                    e.getMessage(), e);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to update sample points: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new DatasetServiceException("Failed to upload the file " + fileName + " : " +
-                e.getMessage(), e);
-        }
-    }
+            String projectID) throws DatasetServiceException;
 
     /**
      * Update the data type of a given feature.
@@ -150,16 +62,8 @@ public class DatasetService implements AbstractDatasetService {
      * @param featureType Updated type of the feature
      * @throws DatasetServiceException
      */
-    @Override
     public void updateDataType(String featureName, String workflowID, String featureType)
-            throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            dbHandler.updateDataType(featureName, workflowID, featureType);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to update feature type: " + e.getMessage(), e);
-        }
-    }
+            throws DatasetServiceException;
 
     /**
      * Update the impute option of a given feature.
@@ -169,17 +73,8 @@ public class DatasetService implements AbstractDatasetService {
      * @param imputeOption Updated impute option of the feature
      * @throws DatasetServiceException
      */
-    @Override
     public void updateImputeOption(String featureName, String workflowID, String imputeOption)
-            throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            dbHandler.updateImputeOption(featureName, workflowID, imputeOption);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to update impute option: " + e.getMessage(),
-                e);
-        }
-    }
+            throws DatasetServiceException;
 
     /**
      * change whether a feature should be included as an input or not.
@@ -189,17 +84,8 @@ public class DatasetService implements AbstractDatasetService {
      * @param isInput Boolean value indicating whether the feature is an input or not
      * @throws DatasetServiceException
      */
-    @Override
     public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
-            throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            dbHandler.updateIsIncludedFeature(featureName, workflowID, isInput);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException( "Failed to update included option: "
-                + e.getMessage(), e);
-        }
-    }
+            throws DatasetServiceException;
 
     /**
      * Returns a set of features in a given range, from the alphabetically
@@ -211,16 +97,8 @@ public class DatasetService implements AbstractDatasetService {
      * @return A list of Feature objects
      * @throws DatasetServiceException
      */
-    @Override
     public List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
-        int numberOfFeatures) throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getFeatures(datasetID, workflowID, startIndex, numberOfFeatures);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to retrieve features: " + e.getMessage(), e);
-        }
-    }
+            int numberOfFeatures) throws DatasetServiceException;
 
     /**
      * Returns the names of the features, belongs to a particular data-type
@@ -231,17 +109,8 @@ public class DatasetService implements AbstractDatasetService {
      * @return A list of feature names
      * @throws DatasetServiceException
      */
-    @Override
     public List<String> getFeatureNames(String workflowID, String featureType)
-            throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getFeatureNames(workflowID, featureType);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to retrieve feature names: "
-                + e.getMessage(), e);
-        }
-    }
+            throws DatasetServiceException;
 
     /**
      * Returns data points of the selected sample as coordinates of three
@@ -254,17 +123,8 @@ public class DatasetService implements AbstractDatasetService {
      * @return A JSON array of data points
      * @throws DatasetServiceException
      */
-    @Override
     public JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
-        String feature3) throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getSamplePoints(datasetID, feature1, feature2, feature3);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException( "Failed to retrieve sample points: "
-                + e.getMessage(), e);
-        }
-    }
+            String feature3) throws DatasetServiceException;
 
     /**
      * Returns the summary statistics for a given feature of a given data-set
@@ -274,16 +134,7 @@ public class DatasetService implements AbstractDatasetService {
      * @return JSON string containing the summary statistics
      * @throws DatasetServiceException
      */
-    @Override
-    public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getSummaryStats(datasetID, feature);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to retrieve summary statistics: " +
-                e.getMessage(), e);
-        }
-    }
+    public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException;
 
     /**
      * Returns the number of features of a given data-set.
@@ -292,14 +143,5 @@ public class DatasetService implements AbstractDatasetService {
      * @return Number of features in the data-set
      * @throws DatasetServiceException
      */
-    @Override
-    public int getFeatureCount(String datasetID) throws DatasetServiceException {
-        try {
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getFeatureCount(datasetID);
-        } catch (DatabaseHandlerException e) {
-            throw new DatasetServiceException("Failed to retrieve the feature count: " +
-                e.getMessage(), e);
-        }
-    }
+    public int getFeatureCount(String datasetID) throws DatasetServiceException;
 }

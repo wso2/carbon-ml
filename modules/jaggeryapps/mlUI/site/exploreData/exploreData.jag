@@ -20,10 +20,10 @@
   //Retrieving feature names for the two axis
   try{
     var carbon = require('carbon');
-    var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
     if (workflowId != null){
-      var numericalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-      var categoricalFeatureNames = datasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
+      var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
+      var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
       var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"numFeaturesDropdown1");
       var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(1),"numFeaturesDropdown2");
       var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"catFeaturesDropdown");
