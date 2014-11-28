@@ -1,94 +1,91 @@
 <!DOCTYPE html>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <html>
-   <head>
-      <meta charset="utf-8">
-      <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
-      <link rel="stylesheet" type="text/css" href="../../css/wso2_ml_graphs.css">
-      <link rel="stylesheet" type="text/css" href="./css/exploreData.css">
-      <script type="text/javascript" src="../../js/d3.js"></script>
-      <script src="../../js/jquery.js"></script>
-      <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
-   </head>
-<body>
-<%
-  var log = new Log();
-  var mlConfigs=require("/includes/ml.json");
-  var datasetId = session.get("datasetId");
-  var workflowId = session.get("workflowId");
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+        <link rel="stylesheet" type="text/css" href="../../css/wso2_ml_graphs.css">
+        <link rel="stylesheet" type="text/css" href="./css/exploreData.css">
+        <script type="text/javascript" src="../../js/d3.js"></script>
+        <script src="../../js/jquery.js"></script>
+        <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
+    </head>
+    <body>
+    <%
+        var log = new Log();
+        var mlConfigs=require("/includes/ml.json");
+        var datasetId = session.get("datasetId");
+        var workflowId = session.get("workflowId");
 
-  //Retrieving feature names for the two axis
-  try{
-    var carbon = require('carbon');
-    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-    if (workflowId != null){
-      var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-      var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-      var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"numFeaturesDropdown1");
-      var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(1),"numFeaturesDropdown2");
-      var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"catFeaturesDropdown");
-    }
-  }catch(e){
-    log.error("An error occured while retrieving feature names of dataset: "+datasetId, e);
-  }
-  
-  // Creating the drop-down list of features
-  function listSelectionRenderer(featureNames, selectedOption, cssClass){
-     var selection = "<select class=" + cssClass + ">";
-     for (var i=0; i<featureNames.size(); i++){
-      if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
-        selection += "<option selected value=\"" + featureNames.get(i)
-            + "\">" + featureNames.get(i) + "</option>";
-      }
-      else{
-        selection += "<option value=\"" + featureNames.get(i) + "\">"
-            + featureNames.get(i) + "</option>";
-      }
-     }
-     selection += "</select>";
-     return selection;
-   }
-%>
+        //Retrieving feature names for the two axis
+        try{
+            var carbon = require('carbon');
+            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+            if (workflowId != null){
+                var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
+                var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
+                var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"numFeaturesDropdown1");
+                var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(1),"numFeaturesDropdown2");
+                var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"catFeaturesDropdown");
+            }
+        }catch(e){
+            log.error("An error occured while retrieving feature names of dataset: "+datasetId, e);
+        }
+        
+        // Creating the drop-down list of features
+        function listSelectionRenderer(featureNames, selectedOption, cssClass){
+            var selection = "<select class=" + cssClass + ">";
+            for (var i=0; i<featureNames.size(); i++){
+                if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
+                    selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
+                }
+                else{
+                    selection += "<option value=\"" + featureNames.get(i) + "\">"
+                            + featureNames.get(i) + "</option>";
+                }
+            }
+            selection += "</select>";
+            return selection;
+        }
+    %>
 
-<div id="middle">
-	<%
-	    include("../../includes/tenantAware.jag");
-      include("../../includes/title.jag");
-	%>
-	<div id="workArea">
-		<%include("../../includes/wizardmenu.jag");%>
-		<div style="clear:both"></div>
-	</div>
-</div>
-<div id="leftColumn" class="half-width-column">
-  <div id="scatterPlot">
-<div id="scatterPlotTitle" class="graphtitle" align="center"></div>
-<div id="scatter"></div>
-<div id="scatterPlotFeatures">
-<%
-  if (datasetId != null){
-    print("X-Axis:&emsp;"+numFeaturesDropdown1+"<br><br>");
-    print("Y-Axis:&emsp;"+numFeaturesDropdown2+"<br><br>");
-    print("Group By:&emsp;"+catFeaturesDropdown+"<br><br>");
-  }
-%>
-</div>
-</div>
-</div>
+    <div id="middle">
+        <%
+            include("../../includes/tenantAware.jag");
+            include("../../includes/title.jag");
+        %>
+        <div id="workArea">
+            <%include("../../includes/wizardmenu.jag");%>
+            <div style="clear:both"></div>
+        </div>
+    </div>
+    <div id="leftColumn" class="half-width-column">
+        <div id="scatterPlot">
+    <div id="scatterPlotTitle" class="graphtitle" align="center"></div>
+    <div id="scatter"></div>
+    <div id="scatterPlotFeatures">
+    <%
+        if (datasetId != null){
+            print("X-Axis:&emsp;"+numFeaturesDropdown1+"<br><br>");
+            print("Y-Axis:&emsp;"+numFeaturesDropdown2+"<br><br>");
+            print("Group By:&emsp;"+catFeaturesDropdown+"<br><br>");
+        }
+    %>
+    </div>
+    </div>
+    </div>
 
-<div id="rightColumn" class="half-width-column">
-<div id="histograms" class="graph">
-<div id="histogram1Title" class="graphtitle"></div>
-<div id="histogram1" class="graph"></div>
-<div id="numFeature1Summary" class="graphSumarry"></div>
-<div id="histogram2Title" class="graphtitle"></div>
-<div id="histogram2" class="graph"></div>
-<div id="numFeature2Summary" class="graphSumarry"></div>
-</div>
-</div>
-
-<script src="./js/exploreDataset.js"></script>
-<script> drawPlotsAjax(); </script>
- 
-</body>
+    <div id="rightColumn" class="half-width-column">
+        <div id="histograms" class="graph">
+            <div id="histogram1Title" class="graphtitle"></div>
+            <div id="histogram1" class="graph"></div>
+            <div id="numFeature1Summary" class="graphSumarry"></div>
+            <div id="histogram2Title" class="graphtitle"></div>
+            <div id="histogram2" class="graph"></div>
+            <div id="numFeature2Summary" class="graphSumarry"></div>
+        </div>
+    </div>
+    <script src="./js/exploreDataset.js"></script>
+    <script> drawPlotsAjax(); </script>
+    </body>
 </html>

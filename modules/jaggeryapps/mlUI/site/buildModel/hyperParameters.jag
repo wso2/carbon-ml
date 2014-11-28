@@ -1,83 +1,83 @@
-	<%
-		var log=new Log();
-		var algoName = request.getParameter("algorithm");
-		try{
-			// Retrieve and display the hyperparameters of the selected algorithm.
-			var carbon = require('carbon');
-			var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.SparkModelService');
-			var hyperParameters = modelService.getHyperParameters(algoName);
+    <%
+        var log = new Log();
+        var algoName = request.getParameter("algorithm");
+        try {
+            // Retrieve and display the hyperparameters of the selected algorithm.
+            var carbon = require('carbon');
+            var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.SparkModelService');
+            var hyperParameters = modelService.getHyperParameters(algoName);
 
-			// Display the Hyper-Parameters
-			if(hyperParameters!=null){
-	%>
-			<div id="parameters">
-			<p> Hyper-Parameters for <%=algoName%> </p>
-				<div id="names_block">
-	<%
-				for (var i=0; i<hyperParameters.length(); i++){
-					var parameter=hyperParameters.getJSONObject(i).get('parameter');
-					print("<div class=\"parameter_name\" id=\""+parameter+"\">"+parameter+": </div>");
-				}
-				print("</div><div id=\"values_block\">");
-				for (var i=0; i<hyperParameters.length(); i++){
-					print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\""+hyperParameters.getJSONObject(i).get('parameter')+"\" value=\""+hyperParameters.getJSONObject(i).get('value')+"\"></div>");					
-				}
-			}
-	%>
-		</div>
-	</div>
+            // Display the Hyper-Parameters
+            if (hyperParameters != null){
+    %>
+            <div id="parameters">
+            <p> Hyper-Parameters for <%=algoName%> </p>
+                <div id="names_block">
+    <%
+                for (var i=0; i<hyperParameters.length(); i++){
+                    var parameter=hyperParameters.getJSONObject(i).get('parameter');
+                    print("<div class=\"parameter_name\" id=\""+parameter+"\">"+parameter+": </div>");
+                }
+                print("</div><div id=\"values_block\">");
+                for (var i=0; i<hyperParameters.length(); i++){
+                    print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\"" + hyperParameters.getJSONObject(i).get('parameter') + "\" value=\"" + hyperParameters.getJSONObject(i).get('value') + "\"></div>");                    
+                }
+            }
+    %>
+        </div>
+    </div>
 
-	<div id="optionalParameters">
-		<p id="trainProportionLabel">Training Data Propotion:&emsp;<label maxlength="3" size="3" id="ratioVal"></label> </p>
-		<div id="trainRatio"></div>
+    <div id="optionalParameters">
+        <p id="trainProportionLabel">Training Data Propotion:&emsp;<label maxlength="3" size="3" id="ratioVal"></label> </p>
+        <div id="trainRatio"></div>
 
-	<%
-			var mlConfigs=require("/includes/ml.json");
-			var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-			var workflowId = session.get("workflowId");
+    <%
+            var mlConfigs=require("/includes/ml.json");
+            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+            var workflowId = session.get("workflowId");
 
-			// Retrieve and display the dropdown of candidate response variables.
-			if(session.get("algoType")==mlConfigs.algoTypes.classification){
-				var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-				var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"responseDropdown");
-				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
-			}else if(session.get("algoType")==mlConfigs.algoTypes.numericalPrediction){
-				var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-				var responseDropdown = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"responseDropdown");
-				print("<div id=\"responseDropdown\">Response Variable :&emsp;"+responseDropdown+"</div>");
-			}
-		}catch(e){
-			log.error("An error occured while retrieving hyperparameters of algorithm: "+algoName,e);
-		}
+            // Retrieve and display the dropdown of candidate response variables.
+            if (session.get("algoType") == mlConfigs.algoTypes.classification){
+                var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.categorical);
+                var responseDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"responseDropdown");
+                print("<div id=\"responseDropdown\">Response Variable :&emsp;" + responseDropdown + "</div>");
+            } else if (session.get("algoType") == mlConfigs.algoTypes.numericalPrediction){
+                var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.numerical);
+                var responseDropdown = listSelectionRenderer(numericalFeatureNames, numericalFeatureNames.get(0), "responseDropdown");
+                print("<div id=\"responseDropdown\">Response Variable :&emsp;" + responseDropdown + "</div>");
+            }
+        } catch(e) {
+            log.error("An error occured while retrieving hyperparameters of algorithm: " + algoName, e);
+        }
 
-		// Creating the drop-down list
-		function listSelectionRenderer(featureNames, selectedOption, cssClass){
-			var selection = "<select class=" + cssClass + ">";
-			for (var i=0; i<featureNames.size(); i++){
-				if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
-					selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
-				}
-				else{
-					selection += "<option value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
-				}
-			}
-			selection += "</select>";
-			return selection;
-		}
-	%>
-	</div>
+        // Creating the drop-down list
+        function listSelectionRenderer(featureNames, selectedOption, cssClass){
+            var selection = "<select class=" + cssClass + ">";
+            for (var i=0; i<featureNames.size(); i++){
+                if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
+                    selection = selection + "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
+                }
+                else{
+                    selection = selection + "<option value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
+                }
+            }
+            selection = selection + "</select>";
+            return selection;
+        }
+    %>
+    </div>
 
 <!--Function of the training-data ratio selection slider -->
 <script>
-	$(function() {
-		$("#trainRatio").slider( {
-			orientation:"horizontal",
-			value:70,
-			slide: function( event, ui ) {
-				$("#ratioVal").val( ui.value );
-				$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
-			}	
-		});
-		$("#ratioVal").text( $("#trainRatio").slider("value")+'%');
-	});
+    $(function() {
+        $("#trainRatio").slider( {
+            orientation:"horizontal",
+            value:70,
+            slide: function( event, ui ) {
+                $("#ratioVal").val( ui.value );
+                $("#ratioVal").text( $("#trainRatio").slider("value") + '%');
+            }   
+        });
+        $("#ratioVal").text( $("#trainRatio").slider("value")+'%');
+    });
 </script> 
