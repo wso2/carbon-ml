@@ -52,7 +52,7 @@
             <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
             <releases>
                 <enabled>true</enabled>
-                <!--updatePolicy>daily</updatePolicy-->
+                <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
@@ -63,7 +63,7 @@
             <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
-                <!--updatePolicy>daily</updatePolicy-->
+                <updatePolicy>daily</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>false</enabled>
@@ -76,7 +76,7 @@
             <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
             <releases>
                 <enabled>true</enabled>
-                <!--updatePolicy>daily</updatePolicy-->
+                <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
@@ -332,7 +332,7 @@
         <spark.version>1.1.0</spark.version>
         <org.json.version>20140107</org.json.version>
         <opencsv.version>1.8</opencsv.version>
-        <orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
+        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
         <axis2.wso2.version>${orbit.version.axis2}</axis2.wso2.version>
         <axiom.wso2.version>${orbit.version.axiom}</axiom.wso2.version>

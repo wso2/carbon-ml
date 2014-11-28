@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.ml.model.dto;
 
+/**
+ * DTO class for JAXB binding of MLAlgorithmConfigurationParser
+ */
 public class HyperParameter {
     private String parameter;
     private String value;

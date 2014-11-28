@@ -43,7 +43,7 @@ public class MLAlgorithmConfigurationParser {
      * @param xmlFilePath File path of ml-algorithms.xml file
      * @throws MLAlgorithmConfigurationParserException
      */
-    MLAlgorithmConfigurationParser(String xmlFilePath) throws
+    protected MLAlgorithmConfigurationParser(String xmlFilePath) throws
             MLAlgorithmConfigurationParserException {
         try {
             File file = new File(xmlFilePath);
@@ -62,7 +62,7 @@ public class MLAlgorithmConfigurationParser {
      * @return Json array of hyper-parameters
      * @throws MLAlgorithmConfigurationParserException
      */
-    JSONArray getHyperParameters(String algorithm)
+    protected JSONArray getHyperParameters(String algorithm)
             throws MLAlgorithmConfigurationParserException {
         try {
             JSONArray jsonArray = new JSONArray();
@@ -90,7 +90,7 @@ public class MLAlgorithmConfigurationParser {
      * @return Machine learning algorithm names
      * @throws MLAlgorithmConfigurationParserException
      */
-    List<String> getAlgorithms(String algorithmType) throws
+    protected List<String> getAlgorithms(String algorithmType) throws
             MLAlgorithmConfigurationParserException {
         try {
             List<String> algorithms = new ArrayList();

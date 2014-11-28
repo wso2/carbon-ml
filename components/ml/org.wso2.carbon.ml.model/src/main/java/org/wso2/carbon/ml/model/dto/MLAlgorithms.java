@@ -26,11 +26,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+/**
+ * DTO class for JAXB binding of MLAlgorithmConfigurationParser
+ */
 @XmlRootElement(name = MLModelConstants.ALGORITHMS)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MLAlgorithms {
-    @XmlElement(name=MLModelConstants.ALGORITHM)
-    private List<MLAlgorithm> algorithms =null;
+    @XmlElement(name = MLModelConstants.ALGORITHM)
+    private List<MLAlgorithm> algorithms = null;
 
     public List<MLAlgorithm> getAlgorithms() {
         return algorithms;

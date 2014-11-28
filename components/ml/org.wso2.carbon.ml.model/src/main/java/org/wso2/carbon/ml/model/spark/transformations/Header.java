@@ -21,6 +21,9 @@ package org.wso2.carbon.ml.model.spark.transformations;
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
+/**
+ * A filter to remove header row
+ */
 public class Header implements Function<String, Boolean> {
     private String header;
 
@@ -37,7 +40,8 @@ public class Header implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while removing header row: " + e.getMessage(), e);
         }
     }
 }
