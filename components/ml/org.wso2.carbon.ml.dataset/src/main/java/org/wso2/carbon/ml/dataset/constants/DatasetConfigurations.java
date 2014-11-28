@@ -41,6 +41,9 @@ public class DatasetConfigurations {
     public static final String DATABASE= "database";
     public static final String ML_PROJECTS = "MLProjects";
     
+    // Character Encodings
+    public static final String UTF_8= "UTF-8";
+    public static final String ISO_8859_1= "ISO-8859-1";
     /*
 	 * private Constructor to prevent any other class from instantiating.
 	 */

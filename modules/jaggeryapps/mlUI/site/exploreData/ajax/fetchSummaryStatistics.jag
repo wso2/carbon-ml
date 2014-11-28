@@ -1,16 +1,16 @@
 <%
-	var carbon = require('carbon');
-	var log = new Log();
-	var datasetId = session.get("datasetId");
-	try{
-	   var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-	   if (datasetId != null){
-		   var feature = request.getParameter("numFeature");
-		   var summaryStats = mlDatasetService.getSummaryStats(datasetId,feature).toString();
-		   response.contentType = "application/Json";
-		   response.content = summaryStats;
-	   }
-	}catch(e){
-		log.error("An error occured while fetching summary statistics for dataset: "+datasetId, e);
-	}
+    var carbon = require('carbon');
+    var log = new Log();
+    var datasetId = session.get("datasetId");
+    try {
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        if (datasetId != null){
+            var feature = request.getParameter("numFeature");
+            var summaryStats = mlDatasetService.getSummaryStats(datasetId,feature).toString();
+            response.contentType = "application/Json";
+            print(summaryStats);
+        }
+    } catch(e) {
+        log.error("An error occured while fetching summary statistics for dataset: "+datasetId, e);
+    }
 %>

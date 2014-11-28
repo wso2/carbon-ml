@@ -18,8 +18,10 @@
 package org.wso2.carbon.ml.dataset;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.constants.FeatureType;
 import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
@@ -84,9 +87,9 @@ public class DatasetSummary {
     protected DatasetSummary(File csvDataFile, String datasetID) throws DatasetSummaryException {
         this.datasetID = datasetID;
         try {
-            this.parser = CSVParser.parse(csvDataFile, Charset.forName("UTF-8"),
-                CSVFormat.RFC4180.withHeader());
-            // Get the header.
+            Reader reader = new InputStreamReader(new FileInputStream(csvDataFile
+                .getAbsolutePath()),DatasetConfigurations.UTF_8);
+            this.parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader());
             this.headerMap = this.parser.getHeaderMap();
             int noOfFeatures = this.headerMap.size();
             // Initialize the lists.
@@ -111,7 +114,7 @@ public class DatasetSummary {
      *
      * @param sampleSize Size of the sample to use for summary statistic calculation
      * @param noOfIntervals Number of intervals to be calculated for continuous data
-     * @param categoricalThreshold  Threshold for number of categories, to be considered as 
+     * @param categoricalThreshold  Threshold for number of categories, to be considered as
      *            discrete data
      * @param include Default value to set for the flag indicating the feature is an input or not
      * @return Number of features in the data-set
@@ -121,7 +124,7 @@ public class DatasetSummary {
         boolean include, String mlDatabaseName) throws DatasetSummaryException {
         try {
             // Find the columns containing String and Numeric data.
-            findColumnDataType(this.parser.iterator(), sampleSize);
+            identifyColumnDataType(this.parser.iterator(), sampleSize);
             // Calculate descriptive statistics.
             calculateDescriptiveStats();
             // Calculate frequencies of each bin of the String features.
@@ -139,18 +142,18 @@ public class DatasetSummary {
             return this.headerMap.size();
         } catch (DatabaseHandlerException e) {
             throw new DatasetSummaryException("Error occured while Calculating summary statistics " +
-                "for dataset " + this.datasetID + ": " + e.getMessage(), e);
+                    "for dataset " + this.datasetID + ": " + e.getMessage(), e);
         }
     }
 
     /**
-     * Finds the columns with Categorical data and Numerical data. Stores the
-     * raw-data in a list.
+     * Finds the columns with Categorical data and Numerical data. Stores the raw-data in a list.
      *
      * @param datasetIterator Iterator for the CSV parser
      * @param sampleSize Size of the sample
+     * @throws DatasetSummaryException
      */
-    private void findColumnDataType(Iterator<CSVRecord> datasetIterator, int sampleSize) {
+    private void identifyColumnDataType(Iterator<CSVRecord> datasetIterator, int sampleSize) {
         int recordsCount = 0;
         CSVRecord row;
         int[] stringCellCount = new int[this.headerMap.size()];
@@ -172,8 +175,8 @@ public class DatasetSummary {
             }
             recordsCount++;
         }
-        // If atleast one cell contains strings, then the cell is considered to
-        // has string data.
+
+        // If atleast one cell contains strings, then the cell is considered to has string data.
         for (int col = 0; col < headerMap.size(); col++) {
             if (stringCellCount[col] > 0) {
                 this.stringDataColumnPositions.add(col);
@@ -237,7 +240,7 @@ public class DatasetSummary {
     /**
      * Calculate the frequencies of each category/interval of Numerical data columns.
      *
-     * @param categoricalThreshold Threshold for number of categories, to be considered as 
+     * @param categoricalThreshold Threshold for number of categories, to be considered as
      *            discrete data
      * @param noOfIntervals Number of intervals to be calculated for continuous data
      */

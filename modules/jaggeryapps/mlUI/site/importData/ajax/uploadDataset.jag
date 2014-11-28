@@ -21,10 +21,11 @@
         //insert dataset details
         var datasetId=uuid.generate();
         sourceFile.open("r");
-        var inputStream=sourceFile.getStream();
-        mlDatasetService.uploadDataset(inputStream.getStream(),datasetId,sourceFile.getName(),projectId);
+        var inputStream = sourceFile.getStream();
+        var numOfFeatures = mlDatasetService.uploadDataset(inputStream.getStream(),datasetId,sourceFile.getName(),projectId);
         session.put("datasetId",datasetId);
         session.put("datasetName",sourceFile.getName());
+        session.put("numOfFeatures",numOfFeatures);
     } catch(e){
         log.error("An error occured while uploading file "+sourceFile.getName()+ " of user "+session.get("logged.user"),e);
     }finally{
