@@ -1,12 +1,27 @@
 <%
-	var log=new Log();
-	var paramters = request.getAllParameters("UTF-8");
+    var log=new Log();
+    var paramters = request.getAllParameters("UTF-8");
+    var carbon = require('carbon');
+    var uuid = require('uuid');
 
-	var carbon = require('carbon');
-	var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-	paramters.datasetURL = mlDatasetService.getDatasetUrl(session.get("datasetId"));
-	paramters.algorithmType=session.get("algoType");
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+    paramters.datasetURL = mlDatasetService.getDatasetUrl(session.get("datasetId"));
+    paramters.algorithmType=session.get("algoType");
+    paramters.workflowID=session.get("workflowId");
 
-	// Only for testing purpose
-	log.info(paramters);
+    var modelID=uuid.generate();
+    var modelSettingsID=uuid.generate();
+    paramters.modelID=modelID;
+    paramters.modelSettingsID=modelSettingsID;
+
+    // Only for testing purpose
+    log.info(paramters);
+
+    try {
+        var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+        modelService.buildModel(paramters);
+    } catch (e) {
+        log.serror('An error occured while building the model for workflow: ' + workflowId, e);
+    }
+     
 %>

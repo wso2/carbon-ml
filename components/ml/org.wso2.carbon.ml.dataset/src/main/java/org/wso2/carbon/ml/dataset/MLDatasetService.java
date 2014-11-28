@@ -17,12 +17,19 @@
  */
 package org.wso2.carbon.ml.dataset;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -104,8 +111,10 @@ public class MLDatasetService implements DatasetService {
      */
     @Override
     public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
-        String projectID) throws DatasetServiceException {
+        String projectID) throws DatasetServiceException, IOException {
         String uploadDir = dataUploadSettings.getUploadLocation();
+        BufferedWriter writer = null;
+        BufferedReader bufferedReader = null;
         try {
             String fileSeparator = System.getProperty(DatasetConfigurations.FILE_SEPARATOR);
             
@@ -117,8 +126,7 @@ public class MLDatasetService implements DatasetService {
             
             if (FilePathValidator.isValid(uploadDir)) {
                 // Upload the file.
-                File targetFile = new File(uploadDir + fileSeparator + projectID + fileSeparator +
-                    fileName);
+                File targetFile = new File(uploadDir + fileSeparator + projectID + fileSeparator + fileName);
                 FileUtils.copyInputStreamToFile(sourceInputStream, targetFile);
                 // Insert details of the file to the database.
                 DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
@@ -142,6 +150,13 @@ public class MLDatasetService implements DatasetService {
         } catch (IOException e) {
             throw new DatasetServiceException("Failed to upload the file " + fileName + " : " +
                 e.getMessage(), e);
+        } finally{
+            if(writer!=null){
+                writer.close();
+            }
+            if(bufferedReader!=null){
+                bufferedReader.close();
+            }
         }
     }
 

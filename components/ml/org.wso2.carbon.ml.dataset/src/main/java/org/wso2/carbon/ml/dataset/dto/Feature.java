@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.dataset.dto;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Feature Class.
  */
@@ -43,7 +45,7 @@ public class Feature {
 	 * @return Name of the feature
 	 */
 	public String getFieldName() {
-		return fieldName;
+		return this.fieldName;
 	}
 
 	/**
@@ -59,9 +61,10 @@ public class Feature {
 	 * Returns the summary statistics json string.
 	 *
 	 * @return Summary statistics json string
+	 * @throws UnsupportedEncodingException 
 	 */
-	public String getSummaryStats() {
-		return summaryStats;
+	public String getSummaryStats() throws UnsupportedEncodingException {
+		return this.summaryStats;
 	}
 
 	/**
