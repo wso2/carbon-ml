@@ -52,7 +52,7 @@ public interface DatasetService {
      * @throws IOException
      */
     public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
-            String projectID) throws DatasetServiceException;
+            String projectID) throws DatasetServiceException, IOException;
 
     /**
      * Update the data type of a given feature.

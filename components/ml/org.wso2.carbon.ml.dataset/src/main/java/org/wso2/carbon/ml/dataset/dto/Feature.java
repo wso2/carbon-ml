@@ -43,7 +43,7 @@ public class Feature {
 	 * @return Name of the feature
 	 */
 	public String getFieldName() {
-		return fieldName;
+		return this.fieldName;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class Feature {
 	 * @return Summary statistics json string
 	 */
 	public String getSummaryStats() {
-		return summaryStats;
+		return this.summaryStats;
 	}
 
 	/**
