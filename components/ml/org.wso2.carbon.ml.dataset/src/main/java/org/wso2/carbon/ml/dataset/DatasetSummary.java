@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -120,7 +119,6 @@ public class DatasetSummary {
      * @param include Default value to set for the flag indicating the feature is an input or not
      * @return Number of features in the data-set
      * @throws DatasetSummaryException
-     * @throws UnsupportedEncodingException
      */
     protected int generateSummary(int sampleSize, int noOfIntervals, int categoricalThreshold,
         boolean include, String mlDatabaseName) throws DatasetSummaryException {
