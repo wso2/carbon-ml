@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class DecisionTree implements Serializable {
-// make errors more descriptive
+
     /**
      * @param train               Training dataset as a JavaRDD of labeled points
      * @param noOfClasses         No of classes
@@ -44,22 +44,15 @@ public class DecisionTree implements Serializable {
      * @return Decision tree model
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    public DecisionTreeModel train(JavaRDD<LabeledPoint> train,
-                            int noOfClasses,
-                            Map<Integer, Integer> categoricalFeatures,
-                            String impurityCriteria,
-                            int maxTreeDepth,
-                            int maxBins
-    ) throws ModelServiceException {
+    public DecisionTreeModel train(JavaRDD<LabeledPoint> train, int noOfClasses,
+            Map<Integer, Integer> categoricalFeatures, String impurityCriteria, int maxTreeDepth,
+            int maxBins) throws ModelServiceException {
         try {
-            return org.apache.spark.mllib.tree.DecisionTree.trainClassifier(train,
-                                                                            noOfClasses,
-                                                                            categoricalFeatures,
-                                                                            impurityCriteria,
-                                                                            maxTreeDepth,
-                                                                            maxBins);
+            return org.apache.spark.mllib.tree.DecisionTree.trainClassifier(train, noOfClasses,
+                    categoricalFeatures, impurityCriteria, maxTreeDepth, maxBins);
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while training decision tree model: " + e.getMessage(), e);
         }
     }
 
@@ -70,9 +63,7 @@ public class DecisionTree implements Serializable {
      * @throws ModelServiceException
      */
     public JavaPairRDD<Double, Double> test(final DecisionTreeModel model,
-                                     JavaRDD<LabeledPoint> test)
-            throws ModelServiceException {
-
+            JavaRDD<LabeledPoint> test) throws ModelServiceException {
         try {
             return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
                 @Override
@@ -81,7 +72,8 @@ public class DecisionTree implements Serializable {
                 }
             });
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while testing decision tree model: " + e.getMessage(), e);
         }
 
     }
@@ -102,7 +94,9 @@ public class DecisionTree implements Serializable {
                 }
             }).count() / predictionsAndLabels.count();
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while calculating decision tree test error: "
+                    + e.getMessage(), e);
         }
     }
 }

@@ -26,12 +26,18 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @scr.component name="modelService" immediate="true"
@@ -53,7 +59,7 @@ public class SparkModelService implements ModelService {
             sparkModelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser
                     (MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
             context.getBundleContext().registerService(SparkModelService.class.getName(),
-                                                       sparkModelService, null);
+                    sparkModelService, null);
             logger.info("ML Model Service Started");
         } catch (Exception e) {
             logger.error("An error occured while activating model service: " + e
@@ -80,7 +86,8 @@ public class SparkModelService implements ModelService {
 
             return this.mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error("An error occurred while retrieving hyper parameters :" + e.getMessage(), e);
+            logger.error("An error occurred while retrieving hyper parameters :" + e.getMessage(),
+                    e);
             throw new ModelServiceException(e.getMessage(), e);
         }
     }
@@ -94,7 +101,8 @@ public class SparkModelService implements ModelService {
         try {
             return this.mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error("An error occurred while retrieving algorithm names: " + e.getMessage(), e);
+            logger.error("An error occurred while retrieving algorithm names: " + e.getMessage(),
+                    e);
             throw new ModelServiceException(e.getMessage(), e);
         }
     }
@@ -107,7 +115,7 @@ public class SparkModelService implements ModelService {
      * @throws ModelServiceException
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
-                                                        String userResponseJson)
+            String userResponseJson)
             throws ModelServiceException {
         Map<String, Double> recommendations = new HashMap<String, Double>();
         try {
@@ -115,18 +123,23 @@ public class SparkModelService implements ModelService {
             Map<String, List<Integer>> algorithmRatings = this.mlAlgorithmConfigurationParser
                     .getAlgorithmRatings(algorithmType);
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
-                if (MLModelConstants.HIGH.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
+                if (MLModelConstants.HIGH.equals(
+                        userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, rating.getValue().get(0) * 5);
-                } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.INTERPRETABILITY))) {
+                } else if (MLModelConstants.MEDIUM.equals(
+                        userResponse.get(MLModelConstants.INTERPRETABILITY))) {
                     rating.getValue().set(0, rating.getValue().get(0) * 3);
                 } else {
                     rating.getValue().set(0, 5);
                 }
-                if (MLModelConstants.LARGE.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
+                if (MLModelConstants.LARGE.equals(
+                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, rating.getValue().get(1) * 5);
-                } else if (MLModelConstants.MEDIUM.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
+                } else if (MLModelConstants.MEDIUM.equals(
+                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, rating.getValue().get(1) * 3);
-                } else if (MLModelConstants.SMALL.equals(userResponse.get(MLModelConstants.DATASET_SIZE))) {
+                } else if (MLModelConstants.SMALL.equals(
+                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
                     rating.getValue().set(1, 5);
                 }
                 if (MLModelConstants.YES.equals(userResponse.get(MLModelConstants.TEXTUAL))) {
@@ -147,9 +160,29 @@ public class SparkModelService implements ModelService {
                 recommendations.put(recommendation.getKey(), scaledRating);
             }
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error("An error occurred while retrieving recommended algorithms: " + e.getMessage(), e);
+            logger.error(
+                    "An error occurred while retrieving recommended algorithms: " + e.getMessage(),
+                    e);
             throw new ModelServiceException(e.getMessage(), e);
         }
         return recommendations;
+    }
+
+    public void buildModel(JSONObject workflow) throws ModelServiceException {
+        try {
+            String algorithmType = workflow.getString(MLModelConstants.ALGORITHM_TYPE);
+            if (MLModelConstants.CLASSIFICATION.equals(algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)){
+                SupervisedModel supervisedModel = new SupervisedModel(workflow);
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                executorService.submit(supervisedModel);
+                executorService.shutdown();
+                executorService.awaitTermination(10L,TimeUnit.MINUTES);
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "An error occurred while building machine learning model: " + e.getMessage(),
+                    e);
+            throw new ModelServiceException(e.getMessage(), e);
+        }
     }
 }

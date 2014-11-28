@@ -37,9 +37,10 @@ public class KMeans implements Serializable {
             throws ModelServiceException {
         try {
             return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters,
-                                                                  noOfIterations);
+                    noOfIterations);
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while training k-means model: " + e.getMessage(), e);
         }
     }
 
@@ -49,12 +50,13 @@ public class KMeans implements Serializable {
      * @return JavaRDD containing cluster centers
      * @throws ModelServiceException
      */
-    public JavaRDD<Integer> test(KMeansModel kMeansModel,
-                          JavaRDD<Vector> data) throws ModelServiceException {
+    public JavaRDD<Integer> test(KMeansModel kMeansModel, JavaRDD<Vector> data)
+            throws ModelServiceException {
         try {
             return kMeansModel.predict(data);
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while testing k-means model: " + e.getMessage(), e);
         }
     }
 }

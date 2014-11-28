@@ -30,9 +30,13 @@ public final class MLModelConstants {
     public static final String TEXTUAL = "textual";
     public static final String YES = "yes";
     public static final String MODEL_ID = "modelID";
+    public static final String MODEL_SETTINGS_ID = "modelSettingsID";
+    public static final String WORKFLOW_ID = "workflowID";
     public static final String DATASET_URL = "datasetURL";
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
     public static final String RESPONSE = "responseVariable";
+    public static final String ALGORITHM_NAME = "algorithmName";
+    public static final String ALGORITHM_TYPE = "algorithmType";
 
     // xml tags
     public static final String ALGORITHMS = "algorithms";
@@ -47,6 +51,9 @@ public final class MLModelConstants {
     public static final String PARAMETERS = "parameters";
     public static final String PARAMETER = "parameter";
     public static final String PROPERTY = "property";
+    public static final String CLASSIFICATION = "Classification";
+    public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
+    public static final String CLUSTERING = "Clustering";
 
     // file formats
     public static final String CSV = ".csv";

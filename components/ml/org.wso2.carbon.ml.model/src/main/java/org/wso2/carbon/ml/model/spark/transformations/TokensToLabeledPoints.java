@@ -23,6 +23,9 @@ import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
+/**
+ * This class transforms string arrays of tokens to labeled points
+ */
 public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
     private final int responseIndex;
 
@@ -34,7 +37,7 @@ public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
     }
 
     /**
-     * This class transforms token arrays into labeled points
+     * Function to transform token arrays into labeled points
      *
      * @param tokens String array of tokens
      * @return Labeled point
@@ -52,7 +55,9 @@ public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while transforming tokens to labeled points: "
+                    + e.getMessage(), e);
         }
     }
 }

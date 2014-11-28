@@ -22,6 +22,9 @@ import org.apache.spark.api.java.function.Function2;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
+/**
+ * A filter to remove discarded rows - Impute Option: Discard
+ */
 public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
 
     @Override
@@ -37,7 +40,8 @@ public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
             }
             return keep;
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while removing discarded rows: " + e.getMessage(), e);
         }
     }
 }

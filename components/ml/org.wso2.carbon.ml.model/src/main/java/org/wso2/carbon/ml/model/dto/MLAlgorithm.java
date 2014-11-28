@@ -20,6 +20,9 @@ package org.wso2.carbon.ml.model.dto;
 
 import java.util.List;
 
+/**
+ * DTO class for JAXB binding of MLAlgorithmConfigurationParser
+ */
 public class MLAlgorithm {
     private String name;
     private String type;
