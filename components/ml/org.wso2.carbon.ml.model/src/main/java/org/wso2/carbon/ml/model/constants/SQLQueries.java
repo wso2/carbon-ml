@@ -19,11 +19,17 @@ package org.wso2.carbon.ml.model.constants;
 
 public class SQLQueries {
 
-    public static final String INSERT_MODEL_SETTINGS =
+    public static final String INSERT_ML_MODEL_SETTINGS =
             "INSERT INTO MODEL_SETTINGS(MODEL_SETTINGS_ID,WORKFLOW_ID,ALGORITHM_CLASS," +
             "ALGORITHM_NAME,RESPONSE,TRAIN_DATA_FRACTION,HYPERPARAMETERS) VALUES(?,?,?,?,?,?,?)";
 
-    public static final String INSERT_ML_MODEL = "";
+    public static final String UPDATE_ML_MODEL = "UPDATE ML_MODEL SET MODEL=? AND SET " +
+                                                 "MODEL_SUMMARY=? AND SET " +
+                                                 "MODEL_EXECUTION_END_TIME=?"
+                                                 + "WHERE MODEL_ID=?";
+
+    public static final String INSERT_ML_MODEL = "INSERT INTO ML_MODEL(MODEL_ID,WORKFLOW_ID," +
+                                                 "MODEL_EXECUTION_START_TIME) VALUES(?,?,?)";
 
     /*
      * private Constructor to prevent any other class from instantiating.

@@ -38,7 +38,8 @@ public class LineToTokens implements Function<String, String[]> {
         try {
             return tokenSeparator.split(line);
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while tranforming lines to tokens: " + e.getMessage(), e);
         }
     }
 }

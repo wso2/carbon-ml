@@ -28,16 +28,18 @@ import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.json.JSONObject;
-import org.wso2.carbon.ml.model.spark.transformations.Header;
-import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.DatabaseHandler;
 import org.wso2.carbon.ml.model.MLModelUtils;
 import org.wso2.carbon.ml.model.SparkConfigurationParser;
-import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
+import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.spark.transformations.Header;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 import scala.Tuple2;
 
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -49,7 +51,7 @@ public class SupervisedModel implements Runnable {
     /**
      * @param workflow Machine learning workflow
      */
-    SupervisedModel(JSONObject workflow) {
+    public SupervisedModel(JSONObject workflow) {
         this.workflow = workflow;
     }
 
@@ -59,7 +61,8 @@ public class SupervisedModel implements Runnable {
         try {
             // create a new spark configuration
             SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser();
-            SparkConf sparkConf = sparkConfigurationParser.getSparkConfiguration(MLModelConstants.SPARK_CONFIG_XML);
+            SparkConf sparkConf = sparkConfigurationParser.getSparkConfiguration(
+                    MLModelConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName(workflow.getString(MLModelConstants.MODEL_ID));
             // create a new java spark context
             JavaSparkContext sc = new JavaSparkContext(sparkConf);
@@ -77,16 +80,16 @@ public class SupervisedModel implements Runnable {
             JavaRDD<String[]> tokens = data.map(lineToTokens);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = MLModelUtils.getResponseIndex(workflow.getString(MLModelConstants
-                                                                                         .RESPONSE), headerRow, columnSeparator);
+                    .RESPONSE), headerRow, columnSeparator);
             TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(responseIndex);
             JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
             JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,
-                                                                      workflow.getDouble(MLModelConstants.TRAIN_DATA_FRACTION),
-                                                                      MLModelConstants.RANDOM_SEED);
+                    workflow.getDouble(MLModelConstants.TRAIN_DATA_FRACTION),
+                    MLModelConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
             // build a machine learning model according to user selected algorithm
             MLModelConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLModelConstants
-                    .SUPERVISED_ALGORITHM.valueOf(workflow.getString(MLModelConstants.ALGORITHM));
+                    .SUPERVISED_ALGORITHM.valueOf(workflow.getString(MLModelConstants.ALGORITHM_NAME));
             switch (supervisedAlgorithm) {
                 case LOGISTIC_REGRESSION:
                     buildLogisticRegressionModel(trainingData, testingData, workflow);
@@ -95,7 +98,8 @@ public class SupervisedModel implements Runnable {
                     // empty hashmap - no categorical features
                     // needs to be populated with categorical column number:no of categories
                     Map<Integer, Integer> categoricalFeatures = new HashMap();
-                    buildDecisionTreeModel(trainingData, testingData, categoricalFeatures, workflow);
+                    buildDecisionTreeModel(trainingData, testingData, categoricalFeatures,
+                            workflow);
                     break;
                 default:
                     throw new IllegalStateException();
@@ -117,28 +121,31 @@ public class SupervisedModel implements Runnable {
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     private void buildLogisticRegressionModel(JavaRDD<LabeledPoint> trainingData,
-                                              JavaRDD<LabeledPoint> testingData,
-                                              JSONObject workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData,
+            JSONObject workflow) throws ModelServiceException {
         try {
+            String modelID = workflow.getString(MLModelConstants.MODEL_ID);
+            DatabaseHandler databaseHandler = new DatabaseHandler();
+            databaseHandler.insertModel(modelID, workflow.getString(MLModelConstants.WORKFLOW_ID),
+                    new Time(System.currentTimeMillis()));
             LogisticRegression logisticRegression = new LogisticRegression();
             LogisticRegressionModel model = logisticRegression.trainWithSGD(trainingData,
-                                                                            workflow.getDouble
-                                                                                    (MLModelConstants.LEARNING_RATE),
-                                                                            workflow.getInt
-                                                                                    (MLModelConstants.ITERATIONS),
-                                                                            workflow.getString
-                                                                                    (MLModelConstants.REGULARIZATION_TYPE),
-                                                                            workflow.getDouble
-                                                                                    (MLModelConstants.REGULARIZATION_PARAMETER),
-                                                                            workflow.getDouble
-                                                                                    (MLModelConstants.SGD_DATA_FRACTION));
+                    workflow.getDouble(MLModelConstants.LEARNING_RATE),
+                    workflow.getInt(MLModelConstants.ITERATIONS),
+                    workflow.getString(MLModelConstants.REGULARIZATION_TYPE),
+                    workflow.getDouble(MLModelConstants.REGULARIZATION_PARAMETER),
+                    workflow.getDouble(MLModelConstants.SGD_DATA_FRACTION));
             model.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(model,
-                                                                                      testingData);
+                    testingData);
             LogisticRegressionModelSummary logisticRegressionModelSummary = logisticRegression
                     .getModelSummary(scoresAndLabels);
+            databaseHandler.updateModel(modelID, model, logisticRegressionModelSummary,
+                    new Time(System.currentTimeMillis()));
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while building logistic regression model: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -153,21 +160,22 @@ public class SupervisedModel implements Runnable {
      * @throws ModelServiceException
      */
     private void buildDecisionTreeModel(JavaRDD<LabeledPoint> trainingData,
-                                        JavaRDD<LabeledPoint> testingData,
-                                        Map<Integer, Integer> categoricalFeatures,
-                                        JSONObject workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData,
+            Map<Integer, Integer> categoricalFeatures,
+            JSONObject workflow) throws ModelServiceException {
         try {
             DecisionTree decisionTree = new DecisionTree();
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
-                                                                     workflow.getInt(MLModelConstants.NUM_CLASSES),
-                                                                     categoricalFeatures,
-                                                                     workflow.getString(MLModelConstants.IMPURITY),
-                                                                     workflow.getInt(MLModelConstants.MAX_DEPTH),
-                                                                     workflow.getInt(MLModelConstants.MAX_BINS));
-            JavaPairRDD<Double, Double> predictionsAnsLabels = decisionTree.test(decisionTreeModel, trainingData);
+                    workflow.getInt(MLModelConstants.NUM_CLASSES), categoricalFeatures,
+                    workflow.getString(MLModelConstants.IMPURITY),
+                    workflow.getInt(MLModelConstants.MAX_DEPTH),
+                    workflow.getInt(MLModelConstants.MAX_BINS));
+            JavaPairRDD<Double, Double> predictionsAnsLabels = decisionTree.test(decisionTreeModel,
+                    trainingData);
             double testError = decisionTree.getTestError(predictionsAnsLabels);
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while building decision tree model: " + e.getMessage(), e);
         }
 
     }

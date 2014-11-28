@@ -21,6 +21,9 @@ package org.wso2.carbon.ml.model.dto;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
+/**
+ * DTO class for JAXB binding of SparkConfigurationParser
+ */
 public class SparkProperty {
     private String property;
     private String name;

@@ -31,9 +31,10 @@ import org.wso2.carbon.ml.model.spark.transformations.Header;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 
+import java.io.Serializable;
 import java.util.regex.Pattern;
 
-public class LogisticRegressionTest{
+public class LogisticRegressionTest {
 
     @Test
     public void testGetModelSummary() throws Exception {
@@ -52,12 +53,12 @@ public class LogisticRegressionTest{
         JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
         LogisticRegression logisticRegression = new LogisticRegression();
         LogisticRegressionModel model = logisticRegression.trainWithSGD(trainingData, 0.01,
-                                                                        100,
-                                                                        "L1", 0.001, 1.0);
+                100,
+                "L1", 0.001, 1.0);
         model.clearThreshold();
         LogisticRegressionModelSummary modelSummary = logisticRegression.getModelSummary
                 (logisticRegression.test(model, testingData));
-        Assert.assertEquals(modelSummary.getAuc(),0.54,0.01);
+        Assert.assertEquals(modelSummary.getAuc(), 0.54, 0.01);
         sc.stop();
     }
 }

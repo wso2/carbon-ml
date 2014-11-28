@@ -18,12 +18,12 @@
 package org.wso2.carbon.ml.model.exceptions;
 
 public class DatabaseHandlerException extends Exception {
-	
-	public DatabaseHandlerException(String message) {
-		super(message);
-	}
-	
-	public DatabaseHandlerException(String message, Throwable cause) {
+
+    public DatabaseHandlerException(String message) {
+        super(message);
+    }
+
+    public DatabaseHandlerException(String message, Throwable cause) {
         super(message, cause);
     }
 }

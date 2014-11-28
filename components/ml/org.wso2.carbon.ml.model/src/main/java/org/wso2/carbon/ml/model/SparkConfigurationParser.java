@@ -39,16 +39,16 @@ public class SparkConfigurationParser {
      * @return Spark configuration
      * @throws org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException
      */
-    public SparkConf getSparkConfiguration(String xmlFilePath) throws SparkConfigurationParserException {
+    public SparkConf getSparkConfiguration(String xmlFilePath)
+            throws SparkConfigurationParserException {
         try {
             SparkConf sparkConf = new SparkConf();
             File file = new File(xmlFilePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(SparkSettings.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SparkSettings sparkSettings = (SparkSettings) jaxbUnmarshaller.unmarshal(file);
-            for (SparkProperty sparkProperty : sparkSettings.getProperties())
-            {
-                sparkConf.set(sparkProperty.getName(),sparkProperty.getProperty());
+            for (SparkProperty sparkProperty : sparkSettings.getProperties()) {
+                sparkConf.set(sparkProperty.getName(), sparkProperty.getProperty());
             }
             return sparkConf;
         } catch (Exception e) {
