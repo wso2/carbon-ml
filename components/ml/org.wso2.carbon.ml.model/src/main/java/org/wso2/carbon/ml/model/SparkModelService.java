@@ -168,15 +168,17 @@ public class SparkModelService implements ModelService {
         return recommendations;
     }
 
-    public void buildModel(JSONObject workflow) throws ModelServiceException {
+    public void buildModel(String workflowJSON) throws ModelServiceException {
         try {
+            JSONObject workflow = new JSONObject(workflowJSON);
             String algorithmType = workflow.getString(MLModelConstants.ALGORITHM_TYPE);
-            if (MLModelConstants.CLASSIFICATION.equals(algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)){
+            if (MLModelConstants.CLASSIFICATION.equals(
+                    algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
                 SupervisedModel supervisedModel = new SupervisedModel(workflow);
                 ExecutorService executorService = Executors.newSingleThreadExecutor();
                 executorService.submit(supervisedModel);
                 executorService.shutdown();
-                executorService.awaitTermination(10L,TimeUnit.MINUTES);
+                executorService.awaitTermination(10L, TimeUnit.MINUTES);
             }
         } catch (Exception e) {
             logger.error(
