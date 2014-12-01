@@ -1,15 +1,15 @@
 <%
-   var log = new Log();
-   var carbon = require('carbon');
-   var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-   try{
-      var workflowId = session.get("workflowId");
-      if (workflowId != null){
-         var featureType = request.getParameter("FEATURE_TYPE");
-   		var featureName = request.getParameter("FEATURE_NAME");
-   		mlDatasetService.updateDataType(featureName, workflowId, featureType);
-      }
-   }catch(e){
-   	log.error("An error occured while updating feature type",e);
-   }
+    var log = new Log();
+    var carbon = require('carbon');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+    try {
+        var workflowId = session.get("workflowId");
+        if (workflowId != null) {
+            var featureType = request.getParameter("FEATURE_TYPE");
+            var featureName = request.getParameter("FEATURE_NAME");
+            mlDatasetService.updateDataType(featureName, workflowId, featureType);
+        }
+    } catch(e) {
+        log.error("An error occured while updating feature type", e);
+    }
 %>
