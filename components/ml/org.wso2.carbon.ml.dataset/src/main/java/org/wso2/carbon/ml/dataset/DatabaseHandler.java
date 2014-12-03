@@ -279,7 +279,7 @@ public class DatabaseHandler {
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
-            JSONObject summaryStat;
+            JSONArray summaryStat;
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             for (int column = 0; column < header.length; column++) {
@@ -325,16 +325,16 @@ public class DatabaseHandler {
      * @param descriptiveStats DescriptiveStats object of the column
      * @return JSON representation of the summary statistics of the column
      */
-    private JSONObject createJson(String type, SortedMap<?, Integer> graphFrequencies,
+    private JSONArray createJson(String type, SortedMap<?, Integer> graphFrequencies,
         int missing, int unique, DescriptiveStatistics descriptiveStats) {
         JSONObject json = new JSONObject();
         JSONArray freqs = new JSONArray();
         Object[] categoryNames = graphFrequencies.keySet().toArray();
         // Create an array with intervals/categories and their frequencies.
         for (int i = 0; i < graphFrequencies.size(); i++) {
-            JSONObject temp = new JSONObject();
-            temp.put("range", categoryNames[i].toString());
-            temp.put("frequency", graphFrequencies.get(categoryNames[i]));
+            JSONArray temp = new JSONArray();
+            temp.put(categoryNames[i].toString());
+            temp.put(graphFrequencies.get(categoryNames[i]));
             freqs.put(temp);
         }
         // Put the statistics to a json object
@@ -350,8 +350,12 @@ public class DatabaseHandler {
                 json.put("skewness", decimalFormat.format(descriptiveStats.getSkewness()));
             }
         }
-        json.put("frequencies", freqs);
-        return json;
+        json.put("values", freqs);
+        json.put("bar", true);
+        json.put("key", "Frequency");
+        JSONArray summaryStatArray = new JSONArray();
+        summaryStatArray.put(json);
+        return summaryStatArray;
     }
 
     /**
