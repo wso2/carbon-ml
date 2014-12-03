@@ -1,6 +1,6 @@
 .graphtitle{
 	text-align:center;
-	margin-top: 50px;
+	margin-top: 4em;
 }
 
 .graphSumarry{
@@ -11,7 +11,7 @@
 }
 
 .graph{
-	margin-top: -20px;
+	margin-bottom: 2em;
 }
 
 #scatterPlotFeatures{
@@ -26,11 +26,17 @@
 
 #histograms{
 	float: center;
-	width: 40em;
-	margin: auto;
+	width: 45em;
+	margin-top: -2em;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .half-width-column{
 	float: left;
 	width: 50%;	
+}
+
+#histogram1 svg, #histogram2 svg{
+	height: 18em;
 }

@@ -6,7 +6,17 @@
         <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
         <link rel="stylesheet" type="text/css" href="../../css/wso2_ml_graphs.css">
         <link rel="stylesheet" type="text/css" href="./css/exploreData.css">
+        <link rel="stylesheet" type="text/css" href="../../css/nv.d3.css">
         <script type="text/javascript" src="../../js/d3.js"></script>
+        <script type="text/javascript" src="../../js/nv.d3.js"></script>
+        <script src="../../js/src/utils.js"></script>
+        <script src="../../js/src/tooltip.js"></script>
+        <script src="../../js/src/models/legend.js"></script>
+        <script src="../../js/src/models/axis.js"></script>
+        <script src="../../js/src/models/scatter.js"></script>
+        <script src="../../js/src/models/line.js"></script>
+        <script src="../../js/src/models/historicalBar.js"></script>
+        <script src="../../js/src/models/linePlusBarChart.js"></script>
         <script src="../../js/jquery.js"></script>
         <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
     </head>
@@ -77,14 +87,19 @@
 
     <div id="rightColumn" class="half-width-column">
         <div id="histograms" class="graph">
-            <div id="histogram1Title" class="graphtitle"></div>
-            <div id="histogram1" class="graph"></div>
-            <div id="numFeature1Summary" class="graphSumarry"></div>
-            <div id="histogram2Title" class="graphtitle"></div>
-            <div id="histogram2" class="graph"></div>
-            <div id="numFeature2Summary" class="graphSumarry"></div>
+            <div id="histogram1" class="graph">
+                <div id="histogram1Title" class="graphtitle"></div>
+                <svg></svg>
+                <div id="numFeature1Summary" class="graphSumarry"></div>
+            </div>
+            <div id="histogram2" class="graph">
+                <div id="histogram2Title" class="graphtitle"></div>
+                <svg></svg>
+                 <div id="numFeature2Summary" class="graphSumarry"></div>
+            </div>
         </div>
     </div>
+    
     <script src="./js/exploreDataset.js"></script>
     <script> drawPlotsAjax(); </script>
     </body>

@@ -26,12 +26,12 @@
         session.put("datasetId", datasetId);
         session.put("datasetName", sourceFile.getName());
         session.put("numOfFeatures", numOfFeatures);
-        } catch(e) {
-            log.error("An error occured while uploading file " + sourceFile.getName() + " of user " + session.get("logged.user"), e);
-        }finally{
-            sourceFile.close();
-            inputStream.getStream().close();
-        }
+    } catch(e) {
+        log.error("An error occured while uploading file " + sourceFile.getName() + " of user " + session.get("logged.user"), e);
+    }finally{
+        inputStream.getStream().close();
+        sourceFile.close();
+    }
 
     //create a new workflow
     var workflowId = uuid.generate();
