@@ -94,8 +94,8 @@ function drawDataViewTable() {
         $('.summaryStatistics').each(function() {
             var jsonText = $(this).text();
             // TODO: handle JSON parsing errors
-            var jsonObj  = JSON.parse(jsonText);
-            
+            var jsonObj  = JSON.parse(jsonText);            
+
             // clear text in this cell and draw graphs
             $(this).text("");
 
@@ -103,11 +103,11 @@ function drawDataViewTable() {
             var closestTr = $(this).closest('tr');
             var FeatureType = closestTr.find('.fieldType option:selected').text();
 
-            var frequencies = jsonObj.frequencies;
+            var frequencies = jsonObj[0].values;
             
             // transform dataset
             var dataArray = $.map(frequencies, function(value, index) {
-                return [value.frequency];
+                return value[1];
             });
             
             if (FeatureType == 'CATEGORICAL'){          
