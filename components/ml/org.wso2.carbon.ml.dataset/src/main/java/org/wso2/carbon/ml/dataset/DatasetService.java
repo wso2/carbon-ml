@@ -117,14 +117,14 @@ public interface DatasetService {
      * features, needed for the scatter plot.
      *
      * @param datasetID Unique Identifier of the data-set
-     * @param xAxisFeature Name of the feature to use as the x-axis
-     * @param yAxisFeature Name of the feature to use as the y-axis
-     * @param groupByFeature Name of the feature to be grouped by (color code)
+     * @param feature1 Name of the feature to use as the x-axis
+     * @param feature2 Name of the feature to use as the y-axis
+     * @param feature3 Name of the feature to be grouped by (color code)
      * @return A JSON array of data points
      * @throws DatasetServiceException
      */
-    public JSONArray getSamplePoints(String datasetID, String xAxisFeature, String yAxisFeature,
-            String groupByFeature) throws DatasetServiceException;
+    public JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
+            String feature3) throws DatasetServiceException;
 
     /**
      * Returns the summary statistics for a given feature of a given data-set

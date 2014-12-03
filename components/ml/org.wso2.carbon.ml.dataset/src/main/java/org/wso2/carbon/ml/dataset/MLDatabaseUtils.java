@@ -59,7 +59,7 @@ public class MLDatabaseUtils {
             try {
                 connection.close();
             } catch (SQLException e) {
-                logger.error("Could not close connection: " + e.getMessage(), e);
+                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
         // Close the statement
@@ -67,7 +67,7 @@ public class MLDatabaseUtils {
             try {
                 preparedStatement.close();
             } catch (SQLException e) {
-                logger.error("Could not close statement: " + e.getMessage(), e);
+                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
     }
