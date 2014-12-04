@@ -269,11 +269,11 @@ public class MLDatasetService implements DatasetService {
      * @throws DatasetServiceException
      */
     @Override
-    public JSONArray getSamplePoints(String datasetID, String xAxisFeature, String yAxisFeature,
+    public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
         String groupByFeature) throws DatasetServiceException {
         try {
             DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getSamplePoints(datasetID, xAxisFeature, yAxisFeature, groupByFeature);
+            return dbHandler.getScatterPlotPoints(datasetID, xAxisFeature, yAxisFeature, groupByFeature);
         } catch (DatabaseHandlerException e) {
             throw new DatasetServiceException( "Failed to retrieve sample points: "
                 + e.getMessage(), e);
