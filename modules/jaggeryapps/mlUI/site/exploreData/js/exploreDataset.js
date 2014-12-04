@@ -1,30 +1,38 @@
+/*
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 $('document').ready(function() {
     $('#exploreData').addClass('top_Menu_button menuHiligher');
+    
     disableWizardMenu();
+
+    // redraw upon numerical features list 1, list 2 or list 3 selection
+	$( ".numFeaturesDropdown1, .numFeaturesDropdown2, .catFeaturesDropdown" ).change(function() {
+    	drawPlotsAjax();
+	});
+
 });
 
-
 function disableWizardMenu() {
-    var color='#848484';
+    var color='#848484	';
     $('#evaluate').css('color',color);
     $('#evaluate').removeAttr("href");
 };
-
-// redraw upon numerical features list 1 selection
-$( ".numFeaturesDropdown1" ).change(function() {
-    drawPlotsAjax();
-});
-
-// redraw upon numerical features list 2 selection
-$( ".numFeaturesDropdown2" ).change(function() {
-    drawPlotsAjax();
-});
-
-// redraw upon categorical features list selection
-$( ".catFeaturesDropdown" ).change(function() {
-    drawPlotsAjax();
-});
 
 function drawPlotsAjax(){
     var numFeature1 = $(".numFeaturesDropdown1").val();
@@ -41,8 +49,7 @@ function drawPlotsAjax(){
         },
         success : function(data){
             drawScatterPlot(JSON.parse(data),"#scatter",numFeature1,numFeature2);
-            $("#scatterPlotTitle").empty();
-            $("#scatterPlotTitle").append(numFeature1+" Vs. "+numFeature2);
+            $("#scatterPlotTitle").html(numFeature1+" Vs. "+numFeature2);
         }
     });
 
@@ -54,12 +61,10 @@ function drawPlotsAjax(){
         },
         success : function(data){
             var jsonObj  = JSON.parse(data);
-            var summary = "Mean: "+jsonObj[0].mean+ "&emsp;&emsp;&emsp; Median: "+jsonObj[0].median+ "&emsp;&emsp;&emsp; Std: "+jsonObj[0].std+ "&emsp;&emsp;&emsp; Skewness: "+jsonObj[0].skewness;
-            $("#histogram1Title").empty();
-            $("#histogram1Title").append(numFeature1);
-            $("#numFeature1Summary").empty();
-            $("#numFeature1Summary").append(summary);
-            var frequencies = jsonObj.frequencies;
+            var summary = "Mean: "+jsonObj[0].mean+ "&emsp;&emsp;&emsp;  Median: "+jsonObj[0].median+ "&emsp;&emsp;&emsp; Std: "+jsonObj[0].std+ "&emsp;&emsp;&emsp; Skewness: "+jsonObj[0].skewness;
+            $("#histogram1Title").html(numFeature1);
+            $("#numFeature1Summary").html(summary);
+            
             // transform dataset
             drawHistogram(jsonObj,"#histogram1");
         }
@@ -74,16 +79,13 @@ function drawPlotsAjax(){
         success : function(data){
             var jsonObj  = JSON.parse(data);
             var summary = "Mean: "+jsonObj[0].mean+ "&emsp;&emsp;&emsp; Median: "+jsonObj[0].median+ "&emsp;&emsp;&emsp; Std: "+jsonObj[0].std+ "&emsp;&emsp;&emsp; Skewness: "+jsonObj[0].skewness;
-            $("#histogram2Title").empty();
-            $("#histogram2Title").append(numFeature2);
-            $("#numFeature2Summary").empty();
-            $("#numFeature2Summary").append(summary);
-            var frequencies = jsonObj.frequencies;       
+            $("#histogram2Title").html(numFeature2);
+            $("#numFeature2Summary").html(summary);                 
+            
             // transform dataset
             drawHistogram(jsonObj,"#histogram2");
         }
     });
-
 }
 
 // drawing a simple scatter graph
@@ -102,19 +104,21 @@ function drawScatterPlot(data,cssClass,xLabel,yLabel){
 
 function drawHistogram(data,divID){
     $(divID+' svg').empty();
+    
     nv.addGraph(function() {
+    
     var chart = nv.models.linePlusBarChart()
-      .margin({top: 30, right: 60, bottom: 50, left: 70})
-      .x(function(d,i) { return i })
-      .y(function(d) { return d[1] })
-      .color(["#C99614"])
-      ;
+      	.margin({top: 30, right: 60, bottom: 50, left: 70})
+      	.x(function(d,i) { return i })
+      	.y(function(d) { return d[1] })
+      	.color(["#C99614"])
+      	;
 
     chart.xAxis
-      .showMaxMin(false)
-      .tickFormat(function(d) {
-        return data[0].values[d][0];
-      });
+      	.showMaxMin(false)
+      	.tickFormat(function(d) {
+        	return data[0].values[d][0];
+      	});
 
     chart.y1Axis
       .tickFormat(d3.format(',f'));
@@ -122,6 +126,7 @@ function drawHistogram(data,divID){
     chart.y2Axis
       .tickFormat(function(d) { return '$' + d3.format(',f')(d) });
 
+    
     chart.bars.forceY([0]);
 
     d3.select(divID+' svg')
