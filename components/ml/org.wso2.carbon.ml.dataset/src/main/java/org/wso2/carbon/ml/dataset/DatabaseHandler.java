@@ -423,11 +423,11 @@ public class DatabaseHandler {
             if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
                     !columnData.get(secondFeatureColumn).get(row).isEmpty() &&
                     !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
-                String category =columnData.get(thirdFeatureColumn).get(row);
+                String category = columnData.get(thirdFeatureColumn).get(row);
                 JSONObject point = new JSONObject();
                 point.put("x", Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
                 point.put("y", Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
-                if(pointsGroups.containsKey(category)){
+                if (pointsGroups.containsKey(category)) {
                     pointsGroups.get(category).getJSONArray("values").put(point);
                 } else {
                     JSONObject group = new JSONObject();
@@ -438,7 +438,7 @@ public class DatabaseHandler {
             }
         }
         // Put all JSON Objects to a JSON Array
-        for(String groupName : pointsGroups.keySet()){
+        for (String groupName : pointsGroups.keySet()) {
             samplePointsArray.put(pointsGroups.get(groupName));
         }
         return samplePointsArray;
