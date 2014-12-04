@@ -123,7 +123,7 @@ public interface DatasetService {
      * @return A JSON array of data points
      * @throws DatasetServiceException
      */
-    public JSONArray getSamplePoints(String datasetID, String xAxisFeature, String yAxisFeature,
+    public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
             String groupByFeature) throws DatasetServiceException;
 
     /**

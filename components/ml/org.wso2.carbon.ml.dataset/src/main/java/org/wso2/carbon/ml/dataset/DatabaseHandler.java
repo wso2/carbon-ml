@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -404,7 +405,7 @@ public class DatabaseHandler {
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    protected JSONArray getSamplePoints(String datasetID, String xAxisFeature, String yAxisFeature,
+    protected JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
         String groupByFeature) throws DatabaseHandlerException {
         // Get the sample from the database.
         SamplePoints sample = getDatasetSample(datasetID);
@@ -412,20 +413,33 @@ public class DatabaseHandler {
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
+        Map<String, JSONObject> pointsGroups = new HashMap<String, JSONObject>();
         JSONArray samplePointsArray = new JSONArray();
         int firstFeatureColumn = dataHeaders.get(xAxisFeature);
         int secondFeatureColumn = dataHeaders.get(yAxisFeature);
         int thirdFeatureColumn = dataHeaders.get(groupByFeature);
+        // create JSON Objects for each category
         for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
             if (!columnData.get(firstFeatureColumn).get(row).isEmpty() &&
                     !columnData.get(secondFeatureColumn).get(row).isEmpty() &&
                     !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
-                JSONArray point = new JSONArray();
-                point.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
-                point.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
-                point.put(columnData.get(thirdFeatureColumn).get(row));
-                samplePointsArray.put(point);
+                String category = columnData.get(thirdFeatureColumn).get(row);
+                JSONObject point = new JSONObject();
+                point.put("x", Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
+                point.put("y", Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
+                if (pointsGroups.containsKey(category)) {
+                    pointsGroups.get(category).getJSONArray("values").put(point);
+                } else {
+                    JSONObject group = new JSONObject();
+                    group.put("key", category);
+                    group.put("values", new JSONArray("[" + point.toString() + "]"));
+                    pointsGroups.put(category, group);
+                }
             }
+        }
+        // Put all JSON Objects to a JSON Array
+        for (String groupName : pointsGroups.keySet()) {
+            samplePointsArray.put(pointsGroups.get(groupName));
         }
         return samplePointsArray;
     }
