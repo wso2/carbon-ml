@@ -31,7 +31,11 @@ import java.io.File;
 
 public class SparkConfigurationParser {
     private static final Log logger = LogFactory.getLog(SparkConfigurationParser.class);
+    private String sparkConfigurationFilePath;
 
+    public SparkConfigurationParser(String sparkConfigurationFilePath){
+        this.sparkConfigurationFilePath = sparkConfigurationFilePath;
+    }
     /**
      * This method generates a spark configuration according to configuration settings in
      * spark-config.xml
@@ -39,14 +43,14 @@ public class SparkConfigurationParser {
      * @return Spark configuration
      * @throws org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException
      */
-    public SparkConf getSparkConfiguration(String xmlFilePath)
+    public SparkConf getSparkConf()
             throws SparkConfigurationParserException {
         try {
-            SparkConf sparkConf = new SparkConf();
-            File file = new File(xmlFilePath);
+            File file = new File(this.sparkConfigurationFilePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(SparkSettings.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SparkSettings sparkSettings = (SparkSettings) jaxbUnmarshaller.unmarshal(file);
+            SparkConf sparkConf = new SparkConf();
             for (SparkProperty sparkProperty : sparkSettings.getProperties()) {
                 sparkConf.set(sparkProperty.getName(), sparkProperty.getProperty());
             }

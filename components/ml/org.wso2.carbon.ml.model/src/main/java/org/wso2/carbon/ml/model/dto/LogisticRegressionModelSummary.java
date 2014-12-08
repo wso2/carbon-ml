@@ -20,20 +20,13 @@ package org.wso2.carbon.ml.model.dto;
 
 import org.json.JSONArray;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LogisticRegressionModelSummary {
-    private JSONArray roc;
+public class LogisticRegressionModelSummary implements Serializable {
+    private String roc;
     private double auc;
     private List<PredictedVsActual> predictedVsActuals;
-
-    public JSONArray getRoc() {
-        return roc;
-    }
-
-    public void setRoc(JSONArray roc) {
-        this.roc = roc;
-    }
 
     public double getAuc() {
         return auc;
@@ -49,5 +42,13 @@ public class LogisticRegressionModelSummary {
 
     public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
         this.predictedVsActuals = predictedVsActuals;
+    }
+
+    public String getRoc() {
+        return roc;
+    }
+
+    public void setRoc(String roc) {
+        this.roc = roc;
     }
 }

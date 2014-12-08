@@ -155,8 +155,6 @@
             <outputDirectory>wso2ml-${pom.version}/repository/components/lib</outputDirectory>
             <includes>
                 <include>org.apache.commons:commons-math3:jar</include>
-                <include>org.apache.spark:spark-mllib_2.10:jar</include>
-                <include>org.apache.spark:spark-core_2.10:jar</include>
                 <include>org.json:json:jar</include>
                 <include>org.apache.commons:commons-csv:jar</include>
                 <include>commons-lang:commons-lang:jar</include>

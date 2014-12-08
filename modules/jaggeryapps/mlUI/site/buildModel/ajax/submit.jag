@@ -19,9 +19,9 @@
 
     try {
         var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
-        modelService.buildModel(paramters);
+        modelService.buildModel(stringify(paramters));
     } catch (e) {
-        log.serror('An error occured while building the model for workflow: ' + workflowId, e);
+        log.error('An error occured while building the model for workflow: ' + paramters.workflowID, e);
     }
      
 %>

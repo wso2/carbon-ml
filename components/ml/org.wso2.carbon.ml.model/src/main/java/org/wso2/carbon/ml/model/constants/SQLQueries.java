@@ -23,13 +23,16 @@ public class SQLQueries {
             "INSERT INTO MODEL_SETTINGS(MODEL_SETTINGS_ID,WORKFLOW_ID,ALGORITHM_CLASS," +
             "ALGORITHM_NAME,RESPONSE,TRAIN_DATA_FRACTION,HYPERPARAMETERS) VALUES(?,?,?,?,?,?,?)";
 
-    public static final String UPDATE_ML_MODEL = "UPDATE ML_MODEL SET MODEL=? AND SET " +
-                                                 "MODEL_SUMMARY=? AND SET " +
+    public static final String UPDATE_ML_MODEL = "UPDATE ML_MODEL SET MODEL=?," +
+                                                 "MODEL_SUMMARY=?," +
                                                  "MODEL_EXECUTION_END_TIME=?"
                                                  + "WHERE MODEL_ID=?";
 
     public static final String INSERT_ML_MODEL = "INSERT INTO ML_MODEL(MODEL_ID,WORKFLOW_ID," +
                                                  "MODEL_EXECUTION_START_TIME) VALUES(?,?,?)";
+
+    public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE "
+                                                      + "MODEL_ID=?";
 
     /*
      * private Constructor to prevent any other class from instantiating.
