@@ -359,7 +359,7 @@
         <uuid.feature.version>1.0.0</uuid.feature.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-        <ml.version>0.1.0</ml.version>
+        <ml.version>0.1.0-SNAPSHOT</ml.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <commons.math.version>3.3</commons.math.version>
         <commons.csv.version>1.0</commons.csv.version>
