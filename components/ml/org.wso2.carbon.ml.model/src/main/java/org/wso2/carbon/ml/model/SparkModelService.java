@@ -168,6 +168,11 @@ public class SparkModelService implements ModelService {
         return recommendations;
     }
 
+    /**
+     *
+     * @param workflowJSON Workflow as a JSON string
+     * @throws ModelServiceException
+     */
     public void buildModel(String workflowJSON) throws ModelServiceException {
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
@@ -193,6 +198,13 @@ public class SparkModelService implements ModelService {
         }
     }
 
+    /**
+     *
+     * @param modelID Model ID
+     * @param <T>
+     * @return Model summary object
+     * @throws ModelServiceException
+     */
     public <T> T getModelSummary(String modelID) throws ModelServiceException {
         T modelSummary = null;
         try {
