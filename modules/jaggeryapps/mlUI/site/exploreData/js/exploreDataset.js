@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 $('document').ready(function() {
     $('#exploreData').addClass('top_Menu_button menuHiligher');
     
@@ -26,6 +25,8 @@ $('document').ready(function() {
     	drawPlotsAjax();
 	});
 
+	// at the loading event also, drawing graphs
+    drawPlotsAjax();
 });
 
 function disableWizardMenu() {
@@ -90,16 +91,15 @@ function drawPlotsAjax(){
 
 // drawing a simple scatter graph
 function drawScatterPlot(data,cssClass,xLabel,yLabel){
-    var sg = scatterPlot()
-        .data(data)
-        .width(600)
-        .height(300)
-        .markerSize(2)
-        .xLabel(xLabel)
-        .yLabel(yLabel)
-        .exploreTwoFeatures(true); 
-    $(cssClass).empty(); 
-    d3.select(cssClass).call(sg);
+  $(cssClass).empty();
+  var scatter = new ScatterPlot(data);
+  
+  scatter.setPlotingAreaWidth(600);
+  scatter.setPlotingAreaHeight(350);
+  scatter.setMarkerSize("2");
+  scatter.setXAxisText(xLabel);
+  scatter.setYAxisText(yLabel);
+  scatter.plot(d3.select(cssClass));
 };
 
 function drawHistogram(data,divID){

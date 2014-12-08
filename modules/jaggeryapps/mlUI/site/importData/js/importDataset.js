@@ -7,15 +7,34 @@ $('document').ready(function() {
     disableEvaluation();
 
     $("#dataImportForm").submit(function(e) {
-        var fileName = $('#datasetName').val();
+        var isAllEntered = true;
+        
         var projectName = $('#projectName').val();
-
+        var projectDescrition = $('#projectDescription').val();
+        var workflowName = $('#workflowName').val();
+        var dataFileName = $('#datasetName').val();
+        
         if(!projectName){
-            $('#validatorMsg').html("<span class=\"errorMessage\">Project name is empty!</span>");
-        }else if (!fileName) {
-            // if dataset name is empty, an error messages is displayed 
-            $('#validatorMsg').html("<span class=\"errorMessage\">Data Source is empty!</span>");
-        } else {
+            $('#projectNameValidator').html("<span class=\"errorMessage\">Project name is required</span>");
+            isAllEntered = false;
+        }
+
+        if(!projectDescrition){
+            $('#projectDescriptionValidator').html("<span class=\"errorMessage\">Project description is required</span>");
+            isAllEntered = false;
+        }
+        
+        if(!workflowName){
+            $('#workflowNameValidator').html("<span class=\"errorMessage\">Workflow name is required</span>");
+            isAllEntered = false;
+        }
+
+        if(!dataFileName){
+	    $('#datasetNameValidator').html("<span class=\"errorMessage\">Dataset is required</span>");
+            isAllEntered = false;
+        }
+
+        if(isAllEntered){
             var formObj = $(this);
             var formURL = formObj.attr("action");
             var formData = new FormData(this);
@@ -49,6 +68,19 @@ $('document').ready(function() {
 
     $("#uploadDataset").change(function() {
         $("#datasetName").val($('#uploadDataset').val());
+        $('#datasetNameValidator').empty();
+    });
+
+    $('#projectName').keypress(function (event){
+        $('#projectNameValidator').empty();
+    });
+
+    $('#projectDescription').keypress(function(event){
+       $('#projectDescriptionValidator').empty();
+    });
+
+    $('#workflowName').keypress(function(event){
+       $('#workflowNameValidator').empty();
     });
 });
 
