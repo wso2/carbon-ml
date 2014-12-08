@@ -41,6 +41,7 @@
             <artifactId>h2-database-engine</artifactId>
             <version>${version.h2.engine}</version>
         </dependency>
+<!--
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -69,6 +70,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
+-->
     </dependencies>
     <build>
         <plugins>

@@ -56,7 +56,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-
         <repository>
             <id>wso2.snapshots</id>
             <name>WSO2 Snapshot Repository</name>
@@ -69,7 +68,6 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-
         <repository>
             <id>wso2.releases</id>
             <name>WSO2 internal Repository</name>
@@ -80,7 +78,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-        
     </repositories>
 
     <pluginRepositories>
@@ -207,10 +204,22 @@
                 <version>${carbon.platform.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- End of dependencies for test framework -->
+
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>${org.json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${orbit.version.json}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.spark.wso2</groupId>
+                <artifactId>spark</artifactId>
+                <version>${orbit.version.spark}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -237,16 +246,16 @@
                 <artifactId>commons-lang</artifactId>
                 <version>${commons.lang.version}</version>
             </dependency>
-	    <dependency>
-		<groupId>commons-io</groupId>
-		<artifactId>commons-io</artifactId>
-		<version>${commons.io.version}</version>
-	    </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
 
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>${orbit.version.h2.database.engine}</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -269,6 +278,25 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
+
+            <!-- Dependencies on WSO2 Carbon ML components -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.model</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.dataset</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <!-- End of depencencies on WSO2 Carbon ML components -->
+
         </dependencies>
     </dependencyManagement>
 
@@ -360,13 +388,15 @@
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <ml.version>0.1.0-SNAPSHOT</ml.version>
+        <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <commons.math.version>3.3</commons.math.version>
         <commons.csv.version>1.0</commons.csv.version>
         <commons.lang.version>2.6</commons.lang.version>
-	    <commons.io.version>2.4</commons.io.version>
-        <h2.version>1.4.180</h2.version>
+        <commons.io.version>2.4</commons.io.version>
+        <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>
         <spark.version>1.1.0</spark.version>
+        <orbit.version.spark>1.1.0.wso2v1</orbit.version.spark>
         <org.json.version>20140107</org.json.version>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>

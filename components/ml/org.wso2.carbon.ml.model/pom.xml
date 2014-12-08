@@ -18,20 +18,8 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.10</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_2.10</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -44,6 +32,14 @@
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark.wso2</groupId>
+            <artifactId>spark</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -60,9 +56,10 @@
                             org.wso2.carbon.ml.model.*,
                         </Export-Package>
                         <Import-Package>
-                            org.h2;version="[0.0.0,1.4.81)",
+                            org.h2,
                             org.apache.commons.logging,
                             org.json.*,
+                            org.apache.spark.*,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

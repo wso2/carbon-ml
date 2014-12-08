@@ -13,9 +13,9 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Machine Learner Project Management Component</name>
     <dependencies>
-	<dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+        <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -41,14 +41,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-				org.wso2.carbon.ml.project.mgt.*,
-				org.h2.*,
-				org.apache.commons.logging
-			</Export-Package>
+                            org.wso2.carbon.ml.project.mgt.*,
+                        </Export-Package>
                         <Import-Package>
-                        	org.h2;version="[0.0.0,1.4.81)",
-                        	org.apache.commons.logging,
-                        	*;resolution:=optional
+                            org.h2;version="[0.0.0,1.4.81)",
+                            org.apache.commons.logging,
+                            *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
