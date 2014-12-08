@@ -1,16 +1,15 @@
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.mllib.regression.LabeledPoint;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 
 import java.util.regex.Pattern;
 
-public class TokensToLabeledPointsTest {
+public class LineToTokensTest {
 
     @Test
     public void testCall() throws Exception {
@@ -20,8 +19,8 @@ public class TokensToLabeledPointsTest {
         Pattern pattern = Pattern.compile(",");
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = lines.map(lineToTokens);
-        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
-        JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
+        Assert.assertEquals(lines.count(),tokens.count(),"Line count doesn't match the tokens " +
+                                                         "count");
         sc.stop();
     }
 }

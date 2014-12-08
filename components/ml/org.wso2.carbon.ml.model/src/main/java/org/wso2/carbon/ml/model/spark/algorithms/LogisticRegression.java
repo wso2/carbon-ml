@@ -33,8 +33,8 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
 import org.wso2.carbon.ml.model.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
@@ -60,16 +60,16 @@ public class LogisticRegression implements Serializable {
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
-                                         double initialLearningRate,
-                                         int noOfIterations,
-                                         String regularizationType,
-                                         double regularizationParameter,
-                                         double dataFractionPerSGDIteration) throws
-                                                                             ModelServiceException {
+            double initialLearningRate,
+            int noOfIterations,
+            String regularizationType,
+            double regularizationParameter,
+            double dataFractionPerSGDIteration) throws
+            ModelServiceException {
         try {
             LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate,
-                                                                            noOfIterations,
-                                                                            regularizationParameter, dataFractionPerSGDIteration);
+                    noOfIterations,
+                    regularizationParameter, dataFractionPerSGDIteration);
             if (MLModelConstants.L1.equals(regularizationType)) {
                 lrSGD.optimizer().setUpdater(new L1Updater());
             } else if (MLModelConstants.L2.equals(regularizationType)) {
@@ -94,17 +94,18 @@ public class LogisticRegression implements Serializable {
      * @throws ModelServiceException
      */
     public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
-                                           int noOfCorrections,
-                                           double convergenceTolerance,
-                                           int noOfIterations,
-                                           double regularizationParameter)
+            int noOfCorrections,
+            double convergenceTolerance,
+            int noOfIterations,
+            double regularizationParameter)
             throws ModelServiceException {
         try {
             int numFeatures = trainingDataset.take(1).get(0).features().size();
             JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
                     new Function<LabeledPoint, Tuple2<Object, Vector>>() {
                         public Tuple2<Object, Vector> call(LabeledPoint p) {
-                            return new Tuple2<Object, Vector>(p.label(), MLUtils.appendBias(p.features()));
+                            return new Tuple2<Object, Vector>(p.label(),
+                                    MLUtils.appendBias(p.features()));
                         }
                     });
             training.cache();
@@ -120,7 +121,8 @@ public class LogisticRegression implements Serializable {
                     initialWeightsWithIntercept);
             Vector weightsWithIntercept = result._1();
             return new LogisticRegressionModel(
-                    Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(), weightsWithIntercept.size() - 1)),
+                    Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(),
+                            weightsWithIntercept.size() - 1)),
                     (weightsWithIntercept.toArray())[weightsWithIntercept.size() - 1]);
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
@@ -136,7 +138,7 @@ public class LogisticRegression implements Serializable {
      * @throws ModelServiceException
      */
     public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
-                                         JavaRDD<LabeledPoint> testingDataset)
+            JavaRDD<LabeledPoint> testingDataset)
             throws ModelServiceException {
         try {
             return testingDataset.map(
@@ -191,10 +193,11 @@ public class LogisticRegression implements Serializable {
                 point.put(rocData.get(i)._2());
                 rocPoints.put(point);
             }
-            logisticRegressionModelSummary.setRoc(rocPoints);
+            logisticRegressionModelSummary.setRoc(rocPoints.toString());
             return logisticRegressionModelSummary;
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
         }
     }
+
 }
