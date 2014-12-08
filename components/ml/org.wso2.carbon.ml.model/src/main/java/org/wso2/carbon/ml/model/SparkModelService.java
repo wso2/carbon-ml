@@ -122,6 +122,11 @@ public class SparkModelService implements ModelService {
             JSONObject userResponse = new JSONObject(userResponseJson);
             Map<String, List<Integer>> algorithmRatings = this.mlAlgorithmConfigurationParser
                     .getAlgorithmRatings(algorithmType);
+            // check whether the response is binary and eliminate logistic regression
+            if (MLModelConstants.NO.equals(userResponse.getString(MLModelConstants.BINARY))) {
+                algorithmRatings.remove(
+                        MLModelConstants.SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString());
+            }
             for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
                 if (MLModelConstants.HIGH.equals(
                         userResponse.get(MLModelConstants.INTERPRETABILITY))) {
@@ -168,6 +173,10 @@ public class SparkModelService implements ModelService {
         return recommendations;
     }
 
+    /**
+     * @param workflowJSON Workflow as a JSON string
+     * @throws ModelServiceException
+     */
     public void buildModel(String workflowJSON) throws ModelServiceException {
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
@@ -193,6 +202,12 @@ public class SparkModelService implements ModelService {
         }
     }
 
+    /**
+     * @param modelID Model ID
+     * @param <T>
+     * @return Model summary object
+     * @throws ModelServiceException
+     */
     public <T> T getModelSummary(String modelID) throws ModelServiceException {
         T modelSummary = null;
         try {
