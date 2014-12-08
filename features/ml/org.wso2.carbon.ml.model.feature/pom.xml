@@ -18,6 +18,11 @@
             <artifactId>org.wso2.carbon.ml.model</artifactId>
             <version>0.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.spark.wso2</groupId>
+            <artifactId>spark</artifactId>
+            <version>1.1.0.wso2v1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -44,6 +49,7 @@
                         </adviceFile>
                         <bundles>
                             <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.model</bundleDef>
+                            <bundleDef>org.apache.spark.wso2:spark</bundleDef>
                         </bundles>
                     </configuration>
                 </execution>
@@ -51,5 +57,4 @@
         </plugin>
     </plugins>
     </build>
-
 </project>

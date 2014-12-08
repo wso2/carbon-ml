@@ -18,13 +18,18 @@
 
 package org.wso2.carbon.ml.model.spark.algorithms;
 
+import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
+import org.apache.spark.SparkEnv;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.json.JSONObject;
@@ -33,36 +38,25 @@ import org.wso2.carbon.ml.model.MLModelUtils;
 import org.wso2.carbon.ml.model.SparkConfigurationParser;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
+import org.wso2.carbon.ml.model.dto.SparkProperty;
+import org.wso2.carbon.ml.model.dto.SparkSettings;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.transformations.Header;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 import scala.Tuple2;
 
+import java.io.File;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class SupervisedModel implements Runnable {
-    private JSONObject workflow;
+public class SupervisedModel {
     private static final Log logger = LogFactory.getLog(SupervisedModel.class);
 
-    /**
-     * @param workflow Machine learning workflow
-     */
-    public SupervisedModel(JSONObject workflow) {
-        this.workflow = workflow;
-    }
-
-    @Override
-    public void run() {
-        // parse filter
+    public void buildModel(JSONObject workflow, SparkConf sparkConf) {
         try {
-            // create a new spark configuration
-            SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser();
-            SparkConf sparkConf = sparkConfigurationParser.getSparkConfiguration(
-                    MLModelConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName(workflow.getString(MLModelConstants.MODEL_ID));
             // create a new java spark context
             JavaSparkContext sc = new JavaSparkContext(sparkConf);
@@ -89,7 +83,8 @@ public class SupervisedModel implements Runnable {
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
             // build a machine learning model according to user selected algorithm
             MLModelConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLModelConstants
-                    .SUPERVISED_ALGORITHM.valueOf(workflow.getString(MLModelConstants.ALGORITHM_NAME));
+                    .SUPERVISED_ALGORITHM.valueOf(
+                            workflow.getString(MLModelConstants.ALGORITHM_NAME));
             switch (supervisedAlgorithm) {
                 case LOGISTIC_REGRESSION:
                     buildLogisticRegressionModel(trainingData, testingData, workflow);

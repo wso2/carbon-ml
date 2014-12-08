@@ -29,6 +29,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 
@@ -169,5 +170,31 @@ public class DatabaseHandler {
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
+    }
+
+    public <T> T getModelSummary(String modelID) throws DatabaseHandlerException{
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(true);
+            getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
+            getStatement.setString(1, modelID);
+            result = getStatement.executeQuery();
+            if (result.first()) {
+                return (T)result.getObject(1);
+            } else {
+                logger.error("Invalid model ID: " + modelID);
+                throw new DatabaseHandlerException("Invalid model ID: " + modelID);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occured while reading model summary for " +
+                                               modelID + " from the database: " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
+        }
+
     }
 }

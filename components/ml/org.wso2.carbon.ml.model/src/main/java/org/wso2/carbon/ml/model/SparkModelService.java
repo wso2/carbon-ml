@@ -18,8 +18,13 @@
 
 package org.wso2.carbon.ml.model;
 
+import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
@@ -28,16 +33,12 @@ import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserExcepti
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @scr.component name="modelService" immediate="true"
@@ -58,7 +59,7 @@ public class SparkModelService implements ModelService {
             SparkModelService sparkModelService = new SparkModelService();
             sparkModelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser
                     (MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
-            context.getBundleContext().registerService(SparkModelService.class.getName(),
+            context.getBundleContext().registerService(ModelService.class.getName(),
                     sparkModelService, null);
             logger.info("ML Model Service Started");
         } catch (Exception e) {
@@ -83,7 +84,6 @@ public class SparkModelService implements ModelService {
      */
     public JSONArray getHyperParameters(String algorithm) throws ModelServiceException {
         try {
-
             return this.mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
         } catch (MLAlgorithmConfigurationParserException e) {
             logger.error("An error occurred while retrieving hyper parameters :" + e.getMessage(),
@@ -168,21 +168,39 @@ public class SparkModelService implements ModelService {
         return recommendations;
     }
 
-    public void buildModel(JSONObject workflow) throws ModelServiceException {
+    public void buildModel(String workflowJSON) throws ModelServiceException {
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            JSONObject workflow = new JSONObject(workflowJSON);
             String algorithmType = workflow.getString(MLModelConstants.ALGORITHM_TYPE);
-            if (MLModelConstants.CLASSIFICATION.equals(algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)){
-                SupervisedModel supervisedModel = new SupervisedModel(workflow);
-                ExecutorService executorService = Executors.newSingleThreadExecutor();
-                executorService.submit(supervisedModel);
-                executorService.shutdown();
-                executorService.awaitTermination(10L,TimeUnit.MINUTES);
+            if (MLModelConstants.CLASSIFICATION.equals(
+                    algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
+                // create a new spark configuration
+                SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser(
+                        MLModelConstants.SPARK_CONFIG_XML);
+                SparkConf sparkConf = sparkConfigurationParser.getSparkConf();
+                SupervisedModel supervisedModel = new SupervisedModel();
+                supervisedModel.buildModel(workflow, sparkConf);
             }
         } catch (Exception e) {
             logger.error(
                     "An error occurred while building machine learning model: " + e.getMessage(),
                     e);
             throw new ModelServiceException(e.getMessage(), e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    public <T> T getModelSummary(String modelID) throws ModelServiceException {
+        T modelSummary = null;
+        try {
+            DatabaseHandler databaseHandler = new DatabaseHandler();
+            modelSummary = databaseHandler.getModelSummary(modelID);
+        } catch (Exception e) {
+            logger.error("An error occured while retrieving model summay: " + e.getMessage(), e);
+        }
+        return modelSummary;
     }
 }

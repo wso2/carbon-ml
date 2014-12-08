@@ -4,7 +4,7 @@
         try {
             // Retrieve and display the hyperparameters of the selected algorithm.
             var carbon = require('carbon');
-            var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.SparkModelService');
+            var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
             var hyperParameters = modelService.getHyperParameters(algoName);
 
             // Display the Hyper-Parameters

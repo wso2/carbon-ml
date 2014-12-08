@@ -59,11 +59,13 @@
                         <Export-Package>
 				org.wso2.carbon.ml.model.*,
 				org.h2.*,
+                            org.json.*,
                         	org.apache.commons.logging,
 			</Export-Package>
                          <Import-Package>
                         	org.h2;version="[0.0.0,1.4.81)",
                         	org.apache.commons.logging,
+                             org.json.*,
                         	*;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

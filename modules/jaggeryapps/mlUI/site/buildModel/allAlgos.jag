@@ -7,7 +7,7 @@
         var algoType=session.get("algoType");
         try{
             var carbon = require('carbon');
-            var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.SparkModelService');
+            var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
             var algorithms = modelService.getAlgorithmsByType(algoType);
             for(var i=0 ; i<algorithms.size() ; i++){
                 print('<input type="radio" class="algoName" name="algorithm" value="'+algorithms.get(i)+'">'+algorithms.get(i)+'<br>');

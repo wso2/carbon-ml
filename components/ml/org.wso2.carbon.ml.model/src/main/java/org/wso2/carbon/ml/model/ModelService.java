@@ -56,5 +56,5 @@ public interface ModelService {
      * @param workflow JSON object containing machine learning work flow information
      * @throws ModelServiceException
      */
-    public void buildModel(JSONObject workflow) throws ModelServiceException;
+    public void buildModel(String workflowJSON) throws ModelServiceException;
 }
