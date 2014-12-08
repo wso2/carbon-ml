@@ -38,8 +38,8 @@ public class SupervisedModelTest {
         JSONObject workflow = new JSONObject(workflowJSON);
         SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser(
                 "src/test/resources/spark-config.xml");
-        SupervisedModel supervisedModel = new SupervisedModel();
-        SparkConf sparkConf = sparkConfigurationParser.getSparkConf();
-        supervisedModel.buildModel(workflow,sparkConf);
+//        SupervisedModel supervisedModel = new SupervisedModel();
+//        SparkConf sparkConf = sparkConfigurationParser.getSparkConf();
+//        supervisedModel.buildModel(workflow,sparkConf);
     }
 }
