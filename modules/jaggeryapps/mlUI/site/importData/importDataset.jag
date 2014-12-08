@@ -25,17 +25,23 @@
                 <form id="dataImportForm" action="./ajax/uploadDataset.jag" method="post"
                     enctype="multipart/form-data">
                     <div class="row">
-                        <div class="cell"> Project Name:</div>
-                        <div class="cell"><input type="text" name="projectName" id="projectName"/></div> 
+                        <div class="cell"> Project Name:</div> 
+                        <div class="cell"><input type="text" name="projectName" id="projectName"/>
+                            <span id="projectNameValidator"></span>
+                        </div> 
                     </div>
                     <div id="description" class="row">
                         <div class="cell"> Project Description:</div>
-                        <div class="cell" ><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea></div>
+                        <div class="cell" ><textarea rows="2" name="projectDescription" id="projectDescription"/></textarea>
+                            <span id="projectDescriptionValidator"></span>
+                        </div>
                     </div>
                     
                     <div class="row">
                         <div class="cell"> Workflow Name:</div>
-                        <div class="cell"><input type="text" name="workflowName" id="workflowName"/></div> 
+                        <div class="cell"><input type="text" name="workflowName" id="workflowName"/>
+                            <span id="workflowNameValidator"></span>
+                        </div> 
                     </div>
                     
                     <div id="dataSource" class="row">
@@ -43,6 +49,7 @@
                         <div class="cell">
                             <input type="text" id="datasetName" name="datasetName" disabled/>
                             <input type="button" id="datasetOpen" value="Browse" /> 
+                            <span id="datasetNameValidator"></span>
                         </div>
                         <input type="file" size="60" name="uploadDataset" id="uploadDataset"> 
                     </div>
@@ -50,8 +57,7 @@
                     <div id="import" class="row">
                         <div class="cell"><input type="submit" value="Import"></div> 
                     </div>
-
-                    <span id="validatorMsg"></span>
+                    
                 </form>
             </div>
         </div>
