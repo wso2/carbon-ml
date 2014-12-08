@@ -1,13 +1,12 @@
 <%
-// Redirects to the login page if the user has not signed-in
+    // Redirects to the login page if the user has not signed-in
+    include("./header.jag");
+    user = jagg.getUser();
 
-	include("./header.jag");
-	user = jagg.getUser();
-
-	(function () {
-	    if (!user) {
-	        response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
-	        return;
-	    }
-	}());
+    (function () {
+        if (!user) {
+            response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
+            return;
+        }
+    }());
 %>

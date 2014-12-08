@@ -1,36 +1,36 @@
 <% 
-	var log = new Log();
-	var carbon = require('carbon');
-	var uuid = require('uuid');
-	var projectId=request.getParameter('projectId');
-	var action=request.getParameter('action');
-	try{
-		var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
-		var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
-		var datasetId=projectManagementService.getdatasetID(projectId);
+    var log = new Log();
+    var carbon = require('carbon');
+    var uuid = require('uuid');
+    var projectId = request.getParameter('projectId');
+    var action = request.getParameter('action');
+    try {
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+        var datasetId = projectManagementService.getdatasetID(projectId);
 
-		// create a new worflow
-		if(action=='newWorkflow'){
-			var workflowId=uuid.generate();
-		    var workflowName=request.getParameter("workflowName");
-		    projectManagementService.createNewWorkflow(workflowId,workflowId,projectId,datasetId,workflowName);
-		    session.put("workflowId",workflowId);
+        // create a new worflow
+        if(action == 'newWorkflow'){
+            var workflowId = uuid.generate();
+            var workflowName = request.getParameter("workflowName");
+            projectManagementService.createNewWorkflow(workflowId,workflowId,projectId,datasetId,workflowName);
+            session.put("workflowId",workflowId);
 
-		    // load default feature settings
-	   		projectManagementService.setDefaultFeatureSettings(datasetId,workflowId);
-		}else if(action=='openWorkflow'){
-			var workflowId=request.getParameter('workflowId');
-			var workflowName=request.getParameter("workflowName");
-			session.put("workflowId",workflowId);
-		}else{
-			alert('Invalid action');
-		}
-		var featureCount=mlDatasetService.getFeatureCount(datasetId);
+            // load default feature settings
+            projectManagementService.setDefaultFeatureSettings(datasetId,workflowId);
+        } else if (action == 'openWorkflow') {
+            var workflowId = request.getParameter('workflowId');
+            var workflowName = request.getParameter("workflowName");
+            session.put("workflowId",workflowId);
+        } else {
+            alert('Invalid action');
+        }
+        var featureCount = mlDatasetService.getFeatureCount(datasetId);
 
-		session.put('datasetId',datasetId);
-		session.put('projectId',projectId);
-		session.put("numOfFeatures",featureCount);
-	}catch(e){
-		log.error("An error occured while opening the project: "+projectId, e);
-	}
+        session.put('datasetId',datasetId);
+        session.put('projectId',projectId);
+        session.put("numOfFeatures",featureCount);
+    } catch(e) {
+        log.error("An error occured while opening the project: " + projectId, e);
+    }
 %>

@@ -121,7 +121,8 @@ public class MLDatasetService implements DatasetService {
             
             if (FilePathValidator.isValid(uploadDir)) {
                 // Upload the file.
-                File targetFile = new File(uploadDir + fileSeparator + projectID + fileSeparator + fileName);
+                File targetFile = new File(uploadDir + fileSeparator + projectID + fileSeparator +
+                    fileName);
                 FileUtils.copyInputStreamToFile(sourceInputStream, targetFile);
                 // Insert details of the file to the database.
                 DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
@@ -261,18 +262,18 @@ public class MLDatasetService implements DatasetService {
      * features, needed for the scatter plot.
      *
      * @param datasetID Unique Identifier of the data-set
-     * @param feature1 Name of the feature to use as the x-axis
-     * @param feature2 Name of the feature to use as the y-axis
-     * @param feature3 Name of the feature to be grouped by (color code)
+     * @param xAxisFeature Name of the feature to use as the x-axis
+     * @param yAxisFeature Name of the feature to use as the y-axis
+     * @param groupByFeature Name of the feature to be grouped by (color code)
      * @return A JSON array of data points
      * @throws DatasetServiceException
      */
     @Override
-    public JSONArray getSamplePoints(String datasetID, String feature1, String feature2,
-        String feature3) throws DatasetServiceException {
+    public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
+        String groupByFeature) throws DatasetServiceException {
         try {
             DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            return dbHandler.getSamplePoints(datasetID, feature1, feature2, feature3);
+            return dbHandler.getScatterPlotPoints(datasetID, xAxisFeature, yAxisFeature, groupByFeature);
         } catch (DatabaseHandlerException e) {
             throw new DatasetServiceException( "Failed to retrieve sample points: "
                 + e.getMessage(), e);

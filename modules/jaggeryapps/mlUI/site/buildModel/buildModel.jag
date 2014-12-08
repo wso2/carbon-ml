@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <%
-	include("../../includes/tenantAware.jag");
+    include("../../includes/tenantAware.jag");
 %>
 
 <html>
-	<link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
-	<link href="../../css/jquery-ui.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="./css/buildModel.css">
-	<script src="../../js/jquery.js"></script>
-	<script src="../../js/jquery-ui.js"></script>
-	<script src="./js/buildModel.js"></script> 
+    <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+    <link href="../../css/jquery-ui.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./css/buildModel.css">
+    <script src="../../js/jquery.js"></script>
+    <script src="../../js/jquery-ui.js"></script>
+    <script src="./js/buildModel.js"></script> 
 
-	<body>
-		<div id="middle">
-			<%
-				include("../../includes/title.jag");
-			%>
-			<div id="workArea">
-				<%include("../../includes/wizardmenu.jag");%>
-				<div style="clear:both"></div>
+    <body>
+        <div id="middle">
+            <%
+                include("../../includes/title.jag");
+            %>
+            <div id="workArea">
+                <%include("../../includes/wizardmenu.jag");%>
+                <div style="clear:both"></div>
 
-				<div id="wizzardSteps">
-					<% include('algoType.jag'); %>
-				</div>
-			</div>
-		</div>
-	</body>
+                <div id="wizzardSteps">
+                    <% include('algoType.jag'); %>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
