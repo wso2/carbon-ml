@@ -18,7 +18,9 @@
 
 package org.wso2.carbon.ml.model.dto;
 
-public class PredictedVsActual {
+import java.io.Serializable;
+
+public class PredictedVsActual implements Serializable {
     private double predicted;
     private double actual;
 

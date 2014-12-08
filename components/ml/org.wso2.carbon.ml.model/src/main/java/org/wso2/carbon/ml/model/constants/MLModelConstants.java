@@ -28,7 +28,9 @@ public final class MLModelConstants {
     public static final String HIGH = "high";
     public static final String DATASET_SIZE = "datasetSize";
     public static final String TEXTUAL = "textual";
+    public static final String BINARY = "binary";
     public static final String YES = "yes";
+    public static final String NO = "no";
     public static final String MODEL_ID = "modelID";
     public static final String MODEL_SETTINGS_ID = "modelSettingsID";
     public static final String WORKFLOW_ID = "workflowID";

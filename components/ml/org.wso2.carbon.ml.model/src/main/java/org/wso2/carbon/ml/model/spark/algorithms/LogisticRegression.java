@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 public class LogisticRegression implements Serializable {
@@ -168,16 +169,14 @@ public class LogisticRegression implements Serializable {
             LogisticRegressionModelSummary logisticRegressionModelSummary = new
                     LogisticRegressionModelSummary();
             // store predicted vs actual results
-            final List<PredictedVsActual> predictedVsActuals = new ArrayList();
-            scoresAndLabels.foreach(new VoidFunction<Tuple2<Object, Object>>() {
-                @Override
-                public void call(Tuple2<Object, Object> scoreAndLabel) throws Exception {
-                    PredictedVsActual predictedVsActual = new PredictedVsActual();
-                    predictedVsActual.setPredicted((Double) scoreAndLabel._1());
-                    predictedVsActual.setActual((Double) scoreAndLabel._2());
-                    predictedVsActuals.add(predictedVsActual);
-                }
-            });
+            List<PredictedVsActual> predictedVsActuals = new ArrayList();
+            List<Tuple2<Object,Object>> scoresAnaLabels = scoresAndLabels.collect();
+            for (Tuple2<Object,Object> scoreAndLabel : scoresAnaLabels){
+                PredictedVsActual predictedVsActual = new PredictedVsActual();
+                predictedVsActual.setPredicted((Double) scoreAndLabel._1());
+                predictedVsActual.setActual((Double) scoreAndLabel._2());
+                predictedVsActuals.add(predictedVsActual);
+            }
             logisticRegressionModelSummary.setPredictedVsActuals(predictedVsActuals);
             // generate binary classification metrics
             BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD
