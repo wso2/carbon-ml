@@ -25,7 +25,7 @@
     <groupId>org.wso2.carbon</groupId>
     <artifactId>ml-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>WSO2 Machine Learner - Aggregator Module</name>
     <url>http://wso2.com/products/ml</url>
     <description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -56,7 +56,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-
         <repository>
             <id>wso2.snapshots</id>
             <name>WSO2 Snapshot Repository</name>
@@ -69,7 +68,6 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
-
         <repository>
             <id>wso2.releases</id>
             <name>WSO2 internal Repository</name>
@@ -80,7 +78,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-        
     </repositories>
 
     <pluginRepositories>
@@ -197,18 +194,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.clients</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.integration.ui.pages</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
@@ -219,20 +204,17 @@
                 <version>${carbon.platform.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- End of dependencies for test framework -->
+
             <dependency>
-                <groupId>org.json</groupId>
+                <groupId>org.json.wso2</groupId>
                 <artifactId>json</artifactId>
-                <version>${org.json.version}</version>
+                <version>${orbit.version.json}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.10</artifactId>
-                <version>${spark.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-mllib_2.10</artifactId>
-                <version>${spark.version}</version>
+                <groupId>org.apache.spark.wso2</groupId>
+                <artifactId>spark</artifactId>
+                <version>${orbit.version.spark}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -249,16 +231,16 @@
                 <artifactId>commons-lang</artifactId>
                 <version>${commons.lang.version}</version>
             </dependency>
-	    <dependency>
-		<groupId>commons-io</groupId>
-		<artifactId>commons-io</artifactId>
-		<version>${commons.io.version}</version>
-	    </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
 
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>${orbit.version.h2.database.engine}</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -281,6 +263,25 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
+
+            <!-- Dependencies on WSO2 Carbon ML components -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.model</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.dataset</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <!-- End of depencencies on WSO2 Carbon ML components -->
+
         </dependencies>
     </dependencyManagement>
 
@@ -309,6 +310,55 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>1.7.2</version>
+                    <executions>
+                        <execution>
+                            <id>generate-scr-scrdescriptor</id>
+                            <goals>
+                                <goal>scr</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.5</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <obrRepository>NONE</obrRepository>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <properties>
@@ -322,15 +372,15 @@
         <uuid.feature.version>1.0.0</uuid.feature.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-        <ml.version>0.1.0</ml.version>
+        <ml.version>0.1.0-SNAPSHOT</ml.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <commons.math.version>3.3</commons.math.version>
         <commons.csv.version>1.0</commons.csv.version>
         <commons.lang.version>2.6</commons.lang.version>
-	    <commons.io.version>2.4</commons.io.version>
-        <h2.version>1.4.180</h2.version>
-        <spark.version>1.1.0</spark.version>
-        <org.json.version>20140107</org.json.version>
+        <commons.io.version>2.4</commons.io.version>
+        <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>
+        <orbit.version.spark>1.1.0.wso2v1</orbit.version.spark>
+        <orbit.version.json>3.0.0.wso2v1</orbit.version.json>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>

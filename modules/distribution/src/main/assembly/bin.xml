@@ -38,6 +38,14 @@
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/cache.xml</exclude>
                 <exclude>**/master-datasources.xml</exclude>
+                <!-- Excluding these files since they seem to be copied twice.
+                     TODO Need to investigate properly and fix once kernel-4.3.0 is released-->
+                <exclude>**/bin/java2wsdl.sh</exclude>
+                <exclude>**/bin/carbondump.sh</exclude>
+                <exclude>**/bin/chpasswd.sh</exclude>
+                <exclude>**/bin/tcpmon.sh</exclude>
+                <exclude>**/bin/ciphertool.sh</exclude>
+                <exclude>**/bin/wsdl2java.sh</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -69,18 +77,20 @@
             <fileMode>755</fileMode>
         </fileSet>
 
-        <!--copying registry dbscripts-->
+<!--
+        &lt;!&ndash;copying registry dbscripts&ndash;&gt;
         <fileSet>
             <directory>target/wso2carbon-core-${carbon.kernel.version}/dbscripts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
-            <!-- Changes related to Carbon kernel 4.2.0 patches -->
+            &lt;!&ndash; Changes related to Carbon kernel 4.2.0 patches &ndash;&gt;
             <excludes>
                 <exclude>db2.sql</exclude>
                 <exclude>mysql.sql</exclude>
                 <exclude>mysql_cluster.sql</exclude>
             </excludes>
-            <!-- End - Changes related to Carbon kernel 4.2.0 patches -->
+            &lt;!&ndash; End - Changes related to Carbon kernel 4.2.0 patches &ndash;&gt;
         </fileSet>
+-->
 
         <fileSet>
             <directory>
@@ -150,6 +160,7 @@
         </fileSet>
     </fileSets>
 
+<!--
     <dependencySets>
         <dependencySet>
             <outputDirectory>wso2ml-${pom.version}/repository/components/lib</outputDirectory>
@@ -163,6 +174,7 @@
             </includes>
         </dependencySet>
     </dependencySets>
+-->
 
     <files>
         <file>
@@ -286,6 +298,7 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
+<!--
         <file>
             <source>src/main/resources/security/cipher-text.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
@@ -294,6 +307,7 @@
             <source>src/main/resources/security/cipher-tool.properties</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
         </file>
+-->
         <file>
             <source>src/main/conf/etc/ml-algorithms.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc/</outputDirectory>

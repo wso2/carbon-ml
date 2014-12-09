@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.ml.model;
 
-import akka.actor.ActorSystem;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
@@ -33,7 +30,6 @@ import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserExcepti
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
