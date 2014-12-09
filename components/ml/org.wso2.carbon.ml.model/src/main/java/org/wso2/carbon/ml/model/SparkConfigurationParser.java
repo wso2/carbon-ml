@@ -33,9 +33,10 @@ public class SparkConfigurationParser {
     private static final Log logger = LogFactory.getLog(SparkConfigurationParser.class);
     private String sparkConfigurationFilePath;
 
-    public SparkConfigurationParser(String sparkConfigurationFilePath){
+    public SparkConfigurationParser(String sparkConfigurationFilePath) {
         this.sparkConfigurationFilePath = sparkConfigurationFilePath;
     }
+
     /**
      * This method generates a spark configuration according to configuration settings in
      * spark-config.xml

@@ -23,31 +23,52 @@ import org.json.JSONArray;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * A utility class to store logistic regression model summary
+ */
 public class LogisticRegressionModelSummary implements Serializable {
     private String roc;
     private double auc;
     private List<PredictedVsActual> predictedVsActuals;
 
+    /**
+     * @return Returns area under curve (AUC)
+     */
     public double getAuc() {
         return auc;
     }
 
+    /**
+     * @param auc Sets area under curve (AUC)
+     */
     public void setAuc(double auc) {
         this.auc = auc;
     }
 
+    /**
+     * @return Returns a list of predicted vs. actual values
+     */
     public List<PredictedVsActual> getPredictedVsActuals() {
         return predictedVsActuals;
     }
 
+    /**
+     * @param predictedVsActuals Sets predicted vs. actual values
+     */
     public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
         this.predictedVsActuals = predictedVsActuals;
     }
 
+    /**
+     * @return Returns receiver operating characteristic (ROC) curve as a JSON string
+     */
     public String getRoc() {
         return roc;
     }
 
+    /**
+     * @param roc Sets receiver operating characteristic (ROC) curve
+     */
     public void setRoc(String roc) {
         this.roc = roc;
     }

@@ -28,19 +28,31 @@ public class SparkProperty {
     private String property;
     private String name;
 
+    /**
+     * @return Retuns spark property name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name Sets spark property name
+     */
     @XmlAttribute
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return Returns spark property value
+     */
     public String getProperty() {
         return property;
     }
 
+    /**
+     * @param property Sets spark property value
+     */
     @XmlValue
     public void setProperty(String property) {
         this.property = property;

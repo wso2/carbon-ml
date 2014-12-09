@@ -57,4 +57,12 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public void buildModel(String workflowJSON) throws ModelServiceException;
+
+    /**
+     * @param modelID Model ID
+     * @param <T>     Model summary type
+     * @return Model summary object
+     * @throws ModelServiceException
+     */
+    public <T> T getModelSummary(String modelID) throws ModelServiceException;
 }
