@@ -20,22 +20,37 @@ package org.wso2.carbon.ml.model.dto;
 
 import java.io.Serializable;
 
+/**
+ * DTO class to store predicted vs. actual value
+ */
 public class PredictedVsActual implements Serializable {
     private double predicted;
     private double actual;
 
+    /**
+     * @return Returns predicted value
+     */
     public double getPredicted() {
         return predicted;
     }
 
+    /**
+     * @param predicted Sets predicted value
+     */
     public void setPredicted(double predicted) {
         this.predicted = predicted;
     }
 
+    /**
+     * @return Returns actual value
+     */
     public double getActual() {
         return actual;
     }
 
+    /**
+     * @param actual Sets actual value
+     */
     public void setActual(double actual) {
         this.actual = actual;
     }

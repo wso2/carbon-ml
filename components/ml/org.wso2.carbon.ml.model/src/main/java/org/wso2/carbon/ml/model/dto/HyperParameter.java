@@ -25,18 +25,30 @@ public class HyperParameter {
     private String parameter;
     private String value;
 
+    /**
+     * @return Returns hyper-parameter name
+     */
     public String getParameter() {
         return parameter;
     }
 
+    /**
+     * @param parameter Sets hyper-parameter name
+     */
     public void setParameter(String parameter) {
         this.parameter = parameter;
     }
 
+    /**
+     * @return Returns hyper-parameter value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * @param value Sets hyper-parameter value
+     */
     public void setValue(String value) {
         this.value = value;
     }

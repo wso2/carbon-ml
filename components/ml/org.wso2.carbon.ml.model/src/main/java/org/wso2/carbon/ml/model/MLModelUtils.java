@@ -18,16 +18,14 @@
 
 package org.wso2.carbon.ml.model;
 
-import org.w3c.dom.Document;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.exceptions.XMLParserException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.util.List;
 
+/**
+ * A utility class for various model related tasks
+ */
 public class MLModelUtils {
     /**
      * Private constructor to prevent any other class from instantiating.
@@ -36,6 +34,13 @@ public class MLModelUtils {
         //
     }
 
+    /**
+     * @param response        Response variable name
+     * @param headerRow       Header row
+     * @param columnSeparator Column separator character
+     * @return Index of the response variable
+     * @throws ModelServiceException
+     */
     public static int getResponseIndex(String response, String headerRow,
             String columnSeparator) throws
             ModelServiceException {
@@ -54,6 +59,11 @@ public class MLModelUtils {
         }
     }
 
+    /**
+     * @param datasetURL Dataset URL
+     * @return Column separator character
+     * @throws ModelServiceException
+     */
     public static String getColumnSeparator(String datasetURL) throws
             ModelServiceException {
         try {
