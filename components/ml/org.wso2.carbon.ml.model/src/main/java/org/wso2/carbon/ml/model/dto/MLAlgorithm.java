@@ -32,58 +32,100 @@ public class MLAlgorithm {
     private int dimensionality;
     private List<HyperParameter> parameters;
 
+    /**
+     * @return Returns machine learning algorithm name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name Sets machine learning algorithm name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return Returns machine learning algorithm type e.g. Classification
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * @param type Sets machine learning algorithm type
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * @return Returns interpretability score (out of 5)
+     */
     public int getInterpretability() {
         return interpretability;
     }
 
+    /**
+     * @param interpretability Sets interpretability score
+     */
     public void setInterpretability(int interpretability) {
         this.interpretability = interpretability;
     }
 
+    /**
+     * @return Returns scalability score (out of 5)
+     */
     public int getScalability() {
         return scalability;
     }
 
+    /**
+     * @param scalability Sets scalability score
+     */
     public void setScalability(int scalability) {
         this.scalability = scalability;
     }
 
+    /**
+     * @return Returns multicollinearity score (out of 5)
+     */
     public int getMulticollinearity() {
         return multicollinearity;
     }
 
+    /**
+     * @param multicollinearity Sets multicollinearity score
+     */
     public void setMulticollinearity(int multicollinearity) {
         this.multicollinearity = multicollinearity;
     }
 
+    /**
+     * @return Returns dimensionality score (out of 5)
+     */
     public int getDimensionality() {
         return dimensionality;
     }
 
+    /**
+     * @param dimensionality Sets dimensionality score
+     */
     public void setDimensionality(int dimensionality) {
         this.dimensionality = dimensionality;
     }
 
+    /**
+     * @return Returns a list of hyper-parameters
+     */
     public List<HyperParameter> getParameters() {
         return parameters;
     }
 
+    /**
+     * @param parameters Sets hyper-parameters
+     */
     public void setParameters(List<HyperParameter> parameters) {
         this.parameters = parameters;
     }

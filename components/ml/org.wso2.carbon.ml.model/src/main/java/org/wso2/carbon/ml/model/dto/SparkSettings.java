@@ -33,10 +33,16 @@ public class SparkSettings {
     @XmlElement(name = "property")
     private List<SparkProperty> properties;
 
+    /**
+     * @return Returns spark properties
+     */
     public List<SparkProperty> getProperties() {
         return properties;
     }
 
+    /**
+     * @param properties Sets spark properties
+     */
     public void setProperties(List<SparkProperty> properties) {
         this.properties = properties;
     }
