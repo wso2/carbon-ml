@@ -207,11 +207,6 @@
             <!-- End of dependencies for test framework -->
 
             <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>${org.json.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.json.wso2</groupId>
                 <artifactId>json</artifactId>
                 <version>${orbit.version.json}</version>
@@ -220,16 +215,6 @@
                 <groupId>org.apache.spark.wso2</groupId>
                 <artifactId>spark</artifactId>
                 <version>${orbit.version.spark}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.10</artifactId>
-                <version>${spark.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-mllib_2.10</artifactId>
-                <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -388,16 +373,14 @@
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <ml.version>0.1.0-SNAPSHOT</ml.version>
-        <orbit.version.json>2.0.0.wso2v1</orbit.version.json>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <commons.math.version>3.3</commons.math.version>
         <commons.csv.version>1.0</commons.csv.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.io.version>2.4</commons.io.version>
         <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>
-        <spark.version>1.1.0</spark.version>
         <orbit.version.spark>1.1.0.wso2v1</orbit.version.spark>
-        <org.json.version>20140107</org.json.version>
+        <orbit.version.json>3.0.0.wso2v1</orbit.version.json>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>

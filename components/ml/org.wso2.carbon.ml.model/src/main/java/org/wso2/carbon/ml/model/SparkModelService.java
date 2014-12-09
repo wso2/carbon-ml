@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
@@ -112,7 +111,7 @@ public class SparkModelService implements ModelService {
      * @throws ModelServiceException
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
-                                                        String userResponseJson)
+            String userResponseJson)
             throws ModelServiceException {
         Map<String, Double> recommendations = new HashMap<String, Double>();
         try {
@@ -164,11 +163,6 @@ public class SparkModelService implements ModelService {
         } catch (MLAlgorithmConfigurationParserException e) {
             logger.error(
                     "An error occurred while retrieving recommended algorithms: " + e.getMessage(),
-                    e);
-            throw new ModelServiceException(e.getMessage(), e);
-        } catch (JSONException e) {
-            logger.error(
-                    "A JSON error occurred while retrieving recommended algorithms: " + e.getMessage(),
                     e);
             throw new ModelServiceException(e.getMessage(), e);
         }
