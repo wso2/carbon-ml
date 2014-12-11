@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ml-components</artifactId>
         <groupId>org.wso2.carbon</groupId>
-        <version>0.1.0</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.ml.dataset</artifactId>
@@ -16,32 +16,30 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
         </dependency>
-	<dependency>
-	    <groupId>org.json</groupId>
-	    <artifactId>json</artifactId>
-	    <version>20140107</version>
-	</dependency>
-	<dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-csv</artifactId>
-	</dependency>
-	<dependency>
-	    <groupId>commons-lang</groupId>
-	    <artifactId>commons-lang</artifactId>
-	    <version>2.6</version>
-	</dependency>
-	<dependency>
-	    <groupId>commons-io</groupId>
-	    <artifactId>commons-io</artifactId>
-	</dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -56,35 +54,33 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                 <version>2.5.0</version>
+                <version>2.5.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${pom.artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-				org.wso2.carbon.ml.dataset.*,
-				org.apache.commons.math3.*,
-                        	org.apache.commons.csv.*,
-                        	org.apache.commons.lang.math.*,
-                        	org.h2.*,
-                        	org.apache.commons.logging,
-                        	org.json.*,
-			</Export-Package>
+                            org.wso2.carbon.ml.dataset.*,
+                        </Export-Package>
                         <Import-Package>
-                        	org.apache.commons.math3.*;version="[0.0.0,0.0.1)",
-                        	org.apache.commons.csv.*;version="[0.0.0,0.0.1)",
-                        	org.apache.commons.lang.math.*;version="[0.0.0,0.0.1)",
-                        	org.h2;version="[0.0.0,1.4.81)",
-                        	org.apache.commons.logging,
-                        	org.json.*,
-                        	*;resolution:=optional
+                            org.apache.commons.math3.*,
+                            org.apache.commons.csv.*,
+                            org.apache.commons.lang.math.*,
+                            org.h2,
+                            org.apache.commons.logging,
+                            org.json.*,
+                            *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>

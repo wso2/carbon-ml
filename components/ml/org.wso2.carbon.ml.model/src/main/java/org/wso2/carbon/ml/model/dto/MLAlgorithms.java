@@ -35,10 +35,16 @@ public class MLAlgorithms {
     @XmlElement(name = MLModelConstants.ALGORITHM)
     private List<MLAlgorithm> algorithms = null;
 
+    /**
+     * @return Returns a list of machine learning algorithms
+     */
     public List<MLAlgorithm> getAlgorithms() {
         return algorithms;
     }
 
+    /**
+     * @param algorithms Sets machine learning algorithms
+     */
     public void setAlgorithms(List<MLAlgorithm> algorithms) {
         this.algorithms = algorithms;
     }

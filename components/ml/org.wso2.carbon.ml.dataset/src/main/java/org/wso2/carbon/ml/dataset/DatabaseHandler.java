@@ -17,21 +17,6 @@
  */
 package org.wso2.carbon.ml.dataset;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -43,6 +28,19 @@ import org.wso2.carbon.ml.dataset.constants.SQLQueries;
 import org.wso2.carbon.ml.dataset.dto.Feature;
 import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Class handles all the database operations in the DatasetService component.

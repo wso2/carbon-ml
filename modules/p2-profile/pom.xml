@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>ml-parent</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -85,17 +85,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.core.runtime.feature:${carbon.kernel.version}
                                 </featureArtifactDef>
-                                <!--Start LDAP features-->
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.ldap.server.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.ldap.server.server.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.directory.service.mgr.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-                                <!--End LDAP features-->
                                 <!--Start Remote User Management Client features-->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.um.ws.service.feature:${carbon.platform.version}
@@ -202,28 +191,6 @@
                             </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
-                                <!--Start LDAP features-->
-                                <feature>
-                                    <id>org.wso2.carbon.ldap.server.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.ldap.server.server.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.directory.service.mgr.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.directory.service.mgr.server.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.directory.service.mgr.ui.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <!--End LDAP features-->
                                 <!--Start Remote User Management Client features-->
                                 <feature>
                                     <id>org.wso2.carbon.um.ws.service.feature.group</id>

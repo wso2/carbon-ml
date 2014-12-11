@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.ml.model;
 
-import akka.actor.ActorSystem;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
@@ -33,7 +30,6 @@ import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserExcepti
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -178,8 +174,10 @@ public class SparkModelService implements ModelService {
      * @throws ModelServiceException
      */
     public void buildModel(String workflowJSON) throws ModelServiceException {
+        // temporarily store thread context class loader (tccl)
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
+            // switch class loader to JavaSparkContext class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             JSONObject workflow = new JSONObject(workflowJSON);
             String algorithmType = workflow.getString(MLModelConstants.ALGORITHM_TYPE);
@@ -198,13 +196,14 @@ public class SparkModelService implements ModelService {
                     e);
             throw new ModelServiceException(e.getMessage(), e);
         } finally {
+            // switch class loader back to tccl
             Thread.currentThread().setContextClassLoader(tccl);
         }
     }
 
     /**
      * @param modelID Model ID
-     * @param <T>
+     * @param <T>     Model summary type
      * @return Model summary object
      * @throws ModelServiceException
      */

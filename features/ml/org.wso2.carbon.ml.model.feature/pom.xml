@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ml-features</artifactId>
         <groupId>org.wso2.carbon</groupId>
-        <version>0.1.0</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,12 +16,18 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.model</artifactId>
-            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark.wso2</groupId>
             <artifactId>spark</artifactId>
-            <version>1.1.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database.wso2</groupId>
+            <artifactId>h2-database-engine</artifactId>
         </dependency>
     </dependencies>
 
@@ -50,6 +56,8 @@
                         <bundles>
                             <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.model</bundleDef>
                             <bundleDef>org.apache.spark.wso2:spark</bundleDef>
+                            <bundleDef>org.json.wso2:json</bundleDef>
+                            <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
                         </bundles>
                     </configuration>
                 </execution>

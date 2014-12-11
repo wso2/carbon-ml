@@ -19,6 +19,9 @@ package org.wso2.carbon.ml.model.constants;
 
 import java.io.File;
 
+/**
+ * A utility class to store ML model service constants
+ */
 public final class MLModelConstants {
 
     // user response
@@ -86,7 +89,6 @@ public final class MLModelConstants {
     public static final String DECIMAL_FORMAT = "#.00";
 
     // enums
-
     public enum SUPERVISED_ALGORITHM {
         LOGISTIC_REGRESSION, SVM, DECISION_TREE, NAIVE_BAYES
     }

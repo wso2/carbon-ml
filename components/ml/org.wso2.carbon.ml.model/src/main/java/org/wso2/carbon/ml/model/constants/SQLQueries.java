@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.ml.model.constants;
 
+/**
+ * A utility class to store SQL prepared statements
+ */
 public class SQLQueries {
 
     public static final String INSERT_ML_MODEL_SETTINGS =
@@ -32,7 +35,7 @@ public class SQLQueries {
                                                  "MODEL_EXECUTION_START_TIME) VALUES(?,?,?)";
 
     public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE "
-                                                      + "MODEL_ID=?";
+                                                   + "MODEL_ID=?";
 
     public static final String GET_MODEL_EXE_END_TIME = " SELECT MODEL_EXECUTION_END_TIME FROM " +
             "ML_MODEL WHERE MODEL_ID =  ?";

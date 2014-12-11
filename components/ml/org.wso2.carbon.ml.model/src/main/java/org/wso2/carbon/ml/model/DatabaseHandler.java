@@ -103,6 +103,14 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * This method initialize insering model into the database
+     *
+     * @param modelID            Model ID
+     * @param workflowID         Workflow ID
+     * @param executionStartTime Model execution start time
+     * @throws DatabaseHandlerException
+     */
     public void insertModel(String modelID, String workflowID, Time executionStartTime)
             throws DatabaseHandlerException {
         Connection connection = null;
@@ -135,6 +143,17 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * This method inserts model and model summary into the database
+     *
+     * @param modelID          Model ID
+     * @param model            Machine learning model
+     * @param modelSummary     Machine learning model summary
+     * @param executionEndTime Model execution end time
+     * @param <T>              Type of machine learning  model
+     * @param <S>              Type of machine learning model summary
+     * @throws DatabaseHandlerException
+     */
     public <T, S> void updateModel(String modelID, T model,
             S modelSummary, Time executionEndTime)
             throws DatabaseHandlerException {
@@ -151,7 +170,7 @@ public class DatabaseHandler {
             updateStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the details of model: Model ID" + modelID);
+                logger.debug("Successfully updated the details of model: model ID" + modelID);
             }
 
         } catch (SQLException e) {
@@ -169,26 +188,37 @@ public class DatabaseHandler {
         }
     }
 
-    public <T> T getModelSummary(String modelID) throws DatabaseHandlerException{
+    /**
+     * This method returns machine learning model summary
+     *
+     * @param modelID Model ID
+     * @param <T>     Type of machine learning model summary
+     * @return Model summary
+     * @throws DatabaseHandlerException
+     */
+    public <T> T getModelSummary(String modelID) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
             connection = dataSource.getConnection();
-            connection.setAutoCommit(true);
+            connection.setAutoCommit(false);
             getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
             getStatement.setString(1, modelID);
             result = getStatement.executeQuery();
             if (result.first()) {
-                return (T)result.getObject(1);
+                return (T) result.getObject(1);
             } else {
                 logger.error("Invalid model ID: " + modelID);
                 throw new DatabaseHandlerException("Invalid model ID: " + modelID);
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occured while reading model summary for " +
-                                               modelID + " from the database: " + e.getMessage(), e);
+                                               modelID + " from the database: " + e.getMessage(),
+                    e);
         } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
         }
