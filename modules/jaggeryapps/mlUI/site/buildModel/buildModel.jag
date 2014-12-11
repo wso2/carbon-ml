@@ -22,7 +22,7 @@
 
                 <div id="wizzardSteps">
                     <% include('algoType.jag'); %>
-                </div>
+                </div>                
             </div>
         </div>
     </body>

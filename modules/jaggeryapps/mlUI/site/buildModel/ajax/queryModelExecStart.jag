@@ -1,0 +1,20 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var workflowId = session.get("workflowId");
+    
+    try{
+        var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+        var retrievedModelId =  datasetService.getModelId(workflowId);
+        
+        if (retrievedModelId == null){
+            print(false);
+        }else{
+            print( modelService.isExecutionStarted(retrievedModelId));        
+        }
+
+    }catch(e){
+        log.error("An error occurred while querying model start status for workflow: "+workflowId, e);
+    }    
+%>

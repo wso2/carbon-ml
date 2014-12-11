@@ -3,7 +3,6 @@ $('document').ready(function () {
     disableWizardMenu();
 });
 
-
 function disableWizardMenu() {
     var color = '#848484';
     $('#evaluate').css('color', color);
@@ -75,13 +74,50 @@ $('#algorithms_continue').click(function () {
             hyperParametersData = hyperParametersData + '&' + parameters[i].id + '=' + values[i].value;
             i++;
         }
+        var isModelExecStarted = 'false';
         $.ajax({
-                   url: "./ajax/submit.jag",
-                   type: 'POST',
-                   data: hyperParametersData,
-                   error: function (jqXHR, textStatus, errorThrown) {
-                       // TODO: redirect to error page
-                   }
-               });
+            url : "./ajax/queryModelExecStart.jag",
+            type : "POST",
+            async : "false",
+            success : function(data) { isModelExecStarted = data;},
+            error : function(){/*TODO:*/ }
+        });
+
+        //  model building process starts
+        if(isModelExecStarted === 'false'){
+            $.ajax({
+                url: "./ajax/submit.jag",
+                type: 'POST',
+                data: hyperParametersData,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // TODO: redirect to error page
+                }
+            });
+            $('.wizzardSteps').html("Model building starts...."); 
+        }
+        
+        // continuously polling for the model output      
+        var isModelExecFinished = 'false';
+        function poll(){            
+            $.ajax({ 
+                url: "./ajax/queryModelExecEnd.jag", 
+                type: 'POST',
+                async : "false",
+                success: function(data){
+                    isModelExecFinished = data;
+                }, 
+                complete: function(){                    
+                    if(isModelExecFinished === 'true'){                        
+                        $('#wizzardSteps').html("Result is 101% accuracy"); 
+                        return; 
+                    } else{
+                        $('#wizzardSteps').html("Model building starts....");                         
+                        setTimeout(poll, 20*1000); // setting polling interval to 20 seconds
+                    }
+                }, 
+                timeout: 30*1000}); // setting connection timeout to 30 seconds         
+        }; 
+        // calling poll function       
+        poll();
     }
 });
