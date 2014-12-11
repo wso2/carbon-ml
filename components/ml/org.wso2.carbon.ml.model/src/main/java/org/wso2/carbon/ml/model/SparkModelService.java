@@ -218,4 +218,36 @@ public class SparkModelService implements ModelService {
         }
         return modelSummary;
     }
+
+    /**
+     * This method checks whether the model building process is completed for a given model id
+     * @param modelId
+     * @return
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionCompleted(String modelId) throws ModelServiceException {
+        try{
+            DatabaseHandler handler = new DatabaseHandler();
+            return handler.getModelExecutionEndTime(modelId) > 0;
+        }catch (Exception e){
+            throw  new ModelServiceException("An error has occurred while querying model: " + modelId +
+                    " for execution end time: "+ e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method checks whether the model building process is started for a given model id
+     * @param modelId
+     * @return
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionStarted(String modelId) throws ModelServiceException {
+        try {
+            DatabaseHandler handler = new DatabaseHandler();
+            return  handler.getModelExecutionStartTime(modelId) > 0;
+        }catch (Exception e){
+            throw  new ModelServiceException("An error has occurred while querying model: " + modelId +
+                    " for execution start time: "+ e.getMessage(), e);
+        }
+    }
 }

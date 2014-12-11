@@ -57,4 +57,20 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public void buildModel(String workflowJSON) throws ModelServiceException;
+
+    /**
+     * This method checks whether model execution is completed or not
+     * @param modelId
+     * @return indicates whether model execution is completed or not
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionCompleted(String modelId) throws ModelServiceException;
+
+    /**
+     * This method checks whether model execution is started or not
+     * @param modelId
+     * @return indicates whether model execution is started or not
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionStarted(String modelId) throws ModelServiceException;
 }

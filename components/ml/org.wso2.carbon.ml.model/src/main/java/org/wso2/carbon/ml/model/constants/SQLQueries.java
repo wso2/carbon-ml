@@ -34,6 +34,12 @@ public class SQLQueries {
     public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE "
                                                       + "MODEL_ID=?";
 
+    public static final String GET_MODEL_EXE_END_TIME = " SELECT MODEL_EXECUTION_END_TIME FROM " +
+            "ML_MODEL WHERE MODEL_ID =  ?";
+
+    public static final String GET_MODEL_EXE_START_TIME = " SELECT MODEL_EXECUTION_START_TIME FROM " +
+            "ML_MODEL WHERE MODEL_ID =  ?";
+
     /*
      * private Constructor to prevent any other class from instantiating.
      */

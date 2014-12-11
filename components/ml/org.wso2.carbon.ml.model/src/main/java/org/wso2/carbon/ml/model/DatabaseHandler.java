@@ -19,6 +19,7 @@ package org.wso2.carbon.ml.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.net.ntp.TimeStamp;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.constants.SQLQueries;
@@ -27,11 +28,7 @@ import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.*;
 
 /**
  * This class handles database connectivity in model component
@@ -196,5 +193,62 @@ public class DatabaseHandler {
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
         }
 
+    }
+
+    /**
+     * Reads model execution completion time for a given model id.
+     * @param modelId
+     * @return Returns the number of millis since Jan 1, 1970, 00:00:00 GMT represented by model execution
+     *         end time.
+     * @throws DatabaseHandlerException
+     */
+    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException {
+        return getModelExecutionTime(modelId, SQLQueries.GET_MODEL_EXE_END_TIME);
+    }
+
+    /**
+     * Read model execution start time for a given model id.
+     * @param modelId
+     * @return Returns the number of millis since Jan 1, 1970, 00:00:00 GMT represented by model execution
+     *         start time
+     * @throws DatabaseHandlerException
+     */
+    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException {
+        return getModelExecutionTime(modelId, SQLQueries.GET_MODEL_EXE_START_TIME);
+    }
+
+    /**
+     * This helper class is used to extract model execution start/end time
+     * @param modelId
+     * @param query
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    private long getModelExecutionTime(String modelId, String query) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try{
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(query);
+            statement.setString(1, modelId);
+            result = statement.executeQuery();
+            if (result.first()) {
+                Timestamp time = result.getTimestamp(1);
+                if(time != null){
+                    return time.getTime();
+                }
+                return 0;
+            } else {
+                throw  new DatabaseHandlerException("No timestamp data associated with model id: "+modelId);
+            }
+
+        } catch (SQLException e){
+            throw new DatabaseHandlerException(" An error has occurred while reading "+
+                    "execution time from the database: "+e.getMessage(), e);
+        }finally {
+            // closing database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
     }
 }
