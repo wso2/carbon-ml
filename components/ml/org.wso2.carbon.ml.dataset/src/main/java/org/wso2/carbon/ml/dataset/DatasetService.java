@@ -144,4 +144,12 @@ public interface DatasetService {
      * @throws DatasetServiceException
      */
     public int getFeatureCount(String datasetID) throws DatasetServiceException;
+    
+    /**
+     * Returns the model id associated with a given workflow Id
+     * @param workflowId unique identifier of the workflow
+     * @returns the model id associated with this workflow id
+     * @throws org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException
+     */
+    public String getModelId(String workflowId) throws DatasetServiceException;
 }
