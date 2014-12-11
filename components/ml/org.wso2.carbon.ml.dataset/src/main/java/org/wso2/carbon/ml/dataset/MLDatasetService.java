@@ -316,4 +316,21 @@ public class MLDatasetService implements DatasetService {
                 e.getMessage(), e);
         }
     }
+
+    /**
+     * Returns the model id associated with given workflow id
+     * @param workflowId unique identifier of the workflow
+     * @return
+     * @throws DatasetServiceException
+     */
+    @Override
+    public String getModelId(String workflowId) throws DatasetServiceException {
+        try {
+            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
+            return dbHandler.getModelId(workflowId);
+        } catch (DatabaseHandlerException e){
+            throw new DatasetServiceException("Failed to retrieve the model id associated with "+
+                " workflow id: "+workflowId, e);
+        }
+    }
 }

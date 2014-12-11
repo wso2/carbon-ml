@@ -623,11 +623,45 @@ public class DatabaseHandler {
             return featureCount;
         } catch (SQLException e) {
             throw new DatabaseHandlerException(
-                "An error occured while retireving feature count of the dataset " + datasetID +
+                "An error occurred while retrieving feature count of the dataset " + datasetID +
                 ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
+        }
+    }
+
+    /**
+     * Returns model id associated with given workflow id
+     * @param workflowId
+     * @return model id
+     * @throws DatabaseHandlerException
+     */
+    protected String getModelId(String workflowId) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement model = null;
+        ResultSet result = null;
+
+        try {
+            connection = dataSource.getConnection();
+            model = connection.prepareStatement(SQLQueries.GET_MODEL_ID);
+            model.setString(1, workflowId);
+            result = model.executeQuery();
+            if(!result.first()) {
+                // need to query ML_MODEL table, just before model building process is started
+                // to overcome building same model two (or more) times.
+                // hence, null will be checked in UI.
+                return null;
+            }
+            return result.getString(1);
+
+        } catch (SQLException e){
+            throw new DatabaseHandlerException(
+                "An error occurred white retrieving model associated with workflow id "+ workflowId +
+                ":" + e.getMessage(), e);
+        } finally {
+            // Close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, model, result);
         }
     }
 }
