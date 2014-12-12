@@ -19,6 +19,7 @@ package org.wso2.carbon.ml.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +30,6 @@ import java.sql.SQLException;
  * This class contains utility methods for database resources.
  */
 public class MLDatabaseUtils {
-    private static final Log logger = LogFactory.getLog(MLDatabaseUtils.class);
 
     /*
      * private Constructor to prevent any other class from instantiating.
@@ -45,14 +45,16 @@ public class MLDatabaseUtils {
      * @param resultSet         ResultSet to be closed
      */
     protected static void closeDatabaseResources(Connection connection,
-                                                 PreparedStatement preparedStatement,
-                                                 ResultSet resultSet) {
+            PreparedStatement preparedStatement,
+            ResultSet resultSet) throws
+            DatabaseHandlerException {
         // Close the resultSet
         if (resultSet != null) {
             try {
                 resultSet.close();
             } catch (SQLException e) {
-                logger.error("Could not close result set: " + e.getMessage(), e);
+                throw new DatabaseHandlerException("Could not close result set: " + e.getMessage(),
+                        e);
             }
         }
         // Close the connection
@@ -60,7 +62,8 @@ public class MLDatabaseUtils {
             try {
                 connection.close();
             } catch (SQLException e) {
-                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
+                throw new DatabaseHandlerException(
+                        "Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
         // Close the statement
@@ -68,7 +71,8 @@ public class MLDatabaseUtils {
             try {
                 preparedStatement.close();
             } catch (SQLException e) {
-                logger.error("Database error. Could not close statement: " + e.getMessage(), e);
+                throw new DatabaseHandlerException(
+                        "Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
     }
@@ -80,7 +84,7 @@ public class MLDatabaseUtils {
      * @param preparedStatement PeparedStatement to be closed
      */
     protected static void closeDatabaseResources(Connection connection,
-                                                 PreparedStatement preparedStatement) {
+            PreparedStatement preparedStatement) throws DatabaseHandlerException {
         closeDatabaseResources(connection, preparedStatement, null);
     }
 
@@ -89,7 +93,8 @@ public class MLDatabaseUtils {
      *
      * @param connection Connection to be closed
      */
-    protected static void closeDatabaseResources(Connection connection) {
+    protected static void closeDatabaseResources(Connection connection)
+            throws DatabaseHandlerException {
         closeDatabaseResources(connection, null, null);
     }
 
@@ -98,7 +103,8 @@ public class MLDatabaseUtils {
      *
      * @param preparedStatement PeparedStatement to be closed
      */
-    protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
+    protected static void closeDatabaseResources(PreparedStatement preparedStatement)
+            throws DatabaseHandlerException {
         closeDatabaseResources(null, preparedStatement, null);
     }
 
@@ -107,13 +113,14 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection to be rolled-back
      */
-    protected static void rollBack(Connection dbConnection) {
+    protected static void rollBack(Connection dbConnection) throws DatabaseHandlerException {
         try {
             if (dbConnection != null) {
                 dbConnection.rollback();
             }
         } catch (SQLException e) {
-            logger.error("An error occurred while rolling back transactions: ", e);
+            throw new DatabaseHandlerException(
+                    "An error occurred while rolling back transactions: " + e.getMessage(), e);
         }
     }
 
@@ -122,13 +129,15 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection of which the auto-commit should be enabled
      */
-    protected static void enableAutoCommit(Connection dbConnection) {
+    protected static void enableAutoCommit(Connection dbConnection)
+            throws DatabaseHandlerException {
         try {
             if (dbConnection != null) {
                 dbConnection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            logger.error("An error occurred while enabling autocommit: ", e);
+            throw new DatabaseHandlerException(
+                    "An error occurred while enabling autocommit: " + e.getMessage(), e);
         }
     }
 }

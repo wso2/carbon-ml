@@ -6,14 +6,11 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.Header;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 
 import java.util.regex.Pattern;
-
-import static org.testng.Assert.*;
 
 public class LogisticRegressionTest {
 
@@ -37,7 +34,7 @@ public class LogisticRegressionTest {
                 100,
                 "L1", 0.001, 1.0);
         model.clearThreshold();
-//        LogisticRegressionModelSummary modelSummary = logisticRegression.getModelSummary
+//        ProbabilisticClassificationModelSummary modelSummary = logisticRegression.getModelSummary
 //                (logisticRegression.test(model, testingData));
 //        assertEquals(modelSummary.getAuc(), 0.54, 0.01);
         sc.stop();

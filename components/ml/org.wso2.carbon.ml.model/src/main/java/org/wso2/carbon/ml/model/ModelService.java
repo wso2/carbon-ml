@@ -53,13 +53,29 @@ public interface ModelService {
             throws ModelServiceException;
 
     /**
-     * @param workflow JSON object containing machine learning work flow information
+     * @param modelID    Model ID
+     * @param workflowID Workflow ID
      * @throws ModelServiceException
      */
-    public void buildModel(String workflowJSON) throws ModelServiceException;
+    public void buildModel(String modelID, String workflowID) throws ModelServiceException;
+
+    /**
+     * @param modelID Model ID
+     * @param <T>     Model summary type
+     * @return Model summary object
+     * @throws ModelServiceException
+     */
+    public <T> T getModelSummary(String modelID) throws ModelServiceException;
+
+    /**
+     * @param modelSettingsJSON Model settings as a JSON string
+     * @throws ModelServiceException
+     */
+    public void insertModelSettings(String modelSettingsJSON) throws ModelServiceException;
 
     /**
      * This method checks whether model execution is completed or not
+     *
      * @param modelId
      * @return indicates whether model execution is completed or not
      * @throws ModelServiceException
@@ -68,17 +84,10 @@ public interface ModelService {
 
     /**
      * This method checks whether model execution is started or not
+     *
      * @param modelId
      * @return indicates whether model execution is started or not
      * @throws ModelServiceException
      */
     public boolean isExecutionStarted(String modelId) throws ModelServiceException;
-
-     /** @param modelID Model ID
-     * @param <T>     Model summary type
-     * @return Model summary object
-     * @throws ModelServiceException
-     */
-    public <T> T getModelSummary(String modelID) throws ModelServiceException;
-
 }

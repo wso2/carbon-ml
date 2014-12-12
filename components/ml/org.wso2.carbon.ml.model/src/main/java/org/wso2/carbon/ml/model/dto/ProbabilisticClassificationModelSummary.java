@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A utility class to store logistic regression model summary
  */
-public class LogisticRegressionModelSummary implements Serializable {
+public class ProbabilisticClassificationModelSummary implements Serializable {
     private String roc;
     private double auc;
     private List<PredictedVsActual> predictedVsActuals;

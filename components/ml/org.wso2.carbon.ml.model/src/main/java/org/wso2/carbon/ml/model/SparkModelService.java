@@ -26,11 +26,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.HyperParameter;
+import org.wso2.carbon.ml.model.dto.MLWorkflow;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,16 +53,16 @@ public class SparkModelService implements ModelService {
      *
      * @param context ComponentContext
      */
-    protected void activate(ComponentContext context) {
+    protected void activate(ComponentContext context) throws ModelServiceException {
         try {
             SparkModelService sparkModelService = new SparkModelService();
             sparkModelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser
                     (MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
             context.getBundleContext().registerService(ModelService.class.getName(),
                     sparkModelService, null);
-            logger.info("ML Model Service Started");
+            logger.info("ML Model Service Started.");
         } catch (Exception e) {
-            logger.error("An error occured while activating model service: " + e
+            throw new ModelServiceException("An error occured while activating model service: " + e
                     .getMessage(), e);
         }
     }
@@ -70,7 +73,7 @@ public class SparkModelService implements ModelService {
      * @param context ComponentContext
      */
     protected void deactivate(ComponentContext context) {
-        logger.info("ML Model Service Stopped");
+        logger.info("ML Model Service Stopped.");
     }
 
     /**
@@ -82,9 +85,8 @@ public class SparkModelService implements ModelService {
         try {
             return this.mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error("An error occurred while retrieving hyper parameters :" + e.getMessage(),
-                    e);
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occurred while retrieving hyper parameters :" + e.getMessage(), e);
         }
     }
 
@@ -97,9 +99,8 @@ public class SparkModelService implements ModelService {
         try {
             return this.mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error("An error occurred while retrieving algorithm names: " + e.getMessage(),
-                    e);
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occurred while retrieving algorithm names: " + e.getMessage(), e);
         }
     }
 
@@ -161,26 +162,29 @@ public class SparkModelService implements ModelService {
                 recommendations.put(recommendation.getKey(), scaledRating);
             }
         } catch (MLAlgorithmConfigurationParserException e) {
-            logger.error(
+            throw new ModelServiceException(
                     "An error occurred while retrieving recommended algorithms: " + e.getMessage(),
                     e);
-            throw new ModelServiceException(e.getMessage(), e);
         }
         return recommendations;
     }
 
     /**
-     * @param workflowJSON Workflow as a JSON string
+     * @param modelID    Model ID
+     * @param workflowID Workflow ID
      * @throws ModelServiceException
      */
-    public void buildModel(String workflowJSON) throws ModelServiceException {
+    public void buildModel(String modelID, String workflowID) throws ModelServiceException {
         // temporarily store thread context class loader (tccl)
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
             // switch class loader to JavaSparkContext class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            JSONObject workflow = new JSONObject(workflowJSON);
-            String algorithmType = workflow.getString(MLModelConstants.ALGORITHM_TYPE);
+            DatabaseHandler databaseHandler = new DatabaseHandler();
+            MLWorkflow workflow = databaseHandler.getWorkflow(workflowID);
+            JSONObject jsonObject = new JSONObject(workflow);
+            logger.info(jsonObject.toString(4));
+            String algorithmType = workflow.getAlgorithmClass();
             if (MLModelConstants.CLASSIFICATION.equals(
                     algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
                 // create a new spark configuration
@@ -188,13 +192,12 @@ public class SparkModelService implements ModelService {
                         MLModelConstants.SPARK_CONFIG_XML);
                 SparkConf sparkConf = sparkConfigurationParser.getSparkConf();
                 SupervisedModel supervisedModel = new SupervisedModel();
-                supervisedModel.buildModel(workflow, sparkConf);
+                supervisedModel.buildModel(modelID, workflow, sparkConf);
             }
         } catch (Exception e) {
-            logger.error(
+            throw new ModelServiceException(
                     "An error occurred while building machine learning model: " + e.getMessage(),
                     e);
-            throw new ModelServiceException(e.getMessage(), e);
         } finally {
             // switch class loader back to tccl
             Thread.currentThread().setContextClassLoader(tccl);
@@ -213,29 +216,61 @@ public class SparkModelService implements ModelService {
             DatabaseHandler databaseHandler = new DatabaseHandler();
             modelSummary = databaseHandler.getModelSummary(modelID);
         } catch (Exception e) {
-            logger.error("An error occured while retrieving model summay: " + e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while retrieving model summay: " + e.getMessage(), e);
         }
         return modelSummary;
     }
 
     /**
+     * @param modelSettingsJSON Model settings as a JSON string
+     * @throws ModelServiceException
+     */
+    public void insertModelSettings(String modelSettingsJSON) throws ModelServiceException {
+        try {
+            JSONObject modelSettings = new JSONObject(modelSettingsJSON);
+            JSONArray parameters = modelSettings.getJSONArray(MLModelConstants.HYPER_PARAMETERS);
+            Map<String, String> hyperParameters = new HashMap();
+            for (int i = 0; i < parameters.length(); i++) {
+                hyperParameters.put(parameters.getJSONArray(i).getString(0),
+                        parameters.getJSONArray(i).getString(1));
+            }
+            DatabaseHandler dbHandler = new DatabaseHandler();
+            dbHandler.insertModelSettings(
+                    modelSettings.getString(MLModelConstants.MODEL_SETTINGS_ID),
+                    modelSettings.getString(MLModelConstants.WORKFLOW_ID),
+                    modelSettings.getString(MLModelConstants.ALGORITHM_TYPE),
+                    modelSettings.getString(MLModelConstants.ALGORITHM_NAME),
+                    modelSettings.getString(MLModelConstants.RESPONSE),
+                    modelSettings.getDouble(MLModelConstants.TRAIN_DATA_FRACTION),
+                    hyperParameters);
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error occured while inserting model settings: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * This method checks whether the model building process is completed for a given model id
+     *
      * @param modelId
      * @return
      * @throws ModelServiceException
      */
     public boolean isExecutionCompleted(String modelId) throws ModelServiceException {
-        try{
+        try {
             DatabaseHandler handler = new DatabaseHandler();
             return handler.getModelExecutionEndTime(modelId) > 0;
-        }catch (Exception e){
-            throw  new ModelServiceException("An error has occurred while querying model: " + modelId +
-                    " for execution end time: "+ e.getMessage(), e);
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error has occurred while querying model: " + modelId +
+                    " for execution end time: " + e.getMessage(), e);
         }
     }
 
     /**
      * This method checks whether the model building process is started for a given model id
+     *
      * @param modelId
      * @return
      * @throws ModelServiceException
@@ -243,10 +278,11 @@ public class SparkModelService implements ModelService {
     public boolean isExecutionStarted(String modelId) throws ModelServiceException {
         try {
             DatabaseHandler handler = new DatabaseHandler();
-            return  handler.getModelExecutionStartTime(modelId) > 0;
-        }catch (Exception e){
-            throw  new ModelServiceException("An error has occurred while querying model: " + modelId +
-                    " for execution start time: "+ e.getMessage(), e);
+            return handler.getModelExecutionStartTime(modelId) > 0;
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error has occurred while querying model: " + modelId +
+                    " for execution start time: " + e.getMessage(), e);
         }
     }
 }

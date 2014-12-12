@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.model.dto;
 
+import java.io.Serializable;
+
 /**
  * DTO class for JAXB binding of MLAlgorithmConfigurationParser
  */

@@ -34,6 +34,8 @@ public final class MLModelConstants {
     public static final String BINARY = "binary";
     public static final String YES = "yes";
     public static final String NO = "no";
+
+    // model settings json
     public static final String MODEL_ID = "modelID";
     public static final String MODEL_SETTINGS_ID = "modelSettingsID";
     public static final String WORKFLOW_ID = "workflowID";
@@ -42,13 +44,14 @@ public final class MLModelConstants {
     public static final String RESPONSE = "responseVariable";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
+    public static final String HYPER_PARAMETERS = "hyperParameters";
 
     // xml tags
     public static final String ALGORITHMS = "algorithms";
     public static final String ALGORITHM = "algorithm";
     public static final String NAME = "name";
     public static final String TYPE = "type";
-    public static final String VALAUE = "value";
+    public static final String VALUE = "value";
     public static final String SCALABILITY = "scalability";
     public static final String INTERPRETABILITY = "interpretability";
     public static final String MULTICOLLINEARITY = "multicollinearity";
