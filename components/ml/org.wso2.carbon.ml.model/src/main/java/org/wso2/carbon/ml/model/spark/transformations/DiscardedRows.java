@@ -18,17 +18,23 @@
 
 package org.wso2.carbon.ml.model.spark.transformations;
 
-import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 /**
  * A filter to remove discarded rows - Impute Option: Discard
  */
-public class DiscardedRows implements Function2<String[], Integer[], Boolean> {
+public class DiscardedRows implements Function<String[], Boolean> {
+
+    private int[] indices;
+
+    DiscardedRows(int[] discardIndices){
+        this.indices = discardIndices;
+    }
 
     @Override
-    public Boolean call(String[] tokens, Integer[] indices) throws Exception {
+    public Boolean call(String[] tokens) throws Exception {
         try {
             Boolean keep = true;
             for (Integer index : indices) {

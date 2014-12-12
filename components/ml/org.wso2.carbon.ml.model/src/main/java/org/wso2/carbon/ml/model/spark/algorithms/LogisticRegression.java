@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
@@ -34,7 +33,7 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
+import org.wso2.carbon.ml.model.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
@@ -43,7 +42,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 
 public class LogisticRegression implements Serializable {
@@ -162,12 +160,12 @@ public class LogisticRegression implements Serializable {
      * @return Logistic regression model summary
      * @throws ModelServiceException
      */
-    public LogisticRegressionModelSummary getModelSummary(JavaRDD<Tuple2<Object,
+    public ProbabilisticClassificationModelSummary getModelSummary(JavaRDD<Tuple2<Object,
             Object>> scoresAndLabels) throws ModelServiceException {
         try {
             // create a logistic regression model summary object
-            LogisticRegressionModelSummary logisticRegressionModelSummary = new
-                    LogisticRegressionModelSummary();
+            ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = new
+                    ProbabilisticClassificationModelSummary();
             // store predicted vs actual results
             List<PredictedVsActual> predictedVsActuals = new ArrayList();
             List<Tuple2<Object,Object>> scoresAnaLabels = scoresAndLabels.collect();
@@ -177,12 +175,12 @@ public class LogisticRegression implements Serializable {
                 predictedVsActual.setActual((Double) scoreAndLabel._2());
                 predictedVsActuals.add(predictedVsActual);
             }
-            logisticRegressionModelSummary.setPredictedVsActuals(predictedVsActuals);
+            probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
             // generate binary classification metrics
             BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD
                     (scoresAndLabels));
             // store AUC
-            logisticRegressionModelSummary.setAuc(metrics.areaUnderROC());
+            probabilisticClassificationModelSummary.setAuc(metrics.areaUnderROC());
             // store ROC data points
             List<Tuple2<Object, Object>> rocData = metrics.roc().toJavaRDD().collect();
             JSONArray rocPoints = new JSONArray();
@@ -192,8 +190,8 @@ public class LogisticRegression implements Serializable {
                 point.put(rocData.get(i)._2());
                 rocPoints.put(point);
             }
-            logisticRegressionModelSummary.setRoc(rocPoints.toString());
-            return logisticRegressionModelSummary;
+            probabilisticClassificationModelSummary.setRoc(rocPoints.toString());
+            return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new ModelServiceException(e.getMessage(), e);
         }
