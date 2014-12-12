@@ -26,8 +26,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.dto.HyperParameter;
 import org.wso2.carbon.ml.model.dto.MLWorkflow;
+import org.wso2.carbon.ml.model.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
@@ -183,7 +186,6 @@ public class SparkModelService implements ModelService {
             DatabaseHandler databaseHandler = new DatabaseHandler();
             MLWorkflow workflow = databaseHandler.getWorkflow(workflowID);
             JSONObject jsonObject = new JSONObject(workflow);
-            logger.info(jsonObject.toString(4));
             String algorithmType = workflow.getAlgorithmClass();
             if (MLModelConstants.CLASSIFICATION.equals(
                     algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
@@ -251,38 +253,84 @@ public class SparkModelService implements ModelService {
     }
 
     /**
-     * This method checks whether the model building process is completed for a given model id
+     * This method checks whether model execution is completed or not
      *
-     * @param modelId
-     * @return
+     * @param modelID Model ID
+     * @return Indicates whether model execution is completed or not
      * @throws ModelServiceException
      */
-    public boolean isExecutionCompleted(String modelId) throws ModelServiceException {
+    public boolean isExecutionCompleted(String modelID) throws ModelServiceException {
         try {
             DatabaseHandler handler = new DatabaseHandler();
-            return handler.getModelExecutionEndTime(modelId) > 0;
+            return handler.getModelExecutionEndTime(modelID) > 0;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error has occurred while querying model: " + modelId +
+                    "An error has occurred while querying model: " + modelID +
                     " for execution end time: " + e.getMessage(), e);
         }
     }
 
     /**
-     * This method checks whether the model building process is started for a given model id
+     * This method checks whether model execution is started or not
      *
-     * @param modelId
-     * @return
+     * @param modelID Model ID
+     * @return Indicates whether model execution is started or not
      * @throws ModelServiceException
      */
-    public boolean isExecutionStarted(String modelId) throws ModelServiceException {
+    public boolean isExecutionStarted(String modelID) throws ModelServiceException {
         try {
             DatabaseHandler handler = new DatabaseHandler();
-            return handler.getModelExecutionStartTime(modelId) > 0;
+            return handler.getModelExecutionStartTime(modelID) > 0;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error has occurred while querying model: " + modelId +
+                    "An error has occurred while querying model: " + modelID +
                     " for execution start time: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method returns a confusion matrix for a given threshold
+     *
+     * @param modelID   Model ID
+     * @param threshold Probability threshold
+     * @return Returns a confusion matrix object
+     * @throws ModelServiceException
+     */
+    public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
+            throws ModelServiceException {
+        try {
+            long truePositives, falsePositives, trueNegatives, falseNegatives;
+            trueNegatives = truePositives = falsePositives = falseNegatives = 0;
+            List<PredictedVsActual> predictedVsActuals = (
+                    (ProbabilisticClassificationModelSummary) getModelSummary(
+                            modelID)).getPredictedVsActuals();
+            double predicted, actual;
+            for (PredictedVsActual predictedVsActual : predictedVsActuals) {
+                predicted = predictedVsActual.getPredicted();
+                actual = predictedVsActual.getActual();
+                if (predicted > threshold) {
+                    if (actual == 1.0) {
+                        truePositives += 1;
+                    } else {
+                        falsePositives += 1;
+                    }
+                } else {
+                    if (actual == 0.0) {
+                        trueNegatives += 1;
+                    } else {
+                        falseNegatives += 1;
+                    }
+                }
+            }
+            ConfusionMatrix confusionMatrix = new ConfusionMatrix();
+            confusionMatrix.setTruePositives(truePositives);
+            confusionMatrix.setFalsePositives(falsePositives);
+            confusionMatrix.setTrueNegatives(trueNegatives);
+            confusionMatrix.setFalseNegatives(falseNegatives);
+            return confusionMatrix;
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error occured while generating confusion matrix: " + e.getMessage(), e);
         }
     }
 }

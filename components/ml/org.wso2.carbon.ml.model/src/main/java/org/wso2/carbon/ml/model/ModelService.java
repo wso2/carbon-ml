@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.wso2.carbon.ml.model.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.List;
@@ -76,18 +76,29 @@ public interface ModelService {
     /**
      * This method checks whether model execution is completed or not
      *
-     * @param modelId
-     * @return indicates whether model execution is completed or not
+     * @param modelID Model ID
+     * @return Indicates whether model execution is completed or not
      * @throws ModelServiceException
      */
-    public boolean isExecutionCompleted(String modelId) throws ModelServiceException;
+    public boolean isExecutionCompleted(String modelID) throws ModelServiceException;
 
     /**
      * This method checks whether model execution is started or not
      *
-     * @param modelId
-     * @return indicates whether model execution is started or not
+     * @param modelID Model ID
+     * @return Indicates whether model execution is started or not
      * @throws ModelServiceException
      */
-    public boolean isExecutionStarted(String modelId) throws ModelServiceException;
+    public boolean isExecutionStarted(String modelID) throws ModelServiceException;
+
+    /**
+     * This method returns a confusion matrix for a given threshold
+     *
+     * @param modelID   Model ID
+     * @param threshold Probability threshold
+     * @return Returns a confusion matrix object
+     * @throws ModelServiceException
+     */
+    public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
+            throws ModelServiceException;
 }
