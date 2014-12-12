@@ -19,11 +19,31 @@
             <div id="workArea">
                 <%include("../../includes/wizardmenu.jag");%>
                 <div style="clear:both"></div>
-
                 <div id="wizzardSteps">
                     <% include('algoType.jag'); %>
                 </div>                
             </div>
         </div>
     </body>
+
+    <script type="text/javascript">
+        $('document').ready(function () {
+            $('#buildModel').addClass('top_Menu_button menuHiligher');            
+            disableWizardMenu();
+
+            // 
+            var isModelExecStarted = 'false';
+            $.ajax({
+                url : "./ajax/queryModelExecStart.jag",
+                type : "POST",
+                async : false,
+                success : function(data) { isModelExecStarted = data;},
+                error : function(){/*TODO:*/ }
+            });
+
+            if(isModelExecStarted === 'true'){        
+                poll();
+            }    
+        });
+    </script>
 </html>
