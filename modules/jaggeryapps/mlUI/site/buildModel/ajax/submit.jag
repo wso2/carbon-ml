@@ -1,6 +1,6 @@
 <%
     var log = new Log();
-    var parameters = request.getAllParameters("UTF-8");
+    var parameters = JSON.parse(request.getParameter('modelParameters',"UTF-8"));
     var carbon = require('carbon');
     var uuid = require('uuid');
 

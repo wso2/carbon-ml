@@ -61,14 +61,22 @@ $('#algorithms_continue').click(function () {
     if (algoName == undefined) {
         alert("Please select an algorithm before continue.");
     } else {
-        var hyperParametersData = 'algorithmName=' + algoName.value + '&trainDataFraction=' + trainDataFraction;
+        var modelParameters = {};
+        modelParameters.algorithmName = algoName.value;
+        modelParameters.trainDataFraction = trainDataFraction;
         if (response != "") {
-            hyperParametersData = hyperParametersData + '&responseVariable=' + response;
+            modelParameters.responseVariable = response;
         }
+        var hyperParameters = [];
         while (parameters[i] != undefined) {
-            hyperParametersData = hyperParametersData + '&' + parameters[i].id + '=' + values[i].value;
+            var parameter = [];
+            parameter.push(parameters[i].id);
+            parameter.push(values[i].value);
+            hyperParameters.push(parameter);
             i++;
         }
+        modelParameters.hyperParameters = hyperParameters;
+
         var isModelExecStarted = 'false';
         $.ajax({
             url : "./ajax/queryModelExecStart.jag",
@@ -82,8 +90,9 @@ $('#algorithms_continue').click(function () {
         if(isModelExecStarted === 'false'){
             $.ajax({
                 url: "./ajax/submit.jag",
-                type: 'POST',
-                data: hyperParametersData,
+            	type: 'POST',
+            	dataType: "json",
+            	data: {'modelParameters': JSON.stringify(modelParameters)},
                 error: function (jqXHR, textStatus, errorThrown) {
                     // TODO: redirect to error page
                 }
