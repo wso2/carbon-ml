@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
+import org.wso2.carbon.ml.model.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.List;
@@ -52,10 +53,11 @@ public interface ModelService {
             throws ModelServiceException;
 
     /**
-     * @param workflowJSON object containing machine learning work flow information
+     * @param modelID    Model ID
+     * @param workflowID Workflow ID
      * @throws ModelServiceException
      */
-    public void buildModel(String workflowJSON) throws ModelServiceException;
+    public void buildModel(String modelID, String workflowID) throws ModelServiceException;
 
     /**
      * @param modelID Model ID
@@ -64,4 +66,39 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public <T> T getModelSummary(String modelID) throws ModelServiceException;
+
+    /**
+     * @param modelSettingsJSON Model settings as a JSON string
+     * @throws ModelServiceException
+     */
+    public void insertModelSettings(String modelSettingsJSON) throws ModelServiceException;
+
+    /**
+     * This method checks whether model execution is completed or not
+     *
+     * @param modelID Model ID
+     * @return Indicates whether model execution is completed or not
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionCompleted(String modelID) throws ModelServiceException;
+
+    /**
+     * This method checks whether model execution is started or not
+     *
+     * @param modelID Model ID
+     * @return Indicates whether model execution is started or not
+     * @throws ModelServiceException
+     */
+    public boolean isExecutionStarted(String modelID) throws ModelServiceException;
+
+    /**
+     * This method returns a confusion matrix for a given threshold
+     *
+     * @param modelID   Model ID
+     * @param threshold Probability threshold
+     * @return Returns a confusion matrix object
+     * @throws ModelServiceException
+     */
+    public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
+            throws ModelServiceException;
 }

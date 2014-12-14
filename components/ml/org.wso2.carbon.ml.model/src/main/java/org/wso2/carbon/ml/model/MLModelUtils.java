@@ -55,7 +55,9 @@ public class MLModelUtils {
             }
             return responseIndex;
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while getting response variable index: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -75,7 +77,8 @@ public class MLModelUtils {
                 return "";
             }
         } catch (Exception e) {
-            throw new ModelServiceException(e.getMessage(), e);
+            throw new ModelServiceException(
+                    "An error occured while getting column separator: " + e.getMessage(), e);
         }
     }
 
@@ -83,10 +86,15 @@ public class MLModelUtils {
      * @param values List of integer values
      * @return Sum of the list of values as a double
      */
-    public static Double sum(List<Integer> values) {
+    public static Double sum(List<Integer> values) throws ModelServiceException {
         Double sum = 0.0;
-        for (Integer value : values) {
-            sum = sum + value;
+        try {
+            for (Integer value : values) {
+                sum = sum + value;
+            }
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error occured while calculating sum: " + e.getMessage(), e);
         }
         return sum;
     }

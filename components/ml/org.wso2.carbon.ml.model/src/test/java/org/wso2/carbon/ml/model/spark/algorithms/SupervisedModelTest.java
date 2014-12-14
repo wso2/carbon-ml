@@ -1,22 +1,8 @@
 package org.wso2.carbon.ml.model.spark.algorithms;
 
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.regression.LabeledPoint;
 import org.json.JSONObject;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.model.SparkConfigurationParser;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
-import org.wso2.carbon.ml.model.spark.transformations.Header;
-import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
-
-import java.util.regex.Pattern;
-
-import static org.testng.Assert.*;
 
 public class SupervisedModelTest {
 

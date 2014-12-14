@@ -18,35 +18,26 @@
 
 package org.wso2.carbon.ml.model.spark.algorithms;
 
-import akka.actor.ActorSystem;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
-import org.apache.spark.SparkEnv;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
-import org.json.JSONObject;
 import org.wso2.carbon.ml.model.DatabaseHandler;
 import org.wso2.carbon.ml.model.MLModelUtils;
-import org.wso2.carbon.ml.model.SparkConfigurationParser;
 import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.LogisticRegressionModelSummary;
-import org.wso2.carbon.ml.model.dto.SparkProperty;
-import org.wso2.carbon.ml.model.dto.SparkSettings;
+import org.wso2.carbon.ml.model.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.dto.MLWorkflow;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.transformations.Header;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 import scala.Tuple2;
 
-import java.io.File;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,13 +46,13 @@ import java.util.regex.Pattern;
 public class SupervisedModel {
     private static final Log logger = LogFactory.getLog(SupervisedModel.class);
 
-    public void buildModel(JSONObject workflow, SparkConf sparkConf) {
+    public void buildModel(String modelID,MLWorkflow workflow, SparkConf sparkConf) {
         try {
-            sparkConf.setAppName(workflow.getString(MLModelConstants.MODEL_ID));
+            sparkConf.setAppName(modelID);
             // create a new java spark context
             JavaSparkContext sc = new JavaSparkContext(sparkConf);
             // parse lines in the dataset
-            String datasetURL = workflow.getString(MLModelConstants.DATASET_URL);
+            String datasetURL = workflow.getDatasetURL();
             JavaRDD<String> lines = sc.textFile(datasetURL);
             // filter out header line
             String headerRow = lines.take(1).get(0);
@@ -73,27 +64,26 @@ public class SupervisedModel {
             LineToTokens lineToTokens = new LineToTokens(pattern);
             JavaRDD<String[]> tokens = data.map(lineToTokens);
             // generate train and test datasets by converting tokens to labeled points
-            int responseIndex = MLModelUtils.getResponseIndex(workflow.getString(MLModelConstants
-                    .RESPONSE), headerRow, columnSeparator);
+            int responseIndex = MLModelUtils.getResponseIndex(workflow.getResponseVariable(), headerRow, columnSeparator);
             TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(responseIndex);
             JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
             JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,
-                    workflow.getDouble(MLModelConstants.TRAIN_DATA_FRACTION),
+                    workflow.getTrainDataFraction(),
                     MLModelConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
             // build a machine learning model according to user selected algorithm
             MLModelConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLModelConstants
                     .SUPERVISED_ALGORITHM.valueOf(
-                            workflow.getString(MLModelConstants.ALGORITHM_NAME));
+                            workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
                 case LOGISTIC_REGRESSION:
-                    buildLogisticRegressionModel(trainingData, testingData, workflow);
+                    buildLogisticRegressionModel(modelID,trainingData, testingData, workflow);
                     break;
                 case DECISION_TREE:
                     // empty hashmap - no categorical features
                     // needs to be populated with categorical column number:no of categories
                     Map<Integer, Integer> categoricalFeatures = new HashMap();
-                    buildDecisionTreeModel(trainingData, testingData, categoricalFeatures,
+                    buildDecisionTreeModel(modelID,trainingData, testingData, categoricalFeatures,
                             workflow);
                     break;
                 default:
@@ -115,27 +105,28 @@ public class SupervisedModel {
      * @param workflow     Machine learning workflow
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
-    private void buildLogisticRegressionModel(JavaRDD<LabeledPoint> trainingData,
+    private void buildLogisticRegressionModel(String modelID,JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData,
-            JSONObject workflow) throws ModelServiceException {
+            MLWorkflow workflow) throws ModelServiceException {
         try {
-            String modelID = workflow.getString(MLModelConstants.MODEL_ID);
             DatabaseHandler databaseHandler = new DatabaseHandler();
-            databaseHandler.insertModel(modelID, workflow.getString(MLModelConstants.WORKFLOW_ID),
+            databaseHandler.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             LogisticRegression logisticRegression = new LogisticRegression();
+            Map<String,String> hyperParameters = workflow.getHyperParameters();
             LogisticRegressionModel model = logisticRegression.trainWithSGD(trainingData,
-                    workflow.getDouble(MLModelConstants.LEARNING_RATE),
-                    workflow.getInt(MLModelConstants.ITERATIONS),
-                    workflow.getString(MLModelConstants.REGULARIZATION_TYPE),
-                    workflow.getDouble(MLModelConstants.REGULARIZATION_PARAMETER),
-                    workflow.getDouble(MLModelConstants.SGD_DATA_FRACTION));
+                    Double.parseDouble(hyperParameters.get(MLModelConstants.LEARNING_RATE)),
+                    Integer.parseInt(hyperParameters.get(MLModelConstants.ITERATIONS)),
+                    hyperParameters.get(MLModelConstants.REGULARIZATION_TYPE),
+                    Double.parseDouble(
+                            hyperParameters.get(MLModelConstants.REGULARIZATION_PARAMETER)),
+                    Double.parseDouble(hyperParameters.get(MLModelConstants.SGD_DATA_FRACTION)));
             model.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(model,
                     testingData);
-            LogisticRegressionModelSummary logisticRegressionModelSummary = logisticRegression
+            ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = logisticRegression
                     .getModelSummary(scoresAndLabels);
-            databaseHandler.updateModel(modelID, model, logisticRegressionModelSummary,
+            databaseHandler.updateModel(modelID, model, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (Exception e) {
             throw new ModelServiceException(
@@ -154,17 +145,18 @@ public class SupervisedModel {
      * @param workflow            Machine learning workflow
      * @throws ModelServiceException
      */
-    private void buildDecisionTreeModel(JavaRDD<LabeledPoint> trainingData,
+    private void buildDecisionTreeModel(String modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData,
             Map<Integer, Integer> categoricalFeatures,
-            JSONObject workflow) throws ModelServiceException {
+            MLWorkflow workflow) throws ModelServiceException {
         try {
+            Map<String,String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
-                    workflow.getInt(MLModelConstants.NUM_CLASSES), categoricalFeatures,
-                    workflow.getString(MLModelConstants.IMPURITY),
-                    workflow.getInt(MLModelConstants.MAX_DEPTH),
-                    workflow.getInt(MLModelConstants.MAX_BINS));
+                    Integer.parseInt(hyperParameters.get(MLModelConstants.NUM_CLASSES)), categoricalFeatures,
+                    hyperParameters.get(MLModelConstants.IMPURITY),
+                    Integer.parseInt(hyperParameters.get(MLModelConstants.MAX_DEPTH)),
+                    Integer.parseInt(hyperParameters.get(MLModelConstants.MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAnsLabels = decisionTree.test(decisionTreeModel,
                     trainingData);
             double testError = decisionTree.getTestError(predictionsAnsLabels);

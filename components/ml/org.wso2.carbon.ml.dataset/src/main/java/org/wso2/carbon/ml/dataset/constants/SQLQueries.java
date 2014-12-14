@@ -68,6 +68,8 @@ public class SQLQueries {
 			"SELECT FEATURE_NAME,TYPE,IMPUTE_METHOD,INCLUDE FROM ML_FEATURE_DEFAULTS WHERE "
 					+ "DATASET_ID=?" + " ";
 
+	public static final String GET_MODEL_ID = " SELECT MODEL_ID FROM ML_MODEL WHERE WORKFLOW_ID = ?";
+
 	/*
 	 * private Constructor to prevent any other class from instantiating.
 	 */

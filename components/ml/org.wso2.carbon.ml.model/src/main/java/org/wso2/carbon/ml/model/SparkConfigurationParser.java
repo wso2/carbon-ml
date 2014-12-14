@@ -30,7 +30,6 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 
 public class SparkConfigurationParser {
-    private static final Log logger = LogFactory.getLog(SparkConfigurationParser.class);
     private String sparkConfigurationFilePath;
 
     public SparkConfigurationParser(String sparkConfigurationFilePath) {
@@ -57,9 +56,8 @@ public class SparkConfigurationParser {
             }
             return sparkConf;
         } catch (Exception e) {
-            logger.error("An error occurred while generating spark configuration: " + e
-                    .getMessage(), e);
-            throw new SparkConfigurationParserException(e.getMessage(), e);
+            throw new SparkConfigurationParserException(
+                    "An error occurred while generating spark configuration: " + e.getMessage(), e);
         }
     }
 }
