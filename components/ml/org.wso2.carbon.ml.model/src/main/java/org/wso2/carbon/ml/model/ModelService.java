@@ -19,7 +19,6 @@
 package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.List;
@@ -53,7 +52,7 @@ public interface ModelService {
             throws ModelServiceException;
 
     /**
-     * @param workflow JSON object containing machine learning work flow information
+     * @param workflowJSON object containing machine learning work flow information
      * @throws ModelServiceException
      */
     public void buildModel(String workflowJSON) throws ModelServiceException;
