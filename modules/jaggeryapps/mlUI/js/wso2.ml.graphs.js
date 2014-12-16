@@ -290,10 +290,51 @@ var ROCGraph = function(data){
     BasePlot.call(this, data);
 
     this.randomGuassingLineColor = "#000000";
+    this.xScale = null;
+    this.yScale = null;
+
+    this.marker = null;
+    this.markerHorizontalLine = null;
+    this.markerVerticalLine = null;
 };
 
 ROCGraph.prototype = Object.create(BasicLineGraph.prototype);
 ROCGraph.prototype.constructor = ROCGraph;
+
+ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
+    if(this.marker){
+        this.marker.remove();
+    }
+    this.marker = this.svg.append("circle")
+            .attr("cx", xScale(cx))
+            .attr("cy", yScale(cy))
+            .attr("r", r)
+            .attr("fill", "red");
+
+    if(this.markerHorizontalLine){
+        this.markerHorizontalLine.remove();
+    }
+    this.markerHorizontalLine = this.svg.append("line")
+        .attr('x1', 0)
+        .attr('y1', yScale(cy))
+        .attr('x2', xScale(cx))
+        .attr('y2', yScale(cy))
+        .attr('stroke-width', 1)
+        .attr('stroke', '#ff0000')
+        .attr("stroke-dasharray", ("5, 5"));
+    
+    if(this.markerVerticalLine){
+        this.markerVerticalLine.remove();
+    }
+    this.markerVerticalLine = this.svg.append("line")
+        .attr('x1', xScale(cx))
+        .attr('y1', this.height)
+        .attr('x2', xScale(cx))
+        .attr('y2', yScale(cy))
+        .attr('stroke-width', 1)
+        .attr('stroke', '#ff0000')
+        .attr("stroke-dasharray", ("5, 5"));
+};
 
 ROCGraph.prototype.plot = function(selection){
     if(!selection){
@@ -304,7 +345,7 @@ ROCGraph.prototype.plot = function(selection){
     this.initializeSVGContainer(selection); 
 
     //setting up X and Y scales appropriate to Scatter Plots 
-    var xScale = d3.scale.linear()
+    xScale = d3.scale.linear()
         .domain([d3.min(this.data, function(d) {
             return d[0];
         }), d3.max(this.data, function(d) {
@@ -312,7 +353,7 @@ ROCGraph.prototype.plot = function(selection){
         })])
         .range([0, this.width]);
 
-    var yScale = d3.scale.linear()
+    yScale = d3.scale.linear()
         .domain([d3.min(this.data, function(d) {
             return d[1];
         }), d3.max(this.data, function(d) {
@@ -346,7 +387,7 @@ ROCGraph.prototype.plot = function(selection){
             .interpolate("linear");
 
     var graph = this.svg.append("path")
-                .attr("d", lineFunction(roc))
+                .attr("d", lineFunction(this.data))
                 .attr("stroke", this.lineColor)
                 .attr("stroke-width", this.lineWidth)
                 .attr("fill", "none");

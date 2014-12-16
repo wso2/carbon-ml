@@ -1,0 +1,26 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var workflowId = session.get("workflowId");
+    var retrievedModelId = null;
+
+    try{
+        var datasetService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.dataset.MLDatasetService');
+        var modelService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.model.ModelService');
+        var retrievedModelId =  datasetService.getModelId(workflowId);       
+        
+        var threshold = request.getParameter("threshold");
+        var cm = modelService.getConfusionMatrix(retrievedModelId, threshold);   
+     
+        var result = {tp : cm.getTruePositives(),
+                        fp : cm.getFalsePositives(),
+                        fn : cm.getFalseNegatives(),
+                        tn : cm.getTrueNegatives()};
+        print(result);
+
+    }catch(e){
+        log.error("An error occurred while querying results for model: "+retrievedModelId, e);
+    }    
+%>
