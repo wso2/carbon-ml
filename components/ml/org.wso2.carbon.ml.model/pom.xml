@@ -57,6 +57,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+                            !org.wso2.carbon.ml.internal.*,
                             org.wso2.carbon.ml.model.*,
                         </Export-Package>
                         <Import-Package>

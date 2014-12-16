@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.model;
 
 import org.json.JSONArray;
-import org.wso2.carbon.ml.model.dto.ConfusionMatrix;
+import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.List;
