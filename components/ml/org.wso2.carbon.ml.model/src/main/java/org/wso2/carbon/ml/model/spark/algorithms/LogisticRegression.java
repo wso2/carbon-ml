@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.spark.algorithms;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -33,8 +33,8 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.internal.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.internal.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 

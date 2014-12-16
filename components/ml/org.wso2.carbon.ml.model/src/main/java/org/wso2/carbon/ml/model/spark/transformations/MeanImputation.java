@@ -16,40 +16,40 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.spark.transformations;
+package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-import java.util.List;
+import java.util.Map;
 
-/**
- * A filter to remove discarded rows - Impute Option: Discard
- */
-public class DiscardedRows implements Function<String[], Boolean> {
+public class MeanImputation implements Function<String[], double[]> {
+    private Map<Integer, Double> meanImputation;
 
-    private List<Integer> indices;
-
-    public DiscardedRows(List<Integer> discardIndices){
-        this.indices = discardIndices;
+    public MeanImputation(Map<Integer, Double> meanImputation) {
+        this.meanImputation = meanImputation;
     }
 
     @Override
-    public Boolean call(String[] tokens) throws Exception {
+    public double[] call(String[] tokens) throws ModelServiceException {
         try {
-            Boolean keep = true;
-            for (Integer index : indices) {
-                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
-                        (tokens[index])) {
-                    keep = false;
-                    break;
+            double[] features = new double[tokens.length];
+            for (int i = 0; i < tokens.length; ++i) {
+                if (MLModelConstants.EMPTY.equals(tokens[i]) || MLModelConstants.NA.equals
+                        (tokens[i])) {
+                    // if mean imputation is set
+                    if (meanImputation.containsKey(i)) {
+                        features[i] = meanImputation.get(i);
+                    }
+                } else {
+                    features[i] = Double.parseDouble(tokens[i]);
                 }
             }
-            return keep;
+            return features;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while removing discarded rows: " + e.getMessage(), e);
+                    "An error occured while applying mean imputation: " + e.getMessage(), e);
         }
     }
 }

@@ -16,30 +16,40 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.spark.transformations;
+package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
- * This class transforms each line (line-by-line) into an array of String tokens
+ * A filter to remove discarded rows - Impute Option: Discard
  */
-public class LineToTokens implements Function<String, String[]> {
-    private Pattern tokenSeparator;
+public class DiscardedRows implements Function<String[], Boolean> {
 
-    public LineToTokens(Pattern pattern) {
-        this.tokenSeparator = pattern;
+    private List<Integer> indices;
+
+    public DiscardedRows(List<Integer> discardIndices){
+        this.indices = discardIndices;
     }
 
     @Override
-    public String[] call(String line) throws Exception {
+    public Boolean call(String[] tokens) throws Exception {
         try {
-            return tokenSeparator.split(line);
+            Boolean keep = true;
+            for (Integer index : indices) {
+                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
+                        (tokens[index])) {
+                    keep = false;
+                    break;
+                }
+            }
+            return keep;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while tranforming lines to tokens: " + e.getMessage(), e);
+                    "An error occured while removing discarded rows: " + e.getMessage(), e);
         }
     }
 }

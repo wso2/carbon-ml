@@ -16,13 +16,13 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.model.spark.dto;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * A utility class to store logistic regression model summary
+ * A utility class to store probabilistic classification model summary
  */
 public class ProbabilisticClassificationModelSummary implements Serializable {
     private String roc;

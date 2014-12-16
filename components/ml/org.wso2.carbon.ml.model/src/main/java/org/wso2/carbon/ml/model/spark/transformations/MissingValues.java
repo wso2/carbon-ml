@@ -16,35 +16,32 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.spark.transformations;
+package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.mllib.linalg.Vector;
-import org.apache.spark.mllib.linalg.Vectors;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-import java.util.List;
-
-public class TokensToVectors implements Function<String[], Vector> {
-    private List<Integer> indices;
-
-    public TokensToVectors(List<Integer> indices) {
-        this.indices = indices;
-    }
+/**
+ * A filter to remove rows containing missing values
+ */
+public class MissingValues implements Function<String[], Boolean> {
 
     @Override
-    public Vector call(String[] tokens) throws ModelServiceException {
+    public Boolean call(String[] tokens) throws Exception {
         try {
-            double[] features = new double[indices.size()];
-            int i = 0;
-            for (int j : indices) {
-                features[i] = Double.parseDouble(tokens[j]);
-                i++;
+            Boolean keep = true;
+            for (String token : tokens) {
+                if (MLModelConstants.EMPTY.equals(token) || MLModelConstants.NA.equals
+                        (token)) {
+                    keep = false;
+                    break;
+                }
             }
-            return Vectors.dense(features);
+            return keep;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while converting tokens to vectors: " + e.getMessage(), e);
+                    "An error occured while removing missing value rows: " + e.getMessage(), e);
         }
     }
 }

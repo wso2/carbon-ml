@@ -18,7 +18,7 @@
  *
  */
 
-package org.wso2.carbon.ml.model.internal.spark.algorithms;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;

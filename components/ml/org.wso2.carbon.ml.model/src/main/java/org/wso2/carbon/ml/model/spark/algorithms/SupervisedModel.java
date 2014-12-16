@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.spark.algorithms;
+package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -33,15 +33,15 @@ import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.MLFeature;
 import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
-import org.wso2.carbon.ml.model.internal.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.spark.transformations.DiscardedRows;
-import org.wso2.carbon.ml.model.internal.spark.transformations.Header;
-import org.wso2.carbon.ml.model.internal.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.internal.spark.transformations.MeanImputation;
-import org.wso2.carbon.ml.model.internal.spark.transformations.MissingValues;
-import org.wso2.carbon.ml.model.internal.spark.transformations.TokensToLabeledPoints;
-import org.wso2.carbon.ml.model.internal.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.model.spark.transformations.DiscardedRows;
+import org.wso2.carbon.ml.model.spark.transformations.Header;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.model.spark.transformations.MissingValues;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToVectors;
 import scala.Tuple2;
 
 import java.sql.Time;

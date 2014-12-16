@@ -29,11 +29,11 @@ import org.wso2.carbon.ml.model.ModelService;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
-import org.wso2.carbon.ml.model.internal.dto.PredictedVsActual;
-import org.wso2.carbon.ml.model.internal.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.spark.algorithms.SupervisedModel;
+import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
