@@ -3,7 +3,7 @@
     var log = new Log();
     var datasetId = session.get("datasetId");
     try{
-        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
         if (datasetId != null){
             var feature1 = request.getParameter("numFeature1");
             var feature2 = request.getParameter("numFeature2");

@@ -15,7 +15,7 @@
     // Add the tenant to the project
     projectManagementService.addTenantToProject(session.get("tenantId"), projectId);
 
-    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
     var sourceFile = request.getFile("uploadDataset");
     try {
         //insert dataset details

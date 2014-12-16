@@ -4,7 +4,7 @@
     var workflowId = session.get("workflowId");
     
     try{
-        var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var datasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
         var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
         var retrievedModelId =  datasetService.getModelId(workflowId);
         
