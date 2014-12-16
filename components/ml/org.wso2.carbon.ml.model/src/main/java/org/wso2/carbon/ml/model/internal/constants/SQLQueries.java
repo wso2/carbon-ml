@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.model.constants;
+package org.wso2.carbon.ml.model.internal.constants;
 
 /**
  * A utility class to store SQL prepared statements

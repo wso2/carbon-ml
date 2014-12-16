@@ -15,9 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.model.constants;
-
-import java.io.File;
+package org.wso2.carbon.ml.model.internal.constants;
 
 /**
  * A utility class to store ML model service constants
@@ -45,6 +43,10 @@ public final class MLModelConstants {
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
     public static final String HYPER_PARAMETERS = "hyperParameters";
+
+    // feature settings
+    public static final String DISCARD = "DISCARD";
+    public static final String MEAN_IMPUTATION = "REPLACE_WTH_MEAN";
 
     // xml tags
     public static final String ALGORITHMS = "algorithms";

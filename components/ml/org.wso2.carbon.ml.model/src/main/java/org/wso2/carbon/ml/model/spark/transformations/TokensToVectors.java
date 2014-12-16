@@ -19,37 +19,32 @@
 package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.linalg.Vectors;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.List;
 
-/**
- * A filter to remove discarded rows - Impute Option: Discard
- */
-public class DiscardedRows implements Function<String[], Boolean> {
-
+public class TokensToVectors implements Function<String[], Vector> {
     private List<Integer> indices;
 
-    public DiscardedRows(List<Integer> discardIndices){
-        this.indices = discardIndices;
+    public TokensToVectors(List<Integer> indices) {
+        this.indices = indices;
     }
 
     @Override
-    public Boolean call(String[] tokens) throws Exception {
+    public Vector call(String[] tokens) throws ModelServiceException {
         try {
-            Boolean keep = true;
-            for (Integer index : indices) {
-                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
-                        (tokens[index])) {
-                    keep = false;
-                    break;
-                }
+            double[] features = new double[indices.size()];
+            int i = 0;
+            for (int j : indices) {
+                features[i] = Double.parseDouble(tokens[j]);
+                i++;
             }
-            return keep;
+            return Vectors.dense(features);
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while removing discarded rows: " + e.getMessage(), e);
+                    "An error occured while converting tokens to vectors: " + e.getMessage(), e);
         }
     }
 }

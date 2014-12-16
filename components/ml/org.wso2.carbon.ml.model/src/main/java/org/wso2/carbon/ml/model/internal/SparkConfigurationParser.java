@@ -16,13 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.internal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
-import org.wso2.carbon.ml.model.dto.SparkProperty;
-import org.wso2.carbon.ml.model.dto.SparkSettings;
+import org.wso2.carbon.ml.model.internal.dto.SparkProperty;
+import org.wso2.carbon.ml.model.internal.dto.SparkSettings;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 
 import javax.xml.bind.JAXBContext;

@@ -15,14 +15,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.constants.SQLQueries;
-import org.wso2.carbon.ml.model.dto.MLFeature;
-import org.wso2.carbon.ml.model.dto.MLWorkflow;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.internal.constants.SQLQueries;
+import org.wso2.carbon.ml.model.internal.dto.MLFeature;
+import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
 import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
 
 import javax.naming.Context;
@@ -252,14 +252,17 @@ public class DatabaseHandler {
             getStatement.setString(1, workflowID);
             result = getStatement.executeQuery();
             while (result.next()) {
-                MLFeature mlFeature = new MLFeature();
-                mlFeature.setName(result.getString(1));
-                mlFeature.setType(result.getString(2));
-                mlFeature.setImputeOption(result.getString(3));
-                mlFeature.setInclude(result.getBoolean(4));
-                mlFeatures.add(mlFeature);
+                // check whether to include the feature or not
+                if (result.getBoolean(4) == true) {
+                    MLFeature mlFeature = new MLFeature();
+                    mlFeature.setName(result.getString(1));
+                    mlFeature.setType(result.getString(2));
+                    mlFeature.setImputeOption(result.getString(3));
+                    mlFeature.setInclude(result.getBoolean(4));
+                    mlFeatures.add(mlFeature);
+                }
             }
-            mlWorkflow.setMlFeatures(mlFeatures);
+            mlWorkflow.setFeatures(mlFeatures);
             getStatement = connection.prepareStatement(SQLQueries.GET_ML_MODEL_SETTINGS);
             getStatement.setString(1, workflowID);
             result = getStatement.executeQuery();

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.dto;
+package org.wso2.carbon.ml.model.spark.dto;
 
 import java.io.Serializable;
 

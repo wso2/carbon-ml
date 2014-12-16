@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.dto;
+package org.wso2.carbon.ml.model.internal.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,7 +29,7 @@ public class MLWorkflow implements Serializable {
     private String algorithmClass;
     private String responseVariable;
     private double trainDataFraction;
-    private List<MLFeature> mlFeatures;
+    private List<MLFeature> features;
     private Map<String, String> hyperParameters;
 
     public String getWorkflowID() {
@@ -72,12 +72,12 @@ public class MLWorkflow implements Serializable {
         this.trainDataFraction = trainDataFraction;
     }
 
-    public List<MLFeature> getMlFeatures() {
-        return mlFeatures;
+    public List<MLFeature> getFeatures() {
+        return features;
     }
 
-    public void setMlFeatures(List<MLFeature> mlFeatures) {
-        this.mlFeatures = mlFeatures;
+    public void setFeatures(List<MLFeature> features) {
+        this.features = features;
     }
 
     public String getAlgorithmClass() {

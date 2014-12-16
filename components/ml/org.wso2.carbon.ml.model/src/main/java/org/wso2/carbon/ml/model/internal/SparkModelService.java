@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,18 +25,17 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.ConfusionMatrix;
-import org.wso2.carbon.ml.model.dto.HyperParameter;
-import org.wso2.carbon.ml.model.dto.MLWorkflow;
-import org.wso2.carbon.ml.model.dto.PredictedVsActual;
-import org.wso2.carbon.ml.model.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.ModelService;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
+import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

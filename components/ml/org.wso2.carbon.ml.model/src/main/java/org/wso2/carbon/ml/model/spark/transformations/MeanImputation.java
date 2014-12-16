@@ -19,49 +19,37 @@
 package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.mllib.linalg.Vectors;
-import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
 import java.util.Map;
 
-/**
- * This class transforms double array of tokens to labeled point
- */
-public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
-    private final int responseIndex;
+public class MeanImputation implements Function<String[], double[]> {
     private Map<Integer, Double> meanImputation;
 
-    /**
-     * @param index Index of the response variable
-     */
-    public TokensToLabeledPoints(int index) {
-        this.responseIndex = index;
+    public MeanImputation(Map<Integer, Double> meanImputation) {
+        this.meanImputation = meanImputation;
     }
 
-    /**
-     * Function to transform double array into labeled point
-     *
-     * @param tokens double array of tokens
-     * @return Labeled point
-     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
-     */
     @Override
-    public LabeledPoint call(double[] tokens) throws ModelServiceException {
+    public double[] call(String[] tokens) throws ModelServiceException {
         try {
-            double response = tokens[responseIndex];
             double[] features = new double[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
-                // if not response
-                if (responseIndex != i) {
-                    features[i] = tokens[i];
+                if (MLModelConstants.EMPTY.equals(tokens[i]) || MLModelConstants.NA.equals
+                        (tokens[i])) {
+                    // if mean imputation is set
+                    if (meanImputation.containsKey(i)) {
+                        features[i] = meanImputation.get(i);
+                    }
+                } else {
+                    features[i] = Double.parseDouble(tokens[i]);
                 }
             }
-            return new LabeledPoint(response, Vectors.dense(features));
+            return features;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while transforming tokens to labeled points: " + e
-                            .getMessage(), e);
+                    "An error occured while applying mean imputation: " + e.getMessage(), e);
         }
     }
 }

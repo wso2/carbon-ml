@@ -16,16 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.internal;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.HyperParameter;
-import org.wso2.carbon.ml.model.dto.MLAlgorithm;
-import org.wso2.carbon.ml.model.dto.MLAlgorithms;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
+import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
+import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
 
 import javax.xml.bind.JAXBContext;

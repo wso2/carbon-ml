@@ -32,9 +32,9 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import scala.Tuple2;
 

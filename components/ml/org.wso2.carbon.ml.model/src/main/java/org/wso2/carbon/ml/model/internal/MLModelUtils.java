@@ -16,11 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model;
+package org.wso2.carbon.ml.model.internal;
 
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.internal.dto.MLFeature;
+import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,29 +38,28 @@ public class MLModelUtils {
     }
 
     /**
-     * @param response        Response variable name
+     * @param feature        Feature name
      * @param headerRow       Header row
      * @param columnSeparator Column separator character
      * @return Index of the response variable
      * @throws ModelServiceException
      */
-    public static int getResponseIndex(String response, String headerRow,
+    public static int getFeatureIndex(String feature, String headerRow,
             String columnSeparator) throws
             ModelServiceException {
         try {
-            int responseIndex = 0;
+            int featureIndex = 0;
             String[] headerItems = headerRow.split(columnSeparator);
             for (int i = 0; i < headerItems.length; i++) {
-                if (response.equals(headerItems[i])) {
-                    responseIndex = i;
+                if (feature.equals(headerItems[i])) {
+                    featureIndex = i;
                     break;
                 }
             }
-            return responseIndex;
+            return featureIndex;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while getting response variable index: " + e.getMessage(),
-                    e);
+                    "An error occured while getting response variable index: " + e.getMessage(),e);
         }
     }
 
@@ -97,6 +99,29 @@ public class MLModelUtils {
                     "An error occured while calculating sum: " + e.getMessage(), e);
         }
         return sum;
+    }
+
+    /**
+     * @param workflow     Machine learning workflow
+     * @param imputeOption Impute option
+     * @return Returns indices of features where discard row imputaion is applied
+     * @throws ModelServiceException
+     */
+    public static List<Integer> getImputeFeatureIndices(MLWorkflow workflow, String imputeOption)
+            throws ModelServiceException {
+        try {
+            List<Integer> imputeFeatureIndices = new ArrayList();
+            for (MLFeature feature : workflow.getFeatures()) {
+                if (feature.getImputeOption().equals(imputeOption)) {
+                    imputeFeatureIndices.add(feature.getIndex());
+                }
+            }
+            return imputeFeatureIndices;
+        } catch (Exception e) {
+            throw new ModelServiceException(
+                    "An error occured while retrieving discarder rows feature indices: "
+                    + e.getMessage(), e);
+        }
     }
 
 

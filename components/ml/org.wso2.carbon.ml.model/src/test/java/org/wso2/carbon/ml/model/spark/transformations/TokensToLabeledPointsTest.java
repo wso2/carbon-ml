@@ -5,9 +5,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class TokensToLabeledPointsTest {
@@ -20,8 +19,9 @@ public class TokensToLabeledPointsTest {
         Pattern pattern = Pattern.compile(",");
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = lines.map(lineToTokens);
+        MeanImputation meanImputation =new MeanImputation(new HashMap<Integer, Double>());
         TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
-        JavaRDD<LabeledPoint> labeledPoints = tokens.map(tokensToLabeledPoints);
+        JavaRDD<LabeledPoint> labeledPoints = tokens.map(meanImputation).map(tokensToLabeledPoints);
         sc.stop();
     }
 }

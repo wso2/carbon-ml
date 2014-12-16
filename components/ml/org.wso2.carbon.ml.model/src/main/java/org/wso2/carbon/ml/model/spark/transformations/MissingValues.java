@@ -22,26 +22,18 @@ import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
-import java.util.List;
-
 /**
- * A filter to remove discarded rows - Impute Option: Discard
+ * A filter to remove rows containing missing values
  */
-public class DiscardedRows implements Function<String[], Boolean> {
-
-    private List<Integer> indices;
-
-    public DiscardedRows(List<Integer> discardIndices){
-        this.indices = discardIndices;
-    }
+public class MissingValues implements Function<String[], Boolean> {
 
     @Override
     public Boolean call(String[] tokens) throws Exception {
         try {
             Boolean keep = true;
-            for (Integer index : indices) {
-                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals
-                        (tokens[index])) {
+            for (String token : tokens) {
+                if (MLModelConstants.EMPTY.equals(token) || MLModelConstants.NA.equals
+                        (token)) {
                     keep = false;
                     break;
                 }
@@ -49,7 +41,7 @@ public class DiscardedRows implements Function<String[], Boolean> {
             return keep;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while removing discarded rows: " + e.getMessage(), e);
+                    "An error occured while removing missing value rows: " + e.getMessage(), e);
         }
     }
 }

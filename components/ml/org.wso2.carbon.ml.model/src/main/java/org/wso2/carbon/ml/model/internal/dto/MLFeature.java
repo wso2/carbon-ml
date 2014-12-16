@@ -16,12 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.dto;
-
-import org.wso2.carbon.ml.model.constants.MLModelConstants;
+package org.wso2.carbon.ml.model.internal.dto;
 
 public class MLFeature {
     private String name;
+    private int index;
     private String type;
     private String imputeOption;
     private boolean include;
@@ -56,5 +55,13 @@ public class MLFeature {
 
     public void setImputeOption(String imputeOption) {
         this.imputeOption = imputeOption;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

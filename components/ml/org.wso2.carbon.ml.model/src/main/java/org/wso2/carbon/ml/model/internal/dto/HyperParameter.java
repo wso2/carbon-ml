@@ -16,45 +16,40 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.dto;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+package org.wso2.carbon.ml.model.internal.dto;
 
 /**
- * DTO class for JAXB binding of SparkConfigurationParser
+ * DTO class for JAXB binding of MLAlgorithmConfigurationParser
  */
-public class SparkProperty {
-    private String property;
-    private String name;
+public class HyperParameter {
+    private String parameter;
+    private String value;
 
     /**
-     * @return Retuns spark property name
+     * @return Returns hyper-parameter name
      */
-    public String getName() {
-        return name;
+    public String getParameter() {
+        return parameter;
     }
 
     /**
-     * @param name Sets spark property name
+     * @param parameter Sets hyper-parameter name
      */
-    @XmlAttribute
-    public void setName(String name) {
-        this.name = name;
+    public void setParameter(String parameter) {
+        this.parameter = parameter;
     }
 
     /**
-     * @return Returns spark property value
+     * @return Returns hyper-parameter value
      */
-    public String getProperty() {
-        return property;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * @param property Sets spark property value
+     * @param value Sets hyper-parameter value
      */
-    @XmlValue
-    public void setProperty(String property) {
-        this.property = property;
+    public void setValue(String value) {
+        this.value = value;
     }
 }
