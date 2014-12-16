@@ -29,6 +29,7 @@ $('input[name=algorithm]').change(function () {
     jagg.sessionAwareJs();
     var algoName = $('input[name=algorithm]:checked')[0].value;
     $('#hyperParameters').load('hyperParameters.jag', 'algorithm=' + algoName);
+    $('.algoSelectionErrorMessage').css('display','none');
 });
 
 $('.algoTypeButton').click(function () {
@@ -59,7 +60,7 @@ $('#algorithms_continue').click(function () {
     var trainDataFraction = $("#trainRatio").slider("value") / 100;
     var i = 0;
     if (algoName == undefined) {
-        alert("Please select an algorithm before continue.");
+        $('.algoSelectionErrorMessage').css('display', 'block');
     } else {
         var modelParameters = {};
         modelParameters.algorithmName = algoName.value;
@@ -117,8 +118,58 @@ function poll(){
             isModelExecFinished = data;
         }, 
         complete: function(){                    
-            if(isModelExecFinished === 'true'){                        
-                $('#wizzardSteps').html("Result is 101% accuracy"); 
+            if(isModelExecFinished === 'true'){
+                var rocGraph = null;
+                $('#wizzardSteps').empty();                        
+                $('#wizzardSteps').append('<div class="rocCurve" ></div>'); 
+                    $.ajax({
+                        url : './ajax/getResults.jag',
+                        type : 'POST',
+                        async : false,
+                        success : function(data){
+                            result = $.parseJSON(data);
+                            var rocData = $.parseJSON(result.roc);
+                            rocGraph = new ROCGraph(rocData);
+                            rocGraph.setXAxisText("False positive rate");
+                            rocGraph.setYAxisText("True positive rate");
+                            rocGraph.setLegendName("roc curve (area="+result.auc+")");
+                            rocGraph.setLineWidth(2);
+                            rocGraph.setPlotingAreaWidth(400);
+                            rocGraph.setPlotingAreaHeight(300);
+                            rocGraph.setLineColor("#cf1fff");
+                            rocGraph.plot(d3.select(".rocCurve"));
+                        },
+                        error : function (jqXHR, textStatus, errorThrown) {console.log("error");}
+                    });
+                    $('#wizzardSteps').append(
+                        '<div class="cutOff"> '+
+                        '<input id="cutOffSlider" type="range" min="0" max="1.0" step="0.01" />'+
+                        '<span class="cutoffDisplay"></span>'+
+                        '</div>')
+                    $('#wizzardSteps').append('<div class="confutionMatrix"></div>');
+                    
+                    $('#cutOffSlider').on('change', function(){
+                        var cutOffVal = $(this).val();
+                        $('.cutoffDisplay').text(cutOffVal);
+                        $.ajax({
+                        url : './ajax/getconfusionMatrix.jag',
+                        type : 'POST',
+                        async : false,
+                        data : {threshold: cutOffVal},
+                        success :  function(data){
+                            var cm = $.parseJSON(data);
+                            var table = "<table>" +
+                                        "<tr><td></td><td> </td><td>Actual</td><td></td><tr>"+
+                                        "<tr><td></td><td> </td><td>True</td><td>False</td><tr>"+
+                                        "<tr><td>Predicted: </td><td>True</td><td>"+cm.tp+"</td><td>"+cm.fp+"</td><tr>"+
+                                        "<tr><td></td><td>False</td><td>"+cm.fn+"</td><td>"+cm.tn+"</td><tr>"+
+                                        "</table>";
+                            $('.confutionMatrix').html(table);
+                            rocGraph.drawCutoffProbMarker((cm.fp/(cm.tn+cm.fp)),(cm.tp/(cm.tp+cm.fn)),5);
+                        }
+                    });
+                    });                    
+                    
                     return; 
                 } else{
                     $('#wizzardSteps').html("Model building starts....");                         

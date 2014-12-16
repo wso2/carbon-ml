@@ -29,6 +29,7 @@
             }
         %>
     </form>
+    <div class="algoSelectionErrorMessage">Please select an algorithm before continue.</div>
 </div>
 
 <div id="hyperParameters"> </div>

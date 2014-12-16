@@ -1,0 +1,21 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var workflowId = session.get("workflowId");
+    var retrievedModelId = null;
+
+    try{
+        var datasetService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.dataset.MLDatasetService');
+        var modelService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.model.ModelService');
+        var retrievedModelId =  datasetService.getModelId(workflowId);        
+        var modelSummary = modelService.getModelSummary(retrievedModelId);    
+        var result = {roc: modelSummary.getRoc(),
+                      auc: modelSummary.getAuc()};
+        print(result);
+
+    }catch(e){
+        log.error("An error occurred while querying results for model: "+retrievedModelId, e);
+    }    
+%>

@@ -156,3 +156,18 @@ input.algoName {
 #parameters, #optionalParameters{
     display:inline;
 }
+
+/* error message class related to algorithm selection */
+.algoSelectionErrorMessage{
+    display: none;
+    color: red;
+}
+
+.rocCurve{
+    float: left;
+}
+
+.confutionMatrix{
+    float: left;
+    margin-top: 50px;
+}
