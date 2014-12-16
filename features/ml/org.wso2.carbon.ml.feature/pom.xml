@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ml-features</artifactId>
         <groupId>org.wso2.carbon</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.ml.feature</artifactId>
@@ -15,19 +15,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.dataset.feature</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ml.model.feature</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.ml.project.mgt.feature</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -55,8 +43,6 @@
                             </adviceFile>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.dataset.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.model.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.project.mgt.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
