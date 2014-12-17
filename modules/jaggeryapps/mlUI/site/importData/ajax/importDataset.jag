@@ -5,7 +5,7 @@
     var datasetID = session.get("datasetId");
     var workflowId = session.get("workflowId");
     try{
-        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
         var start = parseInt(request.getParameter("iDisplayStart"));
         var length = parseInt(request.getParameter("iDisplayLength"));
 
