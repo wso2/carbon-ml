@@ -42,7 +42,7 @@
         <module>modules/features</module>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
-        <!--<module>modules/integration</module>-->
+        <module>modules/integration</module>
     </modules>
 
     <repositories>
@@ -132,78 +132,59 @@
     <dependencyManagement>
         <dependencies>
             <!-- Dependencies for Automation Test Framework-->
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.automation</groupId>
-                <artifactId>org.wso2.carbon.automation.engine</artifactId>
-                <version>${test.framework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.automation</groupId>
-                <artifactId>org.wso2.carbon.automation.extensions</artifactId>
-                <version>${test.framework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.automation</groupId>
-                <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
-                <version>${test.framework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.service.mgt.stub</artifactId>
-                <version>${carbon.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
-                <version>${carbon.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.tests</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.clients</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.ui.pages</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
-                <version>${carbon.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
+		    <dependency>
+				<groupId>org.wso2.carbon.automation</groupId>
+				<artifactId>org.wso2.carbon.automation.engine</artifactId>
+				<version>${test.framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.automation</groupId>
+				<artifactId>org.wso2.carbon.automation.extensions</artifactId>
+				<version>${test.framework.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.automation</groupId>
+				<artifactId>org.wso2.carbon.automation.test.utils</artifactId>
+				<version>${test.framework.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon</groupId>
+				<artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
+				<version>${carbon.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon</groupId>
+				<artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
+				<version>${carbon.version}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-policy</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-trust</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-java</artifactId>
+				<version>${selenium.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-api</artifactId>
+				<version>${selenium.version}</version>
+			</dependency>
             <!-- End of dependencies for test framework -->
 
             <dependency>
@@ -524,6 +505,7 @@
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <ml.version>0.1.0-SNAPSHOT</ml.version>
+        
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0-SNAPSHOT</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
@@ -532,6 +514,7 @@
         <process.feature.version>1.0.0</process.feature.version>
         <carbon.feature.version>1.0.0</carbon.feature.version>
         <uuid.feature.version>1.0.0</uuid.feature.version>
+        
         <!-- End of jaggery dependency versions -->
         <scala.version>2.10.4</scala.version>
         <commons.math.version>3.3</commons.math.version>
@@ -567,6 +550,7 @@
         <commons.logging.version>1.1.1</commons.logging.version>
         <emma.version>2.1.5320</emma.version>
         <orbit.version.jettison>1.3.4.wso2v1</orbit.version.jettison>
+        
         <!-- Integration Test Dependency versions-->
         <test.framework.version>4.3.1-SNAPSHOT</test.framework.version>
         <test.framework.util.version>4.3.0-SNAPSHOT</test.framework.util.version>
@@ -579,6 +563,7 @@
         <javax.transaction.version>1.1.1.v201105210645</javax.transaction.version>
         <guava.version>14.0.1</guava.version>
         <zookeeper.version>3.4.5</zookeeper.version>
+        <selenium.version>2.44.0</selenium.version>
     </properties>
 
     <organization>

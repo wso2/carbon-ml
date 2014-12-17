@@ -33,7 +33,7 @@
         //Retrieving feature names for the two axis
         try{
             var carbon = require('carbon');
-            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
             if (workflowId != null){
                 var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
                 var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);

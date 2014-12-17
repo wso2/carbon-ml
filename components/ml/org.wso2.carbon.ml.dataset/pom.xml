@@ -70,7 +70,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Private-Package>
+                            org.wso2.carbon.ml.dataset.internal.*
+                        </Private-Package>
                         <Export-Package>
+                        	!org.wso2.carbon.ml.dataset.internal,
                             org.wso2.carbon.ml.dataset.*,
                         </Export-Package>
                         <Import-Package>
