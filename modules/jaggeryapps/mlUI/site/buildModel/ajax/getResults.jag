@@ -1,10 +1,9 @@
 <%
-    var log = new Log();
-    var carbon = require('carbon');
-    var workflowId = session.get("workflowId");
-    var retrievedModelId = '';
-
-    try{        
+    try{
+        var log = new Log();
+        var carbon = require('carbon');
+        var workflowId = session.get("workflowId");
+              
         var datasetService = carbon.server.osgiService(
             'org.wso2.carbon.ml.dataset.DatasetService');
         var modelService = carbon.server.osgiService(
@@ -22,11 +21,10 @@
             throw new Error('Model summary is null for model id: '+retrievedModelId);
         }
         var result = {roc: modelSummary.getRoc(),
-                  auc: modelSummary.getAuc()};
+                      auc: modelSummary.getAuc()};
         print(result);
-
-    }catch(e){
-        log.error("An error occurred while querying results for model: "+retrievedModelId, e);  
-        throw new Error("An error has occurred while fetching results");      
+        
+    }catch(e){        
+        throw new Error("An error occurred while querying results for model: "+e.message);      
     }  
 %>

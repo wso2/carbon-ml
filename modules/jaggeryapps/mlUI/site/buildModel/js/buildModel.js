@@ -147,8 +147,9 @@ function poll(){
                                 isResultSuccess = true;
                             }
                         },
-                        error : function (){
+                        error : function (error){
                             var message = "An error has occurred while fetching results";
+                            console.log(error);
                             //TODO: handle this with new UI...                            
                         }
                     });
