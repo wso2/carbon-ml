@@ -45,7 +45,7 @@ import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
-import org.wso2.carbon.ml.dataset.internal.dto.SamplePoints;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 
 /**
  * Class Generate Summary statistics for a data-set.
@@ -88,8 +88,9 @@ public class DatasetSummary {
         this.datasetID = datasetID;
         try {
             Reader reader = new InputStreamReader(new FileInputStream(csvDataFile
-                .getAbsolutePath()),DatasetConfigurations.UTF_8);
-            this.parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader().withAllowMissingColumnNames(true));
+                    .getAbsolutePath()),DatasetConfigurations.UTF_8);
+            this.parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader()
+                    .withAllowMissingColumnNames(true));
             this.headerMap = this.parser.getHeaderMap();
             int noOfFeatures = this.headerMap.size();
             // Initialize the lists.

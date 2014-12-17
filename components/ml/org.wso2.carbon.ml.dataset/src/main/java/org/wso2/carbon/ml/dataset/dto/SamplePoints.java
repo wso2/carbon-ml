@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.dataset.internal.dto;
+package org.wso2.carbon.ml.dataset.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
