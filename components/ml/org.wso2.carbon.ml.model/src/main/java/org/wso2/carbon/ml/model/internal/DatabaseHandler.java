@@ -341,10 +341,9 @@ public class DatabaseHandler {
             }
 
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while reading " +
-                                               "execution time from the database: " + e
-                    .getMessage(),
-                    e);
+            throw new DatabaseHandlerException(
+                    " An error has occurred while reading execution time from the database: " + e
+                            .getMessage(), e);
         } finally {
             // closing database resources
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
