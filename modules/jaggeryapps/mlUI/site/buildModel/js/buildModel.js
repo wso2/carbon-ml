@@ -95,31 +95,31 @@ $('#algorithms_continue').click(function () {
             	dataType: "json",
             	data: {'modelParameters': JSON.stringify(modelParameters)},
                 error: function (jqXHR, textStatus, errorThrown) {
-                    // TODO: redirect to error page
+                    var message = "An error has occurred with submitting model data";
                 }
             });
             $('.wizzardSteps').html("Model building starts...."); 
         }
-        
-        // continuously polling for the model output      
-        
-        // calling poll function       
+
+        // continuously polling with poll       
         poll();
     }
 });
 
-var isModelExecFinished = 'false'; 
+var isModelExecFinished = false;
+var isResultSuccess = false; 
+
 function poll(){              
     $.ajax({ 
         url: "./ajax/queryModelExecEnd.jag", 
         type: 'POST',
         async : false,
         success: function(data){
-            isModelExecFinished = data;
+            isModelExecFinished = (data === "true");
         }, 
         complete: function(){                    
-            if(isModelExecFinished === 'true'){
-                var rocGraph = null;
+            if(isModelExecFinished){
+                var graph = null;
                 $('#wizzardSteps').empty();                        
                 $('#wizzardSteps').append('<div class="rocCurve" ></div>'); 
                     $.ajax({
@@ -127,51 +127,68 @@ function poll(){
                         type : 'POST',
                         async : false,
                         success : function(data){
-                            result = $.parseJSON(data);
-                            var rocData = $.parseJSON(result.roc);
-                            rocGraph = new ROCGraph(rocData);
-                            rocGraph.setXAxisText("False positive rate");
-                            rocGraph.setYAxisText("True positive rate");
-                            rocGraph.setLegendName("roc curve (area="+result.auc+")");
-                            rocGraph.setLineWidth(2);
-                            rocGraph.setPlotingAreaWidth(400);
-                            rocGraph.setPlotingAreaHeight(300);
-                            rocGraph.setLineColor("#cf1fff");
-                            rocGraph.plot(d3.select(".rocCurve"));
+                            if(!data){
+                               //TODO: write a proper error message in new UI
+                               $('#wizzardSteps').text("An error has occurred while "+
+                                "building the model"); 
+                            }else{
+                                result = $.parseJSON(data);
+                                var rocData = $.parseJSON(result.roc);
+                                graph = new ROCGraph(rocData);
+                                graph.setXAxisText("False positive rate");
+                                graph.setYAxisText("True positive rate");
+                                graph.setLegendName("roc curve (area="+result.auc+")");
+                                graph.setLineWidth(2);
+                                graph.setPlotingAreaWidth(400);
+                                graph.setPlotingAreaHeight(300);
+                                graph.setLineColor("#cf1fff");
+                                graph.plot(d3.select(".rocCurve"));
+
+                                isResultSuccess = true;
+                            }
                         },
-                        error : function (jqXHR, textStatus, errorThrown) {console.log("error");}
+                        error : function (){
+                            var message = "An error has occurred while fetching results";
+                            //TODO: handle this with new UI...                            
+                        }
                     });
-                    $('#wizzardSteps').append(
-                        '<div class="cutOff"> '+
-                        '<input id="cutOffSlider" type="range" min="0" max="1.0" step="0.01" />'+
-                        '<span class="cutoffDisplay"></span>'+
-                        '</div>')
-                    $('#wizzardSteps').append('<div class="confutionMatrix"></div>');
+                    if(isResultSuccess){
+                        $('#wizzardSteps').append(
+                            '<div class="cutOff"> '+
+                            '<input id="cutOffSlider" type="range" min="0" max="1.0" step="0.01" />'+
+                            '<span class="cutoffDisplay"></span>'+
+                            '</div>')
+                        $('#wizzardSteps').append('<div class="confutionMatrix"></div>');
                     
-                    $('#cutOffSlider').on('change', function(){
-                        var cutOffVal = $(this).val();
-                        $('.cutoffDisplay').text(cutOffVal);
-                        $.ajax({
-                        url : './ajax/getconfusionMatrix.jag',
-                        type : 'POST',
-                        async : false,
-                        data : {threshold: cutOffVal},
-                        success :  function(data){
-                            var cm = $.parseJSON(data);
-                            var table = "<table>" +
+                        $('#cutOffSlider').on('change', function(){
+                            var cutoffVal = $(this).val();
+                            $('.cutoffDisplay').text(cutoffVal);
+                            $.ajax({
+                                url : './ajax/getconfusionMatrix.jag',
+                                type : 'POST',
+                                async : false,
+                                data : {threshold: cutoffVal},
+                                success :  function(data){
+                                    var cm = $.parseJSON(data);
+                                    var table = "<table>" +
                                         "<tr><td></td><td> </td><td>Actual</td><td></td><tr>"+
                                         "<tr><td></td><td> </td><td>True</td><td>False</td><tr>"+
                                         "<tr><td>Predicted: </td><td>True</td><td>"+cm.tp+"</td><td>"+cm.fp+"</td><tr>"+
                                         "<tr><td></td><td>False</td><td>"+cm.fn+"</td><td>"+cm.tn+"</td><tr>"+
-                                        "</table>";
-                            $('.confutionMatrix').html(table);
-                            rocGraph.drawCutoffProbMarker((cm.fp/(cm.tn+cm.fp)),(cm.tp/(cm.tp+cm.fn)),5);
-                        }
-                    });
-                    });                    
-                    
-                    return; 
+                                         "</table>";
+                                    $('.confutionMatrix').html(table);
+                                    graph.drawCutoffProbMarker((cm.fp/(cm.tn+cm.fp)),(cm.tp/(cm.tp+cm.fn)),5);
+                                },
+                                error : function(){
+                                    var message = "An error has occurred while fetching confution matrix";
+                                    //TODO: handle this error in new UI
+                                }
+                            });
+                        });                   
+                        return; 
+                    }
                 } else{
+                    // TODO: print proper error message in the new UI
                     $('#wizzardSteps').html("Model building starts....");                         
                     setTimeout(poll, 20*1000); // setting polling interval to 20 seconds
                 }

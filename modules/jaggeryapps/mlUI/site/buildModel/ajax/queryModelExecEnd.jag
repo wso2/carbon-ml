@@ -11,10 +11,12 @@
         if(retrievedModelId == null){
             print(false);
         }else {
-            print( modelService.isExecutionCompleted(retrievedModelId));        
+            print(modelService.isExecutionCompleted(retrievedModelId));        
         }
 
     }catch(e){
-        log.error("An error occurred while querying model completion status for work flow: "+workflowId, e);
+        log.error("An error occurred while querying "+
+            "model completion status for work flow: "+workflowId, e);
+        throw new Error("An error has occurred getting model execution end time");
     }    
 %>

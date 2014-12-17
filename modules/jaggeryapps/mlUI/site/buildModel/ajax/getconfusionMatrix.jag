@@ -2,25 +2,29 @@
     var log = new Log();
     var carbon = require('carbon');
     var workflowId = session.get("workflowId");
-    var retrievedModelId = null;
+    var retrievedModelId = '';
+    var result = '';
 
     try{
         var datasetService = carbon.server.osgiService(
             'org.wso2.carbon.ml.dataset.DatasetService');
         var modelService = carbon.server.osgiService(
             'org.wso2.carbon.ml.model.ModelService');
-        var retrievedModelId =  datasetService.getModelId(workflowId);       
-        
-        var threshold = request.getParameter("threshold");
-        var cm = modelService.getConfusionMatrix(retrievedModelId, threshold);   
-     
-        var result = {tp : cm.getTruePositives(),
-                        fp : cm.getFalsePositives(),
-                        fn : cm.getFalseNegatives(),
-                        tn : cm.getTrueNegatives()};
-        print(result);
+        var retrievedModelId =  datasetService.getModelId(workflowId);
+        if(retrievedModelId){       
+            var threshold = request.getParameter("threshold");
+            if(threshold){
+                var cm = modelService.getConfusionMatrix(retrievedModelId, threshold);     
+                result = {tp : cm.getTruePositives(),
+                          fp : cm.getFalsePositives(),
+                          fn : cm.getFalseNegatives(),
+                          tn : cm.getTrueNegatives()};
+            }
+        }
 
     }catch(e){
-        log.error("An error occurred while querying results for model: "+retrievedModelId, e);
+        log.error("An error occurred while querying getting confution matrix: "+retrievedModelId, e);
+    }finally{
+        print(result);
     }    
 %>
