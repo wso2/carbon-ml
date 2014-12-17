@@ -1,9 +1,8 @@
 <%
     try{
-        var log = new Log();
         var carbon = require('carbon');
         var workflowId = session.get("workflowId");
-              
+
         var datasetService = carbon.server.osgiService(
             'org.wso2.carbon.ml.dataset.DatasetService');
         var modelService = carbon.server.osgiService(

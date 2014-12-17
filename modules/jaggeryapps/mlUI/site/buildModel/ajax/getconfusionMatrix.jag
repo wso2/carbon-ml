@@ -1,7 +1,6 @@
 <%
     var retrievedModelId = null;
     try{
-        var log = new Log();
         var carbon = require('carbon');
         var workflowId = session.get("workflowId");
 
@@ -16,9 +15,9 @@
             if(threshold){
                 var cm = modelService.getConfusionMatrix(retrievedModelId, threshold);     
                 var result = {tp : cm.getTruePositives(),
-                          fp : cm.getFalsePositives(),
-                          fn : cm.getFalseNegatives(),
-                          tn : cm.getTrueNegatives()};
+                              fp : cm.getFalsePositives(),
+                              fn : cm.getFalseNegatives(),
+                              tn : cm.getTrueNegatives()};
                 print(result);
             }
         }
