@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.wso2.carbon.ml.dataset.dto.Feature;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
-import org.wso2.carbon.ml.dataset.internal.dto.Feature;
 
 /**
  * Interface contains the services related to importing and exploring a
