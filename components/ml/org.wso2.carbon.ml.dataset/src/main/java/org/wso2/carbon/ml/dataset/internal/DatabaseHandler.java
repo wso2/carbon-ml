@@ -26,8 +26,8 @@ import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
 import org.wso2.carbon.ml.dataset.internal.constants.ImputeOption;
 import org.wso2.carbon.ml.dataset.internal.constants.SQLQueries;
-import org.wso2.carbon.ml.dataset.internal.dto.Feature;
-import org.wso2.carbon.ml.dataset.internal.dto.SamplePoints;
+import org.wso2.carbon.ml.dataset.dto.Feature;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

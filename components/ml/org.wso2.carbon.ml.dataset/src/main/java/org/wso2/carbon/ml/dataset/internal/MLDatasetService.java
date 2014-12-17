@@ -31,12 +31,12 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.dataset.DatasetService;
+import org.wso2.carbon.ml.dataset.dto.Feature;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
-import org.wso2.carbon.ml.dataset.internal.dto.Feature;
 import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
 
 /**
