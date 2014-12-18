@@ -32,7 +32,7 @@ $('document').ready(function() {
         if(!dataFileName){
 	        $('#datasetNameValidator').html("<span class=\"errorMessage\">Dataset is required</span>");
             isAllEntered = false;
-        } else if(!isValidFormat(dataFileName)){
+        } else if(!hasValidFileFormat(dataFileName)){
             $('#datasetNameValidator').empty().html("<span class=\"errorMessage\">Incorrect file format selected</span>");
             isAllEntered = false;
         }
