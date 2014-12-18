@@ -1,36 +1,21 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
 package org.wso2.carbon.ml.dataset.internal;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -41,11 +26,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
-import org.wso2.carbon.ml.dataset.dto.SamplePoints;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Class Generate Summary statistics for a data-set.
