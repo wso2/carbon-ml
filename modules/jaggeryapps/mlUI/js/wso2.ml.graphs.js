@@ -50,14 +50,14 @@ var BasePlot = function(data) {
 //following are methods of the base class
 BasePlot.prototype.setPlotingAreaWidth = function(width){
     if(width <= 0){
-        throw new PlottingError("plotting area width should be a positive integer");
+        throw new PlottingError("plotting area width should be positive");
     }
     this.width = width;
 };
 
 BasePlot.prototype.setPlotingAreaHeight = function(height){
     if(height <= 0){
-        throw new PlottingError("plotting area height should be a positive integer");
+        throw new PlottingError("plotting area height should be positive");
     }
     this.height = height;
 };
@@ -76,9 +76,9 @@ BasePlot.prototype.initializeSVGContainer = function(selection){
     }
 };
 
-//internal method should not call from outside Plot class hierarchy
+//internal method should not be called from outside Plot class hierarchy
 BasePlot.prototype.attachXAxis = function(xAxis){
-    if(arguments.length){ //
+    if(xAxis){ //
         this.svg.append("g")
             .attr("class", "axis text")
             .attr("transform", "translate(0," + this.height + ")")
@@ -89,12 +89,14 @@ BasePlot.prototype.attachXAxis = function(xAxis){
             .attr("y", 30)
             .style("text-anchor", "end")
             .text(this.xLabel);
+    }else{
+        throw new PlottingError("xAxis is null or empty");
     }
 };
 
-//internal method should not call from outside Plot class hierarchy
+//internal method should not called from outside Plot class hierarchy
 BasePlot.prototype.attachYAxis = function(yAxis){
-    if(arguments.length){
+    if(yAxis){
         this.svg.append("g")
             .attr("class", "axis text")
             .call(yAxis)
@@ -105,6 +107,8 @@ BasePlot.prototype.attachYAxis = function(yAxis){
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(this.yLabel);
+    }else{
+        throw new PlottingError("yAxis is null or empty");
     }
 };
 
@@ -149,7 +153,7 @@ ScatterPlot.prototype.constructor = ScatterPlot;
 ScatterPlot.prototype.setMarkerSize = function(markerSize){
 
     if( markerSize <= 0){
-        throw new PlottingError("markerSize should be a positive integer");
+        throw new PlottingError("markerSize should be positive");
     }
     this.markerSize = markerSize;    
 };
@@ -158,7 +162,7 @@ ScatterPlot.prototype.setMarkerSize = function(markerSize){
 //Once called graph will be drawn inside the SVG container
 ScatterPlot.prototype.plot = function(selection) {
     if(!selection){
-       throw new PlottingError("The parent DOM element of the SVG container is undefined"); 
+       throw new PlottingError("DOM element can't be null or empty"); 
     }
 
     //setting up the SVG container
@@ -294,13 +298,15 @@ var ROCGraph = function(data){
     this.yScale = null;
 
     this.marker = null;
-    this.markerHorizontalLine = null;
-    this.markerVerticalLine = null;
+    this.markerHorizontalIndicator = null;
+    this.marketVerticalIndicator = null;
 };
 
 ROCGraph.prototype = Object.create(BasicLineGraph.prototype);
 ROCGraph.prototype.constructor = ROCGraph;
 
+// cutoff probability and it's X and Y coordinates 
+// will be draw on the ROC graph 
 ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
     if(this.marker){
         this.marker.remove();
@@ -311,10 +317,10 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
             .attr("r", r)
             .attr("fill", "red");
 
-    if(this.markerHorizontalLine){
-        this.markerHorizontalLine.remove();
+    if(this.markerHorizontalIndicator){
+        this.markerHorizontalIndicator.remove();
     }
-    this.markerHorizontalLine = this.svg.append("line")
+    this.markerHorizontalIndicator = this.svg.append("line")
         .attr('x1', 0)
         .attr('y1', yScale(cy))
         .attr('x2', xScale(cx))
@@ -323,10 +329,10 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
         .attr('stroke', '#ff0000')
         .attr("stroke-dasharray", ("5, 5"));
     
-    if(this.markerVerticalLine){
-        this.markerVerticalLine.remove();
+    if(this.marketVerticalIndicator){
+        this.marketVerticalIndicator.remove();
     }
-    this.markerVerticalLine = this.svg.append("line")
+    this.marketVerticalIndicator = this.svg.append("line")
         .attr('x1', xScale(cx))
         .attr('y1', this.height)
         .attr('x2', xScale(cx))
@@ -338,7 +344,7 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
 
 ROCGraph.prototype.plot = function(selection){
     if(!selection){
-       throw new PlottingError("The parent DOM element of the SVG container is undefined"); 
+       throw new PlottingError("DOM element can't be null or empty"); 
     }
 
     //setting up the SVG container
@@ -382,9 +388,9 @@ ROCGraph.prototype.plot = function(selection){
     this.attachYAxis(yAxis);
 
     var lineFunction = d3.svg.line()
-            .x(function(d) { return xScale(d[0]); })
-            .y(function(d) { return yScale(d[1]); })
-            .interpolate("linear");
+                .x(function(d) { return xScale(d[0]); })
+                .y(function(d) { return yScale(d[1]); })
+                .interpolate("linear");
 
     var graph = this.svg.append("path")
                 .attr("d", lineFunction(this.data))
@@ -466,7 +472,7 @@ Histogram.prototype.constructor = Histogram;
 
 Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {    
     if(numOfBuckets <= 0){
-        throw new PlottingError("numOfBuckets should be a positive integer");
+        throw new PlottingError("numOfBuckets should be positive");
     }
     this.numOfBuckets = numOfBuckets;
 };
@@ -475,7 +481,7 @@ Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {
 //Once called graph will be drawn inside the SVG container 
 Histogram.prototype.plot = function(selection) {
     if(!selection){
-       throw new PlottingError("The parent DOM element of the SVG container is undefined"); 
+       throw new PlottingError("DOM element can't be null or empty"); 
     }
 
     //setting up the SVG container
@@ -499,7 +505,6 @@ Histogram.prototype.plot = function(selection) {
         .range([this.height, 0]);
     
     //setting up a bars chart, one bar per each bin 
-    var barHight = this.height; //TODO: ugly, change this ASAP
     var that = this;
     var bar = this.svg.selectAll("rect")
         .data(histogramData)
@@ -539,7 +544,7 @@ Histogram.prototype.plot = function(selection) {
 /******************************************************************/
 /************HistogramUsingCalculatedFrequencies class starts******/
 
-//This class generates histogram using calculated frequencies
+//This class generates a histogram using calculated frequencies
 //Calculated frequencies should be given as an array [5, 10, 20, 2,1]
 //Bucket labels are given as a separate array ['Sun','Mon','Tues','Wed', 'Thu']
 var HistogramUsingCalculatedFrequencies = function(data){
@@ -552,7 +557,7 @@ HistogramUsingCalculatedFrequencies.prototype.constructor = HistogramUsingCalcul
 
 HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
     if(!selection){
-       throw new PlottingError("The parent DOM element of the SVG container is undefined"); 
+       throw new PlottingError("DOM element can't be null or empty"); 
     }
 
     //setting up SVG container
@@ -564,24 +569,20 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
             return d[0];
         })])
        .range([0, this.height]);
-
-    //TODO: remove following three lines ASAP
-    var dataLength = this.data.length; 
-    var w = this.width;
-    var h = this.height;
     
+    var that = this;    
     //draw rectangles, each represents single bucket in the histogram
     var rect = this.svg.selectAll("rect")
             .data(this.data)
             .enter()
             .append("rect")
             .attr("x", function(d, i) {
-                return i * (w / dataLength);
+                return i * (that.width / that.data.length);
             })
             .attr("y", function(d) {                
-                return h - yScale(d[0]);
+                return that.height - yScale(d[0]);
             })
-            .attr("width", w / dataLength - this.barPadding)
+            .attr("width", that.width / that.data.length - this.barPadding)
             .attr("height", function(d) {
                 return yScale(d[0]);
             })
@@ -598,7 +599,7 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
         .orient("left")
         .tickFormat(function(d) { return (d3.format(".2s"))(d);});       
 
-    //TODO: bit ugly, need a better technique
+    //TODO: bit ugly, find a better technique
     var labels = [];
     for(var i=0; i<this.data.length;i++){
         labels.push(this.data[i][1]);

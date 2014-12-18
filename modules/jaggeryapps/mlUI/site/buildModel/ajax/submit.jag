@@ -1,32 +1,30 @@
 <%
-var log = new Log();
-var parameters = JSON.parse(request.getParameter('modelParameters', "UTF-8"));
-var carbon = require('carbon');
-var uuid = require('uuid');
+	var workflowID = session.get("workflowId");
 
-var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
-parameters.datasetURL = mlDatasetService.getDatasetUrl(session.get("datasetId"));
-parameters.algorithmType = session.get("algoType");
-var workflowID = session.get("workflowId");
-parameters.workflowID = workflowID;
+	try {
+		var parameters = JSON.parse(request.getParameter('modelParameters', "UTF-8"));
+		var carbon = require('carbon');
+		var uuid = require('uuid');
 
-var modelID = uuid.generate();
-var modelSettingsID = uuid.generate();
-parameters.modelID = modelID;
-parameters.modelSettingsID = modelSettingsID;
+		var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+		parameters.datasetURL = mlDatasetService.getDatasetUrl(session.get("datasetId"));
+		parameters.algorithmType = session.get("algoType");
 
-// Only for testing purpose
-log.info(parameters);
+		parameters.workflowID = workflowID;
 
-try {
-    var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
-    modelService.insertModelSettings(stringify(parameters));
-    modelService.buildModel(modelID, workflowID);
-    var confusionMatrix = modelService.getConfusionMatrix(modelID, 0.5);
-    log.info("TP: " + confusionMatrix.getTruePositives() + " FP: "
-             + confusionMatrix.getFalsePositives() + " TN: " + confusionMatrix.getTrueNegatives()
-             + " FN: " + confusionMatrix.getFalseNegatives());
-} catch (e) {
-    log.error('An error occured while building the model for workflow: ' + parameters.workflowID, e);
-}
+		var modelID = uuid.generate();
+		var modelSettingsID = uuid.generate();
+		
+		parameters.modelID = modelID;
+		parameters.modelSettingsID = modelSettingsID;
+
+	    var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+	    modelService.insertModelSettings(stringify(parameters));
+	    
+	    //building the model
+	    modelService.buildModel(modelID, workflowID);
+
+	} catch (e) {
+	    throw new Error('An error occured while building the model for workflow: ' + workflowID, e);
+	}
 %>
