@@ -53,7 +53,7 @@ public class MLDatasetService implements DatasetService {
     /*
      * Activates the Data-set Service.
      */
-    protected void activate(ComponentContext context) {
+    protected void activate(ComponentContext context) throws DatasetServiceException {
         try {
             // Read data-set settings from ml-config.xml file.
             MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
@@ -66,7 +66,8 @@ public class MLDatasetService implements DatasetService {
                 datasetService, null);
             logger.info("ML Dataset Service Started");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            throw new DatasetServiceException("Failed to activate the ML Dataset Service component: "
+                + e.getMessage(), e);
         }
     }
 
@@ -117,7 +118,7 @@ public class MLDatasetService implements DatasetService {
             
             // Get user home, if the uploading directory is set to USER_HOME
             if (uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)) {
-                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator+
+                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator +
                     DatasetConfigurations.ML_PROJECTS;
             }
             
