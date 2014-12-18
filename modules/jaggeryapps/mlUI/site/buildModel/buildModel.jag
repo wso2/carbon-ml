@@ -35,16 +35,16 @@
             disableWizardMenu();
 
             // 
-            var isModelExecStarted = 'false';
+            var isModelExecStarted = false;
             $.ajax({
                 url : "./ajax/queryModelExecStart.jag",
                 type : "POST",
                 async : false,
-                success : function(data) { isModelExecStarted = data;},
+                success : function(data) { isModelExecStarted = (data === "true");},
                 error : function(){/*TODO:*/ }
             });
 
-            if(isModelExecStarted === 'true'){        
+            if(isModelExecStarted){        
                 poll();
             }    
         });
