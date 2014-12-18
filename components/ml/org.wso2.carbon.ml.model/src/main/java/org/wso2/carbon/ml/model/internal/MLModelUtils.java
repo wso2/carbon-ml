@@ -119,7 +119,7 @@ public class MLModelUtils {
             return imputeFeatureIndices;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while retrieving discarder rows feature indices: "
+                    "An error occured while retrieving discarded row feature indices: "
                     + e.getMessage(), e);
         }
     }
