@@ -387,13 +387,13 @@ ROCGraph.prototype.plot = function(selection){
     this.attachXAxis(xAxis);
     this.attachYAxis(yAxis);
 
-    var lineFunction = d3.svg.line()
+    var lineBuilder = d3.svg.line()
                 .x(function(d) { return xScale(d[0]); })
                 .y(function(d) { return yScale(d[1]); })
                 .interpolate("linear");
 
     var graph = this.svg.append("path")
-                .attr("d", lineFunction(this.data))
+                .attr("d", lineBuilder(this.data))
                 .attr("stroke", this.lineColor)
                 .attr("stroke-width", this.lineWidth)
                 .attr("fill", "none");
@@ -545,8 +545,7 @@ Histogram.prototype.plot = function(selection) {
 /************HistogramUsingCalculatedFrequencies class starts******/
 
 //This class generates a histogram using calculated frequencies
-//Calculated frequencies should be given as an array [5, 10, 20, 2,1]
-//Bucket labels are given as a separate array ['Sun','Mon','Tues','Wed', 'Thu']
+//Data format should be [[10,'Sun'],[20, 'Mon'],[30, 'Tue']]
 var HistogramUsingCalculatedFrequencies = function(data){
     //calling the base class constructor
     BaseHistogram.call(this, data);    
