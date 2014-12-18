@@ -24,51 +24,51 @@
     </head>
 
     <body>
+<%
+var log = new Log();
+var mlConfigs = require("/includes/ml.json");
+try {
+    var carbon = require('carbon');
+    var workflowId = session.get("workflowId");
+    if (!workflowId) {
+        throw new Error("Workflow ID not found");
+    }
+    // get numerical and categorical features
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.numerical);
+    var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.categorical);
+    // generate dropdown lists for numerical and categorical features
+    var numFeaturesIndependentDropdown = listSelectionRenderer(numericalFeatureNames, numericalFeatureNames.get(0), "numFeaturesIndependentDropdown");
+    var numFeaturesDependentDropdown = listSelectionRenderer(numericalFeatureNames, numericalFeatureNames.get(1), "numFeaturesDependentDropdown");
+    var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames, categoricalFeatureNames.get(0), "catFeaturesDropdown");
+} catch (e) {
+    throw new Error("An error occured while generating dropdown lists from features", e);
+}
+
+// Generate html for dropdown lists
+function listSelectionRenderer(featureNames, selectedOption, cssClass) {
+    var selection = "<select class=" + cssClass + ">";
+    for (var i = 0; i < featureNames.size(); i++) {
+        if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()) {
+            selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
+        }
+        else {
+            selection += "<option value=\"" + featureNames.get(i) + "\">"
+                         + featureNames.get(i) + "</option>";
+        }
+    }
+    selection += "</select>";
+    return selection;
+}
+%>
+
+<div id="middle">
     <%
-        var log = new Log();
-        var mlConfigs=require("/includes/ml.json");
-        var datasetId = session.get("datasetId");
-        var workflowId = session.get("workflowId");
-
-        //Retrieving feature names for the two axis
-        try{
-            var carbon = require('carbon');
-            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
-            if (workflowId != null){
-                var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.numerical);
-                var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId,mlConfigs.featureTypes.categorical);
-                var numFeaturesDropdown1 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(0),"numFeaturesDropdown1");
-                var numFeaturesDropdown2 = listSelectionRenderer(numericalFeatureNames,numericalFeatureNames.get(1),"numFeaturesDropdown2");
-                var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames,categoricalFeatureNames.get(0),"catFeaturesDropdown");
-            }
-        }catch(e){
-            log.error("An error occured while retrieving feature names of dataset: "+datasetId, e);
-        }
-        
-        // Creating the drop-down list of features
-        function listSelectionRenderer(featureNames, selectedOption, cssClass){
-            var selection = "<select class=" + cssClass + ">";
-            for (var i=0; i<featureNames.size(); i++){
-                if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()){
-                    selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
-                }
-                else{
-                    selection += "<option value=\"" + featureNames.get(i) + "\">"
-                            + featureNames.get(i) + "</option>";
-                }
-            }
-            selection += "</select>";
-            return selection;
-        }
-    %>
-
-    <div id="middle">
-        <%
-            include("../../includes/tenantAware.jag");
-            include("../../includes/title.jag");
-        %>
-        <div id="workArea">
-            <%include("../../includes/wizardmenu.jag");%>
+include("../../includes/tenantAware.jag");
+include("../../includes/title.jag");
+%>
+<div id="workArea">
+    <%include("../../includes/wizardmenu.jag");%>
             <div style="clear:both"></div>
         </div>
     </div>
@@ -78,31 +78,37 @@
         <div id="scatter"></div>
         <div id="scatterPlotFeatures">
         <%
-            if (datasetId != null){
-                print("X-Axis:&emsp;"+numFeaturesDropdown1+"<br><br>");
-                print("Y-Axis:&emsp;"+numFeaturesDropdown2+"<br><br>");
-                print("Group By:&emsp;"+catFeaturesDropdown+"<br><br>");
-            }
-    %>
-        </div>
+try {
+    var datasetId = session.get("datasetId");
+    if (!datasetId) {
+        throw new Error("Dataset ID not found");
+    }
+    print("X-Axis:&emsp;" + numFeaturesIndependentDropdown + "<br><br>");
+    print("Y-Axis:&emsp;" + numFeaturesDependentDropdown + "<br><br>");
+    print("Group By:&emsp;" + catFeaturesDropdown + "<br><br>");
+}
+catch (e) {
+    throw new Error("An error occured while adding dropdown lists to page layout", e);
+}
+%>
+</div>
+</div>
+<div id="rightColumn" class="half-width-column">
+<div id="histograms" class="graph">
+    <div id="histogramIndependent" class="graph">
+        <div id="histogramIndependentTitle" class="graphtitle"></div>
+        <!-- Histogram for the independent variable will be drawn here -->
+        <svg></svg>
+        <div id="numFeatureIndependentSummary" class="graphSummary"></div>
     </div>
+    <div id="histogramDependent" class="graph">
+        <div id="histogramDependentTitle" class="graphtitle"></div>
+        <!-- Histogram for the dependent variable will be drawn here -->
+        <svg></svg>
+        <div id="numFeatureDependentSummary" class="graphSummary"></div>
+    </div>
+</div>
+</div>
 
-    <div id="rightColumn" class="half-width-column">
-        <div id="histograms" class="graph">
-            <div id="histogram1" class="graph">
-                <div id="histogram1Title" class="graphtitle"></div>
-                <!-- first histogram will be drawn --> 
-                <svg></svg>
-                <div id="numFeature1Summary" class="graphSummary"></div>
-            </div>
-            <div id="histogram2" class="graph">
-                <div id="histogram2Title" class="graphtitle"></div>
-                <!-- first histogram will be drawn -->
-                <svg></svg>
-                <div id="numFeature2Summary" class="graphSummary"></div>
-            </div>
-        </div>
-    </div>   
-     
-    </body>
+</body>
 </html>
