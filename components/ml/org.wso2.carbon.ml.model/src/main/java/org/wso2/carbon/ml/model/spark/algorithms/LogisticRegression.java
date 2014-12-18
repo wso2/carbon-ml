@@ -32,13 +32,14 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import scala.Tuple2;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -168,11 +169,14 @@ public class LogisticRegression implements Serializable {
                     ProbabilisticClassificationModelSummary();
             // store predicted vs actual results
             List<PredictedVsActual> predictedVsActuals = new ArrayList();
-            List<Tuple2<Object,Object>> scoresAnaLabels = scoresAndLabels.collect();
-            for (Tuple2<Object,Object> scoreAndLabel : scoresAnaLabels){
+            List<Tuple2<Object, Object>> scoresAnaLabels = scoresAndLabels.collect();
+            DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
+            for (Tuple2<Object, Object> scoreAndLabel : scoresAnaLabels) {
                 PredictedVsActual predictedVsActual = new PredictedVsActual();
-                predictedVsActual.setPredicted((Double) scoreAndLabel._1());
-                predictedVsActual.setActual((Double) scoreAndLabel._2());
+                predictedVsActual.setPredicted(
+                        Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
+                predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(
+                        scoreAndLabel._2())));
                 predictedVsActuals.add(predictedVsActual);
             }
             probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
@@ -186,8 +190,8 @@ public class LogisticRegression implements Serializable {
             JSONArray rocPoints = new JSONArray();
             for (int i = 0; i < rocData.size(); i += 1) {
                 JSONArray point = new JSONArray();
-                point.put(rocData.get(i)._1());
-                point.put(rocData.get(i)._2());
+                point.put(decimalFormat.format(rocData.get(i)._1()));
+                point.put(decimalFormat.format(rocData.get(i)._2()));
                 rocPoints.put(point);
             }
             probabilisticClassificationModelSummary.setRoc(rocPoints.toString());
