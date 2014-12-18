@@ -32,8 +32,8 @@ components.
 Key Features of WSO2 Machine Learner
 ====================================
 
-1. Wizard like pipeline.
-2  Assisted model building
+1. Wizard like pipeline
+2. Assisted model building
 3. Data exploration utility
 
 System Requirements
@@ -51,7 +51,7 @@ System Requirements
 Installation & Running
 ==================================
 
-1. Extract the wso2ml-0.1.0.zip and go to the extracted directory
+1. Extract the wso2ml-1.0.0-SNAPSHOT.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
@@ -63,7 +63,7 @@ Installation & Running
     password : admin
 
 
-WSO2 Machine Learner 0.1.0 distribution directory structure
+WSO2 Machine Learner 1.0.0-SNAPSHOT distribution directory structure
 ===========================================================
 
 	CARBON_HOME
@@ -130,7 +130,7 @@ WSO2 Machine Learner 0.1.0 distribution directory structure
       This document will contain information on installing WSO2 Machine Learner
 
 	- release-notes.html
-	  Release information for WSO2 Machine Learner 0.1.0
+	  Release information for WSO2 Machine Learner 1.0.0-SNAPSHOT
 
 Support
 =======
