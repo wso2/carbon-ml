@@ -1,5 +1,5 @@
 
-.algo_type_button{
+.algoTypeDiv {
     margin-top: 2.5em;
     height:3em;
     width:10em;
@@ -63,7 +63,7 @@
 	margin-left: 5%;
 }
 
-#algo_type{
+#algoType{
 	margin-left: 8%;
 }
 
@@ -78,10 +78,10 @@ input.algoName {
 
 
 /* Questions*/
-#questions_content{
+#questionsContent{
     margin-left: 4em;
 }
-#questions_block{
+#questionsBlock{
     float:left;
 }
 
@@ -89,7 +89,7 @@ input.algoName {
     margin-top: 2em;
 }
 
-#options_block{
+#optionsBlock{
     float:left;
     margin-left: 2em;
 }
@@ -122,22 +122,22 @@ input.algoName {
     margin-left: 4em;
 }
 
-#names_block{
+#namesBlock{
     float:left;
     margin-top: -1em;
 }
 
-.parameter_name{
+.parameterName{
     margin-top: 2.2em;
 }
 
-#values_block{
+#valuesBlock{
     float:left;
     margin-left: 2em;
     margin-top: -1em;
 }
 
-.parameter_value{
+.parameterValue{
     margin-top: 2em;
 }
 
@@ -159,6 +159,11 @@ input.algoName {
 
 /* error message class related to algorithm selection */
 .algoSelectionErrorMessage{
+    display: none;
+    color: red;
+}
+
+.hyperParameterError{
     display: none;
     color: red;
 }
