@@ -169,7 +169,8 @@ function drawDataViewTable() {
                   var svg = d3.select(this)
                             .append("svg")
                             .attr("width", w)
-                            .attr("height", h);
+                            .attr("height", h)
+			    .attr("class", "pieChart");
 
                   var arcs = svg.selectAll("g.arc")
                         .data(pie(dataArray))
@@ -203,7 +204,8 @@ function drawDataViewTable() {
                 var svg = d3.select(this)
                 .append("svg")
                 .attr("width", w)
-                .attr("height", h);
+                .attr("height", h)
+		.attr("class", "barChart");
                 
                 svg.selectAll("rect")
                     .data(dataArray)
