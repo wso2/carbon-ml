@@ -5,10 +5,13 @@
 
 <html>
     <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
     <link href="../../css/jquery-ui.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./css/buildModel.css">
+    <script src="../../js/d3.js"></script>
     <script src="../../js/jquery.js"></script>
-    <script src="../../js/jquery-ui.js"></script>
+    <script src="../../js/jquery-ui.js"></script>    
+    <script src="../../js/wso2.ml.graphs.js"></script>
     <script src="./js/buildModel.js"></script> 
 
     <body>
@@ -32,16 +35,16 @@
             disableWizardMenu();
 
             // 
-            var isModelExecStarted = 'false';
+            var isModelExecStarted = false;
             $.ajax({
                 url : "./ajax/queryModelExecStart.jag",
                 type : "POST",
                 async : false,
-                success : function(data) { isModelExecStarted = data;},
+                success : function(data) { isModelExecStarted = (data === "true");},
                 error : function(){/*TODO:*/ }
             });
 
-            if(isModelExecStarted === 'true'){        
+            if(isModelExecStarted){        
                 poll();
             }    
         });

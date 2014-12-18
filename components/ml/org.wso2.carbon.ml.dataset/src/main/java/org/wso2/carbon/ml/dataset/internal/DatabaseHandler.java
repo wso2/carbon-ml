@@ -15,23 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.carbon.ml.dataset.constants.FeatureType;
-import org.wso2.carbon.ml.dataset.constants.ImputeOption;
-import org.wso2.carbon.ml.dataset.constants.SQLQueries;
+import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
+import org.wso2.carbon.ml.dataset.internal.constants.ImputeOption;
+import org.wso2.carbon.ml.dataset.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.dataset.dto.Feature;
 import org.wso2.carbon.ml.dataset.dto.SamplePoints;
-import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

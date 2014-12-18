@@ -1,0 +1,29 @@
+<%
+    var retrievedModelId = null;
+    try{
+        var carbon = require('carbon');
+        var workflowId = session.get("workflowId");
+
+        var datasetService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.dataset.DatasetService');
+        var modelService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.model.ModelService');
+        retrievedModelId =  datasetService.getModelId(workflowId);
+        
+        if(retrievedModelId){       
+            var threshold = request.getParameter("threshold");
+            if(threshold){
+                var cm = modelService.getConfusionMatrix(retrievedModelId, threshold);     
+                var result = {tp : cm.getTruePositives(),
+                              fp : cm.getFalsePositives(),
+                              fn : cm.getFalseNegatives(),
+                              tn : cm.getTrueNegatives()};
+                print(result);
+            }
+        }
+
+    }catch(e){
+        throw new Error("An error occurred while "+
+            "reading confution matrix for model: "+retrievedModelId);
+    }  
+%>

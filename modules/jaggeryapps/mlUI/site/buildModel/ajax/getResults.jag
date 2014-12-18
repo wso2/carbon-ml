@@ -1,0 +1,29 @@
+<%
+    try{
+        var carbon = require('carbon');
+        var workflowId = session.get("workflowId");
+
+        var datasetService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.dataset.DatasetService');
+        var modelService = carbon.server.osgiService(
+            'org.wso2.carbon.ml.model.ModelService');
+
+        //reading model id from the database
+        var retrievedModelId =  datasetService.getModelId(workflowId); 
+        if(!retrievedModelId){
+            throw new Error("Model is not available for workflowId: "+workflowId);
+        }
+        
+        // reading model summary
+        var modelSummary = modelService.getModelSummary(retrievedModelId);
+        if(!modelSummary){
+            throw new Error('Model summary is null for model id: '+retrievedModelId);
+        }
+        var result = {roc: modelSummary.getRoc(),
+                      auc: modelSummary.getAuc()};
+        print(result);
+        
+    }catch(e){        
+        throw new Error("An error occurred while querying results for model: "+e.message);      
+    }  
+%>

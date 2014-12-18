@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+
+package org.wso2.carbon.ml.dataset.internal;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,13 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.dto.DataUploadSettings;
+import org.wso2.carbon.ml.dataset.DatasetService;
 import org.wso2.carbon.ml.dataset.dto.Feature;
-import org.wso2.carbon.ml.dataset.dto.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
+import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
+import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
+import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
 
 /**
  * Class contains the services related to importing and exploring a data-set.
@@ -51,7 +53,7 @@ public class MLDatasetService implements DatasetService {
     /*
      * Activates the Data-set Service.
      */
-    protected void activate(ComponentContext context) {
+    protected void activate(ComponentContext context) throws DatasetServiceException {
         try {
             // Read data-set settings from ml-config.xml file.
             MLConfigurationParser mlConfigurationParser = new MLConfigurationParser();
@@ -60,11 +62,12 @@ public class MLDatasetService implements DatasetService {
             datasetService.summaryStatSettings = mlConfigurationParser.getSummaryStatisticsSettings();
             datasetService.mlDatabaseName=mlConfigurationParser.getDatabaseName();
             // Register the service.
-            context.getBundleContext().registerService(MLDatasetService.class.getName(),
+            context.getBundleContext().registerService(DatasetService.class.getName(),
                 datasetService, null);
             logger.info("ML Dataset Service Started");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            throw new DatasetServiceException("Failed to activate the ML Dataset Service component: "
+                + e.getMessage(), e);
         }
     }
 
@@ -115,7 +118,7 @@ public class MLDatasetService implements DatasetService {
             
             // Get user home, if the uploading directory is set to USER_HOME
             if (uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)) {
-                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator+
+                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator +
                     DatasetConfigurations.ML_PROJECTS;
             }
             

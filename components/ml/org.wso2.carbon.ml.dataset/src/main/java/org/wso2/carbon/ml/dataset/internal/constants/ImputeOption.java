@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset.constants;
+package org.wso2.carbon.ml.dataset.internal.constants;
 
 public class ImputeOption {
 	public static final String DISCARD = "DISCARD";

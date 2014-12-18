@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.dataset.dto;
+package org.wso2.carbon.ml.dataset.internal.dto;
 
 public class SummaryStatisticsSettings {
 	private int histogramBins;

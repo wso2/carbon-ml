@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.internal;
 
 import java.io.File;
 
@@ -27,10 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.dto.DataUploadSettings;
-import org.wso2.carbon.ml.dataset.dto.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
+import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
+import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
 
 /**
  * Class contains methods for parsing configurations from ml-config XML file.

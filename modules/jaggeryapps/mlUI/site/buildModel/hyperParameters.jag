@@ -33,7 +33,7 @@
 
     <%
             var mlConfigs=require("/includes/ml.json");
-            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
             var workflowId = session.get("workflowId");
 
             // Retrieve and display the dropdown of candidate response variables.

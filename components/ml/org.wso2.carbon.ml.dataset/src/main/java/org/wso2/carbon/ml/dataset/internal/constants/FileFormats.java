@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.dataset.constants;
+package org.wso2.carbon.ml.dataset.internal.constants;
 
 public class FileFormats {
 	public static final String CSV = "csv";

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset;
+package org.wso2.carbon.ml.dataset.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,11 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.wso2.carbon.ml.dataset.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.constants.FeatureType;
-import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
+import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
+import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
+import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 
 /**
  * Class Generate Summary statistics for a data-set.
@@ -88,8 +88,9 @@ public class DatasetSummary {
         this.datasetID = datasetID;
         try {
             Reader reader = new InputStreamReader(new FileInputStream(csvDataFile
-                .getAbsolutePath()),DatasetConfigurations.UTF_8);
-            this.parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader());
+                    .getAbsolutePath()),DatasetConfigurations.UTF_8);
+            this.parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader()
+                    .withAllowMissingColumnNames(true));
             this.headerMap = this.parser.getHeaderMap();
             int noOfFeatures = this.headerMap.size();
             // Initialize the lists.
@@ -161,7 +162,7 @@ public class DatasetSummary {
             row = datasetIterator.next();
             // For each cell in the row.
             for (int currentCol = 0; currentCol < this.headerMap.size(); currentCol++) {
-                if (!"".equalsIgnoreCase(row.get(currentCol))) {
+                if (!row.get(currentCol).isEmpty()) {
                     // Count the number of cell contain strings.
                     if (!NumberUtils.isNumber(row.get(currentCol))) {
                         stringCellCount[currentCol]++;
@@ -260,8 +261,10 @@ public class DatasetSummary {
                 // Calculate the category frequencies.
                 SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
                 for (String uniqueValue : uniqueSet) {
-                    frequencies.put(Double.parseDouble(uniqueValue),
-                        Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                    if (!uniqueValue.isEmpty()) {
+                        frequencies.put(Double.parseDouble(uniqueValue),
+                            Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                        }
                 }
                 this.graphFrequencies.set(currentCol, frequencies);
             } else {

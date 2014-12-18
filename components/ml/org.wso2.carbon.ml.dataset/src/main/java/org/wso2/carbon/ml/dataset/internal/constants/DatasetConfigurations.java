@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.dataset.constants;
+package org.wso2.carbon.ml.dataset.internal.constants;
 
 public class DatasetConfigurations {
     public static final String ML_CONFIG_XML = "repository/conf/etc/ml-config.xml";
