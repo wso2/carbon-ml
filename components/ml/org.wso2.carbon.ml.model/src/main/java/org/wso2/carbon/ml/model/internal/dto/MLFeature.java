@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.ml.model.internal.dto;
 
+/**
+ * DTO class to store a machine learning feature
+ */
 public class MLFeature {
     private String name;
     private int index;
@@ -25,42 +28,72 @@ public class MLFeature {
     private String imputeOption;
     private boolean include;
 
+    /**
+     * @return Returns feature name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name Sets feature name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return Whether to include the feature in the machine learning model building or not
+     */
     public boolean isInclude() {
         return include;
     }
 
+    /**
+     * @param include Sets whether to include the feature or not
+     */
     public void setInclude(boolean include) {
         this.include = include;
     }
 
+    /**
+     * @return Returns feature type - CATEGORICAL or NUMERICAL
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * @param type Sets feature type
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * @return Returns impute option
+     */
     public String getImputeOption() {
         return imputeOption;
     }
 
+    /**
+     * @param imputeOption Sets impute option - DISCARD or REPLACE_WITH_MEAN
+     */
     public void setImputeOption(String imputeOption) {
         this.imputeOption = imputeOption;
     }
 
+    /**
+     * @return Returns feature index
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * @param index Sets feature index
+     */
     public void setIndex(int index) {
         this.index = index;
     }

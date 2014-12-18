@@ -27,9 +27,13 @@ import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import scala.Tuple2;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class DecisionTree implements Serializable {
@@ -79,20 +83,34 @@ public class DecisionTree implements Serializable {
     }
 
     /**
-     * @param predictionsAndLabels JavaPairRDD containing predictions and labels
-     * @return Test error
+     * @param predictionsAndLabels Predicted labels and actual labels
+     * @return Class classification model summary
      * @throws ModelServiceException
      */
-    public double getTestError(JavaPairRDD<Double, Double> predictionsAndLabels)
+    public ClassClassificationModelSummary getClassClassificationModelSummary(
+            JavaPairRDD<Double, Double> predictionsAndLabels)
             throws ModelServiceException {
         try {
-            return 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
+            ClassClassificationModelSummary classClassificationModelSummary = new
+                    ClassClassificationModelSummary();
+            List<PredictedVsActual> predictedVsActuals = new ArrayList();
+            List<Tuple2<Double, Double>> scoresAndLabels = predictionsAndLabels.collect();
+            for (Tuple2<Double, Double> scoreAndLabel : scoresAndLabels) {
+                PredictedVsActual predictedVsActual = new PredictedVsActual();
+                predictedVsActual.setPredicted(scoreAndLabel._1());
+                predictedVsActual.setActual(scoreAndLabel._2());
+                predictedVsActuals.add(predictedVsActual);
+            }
+            classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
+            double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
                     Boolean>() {
                 @Override
                 public Boolean call(Tuple2<Double, Double> pl) {
                     return !pl._1().equals(pl._2());
                 }
             }).count() / predictionsAndLabels.count();
+            classClassificationModelSummary.setError(error);
+            return classClassificationModelSummary;
         } catch (Exception e) {
             throw new ModelServiceException(
                     "An error occured while calculating decision tree test error: "

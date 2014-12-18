@@ -33,6 +33,7 @@ import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.MLFeature;
 import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.spark.transformations.DiscardedRows;
@@ -95,6 +96,7 @@ public class SupervisedModel {
                     imputeMeans.put(meanImputeIndices.get(i), means[i]);
                 }
             }
+            // apply mean imputation
             MeanImputation meanImputation = new MeanImputation(imputeMeans);
             JavaRDD<double[]> features = tokensDiscardedRemoved.map(meanImputation);
             // generate train and test datasets by converting tokens to labeled points
@@ -115,11 +117,7 @@ public class SupervisedModel {
                     buildLogisticRegressionModel(modelID, trainingData, testingData, workflow);
                     break;
                 case DECISION_TREE:
-                    // empty hashmap - no categorical features
-                    // needs to be populated with categorical column number:no of categories
-                    Map<Integer, Integer> categoricalFeatures = new HashMap();
-                    buildDecisionTreeModel(modelID, trainingData, testingData, categoricalFeatures,
-                            workflow);
+                    buildDecisionTreeModel(modelID, trainingData, testingData, workflow);
                     break;
                 default:
                     throw new IllegalStateException();
@@ -175,29 +173,31 @@ public class SupervisedModel {
     /**
      * This method builds a decision tree model
      *
-     * @param trainingData        Training data
-     * @param testingData         Testing data
-     * @param categoricalFeatures Map of categorical features - categorical column index : no of
-     *                            categories
-     * @param workflow            Machine learning workflow
+     * @param trainingData Training data
+     * @param testingData  Testing data
+     * @param workflow     Machine learning workflow
      * @throws ModelServiceException
      */
     private void buildDecisionTreeModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData,
-            Map<Integer, Integer> categoricalFeatures,
-            MLWorkflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, MLWorkflow workflow) throws ModelServiceException {
         try {
+            DatabaseHandler databaseHandler = new DatabaseHandler();
+            databaseHandler.insertModel(modelID, workflow.getWorkflowID(),
+                    new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLModelConstants.NUM_CLASSES)),
-                    categoricalFeatures,
+                    new HashMap<Integer, Integer>(),
                     hyperParameters.get(MLModelConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLModelConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLModelConstants.MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAnsLabels = decisionTree.test(decisionTreeModel,
                     trainingData);
-            double testError = decisionTree.getTestError(predictionsAnsLabels);
+            ClassClassificationModelSummary classClassificationModelSummary = decisionTree
+                    .getClassClassificationModelSummary(predictionsAnsLabels);
+            databaseHandler.updateModel(modelID, decisionTreeModel, classClassificationModelSummary,
+                    new Time(System.currentTimeMillis()));
         } catch (Exception e) {
             throw new ModelServiceException(
                     "An error occured while building decision tree model: " + e.getMessage(), e);
