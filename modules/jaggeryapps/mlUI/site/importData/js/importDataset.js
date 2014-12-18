@@ -30,7 +30,10 @@ $('document').ready(function() {
         }
 
         if(!dataFileName){
-	    $('#datasetNameValidator').html("<span class=\"errorMessage\">Dataset is required</span>");
+	        $('#datasetNameValidator').html("<span class=\"errorMessage\">Dataset is required</span>");
+            isAllEntered = false;
+        } else if(!isValidFormat(dataFileName)){
+            $('#datasetNameValidator').empty().html("<span class=\"errorMessage\">Incorrect file format selected</span>");
             isAllEntered = false;
         }
 
@@ -83,6 +86,15 @@ $('document').ready(function() {
        $('#workflowNameValidator').empty();
     });
 });
+
+function hasValidFileFormat(fileName) {
+    var result = fileName.match(/^.+\.csv$/g);
+    if(result) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function disableEvaluation() {
     var color='#848484';
