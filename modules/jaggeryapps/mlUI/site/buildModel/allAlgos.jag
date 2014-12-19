@@ -1,7 +1,26 @@
-<script src="../../session/sessionCheck.js"></script>
+<!--
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ -->
+ 
+ <script src="../../session/sessionCheck.js"></script>
 
 <div class="algorithms">
     <h3>Available Algorithms</h3>
+    <form id="allAlgoForm" action="#" method="post" enctype="multipart/form-data">
     <%
         var log =new Log();
         var algoType=session.get("algoType");
@@ -13,16 +32,20 @@
                 print('<input type="radio" class="algoName" name="algorithm" value="'+algorithms.get(i)+'">'+algorithms.get(i)+'<br>');
             }
         }catch(e){
-            log.error("An error occured while retrieving available algorithms of type: "+algoType, e);
+            log.error('An error occured while retrieving available algorithms of type: ' + algoType, e);
+            throw new Error('An error occured while retrieving available algorithms of type: ' + algoType);
         }
     %>
+    </form>
+    <br>
+    <div class="algoSelectionErrorMessage">*Please select an algorithm before continue.</div>
 </div>
 
 <div id="hyperParameters"> </div>
 
 <div style="clear:both"></div>
 <div class="bottomNavigationButtons">
-    <button id="allAlgos_back" class="blueButton" onclick="loadQuestions();">Go Back</button>
-    <button id="algorithms_continue" class="blueButton">Continue</button>
+    <button id="allAlgosBackButton" class="blueButton">Go Back</button>
+    <button id="algorithmsContinueButton" class="blueButton">Continue</button>
 <div>
 <script src="./js/buildModel.js"></script> 
