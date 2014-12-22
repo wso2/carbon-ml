@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,10 +11,11 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.ml.model.internal;
 
 import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
@@ -42,7 +43,7 @@ public class MLDatabaseUtils {
      * @param preparedStatement PeparedStatement to be closed
      * @param resultSet         ResultSet to be closed
      */
-    protected static void closeDatabaseResources(Connection connection,
+    public static void closeDatabaseResources(Connection connection,
             PreparedStatement preparedStatement,
             ResultSet resultSet) throws
             DatabaseHandlerException {
@@ -81,7 +82,7 @@ public class MLDatabaseUtils {
      * @param connection        Connection to be closed
      * @param preparedStatement PeparedStatement to be closed
      */
-    protected static void closeDatabaseResources(Connection connection,
+    public static void closeDatabaseResources(Connection connection,
             PreparedStatement preparedStatement) throws DatabaseHandlerException {
         closeDatabaseResources(connection, preparedStatement, null);
     }
@@ -91,7 +92,7 @@ public class MLDatabaseUtils {
      *
      * @param connection Connection to be closed
      */
-    protected static void closeDatabaseResources(Connection connection)
+    public static void closeDatabaseResources(Connection connection)
             throws DatabaseHandlerException {
         closeDatabaseResources(connection, null, null);
     }
@@ -101,7 +102,7 @@ public class MLDatabaseUtils {
      *
      * @param preparedStatement PeparedStatement to be closed
      */
-    protected static void closeDatabaseResources(PreparedStatement preparedStatement)
+    public static void closeDatabaseResources(PreparedStatement preparedStatement)
             throws DatabaseHandlerException {
         closeDatabaseResources(null, preparedStatement, null);
     }
@@ -111,7 +112,7 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection to be rolled-back
      */
-    protected static void rollBack(Connection dbConnection) throws DatabaseHandlerException {
+    public static void rollBack(Connection dbConnection) throws DatabaseHandlerException {
         try {
             if (dbConnection != null) {
                 dbConnection.rollback();
@@ -127,7 +128,7 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection of which the auto-commit should be enabled
      */
-    protected static void enableAutoCommit(Connection dbConnection)
+    public static void enableAutoCommit(Connection dbConnection)
             throws DatabaseHandlerException {
         try {
             if (dbConnection != null) {

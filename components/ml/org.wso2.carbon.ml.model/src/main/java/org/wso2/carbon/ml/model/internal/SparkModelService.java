@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -22,24 +22,48 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.json.JSONArray;
+import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.model.ModelService;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.model.exceptions.MLAlgorithmParserException;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
+import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
+import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
+import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
 import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
+import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
+import org.wso2.carbon.ml.model.spark.dto.ModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.exceptions.MLAlgorithmConfigurationParserException;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.BINARY;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLASSIFICATION;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DATASET_SIZE;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.HIGH;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.INTERPRETABILITY;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LARGE;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MEDIUM;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ML_ALGORITHMS_CONFIG_XML;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NO;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NUMERICAL_PREDICTION;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SMALL;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SPARK_CONFIG_XML;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SUPERVISED_ALGORITHM;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.TEXTUAL;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.YES;
 
 /**
  * @scr.component name="modelService" immediate="true"
@@ -48,7 +72,11 @@ import java.util.Map;
 
 public class SparkModelService implements ModelService {
     private static final Log logger = LogFactory.getLog(SparkModelService.class);
-    private MLAlgorithmConfigurationParser mlAlgorithmConfigurationParser;
+    private MLAlgorithms mlAlgorithms;
+
+    public SparkModelService() throws MLAlgorithmParserException {
+        mlAlgorithms = MLModelUtils.getMLAlgorithms(ML_ALGORITHMS_CONFIG_XML);
+    }
 
     /**
      * ModelService activator
@@ -58,14 +86,12 @@ public class SparkModelService implements ModelService {
     protected void activate(ComponentContext context) throws ModelServiceException {
         try {
             SparkModelService sparkModelService = new SparkModelService();
-            sparkModelService.mlAlgorithmConfigurationParser = new MLAlgorithmConfigurationParser
-                    (MLModelConstants.ML_ALGORITHMS_CONFIG_XML);
             context.getBundleContext().registerService(ModelService.class.getName(),
                     sparkModelService, null);
             logger.info("ML Model Service Started.");
-        } catch (Exception e) {
-            throw new ModelServiceException("An error occured while activating model service: " + e
-                    .getMessage(), e);
+        } catch (MLAlgorithmParserException e) {
+            throw new ModelServiceException("An error occured while parsing machine learning " +
+                                            "algorithm configration: " + e.getMessage(), e);
         }
     }
 
@@ -80,93 +106,79 @@ public class SparkModelService implements ModelService {
 
     /**
      * @param algorithm Name of the machine learning algorithm
-     * @return Json array containing hyper parameters
-     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
+     * @return List containing hyper parameters
      */
-    public JSONArray getHyperParameters(String algorithm) throws ModelServiceException {
-        try {
-            return this.mlAlgorithmConfigurationParser.getHyperParameters(algorithm);
-        } catch (MLAlgorithmConfigurationParserException e) {
-            throw new ModelServiceException(
-                    "An error occurred while retrieving hyper parameters :" + e.getMessage(), e);
+    public List<HyperParameter> getHyperParameters(String algorithm) {
+        List<HyperParameter> hyperParameters = null;
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()) {
+            if (algorithm.equals(mlAlgorithm.getName())) {
+                hyperParameters = mlAlgorithm.getParameters();
+                break;
+            }
         }
+        return hyperParameters;
     }
 
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
      * @return List of algorithm names
-     * @throws ModelServiceException
      */
-    public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException {
-        try {
-            return this.mlAlgorithmConfigurationParser.getAlgorithms(algorithmType);
-        } catch (MLAlgorithmConfigurationParserException e) {
-            throw new ModelServiceException(
-                    "An error occurred while retrieving algorithm names: " + e.getMessage(), e);
+    public List<String> getAlgorithmsByType(String algorithmType) {
+        List<String> algorithms = new ArrayList();
+        for (MLAlgorithm algorithm : mlAlgorithms.getAlgorithms()) {
+            if (algorithmType.equals(algorithm.getType())) {
+                algorithms.add(algorithm.getName());
+            }
         }
+        return algorithms;
     }
 
     /**
-     * @param algorithmType    Type of the machine learning algorithm - e.g. Classification
-     * @param userResponseJson User's response to a questionnaire about machine learning task
+     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
+     * @param userResponse  User's response to a questionnaire about machine learning task
      * @return Map containing names of recommended machine learning algorithms and
      * recommendation scores (out of 5) for each algorithm
-     * @throws ModelServiceException
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
-            String userResponseJson)
-            throws ModelServiceException {
+            Map<String, String> userResponse) {
         Map<String, Double> recommendations = new HashMap<String, Double>();
-        try {
-            JSONObject userResponse = new JSONObject(userResponseJson);
-            Map<String, List<Integer>> algorithmRatings = this.mlAlgorithmConfigurationParser
-                    .getAlgorithmRatings(algorithmType);
-            // check whether the response is binary and eliminate logistic regression
-            if (MLModelConstants.NO.equals(userResponse.getString(MLModelConstants.BINARY))) {
-                algorithmRatings.remove(
-                        MLModelConstants.SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString());
+        List<MLAlgorithm> algorithms = mlAlgorithms.getAlgorithms();
+        for (MLAlgorithm mlAlgorithm : algorithms) {
+            if (!algorithmType.equals(mlAlgorithm.getType())) {
+                algorithms.remove(mlAlgorithm);
             }
-            for (Map.Entry<String, List<Integer>> rating : algorithmRatings.entrySet()) {
-                if (MLModelConstants.HIGH.equals(
-                        userResponse.get(MLModelConstants.INTERPRETABILITY))) {
-                    rating.getValue().set(0, rating.getValue().get(0) * 5);
-                } else if (MLModelConstants.MEDIUM.equals(
-                        userResponse.get(MLModelConstants.INTERPRETABILITY))) {
-                    rating.getValue().set(0, rating.getValue().get(0) * 3);
-                } else {
-                    rating.getValue().set(0, 5);
-                }
-                if (MLModelConstants.LARGE.equals(
-                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
-                    rating.getValue().set(1, rating.getValue().get(1) * 5);
-                } else if (MLModelConstants.MEDIUM.equals(
-                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
-                    rating.getValue().set(1, rating.getValue().get(1) * 3);
-                } else if (MLModelConstants.SMALL.equals(
-                        userResponse.get(MLModelConstants.DATASET_SIZE))) {
-                    rating.getValue().set(1, 5);
-                }
-                if (MLModelConstants.YES.equals(userResponse.get(MLModelConstants.TEXTUAL))) {
-                    rating.getValue().set(2, rating.getValue().get(2) * 3);
-                } else {
-                    rating.getValue().set(2, 5);
-                }
+        }
+        for (MLAlgorithm mlAlgorithm : algorithms) {
+            if (HIGH.equals(userResponse.get(INTERPRETABILITY))) {
+                mlAlgorithm.setInterpretability(mlAlgorithm.getInterpretability() * 5);
+            } else if (MEDIUM.equals(userResponse.get(INTERPRETABILITY))) {
+                mlAlgorithm.setInterpretability(mlAlgorithm.getInterpretability() * 3);
+            } else {
+                mlAlgorithm.setInterpretability(5);
             }
-            for (Map.Entry<String, List<Integer>> pair : algorithmRatings.entrySet()) {
-                recommendations.put(pair.getKey(), MLModelUtils.sum(pair.getValue()));
+            if (LARGE.equals(userResponse.get(DATASET_SIZE))) {
+                mlAlgorithm.setScalability(mlAlgorithm.getScalability() * 5);
+            } else if (MEDIUM.equals(userResponse.get(DATASET_SIZE))) {
+                mlAlgorithm.setScalability(mlAlgorithm.getScalability() * 3);
+            } else if (SMALL.equals(userResponse.get(DATASET_SIZE))) {
+                mlAlgorithm.setScalability(5);
             }
-            Double max = Collections.max(recommendations.values());
-            DecimalFormat ratingNumberFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
-            Double scaledRating;
-            for (Map.Entry<String, Double> recommendation : recommendations.entrySet()) {
-                scaledRating = ((recommendation.getValue()) / max) * 5;
-                scaledRating = Double.valueOf(ratingNumberFormat.format(scaledRating));
-                recommendations.put(recommendation.getKey(), scaledRating);
+            if (YES.equals(userResponse.get(TEXTUAL))) {
+                mlAlgorithm.setDimensionality(mlAlgorithm.getDimensionality() * 3);
+            } else {
+                mlAlgorithm.setDimensionality(5);
             }
-        } catch (MLAlgorithmConfigurationParserException e) {
-            throw new ModelServiceException(
-                    "An error occurred while retrieving recommended algorithms: " + e.getMessage(),
-                    e);
+            recommendations.put(mlAlgorithm.getName(), (double) (mlAlgorithm.getDimensionality()
+                                                                 + mlAlgorithm
+                    .getInterpretability() + mlAlgorithm.getScalability()));
+        }
+        Double max = Collections.max(recommendations.values());
+        DecimalFormat ratingNumberFormat = new DecimalFormat(DECIMAL_FORMAT);
+        Double scaledRating;
+        for (Map.Entry<String, Double> recommendation : recommendations.entrySet()) {
+            scaledRating = ((recommendation.getValue()) / max) * 5;
+            scaledRating = Double.valueOf(ratingNumberFormat.format(scaledRating));
+            recommendations.put(recommendation.getKey(), scaledRating);
         }
         return recommendations;
     }
@@ -177,77 +189,70 @@ public class SparkModelService implements ModelService {
      * @throws ModelServiceException
      */
     public void buildModel(String modelID, String workflowID) throws ModelServiceException {
-        // temporarily store thread context class loader (tccl)
+        /**
+         * Spark looks for various configuration files using it's class loader. Therefore, the
+         * class loader needed to be switched temporarily.
+         */
+        // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            // switch class loader to JavaSparkContext class's class loader
+            // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             DatabaseHandler databaseHandler = new DatabaseHandler();
             MLWorkflow workflow = databaseHandler.getWorkflow(workflowID);
-            JSONObject jsonObject = new JSONObject(workflow);
             String algorithmType = workflow.getAlgorithmClass();
-            if (MLModelConstants.CLASSIFICATION.equals(
-                    algorithmType) || MLModelConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
+            if (CLASSIFICATION.equals(algorithmType) || NUMERICAL_PREDICTION.equals(
+                    algorithmType)) {
                 // create a new spark configuration
-                SparkConfigurationParser sparkConfigurationParser = new SparkConfigurationParser(
-                        MLModelConstants.SPARK_CONFIG_XML);
-                SparkConf sparkConf = sparkConfigurationParser.getSparkConf();
+                SparkConf sparkConf = MLModelUtils.getSparkConf(SPARK_CONFIG_XML);
                 SupervisedModel supervisedModel = new SupervisedModel();
                 supervisedModel.buildModel(modelID, workflow, sparkConf);
             }
-        } catch (Exception e) {
+        } catch (DatabaseHandlerException e) {
             throw new ModelServiceException(
-                    "An error occurred while building machine learning model: " + e.getMessage(),
+                    "An error occurred while saving model to database: " + e.getMessage(),
+                    e);
+        } catch (SparkConfigurationParserException e) {
+            throw new ModelServiceException(
+                    "An error occurred while parsing spark configuration: " + e.getMessage(),
                     e);
         } finally {
-            // switch class loader back to tccl
+            // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
     }
 
     /**
      * @param modelID Model ID
-     * @param <T>     Model summary type
      * @return Model summary object
      * @throws ModelServiceException
      */
-    public <T> T getModelSummary(String modelID) throws ModelServiceException {
-        T modelSummary = null;
+    public ModelSummary getModelSummary(String modelID) throws ModelServiceException {
+        ModelSummary modelSummary = null;
         try {
             DatabaseHandler databaseHandler = new DatabaseHandler();
             modelSummary = databaseHandler.getModelSummary(modelID);
-        } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while retrieving model summay: " + e.getMessage(), e);
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occured while retrieving model summay: "
+                                            + e.getMessage(), e);
         }
         return modelSummary;
     }
 
     /**
-     * @param modelSettingsJSON Model settings as a JSON string
+     * @param modelSettings Model settings
      * @throws ModelServiceException
      */
-    public void insertModelSettings(String modelSettingsJSON) throws ModelServiceException {
+    public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException {
         try {
-            JSONObject modelSettings = new JSONObject(modelSettingsJSON);
-            JSONArray parameters = modelSettings.getJSONArray(MLModelConstants.HYPER_PARAMETERS);
-            Map<String, String> hyperParameters = new HashMap();
-            for (int i = 0; i < parameters.length(); i++) {
-                hyperParameters.put(parameters.getJSONArray(i).getString(0),
-                        parameters.getJSONArray(i).getString(1));
-            }
             DatabaseHandler dbHandler = new DatabaseHandler();
-            dbHandler.insertModelSettings(
-                    modelSettings.getString(MLModelConstants.MODEL_SETTINGS_ID),
-                    modelSettings.getString(MLModelConstants.WORKFLOW_ID),
-                    modelSettings.getString(MLModelConstants.ALGORITHM_TYPE),
-                    modelSettings.getString(MLModelConstants.ALGORITHM_NAME),
-                    modelSettings.getString(MLModelConstants.RESPONSE),
-                    modelSettings.getDouble(MLModelConstants.TRAIN_DATA_FRACTION),
-                    hyperParameters);
-        } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while inserting model settings: " + e.getMessage(), e);
+            dbHandler.insertModelSettings(modelSettings.getModelSettingsID(),
+                    modelSettings.getWorkflowID(), modelSettings.getAlgorithmType(),
+                    modelSettings.getAlgorithmName(), modelSettings.getResponse(),
+                    modelSettings.getTrainDataFraction(), modelSettings.getHyperParameters());
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occured while inserting model settings: "
+                                            + e.getMessage(), e);
         }
     }
 
@@ -262,10 +267,9 @@ public class SparkModelService implements ModelService {
         try {
             DatabaseHandler handler = new DatabaseHandler();
             return handler.getModelExecutionEndTime(modelID) > 0;
-        } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error has occurred while querying model: " + modelID +
-                    " for execution end time: " + e.getMessage(), e);
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occurred while querying model: " + modelID
+                                            + " for execution end time: " + e.getMessage(), e);
         }
     }
 
@@ -280,10 +284,9 @@ public class SparkModelService implements ModelService {
         try {
             DatabaseHandler handler = new DatabaseHandler();
             return handler.getModelExecutionStartTime(modelID) > 0;
-        } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error has occurred while querying model: " + modelID +
-                    " for execution start time: " + e.getMessage(), e);
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occurred while querying model: " + modelID +
+                                            " for execution start time: " + e.getMessage(), e);
         }
     }
 
@@ -300,9 +303,8 @@ public class SparkModelService implements ModelService {
         try {
             long truePositives, falsePositives, trueNegatives, falseNegatives;
             trueNegatives = truePositives = falsePositives = falseNegatives = 0;
-            List<PredictedVsActual> predictedVsActuals = (
-                    (ProbabilisticClassificationModelSummary) getModelSummary(
-                            modelID)).getPredictedVsActuals();
+            List<PredictedVsActual> predictedVsActuals = ((ProbabilisticClassificationModelSummary)
+                     getModelSummary(modelID)).getPredictedVsActuals();
             double predicted, actual;
             for (PredictedVsActual predictedVsActual : predictedVsActuals) {
                 predicted = predictedVsActual.getPredicted();
@@ -327,9 +329,9 @@ public class SparkModelService implements ModelService {
             confusionMatrix.setTrueNegatives(trueNegatives);
             confusionMatrix.setFalseNegatives(falseNegatives);
             return confusionMatrix;
-        } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while generating confusion matrix: " + e.getMessage(), e);
+        } catch (ModelServiceException e) {
+            throw new ModelServiceException("An error occured while generating confusion matrix: "
+                                            + e.getMessage(), e);
         }
     }
 }

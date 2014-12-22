@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,22 +11,26 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.carbon.ml.model.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.constants.SQLQueries;
+import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
 import org.wso2.carbon.ml.model.internal.dto.MLFeature;
 import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
 import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.model.spark.dto.ModelSummary;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,7 +58,7 @@ public class DatabaseHandler {
         try {
             Context initContext = new InitialContext();
             dataSource = (DataSource) initContext.lookup(MLModelConstants.ML_DB);
-        } catch (Exception e) {
+        } catch (NamingException e) {
             throw new DatabaseHandlerException(
                     "An error occured while obtaining the data source: " + e.getMessage(), e);
         }
@@ -74,7 +78,7 @@ public class DatabaseHandler {
      */
     public void insertModelSettings(String modelSettingsID, String workflowID, String
             algorithmName, String algorithmClass, String response, double trainDataFraction,
-            Map<String, String> hyperparameters)
+            List<HyperParameter> hyperparameters)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -150,7 +154,6 @@ public class DatabaseHandler {
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }
-
     /**
      * This method inserts model and model summary into the database
      *
@@ -159,11 +162,10 @@ public class DatabaseHandler {
      * @param modelSummary     Machine learning model summary
      * @param executionEndTime Model execution end time
      * @param <T>              Type of machine learning  model
-     * @param <S>              Type of machine learning model summary
      * @throws DatabaseHandlerException
      */
-    public <T, S> void updateModel(String modelID, T model,
-            S modelSummary, Time executionEndTime)
+    public <T> void updateModel(String modelID, T model,
+            ModelSummary modelSummary, Time executionEndTime)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement updateStatement = null;
@@ -200,11 +202,10 @@ public class DatabaseHandler {
      * This method returns machine learning model summary
      *
      * @param modelID Model ID
-     * @param <T>     Type of machine learning model summary
      * @return Model summary
      * @throws DatabaseHandlerException
      */
-    public <T> T getModelSummary(String modelID) throws DatabaseHandlerException {
+    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
@@ -215,7 +216,7 @@ public class DatabaseHandler {
             getStatement.setString(1, modelID);
             result = getStatement.executeQuery();
             if (result.first()) {
-                return (T) result.getObject(1);
+                return (ModelSummary) result.getObject(1);
             } else {
                 throw new DatabaseHandlerException("Invalid model ID: " + modelID);
             }
@@ -232,6 +233,12 @@ public class DatabaseHandler {
 
     }
 
+    /**
+     *
+     * @param workflowID Machine learning workflow ID
+     * @return Returns a machine learning workflow object
+     * @throws DatabaseHandlerException
+     */
     public MLWorkflow getWorkflow(String workflowID) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
@@ -282,7 +289,6 @@ public class DatabaseHandler {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
         }
-
     }
 
     /**
@@ -319,7 +325,7 @@ public class DatabaseHandler {
      * @return
      * @throws DatabaseHandlerException
      */
-    private long getModelExecutionTime(String modelId, String query)
+    public long getModelExecutionTime(String modelId, String query)
             throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;

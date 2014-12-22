@@ -20,26 +20,23 @@ package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
-import java.util.regex.Pattern;
+import java.util.Map;
 
-/**
- * This class transforms each line (line-by-line) into an array of String tokens
- */
-public class LineToTokens implements Function<String, String[]> {
-    private Pattern tokenSeparator;
-
-    public LineToTokens(Pattern pattern) {
-        this.tokenSeparator = pattern;
-    }
+public class StringArrayToDoubleArray implements Function<String[], double[]> {
 
     @Override
-    public String[] call(String line) throws Exception {
+    public double[] call(String[] tokens) throws ModelServiceException {
         try {
-            return tokenSeparator.split(line);
+            double[] features = new double[tokens.length];
+            for (int i = 0; i < tokens.length; ++i) {
+                features[i] = Double.parseDouble(tokens[i]);
+            }
+            return features;
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while tranforming lines to tokens: " + e.getMessage(), e);
+                    "An error occured while transforming tokens: " + e.getMessage(), e);
         }
     }
 }

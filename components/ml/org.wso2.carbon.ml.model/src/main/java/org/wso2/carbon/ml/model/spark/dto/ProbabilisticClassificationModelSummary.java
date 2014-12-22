@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,12 +11,14 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
 
 package org.wso2.carbon.ml.model.spark.dto;
+
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
 /**
  * A utility class to store probabilistic classification model summary
  */
-public class ProbabilisticClassificationModelSummary implements Serializable {
+public class ProbabilisticClassificationModelSummary implements ModelSummary,Serializable {
     private String roc;
     private double auc;
     private List<PredictedVsActual> predictedVsActuals;
@@ -69,5 +71,10 @@ public class ProbabilisticClassificationModelSummary implements Serializable {
      */
     public void setRoc(String roc) {
         this.roc = roc;
+    }
+
+    @Override
+    public String getModelSummaryType() {
+        return MLModelConstants.PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY;
     }
 }
