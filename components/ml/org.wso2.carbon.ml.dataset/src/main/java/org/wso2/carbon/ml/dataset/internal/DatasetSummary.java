@@ -17,20 +17,8 @@
  */
 package org.wso2.carbon.ml.dataset.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.io.*;       
+import java.util.*;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -80,9 +68,9 @@ public class DatasetSummary {
     /**
      * Constructor to create the parser for the data-set and initialize the lists.
      *
-     * @param csvDataFile File object of the data-set CSV file
-     * @param datasetID Unique Identifier of the data-set
-     * @throws DatasetSummaryException
+     * @param csvDataFile   File object of the data-set CSV file.
+     * @param datasetID     Unique Identifier of the data-set.
+     * @throws              DatasetSummaryException
      */
     protected DatasetSummary(File csvDataFile, String datasetID) throws DatasetSummaryException {
         this.datasetID = datasetID;
@@ -113,13 +101,14 @@ public class DatasetSummary {
      * get a summary of a sample from the given CSV file, including descriptive-statistics,
      * missing values, unique values and etc. to display in the data view.
      *
-     * @param sampleSize Size of the sample to use for summary statistic calculation
-     * @param noOfIntervals Number of intervals to be calculated for continuous data
-     * @param categoricalThreshold  Threshold for number of categories, to be considered as
-     *            discrete data
-     * @param include Default value to set for the flag indicating the feature is an input or not
-     * @return Number of features in the data-set
-     * @throws DatasetSummaryException
+     * @param sampleSize            Size of the sample to use for summary statistic calculation.
+     * @param noOfIntervals         Number of intervals to be calculated for continuous data.
+     * @param categoricalThreshold  Threshold for number of categories, to be considered as 
+     *                              discrete data.
+     * @param include               Default value to set for the flag indicating the feature is an
+     *                              input or not.
+     * @return                      Number of features in the data-set.
+     * @throws                      DatasetSummaryException
      */
     protected int generateSummary(int sampleSize, int noOfIntervals, int categoricalThreshold,
         boolean include, String mlDatabaseName) throws DatasetSummaryException {
@@ -133,9 +122,8 @@ public class DatasetSummary {
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies(categoricalThreshold, noOfIntervals);
             // Update the database with calculated summary statistics.
-            String[] header = this.headerMap.keySet().toArray(new String[0]);
             DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            dbHandler.updateSummaryStatistics(this.datasetID, header, this.type,
+            dbHandler.updateSummaryStatistics(this.datasetID, headerMap, this.type,
                 this.graphFrequencies, this.missing, this.unique, this.descriptiveStats, include);
             if(logger.isDebugEnabled()){
                 logger.info("Summary statistics successfully generated for dataset: " + datasetID);
@@ -150,20 +138,20 @@ public class DatasetSummary {
     /**
      * Finds the columns with Categorical data and Numerical data. Stores the raw-data in a list.
      *
-     * @param datasetIterator Iterator for the CSV parser
-     * @param sampleSize Size of the sample
-     * @throws DatasetSummaryException
+     * @param datasetIterator   Iterator for the CSV parser.
+     * @param sampleSize        Size of the sample.
+     * @throws                  DatasetSummaryException
      */
     private void identifyColumnDataType(Iterator<CSVRecord> datasetIterator, int sampleSize) {
         int recordsCount = 0;
         CSVRecord row;
         int[] stringCellCount = new int[this.headerMap.size()];
+        
+        // Count the number of cells contain strings in each column.
         while (datasetIterator.hasNext() && recordsCount != sampleSize) {
             row = datasetIterator.next();
-            // For each cell in the row.
             for (int currentCol = 0; currentCol < this.headerMap.size(); currentCol++) {
                 if (!row.get(currentCol).isEmpty()) {
-                    // Count the number of cell contain strings.
                     if (!NumberUtils.isNumber(row.get(currentCol))) {
                         stringCellCount[currentCol]++;
                     }
@@ -177,7 +165,7 @@ public class DatasetSummary {
             recordsCount++;
         }
 
-        // If atleast one cell contains strings, then the cell is considered to has string data.
+        // If atleast one cell contains strings, then the column is considered to has string data.
         for (int col = 0; col < headerMap.size(); col++) {
             if (stringCellCount[col] > 0) {
                 this.stringDataColumnPositions.add(col);
@@ -216,7 +204,7 @@ public class DatasetSummary {
      * plot bar graphs/histograms.
      * Calculate unique value counts.
      *
-     * @param noOfIntervals Number of intervals to be calculated
+     * @param noOfIntervals     Number of intervals to be calculated.
      */
     private void calculateStringColumnFrequencies(int noOfIntervals) {
 
@@ -241,9 +229,9 @@ public class DatasetSummary {
     /**
      * Calculate the frequencies of each category/interval of Numerical data columns.
      *
-     * @param categoricalThreshold Threshold for number of categories, to be considered as
-     *            discrete data
-     * @param noOfIntervals Number of intervals to be calculated for continuous data
+     * @param categoricalThreshold      Threshold for number of categories, to be considered as
+     *                                  discrete data.
+     * @param noOfIntervals             Number of intervals to be calculated for continuous data
      */
     private void calculateNumericColumnFrequencies(int categoricalThreshold, int noOfIntervals) {
         Iterator<Integer> numericColumns = this.numericDataColumnPositions.iterator();
@@ -277,8 +265,8 @@ public class DatasetSummary {
     /**
      * Calculate the frequencies of each interval of a column.
      *
-     * @param column Column of which the frequencies are to be calculated
-     * @param intervals Number of intervals to be split
+     * @param column        Column of which the frequencies are to be calculated.
+     * @param intervals     Number of intervals to be split.
      */
     private void claculateIntervalFreqs(int column, int intervals) {
         SortedMap<Integer, Integer> frequencies = new TreeMap<Integer, Integer>();
@@ -304,7 +292,7 @@ public class DatasetSummary {
     /**
      * Retrieve the sample.
      *
-     * @return SamplePoints object containing raw-data of the sample
+     * @return SamplePoints     object containing raw-data of the sample.
      */
     protected SamplePoints samplePoints() {
         SamplePoints samplPoints = new SamplePoints();

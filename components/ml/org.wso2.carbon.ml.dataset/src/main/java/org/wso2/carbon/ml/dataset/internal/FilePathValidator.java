@@ -36,8 +36,8 @@ public class FilePathValidator {
 	/**
 	 * Checks whether the given path has the valid pattern.
 	 *
-	 * @param filePath Path to be checked for correct pattern
-	 * @return boolean indicating whether the given path has valid pattern
+	 * @param filePath     Path to be checked for correct pattern
+	 * @return             Boolean indicating whether the given path has valid pattern
 	 */
 	protected static boolean isValid(String filePath) {
 		return filePathPattern.matcher(filePath).matches();

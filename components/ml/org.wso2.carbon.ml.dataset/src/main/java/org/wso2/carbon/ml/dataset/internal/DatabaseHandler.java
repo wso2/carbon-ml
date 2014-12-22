@@ -41,6 +41,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 
 /**
@@ -54,8 +55,8 @@ public class DatabaseHandler {
     /**
      * Creates a singleton DatabaseHandler instance.
      *
-     * @param mlDatabaseName JNDI lookup name of the ML Database
-     * @throws DatabaseHandlerException
+     * @param mlDatabaseName    JNDI lookup name of the ML Database
+     * @throws                  DatabaseHandlerException
      */
     protected DatabaseHandler(String mlDatabaseName) throws DatabaseHandlerException {
         try {
@@ -71,10 +72,9 @@ public class DatabaseHandler {
      * Retrieves the path of the data-set having the given ID, from the
      * database.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @return Absolute path of a given data-set
-     * @throws DatabaseHandlerException
-     * @throws DatabaseHandlerException
+     * @param datasetID     Unique Identifier of the data-set
+     * @return              Absolute path of a given data-set
+     * @throws              DatabaseHandlerException
      */
     protected String getDatasetUrl(String datasetID) throws DatabaseHandlerException {
         Connection connection = null;
@@ -104,10 +104,10 @@ public class DatabaseHandler {
     /**
      * Insert the new data-set details to the the database.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param filePath Absolute path of the data-set
-     * @param projectID Unique Identifier of the project
-     * @throws DatabaseHandlerException
+     * @param datasetID     Unique Identifier of the data-set
+     * @param filePath      Absolute path of the data-set
+     * @param projectID     Unique Identifier of the project
+     * @throws              DatabaseHandlerException
      */
     protected void insertDatasetDetails(String datasetID, String filePath, String projectID)
             throws DatabaseHandlerException {
@@ -144,10 +144,10 @@ public class DatabaseHandler {
     /**
      * Update the data type of a given feature.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param featureType Updated type of the feature
-     * @throws DatabaseHandlerException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param featureType   Updated type of the feature
+     * @throws              DatabaseHandlerException
      */
     protected void updateDataType(String featureName, String workflowID, String featureType)
             throws DatabaseHandlerException {
@@ -184,10 +184,10 @@ public class DatabaseHandler {
     /**
      * Update the impute method option of a given feature.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param imputeOption Updated impute option of the feature
-     * @throws DatabaseHandlerException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param imputeOption  Updated impute option of the feature
+     * @throws              DatabaseHandlerException
      */
     protected void updateImputeOption(String featureName, String workflowID, String imputeOption)
             throws DatabaseHandlerException {
@@ -223,10 +223,10 @@ public class DatabaseHandler {
     /**
      * Change whether a feature should be included as an input or not.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param isInput Boolean value indicating whether the feature is an input or not
-     * @throws DatabaseHandlerException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param isInput       Boolean value indicating whether the feature is an input or not
+     * @throws              DatabaseHandlerException
      */
     protected void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
             throws DatabaseHandlerException {
@@ -262,17 +262,17 @@ public class DatabaseHandler {
     /**
      * Update the database with all the summary statistics of the sample.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param header Array of names of features
-     * @param type Array of data-types of each feature
-     * @param graphFrequencies List of Maps containing frequencies for graphs, of each feature
-     * @param missing Array of Number of missing values in each feature
-     * @param unique Array of Number of unique values in each feature
-     * @param descriptiveStats Array of descriptiveStats object of each feature
-     * @param include Default value to set for the flag indicating the feature is an input or not
-     * @throws DatabaseHandlerException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param headerMap         Array of names of features
+     * @param type              Array of data-types of each feature
+     * @param graphFrequencies  List of Maps containing frequencies for graphs, of each feature
+     * @param missing           Array of Number of missing values in each feature
+     * @param unique            Array of Number of unique values in each feature
+     * @param descriptiveStats  Array of descriptiveStats object of each feature
+     * @param                   include Default value to set for the flag indicating the feature is an input or not
+     * @throws                  DatabaseHandlerException
      */
-    protected void updateSummaryStatistics(String datasetID, String[] header, String[] type,
+    protected void updateSummaryStatistics(String datasetID,  Map<String, Integer> headerMap, String[] type,
         List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
         List<DescriptiveStatistics> descriptiveStats, Boolean include)
                 throws DatabaseHandlerException {
@@ -282,20 +282,22 @@ public class DatabaseHandler {
             JSONArray summaryStat;
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
-            for (int column = 0; column < header.length; column++) {
+            int columnIndex;
+            for (Entry<String, Integer> columnNameMapping : headerMap.entrySet()) {
+                columnIndex = columnNameMapping.getValue();
                 // Get the JSON representation of the column summary.
-                summaryStat = createJson(type[column], graphFrequencies.get(column), missing[column],
-                    unique[column], descriptiveStats.get(column));
-
+                summaryStat = createJson(type[columnIndex], graphFrequencies.get(columnIndex), missing[columnIndex],
+                    unique[columnIndex], descriptiveStats.get(columnIndex));
                 // Put the values to the database table. If the feature already exists, updates
                 // the row. If not, inserts as a new row.
                 updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
-                updateStatement.setString(1, header[column]);
-                updateStatement.setString(2, datasetID);
-                updateStatement.setString(3, summaryStat.toString());
-                updateStatement.setString(4, type[column].toString());
-                updateStatement.setString(5, ImputeOption.DISCARD.toString());
-                updateStatement.setBoolean(6, include);
+                updateStatement.setString(1, columnNameMapping.getKey());
+                updateStatement.setInt(2, columnIndex);
+                updateStatement.setString(3, datasetID);
+                updateStatement.setString(4, summaryStat.toString());
+                updateStatement.setString(5, type[columnIndex].toString());
+                updateStatement.setString(6, ImputeOption.DISCARD.toString());
+                updateStatement.setBoolean(7, include);
                 updateStatement.execute();
             }
             connection.commit();
@@ -318,12 +320,12 @@ public class DatabaseHandler {
     /**
      * Create the JSON string with summary statistics for a column.
      *
-     * @param type Data-type of the column
-     * @param graphFrequencies Bin frequencies of the column
-     * @param missing Number of missing values in the column
-     * @param unique Number of unique values in the column
-     * @param descriptiveStats DescriptiveStats object of the column
-     * @return JSON representation of the summary statistics of the column
+     * @param type              Data-type of the column
+     * @param graphFrequencies  Bin frequencies of the column
+     * @param missing           Number of missing values in the column
+     * @param unique            Number of unique values in the column
+     * @param descriptiveStats  DescriptiveStats object of the column
+     * @return                  JSON representation of the summary statistics of the column
      */
     private JSONArray createJson(String type, SortedMap<?, Integer> graphFrequencies,
         int missing, int unique, DescriptiveStatistics descriptiveStats) {
@@ -346,7 +348,7 @@ public class DatabaseHandler {
             json.put("mean", decimalFormat.format(descriptiveStats.getMean()));
             json.put("median", decimalFormat.format(descriptiveStats.getPercentile(50)));
             json.put("std", decimalFormat.format(descriptiveStats.getStandardDeviation()));
-            if (type.equals(FeatureType.NUMERICAL)) {
+            if (type.equalsIgnoreCase(FeatureType.NUMERICAL)) {
                 json.put("skewness", decimalFormat.format(descriptiveStats.getSkewness()));
             }
         }
@@ -361,9 +363,9 @@ public class DatabaseHandler {
     /**
      * Update the data-set table with a data-set sample.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param datasetSample SamplePoints object of the data-set
-     * @throws DatabaseHandlerException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param datasetSample     SamplePoints object of the data-set
+     * @throws                  DatabaseHandlerException
      */
     protected void updateDatasetSample(String datasetID, SamplePoints datasetSample)
             throws DatabaseHandlerException {
@@ -397,12 +399,12 @@ public class DatabaseHandler {
      * Returns data points of the selected sample as coordinates of three
      * features, needed for the scatter plot.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param xAxisFeature Name of the feature to use as the x-axis
-     * @param yAxisFeature Name of the feature to use as the y-axis
-     * @param groupByFeature Name of the feature to be grouped by (color code)
-     * @return A JSON array of data points
-     * @throws DatabaseHandlerException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param xAxisFeature      Name of the feature to use as the x-axis
+     * @param yAxisFeature      Name of the feature to use as the y-axis
+     * @param groupByFeature    Name of the feature to be grouped by (color code)
+     * @return                  A JSON array of data points
+     * @throws                  DatabaseHandlerException
      */
     protected JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
         String groupByFeature) throws DatabaseHandlerException {
@@ -435,9 +437,9 @@ public class DatabaseHandler {
     /**
      * Retrieve the SamplePoints object for a given data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @return SamplePoints object of the data-set
-     * @throws DatabaseHandlerException
+     * @param datasetID     Unique Identifier of the data-set
+     * @return              SamplePoints object of the data-set
+     * @throws              DatabaseHandlerException
      */
     private SamplePoints getDatasetSample(String datasetID) throws DatabaseHandlerException {
         Connection connection = null;
@@ -469,11 +471,11 @@ public class DatabaseHandler {
      * Returns a set of features in a given range, from the alphabetically ordered set
      * of features, of a data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param startIndex Starting index of the set of features needed
-     * @param numberOfFeatures Number of features needed, from the starting index
-     * @return A list of Feature objects
-     * @throws DatabaseHandlerException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatabaseHandlerException
      */
     protected List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
         int numberOfFeatures) throws DatabaseHandlerException {
@@ -526,10 +528,10 @@ public class DatabaseHandler {
      * Returns the names of the features, belongs to a particular data-type
      * (Categorical/Numerical), of the work-flow.
      *
-     * @param workflowID Unique identifier of the current work-flow
-     * @param featureType Data-type of the feature
-     * @return A list of feature names
-     * @throws DatabaseHandlerException
+     * @param workflowID    Unique identifier of the current work-flow
+     * @param featureType   Data-type of the feature
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
      */
     protected List<String> getFeatureNames(String workflowID, String featureType)
             throws DatabaseHandlerException {
@@ -568,10 +570,10 @@ public class DatabaseHandler {
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set, from the database.
      *
-     * @param datasetID Unique identifier of the data-set
-     * @param featureName Name of the feature of which summary statistics are needed
-     * @return JSON string containing the summary statistics
-     * @throws DatabaseHandlerException
+     * @param datasetID     Unique identifier of the data-set
+     * @param featureName   Name of the feature of which summary statistics are needed
+     * @return              JSON string containing the summary statistics
+     * @throws              DatabaseHandlerException
      */
     protected String getSummaryStats(String datasetID, String featureName)
             throws DatabaseHandlerException {
@@ -600,9 +602,9 @@ public class DatabaseHandler {
     /**
      * Returns the number of features of a given data-set.
      *
-     * @param datasetID Unique identifier of the data-set
-     * @return Number of features in the data-set
-     * @throws DatabaseHandlerException
+     * @param datasetID     Unique identifier of the data-set
+     * @return              Number of features in the data-set
+     * @throws              DatabaseHandlerException
      */
     protected int getFeatureCount(String datasetID) throws DatabaseHandlerException {
         Connection connection = null;
@@ -632,9 +634,10 @@ public class DatabaseHandler {
 
     /**
      * Returns model id associated with given workflow id
-     * @param workflowId
-     * @return model id
-     * @throws DatabaseHandlerException
+     * 
+     * @param workflowId    Unique identifier of the work-flow
+     * @return model id     Unique identifier of the model associated with the work-flow
+     * @throws              DatabaseHandlerException
      */
     protected String getModelId(String workflowId) throws DatabaseHandlerException {
         Connection connection = null;
