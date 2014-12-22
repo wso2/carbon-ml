@@ -59,7 +59,7 @@ Installation & Running
 
 4. Use the following username and password to login
 
-    username : admin
+    username : admin  
     password : admin
 
 
@@ -147,7 +147,7 @@ For more information on WSO2 Machine Learner, visit the WSO2 Oxygen Tank (http:/
 Issue Tracker
 =============
 
-  https://wso2.org/jira/browse/CARBON
+  https://wso2.org/jira/browse/CARBON  
   https://wso2.org/jira/browse/ML
 
 Crypto Notice
@@ -175,10 +175,10 @@ Crypto Notice
    The following provides more details on the included cryptographic
    software:
 
-   Apache Rampart   : http://ws.apache.org/rampart/
-   Apache WSS4J     : http://ws.apache.org/wss4j/
-   Apache Santuario : http://santuario.apache.org/
-   Bouncycastle     : http://www.bouncycastle.org/
-
+   Apache Rampart   : http://ws.apache.org/rampart/  
+   Apache WSS4J     : http://ws.apache.org/wss4j/  
+   Apache Santuario : http://santuario.apache.org/  
+   Bouncycastle     : http://www.bouncycastle.org/  
+   
 (c) Copyright 2014 WSO2 Inc.
 
