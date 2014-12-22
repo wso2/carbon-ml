@@ -28,14 +28,13 @@ try {
     // Display the Hyper-Parameters
     if (hyperParameters != null){
         print('<div id="parameters"><p> Hyper-Parameters for ' +  algoName + '</p><div id="namesBlock">');
-        for (var i=0; i<hyperParameters.length(); i++){
-            var parameter=hyperParameters.getJSONObject(i).get('parameter');
-            print('<div class="parameterName" id="'+parameter+'">'+parameter+': </div>');
+        for (var i=0; i<hyperParameters.size(); i++){
+            var parameter=hyperParameters.get(i).getParameter();
+            print("<div class=\"parameter_name\" id=\""+parameter+"\">"+parameter+": </div>");
         }
-        print("</div><div id=\"valuesBlock\">");
-        for (var i=0; i<hyperParameters.length(); i++){
-            print('<div class="parameterValue"><input type="text" maxlength="10" size="10" name="' + hyperParameters.getJSONObject(i).get('parameter') + '" value="' + hyperParameters.getJSONObject(i).get('value') + '">');
-            print('<div class="hyperParameterError"> *Invalid value</div></div>');              
+        print("</div><div id=\"values_block\">");
+        for (var i=0; i<hyperParameters.size(); i++){
+            print("<div class=\"parameter_value\"><input type=\"text\" maxlength=\"10\" size=\"10\" name=\"" + hyperParameters.get(i).getParameter() + "\" value=\"" + hyperParameters.get(i).getValue() + "\"></div>");
         }
     } else {
         throw new Error("Hyperparameters are not available for algorithm: " + algoName);

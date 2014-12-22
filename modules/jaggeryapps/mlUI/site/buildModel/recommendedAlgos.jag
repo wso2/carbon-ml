@@ -17,46 +17,50 @@
 -->
 
 <%
-    var log=new Log();
-    if(request.getParameter("interpretability")!=undefined && request.getParameter('datasetSize')!=undefined && request.getParameter('textual')!=undefined){
-        session.put('interpretability',request.getParameter('interpretability'));
-        session.put('datasetSize',request.getParameter('datasetSize'));
-        session.put('textual',request.getParameter('textual'));
-        session.put('binary',request.getParameter('binary'));
-    }
+var log = new Log();
+if (request.getParameter("interpretability") != undefined && request.getParameter('datasetSize') != undefined && request.getParameter('textual') != undefined) {
+    session.put('interpretability', request.getParameter('interpretability'));
+    session.put('datasetSize', request.getParameter('datasetSize'));
+    session.put('textual', request.getParameter('textual'));
+    session.put('binary', request.getParameter('binary'));
+}
 %>
 
 <div class='algorithms'>
     <h3>Recommended Algorithms</h3>
     <form id='recomendedAlgoForm' action='#' method='post' enctype='multipart/form-data'>
-        <%  
-            try {
-                var carbon = require('carbon');
-                var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
-                algorithmType = session.get("algoType");
-                userResponseJson = '{"interpretability":"' + session.get("interpretability") + '","datasetSize":"' + session.get("datasetSize") +'","binary":"' + session.get("binary") + '","textual":"' + session.get("textual") + '"}';
-                var recommendedAlgorithms = modelService.getRecommendedAlgorithms(algorithmType,userResponseJson);
-                var iterator = recommendedAlgorithms.entrySet().iterator();
-                while (iterator.hasNext())
-                {
-                    var pair = iterator.next();
-                    print('<input type="radio" class="algoName" name="algorithm" value="' + pair.getKey() + '">' + pair.getKey() + ' (' + pair.getValue() + ')<br>');
-                }
-            } catch(e) {
-                log.error('An error occured while retrieving recommended algorithms of type: ' + algoType, e);
-                throw new Error('An error occured while retrieving recommended algorithms of type: ' + algoType);
-            }
-        %>
-    </form>
-    <br>
-    <div class='algoSelectionErrorMessage'>*Please select an algorithm before continue.</div>
+<%
+try {
+    var carbon = require('carbon');
+    var modelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+    var algorithmType = session.get("algoType");
+    var HashMap = java.util.HashMap;
+    var userResponse = new HashMap();
+    userResponse.put("interpretability", session.get("interpretability"));
+    userResponse.put("datasetSize", session.get("datasetSize"));
+    userResponse.put("binary", session.get("binary"));
+    userResponse.put("textual", session.get("textual"));
+    var recommendedAlgorithms = modelService.getRecommendedAlgorithms(algorithmType, userResponse);
+    var iterator = recommendedAlgorithms.entrySet().iterator();
+    while (iterator.hasNext()) {
+        var pair = iterator.next();
+        print('<input type="radio" class="algoName" name="algorithm" value="' + pair.getKey() + '">' + pair.getKey() + ' (' + pair.getValue() + ')<br>');
+    }
+} catch (e) {
+    log.error('An error occured while retrieving recommended algorithms of type: ' + algoType, e);
+    throw new Error('An error occured while retrieving recommended algorithms of type: ' + algoType);
+}
+%>
+</form>
+<br>
+<div class='algoSelectionErrorMessage'>*Please select an algorithm before continue.</div>
 </div>
 
 <div id='hyperParameters'> </div>
 
 <div style="clear:both"></div>
 <div class="bottomNavigationButtons">
-    <button id='recommendedAlgosBackButton' class='blueButton'>Go Back</button>
-    <button id='algorithmsContinueButton' class='blueButton'>Continue</button>
+<button id='recommendedAlgosBackButton' class='blueButton'>Go Back</button>
+<button id='algorithmsContinueButton' class='blueButton'>Continue</button>
 <div>
 <script src='./js/buildModel.js'></script> 
