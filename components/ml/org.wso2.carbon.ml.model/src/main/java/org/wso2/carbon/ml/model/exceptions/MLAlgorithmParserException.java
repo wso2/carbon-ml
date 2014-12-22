@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.ml.model.exceptions;
 
-public class ModelServiceException extends Exception {
-    public ModelServiceException(String message, Throwable cause) {
+public class MLAlgorithmParserException extends Exception {
+    public MLAlgorithmParserException(String message, Throwable cause) {
         super(message, cause);
     }
 }

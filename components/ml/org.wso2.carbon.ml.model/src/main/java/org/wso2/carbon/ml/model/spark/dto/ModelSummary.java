@@ -16,10 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.exceptions;
+package org.wso2.carbon.ml.model.spark.dto;
 
-public class ModelServiceException extends Exception {
-    public ModelServiceException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public interface ModelSummary {
+    /**
+     *
+     * @return Model summary type
+     */
+    String getModelSummaryType();
 }

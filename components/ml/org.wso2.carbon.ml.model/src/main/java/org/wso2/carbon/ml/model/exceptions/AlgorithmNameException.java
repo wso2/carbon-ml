@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.ml.model.exceptions;
 
-public class ModelServiceException extends Exception {
-    public ModelServiceException(String message, Throwable cause) {
-        super(message, cause);
+public class AlgorithmNameException extends IllegalStateException {
+    public AlgorithmNameException(String message) {
+        super(message);
     }
 }
