@@ -18,6 +18,10 @@
 
 /*******************************************************/
 /*************** BasePlot class starts******************/
+
+/**BasePlot the parent class of all graph classes.
+   It contains a set of properties and methods which 
+   are common to all graph classes*/
 var BasePlot = function(data) {
 
     if(!data){
@@ -62,8 +66,8 @@ BasePlot.prototype.setPlotingAreaHeight = function(height){
     this.height = height;
 };
 
-//setting the SVG container inside the 'selection' DOM
-//internal method should not call from outside Plot class hierarchy
+/*setting the SVG container inside the 'selection' DOM
+  internal method should not call from outside Plot class hierarchy*/
 BasePlot.prototype.initializeSVGContainer = function(selection){
     if(selection){
         this.svg = selection.append("svg")
@@ -76,7 +80,8 @@ BasePlot.prototype.initializeSVGContainer = function(selection){
     }
 };
 
-//internal method should not be called from outside Plot class hierarchy
+/** internal method should not be called from 
+    outside Plot class hierarchy*/
 BasePlot.prototype.attachXAxis = function(xAxis){
     if(xAxis){ //
         this.svg.append("g")
@@ -94,7 +99,8 @@ BasePlot.prototype.attachXAxis = function(xAxis){
     }
 };
 
-//internal method should not called from outside Plot class hierarchy
+/** internal method should not called from 
+    outside Plot class hierarchy*/
 BasePlot.prototype.attachYAxis = function(yAxis){
     if(yAxis){
         this.svg.append("g")
@@ -133,6 +139,9 @@ BasePlot.prototype.setYAxisText = function(text){
 
 /*****************************************************/
 /********* ScatterPlot class starts*******************/
+
+/** This class is used to generate a scatter plot 
+    using a set of data points*/
 var ScatterPlot = function(data) {
     // calling the base class 
     BasePlot.call(this, data);
@@ -149,7 +158,8 @@ var ScatterPlot = function(data) {
 ScatterPlot.prototype = Object.create(BasePlot.prototype);
 ScatterPlot.prototype.constructor = ScatterPlot;
 
-// methods related to ScatterPlot
+/** Following method is used to set the size of each 
+    point in the scatter plot*/
 ScatterPlot.prototype.setMarkerSize = function(markerSize){
 
     if( markerSize <= 0){
@@ -158,8 +168,8 @@ ScatterPlot.prototype.setMarkerSize = function(markerSize){
     this.markerSize = markerSize;    
 };
 
-//Main function of the ScatterPlot class.
-//Once called graph will be drawn inside the SVG container
+/**Main function of the ScatterPlot class.
+   Once called graph will be drawn inside the SVG container*/
 ScatterPlot.prototype.plot = function(selection) {
     if(!selection){
        throw new PlottingError("DOM element can't be null or empty"); 
@@ -251,7 +261,11 @@ ScatterPlot.prototype.plot = function(selection) {
 /********************************************************/
 
 /********************************************************/
-/*********** BasicLineGraph starts *********************/ 
+/*********** BasicLineGraph starts *********************/
+
+/** This is the abstract class of all line graphs.
+    It contains a set of methods which are common to all
+    specialized line graphs such as ROC curve*/ 
 var BasicLineGraph = function(data){
     // calling the base class 
     BasePlot.call(this, data);
@@ -289,6 +303,9 @@ BasicLineGraph.prototype.setLineWidth = function(lineWidth){
 
 /*********** ROC graph starts **************************/
 /*******************************************************/
+/** This is a concrete class of BasicLineGraph and it is 
+    used to generate ROC curve using an array of array of points
+    such as [[0.0, 0.0], ..., [1.0, 1.0]]*/
 var ROCGraph = function(data){
     // calling the base class 
     BasePlot.call(this, data);
@@ -432,8 +449,10 @@ ROCGraph.prototype.plot = function(selection){
 /*******************************************************/
 
 
-/********************************************************/
-/******************** BaseHistogram starts **************/
+/*******************************************************/
+/******************** BaseHistogram starts *************/
+/** This class represents properties common to 
+    all histogram classes*/
 var BaseHistogram = function(data){
     //calling the base class constructor
     BasePlot.call(this,data);
@@ -459,6 +478,8 @@ BaseHistogram.prototype.setBarColor = function(color){
 
 /********************************************************/
 /*****************Histogram class starts*****************/
+/**This class generates a histogram using an array of numbers
+   such as [1.0, 10.3, 100.2, ....] with a given number of buckets*/
 var Histogram = function(data){
     //calling the base class constructor
     BaseHistogram.call(this,data);
@@ -543,9 +564,8 @@ Histogram.prototype.plot = function(selection) {
 
 /******************************************************************/
 /************HistogramUsingCalculatedFrequencies class starts******/
-
-//This class generates a histogram using calculated frequencies
-//Data format should be [[10,'Sun'],[20, 'Mon'],[30, 'Tue']]
+/**This class generates a histogram using calculated frequencies
+   Data format should be [[10,'Sun'],[20, 'Mon'],[30, 'Tue']]*/
 var HistogramUsingCalculatedFrequencies = function(data){
     //calling the base class constructor
     BaseHistogram.call(this, data);    
@@ -597,8 +617,7 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
         .scale(scalingYAxisForDisplaying)
         .orient("left")
         .tickFormat(function(d) { return (d3.format(".2s"))(d);});       
-
-    //TODO: bit ugly, find a better technique
+        
     var labels = [];
     for(var i=0; i<this.data.length;i++){
         labels.push(this.data[i][1]);
@@ -624,11 +643,10 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
 
 /************************************************************/
 /*********** PlottingError**********************************/
-//This is a custom error class extends from Error
+/**custom error class extends from Error*/
 var PlottingError = function (message) {
     this.name = 'PlottingError';
     this.message = message;
     this.stack = (new Error()).stack;
 };
-
 PlottingError.prototype = Object.create(Error.prototype);
