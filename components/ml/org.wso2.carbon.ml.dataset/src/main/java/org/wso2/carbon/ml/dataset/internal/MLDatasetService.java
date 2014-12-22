@@ -81,9 +81,9 @@ public class MLDatasetService implements DatasetService {
     /**
      * Returns a absolute path of a given data source.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @return Absolute path of a given data-set
-     * @throws DatasetServiceException
+     * @param datasetID     Unique Identifier of the data-set
+     * @return              Absolute path of a given data-set
+     * @throws              DatasetServiceException
      */
     @Override
     public String getDatasetUrl(String datasetID) throws DatasetServiceException {
@@ -99,13 +99,13 @@ public class MLDatasetService implements DatasetService {
     /**
      * Upload the data file and calculate summary statistics.
      *
-     * @param sourceInputStream Input Stream of the source data file
-     * @param datasetID Unique Identifier of the data-set
-     * @param fileName Name of the uploading file
-     * @param projectID Unique Identifier of the project
-     * @return Number of features in the data-set
-     * @throws DatasetServiceException
-     * @throws IOException
+     * @param sourceInputStream     Input Stream of the source data file
+     * @param datasetID             Unique Identifier of the data-set
+     * @param fileName              Name of the uploading file
+     * @param projectID             Unique Identifier of the project
+     * @return                      Number of features in the data-set
+     * @throws                      DatasetServiceException
+     * @throws                      IOException
      */
     @Override
     public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
@@ -162,10 +162,10 @@ public class MLDatasetService implements DatasetService {
     /**
      * Update the data type of a given feature.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param featureType Updated type of the feature
-     * @throws DatasetServiceException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param featureType   Updated type of the feature
+     * @throws              DatasetServiceException
      */
     @Override
     public void updateDataType(String featureName, String workflowID, String featureType)
@@ -181,10 +181,10 @@ public class MLDatasetService implements DatasetService {
     /**
      * Update the impute option of a given feature.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param imputeOption Updated impute option of the feature
-     * @throws DatasetServiceException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param imputeOption  Updated impute option of the feature
+     * @throws              DatasetServiceException
      */
     @Override
     public void updateImputeOption(String featureName, String workflowID, String imputeOption)
@@ -201,10 +201,10 @@ public class MLDatasetService implements DatasetService {
     /**
      * change whether a feature should be included as an input or not.
      *
-     * @param featureName Name of the feature to be updated
-     * @param workflowID Unique identifier of the current workflow
-     * @param isInput Boolean value indicating whether the feature is an input or not
-     * @throws DatasetServiceException
+     * @param featureName   Name of the feature to be updated
+     * @param workflowID    Unique identifier of the current workflow
+     * @param isInput       Boolean value indicating whether the feature is an input or not
+     * @throws              DatasetServiceException
      */
     @Override
     public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
@@ -222,11 +222,11 @@ public class MLDatasetService implements DatasetService {
      * Returns a set of features in a given range, from the alphabetically
      * ordered set of features, of a data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param startIndex Starting index of the set of features needed
-     * @param numberOfFeatures Number of features needed, from the starting index
-     * @return A list of Feature objects
-     * @throws DatasetServiceException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatasetServiceException
      */
     @Override
     public List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
@@ -243,10 +243,10 @@ public class MLDatasetService implements DatasetService {
      * Returns the names of the features, belongs to a particular data-type
      * (Categorical/Numerical), of the work-flow.
      *
-     * @param workflowID Unique identifier of the current work-flow
-     * @param featureType Data-type of the feature
-     * @return A list of feature names
-     * @throws DatasetServiceException
+     * @param workflowID    Unique identifier of the current work-flow
+     * @param featureType   Data-type of the feature
+     * @return              A list of feature names
+     * @throws              DatasetServiceException
      */
     @Override
     public List<String> getFeatureNames(String workflowID, String featureType)
@@ -264,12 +264,12 @@ public class MLDatasetService implements DatasetService {
      * Returns data points of the selected sample as coordinates of three
      * features, needed for the scatter plot.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param xAxisFeature Name of the feature to use as the x-axis
-     * @param yAxisFeature Name of the feature to use as the y-axis
-     * @param groupByFeature Name of the feature to be grouped by (color code)
-     * @return A JSON array of data points
-     * @throws DatasetServiceException
+     * @param datasetID         Unique Identifier of the data-set
+     * @param xAxisFeature      Name of the feature to use as the x-axis
+     * @param yAxisFeature      Name of the feature to use as the y-axis
+     * @param groupByFeature    Name of the feature to be grouped by (color code)
+     * @return                  A JSON array of data points
+     * @throws                  DatasetServiceException
      */
     @Override
     public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
@@ -286,10 +286,10 @@ public class MLDatasetService implements DatasetService {
     /**
      * Returns the summary statistics for a given feature of a given data-set
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @param feature Name of the feature of which summary statistics are needed
-     * @return JSON string containing the summary statistics
-     * @throws DatasetServiceException
+     * @param datasetID     Unique Identifier of the data-set
+     * @param feature       Name of the feature of which summary statistics are needed
+     * @return              JSON string containing the summary statistics
+     * @throws              DatasetServiceException
      */
     @Override
     public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException {
@@ -305,9 +305,9 @@ public class MLDatasetService implements DatasetService {
     /**
      * Returns the number of features of a given data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
-     * @return Number of features in the data-set
-     * @throws DatasetServiceException
+     * @param datasetID     Unique Identifier of the data-set
+     * @return              Number of features in the data-set
+     * @throws              DatasetServiceException
      */
     @Override
     public int getFeatureCount(String datasetID) throws DatasetServiceException {
@@ -322,9 +322,10 @@ public class MLDatasetService implements DatasetService {
 
     /**
      * Returns the model id associated with given workflow id
-     * @param workflowId unique identifier of the workflow
-     * @return
-     * @throws DatasetServiceException
+     * 
+     * @param workflowId    Unique identifier of the workflow
+     * @return              Unique identifier of the model associated with workflow
+     * @throws              DatasetServiceException
      */
     @Override
     public String getModelId(String workflowId) throws DatasetServiceException {
