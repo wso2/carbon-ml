@@ -142,10 +142,10 @@ public class SparkModelService implements ModelService {
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
             Map<String, String> userResponse) {
         Map<String, Double> recommendations = new HashMap<String, Double>();
-        List<MLAlgorithm> algorithms = mlAlgorithms.getAlgorithms();
-        for (MLAlgorithm mlAlgorithm : algorithms) {
-            if (!algorithmType.equals(mlAlgorithm.getType())) {
-                algorithms.remove(mlAlgorithm);
+        List<MLAlgorithm> algorithms = new ArrayList();
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()){
+           if (algorithmType.equals(mlAlgorithm.getType())){
+                algorithms.add(mlAlgorithm);
             }
         }
         for (MLAlgorithm mlAlgorithm : algorithms) {
