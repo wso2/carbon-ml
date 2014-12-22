@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -23,11 +23,14 @@ import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 
+import java.util.Map;
+
 /**
- * This class transforms string arrays of tokens to labeled points
+ * This class transforms double array of tokens to labeled point
  */
-public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
+public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
     private final int responseIndex;
+    private Map<Integer, Double> meanImputation;
 
     /**
      * @param index Index of the response variable
@@ -37,27 +40,28 @@ public class TokensToLabeledPoints implements Function<String[], LabeledPoint> {
     }
 
     /**
-     * Function to transform token arrays into labeled points
+     * Function to transform double array into labeled point
      *
-     * @param tokens String array of tokens
+     * @param tokens double array of tokens
      * @return Labeled point
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     @Override
-    public LabeledPoint call(String[] tokens) throws ModelServiceException {
+    public LabeledPoint call(double[] tokens) throws ModelServiceException {
         try {
-            double response = Double.parseDouble(tokens[responseIndex]);
+            double response = tokens[responseIndex];
             double[] features = new double[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
+                // if not response
                 if (responseIndex != i) {
-                    features[i] = Double.parseDouble(tokens[i]);
+                    features[i] = tokens[i];
                 }
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
             throw new ModelServiceException(
-                    "An error occured while transforming tokens to labeled points: "
-                    + e.getMessage(), e);
+                    "An error occured while transforming tokens to labeled points: " + e
+                            .getMessage(), e);
         }
     }
 }

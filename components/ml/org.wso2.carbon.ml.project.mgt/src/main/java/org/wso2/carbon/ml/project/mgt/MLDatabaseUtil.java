@@ -40,12 +40,9 @@ public class MLDatabaseUtil {
 	/**
 	 * Close a given set of database resources.
 	 *
-	 * @param connection
-	 *            Connection to be closed
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
-	 * @param resultSet
-	 *            ResultSet to be closed
+	 * @param connection           Connection to be closed.
+	 * @param preparedStatement    PeparedStatement to be closed.
+	 * @param resultSet            ResultSet to be closed.
 	 */
 	protected static void closeDatabaseResources(Connection connection,
 	                                             PreparedStatement preparedStatement,
@@ -79,10 +76,8 @@ public class MLDatabaseUtil {
 	/**
 	 * Close a given set of database resources.
 	 *
-	 * @param connection
-	 *            Connection to be closed
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
+	 * @param connection           Connection to be closed.
+	 * @param preparedStatement    PeparedStatement to be closed.
 	 */
 	protected static void closeDatabaseResources(Connection connection,
 	                                             PreparedStatement preparedStatement) {
@@ -92,8 +87,7 @@ public class MLDatabaseUtil {
 	/**
 	 * Close a given set of database resources.
 	 *
-	 * @param connection
-	 *            Connection to be closed
+	 * @param connection   Connection to be closed.
 	 */
 	protected static void closeDatabaseResources(Connection connection) {
 		closeDatabaseResources(connection, null, null);
@@ -102,8 +96,7 @@ public class MLDatabaseUtil {
 	/**
 	 * Close a given set of database resources.
 	 *
-	 * @param preparedStatement
-	 *            PeparedStatement to be closed
+	 * @param preparedStatement    PeparedStatement to be closed.
 	 */
 	protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
 		closeDatabaseResources(null, preparedStatement, null);
@@ -112,8 +105,7 @@ public class MLDatabaseUtil {
 	/**
 	 * Roll-backs a connection.
 	 *
-	 * @param dbConnection
-	 *            Connection to be rolled-back
+	 * @param dbConnection     Connection to be rolled-back.
 	 */
 	protected static void rollBack(Connection dbConnection) {
 		try {
@@ -128,8 +120,7 @@ public class MLDatabaseUtil {
 	/**
 	 * Enables the auto-commit of a connection.
 	 *
-	 * @param dbConnection
-	 *            Connection of which the auto-commit should be enabled
+	 * @param dbConnection     Connection of which the auto-commit should be enabled.
 	 */
 	protected static void enableAutoCommit(Connection dbConnection) {
 		try {

@@ -5,7 +5,7 @@
     var projectId = request.getParameter('projectId');
     var action = request.getParameter('action');
     try {
-        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.MLDatasetService');
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
         var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
         var datasetId = projectManagementService.getdatasetID(projectId);
 
