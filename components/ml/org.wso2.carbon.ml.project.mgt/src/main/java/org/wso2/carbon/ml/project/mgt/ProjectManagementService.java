@@ -52,13 +52,10 @@ public class ProjectManagementService {
 	/**
 	 * Creates a new project.
 	 *
-	 * @param projectID
-	 *            Unique identifier of the project
-	 * @param projectName
-	 *            Name of the project
-	 * @param description
-	 *            Description of the project
-	 * @throws ProjectManagementServiceException
+	 * @param projectID        Unique identifier of the project.
+	 * @param projectName      Name of the project.
+	 * @param description      Description of the project.
+	 * @throws                 ProjectManagementServiceException
 	 */
 	public void createProject(String projectID, String projectName, String description)
 			throws
@@ -76,9 +73,8 @@ public class ProjectManagementService {
 	/**
 	 * Delete details of a given project.
 	 *
-	 * @param projectId
-	 *            Unique identifier of the project
-	 * @throws ProjectManagementServiceException
+	 * @param projectId    Unique identifier of the project
+	 * @throws             ProjectManagementServiceException
 	 */
 	public void deleteProject(String projectId) throws ProjectManagementServiceException {
 		try {

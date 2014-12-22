@@ -40,9 +40,9 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      *
-     * @param connection Connection to be closed
-     * @param preparedStatement PeparedStatement to be closed
-     * @param resultSet ResultSet to be closed
+     * @param connection            Connection to be closed
+     * @param preparedStatement     PeparedStatement to be closed
+     * @param resultSet             ResultSet to be closed
      */
     protected static void closeDatabaseResources(Connection connection,
             PreparedStatement preparedStatement, ResultSet resultSet) {
@@ -75,8 +75,8 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      *
-     * @param connection Connection to be closed
-     * @param preparedStatement PeparedStatement to be closed
+     * @param connection            Connection to be closed
+     * @param preparedStatement     PeparedStatement to be closed
      */
     protected static void closeDatabaseResources(Connection connection,
             PreparedStatement preparedStatement) {
@@ -95,7 +95,7 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      *
-     * @param preparedStatement PeparedStatement to be closed
+     * @param preparedStatement     PeparedStatement to be closed
      */
     protected static void closeDatabaseResources(PreparedStatement preparedStatement) {
         closeDatabaseResources(null, preparedStatement, null);
@@ -119,7 +119,7 @@ public class MLDatabaseUtils {
     /**
      * Enables the auto-commit of a connection.
      *
-     * @param dbConnection Connection of which the auto-commit should be enabled
+     * @param dbConnection  Connection of which the auto-commit should be enabled
      */
     protected static void enableAutoCommit(Connection dbConnection) {
         try {
