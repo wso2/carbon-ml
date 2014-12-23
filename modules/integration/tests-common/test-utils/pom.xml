@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.wso2.ml</groupId>
 		<artifactId>tests-common</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>test-utils</artifactId>
 	<name>test-utils</name>
@@ -77,7 +77,7 @@
 		<dependency>
             <groupId>org.wso2.ml</groupId>
             <artifactId>ui-pages</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${ml.version}</version>
         </dependency>
     </dependencies>
 </project>

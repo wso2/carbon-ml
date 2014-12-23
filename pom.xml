@@ -25,7 +25,7 @@
     <groupId>org.wso2.ml</groupId>
     <artifactId>ml-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 Machine Learner - Aggregator Module</name>
     <url>http://wso2.com/products/ml</url>
     <description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -228,7 +228,7 @@
             <dependency>
                 <groupId>io.netty.wso2</groupId>
                 <artifactId>netty-all</artifactId>
-                <version>${orbit.version.nett-all}</version>
+                <version>${orbit.version.netty-all}</version>
             </dependency>
             <dependency>
                 <groupId>asm.wso2</groupId>
@@ -459,17 +459,17 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.model</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.dataset</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
@@ -544,7 +544,7 @@
         <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <ml.version>0.1.0-SNAPSHOT</ml.version>
+        <ml.version>1.0.0-SNAPSHOT</ml.version>
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0-SNAPSHOT</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
@@ -575,7 +575,7 @@
         <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>
         <orbit.version.spark>1.1.0.wso2v1</orbit.version.spark>
         <orbit.version.json>3.0.0.wso2v1</orbit.version.json>
-        <orbit.version.nett-all>4.0.8.wso2v1</orbit.version.nett-all>
+        <orbit.version.netty-all>4.0.23.wso2v1</orbit.version.netty-all>
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
         <orbit.version.jettison>1.3.4.wso2v1</orbit.version.jettison>

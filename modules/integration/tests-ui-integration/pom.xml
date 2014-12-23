@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.ml</groupId>
         <artifactId>integration</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>tests-ui-integration</artifactId>
     <name>tests-ui-integration</name>
@@ -274,12 +274,12 @@
         <dependency>
             <groupId>org.wso2.ml</groupId>
             <artifactId>ui-pages</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${ml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.ml</groupId>
             <artifactId>test-utils</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${ml.version}</version>
         </dependency>
     </dependencies>
 </project>
