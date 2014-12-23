@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-  ~  Copyright (c) 2005-2012, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+  ~ Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
-  ~  WSO2 Inc. licenses this file to you under the Apache License,
-  ~  Version 2.0 (the "License"); you may not use this file except
-  ~  in compliance with the License.
-  ~  You may obtain a copy of the License at
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
   ~
-  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~   http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~  Unless required by applicable law or agreed to in writing,
-  ~  software distributed under the License is distributed on an
-  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~  KIND, either express or implied.  See the License for the
-  ~  specific language governing permissions and limitations
-  ~  under the License.
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
+    <groupId>org.wso2.ml</groupId>
     <artifactId>ml-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
@@ -42,7 +42,7 @@
         <module>modules/features</module>
         <module>modules/p2-profile</module>
         <module>modules/distribution</module>
-        <!--<module>modules/integration</module>-->
+        <module>modules/integration</module>
     </modules>
 
     <repositories>
@@ -143,27 +143,21 @@
                 <artifactId>org.wso2.carbon.automation.engine</artifactId>
                 <version>${test.framework.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.automation</groupId>
-                <artifactId>org.wso2.carbon.automation.extensions</artifactId>
-                <version>${test.framework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.automation</groupId>
-                <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
-                <version>${test.framework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.service.mgt.stub</artifactId>
-                <version>${carbon.platform.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.automation</groupId>
+				<artifactId>org.wso2.carbon.automation.extensions</artifactId>
+				<version>${test.framework.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.automation</groupId>
+				<artifactId>org.wso2.carbon.automation.test.utils</artifactId>
+				<version>${test.framework.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
                 <version>${carbon.platform.version}</version>
                 <scope>test</scope>
@@ -182,22 +176,36 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-                <version>${test.framework.util.version}</version>
+				<artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
+				<version>${carbon.version}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-policy</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.rampart</groupId>
+						<artifactId>rampart-trust</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-java</artifactId>
+				<version>${selenium.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.clients</artifactId>
-                <version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-api</artifactId>
+				<version>${selenium.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.ui.pages</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
@@ -581,7 +589,7 @@
         <commons.logging.version>1.1.1</commons.logging.version>
         <emma.version>2.1.5320</emma.version>
         <!-- Integration Test Dependency versions-->
-        <test.framework.version>4.3.1-SNAPSHOT</test.framework.version>
+        <test.framework.version>4.3.1</test.framework.version>
         <test.framework.util.version>4.3.0-SNAPSHOT</test.framework.util.version>
         <json.version>2.0.0.wso2v1</json.version>
         <testng.version>6.8.5</testng.version>
@@ -592,6 +600,7 @@
         <javax.transaction.version>1.1.1.v201105210645</javax.transaction.version>
         <guava.version>14.0.1</guava.version>
         <zookeeper.version>3.4.5</zookeeper.version>
+        <selenium.version>2.44.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
     </properties>
 
