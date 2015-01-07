@@ -16,20 +16,20 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.database.dto;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class MLWorkflow implements Serializable {
+public class Workflow implements Serializable {
     private String workflowID;
     private String datasetURL;
     private String algorithmName;
     private String algorithmClass;
     private String responseVariable;
     private double trainDataFraction;
-    private List<MLFeature> features;
+    private List<Feature> features;
     private Map<String, String> hyperParameters;
 
     /**
@@ -105,14 +105,14 @@ public class MLWorkflow implements Serializable {
     /**
      * @return Returns a list of machine learning features
      */
-    public List<MLFeature> getFeatures() {
+    public List<Feature> getFeatures() {
         return features;
     }
 
     /**
      * @param features Sets machine learning features
      */
-    public void setFeatures(List<MLFeature> features) {
+    public void setFeatures(List<Feature> features) {
         this.features = features;
     }
 

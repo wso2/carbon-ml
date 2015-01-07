@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.constants;
+package org.wso2.carbon.ml.database.internal.constants;
 
 /**
  * A utility class to store SQL prepared statements

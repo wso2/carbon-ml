@@ -15,13 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.decomposition.exceptions;
 
-package org.wso2.carbon.ml.model.spark.dto;
+public class DecompositionException extends Exception{
 
-public interface ModelSummary {
-    /**
-     *
-     * @return Model summary type
-     */
-    String getModelSummaryType();
+    public DecompositionException(String message, Throwable cause){
+        super(message, cause);
+    }
+
+    public DecompositionException(String message){
+        super(message);
+    }
 }

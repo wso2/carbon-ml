@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.database.dto;
 
 /**
  * DTO class to store a machine learning feature
  */
-public class MLFeature {
+public class Feature {
     private String name;
     private int index;
     private String type;

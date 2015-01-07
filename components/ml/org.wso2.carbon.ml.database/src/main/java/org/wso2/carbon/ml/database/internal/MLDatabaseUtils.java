@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal;
+package org.wso2.carbon.ml.database.internal;
 
 import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
 
