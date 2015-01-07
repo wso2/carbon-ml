@@ -1,4 +1,4 @@
-Installing  WSO2 Machine Learner (WSO2 ML) 0.1.0-SNAPSHOT
+Installing  WSO2 Machine Learner (WSO2 ML) 1.0.0-SNAPSHOT
 =========================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be
