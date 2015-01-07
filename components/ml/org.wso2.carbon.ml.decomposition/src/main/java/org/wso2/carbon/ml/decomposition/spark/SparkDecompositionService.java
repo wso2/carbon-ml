@@ -18,61 +18,117 @@
 package org.wso2.carbon.ml.decomposition.spark;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
+import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.decomposition.DecompositionService;
 import org.wso2.carbon.ml.decomposition.exceptions.DecompositionException;
-
+import org.wso2.carbon.ml.decomposition.spark.dto.PCAResult;
+import org.wso2.carbon.ml.decomposition.spark.transformations.DataPointToFeatureMapper;
+import org.wso2.carbon.ml.decomposition.spark.transformations.DataPointToResponseMapper;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SparkDecompositionService implements DecompositionService {
 
+    /**
+     * This method performs PCA for a given dataset
+     * @param workflowID The workflow ID associated with this dataset
+     * @param dataSet DataSet on which PCA is performing (in JavaRDD<Vector> format)
+     * @param noComponentsRetained Number of singular values retained after PCA operation
+     * @throws DecompositionException
+     */
     @Override
-    public void fitPCA(String workflowID,JavaRDD<Vector> dataSet,
-                       int numOfCompsRetain) throws DecompositionException {
-        Matrix pcaTransFormedMatrix = fitPCAHelper(dataSet, numOfCompsRetain);
-        SparkDecompositionUtil.saveMatrix(workflowID, pcaTransFormedMatrix);
+    public void fitPCA(String workflowID,JavaRDD<Vector> dataSet,  int noComponentsRetained)
+            throws DecompositionException {
+        if(workflowID == null || workflowID.length() == 0){
+            throw new DecompositionException(
+                "Argument: workflowId is either null or empty");
+        }
+
+        if(dataSet == null){
+            throw new DecompositionException("Argument: dataSet is null for workflow Id: "+workflowID);
+        }
+
+        if(noComponentsRetained <= 0){
+            throw new DecompositionException(
+                "Argument: noComponentsRetained is either zero or negative for workflow ID: "+workflowID);
+        }
+
+        RowMatrix dataMatrix= new RowMatrix(dataSet.rdd());
+        Matrix pcaTransFormedMatrix = dataMatrix.computePrincipalComponents(noComponentsRetained);
+        SparkDecompositionServiceUtil.saveMatrix(workflowID, pcaTransFormedMatrix);
     }
 
+    /**
+     * This method transforms a given dataset using pre-calculated PCA
+     * @param workflowID The workflow ID associated with this dataset
+     * @param dataSet DataSet on which PCA is performing (in JavaRDD<Vector> format
+     * @return Transformed dataset in JavaRDD<Vector> format
+     * @throws DecompositionException
+     */
     @Override
-    public JavaRDD<Vector> transformPCA(String workflowID,
-                                        JavaRDD<Vector> dataSet) throws DecompositionException {
+    public JavaRDD<Vector> transformPCA(String workflowID, JavaRDD<Vector> dataSet)
+            throws DecompositionException {
+        if(workflowID == null || workflowID.length() == 0){
+            throw new DecompositionException(
+                    "Argument: workflowId is either null or empty");
+        }
+
+        if(dataSet == null){
+            throw new DecompositionException("Argument: dataSet is null for workflow ID: "+workflowID);
+        }
 
         RowMatrix dataMatrix = new RowMatrix(dataSet.rdd());
-        Matrix principleComponents = SparkDecompositionUtil.loadMatrix(workflowID);
+        Matrix principleComponents = SparkDecompositionServiceUtil.loadMatrix(workflowID);
+        if(principleComponents == null){
+            throw new DecompositionException("" +
+                    "PCA matrix is null for workflow ID: "+workflowID);
+        }
         RowMatrix projectedMatrix = dataMatrix.multiply(principleComponents);
         return projectedMatrix.rows().toJavaRDD();
     }
 
+    /**
+     * This method is used to visualize a given dataset associated with
+     * a given workflowID
+     * @param workflowID The workflow ID associated with this dataset
+     * @response Name of the response variable
+     * @return Fits two principle components of the transformed dataset
+     * @throws DecompositionException
+     */
     @Override
-    public double[][] visualizePCA(String workflowID) throws DecompositionException {
-        JavaRDD<Vector> dataSet = SparkDecompositionUtil.getSamplePoints(workflowID);
-        RowMatrix dataMatrix = new RowMatrix(dataSet.rdd());
+    public List<PCAResult> visualizePCA(String workflowID, String response)
+            throws DecompositionException {
+        if(workflowID == null || workflowID.length() == 0){
+            throw new DecompositionException(
+                    "Argument: workflowId is either null or empty");
+        }
 
-        Matrix pcaTransFormedMatrix = fitPCAHelper(dataSet, 2);
+        if(response == null || response.length() == 0){
+            throw new DecompositionException(
+                    "Argument: response is either null or empty for workflow ID: "+workflowID);
+        }
+
+        JavaRDD<LabeledPoint> dataSet = SparkDecompositionServiceUtil.getSamplePoints(workflowID, response);
+        JavaRDD<Double> labelsRDD = dataSet.map(new DataPointToResponseMapper());
+        JavaRDD<Vector> features = dataSet.map(new DataPointToFeatureMapper());
+        RowMatrix dataMatrix = new RowMatrix(features.rdd());
+
+        // extracting first two principle components for visualization
+        Matrix pcaTransFormedMatrix = dataMatrix.computePrincipalComponents(2);
         RowMatrix projectedMatrix = dataMatrix.multiply(pcaTransFormedMatrix);
 
-        JavaRDD<Vector> pcaDataPoints = projectedMatrix.rows().toJavaRDD();
-        final List<double[]> visulizationPoints = new ArrayList<double[]>();
-        pcaDataPoints.foreach(new VoidFunction<Vector>() {
-            @Override
-            public void call(Vector vector) throws Exception {
-                visulizationPoints.add(vector.toArray());
+        List<Vector> pcaDataPoints = projectedMatrix.rows().toJavaRDD().toArray();
+        List<Double> labels = labelsRDD.toArray();
 
-            }
-        });
-
-        return visulizationPoints.toArray(new double[visulizationPoints.size()][2]);
-    }
-
-    private Matrix fitPCAHelper(JavaRDD<Vector> dataSet, int numOfCompsRetain){
-
-        RowMatrix dataMatrix= new RowMatrix(dataSet.rdd());
-        Matrix pcaTransFormedMatrix =
-            dataMatrix.computePrincipalComponents(numOfCompsRetain);
-        return pcaTransFormedMatrix;
+        List<PCAResult> pcaResults = new ArrayList<PCAResult>();
+        for(int i=0; i<pcaDataPoints.size();i++){
+            double[] pcaData = pcaDataPoints.get(i).toArray();
+            double label = labels.get(i);
+            pcaResults.add(new PCAResult(pcaData[0], pcaData[1], label));
+        }
+        return pcaResults;
     }
 }

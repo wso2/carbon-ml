@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.ml.database.internal;
 
-import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

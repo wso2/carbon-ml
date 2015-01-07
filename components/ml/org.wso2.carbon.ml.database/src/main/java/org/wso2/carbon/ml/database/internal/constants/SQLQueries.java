@@ -43,8 +43,8 @@ public class SQLQueries {
             "FROM ML_MODEL_SETTINGS WHERE "
             + "WORKFLOW_ID=?";
 
-    public static final String GET_ML_FEATURE_SETTINGS = "SELECT FEATURE_NAME,TYPE,IMPUTE_METHOD," +
-                                                         "INCLUDE FROM ML_FEATURE_SETTINGS WHERE " +
+    public static final String GET_ML_FEATURE_SETTINGS = "SELECT FEATURE_NAME,FEATURE_INDEX, TYPE," +
+                                                         "IMPUTE_METHOD, INCLUDE FROM ML_FEATURE_SETTINGS WHERE " +
                                                          "WORKFLOW_ID=?";
 
     public static final String GET_DATASET_LOCATION = "SELECT DATASET_URL FROM ML_DATASET WHERE "

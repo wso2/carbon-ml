@@ -25,8 +25,8 @@ import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 import org.wso2.carbon.ml.model.exceptions.XMLParserException;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
-import org.wso2.carbon.ml.model.internal.dto.MLFeature;
-import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.database.dto.Feature;
+import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.model.internal.dto.SparkProperty;
 import org.wso2.carbon.ml.model.internal.dto.SparkSettings;
 
@@ -88,10 +88,10 @@ public class MLModelUtils {
      * @param imputeOption Impute option
      * @return Returns indices of features where discard row imputaion is applied
      */
-    public static List<Integer> getImputeFeatureIndices(MLWorkflow workflow, String imputeOption)
+    public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption)
             throws ModelServiceException {
         List<Integer> imputeFeatureIndices = new ArrayList();
-        for (MLFeature feature : workflow.getFeatures()) {
+        for (Feature feature : workflow.getFeatures()) {
             if (feature.getImputeOption().equals(imputeOption)) {
                 imputeFeatureIndices.add(feature.getIndex());
             }

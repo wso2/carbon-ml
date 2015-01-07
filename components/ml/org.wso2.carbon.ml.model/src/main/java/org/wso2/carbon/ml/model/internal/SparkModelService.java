@@ -22,33 +22,30 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.mllib.util.MLUtils;
-import org.json.JSONObject;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.dto.ModelSummary;
 import org.wso2.carbon.ml.model.ModelService;
-import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
+import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
-import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
+import org.wso2.carbon.ml.database.dto.HyperParameter;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
-import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
-import org.wso2.carbon.ml.model.spark.dto.ModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.BINARY;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLASSIFICATION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DATASET_SIZE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
@@ -57,18 +54,11 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.INTER
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LARGE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MEDIUM;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ML_ALGORITHMS_CONFIG_XML;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NO;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NUMERICAL_PREDICTION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SMALL;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SPARK_CONFIG_XML;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SUPERVISED_ALGORITHM;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.TEXTUAL;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.YES;
-
-/**
- * @scr.component name="modelService" immediate="true"
- * Service class for machine learning model building related tasks
- */
 
 public class SparkModelService implements ModelService {
     private static final Log logger = LogFactory.getLog(SparkModelService.class);
@@ -198,8 +188,9 @@ public class SparkModelService implements ModelService {
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            DatabaseHandler databaseHandler = new DatabaseHandler();
-            MLWorkflow workflow = databaseHandler.getWorkflow(workflowID);
+
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            Workflow workflow = dbService.getWorkflow(workflowID);
             String algorithmType = workflow.getAlgorithmClass();
             if (CLASSIFICATION.equals(algorithmType) || NUMERICAL_PREDICTION.equals(
                     algorithmType)) {
@@ -230,10 +221,10 @@ public class SparkModelService implements ModelService {
     public ModelSummary getModelSummary(String modelID) throws ModelServiceException {
         ModelSummary modelSummary = null;
         try {
-            DatabaseHandler databaseHandler = new DatabaseHandler();
-            modelSummary = databaseHandler.getModelSummary(modelID);
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            modelSummary = dbService.getModelSummary(modelID);
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while retrieving model summay: "
+            throw new ModelServiceException("An error occurred while retrieving model summary: "
                                             + e.getMessage(), e);
         }
         return modelSummary;
@@ -245,13 +236,13 @@ public class SparkModelService implements ModelService {
      */
     public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException {
         try {
-            DatabaseHandler dbHandler = new DatabaseHandler();
-            dbHandler.insertModelSettings(modelSettings.getModelSettingsID(),
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            dbService.insertModelSettings(modelSettings.getModelSettingsID(),
                     modelSettings.getWorkflowID(), modelSettings.getAlgorithmType(),
                     modelSettings.getAlgorithmName(), modelSettings.getResponse(),
                     modelSettings.getTrainDataFraction(), modelSettings.getHyperParameters());
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while inserting model settings: "
+            throw new ModelServiceException("An error occurred while inserting model settings: "
                                             + e.getMessage(), e);
         }
     }
@@ -265,8 +256,8 @@ public class SparkModelService implements ModelService {
      */
     public boolean isExecutionCompleted(String modelID) throws ModelServiceException {
         try {
-            DatabaseHandler handler = new DatabaseHandler();
-            return handler.getModelExecutionEndTime(modelID) > 0;
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            return dbService.getModelExecutionEndTime(modelID) > 0;
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while querying model: " + modelID
                                             + " for execution end time: " + e.getMessage(), e);
@@ -282,8 +273,8 @@ public class SparkModelService implements ModelService {
      */
     public boolean isExecutionStarted(String modelID) throws ModelServiceException {
         try {
-            DatabaseHandler handler = new DatabaseHandler();
-            return handler.getModelExecutionStartTime(modelID) > 0;
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            return dbService.getModelExecutionStartTime(modelID) > 0;
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while querying model: " + modelID +
                                             " for execution start time: " + e.getMessage(), e);

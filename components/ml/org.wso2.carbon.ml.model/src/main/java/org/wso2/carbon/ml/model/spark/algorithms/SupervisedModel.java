@@ -29,12 +29,14 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
 import org.apache.spark.mllib.stat.Statistics;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
-import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.DatabaseHandler;
+//import org.wso2.carbon.ml.model.internal.DatabaseHandler;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
-import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
+import org.wso2.carbon.ml.database.dto.Workflow;
+import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.DiscardedRowsFilter;
@@ -74,7 +76,7 @@ public class SupervisedModel {
      * @param sparkConf Spark configuration
      * @throws ModelServiceException
      */
-    public void buildModel(String modelID, MLWorkflow workflow, SparkConf sparkConf)
+    public void buildModel(String modelID, Workflow workflow, SparkConf sparkConf)
             throws ModelServiceException {
         try {
             sparkConf.setAppName(modelID);
@@ -129,7 +131,7 @@ public class SupervisedModel {
      * @return Returns a JavaRDD of doubles
      * @throws ModelServiceException
      */
-    private JavaRDD<double[]> preProcess(JavaSparkContext sc, MLWorkflow workflow, JavaRDD<String>
+    private JavaRDD<double[]> preProcess(JavaSparkContext sc, Workflow workflow, JavaRDD<String>
             lines, String headerRow, String columnSeparator) throws ModelServiceException {
         try {
             HeaderFilter headerFilter = new HeaderFilter(headerRow);
@@ -207,10 +209,11 @@ public class SupervisedModel {
      */
     private void buildLogisticRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData,
-            MLWorkflow workflow) throws ModelServiceException {
+            Workflow workflow) throws ModelServiceException {
         try {
-            DatabaseHandler databaseHandler = new DatabaseHandler();
-            databaseHandler.insertModel(modelID, workflow.getWorkflowID(),
+            //DatabaseHandler databaseHandler = new DatabaseHandler();
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService(); //TODO: Upul
+            dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             LogisticRegression logisticRegression = new LogisticRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -225,7 +228,7 @@ public class SupervisedModel {
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     logisticRegression.getModelSummary(scoresAndLabels);
-            databaseHandler.updateModel(modelID, model, probabilisticClassificationModelSummary,
+            dbService.updateModel(modelID, model, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building logistic regression " +
@@ -242,10 +245,11 @@ public class SupervisedModel {
      * @throws ModelServiceException
      */
     private void buildDecisionTreeModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, MLWorkflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
         try {
-            DatabaseHandler databaseHandler = new DatabaseHandler();
-            databaseHandler.insertModel(modelID, workflow.getWorkflowID(),
+            //DatabaseHandler databaseHandler = new DatabaseHandler();
+            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService(); //TODO: Upul
+            dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
@@ -258,7 +262,7 @@ public class SupervisedModel {
                     trainingData);
             ClassClassificationModelSummary classClassificationModelSummary = decisionTree
                     .getClassClassificationModelSummary(predictionsAnsLabels);
-            databaseHandler.updateModel(modelID, decisionTreeModel, classClassificationModelSummary,
+            dbService.updateModel(modelID, decisionTreeModel, classClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building decision tree model: "
