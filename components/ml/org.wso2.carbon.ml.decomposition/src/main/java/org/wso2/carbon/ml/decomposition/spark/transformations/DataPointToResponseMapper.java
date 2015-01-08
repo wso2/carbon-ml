@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,7 +22,7 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.decomposition.exceptions.DecompositionException;
 
 /**
- *
+ * This maps data point to response varialbe
  */
 public class DataPointToResponseMapper implements Function<LabeledPoint, Double> {
     @Override

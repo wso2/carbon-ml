@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,6 +20,9 @@ package org.wso2.carbon.ml.decomposition.internal.ds;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.decomposition.DecompositionService;
 
+/**
+ * The value holder used in the decomposition module
+ */
 public class DecompositionServiceValueHolder {
     private static DecompositionService decompositionService;
     private static DatabaseService databaseService;

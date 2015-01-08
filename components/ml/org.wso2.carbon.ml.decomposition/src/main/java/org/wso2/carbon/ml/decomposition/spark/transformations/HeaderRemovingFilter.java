@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,7 @@ import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.decomposition.exceptions.DecompositionException;
 
 /**
- *
+ * This filter removes the header of a given dataset
  */
 public class HeaderRemovingFilter implements Function<String, Boolean> {
     private String header;

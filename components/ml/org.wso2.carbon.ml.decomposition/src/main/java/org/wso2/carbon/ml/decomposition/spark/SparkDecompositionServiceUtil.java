@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -50,13 +50,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-
+/**
+ * This class contains a set of static helper methods used by
+ * Spark implementation of the decomposition service.
+ */
 public class SparkDecompositionServiceUtil {
 
     private static final Log log = LogFactory.getLog(SparkDecompositionServiceUtil.class);
 
     /**
-     *
+     * Save serialized matrix in hard disk
      * @param workflowID The workflow ID associated with this dataset
      * @param matrix The matrix which is going to save in the disk
      * @throws DecompositionException
@@ -93,7 +96,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Read matrix object from the hard disk
      * @param workflowID The workflow ID associated with this dataset
      * @return The matrix retrieve from the disk
      * @throws DecompositionException
@@ -123,7 +126,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Get a sample datset from a given dataset
      * @param workflowID The workflow ID associated with this dataset
      * @return Random sample drawn from the dataset
      * @throws DecompositionException
@@ -181,7 +184,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Utility method for closing resources
      * @param resource Represents closeable resources
      * @throws DecompositionException
      */
@@ -198,7 +201,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Infer column separator from the dataset url
      * @param dataSetURL Path of the dataset
      * @return Column separator of the dataset
      * @throws DecompositionException
@@ -216,7 +219,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Get feature indices of the dataset associated with this dataset
      * @param workflow The workflow ID associated with this dataset
      * @return Indices (zero based) of features used to build the decomposition model
      */
@@ -231,7 +234,8 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Get the index of response variable of the dataset associated
+     * with this workflow
      * @param workflow The workflow ID associated with this dataset
      * @param response Name of the response variable
      * @return Index (zero based) of the response variable
@@ -250,7 +254,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Build an object of SparkConf file
      * @param sparkConfigXML
      * @return
      * @throws DecompositionException
@@ -272,6 +276,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
+     * Parse XML file
      * @param xmlFilePath Absolute path to an xml file
      * @return Returns unmarshalled xml
      * @throws DecompositionException
@@ -289,7 +294,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     *
+     * Build full path of the matrix associated with this workflowID
      * @param workflowID The workflow ID associated with this dataset
      * @return Full path of the PCA matrix
      */

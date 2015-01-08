@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- *
+ * This mapper converts each line into a set of data points
  */
 public class LineToDataPointMapper implements Function<String, LabeledPoint> {
     private Pattern tokenSeparator;
