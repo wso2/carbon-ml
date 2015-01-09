@@ -15,54 +15,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.wso2.carbon.ml.model.internal;
+package org.wso2.carbon.ml.database.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.internal.constants.SQLQueries;
-import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
-import org.wso2.carbon.ml.model.internal.dto.MLFeature;
-import org.wso2.carbon.ml.model.internal.dto.MLWorkflow;
-import org.wso2.carbon.ml.model.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.model.spark.dto.ModelSummary;
+import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.dto.Feature;
+import org.wso2.carbon.ml.database.dto.HyperParameter;
+import org.wso2.carbon.ml.database.dto.ModelSummary;
+import org.wso2.carbon.ml.database.dto.Workflow;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This class handles database connectivity in model component
- */
-public class DatabaseHandler {
-    private static final Log logger = LogFactory.getLog(DatabaseHandler.class);
-    private DataSource dataSource;
+public class MLDatabaseService implements DatabaseService{
 
-    /**
-     * DatabaseHandler constructor
-     *
-     * @throws DatabaseHandlerException
-     */
-    public DatabaseHandler() throws DatabaseHandlerException {
-        try {
-            Context initContext = new InitialContext();
-            dataSource = (DataSource) initContext.lookup(MLModelConstants.ML_DB);
-        } catch (NamingException e) {
-            throw new DatabaseHandlerException(
-                    "An error occured while obtaining the data source: " + e.getMessage(), e);
-        }
-    }
+    private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
 
     /**
      * This method inserts model settings to database
@@ -78,13 +50,14 @@ public class DatabaseHandler {
      */
     public void insertModelSettings(String modelSettingsID, String workflowID, String
             algorithmName, String algorithmClass, String response, double trainDataFraction,
-            List<HyperParameter> hyperparameters)
+                                    List<HyperParameter> hyperparameters)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         try {
             // insert model settings to the database.
-            connection = this.dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_ML_MODEL_SETTINGS);
             insertStatement.setString(1, modelSettingsID);
@@ -98,15 +71,15 @@ public class DatabaseHandler {
             connection.commit();
             if (logger.isDebugEnabled()) {
                 logger.debug(
-                        "Succesfully updated model settings for model settings id " +
-                        modelSettingsID);
+                        "Successfully updated model settings for model settings id " +
+                                modelSettingsID);
             }
         } catch (SQLException e) {
             // rollback the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                    "An error occured while inserting model settings for model settings id " +
-                    modelSettingsID + " to the database: " + e.getMessage(), e);
+                    "An error occurred while inserting model settings for model settings id " +
+                            modelSettingsID + " to the database: " + e.getMessage(), e);
         } finally {
             // enable auto commit.
             MLDatabaseUtils.enableAutoCommit(connection);
@@ -129,7 +102,9 @@ public class DatabaseHandler {
         PreparedStatement insertStatement = null;
         try {
             // insert model settings to the database.
-            connection = this.dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_ML_MODEL);
             insertStatement.setString(1, modelID);
@@ -138,14 +113,14 @@ public class DatabaseHandler {
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
-                logger.debug("Succesfully inserted model details for model id " + modelID);
+                logger.debug("Successfully inserted model details for model id " + modelID);
             }
         } catch (SQLException e) {
             // rollback the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                    "An error occured while inserting model details for model id " + modelID + " " +
-                    "to the database: " + e.getMessage(),
+                    "An error occurred while inserting model details for model id " + modelID + " " +
+                            "to the database: " + e.getMessage(),
                     e);
         } finally {
             // enable auto commit.
@@ -165,12 +140,13 @@ public class DatabaseHandler {
      * @throws DatabaseHandlerException
      */
     public <T> void updateModel(String modelID, T model,
-            ModelSummary modelSummary, Time executionEndTime)
+                                ModelSummary modelSummary, Time executionEndTime)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
-            connection = this.dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_ML_MODEL);
             updateStatement.setObject(1, model);
@@ -187,8 +163,8 @@ public class DatabaseHandler {
             // rollback the changes
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                    "An error occured while updating the details of model id " + modelID + " : "
-                    + e.getMessage(), e);
+                    "An error occurred while updating the details of model id " + modelID + " : "
+                            + e.getMessage(), e);
 
         } finally {
             // enable auto commit
@@ -210,7 +186,8 @@ public class DatabaseHandler {
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
-            connection = dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
             getStatement.setString(1, modelID);
@@ -221,8 +198,8 @@ public class DatabaseHandler {
                 throw new DatabaseHandlerException("Invalid model ID: " + modelID);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occured while reading model summary for " +
-                                               modelID + " from the database: " + e.getMessage(),
+            throw new DatabaseHandlerException("An error occurred while reading model summary for " +
+                    modelID + " from the database: " + e.getMessage(),
                     e);
         } finally {
             // enable auto commit
@@ -239,14 +216,15 @@ public class DatabaseHandler {
      * @return Returns a machine learning workflow object
      * @throws DatabaseHandlerException
      */
-    public MLWorkflow getWorkflow(String workflowID) throws DatabaseHandlerException {
+    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
-            MLWorkflow mlWorkflow = new MLWorkflow();
+            Workflow mlWorkflow = new Workflow();
             mlWorkflow.setWorkflowID(workflowID);
-            connection = dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_LOCATION);
             getStatement.setString(1, workflowID);
@@ -254,18 +232,19 @@ public class DatabaseHandler {
             if (result.first()) {
                 mlWorkflow.setDatasetURL(result.getString(1));
             }
-            List<MLFeature> mlFeatures = new ArrayList();
+            List<Feature> mlFeatures = new ArrayList();
             getStatement = connection.prepareStatement(SQLQueries.GET_ML_FEATURE_SETTINGS);
             getStatement.setString(1, workflowID);
             result = getStatement.executeQuery();
             while (result.next()) {
                 // check whether to include the feature or not
-                if (result.getBoolean(4) == true) {
-                    MLFeature mlFeature = new MLFeature();
+                if (result.getBoolean(5) == true) {
+                    Feature mlFeature = new Feature();
                     mlFeature.setName(result.getString(1));
-                    mlFeature.setType(result.getString(2));
-                    mlFeature.setImputeOption(result.getString(3));
-                    mlFeature.setInclude(result.getBoolean(4));
+                    mlFeature.setIndex(result.getInt(2));
+                    mlFeature.setType(result.getString(3));
+                    mlFeature.setImputeOption(result.getString(4));
+                    mlFeature.setInclude(result.getBoolean(5));
                     mlFeatures.add(mlFeature);
                 }
             }
@@ -331,7 +310,8 @@ public class DatabaseHandler {
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
-            connection = dataSource.getConnection();
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(query);
             statement.setString(1, modelId);
             result = statement.executeQuery();

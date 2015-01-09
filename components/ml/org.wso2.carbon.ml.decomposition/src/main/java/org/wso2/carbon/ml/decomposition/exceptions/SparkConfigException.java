@@ -15,13 +15,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.decomposition.exceptions;
 
-package org.wso2.carbon.ml.model.spark.dto;
-
-public interface ModelSummary {
-    /**
-     *
-     * @return Model summary type
-     */
-    String getModelSummaryType();
+/**
+ * This exception will be thrown when spark configuration
+ * related issues are occurred.
+ */
+public class SparkConfigException extends Exception{
+    public SparkConfigException(String message, Throwable cause){
+        super(message, cause);
+    }
 }

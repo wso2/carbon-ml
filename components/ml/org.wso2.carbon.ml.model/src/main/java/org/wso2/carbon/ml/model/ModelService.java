@@ -20,9 +20,9 @@ package org.wso2.carbon.ml.model;
 
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
-import org.wso2.carbon.ml.model.internal.dto.HyperParameter;
+import org.wso2.carbon.ml.database.dto.HyperParameter;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
-import org.wso2.carbon.ml.model.spark.dto.ModelSummary;
+import org.wso2.carbon.ml.database.dto.ModelSummary;
 
 import java.util.List;
 import java.util.Map;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,16 +15,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.decomposition.spark.transformations;
 
-package org.wso2.carbon.ml.model.exceptions;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.regression.LabeledPoint;
 
-public class DatabaseHandlerException extends Exception {
-
-    public DatabaseHandlerException(String message) {
-        super(message);
-    }
-
-    public DatabaseHandlerException(String message, Throwable cause) {
-        super(message, cause);
+/**
+ * This maps each data point to features
+ */
+public class DataPointToFeatureMapper implements Function<LabeledPoint, Vector> {
+    @Override
+    public Vector call(LabeledPoint labeledPoint) throws Exception {
+        return labeledPoint.features();
     }
 }
