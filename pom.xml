@@ -540,8 +540,8 @@
     </build>
 
     <properties>
-        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
+        <carbon.version>4.3.0</carbon.version>
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <ml.version>1.0.0-SNAPSHOT</ml.version>
