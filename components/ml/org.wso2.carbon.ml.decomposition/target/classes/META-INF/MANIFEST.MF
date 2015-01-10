@@ -1,0 +1,47 @@
+Manifest-Version: 1.0
+Export-Package: org.wso2.carbon.ml.decomposition.spark;uses:="org.apac
+ he.spark.mllib.linalg.distributed,org.apache.spark.mllib.linalg,org.a
+ pache.spark.api.java.function,org.wso2.carbon.ml.decomposition.spark.
+ transformations,org.wso2.carbon.ml.decomposition.exceptions,org.apach
+ e.spark.api.java,org.apache.spark.rdd,org.wso2.carbon.ml.decompositio
+ n,org.wso2.carbon.ml.decomposition.spark.dto,org.apache.commons.loggi
+ ng,org.apache.spark.mllib.regression,org.wso2.carbon.ml.database.exce
+ ptions,org.apache.spark,org.wso2.carbon.ml.database.dto,javax.xml.bin
+ d,org.wso2.carbon.ml.database";version="1.0.0.SNAPSHOT",org.wso2.carb
+ on.ml.decomposition.spark.transformations;uses:="org.apache.spark.mll
+ ib.linalg,org.apache.spark.mllib.regression,org.apache.spark.api.java
+ .function,org.wso2.carbon.ml.decomposition.exceptions";version="1.0.0
+ .SNAPSHOT",org.wso2.carbon.ml.decomposition.exceptions;version="1.0.0
+ .SNAPSHOT",org.wso2.carbon.ml.decomposition;uses:="org.apache.spark.m
+ llib.linalg,org.wso2.carbon.ml.decomposition.exceptions,org.apache.sp
+ ark.api.java,org.wso2.carbon.ml.decomposition.spark.dto";version="1.0
+ .0.SNAPSHOT",org.wso2.carbon.ml.decomposition.spark.dto;version="1.0.
+ 0.SNAPSHOT"
+Built-By: upul
+Tool: Bnd-1.43.0
+Bundle-Name: org.wso2.carbon.ml.decomposition
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: WSO2, Inc.
+DynamicImport-Package: *
+Build-Jdk: 1.7.0_72
+Bundle-Version: 1.0.0.SNAPSHOT
+Bnd-LastModified: 1420858619350
+Bundle-ManifestVersion: 2
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
+Bundle-Description: WSO2 Machine Learner (WSO2 ML)
+Import-Package: javax.xml.bind;resolution:=optional,javax.xml.bind.ann
+ otation;resolution:=optional,org.apache.commons.logging;version="[1.1
+ ,2)",org.apache.spark;version="[1.1,2)",org.apache.spark.api.java;ver
+ sion="[1.1,2)",org.apache.spark.api.java.function;version="[1.1,2)",o
+ rg.apache.spark.mllib.linalg;version="[1.1,2)",org.apache.spark.mllib
+ .linalg.distributed;version="[1.1,2)",org.apache.spark.mllib.regressi
+ on;version="[1.1,2)",org.apache.spark.rdd;version="[1.1,2)",org.h2;ve
+ rsion="[1.2,2)",org.osgi.framework;resolution:=optional;version="[1.6
+ ,2)",org.osgi.service.component;resolution:=optional;version="[1.2,2)
+ ",org.wso2.carbon.ml.database;resolution:=optional;version="[0.1,1)",
+ org.wso2.carbon.ml.database.dto;resolution:=optional;version="[0.1,1)
+ ",org.wso2.carbon.ml.database.exceptions;resolution:=optional;version
+ ="[0.1,1)",org.wso2.carbon.ml.decomposition;resolution:=optional
+Bundle-DocURL: http://wso2.com
+Bundle-SymbolicName: org.wso2.carbon.ml.decomposition
+
