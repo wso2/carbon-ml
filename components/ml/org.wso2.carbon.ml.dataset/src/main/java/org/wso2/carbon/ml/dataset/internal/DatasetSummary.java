@@ -29,11 +29,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.internal.constants.FeatureType;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
-import org.wso2.carbon.ml.dataset.dto.SamplePoints;
+
 
 /**
  * Class Generate Summary statistics for a data-set.
@@ -122,8 +124,8 @@ public class DatasetSummary {
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies(categoricalThreshold, noOfIntervals);
             // Update the database with calculated summary statistics.
-            DatabaseHandler dbHandler = new DatabaseHandler(mlDatabaseName);
-            dbHandler.updateSummaryStatistics(this.datasetID, headerMap, this.type,
+            DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
+            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type,
                 this.graphFrequencies, this.missing, this.unique, this.descriptiveStats, include);
             if(logger.isDebugEnabled()){
                 logger.info("Summary statistics successfully generated for dataset: " + datasetID);

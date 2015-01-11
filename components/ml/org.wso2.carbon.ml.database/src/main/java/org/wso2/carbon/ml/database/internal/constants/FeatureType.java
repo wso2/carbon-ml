@@ -15,16 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.dataset.internal.constants;
+package org.wso2.carbon.ml.database.internal.constants;
 
-public class ImputeOption {
-	public static final String DISCARD = "DISCARD";
-	public static final String REPLACE_WTH_MEAN = "REPLACE_WTH_MEAN";
-	public static final String REGRESSION_IMPUTATION = "REGRESSION_IMPUTATION";
+public class FeatureType {
+	public static final String NUMERICAL = "NUMERICAL";
+	public static final String CATEGORICAL = "CATEGORICAL";
 	
 	/*
      * private Constructor to prevent any other class from instantiating.
      */
-    private ImputeOption() {
+    private FeatureType() {
     }
 }
