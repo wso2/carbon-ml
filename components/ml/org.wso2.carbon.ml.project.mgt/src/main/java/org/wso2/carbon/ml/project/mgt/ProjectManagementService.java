@@ -158,19 +158,15 @@ public class ProjectManagementService {
 	 * @param projectID
 	 *            Unique identifier for the project for which the workflow is
 	 *            created
-	 * @param datasetID
-	 *            Unique identifier for the data-set associated with the
-	 *            workflow
 	 * @param workflowName
 	 *            Name of the project
 	 * @throws ProjectManagementServiceException
 	 */
 	public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
-	                              String datasetID, String workflowName)
-	                            		  throws
-	                            		  ProjectManagementServiceException {
+	                              String workflowName) throws ProjectManagementServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			String datasetID = getdatasetID(projectID);
 			dbHandler.createNewWorkflow(workflowID, parentWorkflowID, projectID, datasetID,
 			                            workflowName);
 		} catch (DatabaseHandlerException e) {

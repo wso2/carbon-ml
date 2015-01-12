@@ -1,0 +1,306 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+		<!--div class="wr-project">
+			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
+		</div-->
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+			<a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a>
+			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<!--a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+	    </ul-->
+	    		
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+			<div class="wr-form col-lg-5 col-centered">
+
+				<h1 class="title">Create Project</h1>
+                <from id="dataImportForm" action="./ajax/UploadDataset.jag" method="post"
+                    enctype="multipart/form-data">
+
+				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <input type="text" value="" placeholder="Ex: MyDataProject" class="form-fld-error" id="project-name" name="project-name" />
+				    <span class="form-val-error" id="project-name-error"></span>
+				</div>
+
+				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <textarea rows="3" id="project-description" name="project-description"></textarea>
+				    <span class="form-val-error" id="project-description-error"></span>
+				</div>	
+
+				<label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control file info-state" data-role="input-control">
+	                <input type="file" id="datasetUpload" name="datasetUpload">
+	                <span class="form-val-error" id="file-upload-error"></span>
+	            </div>
+
+				<div class="progress">
+				  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+				    60%
+				  </div>
+				</div>
+
+				<label class="input-label">Data File<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control file info-state" data-role="input-control">
+	                <span class="t-data-file" id="data-file-name"></span>
+	                <a href="#" class="cu-level2-btn btn-delete-dark" id="delete-file">Delete File</a>
+	            </div>
+	            </from>
+			</div>
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script type="text/javascript">
+var isFileAlreadyPresent = false;
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+	$('#datasetUpload').on('click', function(){
+        var datasetName = $('input[type=file]').val().split('\\').pop();         
+        if(datasetName.length > 0){
+        	isFileAlreadyPresent = true;
+        }   
+	});
+
+	$('#datasetUpload').on('change', function(){
+        var projectName = $('#project-name').val();
+        var projectDes = $('#project-description').val();
+        var datasetName = $('input[type=file]').val().split('\\').pop();        
+
+        var projectNameValidation = isValidProjectName(projectName);
+        var descriptionValidation = isValidDescription(projectDes);
+        var validFile = isValidDatasetFile(datasetName);
+
+        if(projectNameValidation && 
+            descriptionValidation && validFile){
+        	$('#dataImportForm').submit();  
+        	$("#datasetUpload").prop('disabled', true);          
+        }
+        $('#data-file-name').text(datasetName);
+        
+	});
+
+	$("#dataImportForm").submit(function(e) {
+        var formObj = $(this);
+        var formURL = formObj.attr("action");
+        var formData = new FormData();
+        formData.append('datasetFile', $('input[type=file]')[0].files[0]);
+        
+        $.ajax({
+            url : formURL,
+            type : 'POST',
+            data : formData,
+            mimeType : "multipart/form-data",
+            contentType : false,
+            cache : false,
+            processData : false,
+            success : function(data, textStatus, jqXHR){                  
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+            	console.log("error: "+errorThrown.toString());
+            }
+        });
+    });   
+
+	$('#project-name').on('click', function(){
+        $('#project-name-error').empty();
+	});
+
+	$('#delete-file').on('click', function(){
+        $.ajax({
+        	url: './ajax/DeleteDataset.jag',
+        	type: 'post',
+        	success: function(data){
+                if(data === 'true'){
+                    var control = $('#datasetUpload');
+                    control.replaceWith( control = control.clone( true ));
+                    $('#data-file-name').empty();	
+
+                }else{
+                	$('#file-upload-error').text(
+                		'* An error has occurred while delete file.');
+                }
+        	},
+        	error: function(e){
+        		$('#file-upload-error').text(
+        			'* An error has occurred while calling delete request');
+        	}
+        });
+        $("#datasetUpload").prop('disabled', false);
+	});
+
+	$('#cancel-project').on('click', function(){
+        $.ajax({
+        	url: './ajax/DeleteDataset.jag',
+        	type: 'post',
+        	success: function(data){
+                if(data === 'true'){
+                    var control = $('#datasetUpload');
+                    control.replaceWith( control = control.clone( true ));
+                    $('#data-file-name').empty();	
+
+                }else{
+                	$('#file-upload-error').text(
+                		'* An error has occurred while delete file.');
+                }
+        	},
+        	error: function(e){
+        		$('#file-upload-error').text(
+        			'* An error has occurred while calling delete request');
+        	}
+        });
+
+        $('#project-name').val('');
+        $('#project-description').val('');
+        $("#datasetUpload").prop('disabled', false);
+
+	});
+
+	$('#save-project').on('click', function(){
+		$.ajax({
+            url : './ajax/CreatePorject.jag',
+            type : 'post',
+            data : {projectName : $('#project-name').val(), 
+        	        projectDescription: $('#project-description').val()},
+            success : function(res){
+                window.location.href = './project_success.jag';    
+            },
+            error : function(res){
+                console.log('error: '+res); //TODO: update error message
+            }
+		});        
+	});
+
+	function isValidProjectName(text){
+		if(text.length == 0){
+            $('#project-name-error').text("* Project name is required.");
+            return false;    
+		}
+		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
+            $('#project-name-error').text('* Special characters are not allowed');
+            $('#project-name').text('');
+            return false;
+	    }
+	    return true;
+	}
+
+	function isValidDescription(text){
+		if(text.length == 0){
+            $('#project-description-error').text('* Project description is required.');
+            return false;
+        }
+        return true;
+	}
+
+	function isValidDatasetFile(fileName){
+		if(isFileAlreadyPresent){
+            $('#file-upload-error').text('* Dataset is already exist, delete it first');
+			return false;
+		}
+		if(fileName.length == 0){
+			$('#file-upload-error').text('* Dataset is empty');
+			return false;
+		}
+		return true;
+	}
+});
+</script>
+
+</body>
+</html>

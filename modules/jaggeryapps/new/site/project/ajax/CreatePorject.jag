@@ -1,0 +1,28 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    
+    //TODO: delete this once login is ready
+    session.put('tenantId', 'admin');
+
+    var pjMgtServ = carbon.server.osgiService(
+        'org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+    var dsServ = carbon.server.osgiService(
+    	'org.wso2.carbon.ml.dataset.DatasetService');
+
+    var projectId = session.get('projectId');
+    var datasetId = session.get("datasetId");
+    var datasetname = session.get("datasetName");
+    var projectDescription = request.getParameter("projectDescription");
+    var projectName = request.getParameter("projectName");
+    var tenantId = session.get("tenantId");
+
+    try{
+        pjMgtServ.createProject(projectId, projectName, projectDescription);
+        dsServ.calculateSummaryStatistics(datasetname, datasetId, projectId);
+        pjMgtServ.addTenantToProject(tenantId, projectId);
+
+    }catch(e){
+    	throw new Error("An error occurred while creating project: "+projectId);    	
+    }
+%>

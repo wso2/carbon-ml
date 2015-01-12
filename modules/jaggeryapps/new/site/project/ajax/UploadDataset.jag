@@ -1,0 +1,32 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var uuid = require('uuid');
+
+    var mlDatasetService = 
+        carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var sourceFile = request.getFile("datasetFile");    
+
+    try {
+        //insert dataset details
+        var projectId = uuid.generate();        
+        var datasetId = uuid.generate();       
+
+        sourceFile.open("r");
+        var inputStream = sourceFile.getStream();
+        var numOfFeatures = 
+            mlDatasetService.uploadDataset(inputStream.getStream(), 
+            	                           sourceFile.getName(), projectId);
+        session.put("projectId", projectId);
+        session.put("datasetId", datasetId);
+        session.put("datasetName", sourceFile.getName())
+
+    } catch(e) {
+        log.error("An error occurred while uploading file " + 
+        	       sourceFile.getName() + " of user " + 
+        	       session.get("logged.user"), e);
+    }finally{
+        inputStream.getStream().close();
+        sourceFile.close();
+    }
+%>

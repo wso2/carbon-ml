@@ -17,13 +17,13 @@
  */
 package org.wso2.carbon.ml.dataset;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.wso2.carbon.ml.database.dto.FeatureSummary;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Interface contains the services related to importing and exploring a
@@ -52,6 +52,15 @@ public interface DatasetService {
      */
     public String uploadDataset(InputStream sourceInputStream,  String fileName, String projectID) 
             throws DatasetServiceException, IOException;
+
+    /**
+     *
+     * @param fileName
+     * @param projectID
+     * @return
+     * @throws DatasetServiceException
+     */
+    public boolean deleteDataset(String fileName, String projectID) throws DatasetServiceException;
 
     /**
      * 

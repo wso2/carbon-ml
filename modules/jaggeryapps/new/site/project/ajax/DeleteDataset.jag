@@ -1,0 +1,20 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+
+    var mlDatasetService = 
+        carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    try{
+    	var projectID = session.get('projectId');
+        var datasetName = session.get('datasetName');
+        var status = mlDatasetService.deleteDataset(datasetName, projectID);
+        
+        //TODO: correctly set content headers       
+        print(status);
+
+    }catch(e){
+    	log.error("An error occurred while deleting file " + 
+        	       sourceFile.getName() + " of user " + 
+        	       session.get("logged.user"), e);
+    }
+%>

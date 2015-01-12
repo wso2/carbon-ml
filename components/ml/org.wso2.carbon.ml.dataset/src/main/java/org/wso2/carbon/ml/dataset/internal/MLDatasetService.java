@@ -18,27 +18,23 @@
 
 package org.wso2.carbon.ml.dataset.internal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.dataset.DatasetService;
 import org.wso2.carbon.ml.database.dto.FeatureSummary;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.dataset.DatasetService;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
 import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
 import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * Class contains the services related to importing and exploring a data-set.
@@ -154,20 +150,54 @@ public class MLDatasetService implements DatasetService {
             }
         }
     }
+
+    public boolean deleteDataset(String fileName, String projectID) throws DatasetServiceException{
+        String uploadDir = dataUploadSettings.getUploadLocation();
+        try{
+            String fileSeparator = System.getProperty(DatasetConfigurations.FILE_SEPARATOR);
+
+            if (uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)) {
+                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator +
+                        DatasetConfigurations.ML_PROJECTS;
+            }
+            String dataSetFullPath = uploadDir+fileSeparator+projectID+fileSeparator+fileName;
+            String dataFolderFullPath = uploadDir+fileSeparator+projectID;
+            File dataSet = new File(dataSetFullPath);
+            boolean fileDeletingStatus =  dataSet.delete();
+
+            File dataFolder = new File(dataFolderFullPath);
+            boolean folderDeletingStatus = dataFolder.delete();
+
+            return  (fileDeletingStatus && folderDeletingStatus);
+
+
+        }catch (Exception ex){
+            throw new DatasetServiceException("Failed to delete file:" + fileName + " : " +
+                    ex.getMessage(), ex);
+        }
+    }
     
     /**
      * 
-     * @param filePath      Path of the dataset to calculate summary statistics
+     * @param fileName      Path of the dataset to calculate summary statistics
      * @param datasetID     Unique Identifier of the data-set
      * @param projectID     Unique Identifier of the project associated with the dataset
      * @return              Number of features in the data-set
      * @throws              DatasetServiceException
      */
     @Override
-    public int calculateSummaryStatistics(String filePath, String datasetID, String projectID) 
+    public int calculateSummaryStatistics(String fileName, String datasetID, String projectID)
             throws DatasetServiceException {
         try {
-            File targetFile = new File(filePath);
+            String uploadDir = dataUploadSettings.getUploadLocation();
+            String fileSeparator = System.getProperty(DatasetConfigurations.FILE_SEPARATOR);
+            if (uploadDir.equalsIgnoreCase(DatasetConfigurations.USER_HOME)) {
+                uploadDir = System.getProperty(DatasetConfigurations.HOME) + fileSeparator +
+                        DatasetConfigurations.ML_PROJECTS;
+            }
+            String dataSetFullPath = uploadDir+fileSeparator+projectID+fileSeparator+fileName;
+
+            File targetFile = new File(dataSetFullPath);
             if (targetFile.isFile() && targetFile.canRead()) {
                 // Insert details of the file to the database.
                 DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
