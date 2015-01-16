@@ -140,7 +140,7 @@ public class SparkDecompositionServiceUtil {
         // class loader needed to be switched temporarily.
         // assign current thread context class loader to a variable
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try{
+        try {
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
 
             SparkConf sparkConf = getSparkConf(DecompositionConstants.SPARK_CONFIG_XML);
@@ -250,7 +250,7 @@ public class SparkDecompositionServiceUtil {
     private static int getResponseIndex(Workflow workflow, String response)
             throws DecompositionException {
 
-        for(Feature feature : workflow.getFeatures()) {
+        for (Feature feature : workflow.getFeatures()) {
             if (response.equalsIgnoreCase(feature.getName())) {
                 return feature.getIndex();
             }
