@@ -302,7 +302,7 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     * Build full path of the matrix associated with this workflowID
+     * Build full path of the matrix associated with this workflowID.
      *
      * @param workflowID The workflow ID associated with this dataset.
      * @return Full path of the PCA matrix

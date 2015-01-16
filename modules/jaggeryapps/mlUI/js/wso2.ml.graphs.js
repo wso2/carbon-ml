@@ -24,7 +24,7 @@
    are common to all graph classes*/
 var BasePlot = function(data) {
 
-    if(!data){
+    if (!data) {
         throw new PlottingError("The dataset is not defined");
     }
 
@@ -52,15 +52,15 @@ var BasePlot = function(data) {
 };
 
 //following are methods of the base class
-BasePlot.prototype.setPlotingAreaWidth = function(width){
-    if(width <= 0){
+BasePlot.prototype.setPlotingAreaWidth = function(width) {
+    if (width <= 0) {
         throw new PlottingError("plotting area width should be positive");
     }
     this.width = width;
 };
 
-BasePlot.prototype.setPlotingAreaHeight = function(height){
-    if(height <= 0){
+BasePlot.prototype.setPlotingAreaHeight = function(height) {
+    if (height <= 0) {
         throw new PlottingError("plotting area height should be positive");
     }
     this.height = height;
@@ -68,22 +68,22 @@ BasePlot.prototype.setPlotingAreaHeight = function(height){
 
 /*setting the SVG container inside the 'selection' DOM
   internal method should not call from outside Plot class hierarchy*/
-BasePlot.prototype.initializeSVGContainer = function(selection){
-    if(selection){
+BasePlot.prototype.initializeSVGContainer = function(selection) {
+    if (selection) {
         this.svg = selection.append("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
             .append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-    }else{
+    } else {
         throw new PlottingError("svg container can not be initialized");  
     }
 };
 
 /** internal method should not be called from 
     outside Plot class hierarchy*/
-BasePlot.prototype.attachXAxis = function(xAxis){
-    if(xAxis){ //
+BasePlot.prototype.attachXAxis = function(xAxis) {
+    if (xAxis) { //
         this.svg.append("g")
             .attr("class", "axis text")
             .attr("transform", "translate(0," + this.height + ")")
@@ -94,15 +94,15 @@ BasePlot.prototype.attachXAxis = function(xAxis){
             .attr("y", 30)
             .style("text-anchor", "end")
             .text(this.xLabel);
-    }else{
+    } else {
         throw new PlottingError("xAxis is null or empty");
     }
 };
 
 /** internal method should not called from 
     outside Plot class hierarchy*/
-BasePlot.prototype.attachYAxis = function(yAxis){
-    if(yAxis){
+BasePlot.prototype.attachYAxis = function(yAxis) {
+    if (yAxis) {
         this.svg.append("g")
             .attr("class", "axis text")
             .call(yAxis)
@@ -113,23 +113,23 @@ BasePlot.prototype.attachYAxis = function(yAxis){
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(this.yLabel);
-    }else{
+    } else {
         throw new PlottingError("yAxis is null or empty");
     }
 };
 
-BasePlot.prototype.setXAxisText = function(text){
-    if(text){
+BasePlot.prototype.setXAxisText = function(text) {
+    if (text) {
         this.xLabel = text;
-    }else{
+    } else {
         throw new PlottingError("Label of the X axis can't be null or empty");
     }
 };
 
-BasePlot.prototype.setYAxisText = function(text){
-    if(text){
+BasePlot.prototype.setYAxisText = function(text) {
+    if (text) {
         this.yLabel = text;
-    }else{
+    } else {
         throw new PlottingError("Label of the Y axis can't be null or empty");
     }
 };
@@ -160,9 +160,9 @@ ScatterPlot.prototype.constructor = ScatterPlot;
 
 /** Following method is used to set the size of each 
     point in the scatter plot*/
-ScatterPlot.prototype.setMarkerSize = function(markerSize){
+ScatterPlot.prototype.setMarkerSize = function(markerSize) {
 
-    if( markerSize <= 0){
+    if ( markerSize <= 0) {
         throw new PlottingError("markerSize should be positive");
     }
     this.markerSize = markerSize;    
@@ -171,7 +171,7 @@ ScatterPlot.prototype.setMarkerSize = function(markerSize){
 /**Main function of the ScatterPlot class.
    Once called graph will be drawn inside the SVG container*/
 ScatterPlot.prototype.plot = function(selection) {
-    if(!selection){
+    if (!selection) {
        throw new PlottingError("DOM element can't be null or empty"); 
     }
 
@@ -266,7 +266,7 @@ ScatterPlot.prototype.plot = function(selection) {
 /** This is the abstract class of all line graphs.
     It contains a set of methods which are common to all
     specialized line graphs such as ROC curve*/ 
-var BasicLineGraph = function(data){
+var BasicLineGraph = function(data) {
     // calling the base class 
     BasePlot.call(this, data);
 
@@ -278,22 +278,22 @@ var BasicLineGraph = function(data){
 BasicLineGraph.prototype = Object.create(BasePlot.prototype);
 BasicLineGraph.prototype.constructor = BasicLineGraph;
 
-BasicLineGraph.prototype.setLegendName = function(legend){
-    if(!legend){
+BasicLineGraph.prototype.setLegendName = function(legend) {
+    if (!legend) {
         throw new PlottingError("legend can't be null or empty");
     }    
     this.legendName = legend;
 };
 
 BasicLineGraph.prototype.setLineColor = function(color){
-    if(!color){
+    if (!color) {
         throw new PlottingError("Line color can't be null or empty");
     }    
     this.lineColor = color;
 };
 
 BasicLineGraph.prototype.setLineWidth = function(lineWidth){
-    if(!lineWidth){
+    if (!lineWidth) {
         throw new PlottingError(" Line width can't be null or empty");
     }    
     this.lineWidth = lineWidth;
@@ -306,7 +306,7 @@ BasicLineGraph.prototype.setLineWidth = function(lineWidth){
 /** This is a concrete class of BasicLineGraph and it is 
     used to generate ROC curve using an array of array of points
     such as [[0.0, 0.0], ..., [1.0, 1.0]]*/
-var ROCGraph = function(data){
+var ROCGraph = function(data) {
     // calling the base class 
     BasePlot.call(this, data);
 
@@ -324,8 +324,8 @@ ROCGraph.prototype.constructor = ROCGraph;
 
 // cutoff probability and it's X and Y coordinates 
 // will be draw on the ROC graph 
-ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
-    if(this.marker){
+ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r) {
+    if (this.marker) {
         this.marker.remove();
     }
     this.marker = this.svg.append("circle")
@@ -334,7 +334,7 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
             .attr("r", r)
             .attr("fill", "red");
 
-    if(this.markerHorizontalIndicator){
+    if (this.markerHorizontalIndicator) {
         this.markerHorizontalIndicator.remove();
     }
     this.markerHorizontalIndicator = this.svg.append("line")
@@ -346,7 +346,7 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
         .attr('stroke', '#ff0000')
         .attr("stroke-dasharray", ("5, 5"));
     
-    if(this.marketVerticalIndicator){
+    if (this.marketVerticalIndicator) {
         this.marketVerticalIndicator.remove();
     }
     this.marketVerticalIndicator = this.svg.append("line")
@@ -359,8 +359,8 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
         .attr("stroke-dasharray", ("5, 5"));
 };
 
-ROCGraph.prototype.plot = function(selection){
-    if(!selection){
+ROCGraph.prototype.plot = function(selection) {
+    if (!selection) {
        throw new PlottingError("DOM element can't be null or empty"); 
     }
 
@@ -387,7 +387,7 @@ ROCGraph.prototype.plot = function(selection){
     //setting up X and Y axis, appropriate to basic line graph
     var xAxis = d3.svg.axis()
         .ticks(10)
-        .tickFormat(function(d){            
+        .tickFormat(function(d) {            
             return d3.round(d,2);
         })
         .scale(xScale)
@@ -453,7 +453,7 @@ ROCGraph.prototype.plot = function(selection){
 /******************** BaseHistogram starts *************/
 /** This class represents properties common to 
     all histogram classes*/
-var BaseHistogram = function(data){
+var BaseHistogram = function(data) {
     //calling the base class constructor
     BasePlot.call(this,data);
 
@@ -466,8 +466,8 @@ var BaseHistogram = function(data){
 BaseHistogram.prototype = Object.create(BasePlot.prototype);
 BaseHistogram.prototype.constructor = BaseHistogram;
 
-BaseHistogram.prototype.setBarColor = function(color){
-    if(arguments.length){
+BaseHistogram.prototype.setBarColor = function(color) {
+    if (arguments.length) {
         this.barColor = color;
     }
 };
@@ -480,7 +480,7 @@ BaseHistogram.prototype.setBarColor = function(color){
 /*****************Histogram class starts*****************/
 /**This class generates a histogram using an array of numbers
    such as [1.0, 10.3, 100.2, ....] with a given number of buckets*/
-var Histogram = function(data){
+var Histogram = function(data) {
     //calling the base class constructor
     BaseHistogram.call(this,data);
 
@@ -492,7 +492,7 @@ Histogram.prototype = Object.create(BaseHistogram.prototype);
 Histogram.prototype.constructor = Histogram;
 
 Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {    
-    if(numOfBuckets <= 0){
+    if (numOfBuckets <= 0) {
         throw new PlottingError("numOfBuckets should be positive");
     }
     this.numOfBuckets = numOfBuckets;
@@ -501,7 +501,7 @@ Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {
 //This is the main function of the Histogram class
 //Once called graph will be drawn inside the SVG container 
 Histogram.prototype.plot = function(selection) {
-    if(!selection){
+    if (!selection) {
        throw new PlottingError("DOM element can't be null or empty"); 
     }
 
@@ -566,7 +566,7 @@ Histogram.prototype.plot = function(selection) {
 /************HistogramUsingCalculatedFrequencies class starts******/
 /**This class generates a histogram using calculated frequencies
    Data format should be [[10,'Sun'],[20, 'Mon'],[30, 'Tue']]*/
-var HistogramUsingCalculatedFrequencies = function(data){
+var HistogramUsingCalculatedFrequencies = function(data) {
     //calling the base class constructor
     BaseHistogram.call(this, data);    
 };
@@ -575,7 +575,7 @@ HistogramUsingCalculatedFrequencies.prototype = Object.create(BaseHistogram.prot
 HistogramUsingCalculatedFrequencies.prototype.constructor = HistogramUsingCalculatedFrequencies;
 
 HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
-    if(!selection){
+    if (!selection) {
        throw new PlottingError("DOM element can't be null or empty"); 
     }
 
