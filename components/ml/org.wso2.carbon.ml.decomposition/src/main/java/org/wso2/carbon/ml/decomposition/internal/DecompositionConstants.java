@@ -19,7 +19,7 @@ package org.wso2.carbon.ml.decomposition.internal;
 
 /**
  * This class contains a set of common constants used by
- * decomposition module
+ * decomposition module.
  */
 public class DecompositionConstants {
 
@@ -39,5 +39,6 @@ public class DecompositionConstants {
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
+
     public static final String ML_PROJECTS = "MLProjects";
 }

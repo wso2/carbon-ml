@@ -22,9 +22,17 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.decomposition.exceptions.DecompositionException;
 
 /**
- * This maps data point to response varialbe
+ * This maps data point to response variable
  */
 public class DataPointToResponseMapper implements Function<LabeledPoint, Double> {
+
+    /**
+     * Returns the label of each LabelPoint
+     *
+     * @param labeledPoint
+     * @return
+     * @throws DecompositionException
+     */
     @Override
     public Double call(LabeledPoint labeledPoint) throws DecompositionException {
         return labeledPoint.label();

@@ -18,8 +18,8 @@
 package org.wso2.carbon.ml.decomposition.spark.dto;
 
 /**
- * This class represents the data transfer object between
- * visualizePCA method and jaggery applications.
+ * This class is used to transfer information between
+ * visualizePCA method and other applications.
  */
 public class PCAResult {
     private double firstComponent;
@@ -40,7 +40,7 @@ public class PCAResult {
         return secondComponent;
     }
 
-        public double getLabel() {
+    public double getLabel() {
         return label;
     }
 }

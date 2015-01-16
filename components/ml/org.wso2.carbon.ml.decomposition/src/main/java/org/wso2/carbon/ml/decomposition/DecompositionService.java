@@ -26,12 +26,13 @@ import java.util.List;
 
 /**
  * This interface lists the services offered by decomposition
- * service
+ * service.
  */
 public interface DecompositionService {
 
     /**
-     * This method performs PCA for a given dataset
+     * This method performs PCA for a given dataset.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @param dataSet DataSet on which PCA is performing (in JavaRDD<Vector> format)
      * @param noComponentsRetained Number of singular values retained after PCA operation
@@ -41,7 +42,8 @@ public interface DecompositionService {
             throws DecompositionException;
 
     /**
-     * This method transforms a given dataset using pre-calculated PCA
+     * This method transforms a given dataset using pre-calculated PCA.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @param data DataSet on which PCA is performing (in JavaRDD<Vector> format
      * @return Transformed dataset in JavaRDD<Vector> format
@@ -52,7 +54,8 @@ public interface DecompositionService {
 
     /**
      * This method is used to visualize a given dataset associated with
-     * a given workflowID
+     * a given workflowID.
+     *
      * @param workflowID WorkflowID the workflow ID associated with this dataset
      * @param response This represents the response variable of the dataset
      * @return Fits two principle components of the transformed dataset
