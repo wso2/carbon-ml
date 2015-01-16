@@ -90,7 +90,7 @@ public class SparkDecompositionServiceUtil {
         } catch (IOException ex) {
             throw new DecompositionException(
                 "An error occurred while saving a matrix: " + ex.getMessage(), ex);
-        }finally {
+        } finally {
             closeResource(fileOutStream);
             closeResource(matrixOutStream);
         }
@@ -120,8 +120,7 @@ public class SparkDecompositionServiceUtil {
         } catch (ClassNotFoundException ex) {
             throw new DecompositionException(
                     "An error occurred while reading a matrix Object: " + ex.getMessage(), ex);
-        }
-        finally {
+        } finally {
             closeResource(fileInputStream);
             closeResource(matrixInputStream);
         }
@@ -173,14 +172,14 @@ public class SparkDecompositionServiceUtil {
             }
             return dataPoints;
 
-        }catch (DatabaseHandlerException ex) {
+        } catch (DatabaseHandlerException ex) {
             throw new DecompositionException(
                 "An error occurred while reading data from database: "+ex.getMessage(), ex);
 
-        }catch (DecompositionException ex) {
+        } catch (DecompositionException ex) {
             throw new DecompositionException(
                 "An error occurred while reading data from database: "+ex.getMessage(), ex);
-        }finally {
+        } finally {
             // Switching back to original class loader
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
@@ -198,7 +197,7 @@ public class SparkDecompositionServiceUtil {
         }
         try {
             resource.close();
-        }catch (IOException ex) {
+        } catch (IOException ex) {
             throw  new DecompositionException(
                     "An error occurred while closing the resource: "+ex.getMessage(), ex);
         }

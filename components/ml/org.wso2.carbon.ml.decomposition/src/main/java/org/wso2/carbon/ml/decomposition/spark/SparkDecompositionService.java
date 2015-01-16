@@ -131,7 +131,7 @@ public class SparkDecompositionService implements DecompositionService {
         List<Double> labels = labelsRDD.toArray();
 
         List<PCAResult> pcaResults = new ArrayList<PCAResult>();
-        for (int i=0; i<pcaDataPoints.size();i++) {
+        for (int i=0; i<pcaDataPoints.size(); i++) {
             double[] pcaData = pcaDataPoints.get(i).toArray();
             double label = labels.get(i);
             pcaResults.add(new PCAResult(pcaData[0], pcaData[1], label));
