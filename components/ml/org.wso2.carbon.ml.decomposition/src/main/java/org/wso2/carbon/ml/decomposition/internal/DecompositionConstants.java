@@ -19,7 +19,7 @@ package org.wso2.carbon.ml.decomposition.internal;
 
 /**
  * This class contains a set of common constants used by
- * decomposition module
+ * decomposition module.
  */
 public class DecompositionConstants {
 

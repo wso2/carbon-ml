@@ -22,6 +22,7 @@ package org.wso2.carbon.ml.decomposition.exceptions;
  * related issues are occurred.
  */
 public class SparkConfigException extends Exception{
+
     public SparkConfigException(String message, Throwable cause){
         super(message, cause);
     }
