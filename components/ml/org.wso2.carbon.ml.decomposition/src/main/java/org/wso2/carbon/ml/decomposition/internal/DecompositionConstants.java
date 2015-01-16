@@ -29,8 +29,8 @@ public class DecompositionConstants {
     // Dataset related constants
     public static final String EMPTY = "";
     public static final String NA = "NA";
-    public static final String CSV = ".csv";
-    public static final String TSV = ".tsv";
+    public static final String CSV = "csv";
+    public static final String TSV = "tsv";
 
     // Constants related to drawing random samples
     public static final int RANDOM_SAMPLE_SIZE = 10000;
