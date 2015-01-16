@@ -25,6 +25,14 @@ import org.apache.spark.mllib.regression.LabeledPoint;
  * This maps each data point to features
  */
 public class DataPointToFeatureMapper implements Function<LabeledPoint, Vector> {
+
+    /**
+     * Returns the feature of each LabelPoint
+     *
+     * @param labeledPoint
+     * @return
+     * @throws Exception
+     */
     @Override
     public Vector call(LabeledPoint labeledPoint) throws Exception {
         return labeledPoint.features();

@@ -39,5 +39,6 @@ public class DecompositionConstants {
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
+
     public static final String ML_PROJECTS = "MLProjects";
 }

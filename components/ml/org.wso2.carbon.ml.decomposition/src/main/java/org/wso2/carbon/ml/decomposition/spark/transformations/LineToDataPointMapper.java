@@ -40,6 +40,13 @@ public class LineToDataPointMapper implements Function<String, LabeledPoint> {
         this.labelIndex = labelIndex;
     }
 
+    /**
+     * Transforms each line into a LabeledPoint
+     *
+     * @param line Row in the dataset
+     * @return an instance of LabeledPoint
+     * @throws DecompositionException
+     */
     @Override
     public LabeledPoint call(String line) throws DecompositionException {
         try {
