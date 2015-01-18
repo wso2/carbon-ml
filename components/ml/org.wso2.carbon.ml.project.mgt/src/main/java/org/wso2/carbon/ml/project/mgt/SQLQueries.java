@@ -36,6 +36,9 @@ public class SQLQueries {
 	public static final String CREATE_NEW_WORKFLOW = "INSERT INTO ML_WORKFLOW (WORKFLOW_ID, " +
 	        "PARENT_WORKFLOW_ID, PROJECT_ID, DATASET_ID,NAME) VALUES(?,?,?,?,?)";
 
+	public static final String UPDATE_WORKFLOW_NAME = "UPDATE ML_WORKFLOW SET NAME = ? WHERE " +
+			" WORKFLOW_ID = ? ";
+
 	public static final String DELETE_WORKFLOW = "DELETE FROM ML_WORKFLOW WHERE WORKFLOW_ID = ?";
 
 	public static final String GET_PROJECT_WORKFLOWS = "SELECT WORKFLOW_ID,NAME FROM ML_WORKFLOW" +

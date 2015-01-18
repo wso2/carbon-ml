@@ -23,6 +23,14 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
+import org.wso2.carbon.ml.project.mgt.internal.dto.Project;
+import org.wso2.carbon.ml.project.mgt.internal.dto.Workflow;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class contains services related to project and workflow management
@@ -177,6 +185,25 @@ public class ProjectManagementService {
 	}
 
 	/**
+	 * This method update the workflow name associated with given workflowID
+	 * @param workflowID ID of this workflow
+	 * @param name Updated name of the workflow
+	 * @throws ProjectManagementServiceException
+	 */
+	public void updateWorkflowName(String workflowID, String name)
+			                        throws ProjectManagementServiceException {
+		try {
+			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			dbHandler.updateWorkdflowName(workflowID, name);
+
+		} catch (DatabaseHandlerException e) {
+			throw new ProjectManagementServiceException(
+					"An error has occurred while updating workflow: " +	workflowID+
+					" error message: "+e.getMessage(),e);
+		}
+	}
+
+	/**
 	 * Delete an existing workflow.
 	 *
 	 * @param workflowID
@@ -225,15 +252,62 @@ public class ProjectManagementService {
 	 *            Unique Identifier of the data-set associated with the workflow
 	 * @throws DatasetServiceException
 	 */
-	public void setDefaultFeatureSettings(String datasetID, String workflowID)
+	public void setDefaultFeatureSettings(String projectID, String workflowID)
 			throws ProjectManagementServiceException {
 		try {
 			DatabaseHandler dbHandler = DatabaseHandler.getDatabaseHandler();
+			String datasetID = getdatasetID(projectID);
 			dbHandler.setDefaultFeatureSettings(datasetID, workflowID);
 		} catch (DatabaseHandlerException e) {
 			logger.error("Failed to set default feature settings: " + e.getMessage(), e);
 			throw new ProjectManagementServiceException("Failed to set default feature settings: " +
 					e.getMessage(), e);
+		}
+	}
+
+	public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException {
+		try {
+			List<Project> projectsOfThisTenant = new ArrayList<Project>();
+			String[][] projects = this.getTenantProjects(tenantId);
+			if( projects == null){
+				return projectsOfThisTenant;
+			}
+			for (String[] project : projects) {
+				if(project == null){
+					continue;
+				}
+				String id = project[0];
+				String name = project[1];
+				Date createdDate = new SimpleDateFormat("yyyy-MM-dd").parse(project[2]);
+
+				List<Workflow> workflowsOfThisProject = new ArrayList<Workflow>();
+
+				String[][] workflows = getProjectWorkflows(id);
+				if(workflows != null) {
+					for (String[] workflow : workflows) {
+						if (workflow == null) {
+							continue;
+						}
+						String currentWorkflowId = workflow[0];
+						String currentWorkflowName = workflow[1];
+
+						Workflow currentWorkflow = new Workflow(currentWorkflowId, currentWorkflowName);
+						workflowsOfThisProject.add(currentWorkflow);
+					}
+				}
+                Project currentProject = new Project(id, name, workflowsOfThisProject,createdDate);
+				projectsOfThisTenant.add(currentProject);
+			}
+			return projectsOfThisTenant;
+
+		} catch (ParseException ex) {
+			throw new ProjectManagementServiceException(
+			    "An error has occurred while converting project creating date of tenant: " +tenantId+
+				    ex.getMessage(), ex);
+		} catch (ProjectManagementServiceException ex) {
+			throw new ProjectManagementServiceException(
+			    "An error has occurred while extracting projects of tenant: " +tenantId+
+					ex.getMessage(), ex);
 		}
 	}
 }

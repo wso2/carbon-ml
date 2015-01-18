@@ -19,6 +19,7 @@ package org.wso2.carbon.ml.dataset;
 
 import org.json.JSONArray;
 import org.wso2.carbon.ml.database.dto.FeatureSummary;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 
 import java.io.IOException;
@@ -172,4 +173,12 @@ public interface DatasetService {
      * @throws              org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException
      */
     public String getModelId(String workflowId) throws DatasetServiceException;
+
+    /**
+     *
+     * @param projectId
+     * @return
+     * @throws DatasetServiceException
+     */
+    public String getDatasetId(String projectId) throws DatasetServiceException, DatabaseHandlerException;
 }

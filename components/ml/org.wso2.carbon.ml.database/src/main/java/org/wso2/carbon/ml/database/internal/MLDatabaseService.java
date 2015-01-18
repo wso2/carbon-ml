@@ -918,6 +918,30 @@ public class MLDatabaseService implements DatabaseService{
         return getModelExecutionTime(modelId, SQLQueries.GET_MODEL_EXE_START_TIME);
     }
 
+    @Override
+    public String getDatasetId(String projectId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
+            statement.setString(1, projectId);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getString(1);
+            } else {
+                throw new DatabaseHandlerException(
+                        "No dataset id associated with project id: " + projectId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while extracting dataset id for project id: " + projectId);
+        }
+    }
+
     /**
      * This helper class is used to extract model execution start/end time
      *
@@ -957,4 +981,6 @@ public class MLDatabaseService implements DatabaseService{
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+
+
 }

@@ -108,6 +108,8 @@ public class SQLQueries {
                                                           "FROM " +
                                                           "ML_MODEL WHERE MODEL_ID =  ?";
 
+    public static final String GET_DATASET_ID = "SELECT DATASET_ID FROM ML_DATASET WHERE PROJECT_ID = ?";
+
     /*
      * private Constructor to prevent any other class from instantiating.
      */

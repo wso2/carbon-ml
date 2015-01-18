@@ -17,19 +17,15 @@
  */
 package org.wso2.carbon.ml.database;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.json.JSONArray;
+import org.wso2.carbon.ml.database.dto.*;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.json.JSONArray;
-import org.wso2.carbon.ml.database.dto.FeatureSummary;
-import org.wso2.carbon.ml.database.dto.HyperParameter;
-import org.wso2.carbon.ml.database.dto.ModelSummary;
-import org.wso2.carbon.ml.database.dto.Workflow;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.database.dto.SamplePoints;
 
 public interface DatabaseService {
     
@@ -254,4 +250,12 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
+
+    /**
+     *
+     * @param projectId
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public String getDatasetId(String projectId) throws DatabaseHandlerException;
 }

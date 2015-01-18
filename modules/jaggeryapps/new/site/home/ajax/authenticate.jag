@@ -1,0 +1,26 @@
+<%
+    var log = new Log();
+    var username = request.getParameter("username");
+    var password = request.getParameter("password");
+    var site = require("/site/conf/site.json");
+    var carbon = require('carbon');
+    try{
+        var server = new carbon.server.Server("https://" + site.hostname+":" + site.httpsport + "/admin");
+        var success = server.authenticate(username,password);
+        if (success === true) {
+            var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+            var tenantDomain = MultitenantUtils.getTenantDomain(username);
+            var tenantId = carbon.server.tenantId({'domain': tenantDomain});
+
+            session.put("logged.user",username);
+            session.put("tenantId",tenantId);
+            response.sendRedirect("../../project/projects.jag");
+        } else {
+            log.error("Invalid Authentication");
+            response.sendRedirect("../login.jag");
+        }
+    } catch(e) {
+        log.error("An error occured while authenticating user: " + username,e);
+        response.sendRedirect("../login.jag");
+  }
+%>

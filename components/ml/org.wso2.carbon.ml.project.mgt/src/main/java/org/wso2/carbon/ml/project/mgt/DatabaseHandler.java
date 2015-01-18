@@ -18,18 +18,17 @@
 
 package org.wso2.carbon.ml.project.mgt;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DatabaseHandler {
 
@@ -202,14 +201,14 @@ public class DatabaseHandler {
 			result.last();
 			int size = result.getRow();
 			if (size > 0) {
-				projects = new String[3][size];
+				projects = new String[size][3];
 				result.beforeFirst();
 				// put the result set to the string array
 				for (int i = 0; i < size; i++) {
 					result.next();
-					projects[0][i] = result.getObject(1).toString();
-					projects[1][i] = result.getString(2);
-					projects[2][i] = result.getDate(3).toString();
+					projects[i][0] = result.getObject(1).toString();
+					projects[i][1] = result.getString(2);
+					projects[i][2] = result.getDate(3).toString();
 				}
 			}
 			return projects;
@@ -296,6 +295,38 @@ public class DatabaseHandler {
 		}
 	}
 
+	public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException {
+		Connection connection = null;
+		PreparedStatement updateWorkflow = null;
+
+		try{
+			connection = dataSource.getConnection();
+			connection.setAutoCommit(false);
+			updateWorkflow = connection.prepareStatement(SQLQueries.UPDATE_WORKFLOW_NAME);
+
+			updateWorkflow.setString(1, name);
+			updateWorkflow.setString(2, workflowId);
+			updateWorkflow.executeUpdate();
+			connection.commit();
+
+			if(logger.isDebugEnabled()){
+				if (logger.isDebugEnabled()) {
+					logger.debug("Successfully updated workflow: " + workflowId);
+				}
+			}
+		} catch (SQLException e) {
+			MLDatabaseUtil.rollBack(connection);
+			throw new DatabaseHandlerException("An error occurred while updating workflow " +
+					workflowId + ": " + e.getMessage(),e);
+		}finally {
+			// enable auto commit
+			MLDatabaseUtil.enableAutoCommit(connection);
+
+			// close the database resources
+			MLDatabaseUtil.closeDatabaseResources(connection, updateWorkflow);
+		}
+	}
+
 	/**
 	 * Deletes a workflow.
 	 *
@@ -354,13 +385,13 @@ public class DatabaseHandler {
 			result.last();
 			int noOfWorkflows = result.getRow();
 			if (noOfWorkflows > 0) {
-				workFlows = new String[2][noOfWorkflows];
+				workFlows = new String[noOfWorkflows][2];
 				result.beforeFirst();
 				// put the result set to the string array
 				for (int i = 0; i < noOfWorkflows; i++) {
 					result.next();
-					workFlows[0][i] = result.getString(1);
-					workFlows[1][i] = result.getString(2);
+					workFlows[i][0] = result.getString(1);
+					workFlows[i][1] = result.getString(2);
 				}
 			}
 			return workFlows;

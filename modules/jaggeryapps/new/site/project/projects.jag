@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,264 +8,295 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
 </head>
+
+<%
+	session.put( 'tenantId', 'admin');
+%>
 
 <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+    <div class="container col-lg-12 col-md-12 col-sm-12">
 
-<!-- header -->
-<header>
-<div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
-			<div class="dropdown-menu">
-				<div class="cu-arrow"></div>
-				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
-				</div>
-			</div>			
-		</div>
-	</div>
-</div>
-</header>
-<!-- /header -->
+        <!-- header -->
+        <header>
+            <div class="row wr-global-header">
+                <div class="col-sm-8 app-logo"><img src="../../images/logo.png" />
+                    <h2 class="app-title">Machine Learner</h2>
+                </div>
+                <div class="col-sm-4">
+                    <div class="wr-auth pull-right">
+                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+                        <div class="dropdown-menu">
+                            <div class="cu-arrow"></div>
+                            <div class="dropdown-menu-content">
+                                <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- /header -->
 
-<!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-		<div class="wr-project">
-			<!--span class="title">PROJECT \ </span><span>My Test Project#1</span-->
-		</div>
+        <!-- secondary header - app bar -->
+        <div id="nav" class="row wr-app-bar">
+            <div class="col-md-9 wr-action-container">
+                <div class="wr-project">
+                    <!--span class="title">PROJECT \ </span><span>My Test Project#1</span-->
+                </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-add-new">Create Project</a>
-			<!--a href="#" class="cu-btn btn-save">Save and Create</a-->
-		</div>
-	</div>
+                <div class="wr-action-btn-bar">
+                    <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
+                    <!--a href="#" class="cu-btn btn-save">Save and Create</a-->
+                </div>
+            </div>
 
-	<div class="col-md-3">
-		<div class="wr-secondary-links pull-right">
-			<!-- empty -->
-			<!--a href="#" class="cu-btn btn-prev">Previous</a-->
-			<!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
-		</div>
-	</div>
-</div>
-<!-- secondary header - app bar -->
-
-
-<!-- content/body -->
-<div class="row">
-	<div class="col-lg-12 wr-secondary-bar">
-		
-		<!-- Wizard -->
-	    <!--ul class="nav nav-pills nav-wizard">
-	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-	    </ul-->
-
-		
-	</div>
-</div>
-<div class="row">
-	<div class="col-md-12">
-		
-
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+            <div class="col-md-3">
+                <div class="wr-secondary-links pull-right">
+                    <!-- empty -->
+                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                </div>
+            </div>
+        </div>
+        <!-- secondary header - app bar -->
 
 
-			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-			  <div class="panel panel-default">
-			    <div class="panel-heading" role="tab" id="headingOne">
-			      <h4 class="panel-title">
-			      	<table class="tbl-projects">
-				      	<tr>
-				      		<td>
-						        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="ctrl-exp-col">
-						          	<span class="cu-acc-head-title">Project #1</span>
-						          	<span class="cu-acc-head-created">[ created: 14-05-2014 ]</span>
-						          	<span class="cu-acc-head-workflow"><strong>2</strong> Workflows Available</span>
-						        </a>	
-						    </td>
-						    <td class="c-right">			        
-						        <div>
-								    <a href="#" class="cu-reg-btn btn-add-new">Add Workflow</a>
-									<a href="#" class="cu-reg-btn btn-delete">Delete Project</a>
-								</div>
-							</td>
-						</tr>
-					</table>
-			      </h4>
-			    </div>
-			    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-			      <div class="panel-body">
-			        <table>
-					  <tr>
-					  	<td class="c-padd project-description" valign="top">Project Description goes here. This can be a lengthier description and is a test.</td>
-					  	<td>
-					  		<table class="tbl-project-desc">
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;Workflow #1</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;New Workflow #2</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>					 			
-					 		</table>
-					  	</td>
-					  </tr>
-					</table>
-			      </div>
-			    </div>
-			  </div>
-			  <div class="panel panel-default">
-			    <div class="panel-heading" role="tab" id="headingTwo">
-			      <h4 class="panel-title">
-					<table>
-				      	<tr>
-				      		<td>
-						        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" class="ctrl-exp-col">
-						          	<span class="cu-acc-head-title">Project #2</span>
-						          	<span class="cu-acc-head-created">[ created: 14-05-2014 ]</span>
-						          	<span class="cu-acc-head-workflow"><strong>4</strong> Workflows Available</span>
-						        </a>	
-						    </td>
-						    <td class="c-right">			        
-						        <div>
-								    <a href="#" class="cu-reg-btn btn-add-new">Add Workflow</a>
-									<a href="#" class="cu-reg-btn btn-delete">Delete Project</a>
-								</div>
-							</td>
-						</tr>
-					</table>
-			      </h4>
-			    </div>
-			    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-			    <div class="panel-body">
-			        <table>
-					  <tr>
-					  	<td class="c-padd project-description" valign="top">Project Description</td>
-					  	<td>
-					  		<table class="tbl-project-desc">
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;Workflow #1</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;New Workflow #2</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>	
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;Workflow #3</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>
-					 			<tr>
-					 				<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;New Workflow #4</a></td>
-					 				<td>
-										<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>
-										<a href="#" class="cu-level2-btn btn-delete-dark">Delete</a>
-					 				</td>
-					 			</tr>					 							 			
-					 		</table>
-					  	</td>
-					  </tr>
-					</table>
-				</div>
-			    </div>
-			  </div>
-			  <div class="panel panel-default">
-			    <div class="panel-heading" role="tab" id="headingThree">
-			      <h4 class="panel-title">
-					<table>
-				      	<tr>
-				      		<td>
-						        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" class="ctrl-exp-col">
-						          	<span class="cu-acc-head-title">Project New #3</span>
-						          	<span class="cu-acc-head-created">[ created: 14-05-2014 ]</span>
-						          	<span class="cu-acc-head-workflow"><img src="../../images/icons/ico-alert.png" class="ico-align" />No Workflows Available</span>
-						        </a>	
-						    </td>
-						    <td class="c-right">			        
-						        <div>
-								    <a href="#" class="cu-reg-btn btn-add-new">Add Workflow</a>
-									<a href="#" class="cu-reg-btn btn-delete">Delete Project</a>
-								</div>
-							</td>
-						</tr>
-					</table>
-			      </h4>
-			    </div>
-			    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-			      <div class="panel-body">
-			        <p>No Workflows Available. Click 'Add Workflow' button to create one.</p>
-			      </div>
-			    </div>
-			  </div>
-			</div>
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-lg-12 wr-secondary-bar">
 
-		</div>
-		<!-- /content -->
+                <!-- Wizard -->
+                <!--ul class="nav nav-pills nav-wizard">
+        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+    </ul-->
 
 
-	</div>
-</div>
-<!-- /content/body -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
 
-</div>
-    
+                <!-- content -->
+                <div class="container col-md-12 col-centered wr-content">
+
+
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        
+                    </div>
+
+                </div>
+                <!-- /content -->
+
+
+            </div>
+        </div>
+        <!-- /content/body -->
+
+    </div>
 
 
 
 
-<!--footer class="footer">
-        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+
+    <!--footer class="footer">
+    <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
 
 
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $('#nav').affix({
+                offset: {
+                    top: $('header').height()
+                }
+            });
+
+            loadProjects();
+
+        });
+
+        function deleteProject(projectID) {
+            $.ajax({
+                type: "POST",
+                url: "./ajax/DeleteProject.jag",
+                data: {
+                    'projectID': projectID
+                },
+                success: function(res) {
+
+                    console.log("DELETED");
+                },
+                error: function(res) {
+                    var message = "An error occurred while retrieving tenant projects.";
+                }
+            });
+            
+            $('#accordion').empty();
+            loadProjects();
+            return false; // preventing default action
+        }
+
+        function deleteWorkflow(workflowId){
+            $.ajax({
+            	type: 'POST',
+            	url: '../workflow/ajax/DeleteWorkflow.jag',
+            	data : {
+            		wfid : workflowId
+            	},
+            	success: function(res){
+            		console.log("success: "+res);
+
+            	},
+            	error: function(res){
+            		console.log("error: "+res);
+
+            	}
+            });
+
+            $('#accordion').empty();
+            loadProjects();
+            return false; // preventing default action
+        }
+
+        function loadProjects() {
+            console.log("TEST");
+            $.ajax({
+                type: "POST",
+                url: "./ajax/GetAllProjects.jag",
+                data: {
+                },
+                success: function(data) {
+                    
+                    //TODO: add project description load                    
+                    var tenantProjects = JSON.parse(data);
+                    //tenantProjects = []; // uncomment to test no projects case
+                    if (tenantProjects.length == 0) {
+                        var accordionPanelNoProjects = "<p class='text-center'>No projects available. Click 'Create Project' button to create one.</p>";
+                        $("#accordion").append(accordionPanelNoProjects);    
+                    }
+                    else {
+
+                        for (var i = 0; i < tenantProjects.length; i++) {
+                            console.log("Project ID: " + tenantProjects[i]['projectID'] + " Project name: " + tenantProjects[i]['projectName'] + " Created: " + tenantProjects[i]['projectCreatedDate']);
+
+                            //tenantProjects[i]['noOfWorkflows'] = 0;  // uncomment to test no workflows case
+                            var workflowString = "";
+                            if (tenantProjects[i]['noOfWorkflows'] == 0) {
+                                workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No Workflows Available';
+                            }
+                            else if (tenantProjects[i]['noOfWorkflows'] == 1) {
+                                workflowString = '<strong>1</strong> Workflow available';
+                            }
+                            else {
+                                workflowString = '<strong>'+tenantProjects[i]['noOfWorkflows']+'</strong> Workflows available';
+                            }
+
+                            //var testString = "'hello'";
+                            var projectIDString = "'"+tenantProjects[i]['projectID']+"'";
+                            var projid = tenantProjects[i]['projectID'];
+                            var projna = tenantProjects[i]['projectName'];
+                            var createWorkflow = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna;                            
+
+                            var accordionPanel = '' + 
+                                '<div class="panel panel-default">' +
+                                    '<div class="panel-heading" role="tab" id="heading'+i+'">' +
+                                        '<h4 class="panel-title">' +
+                                            '<table class="tbl-projects" projectID="' + tenantProjects[i]['projectID'] + '">' +
+                                                '<tr>' +
+                                                    '<td>' +
+                                                        '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
+                                                            '<span class="cu-acc-head-title">' + tenantProjects[i]['projectName'] + '</span>' +
+                                                            '<span class="cu-acc-head-created">[ created: ' + tenantProjects[i]['projectCreatedDate'].replace("00:00:00 IST ", "") + ' ]</span>' +
+                                                            '<span class="cu-acc-head-workflow">' + workflowString + '</span>' +
+                                                        '</a>' +
+                                                    '</td>' +
+                                                    '<td class="c-right">' +
+                                                        '<div>' +
+                                                            '<a href="'+createWorkflow+'" class="cu-reg-btn btn-add-new">Add Workflow</a>' +
+                                                            '<a href="#" onclick=" return deleteProject(' + projectIDString + ')" class="cu-reg-btn btn-delete">Delete Project</a>' +
+                                                        '</div>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                            '</table>' +
+                                        '</h4>' +
+                                    '</div>' +
+                                    '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
+                                        '<div class="panel-body">';
+                                    
+                                    if (tenantProjects[i]['noOfWorkflows'] == 0) {
+                                            accordionPanel += "<p class='text-center'>No Workflows Available. Click 'Add Workflow' button to create one.</p>";
+                                    }
+                                    else {
+                                            accordionPanel += '' +
+                                            '<table>' +
+                                                '<tr>' +
+                                                    '<td class="c-padd project-description" valign="top">Project Description goes here. This can be a lengthier ' +'description and is a test.</td>' +
+                                                    '<td>' +
+                                                        '<table class="tbl-project-desc" id="table'+i+'">';
+
+                                        for (var j = 0; j < tenantProjects[i]['noOfWorkflows']; j++) {
+                                            console.log("    Workflow ID: " + tenantProjects[i]['projectWorkflows'][j]['workflowId'] + " Workflow name: " + tenantProjects[i]['projectWorkflows'][j]['workflowName']);
+                                            var workflowId = tenantProjects[i]['projectWorkflows'][j]['workflowId'];
+                                            workflowId = "'"+workflowId+"'";
+
+                                            var wfname = tenantProjects[i]['projectWorkflows'][j]['workflowName'];
+                                            var wfid = tenantProjects[i]['projectWorkflows'][j]['workflowId'];
+                                            var createWorkflow = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&wfname='+wfname+'&wfid='+wfid;
 
 
 
-<script type="text/javascript">
+                                            accordionPanel +=   '<tr>' +
+                                                                    '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+tenantProjects[i]['projectWorkflows'][j]['workflowName']+'</a>' +
+                                                                    '</td>' +
+                                                                    '<td>' +
+                                                                        '<a href="'+createWorkflow+'" class="cu-level2-btn btn-configure-dark">Configure</a>' +
+                                                                        '<a id="del-wf" href="#" class="cu-level2-btn btn-delete-dark" onclick=" return deleteWorkflow(' +workflowId+ ')">Delete</a>' +
+                                                                    '</td>' +
+                                                                '</tr>'; 
+                                                                console.log("return deleteWorkflow(' + workflowId + ')");                                       
+                                        };
 
-$( document ).ready(function() {
+                                            accordionPanel += '' +
+                                                        '</table>' +
+                                                    '</td>' +
+                                                '</tr>' +
+                                            '</table>';
+                                    }                                
+            
+                            accordionPanel += '' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
 
-	$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
+                                $("#accordion").append(accordionPanel);                    
+                        };
+                    }                
+                },
+                error: function() {
+                    var message = "An error occurred while retrieving tenant projects.";
+                }
+            });
+            console.log("TEST 2");
+        }        
 
-		 
-}); 
-
-</script>
+    </script>
 
 </body>
+
 </html>

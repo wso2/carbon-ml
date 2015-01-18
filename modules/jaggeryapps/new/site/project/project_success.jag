@@ -8,6 +8,11 @@
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
 </head>
 
 <body>
@@ -25,7 +30,7 @@
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
 				</div>
 			</div>			
 		</div>
@@ -42,20 +47,19 @@
 		</div-->
 
 		<div class="wr-action-btn-bar">
-			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
-			<a href="#" class="cu-btn btn-save">Save and Create</a-->
-			<a href="#" class="cu-btn btn-prev">Go back Home</a>
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+			<a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a>
+			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
 		</div>
-
 	</div>
 
-	<!--div class="col-md-3">
+	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
 			<!--a href="#" class="cu-btn btn-prev">Previous</a>
-			<a href="#" class="cu-btn-reverse btn-next">Next</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
 		</div>
-	</div-->
+	</div>
 </div>
 <!-- secondary header - app bar -->
 
@@ -70,32 +74,30 @@
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-	    </ul--	>
-
-		
+	    </ul-->
+	    		
 	</div>
 </div>
+
+
 <div class="row">
 	<div class="col-md-12">
-		
 
 		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
-
-            
-			<!-- form content placeholder -->
-			
-
+		    <div class="wr-form col-lg-5 col-centered">
+                <h1 class="input-label">
+                	Project: '<%= session.get('projectName')%>' Successfully Created
+                </h1>
+                <a id="create-wf" href="#" class="">
+                    Create a new workflow for this project
+                </a>                
+			</div>
 		</div>
 		<!-- /content -->
-		<div>Project successfully created</div>
-		<a href="#">Create a workflow for this project</a>
-
-
 	</div>
 </div>
 <!-- /content/body -->
-
 </div>
     
 
@@ -109,10 +111,7 @@
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-
-
-
+<script src="../../js/bootstrap.min.js"></script>
 <script type="text/javascript">
 
 $( document ).ready(function() {
@@ -121,9 +120,25 @@ $( document ).ready(function() {
 	      offset: {
 	        top: $('header').height()
 	      }
-	});	 
-}); 
+	});	
+ 
+	$('#create-wf').on('click', function(e){
+        e.preventDefault();        
+        var projid = getParameterByName('projid');
+        var datid = getParameterByName('datid');
+        var datname = getParameterByName('datname');
+        var projna = getParameterByName('projna');
+        var url = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&datid='+datid+'&datname='+datname;
+        window.location.href = url;     
+	});
 
+	function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+});
 </script>
 
 </body>

@@ -6,8 +6,14 @@
     <title>ML - Machine Learner</title>
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %> 
+
 </head>
 
 <body>
@@ -25,7 +31,7 @@
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
 				</div>
 			</div>			
 		</div>
@@ -38,20 +44,21 @@
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
 		<div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
+			<span class="title">PROJECT \ </span><span id="title"></span>
 		</div>
 
 		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-add-new">Create Project</a>
-			<a href="#" class="cu-btn btn-save">Save Form</a>
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
+			<a href="#" class="cu-btn btn-save">Save Form</a-->
+            <a href="../project/projects.jag" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
 		</div>
 	</div>
 
 	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
-			<a href="#" class="cu-btn btn-add-new">Previous</a>
-			<a href="#" class="cu-btn btn-add-new">Next</a>
+			<a href="#" class="cu-btn btn-prev" id="prev-btn">Previous</a>
+			<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
 		</div>
 	</div>
 </div>
@@ -64,8 +71,8 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
 	    </ul>
@@ -86,15 +93,28 @@
 
 			  <!-- Nav tabs -->
 			  <ul class="nav nav-tabs" role="tablist">
-			    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Pre Process</a></li>
+			    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Preprocess</a></li>
 			    <li role="presentation"><a href="#explore" aria-controls="explore" role="tab" data-toggle="tab">Explore</a></li>
 			  </ul>
 
 			  <!-- Tab panes -->
 			  <div class="tab-content">
 			    <div role="tabpanel" class="tab-pane fade in active" id="home">
-			    	<h4>Pre Process Data</h4>	
-					<!-- data table -->
+			    	<!--h4>Pre Process Data</h4-->	
+					<table id="datasetTable">
+                        <div>Summary Statistics for the first 10,000 data rows: </div>
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Input</th>
+                            <th>Type</th>
+                            <th>Summary Statistics</th>
+                            <th>Impute</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
 				</div>
 			    <div role="tabpanel" class="tab-pane fade" id="explore">
 			    	<h4>Explore Data</h4>
@@ -124,7 +144,9 @@
 
 
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
 
 
 
@@ -136,7 +158,212 @@ $( document ).ready(function() {
 	      offset: {
 	        top: $('header').height()
 	      }
-	});	 
+	});
+
+    var projid = getParameterByName('projid');
+    var projna = getParameterByName('projna');
+    var datid = getParameterByName('datid');
+    var datname = getParameterByName('datname');
+    var wfid = getParameterByName('wfid');
+    var wfname = getParameterByName('wfname');
+
+    $('#title').text(projna);
+
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&datid='+datid+
+            '&datname='+datname+'&wfid='+wfid+'&wfname='+wfname;        
+    });
+
+    $('#next-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+'&datid='+datid+
+            '&datname='+datname+'&wfid='+wfid+'&wfname='+wfname;
+    });
+
+
+	$('#datasetTable').dataTable({
+        "bServerSide": true,
+        "sAjaxSource": './ajax/PreProcess.jag?projid='+projid+'&datid='+datid+'&projna='+projna+'&datname='+datname+'&wfid='+wfid+'&wfname='+wfname,
+        "bProcessing": false,
+        "bLengthChange": false,
+        "bFilter": false,
+    });
+
+    // Preserve pagination when refreshing datatable 
+    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+        if(oSettings.oFeatures.bServerSide === false){
+            var before = oSettings._iDisplayStart;
+            oSettings.oApi._fnReDraw(oSettings);
+            oSettings._iDisplayStart = before;
+            oSettings.oApi._fnCalculateEnd(oSettings);
+        }
+        //draw the 'current' page
+        oSettings.oApi._fnDraw(oSettings);
+    };
+
+    $('#datasetTable').on('draw.dt', function() {
+        
+        $('.summaryStatistics').each(function() {
+            var jsonText = $(this).text();
+            console.log('text: '+jsonText);
+            // TODO: handle JSON parsing errors
+            var jsonObj  = JSON.parse(jsonText); 
+
+
+            // clear text in this cell and draw graphs
+            $(this).text("");
+
+            //get feature type
+            var closestTr = $(this).closest('tr');
+            var FeatureType = closestTr.find('.fieldType option:selected').text();
+
+            var frequencies = jsonObj[0].values;
+            
+            // transform dataset
+            var dataArray = $.map(frequencies, function(value, index) {
+                return value[1];
+            });
+            
+            if (FeatureType == 'CATEGORICAL'){          
+                
+                var w = 40;
+                var h = 40;
+                var pie = d3.layout.pie();
+                
+                var outerRadius = w / 2;
+                var innerRadius = 0;
+                var arc = d3.svg.arc()
+                                .innerRadius(innerRadius)
+                                .outerRadius(outerRadius);
+
+                  var svg = d3.select(this)
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+			    .attr("class", "pieChart");
+
+                  var arcs = svg.selectAll("g.arc")
+                        .data(pie(dataArray))
+                        .enter()
+                        .append("g")
+                        .attr("class", "arc")
+                        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
+
+                  //var color = d3.scale.category20();
+                   var color = d3.scale.ordinal().range(["#D59C0C", "#3C2B02", '#614705', '#FFD64A', '#7A5C0F', '#FFF869', '#A8801C', '#F0D74C', '#D9AE21', '#FFC400', '#D9A90A', '#BFB011', '#B29E47', '#FFD64A', '#C6B902', '#C68202', '#95773B', '#8F6908', '#4F3903', '#FFDA00']);
+                   
+                  arcs.append("path")
+                    .attr("fill", function(d, i) {
+                        return color(i);
+                    })
+                    .attr("d", arc);
+                
+            }else{
+                
+                var w = 200;
+                var h = 40;                 
+                var barPadding = 1;
+                
+                // scaling this y-axis using a linear scaler 
+                var yScale = d3.scale.linear()
+                              .domain([0, d3.max(dataArray, function(d) {
+                                 return d;
+                               })])
+                               .range([0,h]);
+                
+                var svg = d3.select(this)
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h)
+		.attr("class", "barChart");
+                
+                svg.selectAll("rect")
+                    .data(dataArray)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {
+                        return i * (w / dataArray.length);
+                    })
+                    .attr("y", function(d) {
+                        return h - yScale(d);
+                    })
+                    .attr("width", w / dataArray.length - barPadding)
+                    .attr("height", function(d) {
+                        return yScale(d);
+                    })
+                    .attr("fill", '#D59C0C');
+            }
+        });
+        
+        // TODO: AJAX call per change in the data-table is an overhead
+        // use the AJAX methods given by the datatable and improve this section
+        $('.fieldType').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();            
+            var selectedFeatureType = this.options[e.target.selectedIndex].text;
+            var workflowId = getParameterByName('wfid');
+
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateFeatureType.jag",
+                data: {
+                    'FEATURE_TYPE': selectedFeatureType,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                }
+            });
+            // refresh datatable, preserving the current page
+            $('#datasetTable').dataTable().fnStandingRedraw();
+        });
+
+        $('.includeFeature').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();
+            var selectionFlag = 'false';
+
+            if (this.checked) {
+                selectionFlag = 'true';
+            }
+
+            var workflowId = getParameterByName('wfid');
+            
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateInputSelection.jag",
+                data: {
+                    'IS_FEATURE_SELECTED': selectionFlag,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                }
+            });
+        });
+
+        $('.imputeMethod').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();
+            var imputedMethod = this.options[e.target.selectedIndex].text;
+            var workflowId = getParameterByName('wfid');
+
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateImputeMethod.jag",
+                data: {
+                    'IMPUTE_OPTION': imputedMethod,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                }
+            });
+        });
+
+    });
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }	 
 }); 
 
 </script>

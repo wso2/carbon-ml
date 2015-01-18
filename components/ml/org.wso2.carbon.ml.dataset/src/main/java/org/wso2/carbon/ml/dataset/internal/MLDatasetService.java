@@ -401,4 +401,15 @@ public class MLDatasetService implements DatasetService {
                 " workflow id: "+workflowId, e);
         }
     }
+
+    @Override
+    public String getDatasetId(String projectId) throws DatasetServiceException {
+        try {
+            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
+            return dbService.getDatasetId(projectId);
+        } catch (DatabaseHandlerException ex) {
+            throw new DatasetServiceException("Failed to retrieve the dataset id associated with " +
+                    " project id: " + projectId, ex);
+        }
+    }
 }

@@ -7,14 +7,14 @@
     try{
     	var projectID = session.get('projectId');
         var datasetName = session.get('datasetName');
-        var status = mlDatasetService.deleteDataset(datasetName, projectID);
-        
-        //TODO: correctly set content headers       
-        print(status);
+        var deleteStatus = mlDatasetService.deleteDataset(datasetName, projectID);
+
+        response.contentType = 'application/json';
+        response.content = { status : deleteStatus };     
 
     }catch(e){
     	log.error("An error occurred while deleting file " + 
-        	       sourceFile.getName() + " of user " + 
-        	       session.get("logged.user"), e);
+        	    sourceFile.getName() + " of user " + 
+        	    session.get("logged.user"), e);
     }
 %>

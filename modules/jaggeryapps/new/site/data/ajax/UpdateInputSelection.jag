@@ -1,0 +1,16 @@
+<%
+    var carbon = require('carbon');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var wfid = request.getParameter('wfid');
+    try{        
+        if (wfid != null){
+            var selection = request.getParameter("IS_FEATURE_SELECTED");
+            var isSelected = (selection === "true");
+            var featureName = request.getParameter("FEATURE_NAME");            
+            mlDatasetService.updateIsIncludedFeature(featureName, wfid, isSelected);            
+        }
+    } catch(e) {
+        throw new Error("An error occured while selecting features:"+
+                        featureName+" in workflow id: "+wfid);
+    }
+%>

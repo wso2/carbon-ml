@@ -19,7 +19,12 @@
             	                           sourceFile.getName(), projectId);
         session.put("projectId", projectId);
         session.put("datasetId", datasetId);
-        session.put("datasetName", sourceFile.getName())
+        session.put("datasetName", sourceFile.getName());
+
+        response.contentType = 'application/json';
+        response.content = { projid : projectId,
+                             datid : datasetId,
+                             datname : sourceFile.getName()};
 
     } catch(e) {
         log.error("An error occurred while uploading file " + 

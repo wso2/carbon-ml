@@ -8,6 +8,11 @@
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
 </head>
 
 <body>
@@ -25,7 +30,7 @@
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
 				</div>
 			</div>			
 		</div>
@@ -38,18 +43,18 @@
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
 		<div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
+			<span class="title">PROJECT \ </span><span id="title"></span>
 		</div>
 
 		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel">Cancel</a>
+			<a href="../project/projects.jag" class="cu-btn btn-cancel">Cancel</a>
 		</div>
 	</div>
 
 	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
-			<a href="#" class="cu-btn btn-prev">Previous</a>
+			<!--a href="#" class="cu-btn btn-prev">Previous</a-->
 			<a href="#" class="cu-btn-reverse btn-next" id="btn-next">Next</a>
 		</div>
 	</div>
@@ -116,20 +121,37 @@ $( document ).ready(function() {
 	      }
 	});
 
-	$('#btn-next').on('click', function(){
-        var workflow = $('#workflow-name').val();
-        if(isValidWorkflowName(workflow)){
-        	$.ajax({
-                url : './ajax/CreateWorkflow.jag',
-                type : 'post',
-                data : {workflowName: workflow},
-                success : function(res){
-                    window.location.href = '../data/data.jag';
-                },
-                error : function(res){
-                    console.log('error: '+res.toString())
-                }
-        	});
+	var workflowName = getParameterByName('wfname');	
+    var projid = getParameterByName('projid');
+    var projna = getParameterByName('projna');
+    var datid = getParameterByName('datid'); 
+    var datname = getParameterByName('datname');
+    var currentWkName = getParameterByName('wfname');
+    var currentEkId = getParameterByName('wfid');
+
+	$('#workflow-name').val(workflowName);
+	$('#title').text(projna);
+	
+	$('#btn-next').on('click', function(){    
+		var name = $('#workflow-name').val();
+        if(isValidWorkflowName(name)){
+        	if( name !== currentWkName){
+	        	$.ajax({
+	                url : './ajax/CreateWorkflow.jag',
+	                type : 'post',
+	                data : {wfname: name,
+	                        projid: projid},
+	                success : function(res){
+	                	var wfid = res.wfid;
+	                    window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&datid='+datid+'&datname='+datname+'&wfid='+wfid+'&wfname='+name;
+	                },
+	                error : function(res){
+	                    console.log('error: '+res.toString());
+	                }
+	        	});
+	        } else {
+	        	window.location.href = '../data/data.jag?projid='+projid+'&datid='+datid+'&projna='+projna+'&datname='+datname+'&wfid='+currentEkId+'&wfname='+name;
+	        }
         }
 
 	});	 
@@ -144,6 +166,13 @@ $( document ).ready(function() {
             return false;
 	    }
 	    return true;
+    }
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 }); 
 

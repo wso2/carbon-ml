@@ -535,6 +535,19 @@ a.t-proj-workflow {
 	color:#fff;
 }
 
+.nav-pills.nav-wizard > li.disabled .nav-arrow {
+	border-color: transparent transparent transparent #eee;
+}
+
+.nav-pills.nav-wizard > li.disabled .nav-wedge {
+	border-color: #eee #eee #eee transparent;
+}
+
+.nav-pills.nav-wizard > li.disabled a {
+	background-color: #eee;
+	color:#888;
+}
+
 .nav-wedge-step {
 	display:block;
 	font-size:14px;
@@ -563,7 +576,6 @@ a.t-proj-workflow {
     box-shadow: 0 0px 0px rgba(229, 103, 23, 0.075) inset, 0 0 0px rgba(229, 103, 23, 0.6);
     outline: 0 none
 }
-
 
 .input-control file {
 	border: 1px #d9d9d9 solid !important;
@@ -603,12 +615,32 @@ a.t-proj-workflow {
 	border:1px solid #ff5353;
 }
 
+h4.h-option-head span {
+	font-weight:700;
+}
+
 
 /* content */
 .wr-content {
 	padding-top:40px;
 	clear:both;
 }
+
+/* notification and msgs */
+.ctrl-info-panel {
+	text-align: center;
+}
+
+.ctrl-info-panel h2 {
+	font-weight:400;
+}
+
+.ctrl-info-panel p {
+	font-size:14px;
+	font-weight:400;
+	color:#555;
+}
+
 
 /* sticky footer */
 .footer {
@@ -639,4 +671,12 @@ br.c-both {
 .col-centered {
 	float: none;
 	margin: 0 auto;	
+}
+
+.spcr-1 {
+	height:10px;
+}
+
+.spcr-2 {
+	height:20px;
 }
