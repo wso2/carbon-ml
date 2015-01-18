@@ -138,6 +138,17 @@
                 <version>${test.framework.util.version}</version>
                 <scope>test</scope>
             </dependency>
+	    <dependency>
+		<groupId>org.apache.rampart</groupId>
+		<artifactId>rampart</artifactId>
+		<type>mar</type>
+		<version>1.6.1-wso2v8</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.apache.ws.security</groupId>
+		<artifactId>wss4j</artifactId>
+		<version>${wss4j.version}</version>
+	    </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.engine</artifactId>
@@ -548,8 +559,8 @@
     </build>
 
     <properties>
-        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
+        <carbon.version>4.3.0</carbon.version>
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <ml.version>1.0.0-SNAPSHOT</ml.version>
@@ -610,6 +621,7 @@
         <zookeeper.version>3.4.5</zookeeper.version>
         <selenium.version>2.44.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
+	<wss4j.version>1.5.11-wso2v8-SNAPSHOT</wss4j.version>
     </properties>
 
     <organization>
