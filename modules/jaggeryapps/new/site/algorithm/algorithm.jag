@@ -230,8 +230,8 @@ $( document ).ready(function() {
 
     var projid = getParameterByName('projid');
     var projna = getParameterByName('projna');
-    var datid = getParameterByName('datid');
-    var datname = getParameterByName('datname');
+    //var datid = getParameterByName('datid');
+    //var datname = getParameterByName('datname');
     var wfid = getParameterByName('wfid');
     var wfname = getParameterByName('wfname');
 
@@ -239,14 +239,12 @@ $( document ).ready(function() {
 
     $('#btn-prev').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&datid='+datid+
-            '&datname='+datname+'&wfid='+wfid+'&wfname='+wfname;
+        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
     });
 
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
-        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&datid='+datid+
-            '&datname='+datname+'&wfid='+wfid+'&wfname='+wfname;
+        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
     });    
 
     $('#algo-help-radio').on('click', function(){

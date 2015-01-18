@@ -330,10 +330,10 @@ $( document ).ready(function() {
 	            success : function(res){
 	            	var projid = $('#projid').data('projid');
                     var datid = $('#datid').data('datid');
-                    var datname = $('#datname').data('datname');
+                    //var datname = $('#datname').data('datname');
 	                
 	                window.location.href = 
-	                    './project_success.jag?projid='+projid+'&projna='+projectName+'&datid='+datid+'&datname='+datname;    
+	                    './project_success.jag?projid='+projid+'&projna='+projectName+'&datid='+datid;    
 	            },
 	            error : function(res){
 	                //TODO: chat with Dhanuka and select a place 

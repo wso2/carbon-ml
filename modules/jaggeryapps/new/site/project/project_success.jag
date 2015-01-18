@@ -87,7 +87,7 @@
 		<div class="container col-md-12 col-centered wr-content">
 		    <div class="wr-form col-lg-5 col-centered">
                 <h1 class="input-label">
-                	Project: '<%= session.get('projectName')%>' Successfully Created
+                	Project: <span id="project-display-name"></span> Successfully Created
                 </h1>
                 <a id="create-wf" href="#" class="">
                     Create a new workflow for this project
@@ -121,14 +121,18 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});	
- 
+    
+    var projid = getParameterByName('projid');
+    var datid = getParameterByName('datid');
+    var datname = getParameterByName('datname');
+    var projna = getParameterByName('projna');
+
+    $('#project-display-name').text(projna);
+
 	$('#create-wf').on('click', function(e){
         e.preventDefault();        
-        var projid = getParameterByName('projid');
-        var datid = getParameterByName('datid');
-        var datname = getParameterByName('datname');
-        var projna = getParameterByName('projna');
-        var url = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&datid='+datid+'&datname='+datname;
+        var url = '../workflow/create_workflow.jag?projid='+projid+
+                  '&projna='+projna+'&datid='+datid;
         window.location.href = url;     
 	});
 

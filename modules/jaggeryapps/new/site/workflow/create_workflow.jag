@@ -124,8 +124,8 @@ $( document ).ready(function() {
 	var workflowName = getParameterByName('wfname');	
     var projid = getParameterByName('projid');
     var projna = getParameterByName('projna');
-    var datid = getParameterByName('datid'); 
-    var datname = getParameterByName('datname');
+    //var datid = getParameterByName('datid'); 
+    //var datname = getParameterByName('datname');
     var currentWkName = getParameterByName('wfname');
     var currentEkId = getParameterByName('wfid');
 
@@ -143,14 +143,14 @@ $( document ).ready(function() {
 	                        projid: projid},
 	                success : function(res){
 	                	var wfid = res.wfid;
-	                    window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&datid='+datid+'&datname='+datname+'&wfid='+wfid+'&wfname='+name;
+	                    window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+name;
 	                },
 	                error : function(res){
 	                    console.log('error: '+res.toString());
 	                }
 	        	});
 	        } else {
-	        	window.location.href = '../data/data.jag?projid='+projid+'&datid='+datid+'&projna='+projna+'&datname='+datname+'&wfid='+currentEkId+'&wfname='+name;
+	        	window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+currentEkId+'&wfname='+name;
 	        }
         }
 
