@@ -54,11 +54,11 @@ public class LineToDataPointMapper implements Function<String, LabeledPoint> {
             String[] tokens = tokenSeparator.split(line);
 
             int index = 0;
-            for (int i=0;  i < tokens.length; i++) {
+            for (int i = 0; i < tokens.length; i++) {
                 if (featureIndices.contains(i)) {
                     String token = tokens[i];
-                    if ( token.equalsIgnoreCase(DecompositionConstants.EMPTY) ||
-                            token.equalsIgnoreCase(DecompositionConstants.NA)) {
+                    if (token.equalsIgnoreCase(DecompositionConstants.EMPTY)
+                            || token.equalsIgnoreCase(DecompositionConstants.NA)) {
                         features[index] = 0.0;
                     } else {
 
@@ -67,11 +67,11 @@ public class LineToDataPointMapper implements Function<String, LabeledPoint> {
                     index++;
                 }
             }
-            return new LabeledPoint(Double.parseDouble(tokens[labelIndex]),Vectors.dense(features));
+            return new LabeledPoint(Double.parseDouble(tokens[labelIndex]), Vectors.dense(features));
 
         } catch (Exception e) {
-            throw new DecompositionException(
-                "An error occurred while transforming lines to tokens: " + e.getMessage(), e);
+            throw new DecompositionException("An error occurred while transforming lines to tokens: " + e.getMessage(),
+                    e);
         }
     }
 }

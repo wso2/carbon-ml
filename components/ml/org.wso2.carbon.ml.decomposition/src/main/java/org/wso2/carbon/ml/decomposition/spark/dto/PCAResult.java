@@ -18,8 +18,7 @@
 package org.wso2.carbon.ml.decomposition.spark.dto;
 
 /**
- * This class is used to transfer information between
- * visualizePCA method and other applications.
+ * This class is used to transfer information between visualizePCA method and other applications.
  */
 public class PCAResult {
     private double firstComponent;

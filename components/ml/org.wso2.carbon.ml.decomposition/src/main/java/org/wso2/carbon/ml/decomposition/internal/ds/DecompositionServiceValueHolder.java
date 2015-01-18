@@ -27,19 +27,19 @@ public class DecompositionServiceValueHolder {
     private static DecompositionService decompositionService;
     private static DatabaseService databaseService;
 
-    public static  void registerModelService(DecompositionService service){
+    public static void registerModelService(DecompositionService service) {
         DecompositionServiceValueHolder.decompositionService = service;
     }
 
-    public static DecompositionService getModelService(){
+    public static DecompositionService getModelService() {
         return decompositionService;
     }
 
-    public static void registerDatabaseService(DatabaseService service){
+    public static void registerDatabaseService(DatabaseService service) {
         DecompositionServiceValueHolder.databaseService = service;
     }
 
-    public static DatabaseService getDatabaseService(){
+    public static DatabaseService getDatabaseService() {
         return databaseService;
     }
 }

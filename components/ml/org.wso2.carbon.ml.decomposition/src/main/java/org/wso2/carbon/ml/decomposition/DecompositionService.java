@@ -25,8 +25,7 @@ import org.wso2.carbon.ml.decomposition.spark.dto.PCAResult;
 import java.util.List;
 
 /**
- * This interface lists the services offered by decomposition
- * service.
+ * This interface lists the services offered by decomposition service.
  */
 public interface DecompositionService {
 
@@ -49,18 +48,15 @@ public interface DecompositionService {
      * @return Transformed dataset in JavaRDD<Vector> format
      * @throws DecompositionException
      */
-    public JavaRDD<Vector> transformPCA(String workflowID, JavaRDD<Vector> data)
-            throws DecompositionException;
+    public JavaRDD<Vector> transformPCA(String workflowID, JavaRDD<Vector> data) throws DecompositionException;
 
     /**
-     * This method is used to visualize a given dataset associated with
-     * a given workflowID.
+     * This method is used to visualize a given dataset associated with a given workflowID.
      *
      * @param workflowID WorkflowID the workflow ID associated with this dataset
      * @param response This represents the response variable of the dataset
      * @return Fits two principle components of the transformed dataset
      * @throws DecompositionException
      */
-    public List<PCAResult> visualizePCA(String workflowID, String response)
-            throws DecompositionException;
+    public List<PCAResult> visualizePCA(String workflowID, String response) throws DecompositionException;
 }
