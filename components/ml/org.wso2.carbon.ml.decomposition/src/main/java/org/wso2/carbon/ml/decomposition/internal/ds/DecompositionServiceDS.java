@@ -37,13 +37,14 @@ import org.wso2.carbon.ml.decomposition.spark.SparkDecompositionService;
 public class DecompositionServiceDS {
 
     private static final Log log = LogFactory.getLog(DecompositionServiceDS.class);
+
     protected void activate(ComponentContext context) {
         try {
             DecompositionService decompositionService = new SparkDecompositionService();
             DecompositionServiceValueHolder.registerModelService(decompositionService);
 
-            context.getBundleContext().registerService(
-                    DecompositionService.class.getName(), decompositionService, null);
+            context.getBundleContext()
+                    .registerService(DecompositionService.class.getName(), decompositionService, null);
 
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
@@ -54,11 +55,11 @@ public class DecompositionServiceDS {
         DecompositionServiceValueHolder.registerDatabaseService(null);
     }
 
-    protected void setDatabaseService(DatabaseService databaseService){
+    protected void setDatabaseService(DatabaseService databaseService) {
         DecompositionServiceValueHolder.registerDatabaseService(databaseService);
     }
 
-    protected void unsetDatabaseService(DatabaseService databaseService){
+    protected void unsetDatabaseService(DatabaseService databaseService) {
         DecompositionServiceValueHolder.registerDatabaseService(null);
     }
 }

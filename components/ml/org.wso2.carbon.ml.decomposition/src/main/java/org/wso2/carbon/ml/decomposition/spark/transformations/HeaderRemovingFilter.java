@@ -46,8 +46,7 @@ public class HeaderRemovingFilter implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            throw new DecompositionException(
-                    "An error occurred while removing header row: " + e.getMessage(), e);
+            throw new DecompositionException("An error occurred while removing header row: " + e.getMessage(), e);
         }
     }
 }
