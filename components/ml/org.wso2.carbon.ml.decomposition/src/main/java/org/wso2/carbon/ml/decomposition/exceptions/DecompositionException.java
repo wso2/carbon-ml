@@ -18,16 +18,15 @@
 package org.wso2.carbon.ml.decomposition.exceptions;
 
 /**
- * This class represents exceptions related to decomposition
- * component.
+ * This class represents exceptions related to decomposition component.
  */
-public class DecompositionException extends Exception{
+public class DecompositionException extends Exception {
 
-    public DecompositionException(String message, Throwable cause){
+    public DecompositionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DecompositionException(String message){
+    public DecompositionException(String message) {
         super(message);
     }
 }

@@ -25,13 +25,13 @@ import org.wso2.carbon.ml.decomposition.spark.dto.PCAResult;
 import java.util.List;
 
 /**
- * This interface lists the services offered by decomposition
- * service
+ * This interface lists the services offered by decomposition service.
  */
 public interface DecompositionService {
 
     /**
-     * This method performs PCA for a given dataset
+     * This method performs PCA for a given dataset.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @param dataSet DataSet on which PCA is performing (in JavaRDD<Vector> format)
      * @param noComponentsRetained Number of singular values retained after PCA operation
@@ -41,23 +41,22 @@ public interface DecompositionService {
             throws DecompositionException;
 
     /**
-     * This method transforms a given dataset using pre-calculated PCA
+     * This method transforms a given dataset using pre-calculated PCA.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @param data DataSet on which PCA is performing (in JavaRDD<Vector> format
      * @return Transformed dataset in JavaRDD<Vector> format
      * @throws DecompositionException
      */
-    public JavaRDD<Vector> transformPCA(String workflowID, JavaRDD<Vector> data)
-            throws DecompositionException;
+    public JavaRDD<Vector> transformPCA(String workflowID, JavaRDD<Vector> data) throws DecompositionException;
 
     /**
-     * This method is used to visualize a given dataset associated with
-     * a given workflowID
+     * This method is used to visualize a given dataset associated with a given workflowID.
+     *
      * @param workflowID WorkflowID the workflow ID associated with this dataset
      * @param response This represents the response variable of the dataset
      * @return Fits two principle components of the transformed dataset
      * @throws DecompositionException
      */
-    public List<PCAResult> visualizePCA(String workflowID, String response)
-            throws DecompositionException;
+    public List<PCAResult> visualizePCA(String workflowID, String response) throws DecompositionException;
 }

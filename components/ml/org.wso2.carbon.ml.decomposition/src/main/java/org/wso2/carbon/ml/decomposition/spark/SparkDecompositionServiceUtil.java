@@ -51,21 +51,20 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * This class contains a set of static helper methods used by
- * Spark implementation of the decomposition service.
+ * This class contains a set of static helper methods used by Spark implementation of the decomposition service.
  */
 public class SparkDecompositionServiceUtil {
 
     private static final Log log = LogFactory.getLog(SparkDecompositionServiceUtil.class);
 
     /**
-     * Save serialized matrix in hard disk
+     * Save serialized matrix in hard disk.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @param matrix The matrix which is going to save in the disk
      * @throws DecompositionException
      */
-    public static void saveMatrix(String workflowID, Matrix matrix)
-            throws DecompositionException {
+    public static void saveMatrix(String workflowID, Matrix matrix) throws DecompositionException {
         FileOutputStream fileOutStream = null;
         ObjectOutputStream matrixOutStream = null;
         try {
@@ -73,11 +72,11 @@ public class SparkDecompositionServiceUtil {
 
             // if file is already exists, delete it
             File currentMatrix = new File(fullPath);
-            if(currentMatrix.exists()){
+            if (currentMatrix.exists()) {
                 boolean isSuccess = currentMatrix.delete();
-                if(!isSuccess){
-                    throw new DecompositionException(
-                        "An error occurred while deleting matrix, in workflow : " +workflowID);
+                if (!isSuccess) {
+                    throw new DecompositionException("An error occurred while deleting matrix, in workflow : "
+                            + workflowID);
                 }
             }
 
@@ -87,16 +86,16 @@ public class SparkDecompositionServiceUtil {
             matrixOutStream.writeObject(matrix);
 
         } catch (IOException ex) {
-            throw new DecompositionException(
-                "An error occurred while saving a matrix: " + ex.getMessage(), ex);
-        }finally {
+            throw new DecompositionException("An error occurred while saving a matrix: " + ex.getMessage(), ex);
+        } finally {
             closeResource(fileOutStream);
             closeResource(matrixOutStream);
         }
     }
 
     /**
-     * Read matrix object from the hard disk
+     * Read matrix object from the hard disk.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @return The matrix retrieve from the disk
      * @throws DecompositionException
@@ -108,37 +107,36 @@ public class SparkDecompositionServiceUtil {
         try {
             String fullPath = buildPCAMatrixPath(workflowID);
 
-            fileInputStream =  new FileInputStream(fullPath);
+            fileInputStream = new FileInputStream(fullPath);
             matrixInputStream = new ObjectInputStream(fileInputStream);
-            return (Matrix)matrixInputStream.readObject();
+            return (Matrix) matrixInputStream.readObject();
 
         } catch (IOException ex) {
-            throw new DecompositionException(
-                    "An error occurred while reading a matrix: " + ex.getMessage(), ex);
-        } catch (ClassNotFoundException ex){
-            throw new DecompositionException(
-                    "An error occurred while reading a matrix Object: " + ex.getMessage(), ex);
-        }
-        finally {
+            throw new DecompositionException("An error occurred while reading a matrix: " + ex.getMessage(), ex);
+        } catch (ClassNotFoundException ex) {
+            throw new DecompositionException("An error occurred while reading a matrix Object: " + ex.getMessage(), ex);
+        } finally {
             closeResource(fileInputStream);
             closeResource(matrixInputStream);
         }
     }
 
     /**
-     * Get a sample datset from a given dataset
+     * Get a random sample from a given dataset.
+     *
      * @param workflowID The workflow ID associated with this dataset
      * @return Random sample drawn from the dataset
      * @throws DecompositionException
      */
-    public static JavaRDD<LabeledPoint> getSamplePoints(String workflowID, String response) throws DecompositionException {
-        /**
-         * Spark looks for various configuration files using it's class loader. Therefore, the
-         * class loader needed to be switched temporarily.
-         */
+    public static JavaRDD<LabeledPoint> getSamplePoints(String workflowID, String response)
+            throws DecompositionException {
+
+        // Spark looks for various configuration files using it's class loader.
+        // Therefore, the
+        // class loader needed to be switched temporarily.
         // assign current thread context class loader to a variable
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-        try{
+        try {
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
 
             SparkConf sparkConf = getSparkConf(DecompositionConstants.SPARK_CONFIG_XML);
@@ -159,74 +157,77 @@ public class SparkDecompositionServiceUtil {
             Set<Integer> featureIndices = getFeatureIndices(workflow);
             int responseIndex = getResponseIndex(workflow, response);
             Pattern pattern = Pattern.compile(SparkDecompositionServiceUtil.getColumnSeparator(dataSetURL));
-            JavaRDD<LabeledPoint> dataPoints = data.map(new LineToDataPointMapper(pattern,featureIndices,responseIndex));
+            JavaRDD<LabeledPoint> dataPoints = data.map(new LineToDataPointMapper(pattern, featureIndices,
+                    responseIndex));
 
-            // if dataset size is larger than  DecompositionConstants.RANDOM_SAMPLE_SIZE
-            // take a random sample of  DecompositionConstants.RANDOM_SAMPLE_SIZE
+            // if dataset size is larger than
+            // DecompositionConstants.RANDOM_SAMPLE_SIZE
+            // take a random sample of DecompositionConstants.RANDOM_SAMPLE_SIZE
             long dataSetSize = dataPoints.count();
-            if(dataSetSize > DecompositionConstants.RANDOM_SAMPLE_SIZE){
-                double sampleFraction = DecompositionConstants.RANDOM_SAMPLE_SIZE/dataSetSize;
+            if (dataSetSize > DecompositionConstants.RANDOM_SAMPLE_SIZE) {
+                double sampleFraction = DecompositionConstants.RANDOM_SAMPLE_SIZE / dataSetSize;
                 return dataPoints.sample(false, sampleFraction, DecompositionConstants.RANDOM_SEED);
             }
             return dataPoints;
 
-        }catch (DatabaseHandlerException ex){
-            throw new DecompositionException(
-                "An error occurred while reading data from database: "+ex.getMessage(), ex);
+        } catch (DatabaseHandlerException ex) {
+            throw new DecompositionException("An error occurred while reading data from database: " + ex.getMessage(),
+                    ex);
 
-        }catch (DecompositionException ex){
-            throw new DecompositionException(
-                "An error occurred while reading data from database: "+ex.getMessage(), ex);
-        }finally {
+        } catch (DecompositionException ex) {
+            throw new DecompositionException("An error occurred while reading data from database: " + ex.getMessage(),
+                    ex);
+        } finally {
             // Switching back to original class loader
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
     /**
-     * Utility method for closing resources
+     * Utility method for closing resources.
+     *
      * @param resource Represents closeable resources
      * @throws DecompositionException
      */
     private static void closeResource(Closeable resource) throws DecompositionException {
-        if(resource == null){
+        if (resource == null) {
             return;
         }
         try {
             resource.close();
-        }catch (IOException ex){
-            throw  new DecompositionException(
-                    "An error occurred while closing the resource: "+ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new DecompositionException("An error occurred while closing the resource: " + ex.getMessage(), ex);
         }
     }
 
     /**
-     * Infer column separator from the dataset url
+     * Infer column separator from the dataset url.
+     *
      * @param dataSetURL Path of the dataset
      * @return Column separator of the dataset
      * @throws DecompositionException
      */
-    private static String getColumnSeparator(String dataSetURL) throws
-            DecompositionException {
+    private static String getColumnSeparator(String dataSetURL) throws DecompositionException {
         if (dataSetURL.endsWith(DecompositionConstants.CSV)) {
             return ",";
         } else if (dataSetURL.endsWith(DecompositionConstants.TSV)) {
             return "\t";
         } else {
             String fileFormat = dataSetURL.substring(dataSetURL.lastIndexOf('.'));
-            throw new DecompositionException("Unsupported file format: "+fileFormat);
+            throw new DecompositionException("Unsupported file format: " + fileFormat);
         }
     }
 
     /**
-     * Get feature indices of the dataset associated with this dataset
+     * Get feature indices of the dataset associated with this dataset.
+     *
      * @param workflow The workflow ID associated with this dataset
      * @return Indices (zero based) of features used to build the decomposition model
      */
-    private static Set<Integer> getFeatureIndices(Workflow workflow){
+    private static Set<Integer> getFeatureIndices(Workflow workflow) {
         Set<Integer> indices = new HashSet<Integer>();
-        for(Feature feature : workflow.getFeatures()){
-            if(feature.isInclude()) {
+        for (Feature feature : workflow.getFeatures()) {
+            if (feature.isInclude()) {
                 indices.add(feature.getIndex());
             }
         }
@@ -234,33 +235,31 @@ public class SparkDecompositionServiceUtil {
     }
 
     /**
-     * Get the index of response variable of the dataset associated
-     * with this workflow
+     * Get the index of response variable of the dataset associated with this workflow.
+     *
      * @param workflow The workflow ID associated with this dataset
      * @param response Name of the response variable
      * @return Index (zero based) of the response variable
      * @throws DecompositionException
      */
-    private static int getResponseIndex(Workflow workflow, String response)
-            throws DecompositionException {
+    private static int getResponseIndex(Workflow workflow, String response) throws DecompositionException {
 
-        for(Feature feature : workflow.getFeatures()){
-            if(response.equalsIgnoreCase(feature.getName())){
+        for (Feature feature : workflow.getFeatures()) {
+            if (response.equalsIgnoreCase(feature.getName())) {
                 return feature.getIndex();
             }
         }
-        throw new DecompositionException(
-            "Response variable: "+response+" is not available in the dataset");
+        throw new DecompositionException("Response variable: " + response + " is not available in the dataset");
     }
 
     /**
-     * Build an object of SparkConf file
+     * Build an object from SparkConf file.
+     *
      * @param sparkConfigXML
      * @return
      * @throws DecompositionException
      */
-    private static SparkConf getSparkConf(String sparkConfigXML) throws
-            DecompositionException {
+    private static SparkConf getSparkConf(String sparkConfigXML) throws DecompositionException {
         try {
             SparkSettings sparkSettings = (SparkSettings) parseXML(sparkConfigXML);
             SparkConf sparkConf = new SparkConf();
@@ -269,14 +268,15 @@ public class SparkDecompositionServiceUtil {
             }
             return sparkConf;
         } catch (SparkConfigException e) {
-            throw new DecompositionException(
-                    "An error occurred while parsing spark configuration: " + e.getMessage(), e);
+            throw new DecompositionException("An error occurred while parsing spark configuration: " + e.getMessage(),
+                    e);
         }
 
     }
 
     /**
-     * Parse XML file
+     * Parse XML file located at given file path.
+     *
      * @param xmlFilePath Absolute path to an xml file
      * @return Returns unmarshalled xml
      * @throws DecompositionException
@@ -288,17 +288,17 @@ public class SparkDecompositionServiceUtil {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new SparkConfigException("An error occurred while parsing: " + xmlFilePath + ": " +
-                    e.getMessage(), e);
+            throw new SparkConfigException("An error occurred while parsing: " + xmlFilePath + ": " + e.getMessage(), e);
         }
     }
 
     /**
-     * Build full path of the matrix associated with this workflowID
-     * @param workflowID The workflow ID associated with this dataset
+     * Build full path of the matrix associated with this workflowID.
+     *
+     * @param workflowID The workflow ID associated with this dataset.
      * @return Full path of the PCA matrix
      */
-    private static String buildPCAMatrixPath(String workflowID){
+    private static String buildPCAMatrixPath(String workflowID) {
         StringBuilder path = new StringBuilder();
         String separator = System.getProperty(DecompositionConstants.FILE_SEPARATOR);
 

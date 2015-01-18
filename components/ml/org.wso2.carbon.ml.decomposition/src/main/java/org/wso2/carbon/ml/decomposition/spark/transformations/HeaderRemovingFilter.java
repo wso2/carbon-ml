@@ -30,6 +30,13 @@ public class HeaderRemovingFilter implements Function<String, Boolean> {
         this.header = header;
     }
 
+    /**
+     * This method check whether a given line is header or not
+     *
+     * @param line Row in the dataset
+     * @return
+     * @throws DecompositionException
+     */
     @Override
     public Boolean call(String line) throws DecompositionException {
         try {
@@ -39,8 +46,7 @@ public class HeaderRemovingFilter implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            throw new DecompositionException(
-                    "An error occurred while removing header row: " + e.getMessage(), e);
+            throw new DecompositionException("An error occurred while removing header row: " + e.getMessage(), e);
         }
     }
 }

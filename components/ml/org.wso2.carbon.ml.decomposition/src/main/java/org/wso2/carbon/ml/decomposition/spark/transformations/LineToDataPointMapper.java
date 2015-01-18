@@ -40,6 +40,13 @@ public class LineToDataPointMapper implements Function<String, LabeledPoint> {
         this.labelIndex = labelIndex;
     }
 
+    /**
+     * Transforms each line into a LabeledPoint
+     *
+     * @param line Row in the dataset
+     * @return an instance of LabeledPoint
+     * @throws DecompositionException
+     */
     @Override
     public LabeledPoint call(String line) throws DecompositionException {
         try {
@@ -47,24 +54,24 @@ public class LineToDataPointMapper implements Function<String, LabeledPoint> {
             String[] tokens = tokenSeparator.split(line);
 
             int index = 0;
-            for(int i=0;  i < tokens.length; i++){
-                if(featureIndices.contains(i)){
+            for (int i = 0; i < tokens.length; i++) {
+                if (featureIndices.contains(i)) {
                     String token = tokens[i];
-                    if( token.equalsIgnoreCase(DecompositionConstants.EMPTY) ||
-                            token.equalsIgnoreCase(DecompositionConstants.NA)){
+                    if (token.equalsIgnoreCase(DecompositionConstants.EMPTY)
+                            || token.equalsIgnoreCase(DecompositionConstants.NA)) {
                         features[index] = 0.0;
-                    }else{
+                    } else {
 
                         features[index] = Double.parseDouble(token.trim());
                     }
                     index++;
                 }
             }
-            return new LabeledPoint(Double.parseDouble(tokens[labelIndex]),Vectors.dense(features));
+            return new LabeledPoint(Double.parseDouble(tokens[labelIndex]), Vectors.dense(features));
 
         } catch (Exception e) {
-            throw new DecompositionException(
-                "An error occurred while transforming lines to tokens: " + e.getMessage(), e);
+            throw new DecompositionException("An error occurred while transforming lines to tokens: " + e.getMessage(),
+                    e);
         }
     }
 }

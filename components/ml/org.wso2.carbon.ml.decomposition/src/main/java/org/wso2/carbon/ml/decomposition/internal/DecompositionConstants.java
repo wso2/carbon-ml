@@ -18,8 +18,7 @@
 package org.wso2.carbon.ml.decomposition.internal;
 
 /**
- * This class contains a set of common constants used by
- * decomposition module
+ * This class contains a set of common constants used by decomposition module.
  */
 public class DecompositionConstants {
 
@@ -29,8 +28,8 @@ public class DecompositionConstants {
     // Dataset related constants
     public static final String EMPTY = "";
     public static final String NA = "NA";
-    public static final String CSV = ".csv";
-    public static final String TSV = ".tsv";
+    public static final String CSV = "csv";
+    public static final String TSV = "tsv";
 
     // Constants related to drawing random samples
     public static final int RANDOM_SAMPLE_SIZE = 10000;
@@ -39,5 +38,6 @@ public class DecompositionConstants {
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
+
     public static final String ML_PROJECTS = "MLProjects";
 }

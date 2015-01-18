@@ -21,14 +21,14 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * DTO class for JAXB binding of SparkConfigurationParser
+ * DTO class for JAXB binding of SparkConfigurationParser.
  */
 public class SparkProperty {
     private String property;
     private String name;
 
     /**
-     * @return Retuns spark property name
+     * @return Returns spark property name
      */
     public String getName() {
         return name;

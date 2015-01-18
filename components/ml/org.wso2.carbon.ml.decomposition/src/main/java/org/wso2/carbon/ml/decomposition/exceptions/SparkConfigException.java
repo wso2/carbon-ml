@@ -18,11 +18,11 @@
 package org.wso2.carbon.ml.decomposition.exceptions;
 
 /**
- * This exception will be thrown when spark configuration
- * related issues are occurred.
+ * This exception will be thrown when spark configuration related issues are occurred.
  */
-public class SparkConfigException extends Exception{
-    public SparkConfigException(String message, Throwable cause){
+public class SparkConfigException extends Exception {
+
+    public SparkConfigException(String message, Throwable cause) {
         super(message, cause);
     }
 }

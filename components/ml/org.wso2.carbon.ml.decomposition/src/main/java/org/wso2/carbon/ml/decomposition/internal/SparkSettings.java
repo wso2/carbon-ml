@@ -24,11 +24,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * DTO class for JAXB binding of SparkConfigurationParser
+ * DTO class for JAXB binding of SparkConfigurationParser.
  */
 @XmlRootElement(name = "sparkSettings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SparkSettings {
+
     @XmlElement(name = "property")
     private List<SparkProperty> properties;
 
