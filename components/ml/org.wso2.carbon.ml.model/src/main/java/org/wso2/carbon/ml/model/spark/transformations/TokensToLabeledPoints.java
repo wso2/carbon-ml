@@ -59,9 +59,8 @@ public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while transforming tokens to labeled points: " + e
-                            .getMessage(), e);
+            throw new ModelServiceException("An error occured while transforming tokens to labeled points: "
+                    + e.getMessage(), e);
         }
     }
 }

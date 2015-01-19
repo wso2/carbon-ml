@@ -20,9 +20,6 @@ package org.wso2.carbon.ml.model.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
-
-import java.util.Map;
 
 public class StringArrayToDoubleArray implements Function<String[], double[]> {
 
@@ -35,8 +32,7 @@ public class StringArrayToDoubleArray implements Function<String[], double[]> {
             }
             return features;
         } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while transforming tokens: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while transforming tokens: " + e.getMessage(), e);
         }
     }
 }

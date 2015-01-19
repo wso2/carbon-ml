@@ -36,8 +36,7 @@ public class LineToTokensTest {
         Pattern pattern = Pattern.compile(",");
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = lines.map(lineToTokens);
-        Assert.assertEquals(lines.count(),tokens.count(),"Line count doesn't match the tokens " +
-                                                         "count");
+        Assert.assertEquals(lines.count(), tokens.count(), "Line count doesn't match the tokens count");
         sc.stop();
     }
 }

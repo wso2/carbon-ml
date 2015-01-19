@@ -19,14 +19,13 @@
 package org.wso2.carbon.ml.model.internal;
 
 import org.apache.spark.SparkConf;
+import org.wso2.carbon.ml.database.dto.Feature;
+import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
-import org.wso2.carbon.ml.model.exceptions.XMLParserException;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
-import org.wso2.carbon.ml.database.dto.Feature;
-import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.model.internal.dto.SparkProperty;
 import org.wso2.carbon.ml.model.internal.dto.SparkSettings;
 
@@ -54,8 +53,7 @@ public class MLModelUtils {
      * @param columnSeparator Column separator character
      * @return Index of the response variable
      */
-    public static int getFeatureIndex(String feature, String headerRow,
-            String columnSeparator) throws
+    public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) throws
             ModelServiceException {
         int featureIndex = 0;
         String[] headerItems = headerRow.split(columnSeparator);
@@ -72,8 +70,7 @@ public class MLModelUtils {
      * @param datasetURL Dataset URL
      * @return Column separator character
      */
-    public static String getColumnSeparator(String datasetURL) throws
-            ModelServiceException {
+    public static String getColumnSeparator(String datasetURL) throws ModelServiceException {
         if (datasetURL.endsWith(MLModelConstants.CSV)) {
             return ",";
         } else if (datasetURL.endsWith(MLModelConstants.TSV)) {
@@ -104,14 +101,15 @@ public class MLModelUtils {
      * @return Returns MLAlgorithms object
      * @throws MLAlgorithmParserException
      */
-    public static MLAlgorithms getMLAlgorithms(String mlAlgorithmConfigXML)
-            throws MLAlgorithmParserException {
+    public static MLAlgorithms getMLAlgorithms(String mlAlgorithmConfigXML) throws MLAlgorithmParserException {
         try {
-            return (MLAlgorithms) parseXML(mlAlgorithmConfigXML);
-        } catch (XMLParserException e) {
+            File file = new File(mlAlgorithmConfigXML);
+            JAXBContext jaxbContext = JAXBContext.newInstance(MLAlgorithms.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            return (MLAlgorithms) jaxbUnmarshaller.unmarshal(file);
+        } catch (JAXBException e) {
             throw new MLAlgorithmParserException(
-                    "An error occured while parsing ml algorithm configuration: " + e.getMessage(),
-                    e);
+                    "An error occured while parsing: " + mlAlgorithmConfigXML + ": " + e.getMessage(), e);
         }
 
     }
@@ -121,38 +119,22 @@ public class MLModelUtils {
      * @return Return SparkConf object
      * @throws SparkConfigurationParserException
      */
-    public static SparkConf getSparkConf(String sparkConfigXML) throws
-            SparkConfigurationParserException {
+    public static SparkConf getSparkConf(String sparkConfigXML) throws SparkConfigurationParserException {
         try {
-            SparkSettings sparkSettings = (SparkSettings) parseXML(sparkConfigXML);
+            File file = new File(sparkConfigXML);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SparkSettings.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            SparkSettings sparkSettings = (SparkSettings) jaxbUnmarshaller.unmarshal(file);
             SparkConf sparkConf = new SparkConf();
             for (SparkProperty sparkProperty : sparkSettings.getProperties()) {
                 sparkConf.set(sparkProperty.getName(), sparkProperty.getProperty());
             }
             return sparkConf;
-        } catch (XMLParserException e) {
-            throw new SparkConfigurationParserException(
-                    "An error occured while parsing spark configuration: " + e.getMessage(), e);
-        }
-
-    }
-
-    /**
-     * @param xmlFilePath Absolute path to an xml file
-     * @return Returns unmarshalled xml
-     * @throws XMLParserException
-     */
-    public static Object parseXML(String xmlFilePath) throws XMLParserException {
-        try {
-            File file = new File(xmlFilePath);
-            JAXBContext jaxbContext = JAXBContext.newInstance(MLAlgorithms.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new XMLParserException("An error occured while parsing: " + xmlFilePath + ": " +
-                                         e.getMessage(), e);
+            throw new SparkConfigurationParserException("An error occured while parsing: " + sparkConfigXML + ": " +
+                    e.getMessage(), e);
         }
-    }
 
+    }
 
 }
