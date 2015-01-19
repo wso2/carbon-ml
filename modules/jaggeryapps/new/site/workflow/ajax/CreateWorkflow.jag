@@ -1,5 +1,4 @@
 <%
-    var log = new Log();
     var carbon = require('carbon');
     var uuid = require('uuid');
 
