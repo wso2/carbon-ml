@@ -116,9 +116,24 @@
                     </tbody>
                 </table>
 				</div>
-			    <div role="tabpanel" class="tab-pane fade" id="explore">
-			    	<h4>Explore Data</h4>
-			    </div>
+			    <div role="tabpanel" class="tab-pane fade in" id="explore">
+                    <h4>Explore Data</h4>
+                    
+                    <div class="col-md-2 wr-left-nav">
+                        <ul class="ctrl-left-nav nav">
+                            <li role="presentation"><a href="#">Scatter Plot</a></li>
+                            <li role="presentation"><a href="#">Graph #2</a></li>
+                            <li role="presentation"><a href="#">Graph #3</a></li>
+                            <li role="presentation"><a href="#">Graph #4</a></li>
+                            <li role="presentation"><a href="#">Graph #5</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-10">
+                        Graphs
+                    </div>              
+
+                </div>
 			  </div>
 
 			</div>
