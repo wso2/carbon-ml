@@ -1,17 +1,10 @@
 <%
-    var log = new Log();
     var carbon = require('carbon');
-    
-    //TODO: delete this once login is ready
-    session.put('tenantId', 'admin');
-
     var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
 
     try{
         var projectID = request.getParameter("projectID");
-        projectManagementService.deleteProject(projectID);        
-        
-        //print(projectsJson);
+        projectManagementService.deleteProject(projectID);  
 
     }catch(e){
         throw new Error("An error occurred while retrieving all projects of tenant: " + tenantId);        
