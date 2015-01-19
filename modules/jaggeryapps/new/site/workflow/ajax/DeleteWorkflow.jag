@@ -3,21 +3,14 @@
     var carbon = require('carbon');
     var uuid = require('uuid');
 
-    var prjMgntServ = carbon.server.osgiService(
-    	'org.wso2.carbon.ml.project.mgt.ProjectManagementService');    
-   
+    var prjMgntServ = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
     var workflowId = request.getParameter('wfid'); 
     
-    log.info('workflowId: '+workflowId);   
-
-    
     try{
-        prjMgntServ.deleteWorkflow(workflowId);
-           
-        
+        prjMgntServ.deleteWorkflow(workflowId);  
+             
     }catch(e){
-        throw new Error(
-            "An error has occurred, while deleting workflow for project :"+projectId);
+        throw new Error("An error has occurred, while deleting workflow for project :"+projectId);
     }  
     
 %>

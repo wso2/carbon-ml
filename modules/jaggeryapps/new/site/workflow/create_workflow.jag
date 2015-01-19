@@ -124,8 +124,6 @@ $( document ).ready(function() {
 	var workflowName = getParameterByName('wfname');	
     var projid = getParameterByName('projid');
     var projna = getParameterByName('projna');
-    //var datid = getParameterByName('datid'); 
-    //var datname = getParameterByName('datname');
     var currentWkName = getParameterByName('wfname');
     var currentEkId = getParameterByName('wfid');
 
@@ -162,7 +160,7 @@ $( document ).ready(function() {
             return false;    
 		}
 		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
-            $('#workflow-name-error').text('* Special characters are not allowed');            
+            $('#workflow-name-error').text('* Space and special characters are not allowed');            
             return false;
 	    }
 	    return true;
