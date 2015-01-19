@@ -38,7 +38,6 @@ public class MLModelServiceDS {
         try {
             ModelService modelService = new SparkModelService();
             MLModelServiceValueHolder.registerModelService(modelService);
-
             context.getBundleContext().registerService(ModelService.class.getName(), modelService, null);
 
         } catch (Throwable e) {
@@ -50,11 +49,11 @@ public class MLModelServiceDS {
         MLModelServiceValueHolder.registerDatabaseService(null);
     }
 
-    protected void setDatabaseService(DatabaseService databaseService){
+    protected void setDatabaseService(DatabaseService databaseService) {
         MLModelServiceValueHolder.registerDatabaseService(databaseService);
     }
 
-    protected void unsetDatabaseService(DatabaseService databaseService){
+    protected void unsetDatabaseService(DatabaseService databaseService) {
         MLModelServiceValueHolder.registerDatabaseService(null);
     }
 }

@@ -23,7 +23,9 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
@@ -54,9 +56,9 @@ public class LogisticRegressionTest {
         LogisticRegressionModel model = logisticRegression.trainWithSGD(trainingData, 0.01, 100,
                 "L1", 0.001, 1.0);
         model.clearThreshold();
-//        ProbabilisticClassificationModelSummary modelSummary = logisticRegression.getModelSummary
-//                (logisticRegression.test(model, testingData));
-//        assertEquals(modelSummary.getAuc(), 0.54, 0.01);
+        ProbabilisticClassificationModelSummary modelSummary = logisticRegression.getModelSummary
+                (logisticRegression.test(model, testingData));
+        Assert.assertEquals(modelSummary.getAuc(), 0.54, 0.01);
         sc.stop();
     }
 }
