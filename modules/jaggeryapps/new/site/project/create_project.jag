@@ -254,10 +254,13 @@ $( document ).ready(function() {
 	$('#delete-file').on('click', function(e){
 		e.preventDefault();		
 		var datasetName = $('input[type=file]').val();
+		var projid = $('#projid').data('projid');
+
 		if(isValidDatasetFile(datasetName)){
 	        $.ajax({
 	        	url: './ajax/DeleteDataset.jag',
 	        	type: 'post',
+                data: {name: datasetName, projectId: projid},
 	        	success: function(data){
 	                if(data.status){
 	                    var control = $('#datasetUpload');
