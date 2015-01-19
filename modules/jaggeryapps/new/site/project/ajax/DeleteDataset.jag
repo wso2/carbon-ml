@@ -5,16 +5,16 @@
     var mlDatasetService = 
         carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
     try{
-    	var projectID = session.get('projectId');
-        var datasetName = session.get('datasetName');
+    	var projectID = request.getParameter('projectId');
+        var datasetName = request.getParameter('datasetName');
         var deleteStatus = mlDatasetService.deleteDataset(datasetName, projectID);
-
+        
         response.contentType = 'application/json';
         response.content = { status : deleteStatus };     
 
     }catch(e){
     	log.error("An error occurred while deleting file " + 
-        	    sourceFile.getName() + " of user " + 
+        	    datasetName + " of user " + 
         	    session.get("logged.user"), e);
     }
 %>

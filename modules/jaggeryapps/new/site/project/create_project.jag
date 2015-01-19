@@ -253,14 +253,14 @@ $( document ).ready(function() {
 
 	$('#delete-file').on('click', function(e){
 		e.preventDefault();		
-		var datasetName = $('input[type=file]').val();
+		var dsName = $('input[type=file]').val().split('\\').pop();
 		var projid = $('#projid').data('projid');
 
-		if(isValidDatasetFile(datasetName)){
+		if(isValidDatasetFile(dsName)){
 	        $.ajax({
 	        	url: './ajax/DeleteDataset.jag',
 	        	type: 'post',
-                data: {name: datasetName, projectId: projid},
+                data: {datasetName: dsName, projectId: projid},
 	        	success: function(data){
 	                if(data.status){
 	                    var control = $('#datasetUpload');
@@ -269,7 +269,7 @@ $( document ).ready(function() {
 
 	                }else{
 	                	$('#file-upload-error').text(
-	                		'* An error has occurred while delete file.');
+	                		'* An error has occurred while deleting file.');
 	                }
 	        	},
 	        	error: function(e){
@@ -283,11 +283,13 @@ $( document ).ready(function() {
 
 	$('#cancel-project').on('click', function(e){
 		e.preventDefault();		
-        var datasetName = $('input[type=file]').val();
-		if(isValidDatasetFile(datasetName)){
+        var projid = $('#projid').data('projid');
+        var dsName = $('input[type=file]').val().split('\\').pop();
+		if(isValidDatasetFile(dsName)){
 	        $.ajax({
 	        	url: './ajax/DeleteDataset.jag',
 	        	type: 'post',
+	        	data: {datasetName: dsName, projectId: projid},
 	        	success: function(data){
 	                if(data.status){
 	                    var control = $('#datasetUpload');
@@ -296,7 +298,7 @@ $( document ).ready(function() {
 
 	                }else{
 	                	$('#file-upload-error').text(
-	                		'* An error has occurred while delete file.');
+	                		'* An error has occurred while deleting file.');
 	                }
 	        	},
 	        	error: function(e){
