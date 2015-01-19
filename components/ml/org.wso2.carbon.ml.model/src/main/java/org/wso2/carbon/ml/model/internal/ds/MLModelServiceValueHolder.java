@@ -20,24 +20,23 @@ package org.wso2.carbon.ml.model.internal.ds;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.model.ModelService;
 
-
 public class MLModelServiceValueHolder {
     private static ModelService modelService;
     private static DatabaseService databaseService;
 
-    public static  void registerModelService(ModelService model){
+    public static void registerModelService(ModelService model) {
         MLModelServiceValueHolder.modelService = model;
     }
 
-    public static ModelService getModelService(){
+    public static ModelService getModelService() {
         return modelService;
     }
 
-    public static void registerDatabaseService(DatabaseService service){
+    public static void registerDatabaseService(DatabaseService service) {
         MLModelServiceValueHolder.databaseService = service;
     }
 
-    public static DatabaseService getDatabaseService(){
+    public static DatabaseService getDatabaseService() {
         return databaseService;
     }
 }
