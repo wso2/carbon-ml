@@ -25,7 +25,6 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class TokensToLabeledPointsTest {
@@ -41,9 +40,9 @@ public class TokensToLabeledPointsTest {
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
         JavaRDD<String> data = lines.filter(headerFilter);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
-        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
+        DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(8);
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray();
-        JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(tokensToLabeledPoints);
+        JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
         Assert.assertEquals(tokens.count(),labeledPoints.count());
         sc.stop();
     }

@@ -20,17 +20,12 @@ package org.wso2.carbon.ml.model.spark.algorithms;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
-import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
-import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import scala.Tuple2;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class DecisionTree implements Serializable {
@@ -60,38 +55,10 @@ public class DecisionTree implements Serializable {
             test) {
         return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
             @Override
-            public Tuple2<Double, Double> call(LabeledPoint p) {
-                return new Tuple2<Double, Double>(model.predict(p.features()), p.label());
+            public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
+                return new Tuple2<Double, Double>(model.predict(labeledPoint.features()), labeledPoint.label());
             }
         });
 
-    }
-
-    /**
-     * @param predictionsAndLabels Predicted labels and actual labels
-     * @return Class classification model summary
-     */
-    public ClassClassificationModelSummary getClassClassificationModelSummary(
-            JavaPairRDD<Double, Double> predictionsAndLabels) {
-        ClassClassificationModelSummary classClassificationModelSummary = new
-                ClassClassificationModelSummary();
-        List<PredictedVsActual> predictedVsActuals = new ArrayList();
-        List<Tuple2<Double, Double>> scoresAndLabels = predictionsAndLabels.collect();
-        for (Tuple2<Double, Double> scoreAndLabel : scoresAndLabels) {
-            PredictedVsActual predictedVsActual = new PredictedVsActual();
-            predictedVsActual.setPredicted(scoreAndLabel._1());
-            predictedVsActual.setActual(scoreAndLabel._2());
-            predictedVsActuals.add(predictedVsActual);
-        }
-        classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
-        double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
-                Boolean>() {
-            @Override
-            public Boolean call(Tuple2<Double, Double> pl) {
-                return !pl._1().equals(pl._2());
-            }
-        }).count() / predictionsAndLabels.count();
-        classClassificationModelSummary.setError(error);
-        return classClassificationModelSummary;
     }
 }
