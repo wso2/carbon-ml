@@ -291,17 +291,16 @@ a.cu-btn-reverse {
 	color:#fff;
 	text-decoration: none;
 	border:0px solid #ff0000;
-	padding:17px 46px 17px 10px;
+	padding:17px 48px 17px 10px;
 	margin:0 0 0 0px;
 	font-weight:200;
 	display:inline-block;	
 	text-transform: uppercase;
 	background-position: 3.8em 1em;
-
 }
 
 a.cu-btn:hover, a.cu-btn-reverse:hover {
-	background-color:#4a265f;
+	background-color:#4a265f !important;
 }
 
 .btn-add-new {
@@ -316,13 +315,17 @@ a.cu-btn:hover, a.cu-btn-reverse:hover {
 	background:url('../images/icons/ico-cancel.png') 0.8em 1em no-repeat;
 }
 
-
 .btn-delete {
 	background:url('../images/icons/ico-delete.png') 0.8em 1em no-repeat;
 }
 
 .btn-next {
-	background:url('../images/icons/ico-next.png') 0.8em 1em no-repeat;
+	background:url('../images/icons/ico-next.png') center right no-repeat;
+}
+
+.btn-build {
+	background:url('../images/icons/ico-build.png') 8em 1em no-repeat !important;
+
 }
 
 .btn-prev {
@@ -617,6 +620,17 @@ a.t-proj-workflow {
 
 h4.h-option-head span {
 	font-weight:700;
+}
+
+.wr-validation-summary p {
+	display:block;
+	color:#ff2353 !important;
+	margin-top:15px;
+	font-weight: 400 !important;
+	background:#fff2f2;
+	padding:7px 17px;
+	font-size:13px !important;
+	border-left:3px solid #ff2353;
 }
 
 

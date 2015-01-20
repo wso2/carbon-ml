@@ -58,7 +58,10 @@
 				<p>Use your Machine Learner credentials to login.</p>
 
 				<div class="hr-spcr"></div>
-
+                <!-- validation -->
+				<span class="wr-validation-summary">
+					<p>Login did not work, check your user name and password and try again</p>
+				</span>
 				<div class="spcr-2"></div>
 
 				<label class="input-label">Username</label>
@@ -111,17 +114,19 @@ $( document ).ready(function() {
 	      offset: {
 	        top: $('header').height()
 	      }
-	});	 
-});
+	});	
 
-$('#login-btn').on('click', function(e){
-	authenticate();	
-});
+	$('.wr-validation-summary').hide();
+	
+	$('#login-btn').on('click', function(e){
+	    authenticate();	
+    });
 
-$('#password').keydown(function(e){
-    if(e.keyCode == 13){
-        authenticate();
-    }
+    $('#password').keydown(function(e){
+        if(e.keyCode == 13){
+            authenticate();
+        }
+    }); 
 });
 
 function authenticate(){
@@ -136,9 +141,11 @@ function authenticate(){
 				window.location.href = "../project/projects.jag"
 			},
 			error : function(res){
-				
+                $('.wr-validation-summary').show();	
 			}
 		});
+	} else {
+		$('.wr-validation-summary').show();
 	}
 }
 
@@ -148,7 +155,6 @@ function validate(text){
     }
     return true;
 }
-
 
 </script>
 
