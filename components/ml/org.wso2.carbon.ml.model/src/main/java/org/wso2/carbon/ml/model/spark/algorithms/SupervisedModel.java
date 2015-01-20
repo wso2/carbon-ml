@@ -30,12 +30,11 @@ import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
 import org.apache.spark.mllib.stat.Statistics;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-//import org.wso2.carbon.ml.model.internal.DatabaseHandler;
-import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.database.dto.Workflow;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
@@ -68,6 +67,8 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGUL
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGULARIZATION_TYPE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SGD_DATA_FRACTION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SUPERVISED_ALGORITHM;
+
+//import org.wso2.carbon.ml.model.internal.DatabaseHandler;
 
 public class SupervisedModel {
     /**
@@ -104,20 +105,19 @@ public class SupervisedModel {
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(
                     workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
-                case LOGISTIC_REGRESSION:
-                    buildLogisticRegressionModel(modelID, trainingData, testingData, workflow);
-                    break;
-                case DECISION_TREE:
-                    buildDecisionTreeModel(modelID, trainingData, testingData, workflow);
-                    break;
-                default:
-                    throw new AlgorithmNameException("Incorrect algorithm name");
+            case LOGISTIC_REGRESSION:
+                buildLogisticRegressionModel(modelID, trainingData, testingData, workflow);
+                break;
+            case DECISION_TREE:
+                buildDecisionTreeModel(modelID, trainingData, testingData, workflow);
+                break;
+            default:
+                throw new AlgorithmNameException("Incorrect algorithm name");
             }
             // stop spark context
             sc.stop();
         } catch (ModelSpecificationException e) {
-            throw new ModelServiceException(
-                    "An error occurred while building supervised machine learning model: " +
+            throw new ModelServiceException("An error occurred while building supervised machine learning model: " +
                     e.getMessage(), e);
         }
     }
@@ -166,8 +166,7 @@ public class SupervisedModel {
             }
             return features;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while preprocessing data: " +
-                                            e.getMessage(), e);
+            throw new ModelServiceException("An error occured while preprocessing data: " + e.getMessage(), e);
         }
     }
 
@@ -211,8 +210,7 @@ public class SupervisedModel {
             JavaRDD<LabeledPoint> testingData,
             Workflow workflow) throws ModelServiceException {
         try {
-            //DatabaseHandler databaseHandler = new DatabaseHandler();
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService(); //TODO: Upul
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             LogisticRegression logisticRegression = new LogisticRegression();
@@ -231,8 +229,8 @@ public class SupervisedModel {
             dbService.updateModel(modelID, model, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building logistic regression " +
-                                            "model: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while building logistic regression model: "
+                    + e.getMessage(), e);
         }
     }
 
@@ -247,8 +245,7 @@ public class SupervisedModel {
     private void buildDecisionTreeModel(String modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
         try {
-            //DatabaseHandler databaseHandler = new DatabaseHandler();
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService(); //TODO: Upul
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -265,8 +262,8 @@ public class SupervisedModel {
             dbService.updateModel(modelID, decisionTreeModel, classClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building decision tree model: "
-                                            + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while building decision tree model: " + e.getMessage(),
+                    e);
         }
 
     }

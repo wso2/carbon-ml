@@ -46,8 +46,8 @@ public class TokensToVectors implements Function<String[], Vector> {
             }
             return Vectors.dense(features);
         } catch (Exception e) {
-            throw new ModelServiceException(
-                    "An error occured while converting tokens to vectors: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while converting tokens to vectors: " + e.getMessage(),
+                    e);
         }
     }
 }

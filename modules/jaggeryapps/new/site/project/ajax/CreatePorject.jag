@@ -1,22 +1,17 @@
 <%
-    var log = new Log();
     var carbon = require('carbon');
-    
-    //remove all workflow level sessions, if exist
-    session.remove('workflowId');
-    session.remove('workflowName');
 
     var pjMgtServ = carbon.server.osgiService(
         'org.wso2.carbon.ml.project.mgt.ProjectManagementService');
     var dsServ = carbon.server.osgiService(
     	'org.wso2.carbon.ml.dataset.DatasetService');
 
-    var projectId = session.get('projectId');
-    var datasetId = session.get("datasetId");
-    var datasetname = session.get("datasetName");
+    var projectId = request.getParameter('projectId');
+    var datasetId = request.getParameter("datasetId");
+    var datasetname = request.getParameter("datasetName");
     var projectDescription = request.getParameter("projectDescription");
     var projectName = request.getParameter("projectName");
-    session.put('projectName', projectName);
+    
     var tenantId = session.get("tenantId");
 
     try{
@@ -25,6 +20,6 @@
         pjMgtServ.addTenantToProject(tenantId, projectId);
 
     }catch(e){
-    	throw new Error("An error occurred while creating project: "+projectId);    	
+    	throw new Error("An error occurred while creating project: "+projectId+" for tenantId: "+ tenantId);    	
     }
 %>

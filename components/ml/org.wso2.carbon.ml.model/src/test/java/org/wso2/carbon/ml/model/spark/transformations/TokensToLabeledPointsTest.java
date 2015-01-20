@@ -22,6 +22,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -36,10 +37,14 @@ public class TokensToLabeledPointsTest {
         JavaRDD<String> lines = sc.textFile("src/test/resources/pIndiansDiabetes.csv");
         Pattern pattern = Pattern.compile(",");
         LineToTokens lineToTokens = new LineToTokens(pattern);
-        JavaRDD<String[]> tokens = lines.map(lineToTokens);
-        MeanImputation meanImputation =new MeanImputation(new HashMap<Integer, Double>());
+        String headerRow = lines.take(1).get(0);
+        HeaderFilter headerFilter = new HeaderFilter(headerRow);
+        JavaRDD<String> data = lines.filter(headerFilter);
+        JavaRDD<String[]> tokens = data.map(lineToTokens);
         TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
-        JavaRDD<LabeledPoint> labeledPoints = tokens.map(meanImputation).map(tokensToLabeledPoints);
+        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray();
+        JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(tokensToLabeledPoints);
+        Assert.assertEquals(tokens.count(),labeledPoints.count());
         sc.stop();
     }
 }

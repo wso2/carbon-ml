@@ -216,17 +216,17 @@ $( document ).ready(function() {
             },
             success : function(data, textStatus, jqXHR){                  
                 $('.progress').hide();
-                var dataInfo = jQuery.parseJSON(data);
-                var projid = dataInfo.projid;
-                var datid = dataInfo.datid;
-                var datname = dataInfo.datname;
+                var response = jQuery.parseJSON(data);
+                var projid = response.projid;
+                var datid = response.datid;
+                var datname = response.datname;
 
                 $('#projid').data('projid', projid);
                 $('#datid').data('datid', datid);
                 $('#datname').data('datname', datname);
             },
             error : function(jqXHR, textStatus, errorThrown) {
-            	console.log("error: "+errorThrown.toString());
+            	//TODO: handle error
             }
         });
     });   
@@ -253,11 +253,14 @@ $( document ).ready(function() {
 
 	$('#delete-file').on('click', function(e){
 		e.preventDefault();		
-		var datasetName = $('input[type=file]').val();
-		if(isValidDatasetFile(datasetName)){
+		var dsName = $('input[type=file]').val().split('\\').pop();
+		var projid = $('#projid').data('projid');
+
+		if(isValidDatasetFile(dsName)){
 	        $.ajax({
 	        	url: './ajax/DeleteDataset.jag',
 	        	type: 'post',
+                data: {datasetName: dsName, projectId: projid},
 	        	success: function(data){
 	                if(data.status){
 	                    var control = $('#datasetUpload');
@@ -266,7 +269,7 @@ $( document ).ready(function() {
 
 	                }else{
 	                	$('#file-upload-error').text(
-	                		'* An error has occurred while delete file.');
+	                		'* An error has occurred while deleting file.');
 	                }
 	        	},
 	        	error: function(e){
@@ -280,11 +283,13 @@ $( document ).ready(function() {
 
 	$('#cancel-project').on('click', function(e){
 		e.preventDefault();		
-        var datasetName = $('input[type=file]').val();
-		if(isValidDatasetFile(datasetName)){
+        var projid = $('#projid').data('projid');
+        var dsName = $('input[type=file]').val().split('\\').pop();
+		if(isValidDatasetFile(dsName)){
 	        $.ajax({
 	        	url: './ajax/DeleteDataset.jag',
 	        	type: 'post',
+	        	data: {datasetName: dsName, projectId: projid},
 	        	success: function(data){
 	                if(data.status){
 	                    var control = $('#datasetUpload');
@@ -293,7 +298,7 @@ $( document ).ready(function() {
 
 	                }else{
 	                	$('#file-upload-error').text(
-	                		'* An error has occurred while delete file.');
+	                		'* An error has occurred while deleting file.');
 	                }
 	        	},
 	        	error: function(e){
@@ -320,25 +325,25 @@ $( document ).ready(function() {
         var descriptionValidation = isValidDescription(projectDes);
         var validFile = isValidDatasetFile(datasetName);
 
-        if(projectNameValidation && descriptionValidation &&
-        	validFile){
+        if(projectNameValidation && descriptionValidation && validFile){
+        	var projid = $('#projid').data('projid');
+            var datid = $('#datid').data('datid');
+
 			$.ajax({
 	            url : './ajax/CreatePorject.jag',
 	            type : 'post',
-	            data : {projectName : $('#project-name').val(), 
-	        	        projectDescription: $('#project-description').val()},
-	            success : function(res){
-	            	var projid = $('#projid').data('projid');
-                    var datid = $('#datid').data('datid');
-                    //var datname = $('#datname').data('datname');
-	                
-	                window.location.href = 
+	            data : {projectName       : $('#project-name').val(), 
+	        	        projectDescription: $('#project-description').val(),
+	        	        projectId         : projid,
+	        	        datasetId         : datid,
+	        	        datasetName       : datasetName},
+	            success : function(res){	            	
+                    window.location.href = 
 	                    './project_success.jag?projid='+projid+'&projna='+projectName+'&datid='+datid;    
 	            },
 	            error : function(res){
 	                //TODO: chat with Dhanuka and select a place 
-	                // to display error messages
-	                console.log('error: '+res);
+	                // to display error messages	                
 	            }
 			});
 		}        
@@ -368,8 +373,7 @@ $( document ).ready(function() {
 	function isValidDatasetFile(fileName){
 		if(fileName && fileName.length > 0){
 			return true;
-		}
-	    
+		}	    
 	    $('#file-upload-error').text('* No dataset is selected');
 		return false;		
 	}

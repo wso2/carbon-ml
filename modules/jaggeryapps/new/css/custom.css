@@ -641,6 +641,31 @@ h4.h-option-head span {
 	color:#555;
 }
 
+/* left nav */
+.wr-left-nav {
+	padding-left:0 !important;
+}
+
+.ctrl-left-nav {
+	margin:0;
+	padding:10px;
+	list-style: none;
+	border:1px solid #e4e4e4;
+	background:#f9f9f9;
+}
+.ctrl-left-nav li a {
+	text-decoration:none;
+	color:#666;
+	display:block;
+	border-top:0px solid #f0f0f0;
+	padding:10px 10px;
+	font-size:18px;
+	font-weight:100;
+}
+
+.ctrl-left-nav li a:first-child {
+
+}
 
 /* sticky footer */
 .footer {

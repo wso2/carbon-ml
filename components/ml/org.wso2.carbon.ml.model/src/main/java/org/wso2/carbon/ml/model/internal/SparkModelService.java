@@ -24,28 +24,30 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.dto.HyperParameter;
 import org.wso2.carbon.ml.database.dto.ModelSummary;
-import org.wso2.carbon.ml.model.ModelService;
+import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.model.ModelService;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
-import org.wso2.carbon.ml.database.dto.HyperParameter;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
-import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLASSIFICATION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DATASET_SIZE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
@@ -76,12 +78,11 @@ public class SparkModelService implements ModelService {
     protected void activate(ComponentContext context) throws ModelServiceException {
         try {
             SparkModelService sparkModelService = new SparkModelService();
-            context.getBundleContext().registerService(ModelService.class.getName(),
-                    sparkModelService, null);
+            context.getBundleContext().registerService(ModelService.class.getName(), sparkModelService, null);
             logger.info("ML Model Service Started.");
         } catch (MLAlgorithmParserException e) {
-            throw new ModelServiceException("An error occured while parsing machine learning " +
-                                            "algorithm configration: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while parsing machine learning algorithm configration: "
+                    + e.getMessage(), e);
         }
     }
 
@@ -133,8 +134,8 @@ public class SparkModelService implements ModelService {
             Map<String, String> userResponse) {
         Map<String, Double> recommendations = new HashMap<String, Double>();
         List<MLAlgorithm> algorithms = new ArrayList();
-        for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()){
-           if (algorithmType.equals(mlAlgorithm.getType())){
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()) {
+            if (algorithmType.equals(mlAlgorithm.getType())) {
                 algorithms.add(mlAlgorithm);
             }
         }
@@ -159,7 +160,7 @@ public class SparkModelService implements ModelService {
                 mlAlgorithm.setDimensionality(5);
             }
             recommendations.put(mlAlgorithm.getName(), (double) (mlAlgorithm.getDimensionality()
-                                                                 + mlAlgorithm
+                                                                         + mlAlgorithm
                     .getInterpretability() + mlAlgorithm.getScalability()));
         }
         Double max = Collections.max(recommendations.values());
@@ -180,16 +181,21 @@ public class SparkModelService implements ModelService {
      */
     public void buildModel(String modelID, String workflowID) throws ModelServiceException {
         /**
-         * Spark looks for various configuration files using it's class loader. Therefore, the
-         * class loader needed to be switched temporarily.
+         * Spark looks for various configuration files using thread context class loader. Therefore, the
+         * class loader needs to be switched temporarily.
          */
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            if (workflowID == null || workflowID.length() == 0) {
+                throw new ModelServiceException("Argument: workflowID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             Workflow workflow = dbService.getWorkflow(workflowID);
             String algorithmType = workflow.getAlgorithmClass();
             if (CLASSIFICATION.equals(algorithmType) || NUMERICAL_PREDICTION.equals(
@@ -200,12 +206,9 @@ public class SparkModelService implements ModelService {
                 supervisedModel.buildModel(modelID, workflow, sparkConf);
             }
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException(
-                    "An error occurred while saving model to database: " + e.getMessage(),
-                    e);
+            throw new ModelServiceException("An error occurred while saving model to database: " + e.getMessage(), e);
         } catch (SparkConfigurationParserException e) {
-            throw new ModelServiceException(
-                    "An error occurred while parsing spark configuration: " + e.getMessage(),
+            throw new ModelServiceException("An error occurred while parsing spark configuration: " + e.getMessage(),
                     e);
         } finally {
             // switch class loader back to thread context class loader
@@ -221,11 +224,13 @@ public class SparkModelService implements ModelService {
     public ModelSummary getModelSummary(String modelID) throws ModelServiceException {
         ModelSummary modelSummary = null;
         try {
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             modelSummary = dbService.getModelSummary(modelID);
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occurred while retrieving model summary: "
-                                            + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while retrieving model summary: " + e.getMessage(), e);
         }
         return modelSummary;
     }
@@ -236,14 +241,14 @@ public class SparkModelService implements ModelService {
      */
     public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException {
         try {
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModelSettings(modelSettings.getModelSettingsID(),
                     modelSettings.getWorkflowID(), modelSettings.getAlgorithmType(),
                     modelSettings.getAlgorithmName(), modelSettings.getResponse(),
                     modelSettings.getTrainDataFraction(), modelSettings.getHyperParameters());
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occurred while inserting model settings: "
-                                            + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while inserting model settings for " +
+                    modelSettings.getModelSettingsID() + " : " + e.getMessage(), e);
         }
     }
 
@@ -256,11 +261,14 @@ public class SparkModelService implements ModelService {
      */
     public boolean isExecutionCompleted(String modelID) throws ModelServiceException {
         try {
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             return dbService.getModelExecutionEndTime(modelID) > 0;
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occurred while querying model: " + modelID
-                                            + " for execution end time: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while querying model: " + modelID +
+                    " for execution end time: " + e.getMessage(), e);
         }
     }
 
@@ -273,11 +281,14 @@ public class SparkModelService implements ModelService {
      */
     public boolean isExecutionStarted(String modelID) throws ModelServiceException {
         try {
-            DatabaseService dbService =  MLModelServiceValueHolder.getDatabaseService();
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             return dbService.getModelExecutionStartTime(modelID) > 0;
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while querying model: " + modelID +
-                                            " for execution start time: " + e.getMessage(), e);
+                    " for execution start time: " + e.getMessage(), e);
         }
     }
 
@@ -292,10 +303,16 @@ public class SparkModelService implements ModelService {
     public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
             throws ModelServiceException {
         try {
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            if (threshold < 0 || threshold > 1.0) {
+                throw new ModelServiceException("Invalid threshold");
+            }
             long truePositives, falsePositives, trueNegatives, falseNegatives;
             trueNegatives = truePositives = falsePositives = falseNegatives = 0;
             List<PredictedVsActual> predictedVsActuals = ((ProbabilisticClassificationModelSummary)
-                     getModelSummary(modelID)).getPredictedVsActuals();
+                                                                  getModelSummary(modelID)).getPredictedVsActuals();
             double predicted, actual;
             for (PredictedVsActual predictedVsActual : predictedVsActuals) {
                 predicted = predictedVsActual.getPredicted();
@@ -321,8 +338,7 @@ public class SparkModelService implements ModelService {
             confusionMatrix.setFalseNegatives(falseNegatives);
             return confusionMatrix;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while generating confusion matrix: "
-                                            + e.getMessage(), e);
+            throw new ModelServiceException("An error occured while generating confusion matrix: " + e.getMessage(), e);
         }
     }
 }

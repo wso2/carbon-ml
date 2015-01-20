@@ -22,4 +22,8 @@ public class ModelServiceException extends Exception {
     public ModelServiceException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public ModelServiceException(String message) {
+        super(message);
+    }
 }
