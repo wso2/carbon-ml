@@ -187,7 +187,12 @@
                     var tenantProjects = JSON.parse(data);
                     //tenantProjects = []; // uncomment to test no projects case
                     if (tenantProjects.length == 0) {
-                        var accordionPanelNoProjects = "<p class='text-center'>No projects available. Click 'Create Project' button to create one.</p>";
+                        var accordionPanelNoProjects = 
+                        '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                        '<h2>You dont have any projects created at the moment.</h2>'+
+                        '<p>Click on <strong>CREATE PROJECT</strong> button at the top to create one</p>'+
+                        '</div>';
+                        
                         $("#accordion").append(accordionPanelNoProjects);    
                     }
                     else {

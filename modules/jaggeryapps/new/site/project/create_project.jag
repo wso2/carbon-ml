@@ -115,15 +115,16 @@
 				</div> -->
 
 				<div class="progress progress-striped active">
-  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-  </div>
-</div>
+                    <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                    </div>
+                </div>
 
-
+				<div id="dataset-status">
 				<label class="input-label">Data File<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control file info-state" data-role="input-control">
 	                <span class="t-data-file" id="data-file-name"></span>
 	                <a href="#" class="cu-level2-btn btn-delete-dark" id="delete-file">Delete File</a>
+	            </div>
 	            </div>
 	            </from>
 			</div>
@@ -165,6 +166,7 @@ $( document ).ready(function() {
 	});
 
 	$('.progress').hide();
+	$('#dataset-status').hide();
 
 	$('#datasetUpload').on('click', function(){
         var datasetName = $('input[type=file]').val().split('\\').pop();         
@@ -224,6 +226,7 @@ $( document ).ready(function() {
                 $('#projid').data('projid', projid);
                 $('#datid').data('datid', datid);
                 $('#datname').data('datname', datname);
+                $('#dataset-status').show();
             },
             error : function(jqXHR, textStatus, errorThrown) {
             	//TODO: handle error
@@ -265,7 +268,8 @@ $( document ).ready(function() {
 	                if(data.status){
 	                    var control = $('#datasetUpload');
 	                    control.replaceWith(control.val('').clone(true));
-	                    $('#data-file-name').empty();	
+	                    $('#data-file-name').empty();
+	                    $('#dataset-status').hide();
 
 	                }else{
 	                	$('#file-upload-error').text(
@@ -294,7 +298,8 @@ $( document ).ready(function() {
 	                if(data.status){
 	                    var control = $('#datasetUpload');
 	                    control.replaceWith( control = control.clone( true ));
-	                    $('#data-file-name').empty();	
+	                    $('#data-file-name').empty();
+	                    $('#dataset-status').hide();	
 
 	                }else{
 	                	$('#file-upload-error').text(

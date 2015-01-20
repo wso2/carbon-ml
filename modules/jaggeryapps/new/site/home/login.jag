@@ -1,25 +1,156 @@
+<!doctype html>
 <html>
-    <body>
-        <% 
-            include("../../includes/header.jag");
-            include("../../includes/title.jag");
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script>
+
+    <% 
+            include("../../includes/header.jag");            
             (function () {
                 if (session.get("logged.user")) {
                     response.sendRedirect("../project/projects.jag");
                     return;
                 }
             }());
-        %>
-        <form id="loginForm" method="POST" action="./ajax/authenticate.jag">
-            <div class="login">
-                <p id="login_title"> Login :</p>
-                <p>Username : <input type="text" name="username" placeholder="Username"></p>
-                <p>Password : <input type="password" name="password" placeholder="Password"></p>
-                <p><input class="blueButton" type="submit" class="submit" value="Login"></p>
-                <input type="hidden" id="redirect" name="redirect" value="<%=request.getParameter("redirect")%>">
-            </div>
-        </form>
-    </body>
-    <link rel="stylesheet" type="text/css" href="./css/home.css">
-    <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+    %> 
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<!-- empty -->		
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+			<!-- login -->
+
+			<div class="container col-md-5 col-lg-3 col-centered wr-login">
+
+				<h2>Login</h2>
+				<p>Use your Machine Learner credentials to login.</p>
+
+				<div class="hr-spcr"></div>
+
+				<div class="spcr-2"></div>
+
+				<label class="input-label">Username</label>
+				<div class="input-control text">
+				    <input id="userName" type="text" value="" placeholder="input text"/>
+				</div>
+
+				<label class="input-label">Password</label>
+				<div class="input-control text">
+				    <input id="password" type="password" value="" placeholder="input text"/>
+				</div>			
+
+				<div class="input-control text">
+				<button id="login-btn" class="btn btn-primary btn-login col-centered">Login</button>	
+				</div>	
+
+			</div>
+
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});	 
+});
+
+$('#login-btn').on('click', function(e){
+	authenticate();	
+});
+
+$('#password').keydown(function(e){
+    if(e.keyCode == 13){
+        authenticate();
+    }
+});
+
+function authenticate(){
+	var user = $('#userName').val();
+	var passwd = $('#password').val();
+    
+    if(validate(user) && validate(passwd)){
+		$.ajax({
+			url : './ajax/authenticate.jag',
+			data : {userName: user, password: passwd},
+			success : function(res){
+				window.location.href = "../project/projects.jag"
+			},
+			error : function(res){
+				
+			}
+		});
+	}
+}
+
+function validate(text){
+    if(!text || text.length == 0){
+    	return false;
+    }
+    return true;
+}
+
+
+</script>
+
+</body>
 </html>

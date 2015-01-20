@@ -663,9 +663,38 @@ h4.h-option-head span {
 	font-weight:100;
 }
 
-.ctrl-left-nav li a:first-child {
-
+/* login */
+.wr-login {
+	/*
+	border:0px solid #e4e4e4;
+	background:#fafafa;
+	*/
 }
+
+.btn-login {
+	display:block;
+	width:30%;
+	padding:6px 20px !important;
+}
+
+.wr-login h2 {
+	font-weight:400;
+	color:#533565;
+	font-size:32px;
+}
+
+.wr-login p {
+	font-weight:100;
+	color:#533565;
+	font-size:14px;
+}
+
+.hr-spcr {
+	border-bottom:1px solid #e4e4e4;
+}
+
+
+
 
 /* sticky footer */
 .footer {

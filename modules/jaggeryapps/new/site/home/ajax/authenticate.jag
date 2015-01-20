@@ -1,9 +1,10 @@
 <%
     var log = new Log();
-    var username = request.getParameter("username");
+    var username = request.getParameter("userName");
     var password = request.getParameter("password");
     var site = require("/site/conf/site.json");
     var carbon = require('carbon');
+    
     try{
         var server = new carbon.server.Server("https://" + site.hostname+":" + site.httpsport + "/admin");
         var success = server.authenticate(username,password);
@@ -14,13 +15,23 @@
 
             session.put("logged.user",username);
             session.put("tenantId",tenantId);
-            response.sendRedirect("../../project/projects.jag");
+
+            response.status = 200;
+            response.contentType = 'application/json';
+            response.content = { status : 'login success' };     
+            
         } else {
-            log.error("Invalid Authentication");
-            response.sendRedirect("../login.jag");
+            response.status = 401;
+            response.contentType = 'application/json';
+            response.content = { status : 'invalid user name or password' };
         }
     } catch(e) {
-        log.error("An error occured while authenticating user: " + username,e);
-        response.sendRedirect("../login.jag");
-  }
+
+        var message = "An error occured while authenticating user: " + username+ " error message: "+e.message;
+        log.error(message);
+        
+        response.status = 500;
+        response.contentType = 'application/json';
+        response.content = { status : message }; 
+    }
 %>
