@@ -31,7 +31,7 @@ public class TokensToLabeledPointsTest {
 
     @Test
     public void testCall() throws Exception {
-        SparkConf conf = new SparkConf().setAppName("testLineToTokens").setMaster("local");
+        SparkConf conf = new SparkConf().setAppName("testTokensToLabeledPoints").setMaster("local");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> lines = sc.textFile("src/test/resources/pIndiansDiabetes.csv");
         Pattern pattern = Pattern.compile(",");
@@ -43,7 +43,7 @@ public class TokensToLabeledPointsTest {
         DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(8);
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray();
         JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
-        Assert.assertEquals(tokens.count(),labeledPoints.count());
+        Assert.assertEquals(tokens.count(),labeledPoints.count(),"Token count does not match labeled point count");
         sc.stop();
     }
 }

@@ -107,11 +107,13 @@ public class UnsupervisedModel {
             KMeansModel kMeansModel = kMeans.train(trainingData, Integer.parseInt(hyperParameters.get(NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(ITERATIONS)));
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
-            clusterModelSummary.setClusters(kMeans.test(kMeansModel, testingData).collect());
+            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
+            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
+            clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
+            clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             dbService.updateModel(modelID, kMeansModel, clusterModelSummary, new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building k-means model: " + e.getMessage(),
-                    e);
+            throw new ModelServiceException("An error occured while building k-means model: " + e.getMessage(), e);
         }
     }
 }
