@@ -67,9 +67,9 @@ public class UnsupervisedModel {
                     columnSeparator);
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
-            JavaRDD<Vector> vectors = features.map(doubleArrayToVector);
-            JavaRDD<Vector> trainingData = vectors.sample(false, workflow.getTrainDataFraction(), RANDOM_SEED);
-            JavaRDD<Vector> testingData = vectors.subtract(trainingData);
+            JavaRDD<Vector> data = features.map(doubleArrayToVector);
+            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), RANDOM_SEED);
+            JavaRDD<Vector> testingData = data.subtract(trainingData);
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {

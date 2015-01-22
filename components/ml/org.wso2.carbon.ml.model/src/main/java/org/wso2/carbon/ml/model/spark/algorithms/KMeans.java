@@ -55,6 +55,8 @@ public class KMeans implements Serializable {
     }
 
     /**
+     * This method applies a kmeans model to a given dataset
+     *
      * @param kMeansModel KMeans model
      * @param data        JavaRDD containing feature vectors
      * @return JavaRDD containing cluster centers

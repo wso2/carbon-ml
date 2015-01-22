@@ -31,6 +31,8 @@ import java.util.Map;
 public class DecisionTree implements Serializable {
 
     /**
+     * This method trains a decision tree model
+     *
      * @param train               Training dataset as a JavaRDD of labeled points
      * @param noOfClasses         No of classes
      * @param categoricalFeatures Categorical features
@@ -47,6 +49,8 @@ public class DecisionTree implements Serializable {
     }
 
     /**
+     * This method applies a decision tree model to a given dataset
+     *
      * @param model Decision tree model
      * @param test  Test dataset as a JavaRDD of labeled points
      * @return JavaPairRDD containing predictions and labels

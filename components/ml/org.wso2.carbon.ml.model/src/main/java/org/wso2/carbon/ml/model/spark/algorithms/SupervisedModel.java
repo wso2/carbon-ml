@@ -24,6 +24,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
@@ -46,6 +47,7 @@ import java.util.Map;
 
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.IMPURITY;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ITERATIONS;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LAMBDA;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LEARNING_RATE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MAX_BINS;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MAX_DEPTH;
@@ -101,6 +103,9 @@ public class SupervisedModel {
                 break;
             case SVM:
                 buildSVMModel(modelID, trainingData, testingData, workflow);
+                break;
+            case NAIVE_BAYES:
+                buildNaiveBayesModel(modelID, trainingData, testingData, workflow);
                 break;
             case LINEAR_REGRESSION:
                 buildLinearRegressionModel(modelID, trainingData, testingData, workflow);
@@ -251,6 +256,37 @@ public class SupervisedModel {
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building linear regression model: "
                     + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method builds a naive bayes model
+     *
+     * @param modelID      Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData  Testing data as a JavaRDD of LabeledPoints
+     * @param workflow     Machine learning workflow
+     * @throws ModelServiceException
+     */
+    private void buildNaiveBayesModel(String modelID, JavaRDD<LabeledPoint> trainingData,
+            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+        try {
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            dbService.insertModel(modelID, workflow.getWorkflowID(),
+                    new Time(System.currentTimeMillis()));
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
+            NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData, Double.parseDouble(
+                    hyperParameters.get(LAMBDA)));
+            JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel,
+                    trainingData);
+            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
+                    .getClassClassificationModelSummary(predictionsAndLabels);
+            dbService.updateModel(modelID, naiveBayesModel, classClassificationAndRegressionModelSummary,
+                    new Time(System.currentTimeMillis()));
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occured while building naive bayes model: " + e.getMessage(),
+                    e);
         }
     }
 }

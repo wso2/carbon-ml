@@ -45,6 +45,17 @@ public class LinearRegression implements Serializable {
     }
 
     /**
+     * Linear regression train - overload method with 1 parameter
+     *
+     * @param trainingDataset Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations  Number of iterarations
+     * @return Linear regression model
+     */
+    public LinearRegressionModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations) {
+        return LinearRegressionWithSGD.train(trainingDataset.rdd(), noOfIterations);
+    }
+
+    /**
      * This method applies linear regression using a given model and a dataset
      *
      * @param linearRegressionModel Linear regression model

@@ -83,6 +83,7 @@ public final class MLModelConstants {
     public static final String L1 = "L1";
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
+    public static final String LAMBDA = "Lambda";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";

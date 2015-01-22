@@ -58,6 +58,19 @@ public class SVM implements Serializable {
     }
 
     /**
+     * SVM train - overload method with 2 parameters
+     * @param trainingDataset Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations Number of iterarations
+     * @param regularizationParameter Regularization parameter
+     * @return SVM model
+     */
+    public SVMModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations, double regularizationParameter) {
+        SVMWithSGD svmWithSGD = new SVMWithSGD();
+        svmWithSGD.optimizer().setNumIterations(noOfIterations).setRegParam(regularizationParameter);
+        return svmWithSGD.run(trainingDataset.rdd());
+    }
+
+    /**
      * This method performs a binary classification using a given SVM model and a dataset
      *
      * @param svmModel       SVM model
