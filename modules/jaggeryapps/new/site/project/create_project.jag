@@ -1,0 +1,389 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+		<!--div class="wr-project">
+			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
+		</div-->
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+			<a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a>
+			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<!--a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+	    </ul-->
+	    		
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+			<div class="wr-form col-lg-5 col-centered">
+
+				<h1 class="title">Create Project</h1>
+                <from id="dataImportForm" action="./ajax/UploadDataset.jag" method="post"
+                    enctype="multipart/form-data">
+
+				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <input type="text" value="" placeholder="Ex: MyDataProject" id="project-name" name="project-name" />
+				    <span class="form-val-error" id="project-name-error"></span>
+				</div>
+
+				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <textarea rows="3" id="project-description" name="project-description"></textarea>
+				    <span class="form-val-error" id="project-description-error"></span>
+				</div>	
+
+				<label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control file info-state" data-role="input-control">
+	                <input type="file" id="datasetUpload" name="datasetUpload">
+	                <span class="form-val-error" id="file-upload-error"></span>
+	            </div>
+
+				<!-- <div class="progress">
+				  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+				</div> -->
+
+				<div class="progress progress-striped active">
+                    <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                    </div>
+                </div>
+
+				<div id="dataset-status">
+				<label class="input-label">Data File<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control file info-state" data-role="input-control">
+	                <span class="t-data-file" id="data-file-name"></span>
+	                <a href="#" class="cu-level2-btn btn-delete-dark" id="delete-file">Delete File</a>
+	            </div>
+	            </div>
+	            </from>
+			</div>
+
+		</div>
+		<!-- /content -->
+		<!-- data attributes -->
+        <div id="projid" data-projid=""></div>
+        <div id="datid" data-datid=""></div>
+        <div id="datname" data-datname=""></div>
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script type="text/javascript">
+var isFileAlreadyPresent = false;
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+	$('.progress').hide();
+	$('#dataset-status').hide();
+
+	$('#datasetUpload').on('click', function(){
+        var datasetName = $('input[type=file]').val().split('\\').pop();         
+        if(datasetName.length > 0){
+        	isFileAlreadyPresent = true;
+        }   
+	});
+
+	$('#datasetUpload').on('change', function(e){
+		e.preventDefault();
+        var projectName = $('#project-name').val();
+        var projectDes = $('#project-description').val();
+        var datasetName = $('input[type=file]').val().split('\\').pop();        
+
+        var projectNameValidation = isValidProjectName(projectName);
+        var descriptionValidation = isValidDescription(projectDes);
+        var validFile = isValidDatasetFile(datasetName);
+
+        if(projectNameValidation && 
+            descriptionValidation && validFile){
+        	$('#dataImportForm').submit();  
+        	$("#datasetUpload").prop('disabled', true);  
+        	$('#data-file-name').text(datasetName); 
+        	$('#file-upload-error').text('');       
+        }else{
+        	var control = $('#datasetUpload');
+            control.replaceWith( control = control.clone( true )); 
+        }               
+	});
+
+	$("#dataImportForm").submit(function(e) {
+		e.preventDefault();
+
+        var formObj = $(this);
+        var formURL = formObj.attr("action");
+        var formData = new FormData();
+        formData.append('datasetFile', $('input[type=file]')[0].files[0]);
+        
+        $.ajax({
+            url : formURL,
+            type : 'POST',
+            data : formData,
+            mimeType : "multipart/form-data",
+            contentType : false,
+            cache : false,
+            processData : false,
+            beforeSend : function(){
+                $('.progress').show();
+            },
+            success : function(data, textStatus, jqXHR){                  
+                $('.progress').hide();
+                var response = jQuery.parseJSON(data);
+                var projid = response.projid;
+                var datid = response.datid;
+                var datname = response.datname;
+
+                $('#projid').data('projid', projid);
+                $('#datid').data('datid', datid);
+                $('#datname').data('datname', datname);
+                $('#dataset-status').show();
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+            	//TODO: handle error
+            }
+        });
+    });   
+
+	$('#project-name').on('click', function(){
+        $('#project-name-error').empty();
+	});
+
+	$('#project-name').on('keydown', function(e){
+        if(e.which == 9){ // tab key
+            $('#project-name-error').empty();     
+        }
+	});
+
+	$('#project-description').on('click', function(){
+		$('#project-description-error').empty();
+	});
+
+	$('#project-description').on('keydown',function(e){
+        if(e.which == 9){ // tab key
+            $('#project-description-error').empty();     
+        }
+	});
+
+	$('#delete-file').on('click', function(e){
+		e.preventDefault();		
+		var dsName = $('input[type=file]').val().split('\\').pop();
+		var projid = $('#projid').data('projid');
+
+		if(isValidDatasetFile(dsName)){
+	        $.ajax({
+	        	url: './ajax/DeleteDataset.jag',
+	        	type: 'post',
+                data: {datasetName: dsName, projectId: projid},
+	        	success: function(data){
+	                if(data.status){
+	                    var control = $('#datasetUpload');
+	                    control.replaceWith(control.val('').clone(true));
+	                    $('#data-file-name').empty();
+	                    $('#dataset-status').hide();
+
+	                }else{
+	                	$('#file-upload-error').text(
+	                		'* An error has occurred while deleting file.');
+	                }
+	        	},
+	        	error: function(e){
+	        		$('#file-upload-error').text(
+	        			'* An error has occurred while calling delete request');
+	        	}
+	        });
+	        $("#datasetUpload").prop('disabled', false);
+	    }		
+	});
+
+	$('#cancel-project').on('click', function(e){
+		e.preventDefault();		
+        var projid = $('#projid').data('projid');
+        var dsName = $('input[type=file]').val().split('\\').pop();
+		if(isValidDatasetFile(dsName)){
+	        $.ajax({
+	        	url: './ajax/DeleteDataset.jag',
+	        	type: 'post',
+	        	data: {datasetName: dsName, projectId: projid},
+	        	success: function(data){
+	                if(data.status){
+	                    var control = $('#datasetUpload');
+	                    control.replaceWith( control = control.clone( true ));
+	                    $('#data-file-name').empty();
+	                    $('#dataset-status').hide();	
+
+	                }else{
+	                	$('#file-upload-error').text(
+	                		'* An error has occurred while deleting file.');
+	                }
+	        	},
+	        	error: function(e){
+	        		$('#file-upload-error').text(
+	        			'* An error has occurred while calling delete request');
+	        	}
+	        });
+        }
+        $('#project-name').val('');
+        $('#project-description').val('');
+        $('#file-upload-error').text('');
+        $("#datasetUpload").prop('disabled', false);
+
+	});
+
+	$('#save-project').on('click', function(e){
+		e.preventDefault();
+
+		var projectName = $('#project-name').val();
+        var projectDes = $('#project-description').val();
+        var datasetName = $('input[type=file]').val().split('\\').pop();
+        
+        var projectNameValidation = isValidProjectName(projectName);
+        var descriptionValidation = isValidDescription(projectDes);
+        var validFile = isValidDatasetFile(datasetName);
+
+        if(projectNameValidation && descriptionValidation && validFile){
+        	var projid = $('#projid').data('projid');
+            var datid = $('#datid').data('datid');
+
+			$.ajax({
+	            url : './ajax/CreatePorject.jag',
+	            type : 'post',
+	            data : {projectName       : $('#project-name').val(), 
+	        	        projectDescription: $('#project-description').val(),
+	        	        projectId         : projid,
+	        	        datasetId         : datid,
+	        	        datasetName       : datasetName},
+	            success : function(res){	            	
+                    window.location.href = 
+	                    './project_success.jag?projid='+projid+'&projna='+projectName+'&datid='+datid;    
+	            },
+	            error : function(res){
+	                //TODO: chat with Dhanuka and select a place 
+	                // to display error messages	                
+	            }
+			});
+		}        
+	});
+
+	function isValidProjectName(text){
+		if(!text || text.length == 0){
+            $('#project-name-error').text("* Project name is required.");
+            return false;    
+		}
+		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
+            $('#project-name-error').text('* Special characters are not allowed');
+            $('#project-name').text('');
+            return false;
+	    }
+	    return true;
+	}
+
+	function isValidDescription(text){
+		if(text && text.length > 0){
+			return true;
+		}
+		$('#project-description-error').text('* Project description is required.');
+        return false;       
+	}
+
+	function isValidDatasetFile(fileName){
+		if(fileName && fileName.length > 0){
+			return true;
+		}	    
+	    $('#file-upload-error').text('* No dataset is selected');
+		return false;		
+	}
+});
+</script>
+
+</body>
+</html>

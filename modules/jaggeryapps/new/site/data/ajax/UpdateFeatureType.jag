@@ -1,0 +1,16 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var wfid = request.getParameter('wfid');
+    try {
+        if (wfid != null) {
+            var featureType = request.getParameter("FEATURE_TYPE");
+            var featureName = request.getParameter("FEATURE_NAME");
+            mlDatasetService.updateDataType(featureName, wfid, featureType);
+        }
+    } catch(e) {
+        throw new Error("An error occured while updating feature type:"+
+                        featureName+" in workflow id: "+wfid);
+    }
+%>

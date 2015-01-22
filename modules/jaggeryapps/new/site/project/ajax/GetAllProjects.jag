@@ -1,0 +1,39 @@
+<%
+    var carbon = require('carbon');
+    var projectManagementService = carbon.server.osgiService(
+                                   'org.wso2.carbon.ml.project.mgt.ProjectManagementService');  
+
+    try{
+        var tenantId = session.get('tenantId');
+        var allProjects = projectManagementService.getAllProjects(tenantId);
+        var projectsJson = [];
+
+        for (var i = 0; i < allProjects.size(); i++) {
+            
+            var projectJson = {};            
+            projectJson['projectID'] = allProjects.get(i).getProjectId();
+            projectJson['projectName'] = allProjects.get(i).getProjectName();
+            projectJson['projectCreatedDate'] = allProjects.get(i).getCreatedDate().toString();
+
+            var noOfWorkflows = projectJson['noOfWorkflows'] = allProjects.get(i).getWorkflows().size();
+            projectJson['noOfWorkflows'] = noOfWorkflows;
+
+            var workflowsJson = [];
+            for (var j = 0; j < noOfWorkflows; j++) {
+                var workflowJson = {};
+                workflowJson['workflowId'] = allProjects.get(i).getWorkflows().get(j).getWorkflowId();
+                workflowJson['workflowName'] = allProjects.get(i).getWorkflows().get(j).getWorkflowName();
+                
+                workflowsJson.push(workflowJson);
+            }
+
+            projectJson['projectWorkflows'] = workflowsJson;
+            projectsJson.push(projectJson);
+        }
+        
+        print(projectsJson);
+
+    }catch(e){
+        throw new Error("An error occurred while retrieving all projects of tenant: " + tenantId);        
+    }
+%>

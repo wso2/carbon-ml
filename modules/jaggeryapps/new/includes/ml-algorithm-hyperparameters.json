@@ -1,0 +1,55 @@
+{
+	"lgreg": {
+		"displayName": "Logistic Regression",
+		"description": "TODO",
+		"hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  }
+                  {
+                  	"name": "Learning Rate",
+                  	"type": "double"
+                  },
+                  {
+                  	"name": "Regularization Type",
+                  	"type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  }
+		]
+	},
+      "svm": {
+            "displayName": "Support Vector Machine",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization Type",
+                        "type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Mini-Batch"
+                  }
+            ]
+      }
+}
