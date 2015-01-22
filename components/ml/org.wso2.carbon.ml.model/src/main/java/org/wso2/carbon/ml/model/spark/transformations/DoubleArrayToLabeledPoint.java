@@ -28,14 +28,13 @@ import java.util.Map;
 /**
  * This class transforms double array of tokens to labeled point
  */
-public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
+public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoint> {
     private final int responseIndex;
-    private Map<Integer, Double> meanImputation;
 
     /**
      * @param index Index of the response variable
      */
-    public TokensToLabeledPoints(int index) {
+    public DoubleArrayToLabeledPoint(int index) {
         this.responseIndex = index;
     }
 
@@ -59,7 +58,7 @@ public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while transforming tokens to labeled points: "
+            throw new ModelServiceException("An error occured while transforming double array to labeled point: "
                     + e.getMessage(), e);
         }
     }

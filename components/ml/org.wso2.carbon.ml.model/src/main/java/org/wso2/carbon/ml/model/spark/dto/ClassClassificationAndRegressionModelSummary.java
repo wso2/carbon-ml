@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A utility class to store class classification model summary
  */
-public class ClassClassificationModelSummary implements ModelSummary, Serializable {
+public class ClassClassificationAndRegressionModelSummary implements ModelSummary, Serializable {
     private double error;
     private List<PredictedVsActual> predictedVsActuals;
 
@@ -61,6 +61,6 @@ public class ClassClassificationModelSummary implements ModelSummary, Serializab
 
     @Override
     public String getModelSummaryType() {
-        return MLModelConstants.CLASS_CLASSIFICATION_MODEL_SUMMARY;
+        return MLModelConstants.CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY;
     }
 }
