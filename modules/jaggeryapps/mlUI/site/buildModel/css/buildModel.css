@@ -1,5 +1,23 @@
+/*
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-.algoTypeDiv {
+
+.algo_type_button{
     margin-top: 2.5em;
     height:3em;
     width:10em;
@@ -63,7 +81,7 @@
 	margin-left: 5%;
 }
 
-#algoType{
+#algo_type{
 	margin-left: 8%;
 }
 
@@ -78,10 +96,10 @@ input.algoName {
 
 
 /* Questions*/
-#questionsContent{
+#questions_content{
     margin-left: 4em;
 }
-#questionsBlock{
+#questions_block{
     float:left;
 }
 
@@ -89,7 +107,7 @@ input.algoName {
     margin-top: 2em;
 }
 
-#optionsBlock{
+#options_block{
     float:left;
     margin-left: 2em;
 }
@@ -122,22 +140,22 @@ input.algoName {
     margin-left: 4em;
 }
 
-#namesBlock{
+#names_block{
     float:left;
     margin-top: -1em;
 }
 
-.parameterName{
+.parameter_name{
     margin-top: 2.2em;
 }
 
-#valuesBlock{
+#values_block{
     float:left;
     margin-left: 2em;
     margin-top: -1em;
 }
 
-.parameterValue{
+.parameter_value{
     margin-top: 2em;
 }
 
@@ -159,11 +177,6 @@ input.algoName {
 
 /* error message class related to algorithm selection */
 .algoSelectionErrorMessage{
-    display: none;
-    color: red;
-}
-
-.hyperParameterError{
     display: none;
     color: red;
 }

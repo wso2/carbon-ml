@@ -58,8 +58,8 @@ public class MLConfigurationParser {
     /**
      * Parse and return default file uploading settings from ml-config.xml.
      *
-     * @return      Data upload settings
-     * @throws      MLConfigurationParserException
+     * @return Data upload settings
+     * @throws MLConfigurationParserException
      */
     protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
         DataUploadSettings dataUploadSettings = new DataUploadSettings();
@@ -91,8 +91,8 @@ public class MLConfigurationParser {
     /**
      * Parse default summary statistics generation settings from ml-config.xml.
      *
-     * @return      Summary statistics settings
-     * @throws      MLConfigurationParserException
+     * @return Summary statistics settings
+     * @throws MLConfigurationParserException
      */
     protected SummaryStatisticsSettings getSummaryStatisticsSettings() 
             throws MLConfigurationParserException {
@@ -125,9 +125,8 @@ public class MLConfigurationParser {
     
     /**
      * Parse the JNDI lookup name of the ML database from the ml-config.xml file
-     * 
-     * @return      JNDI lookup name of the ML database
-     * @throws      MLConfigurationParserException 
+     * @return JNDI lookup name of the ML database
+     * @throws MLConfigurationParserException 
      */
     protected String getDatabaseName() throws MLConfigurationParserException{
         try{

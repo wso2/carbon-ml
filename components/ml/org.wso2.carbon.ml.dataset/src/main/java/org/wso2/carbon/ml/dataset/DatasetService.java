@@ -17,14 +17,13 @@
  */
 package org.wso2.carbon.ml.dataset;
 
-import org.json.JSONArray;
-import org.wso2.carbon.ml.database.dto.FeatureSummary;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.wso2.carbon.ml.dataset.dto.Feature;
+import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 
 /**
  * Interface contains the services related to importing and exploring a
@@ -42,45 +41,26 @@ public interface DatasetService {
     public String getDatasetUrl(String datasetID) throws DatasetServiceException;
 
     /**
-     * Upload the data file.
+     * Upload the data file and calculate summary statistics.
      *
-     * @param sourceInputStream     Input Stream of the source data file
-     * @param fileName              Name of the uploading file
-     * @param projectID             Unique Identifier of the project
-     * @return                      Path of the uploaded file
-     * @throws                      DatasetServiceException
-     * @throws                      IOException
-     */
-    public String uploadDataset(InputStream sourceInputStream,  String fileName, String projectID) 
-            throws DatasetServiceException, IOException;
-
-    /**
-     *
-     * @param fileName
-     * @param projectID
-     * @return
+     * @param sourceInputStream Input Stream of the source data file
+     * @param datasetID Unique Identifier of the data-set
+     * @param fileName Name of the uploading file
+     * @param projectID Unique Identifier of the project
+     * @return Number of features in the data-set
      * @throws DatasetServiceException
+     * @throws IOException
      */
-    public boolean deleteDataset(String fileName, String projectID) throws DatasetServiceException;
+    public int uploadDataset(InputStream sourceInputStream, String datasetID, String fileName,
+            String projectID) throws DatasetServiceException, IOException;
 
-    /**
-     * 
-     * @param filePath      Path of the dataset to calculate summary statistics
-     * @param datasetID     Unique Identifier of the data-set
-     * @param projectID     Unique Identifier of the project associated with the dataset
-     * @return              Number of features in the data-set
-     * @throws              DatasetServiceException
-     */
-    public int calculateSummaryStatistics(String filePath, String datasetID, String projectID) 
-            throws DatasetServiceException;
-            
     /**
      * Update the data type of a given feature.
      *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param featureType   Updated type of the feature
-     * @throws              DatasetServiceException
+     * @param featureName Name of the feature to be updated
+     * @param workflowID Unique identifier of the current workflow
+     * @param featureType Updated type of the feature
+     * @throws DatasetServiceException
      */
     public void updateDataType(String featureName, String workflowID, String featureType)
             throws DatasetServiceException;
@@ -88,10 +68,10 @@ public interface DatasetService {
     /**
      * Update the impute option of a given feature.
      *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param imputeOption  Updated impute option of the feature
-     * @throws              DatasetServiceException
+     * @param featureName Name of the feature to be updated
+     * @param workflowID Unique identifier of the current workflow
+     * @param imputeOption Updated impute option of the feature
+     * @throws DatasetServiceException
      */
     public void updateImputeOption(String featureName, String workflowID, String imputeOption)
             throws DatasetServiceException;
@@ -99,11 +79,11 @@ public interface DatasetService {
     /**
      * change whether a feature should be included as an input or not.
      *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param isInput       Boolean value indicating whether the feature is an input or not
-     * @throws              DatasetServiceException
-     */ 
+     * @param featureName Name of the feature to be updated
+     * @param workflowID Unique identifier of the current workflow
+     * @param isInput Boolean value indicating whether the feature is an input or not
+     * @throws DatasetServiceException
+     */
     public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
             throws DatasetServiceException;
 
@@ -111,23 +91,23 @@ public interface DatasetService {
      * Returns a set of features in a given range, from the alphabetically
      * ordered set of features, of a data-set.
      *
-     * @param datasetID         Unique Identifier of the data-set
-     * @param startIndex        Starting index of the set of features needed
-     * @param numberOfFeatures  Number of features needed, from the starting index
-     * @return                  A list of Feature objects
-     * @throws                  DatasetServiceException
+     * @param datasetID Unique Identifier of the data-set
+     * @param startIndex Starting index of the set of features needed
+     * @param numberOfFeatures Number of features needed, from the starting index
+     * @return A list of Feature objects
+     * @throws DatasetServiceException
      */
-    public List<FeatureSummary> getFeatures(String datasetID, String workflowID, int startIndex,
+    public List<Feature> getFeatures(String datasetID, String workflowID, int startIndex,
             int numberOfFeatures) throws DatasetServiceException;
 
     /**
      * Returns the names of the features, belongs to a particular data-type
      * (Categorical/Numerical), of the work-flow.
      *
-     * @param workflowID    Unique identifier of the current work-flow
-     * @param featureType   Data-type of the feature
-     * @return              A list of feature names
-     * @throws              DatasetServiceException
+     * @param workflowID Unique identifier of the current work-flow
+     * @param featureType Data-type of the feature
+     * @return A list of feature names
+     * @throws DatasetServiceException
      */
     public List<String> getFeatureNames(String workflowID, String featureType)
             throws DatasetServiceException;
@@ -136,12 +116,12 @@ public interface DatasetService {
      * Returns data points of the selected sample as coordinates of three
      * features, needed for the scatter plot.
      *
-     * @param datasetID         Unique Identifier of the data-set
-     * @param xAxisFeature      Name of the feature to use as the x-axis
-     * @param yAxisFeature      Name of the feature to use as the y-axis
-     * @param groupByFeature    Name of the feature to be grouped by (color code)
-     * @return                  A JSON array of data points
-     * @throws                  DatasetServiceException
+     * @param datasetID Unique Identifier of the data-set
+     * @param xAxisFeature Name of the feature to use as the x-axis
+     * @param yAxisFeature Name of the feature to use as the y-axis
+     * @param groupByFeature Name of the feature to be grouped by (color code)
+     * @return A JSON array of data points
+     * @throws DatasetServiceException
      */
     public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
             String groupByFeature) throws DatasetServiceException;
@@ -149,36 +129,27 @@ public interface DatasetService {
     /**
      * Returns the summary statistics for a given feature of a given data-set
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @param feature       Name of the feature of which summary statistics are needed
-     * @return              JSON string containing the summary statistics
-     * @throws              DatasetServiceException
+     * @param datasetID Unique Identifier of the data-set
+     * @param feature Name of the feature of which summary statistics are needed
+     * @return JSON string containing the summary statistics
+     * @throws DatasetServiceException
      */
     public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException;
 
     /**
      * Returns the number of features of a given data-set.
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @return              Number of features in the data-set
-     * @throws              DatasetServiceException
+     * @param datasetID Unique Identifier of the data-set
+     * @return Number of features in the data-set
+     * @throws DatasetServiceException
      */
     public int getFeatureCount(String datasetID) throws DatasetServiceException;
     
     /**
      * Returns the model id associated with a given workflow Id
-     * 
-     * @param workflowId    Unique identifier of the workflow
-     * @returns             Model id associated with this workflow id
-     * @throws              org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException
+     * @param workflowId unique identifier of the workflow
+     * @returns the model id associated with this workflow id
+     * @throws org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException
      */
     public String getModelId(String workflowId) throws DatasetServiceException;
-
-    /**
-     *
-     * @param projectId
-     * @return
-     * @throws DatasetServiceException
-     */
-    public String getDatasetId(String projectId) throws DatasetServiceException, DatabaseHandlerException;
 }

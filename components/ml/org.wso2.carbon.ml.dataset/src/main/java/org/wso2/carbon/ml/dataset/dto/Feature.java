@@ -40,7 +40,7 @@ public class Feature {
 	/**
 	 * Returns the name of the feature.
 	 *
-	 * @return     Name of the feature
+	 * @return Name of the feature
 	 */
 	public String getFieldName() {
 		return this.fieldName;
@@ -49,7 +49,7 @@ public class Feature {
 	/**
 	 * Set the name of the feature.
 	 *
-	 * @param fieldName    Name of the feature
+	 * @param fieldName Name of the feature
 	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
@@ -58,7 +58,7 @@ public class Feature {
 	/**
 	 * Returns the summary statistics json string.
 	 *
-	 * @return     Summary statistics json string
+	 * @return Summary statistics json string
 	 */
 	public String getSummaryStats() {
 		return this.summaryStats;
@@ -67,7 +67,7 @@ public class Feature {
 	/**
 	 * Set the summary statistics json string.
 	 *
-	 * @param summaryStats     Summary statistics json string
+	 * @param summaryStats Summary statistics json string
 	 */
 	public void setSummaryStats(String summaryStats) {
 		this.summaryStats = summaryStats;
@@ -76,8 +76,8 @@ public class Feature {
 	/**
 	 * Returns whether the feature is treated as an input or not.
 	 *
-	 * @return     Boolean value indicating whether the feature is treated as an
-	 *             input or not
+	 * @return boolean value indicating whether the feature is treated as an
+	 *         input or not
 	 */
 	public boolean isInput() {
 		return isInput;
@@ -86,8 +86,8 @@ public class Feature {
 	/**
 	 * Sets whether the feature is treated as an input or not.
 	 *
-	 * @param isInput  Boolean value indicating whether the feature is treated as an
-	 *                 input or not
+	 * @param isInput boolean value indicating whether the feature is treated as an
+	 *            input or not
 	 */
 	public void setInput(boolean isInput) {
 		this.isInput = isInput;
@@ -96,7 +96,7 @@ public class Feature {
 	/**
 	 * Returns the data-type of the feature.
 	 *
-	 * @return     Data-type of the feature
+	 * @return Data-type of the feature
 	 */
 	public String getType() {
 		return type;
@@ -105,7 +105,7 @@ public class Feature {
 	/**
 	 * Sets the data-type of the feature.
 	 *
-	 * @param type     Data-type of the feature
+	 * @param type Data-type of the feature
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -114,7 +114,7 @@ public class Feature {
 	/**
 	 * Returns the impute method of the feature.
 	 *
-	 * @return     Impute method of the feature
+	 * @return Impute method of the feature
 	 */
 	public String getImputeOperation() {
 		return imputeOperation;
@@ -123,7 +123,7 @@ public class Feature {
 	/**
 	 * Sets the impute method of the feature.
 	 *
-	 * @param imputeOperation  Impute method of the feature
+	 * @param imputeOperation impute method of the feature
 	 */
 	public void setImputeOperation(String imputeOperation) {
 		this.imputeOperation = imputeOperation;

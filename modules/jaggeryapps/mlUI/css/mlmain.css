@@ -1,0 +1,206 @@
+/*
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/* main template */
+
+html,body,head{
+  background:#FAFAFA;
+	width: 100%;
+	margin:0;
+    padding:0;
+    font-family: arial;
+}
+
+#wizzardSteps{
+	margin-left: auto ;
+  	margin-right: auto ;
+}
+/* Header*/
+
+.page-header{
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+	background-color:#E6E6E6;
+	height:7em;
+	text-align: left;
+	margin-top:auto;
+}
+
+#page-header-line{
+	background-color: #DAA520;
+	height:0.1em;
+}
+
+#logo{
+	width:19em;
+	height:3em;
+	float:left;
+	margin-top: 2em;
+	margin-left: 1em;
+}
+
+#hader-name{
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 40px;
+	padding-top: 0.7em;
+	padding-left: 5.5em;
+	margin-bottom: 0em;
+}
+
+.page-footer{
+	background-color: #ffffff; 
+	clear: both; 
+	text-align: center;
+}
+
+#loggedUser{
+	float: right;
+	margin-right: 1em;
+	font-size: 0.9em;
+}
+
+
+/* wizard menu*/
+.menulink{
+	text-decoration:none;
+	padding: 7px 10px -5px -5px;
+}
+.topMenu{
+	margin-top: -1em;
+	margin-bottom: 1em;
+	width: 78em;
+  	margin-left: auto ;
+  	margin-right: auto ;
+}
+
+
+.top_Menu_button {
+  margin: 5px 0;
+  padding: 0;
+  margin-left: 1em;
+  float:left;
+}
+
+.menulink{
+  float: left;
+  width:10em;
+  height:2.4em;
+  line-height: 2.4em;
+  position: relative;
+  margin: 0;
+  padding: 0em 2.4em 0 2.4em;
+  color: #fff;
+  text-decoration: none; 
+  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #E6E6E6), color-stop(1, #BDBDBD));
+	background:-moz-linear-gradient( center top, #E6E6E6 5%, #BDBDBD 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#E6E6E6', endColorstr='#BDBDBD');
+	background-color:#E6E6E6;
+	font-family:arial;
+	font-size:15px;
+	font-style:normal;
+	text-align:center;
+	color:#000000;
+	text-indent: auto;
+    -webkit-transform: rotate(360deg);
+	-moz-transform: rotate(360deg);
+	-ms-transform: rotate(360deg);
+	-o-transform: rotate(360deg);
+	transform: rotate(360deg);
+}
+
+.menulink:after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    top: 0;
+    right: 0;
+    border-top: 1.2em solid #FAFAFA;
+    border-left: 1.2em solid transparent;
+    border-bottom: 1.3em solid #FAFAFA;
+    position: absolute;
+
+}
+
+.menulink:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-color: transparent transparent transparent #FAFAFA;
+  border-style: solid;
+  border-width: 1.2em 0 1.2em 1.2em;
+}
+
+.top_Menu_button.menuHiligher{
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614));
+	background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
+	background-color:#FFD700;
+	color:#ffffff;
+}
+
+
+/* Buttons in UI */
+.greenButton{
+	padding: 5px 5px;
+	color:white;
+	background: #80E680;
+	width: 130px;
+	border-radius: 5px;
+	border: 1px solid #57D6C7;
+	cursor: pointer;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+.blueButton,ui-button{
+	padding: 5px 5px;
+	color:white;
+	/*background: #75A3FF;*/
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #FFD700), color-stop(1, #C99614));
+	background:-moz-linear-gradient( center top, #FFD700 5%, #C99614 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFD700', endColorstr='#C99614');
+	background-color:#FFD700;
+	font-family:arial;
+	font-size:15px;
+	font-style:normal;
+	width: 130px;
+	border-radius: 5px;
+	border: 1px solid #DAA520;
+	cursor: pointer;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+
+#changeSampleButtons{
+	float: right;
+	padding: 1em 2em 1em;
+}
+
+.bottomNavigationButtons{
+	float: right;
+	padding: 2.5em 2em 2.5em;
+}
+
+/* error messages*/
+.errorMessage{
+	color: #ff1111;
+}

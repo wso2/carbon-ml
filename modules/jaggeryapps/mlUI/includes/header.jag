@@ -1,0 +1,39 @@
+<%
+// This is a generic header file to be included in all the pages.
+
+include("/jagg/jagg.jag");
+var site = require("/site/conf/site.json");
+
+var getRedirectPathForNonAuthenticatedUser = function () {
+    var requestedPage = request.getRequestURI();
+    var tenantParam = "";
+    if (request.getQueryString() != null) {
+        requestedPage = requestedPage + '?' + encodeURIComponent(request.getQueryString());
+        var tenantDomain = getTenantDomain();
+        if(tenantDomain != null){
+            tenantParam = "&tenant=" + tenantDomain;
+        }
+    }
+    var redirectPath = jagg.getAbsoluteUrl("/?requestedPage=" + requestedPage + tenantParam);
+    return redirectPath;
+};
+
+var getTenantDomain=function() {
+    return request.getParameter("tenant");
+};
+
+// Filter out tenant parameter
+var request_tenant = request.getParameter("tenant");
+var illegalChars = /([~!@#;%^*+={}\|\\<>\"\',])/;
+var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
+if (illegalChars.test(request_tenant) || illegalCharsInput.test(request_tenant)) {
+    // redirect to 404
+    exit();
+}
+
+if (site.request_url == "READ_FROM_REQUEST") {
+    var request_url = request.getRequestURL().split(request.getRequestURI())[0] + request.getContextPath();
+} else {
+    var request_url = site.request_url;
+}
+%>

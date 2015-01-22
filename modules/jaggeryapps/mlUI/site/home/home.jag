@@ -33,7 +33,7 @@
             <p id="new_project-text">New Project</p>
         </div>
         <div id="help">
-            <a href="https://docs.wso2.com/display/ML100/Machine+Learner+1.0.0+Documentation" target="_blank">
+            <a href="https://docs.wso2.com/display/ML010/Machine+Learner+0.1.0+Documentation" target="_blank"> 
                 <img src="../../images/help.png" id="help_img" alt="Help">
             </a><br><br>
             <p id="help-text">Help</p>

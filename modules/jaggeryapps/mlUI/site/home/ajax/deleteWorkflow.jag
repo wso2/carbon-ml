@@ -1,0 +1,17 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var workflowId = request.getParameter("workflowId");
+    try {
+        var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+        projectManagementService.deleteWorkflow(workflowId);
+
+        // if the deleted workflow is the cureent workflow, remove it from session
+        if (session.get("workflowId") == workflowId) {
+            session.put("workflowId",undefined);
+            session.put("datasetId",undefined);
+        }
+    } catch(e) {
+        log.error("An error occured while deleting the workflow: " + workflowId, e);
+    }
+%>

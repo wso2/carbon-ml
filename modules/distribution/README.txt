@@ -1,8 +1,8 @@
 ================================================================================
-                        WSO2 Machine Learner 1.0.0
+                        WSO2 Machine Learner 0.1.0
 ================================================================================
 
-Welcome to the WSO2 Machine Learner 1.0.0 release
+Welcome to the WSO2 Machine Learner 0.1.0 release
 
 WSO2 Machine Learner provides a user friendly wizard like interface, which guides users through
 a set of steps to find and configure machine learning algorithms. The outcome of this process is a
@@ -34,11 +34,11 @@ System Requirements
 Installation & Running
 ==================================
 
-1. Extract the wso2ml-1.0.0.zip and go to the extracted directory
+1. Extract the wso2ml-0.1.0.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
-    https://localhost:9443/mlUI
+    https://localhost:9443/carbon
 
 4. Use the following username and password to login
 
