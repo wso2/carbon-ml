@@ -26,7 +26,9 @@ import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import scala.Tuple2;
 
-public class NaiveBayesClassifier {
+import java.io.Serializable;
+
+public class NaiveBayesClassifier implements Serializable {
 
     /**
      * This method trains a naive bayes model
