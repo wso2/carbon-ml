@@ -22,21 +22,29 @@ import org.wso2.carbon.ml.database.dto.ModelSummary;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class ClusterModelSummary implements ModelSummary, Serializable {
 
-    private List<Integer> clusters;
+    private double trainDataComputeCost;
+    private double testDataComputeCost;
 
     @Override public String getModelSummaryType() {
         return MLModelConstants.CLUSTER_MODEL_SUMMARY;
     }
 
-    public List<Integer> getClusters() {
-        return clusters;
+    public double getTrainDataComputeCost() {
+        return trainDataComputeCost;
     }
 
-    public void setClusters(List<Integer> clusters) {
-        this.clusters = clusters;
+    public void setTrainDataComputeCost(double trainDataComputeCost) {
+        this.trainDataComputeCost = trainDataComputeCost;
+    }
+
+    public double getTestDataComputeCost() {
+        return testDataComputeCost;
+    }
+
+    public void setTestDataComputeCost(double testDataComputeCost) {
+        this.testDataComputeCost = testDataComputeCost;
     }
 }
