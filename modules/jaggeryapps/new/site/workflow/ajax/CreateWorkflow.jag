@@ -1,0 +1,22 @@
+<%
+    var carbon = require('carbon');
+    var uuid = require('uuid');
+
+    var prjMgntServ = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+    
+    var projectId = request.getParameter('projid');
+    var workflowName = request.getParameter('wfname'); 
+
+    try{
+        workflowId = uuid.generate();
+        prjMgntServ.createNewWorkflow(workflowId, workflowId, projectId, workflowName);
+        prjMgntServ.setDefaultFeatureSettings(projectId, workflowId);
+        
+        response.contentType = 'application/json';
+        response.content = { wfid : workflowId };
+        
+    }catch(e){
+        throw new Error("An error has occurred, while creating workflow for project :"+projectId);
+    }  
+    
+%>

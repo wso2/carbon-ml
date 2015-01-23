@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<html>
+    <head>
+        <meta charset="utf-8">        
+        <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+        <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+        <link rel="stylesheet" type="text/css" href="./css/exploreData.css">
+        <link rel="stylesheet" type="text/css" href="../../css/nv.d3.css">
+        
+        <script type="text/javascript" src="../../js/d3.js"></script>
+        <script type="text/javascript" src="../../js/nv.d3.js"></script>
+        <script src="../../js/src/utils.js"></script>
+        <script src="../../js/src/tooltip.js"></script>
+        <script src="../../js/src/models/legend.js"></script>
+        <script src="../../js/src/models/axis.js"></script>
+        <script src="../../js/src/models/scatter.js"></script>
+        <script src="../../js/src/models/line.js"></script>
+        <script src="../../js/src/models/historicalBar.js"></script>
+        <script src="../../js/src/models/linePlusBarChart.js"></script>
+        <script src="../../js/jquery.js"></script>
+        <script type="text/javascript" src="../../js/wso2.ml.graphs.js"></script>
+        <script src="./js/exploreDataset.js"></script>   
+    </head>
+
+    <body>
+<%
+var log = new Log();
+var mlConfigs = require("/includes/ml.json");
+try {
+    var carbon = require('carbon');
+    var workflowId = session.get("workflowId");
+    if (!workflowId) {
+        throw new Error("Workflow ID not found");
+    }
+    // get numerical and categorical features
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.numerical);
+    var categoricalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.categorical);
+    // generate dropdown lists for numerical and categorical features
+    var numFeaturesIndependentDropdown = listSelectionRenderer(numericalFeatureNames, numericalFeatureNames.get(0), "numFeaturesIndependentDropdown");
+    var numFeaturesDependentDropdown = listSelectionRenderer(numericalFeatureNames, numericalFeatureNames.get(1), "numFeaturesDependentDropdown");
+    var catFeaturesDropdown = listSelectionRenderer(categoricalFeatureNames, categoricalFeatureNames.get(0), "catFeaturesDropdown");
+} catch (e) {
+    throw new Error("An error occured while generating dropdown lists from features", e);
+}
+
+// Generate html for dropdown lists
+function listSelectionRenderer(featureNames, selectedOption, cssClass) {
+    var selection = "<select class=" + cssClass + ">";
+    for (var i = 0; i < featureNames.size(); i++) {
+        if (selectedOption.toUpperCase() == featureNames.get(i).toUpperCase()) {
+            selection += "<option selected value=\"" + featureNames.get(i) + "\">" + featureNames.get(i) + "</option>";
+        }
+        else {
+            selection += "<option value=\"" + featureNames.get(i) + "\">"
+                         + featureNames.get(i) + "</option>";
+        }
+    }
+    selection += "</select>";
+    return selection;
+}
+%>
+
+<div id="middle">
+    <%
+include("../../includes/tenantAware.jag");
+include("../../includes/title.jag");
+%>
+<div id="workArea">
+    <%include("../../includes/wizardmenu.jag");%>
+            <div style="clear:both"></div>
+        </div>
+    </div>
+
+    <div id="leftColumn" class="half-width-column">
+        <div id="scatterPlotTitle" class="graphtitle"></div>
+        <div id="scatter"></div>
+        <div id="scatterPlotFeatures">
+        <%
+try {
+    var datasetId = session.get("datasetId");
+    if (!datasetId) {
+        throw new Error("Dataset ID not found");
+    }
+    print("X-Axis:&emsp;" + numFeaturesIndependentDropdown + "<br><br>");
+    print("Y-Axis:&emsp;" + numFeaturesDependentDropdown + "<br><br>");
+    print("Group By:&emsp;" + catFeaturesDropdown + "<br><br>");
+}
+catch (e) {
+    throw new Error("An error occured while adding dropdown lists to page layout", e);
+}
+%>
+</div>
+</div>
+<div id="rightColumn" class="half-width-column">
+<div id="histograms" class="graph">
+    <div id="histogramIndependent" class="graph">
+        <div id="histogramIndependentTitle" class="graphtitle"></div>
+        <!-- Histogram for the independent variable will be drawn here -->
+        <svg></svg>
+        <div id="numFeatureIndependentSummary" class="graphSummary"></div>
+    </div>
+    <div id="histogramDependent" class="graph">
+        <div id="histogramDependentTitle" class="graphtitle"></div>
+        <!-- Histogram for the dependent variable will be drawn here -->
+        <svg></svg>
+        <div id="numFeatureDependentSummary" class="graphSummary"></div>
+    </div>
+</div>
+</div>
+
+</body>
+</html>

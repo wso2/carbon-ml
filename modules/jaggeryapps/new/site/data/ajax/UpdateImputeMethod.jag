@@ -1,0 +1,15 @@
+<%
+    var carbon = require('carbon');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var wfid = request.getParameter('wfid');
+    try{        
+        if (wfid != null){
+            var imputeOption = request.getParameter("IMPUTE_OPTION");
+            var featureName = request.getParameter("FEATURE_NAME");
+            mlDatasetService.updateImputeOption(featureName, wfid, imputeOption);
+        }
+    } catch(e) {
+        throw new Error("An error occured while updating features:"+
+                        featureName+" in workflow id: "+wfid);
+    }
+%>

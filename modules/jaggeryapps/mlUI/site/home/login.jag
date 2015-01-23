@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <% 
+            include("../../includes/header.jag");
+            include("../../includes/title.jag");
+            (function () {
+                if (session.get("logged.user")) {
+                    response.sendRedirect("./home.jag");
+                    return;
+                }
+            }());
+        %>
+        <form id="loginForm" method="POST" action="./ajax/authenticate.jag">
+            <div class="login">
+                <p id="login_title"> Login :</p>
+                <p>Username : <input type="text" name="username" placeholder="Username"></p>
+                <p>Password : <input type="password" name="password" placeholder="Password"></p>
+                <p><input class="blueButton" type="submit" class="submit" value="Login"></p>
+                <input type="hidden" id="redirect" name="redirect" value="<%=request.getParameter("redirect")%>">
+            </div>
+        </form>
+    </body>
+    <link rel="stylesheet" type="text/css" href="./css/home.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mlmain.css">
+</html>
