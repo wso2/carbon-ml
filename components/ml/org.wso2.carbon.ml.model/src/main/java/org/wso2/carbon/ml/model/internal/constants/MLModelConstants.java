@@ -82,8 +82,6 @@ public final class MLModelConstants {
     public static final String IMPURITY = "Impurity";
     public static final String L1 = "L1";
     public static final String L2 = "L2";
-    public static final String NUM_CLUSTERS = "Num_Clusters";
-    public static final String LAMBDA = "Lambda";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -95,15 +93,14 @@ public final class MLModelConstants {
     public static final String EMPTY = "";
     public static final String NA = "NA";
     public static final String DECIMAL_FORMAT = "#.00";
-    public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY =
-            "ClassClassificationAndRegressionModelSummary";
+    public static final String CLASS_CLASSIFICATION_MODEL_SUMMARY = "ClassClassificationModel" +
+                                                                    "Summary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY =
             "ProbabilisticClassificationModelSummary";
-    public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
 
     // enums
     public enum SUPERVISED_ALGORITHM {
-        LINEAR_REGRESSION, LOGISTIC_REGRESSION, SVM, DECISION_TREE, NAIVE_BAYES
+        LOGISTIC_REGRESSION, SVM, DECISION_TREE, NAIVE_BAYES
     }
 
     public enum UNSUPERVISED_ALGORITHM {

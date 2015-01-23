@@ -32,6 +32,9 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
+import org.wso2.carbon.ml.model.ModelService;
+import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import scala.Tuple2;
@@ -42,14 +45,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L1;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L2;
 
 public class LogisticRegression implements Serializable {
 
     /**
-     * This method uses stochastic gradient descent (SGD) algorithm to train a logistic regression model
+     * This method uses SGD to train a logistic regression model for a given dataset
      *
      * @param trainingDataset             Training dataset as a JavaRDD of labeled points
      * @param noOfIterations              No of iterations
@@ -59,14 +59,14 @@ public class LogisticRegression implements Serializable {
      * @param dataFractionPerSGDIteration Data fraction per SGD iteration
      * @return Logistic regression model
      */
-    public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset, double initialLearningRate,
-            int noOfIterations, String regularizationType, double regularizationParameter,
-            double dataFractionPerSGDIteration) {
+    public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset,
+            double initialLearningRate, int noOfIterations, String regularizationType,
+            double regularizationParameter, double dataFractionPerSGDIteration) {
         LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate,
                 noOfIterations, regularizationParameter, dataFractionPerSGDIteration);
-        if (L1.equals(regularizationType)) {
+        if (MLModelConstants.L1.equals(regularizationType)) {
             lrSGD.optimizer().setUpdater(new L1Updater());
-        } else if (L2.equals(regularizationType)) {
+        } else if (MLModelConstants.L2.equals(regularizationType)) {
             lrSGD.optimizer().setUpdater(new SquaredL2Updater());
         }
         lrSGD.setIntercept(true);
@@ -83,8 +83,9 @@ public class LogisticRegression implements Serializable {
      * @param regularizationParameter Regularization parameter
      * @return Logistic regression model
      */
-    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset, int noOfCorrections,
-            double convergenceTolerance, int noOfIterations, double regularizationParameter) {
+    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset,
+            int noOfCorrections, double convergenceTolerance, int noOfIterations,
+            double regularizationParameter) {
         int numFeatures = trainingDataset.take(1).get(0).features().size();
         JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Vector>>() {
@@ -108,20 +109,62 @@ public class LogisticRegression implements Serializable {
     /**
      * This method performs a binary classification using a given model and a dataset
      *
-     * @param logisticRegressionModel Logistic regression model
-     * @param testingDataset          Testing dataset as a JavaRDD of LabeledPoints
+     * @param model          Logistic regression model
+     * @param testingDataset Testing dataset as a LabeledPoint JavaRDD
      * @return Tuple2 containing scores and labels
      */
-    public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel logisticRegressionModel,
+    public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel model,
             JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Object>>() {
-                    public Tuple2<Object, Object> call(LabeledPoint labeledPoint) {
-                        Double score = logisticRegressionModel.predict(labeledPoint.features());
-                        return new Tuple2<Object, Object>(score, labeledPoint.label());
+                    public Tuple2<Object, Object> call(LabeledPoint p) {
+                        Double score = model.predict(p.features());
+                        return new Tuple2<Object, Object>(score, p.label());
                     }
                 }
         );
+    }
+
+    /**
+     * This method generates a summary for logistic regression
+     *
+     * @param scoresAndLabels Scores and labels
+     * @return Logistic regression model summary
+     */
+    public ProbabilisticClassificationModelSummary getModelSummary(JavaRDD<Tuple2<Object,
+            Object>> scoresAndLabels) {
+        // create a logistic regression model summary object
+        ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = new
+                ProbabilisticClassificationModelSummary();
+        // store predicted vs actual results
+        List<PredictedVsActual> predictedVsActuals = new ArrayList();
+        List<Tuple2<Object, Object>> scoresAnaLabels = scoresAndLabels.collect();
+        DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
+        for (Tuple2<Object, Object> scoreAndLabel : scoresAnaLabels) {
+            PredictedVsActual predictedVsActual = new PredictedVsActual();
+            predictedVsActual.setPredicted(
+                    Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
+            predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(
+                    scoreAndLabel._2())));
+            predictedVsActuals.add(predictedVsActual);
+        }
+        probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
+        // generate binary classification metrics
+        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD
+                (scoresAndLabels));
+        // store AUC
+        probabilisticClassificationModelSummary.setAuc(metrics.areaUnderROC());
+        // store ROC data points
+        List<Tuple2<Object, Object>> rocData = metrics.roc().toJavaRDD().collect();
+        JSONArray rocPoints = new JSONArray();
+        for (int i = 0; i < rocData.size(); i += 1) {
+            JSONArray point = new JSONArray();
+            point.put(decimalFormat.format(rocData.get(i)._1()));
+            point.put(decimalFormat.format(rocData.get(i)._2()));
+            rocPoints.put(point);
+        }
+        probabilisticClassificationModelSummary.setRoc(rocPoints.toString());
+        return probabilisticClassificationModelSummary;
     }
 
 }

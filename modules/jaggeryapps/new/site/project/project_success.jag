@@ -48,7 +48,7 @@
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
-			<a href="#" id="create-wf" class="cu-btn btn-save" id="save-project">Create Workflow</a>
+			<a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a>
 			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
 		</div>
 	</div>
@@ -85,14 +85,14 @@
 
 		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
-		    <!--div class="wr-form col-lg-5 col-centered"-->
-                
-                
-                <div class="ctrl-info-panel col-md-12 col-centered">
-				<h2>Project: <span id="project-display-name"></span> successfully created.</h2>
-				<p>Click on <strong>CREATE WORKFLOW</strong> button to create a workflow for this project</p>
-			</div>                
-			<!--/div-->
+		    <div class="wr-form col-lg-5 col-centered">
+                <h1 class="input-label">
+                	Project: <span id="project-display-name"></span> Successfully Created
+                </h1>
+                <a id="create-wf" href="#" class="">
+                    Create a new workflow for this project
+                </a>                
+			</div>
 		</div>
 		<!-- /content -->
 	</div>

@@ -235,7 +235,6 @@ $( document ).ready(function() {
     //var datname = getParameterByName('datname');
     var wfid = getParameterByName('wfid');
     var wfname = getParameterByName('wfname');
-    var selectedAlgo = 'lgreg';
 
     $('#title').text(projna);
 
@@ -246,7 +245,7 @@ $( document ).ready(function() {
 
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
-        window.location.href = '../parameters/parameters.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname+'&algo='+selectedAlgo;
+        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
     });    
 
     $('#algo-help-radio').on('click', function(){

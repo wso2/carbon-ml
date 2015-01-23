@@ -24,10 +24,10 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.classification.NaiveBayesModel;
-import org.apache.spark.mllib.classification.SVMModel;
+import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
-import org.apache.spark.mllib.regression.LinearRegressionModel;
+import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
+import org.apache.spark.mllib.stat.Statistics;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.dto.Workflow;
@@ -36,21 +36,31 @@ import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
-import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.ClassClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.model.spark.transformations.DiscardedRowsFilter;
+import org.wso2.carbon.ml.model.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.model.spark.transformations.MissingValuesFilter;
+import org.wso2.carbon.ml.model.spark.transformations.StringArrayToDoubleArray;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToLabeledPoints;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToVectors;
 import scala.Tuple2;
 
 import java.sql.Time;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DISCARD;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.IMPURITY;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ITERATIONS;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LAMBDA;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LEARNING_RATE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MAX_BINS;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MAX_DEPTH;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MEAN_IMPUTATION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NUM_CLASSES;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.RANDOM_SEED;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGULARIZATION_PARAMETER;
@@ -81,13 +91,13 @@ public class SupervisedModel {
             // get column separator
             String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             // apply pre processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(sc, workflow, lines, headerRow,
+            JavaRDD<double[]> features = preProcess(sc, workflow, lines, headerRow,
                     columnSeparator);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = MLModelUtils.getFeatureIndex(workflow.getResponseVariable(),
                     headerRow, columnSeparator);
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(responseIndex);
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
+            TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(responseIndex);
+            JavaRDD<LabeledPoint> labeledPoints = features.map(tokensToLabeledPoints);
             JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,
                     workflow.getTrainDataFraction(), RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
@@ -101,15 +111,6 @@ public class SupervisedModel {
             case DECISION_TREE:
                 buildDecisionTreeModel(modelID, trainingData, testingData, workflow);
                 break;
-            case SVM:
-                buildSVMModel(modelID, trainingData, testingData, workflow);
-                break;
-            case NAIVE_BAYES:
-                buildNaiveBayesModel(modelID, trainingData, testingData, workflow);
-                break;
-            case LINEAR_REGRESSION:
-                buildLinearRegressionModel(modelID, trainingData, testingData, workflow);
-                break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
@@ -122,16 +123,92 @@ public class SupervisedModel {
     }
 
     /**
-     * This method builds a logistic regression model
-     *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
+     * @param sc              JavaSparkContext
+     * @param workflow        Machine learning workflow
+     * @param lines           JavaRDD of strings
+     * @param headerRow       HeaderFilter row
+     * @param columnSeparator Column separator
+     * @return Returns a JavaRDD of doubles
      * @throws ModelServiceException
      */
+    private JavaRDD<double[]> preProcess(JavaSparkContext sc, Workflow workflow, JavaRDD<String>
+            lines, String headerRow, String columnSeparator) throws ModelServiceException {
+        try {
+            HeaderFilter headerFilter = new HeaderFilter(headerRow);
+            JavaRDD<String> data = lines.filter(headerFilter);
+            Pattern pattern = Pattern.compile(columnSeparator);
+            LineToTokens lineToTokens = new LineToTokens(pattern);
+            JavaRDD<String[]> tokens = data.map(lineToTokens);
+            // get feature indices for discard imputation
+            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(
+                    MLModelUtils.getImputeFeatureIndices(
+                            workflow, DISCARD));
+            // Discard the row if any of the impute indices content have a missing or NA value
+            JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
+            JavaRDD<double[]> features = null;
+            // get feature indices for mean imputation
+            List<Integer> meanImputeIndices = MLModelUtils.getImputeFeatureIndices(workflow,
+                    MEAN_IMPUTATION);
+            if (meanImputeIndices.size() > 0) {
+                // calculate means for the whole dataset (sampleFraction = 1.0) or a sample
+                Map<Integer, Double> means = getMeans(sc, tokensDiscardedRemoved, meanImputeIndices,
+                        0.01);
+                // Replace missing values in impute indices with the mean for that column
+                MeanImputation meanImputation = new MeanImputation(means);
+                features = tokensDiscardedRemoved.map(meanImputation);
+            } else {
+                /**
+                 * Mean imputation mapper will convert string tokens to doubles as a part of the
+                 * operation. If there is no mean imputation for any columns, tokens has to be
+                 * converted into doubles.
+                 */
+                features = tokensDiscardedRemoved.map(new StringArrayToDoubleArray());
+            }
+            return features;
+        } catch (ModelServiceException e) {
+            throw new ModelServiceException("An error occured while preprocessing data: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @param sc                JavaSparkContext
+     * @param tokens            JavaRDD of String[]
+     * @param meanImputeIndices Indices of columns to impute
+     * @param sampleFraction    Sample fraction used to calculate mean
+     * @return Returns a map of impute indices and means
+     * @throws ModelServiceException
+     */
+    private Map<Integer, Double> getMeans(JavaSparkContext sc, JavaRDD<String[]> tokens,
+            List<Integer> meanImputeIndices, double sampleFraction) throws ModelServiceException {
+        Map<Integer, Double> imputeMeans = new HashMap();
+        JavaRDD<String[]> missingValuesRemoved = tokens.filter(new MissingValuesFilter());
+        JavaRDD<Vector> features = null;
+        // calculate mean and populate mean imputation hashmap
+        TokensToVectors tokensToVectors = new TokensToVectors(meanImputeIndices);
+        if (sampleFraction < 1.0) {
+            features = tokens.sample(false, sampleFraction).map(tokensToVectors);
+        } else {
+            features = tokens.map(tokensToVectors);
+        }
+        MultivariateStatisticalSummary summary = Statistics.colStats(features.rdd());
+        double[] means = summary.mean().toArray();
+        for (int i = 0; i < means.length; i++) {
+            imputeMeans.put(meanImputeIndices.get(i), means[i]);
+        }
+        return imputeMeans;
+    }
+
+    /**
+     * This method builds a logistic regression model
+     *
+     * @param trainingData Training data
+     * @param testingData  Testing data
+     * @param workflow     Machine learning workflow
+     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
+     */
     private void buildLogisticRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData,
+            Workflow workflow) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -148,7 +225,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(model,
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-                    SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
+                    logisticRegression.getModelSummary(scoresAndLabels);
             dbService.updateModel(modelID, model, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
@@ -160,9 +237,8 @@ public class SupervisedModel {
     /**
      * This method builds a decision tree model
      *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
+     * @param trainingData Training data
+     * @param testingData  Testing data
      * @param workflow     Machine learning workflow
      * @throws ModelServiceException
      */
@@ -179,114 +255,16 @@ public class SupervisedModel {
                     new HashMap<Integer, Integer>(), hyperParameters.get(IMPURITY),
                     Integer.parseInt(hyperParameters.get(MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MAX_BINS)));
-            JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel,
+            JavaPairRDD<Double, Double> predictionsAnsLabels = decisionTree.test(decisionTreeModel,
                     trainingData);
-            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
-                    .getClassClassificationModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, decisionTreeModel, classClassificationAndRegressionModelSummary,
+            ClassClassificationModelSummary classClassificationModelSummary = decisionTree
+                    .getClassClassificationModelSummary(predictionsAnsLabels);
+            dbService.updateModel(modelID, decisionTreeModel, classClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building decision tree model: " + e.getMessage(),
                     e);
         }
 
-    }
-
-    /**
-     * This method builds a support vector machine (SVM) model
-     *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @throws ModelServiceException
-     */
-    private void buildSVMModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
-        try {
-            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
-            dbService.insertModel(modelID, workflow.getWorkflowID(),
-                    new Time(System.currentTimeMillis()));
-            SVM svm = new SVM();
-            Map<String, String> hyperParameters = workflow.getHyperParameters();
-            SVMModel svmModel = svm.train(trainingData, Integer.parseInt(hyperParameters.get(ITERATIONS)),
-                    hyperParameters.get(REGULARIZATION_TYPE),
-                    Double.parseDouble(hyperParameters.get(REGULARIZATION_PARAMETER)),
-                    Double.parseDouble(hyperParameters.get(LEARNING_RATE)),
-                    Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
-            svmModel.clearThreshold();
-            JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel,
-                    testingData);
-            ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-                    SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
-            dbService.updateModel(modelID, svmModel, probabilisticClassificationModelSummary,
-                    new Time(System.currentTimeMillis()));
-        } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building SVM model: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * This method builds a linear regression model
-     *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @throws ModelServiceException
-     */
-    private void buildLinearRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
-        try {
-            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
-            dbService.insertModel(modelID, workflow.getWorkflowID(),
-                    new Time(System.currentTimeMillis()));
-            LinearRegression linearRegression = new LinearRegression();
-            Map<String, String> hyperParameters = workflow.getHyperParameters();
-            LinearRegressionModel linearRegressionModel = linearRegression.train(trainingData,
-                    Integer.parseInt(hyperParameters.get(ITERATIONS)),
-                    Double.parseDouble(hyperParameters.get(LEARNING_RATE)),
-                    Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
-            JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = linearRegression.test(linearRegressionModel,
-                    testingData);
-            ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
-                    .generateRegressionModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, linearRegressionModel, regressionModelSummary,
-                    new Time(System.currentTimeMillis()));
-        } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building linear regression model: "
-                    + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * This method builds a naive bayes model
-     *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @throws ModelServiceException
-     */
-    private void buildNaiveBayesModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
-        try {
-            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
-            dbService.insertModel(modelID, workflow.getWorkflowID(),
-                    new Time(System.currentTimeMillis()));
-            Map<String, String> hyperParameters = workflow.getHyperParameters();
-            NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
-            NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData, Double.parseDouble(
-                    hyperParameters.get(LAMBDA)));
-            JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel,
-                    trainingData);
-            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
-                    .getClassClassificationModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, naiveBayesModel, classClassificationAndRegressionModelSummary,
-                    new Time(System.currentTimeMillis()));
-        } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building naive bayes model: " + e.getMessage(),
-                    e);
-        }
     }
 }

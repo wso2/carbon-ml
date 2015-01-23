@@ -25,13 +25,14 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 public class TokensToLabeledPointsTest {
 
     @Test
     public void testCall() throws Exception {
-        SparkConf conf = new SparkConf().setAppName("testTokensToLabeledPoints").setMaster("local");
+        SparkConf conf = new SparkConf().setAppName("testLineToTokens").setMaster("local");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> lines = sc.textFile("src/test/resources/pIndiansDiabetes.csv");
         Pattern pattern = Pattern.compile(",");
@@ -40,10 +41,10 @@ public class TokensToLabeledPointsTest {
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
         JavaRDD<String> data = lines.filter(headerFilter);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
-        DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(8);
+        TokensToLabeledPoints tokensToLabeledPoints = new TokensToLabeledPoints(8);
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray();
-        JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
-        Assert.assertEquals(tokens.count(),labeledPoints.count(),"Token count does not match labeled point count");
+        JavaRDD<LabeledPoint> labeledPoints = tokens.map(stringArrayToDoubleArray).map(tokensToLabeledPoints);
+        Assert.assertEquals(tokens.count(),labeledPoints.count());
         sc.stop();
     }
 }

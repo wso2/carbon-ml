@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparkSettings>
+    <property name="spark.master">local</property>
+    <property name="spark.executor.memory">2g</property>
+</sparkSettings>

@@ -71,6 +71,31 @@ public class SparkModelService implements ModelService {
     }
 
     /**
+     * ModelService activator
+     *
+     * @param context ComponentContext
+     */
+    protected void activate(ComponentContext context) throws ModelServiceException {
+        try {
+            SparkModelService sparkModelService = new SparkModelService();
+            context.getBundleContext().registerService(ModelService.class.getName(), sparkModelService, null);
+            logger.info("ML Model Service Started.");
+        } catch (MLAlgorithmParserException e) {
+            throw new ModelServiceException("An error occured while parsing machine learning algorithm configration: "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ModelService de-activator
+     *
+     * @param context ComponentContext
+     */
+    protected void deactivate(ComponentContext context) {
+        logger.info("ML Model Service Stopped.");
+    }
+
+    /**
      * @param algorithm Name of the machine learning algorithm
      * @return List containing hyper parameters
      */

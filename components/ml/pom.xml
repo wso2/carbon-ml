@@ -16,6 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -31,7 +32,10 @@
     <packaging>pom</packaging>
     <name>WSO2 Machine Learner Components</name>
     <modules>
+        <module>org.wso2.carbon.ml.project.mgt</module>
         <module>org.wso2.carbon.ml.dataset</module>
+        <module>org.wso2.carbon.ml.model</module>
+        <module>org.wso2.carbon.ml.database</module>
         <module>org.wso2.carbon.ml.decomposition</module>
     </modules>
 </project>
