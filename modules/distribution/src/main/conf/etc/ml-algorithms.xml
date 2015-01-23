@@ -11,6 +11,14 @@
             <parameter>Iterations</parameter>
             <value>100</value>
         </parameters>
+        <parameters>
+            <parameter>Learning_Rate</parameter>
+            <value>0.001</value>
+        </parameters>
+        <parameters>
+            <parameter>SGD_Data_Fraction</parameter>
+            <value>1</value>
+        </parameters>
     </algorithm>
     <algorithm>
         <name>LOGISTIC_REGRESSION</name>
@@ -48,12 +56,24 @@
         <multicollinearity>5</multicollinearity>
         <dimensionality>5</dimensionality>
         <parameters>
+            <parameter>Learning_Rate</parameter>
+            <value>0.001</value>
+        </parameters>
+        <parameters>
             <parameter>Iterations</parameter>
             <value>100</value>
         </parameters>
         <parameters>
+            <parameter>Reg_Type</parameter>
+            <value>L1</value>
+        </parameters>
+        <parameters>
             <parameter>Reg_Parameter</parameter>
             <value>0.001</value>
+        </parameters>
+        <parameters>
+            <parameter>SGD_Data_Fraction</parameter>
+            <value>1</value>
         </parameters>
     </algorithm>
     <algorithm>
