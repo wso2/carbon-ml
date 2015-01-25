@@ -52,7 +52,7 @@ public class ProjectManagementService {
 			                                           projectManagementService, null);
 			logger.info("ML Project Management Service Started.");
 			// TODO: Read from a config file
-			logger.info("http://localhost:9763/new/site/data/data.jag");
+			logger.info("http://localhost:9763/new");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
