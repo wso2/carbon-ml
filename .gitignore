@@ -5,6 +5,7 @@ target/
 # Eclipse project files
 .classpath
 .project
+.settings
 # Idea project files
 .idea
 *.iml
