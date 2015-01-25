@@ -180,7 +180,7 @@ public class SupervisedModel {
                     Integer.parseInt(hyperParameters.get(MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel,
-                    trainingData);
+                    testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             dbService.updateModel(modelID, decisionTreeModel, classClassificationAndRegressionModelSummary,
@@ -279,7 +279,7 @@ public class SupervisedModel {
             NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData, Double.parseDouble(
                     hyperParameters.get(LAMBDA)));
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel,
-                    trainingData);
+                    testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             dbService.updateModel(modelID, naiveBayesModel, classClassificationAndRegressionModelSummary,
