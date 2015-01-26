@@ -22,12 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.internal.constants.FeatureType;
 import org.wso2.carbon.ml.dataset.internal.constants.ImputeOption;
 import org.wso2.carbon.ml.dataset.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.dataset.dto.Feature;
-import org.wso2.carbon.ml.dataset.dto.SamplePoints;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
