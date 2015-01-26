@@ -19,9 +19,11 @@ package org.wso2.carbon.ml.database.internal.ds;
 
 
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class MLDatabaseServiceValueHolder {
     private static DatabaseService databaseService;
+    private static ConfigurationContextService contextService;
 
     public static  void registerDatabaseService(DatabaseService databaseService){
         MLDatabaseServiceValueHolder.databaseService = databaseService;
@@ -29,5 +31,13 @@ public class MLDatabaseServiceValueHolder {
 
     public static DatabaseService getDatabaseService(){
         return databaseService;
+    }
+
+    public static void setContextService(ConfigurationContextService contextService) {
+        MLDatabaseServiceValueHolder.contextService = contextService;
+    }
+
+    public static ConfigurationContextService getContextService() {
+        return contextService;
     }
 }

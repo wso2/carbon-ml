@@ -22,9 +22,14 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.internal.MLDatabaseService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="databaseService" immediate="true"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic"  bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class MLDatabaseServiceDS {
 
@@ -46,4 +51,13 @@ public class MLDatabaseServiceDS {
     protected void deactivate(ComponentContext context) {
         MLDatabaseServiceValueHolder.registerDatabaseService(null);
     }
+    
+    protected void setConfigurationContextService(ConfigurationContextService contextService) {
+        MLDatabaseServiceValueHolder.setContextService(contextService);
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
+        MLDatabaseServiceValueHolder.setContextService(null);
+    }
+
 }

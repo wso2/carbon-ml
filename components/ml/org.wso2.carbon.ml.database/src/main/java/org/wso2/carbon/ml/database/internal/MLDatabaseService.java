@@ -34,6 +34,7 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.FeatureType;
 import org.wso2.carbon.ml.database.internal.constants.ImputeOption;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
+import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -46,6 +47,32 @@ import java.util.Map.Entry;
 public class MLDatabaseService implements DatabaseService{
 
     private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
+    private MLDataSource dbh;
+    private static final String DB_CHECK_SQL = "SELECT * FROM ML_PROJECT";
+    
+    public MLDatabaseService () {
+        try {
+            dbh = new MLDataSource();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        
+        String value = System.getProperty("setup");
+        if (value != null) {
+            LocalDatabaseCreator databaseCreator = new LocalDatabaseCreator(dbh.getDataSource());
+            try {
+                if (!databaseCreator.isDatabaseStructureCreated(DB_CHECK_SQL)) {
+                    databaseCreator.createRegistryDatabase();
+                } else {
+                    logger.info("Machine Learner database already exists. Not creating a new database.");
+                }
+            } catch (Exception e) {
+                String msg = "Error in creating the Machine Learner database";
+                throw new RuntimeException(msg, e);
+            }
+        }
+    }
 
     /**
      * Retrieves the path of the data-set having the given ID, from the
@@ -60,7 +87,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_LOCATION);
@@ -95,7 +121,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement insertStatement = null;
         try {
             // Insert the data-set details to the database.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
@@ -136,7 +161,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement updateStatement = null;
         try {
             // Update the database with data type.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_DATA_TYPE);
@@ -177,7 +201,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement updateStatement = null;
         try {
             // Update the database.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_IMPUTE_METHOD);
@@ -216,7 +239,6 @@ public class MLDatabaseService implements DatabaseService{
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_IS_INCLUDED);
@@ -264,7 +286,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement updateStatement = null;
         try {
             JSONArray summaryStat;
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             int columnIndex;
@@ -357,7 +378,6 @@ public class MLDatabaseService implements DatabaseService{
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
@@ -471,7 +491,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         SamplePoints samplePoints = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             updateStatement = connection.prepareStatement(SQLQueries.GET_SAMPLE_POINTS);
@@ -510,7 +529,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         try {
             // Create a prepared statement and retrieve data-set configurations.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
@@ -566,7 +584,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         List<String> featureNames = new ArrayList<String>();
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             // Create a prepared statement and retrieve data-set configurations.
@@ -608,7 +625,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement getSummaryStatement = null;
         ResultSet result = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS);
@@ -640,7 +656,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         int featureCount = 0;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             // Create a prepared statement and extract data-set configurations.
@@ -674,7 +689,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
 
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             model = connection.prepareStatement(SQLQueries.GET_MODEL_ID);
             model.setString(1, workflowId);
@@ -717,7 +731,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement insertStatement = null;
         try {
             // insert model settings to the database.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_ML_MODEL_SETTINGS);
@@ -763,7 +776,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement insertStatement = null;
         try {
             // insert model settings to the database.
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
 
             connection.setAutoCommit(false);
@@ -806,7 +818,6 @@ public class MLDatabaseService implements DatabaseService{
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_ML_MODEL);
@@ -847,7 +858,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         PreparedStatement getStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
@@ -884,7 +894,6 @@ public class MLDatabaseService implements DatabaseService{
         try {
             Workflow mlWorkflow = new Workflow();
             mlWorkflow.setWorkflowID(workflowID);
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             getStatement = connection.prepareStatement(SQLQueries.GET_WORKFLOW_DATASET_LOCATION);
@@ -964,7 +973,6 @@ public class MLDatabaseService implements DatabaseService{
         PreparedStatement statement = null;
 
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
             statement.setString(1, projectId);
@@ -998,7 +1006,6 @@ public class MLDatabaseService implements DatabaseService{
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(query);
             statement.setString(1, modelId);
