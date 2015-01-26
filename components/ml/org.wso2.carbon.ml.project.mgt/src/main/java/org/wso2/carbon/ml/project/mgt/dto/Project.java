@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.project.mgt.internal.dto;
+package org.wso2.carbon.ml.project.mgt.dto;
 
 import java.util.List;
 import java.util.Date;

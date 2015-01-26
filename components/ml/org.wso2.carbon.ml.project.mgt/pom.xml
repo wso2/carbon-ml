@@ -67,11 +67,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            !org.wso2.carbon.ml.project.mgt.internal.ds.*,
+                            !org.wso2.carbon.ml.project.mgt.internal.*,
                             org.wso2.carbon.ml.project.mgt.*,
                         </Export-Package>
                         <Private-Package>
-                            org.wso2.carbon.ml.project.mgt.internal.ds.*
+                            org.wso2.carbon.ml.project.mgt.internal.*
                         </Private-Package>
                         <Import-Package>
                             org.h2;version="[0.0.0,1.4.81)",

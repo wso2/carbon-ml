@@ -20,10 +20,10 @@ package org.wso2.carbon.ml.project.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.project.mgt.dto.Project;
+import org.wso2.carbon.ml.project.mgt.dto.Workflow;
 import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
-import org.wso2.carbon.ml.project.mgt.internal.dto.Project;
-import org.wso2.carbon.ml.project.mgt.internal.dto.Workflow;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
