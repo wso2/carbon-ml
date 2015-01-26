@@ -1,0 +1,32 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    
+    try{
+        var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+
+        var noOfCategoricalFeatures = request.getParameter("noOfCategoricalFeatures");
+        var projectId = request.getParameter("projectId");
+        var datasetId = mlDatasetService.getDatasetId(projectId);
+        
+        var featureArray = [];
+        for (i = 0; i < noOfCategoricalFeatures; i++) {
+            featureArray[i] = request.getParameter("categoricalFeature"+i);
+        }
+
+        var samplePoints = mlDatasetService.getChartSamplePoints(datasetId,featureArray).toString();
+
+        response.status = 200;
+        response.contentType = "application/Json";
+        response.content = samplePoints;
+        
+    } catch(e) {
+
+        var message = "An error occured while fetching sample points from dataset: " + datasetId;
+        log.error(message);
+
+        response.status = 500;
+        response.contentType = 'application/Json';
+        response.content = { status : message };
+    }
+%>
