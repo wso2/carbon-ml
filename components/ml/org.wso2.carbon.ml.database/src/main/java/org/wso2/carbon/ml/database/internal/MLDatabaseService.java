@@ -419,6 +419,44 @@ public class MLDatabaseService implements DatabaseService{
         return samplePointsArray;
     }
 
+	/**
+	 * Returns sample data for selected features
+	 * 
+	 * @param datasetID
+	 *            Unique Identifier of the data-set
+	 * @param featureListString
+	 *            String containing feature name list
+	 * @return A JSON array of data points
+	 * @throws DatasetServiceException
+	 */
+	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+	                                                                                    throws DatabaseHandlerException {
+		// Get the sample from the database.
+		SamplePoints sample = getDatasetSample(datasetID);
+
+		// Converts the sample to a JSON array.
+		List<List<String>> columnData = sample.getSamplePoints();
+		Map<String, Integer> dataHeaders = sample.getHeader();
+		JSONArray samplePointsArray = new JSONArray();
+
+		// split categoricalFeatureListString String into a String array
+		String[] featureList = featureListString.split(",");
+
+		// for each row in a selected categorical feature, iterate through all features
+		for (int row = 0; row < columnData.get(dataHeaders.get(featureList[0])).size(); row++) {
+
+			JSONObject point = new JSONObject();
+			// for each categorical feature in same row put value into a point(JSONObject)
+			// {"Soil_Type1":"0","Soil_Type11":"0","Soil_Type10":"0","Cover_Type":"4"}
+			for (int featureCount = 0; featureCount < featureList.length; featureCount++) {
+				point.put(featureList[featureCount],
+				          columnData.get(dataHeaders.get(featureList[featureCount])).get(row));
+			}
+			samplePointsArray.put(point);
+		}
+		return samplePointsArray;
+	}
+
     /**
      * Retrieve the SamplePoints object for a given data-set.
      *
@@ -939,7 +977,10 @@ public class MLDatabaseService implements DatabaseService{
         } catch (SQLException e) {
             throw new DatabaseHandlerException(
                     " An error has occurred while extracting dataset id for project id: " + projectId);
-        }
+        } finally {
+    		// Close the database resources.
+    		MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+    	}
     }
 
     /**
