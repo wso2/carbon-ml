@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.database.dto;
+package org.wso2.carbon.ml.commons.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
