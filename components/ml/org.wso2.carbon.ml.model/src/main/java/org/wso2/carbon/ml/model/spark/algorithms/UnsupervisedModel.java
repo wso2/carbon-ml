@@ -32,6 +32,7 @@ import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClusterModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.MLModel;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToVector;
 
 import java.sql.Time;
@@ -70,11 +71,15 @@ public class UnsupervisedModel {
             JavaRDD<Vector> data = features.map(doubleArrayToVector);
             JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), RANDOM_SEED);
             JavaRDD<Vector> testingData = data.subtract(trainingData);
+            // create a deployable MLModel object
+            MLModel mlModel = new MLModel();
+            mlModel.setAlgorithmName(workflow.getAlgorithmName());
+            mlModel.setFeatures(workflow.getFeatures());
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
-                buildKMeansModel(modelID, trainingData, testingData, workflow);
+                buildKMeansModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
@@ -94,10 +99,11 @@ public class UnsupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildKMeansModel(String modelID, JavaRDD<Vector> trainingData,
-            JavaRDD<Vector> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<Vector> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -111,7 +117,8 @@ public class UnsupervisedModel {
             double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
             clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
             clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
-            dbService.updateModel(modelID, kMeansModel, clusterModelSummary, new Time(System.currentTimeMillis()));
+            mlModel.setModel(kMeansModel);
+            dbService.updateModel(modelID, mlModel, clusterModelSummary, new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building k-means model: " + e.getMessage(), e);
         }
