@@ -27,9 +27,12 @@ import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.mllib.regression.LassoModel;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
+import org.apache.spark.mllib.regression.RidgeRegressionModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.dto.MLModel;
 import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
@@ -37,7 +40,6 @@ import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
-import org.wso2.carbon.ml.database.dto.MLModel;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToLabeledPoint;
 import scala.Tuple2;
@@ -58,7 +60,6 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGUL
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGULARIZATION_TYPE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SGD_DATA_FRACTION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SUPERVISED_ALGORITHM;
-
 
 public class SupervisedModel {
     /**
@@ -113,6 +114,12 @@ public class SupervisedModel {
                 break;
             case LINEAR_REGRESSION:
                 buildLinearRegressionModel(modelID, trainingData, testingData, workflow, mlModel);
+                break;
+            case RIDGE_REGRESSION:
+                buildRidgeRegressionModel(modelID, trainingData, testingData, workflow, mlModel);
+                break;
+            case LASSO_REGRESSION:
+                buildLassoRegressionModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
@@ -267,6 +274,78 @@ public class SupervisedModel {
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building linear regression model: "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method builds a ridge regression model
+     *
+     * @param modelID      Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData  Testing data as a JavaRDD of LabeledPoints
+     * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
+     * @throws ModelServiceException
+     */
+    private void buildRidgeRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
+        try {
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            dbService.insertModel(modelID, workflow.getWorkflowID(),
+                    new Time(System.currentTimeMillis()));
+            RidgeRegression ridgeRegression = new RidgeRegression();
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            RidgeRegressionModel ridgeRegressionModel = ridgeRegression.train(trainingData,
+                    Integer.parseInt(hyperParameters.get(ITERATIONS)),
+                    Double.parseDouble(hyperParameters.get(LEARNING_RATE)),
+                    Double.parseDouble(hyperParameters.get(REGULARIZATION_PARAMETER)),
+                    Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
+            JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = ridgeRegression.test(ridgeRegressionModel,
+                    testingData);
+            ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
+                    .generateRegressionModelSummary(predictionsAndLabels);
+            mlModel.setModel(ridgeRegressionModel);
+            dbService.updateModel(modelID, mlModel, regressionModelSummary,
+                    new Time(System.currentTimeMillis()));
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occured while building ridge regression model: "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method builds a lasso regression model
+     *
+     * @param modelID      Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData  Testing data as a JavaRDD of LabeledPoints
+     * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
+     * @throws ModelServiceException
+     */
+    private void buildLassoRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
+        try {
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            dbService.insertModel(modelID, workflow.getWorkflowID(),
+                    new Time(System.currentTimeMillis()));
+            LassoRegression lassoRegression = new LassoRegression();
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            LassoModel lassoModel = lassoRegression.train(trainingData,
+                    Integer.parseInt(hyperParameters.get(ITERATIONS)),
+                    Double.parseDouble(hyperParameters.get(LEARNING_RATE)),
+                    Double.parseDouble(hyperParameters.get(REGULARIZATION_PARAMETER)),
+                    Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
+            JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = lassoRegression.test(lassoModel,
+                    testingData);
+            ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
+                    .generateRegressionModelSummary(predictionsAndLabels);
+            mlModel.setModel(lassoModel);
+            dbService.updateModel(modelID, mlModel, regressionModelSummary,
+                    new Time(System.currentTimeMillis()));
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occured while building lasso regression model: "
                     + e.getMessage(), e);
         }
     }
