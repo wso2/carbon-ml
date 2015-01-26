@@ -37,6 +37,7 @@ import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
+import org.wso2.carbon.ml.model.spark.dto.MLModel;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToLabeledPoint;
 import scala.Tuple2;
@@ -58,7 +59,6 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.REGUL
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SGD_DATA_FRACTION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SUPERVISED_ALGORITHM;
 
-//import org.wso2.carbon.ml.model.internal.DatabaseHandler;
 
 public class SupervisedModel {
     /**
@@ -91,24 +91,28 @@ public class SupervisedModel {
             JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false,
                     workflow.getTrainDataFraction(), RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
+            // create a deployable MLModel object
+            MLModel mlModel = new MLModel();
+            mlModel.setAlgorithmName(workflow.getAlgorithmName());
+            mlModel.setFeatures(workflow.getFeatures());
             // build a machine learning model according to user selected algorithm
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(
                     workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
             case LOGISTIC_REGRESSION:
-                buildLogisticRegressionModel(modelID, trainingData, testingData, workflow);
+                buildLogisticRegressionModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             case DECISION_TREE:
-                buildDecisionTreeModel(modelID, trainingData, testingData, workflow);
+                buildDecisionTreeModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             case SVM:
-                buildSVMModel(modelID, trainingData, testingData, workflow);
+                buildSVMModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             case NAIVE_BAYES:
-                buildNaiveBayesModel(modelID, trainingData, testingData, workflow);
+                buildNaiveBayesModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             case LINEAR_REGRESSION:
-                buildLinearRegressionModel(modelID, trainingData, testingData, workflow);
+                buildLinearRegressionModel(modelID, trainingData, testingData, workflow, mlModel);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
@@ -128,28 +132,30 @@ public class SupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildLogisticRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
             LogisticRegression logisticRegression = new LogisticRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
-            LogisticRegressionModel model = logisticRegression.trainWithSGD(trainingData,
+            LogisticRegressionModel logisticRegressionModel = logisticRegression.trainWithSGD(trainingData,
                     Double.parseDouble(hyperParameters.get(LEARNING_RATE)),
                     Integer.parseInt(hyperParameters.get(ITERATIONS)),
                     hyperParameters.get(REGULARIZATION_TYPE),
                     Double.parseDouble(hyperParameters.get(REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
-            model.clearThreshold();
-            JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(model,
+            logisticRegressionModel.clearThreshold();
+            JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(logisticRegressionModel,
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
-            dbService.updateModel(modelID, model, probabilisticClassificationModelSummary,
+            mlModel.setModel(logisticRegressionModel);
+            dbService.updateModel(modelID, mlModel, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building logistic regression model: "
@@ -164,10 +170,11 @@ public class SupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildDecisionTreeModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -180,10 +187,11 @@ public class SupervisedModel {
                     Integer.parseInt(hyperParameters.get(MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel,
-                    testingData);
+                    trainingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, decisionTreeModel, classClassificationAndRegressionModelSummary,
+            mlModel.setModel(decisionTreeModel);
+            dbService.updateModel(modelID, mlModel, classClassificationAndRegressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building decision tree model: " + e.getMessage(),
@@ -199,10 +207,11 @@ public class SupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildSVMModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -219,7 +228,8 @@ public class SupervisedModel {
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
-            dbService.updateModel(modelID, svmModel, probabilisticClassificationModelSummary,
+            mlModel.setModel(svmModel);
+            dbService.updateModel(modelID, mlModel, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building SVM model: " + e.getMessage(), e);
@@ -233,10 +243,11 @@ public class SupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildLinearRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -251,7 +262,8 @@ public class SupervisedModel {
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, linearRegressionModel, regressionModelSummary,
+            mlModel.setModel(linearRegressionModel);
+            dbService.updateModel(modelID, mlModel, regressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building linear regression model: "
@@ -266,10 +278,11 @@ public class SupervisedModel {
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData  Testing data as a JavaRDD of LabeledPoints
      * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
     private void buildNaiveBayesModel(String modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow) throws ModelServiceException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
@@ -279,10 +292,11 @@ public class SupervisedModel {
             NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData, Double.parseDouble(
                     hyperParameters.get(LAMBDA)));
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel,
-                    testingData);
+                    trainingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
-            dbService.updateModel(modelID, naiveBayesModel, classClassificationAndRegressionModelSummary,
+            mlModel.setModel(naiveBayesModel);
+            dbService.updateModel(modelID, mlModel, classClassificationAndRegressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occured while building naive bayes model: " + e.getMessage(),
