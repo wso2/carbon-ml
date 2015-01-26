@@ -1,0 +1,29 @@
+<%
+    var log = new Log();
+    var mlConfigs = require("/includes/ml.json");
+    var carbon = require('carbon');
+    var workflowId = request.getParameter("workflowId");
+
+    if(workflowId == null) {
+        throw new Error("Work flow ID cannot be null.");
+    }
+    else {
+        try {
+            var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+            var numericalFeatureNames = mlDatasetService.getFeatureNames(workflowId, mlConfigs.featureTypes.numerical).toString();
+
+            response.status = 200;
+            response.contentType = "application/Json";
+            response.content = numericalFeatureNames;
+            
+        }
+        catch(e) {
+	        var message = "An error occured while retrieving dataset information: " + datasetId;
+	        log.error(message);
+
+	        response.status = 500;
+	        response.contentType = 'application/Json';
+	        response.content = { status : message };
+        }
+    }
+%>
