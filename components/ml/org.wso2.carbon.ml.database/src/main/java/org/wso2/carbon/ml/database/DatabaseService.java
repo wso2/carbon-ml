@@ -19,8 +19,8 @@ package org.wso2.carbon.ml.database;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.database.dto.*;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.commons.domain.*;
 
 import java.sql.Time;
 import java.util.List;

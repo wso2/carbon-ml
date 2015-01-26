@@ -23,16 +23,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.dto.Feature;
-import org.wso2.carbon.ml.database.dto.FeatureSummary;
-import org.wso2.carbon.ml.database.dto.HyperParameter;
-import org.wso2.carbon.ml.database.dto.MLModel;
-import org.wso2.carbon.ml.database.dto.ModelSummary;
-import org.wso2.carbon.ml.database.dto.SamplePoints;
-import org.wso2.carbon.ml.database.dto.Workflow;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.database.internal.constants.FeatureType;
-import org.wso2.carbon.ml.database.internal.constants.ImputeOption;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 

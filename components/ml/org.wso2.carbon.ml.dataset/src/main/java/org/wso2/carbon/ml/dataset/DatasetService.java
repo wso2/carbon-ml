@@ -18,7 +18,7 @@
 package org.wso2.carbon.ml.dataset;
 
 import org.json.JSONArray;
-import org.wso2.carbon.ml.database.dto.FeatureSummary;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetServiceException;
 

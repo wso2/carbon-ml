@@ -20,8 +20,6 @@ package org.wso2.carbon.ml.project.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.http.HttpService;
 import org.wso2.carbon.ml.project.mgt.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
 import org.wso2.carbon.ml.project.mgt.internal.dto.Project;
@@ -34,41 +32,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Class contains services related to project and workflow management
+ * Class contains services related to project and work-flow management
  *
- * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic"
- *                bind="setHttpService" unbind="unsetHttpService"
- * @scr.component name="projectManagementService" immediate="true"
  */
 public class ProjectManagementService {
 	private static final Log logger = LogFactory.getLog(ProjectManagementService.class);
-	@SuppressWarnings("unused")
-    private static HttpService httpServiceInstance;
-
-	protected void activate(ComponentContext context) {
-		try {
-			ProjectManagementService projectManagementService = new ProjectManagementService();
-			context.getBundleContext().registerService(ProjectManagementService.class.getName(),
-			                                           projectManagementService, null);
-			logger.info("ML Project Management Service Started.");
-			// TODO: Read from a config file
-			logger.info("http://localhost:9763/new");
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
-	protected void deactivate(ComponentContext context) {
-		logger.info("ML Project Management Service Stopped.");
-	}
-	
-    protected void setHttpService(HttpService httpService) {
-        httpServiceInstance = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        httpServiceInstance = null;
-    }
 
 	/**
 	 * Creates a new project.

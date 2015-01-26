@@ -28,7 +28,7 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
 import org.apache.spark.mllib.stat.Statistics;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.database.dto.Workflow;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
 import org.wso2.carbon.ml.model.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.model.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.model.spark.transformations.TokensToVectors;
+
 import scala.Tuple2;
 
 import java.text.DecimalFormat;

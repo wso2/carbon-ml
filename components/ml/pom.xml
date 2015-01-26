@@ -32,6 +32,7 @@
     <packaging>pom</packaging>
     <name>WSO2 Machine Learner Components</name>
     <modules>
+        <module>org.wso2.carbon.ml.commons</module>
         <module>org.wso2.carbon.ml.project.mgt</module>
         <module>org.wso2.carbon.ml.dataset</module>
         <module>org.wso2.carbon.ml.model</module>

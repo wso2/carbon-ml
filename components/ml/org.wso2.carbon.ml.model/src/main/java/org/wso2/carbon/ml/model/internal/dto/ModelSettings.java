@@ -18,9 +18,9 @@
 
 package org.wso2.carbon.ml.model.internal.dto;
 
-import org.wso2.carbon.ml.database.dto.HyperParameter;
-
 import java.util.List;
+
+import org.wso2.carbon.ml.commons.domain.HyperParameter;
 
 
 /**

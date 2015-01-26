@@ -29,10 +29,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.wso2.carbon.ml.commons.domain.FeatureType;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.internal.constants.FeatureType;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.database.dto.SamplePoints;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
 

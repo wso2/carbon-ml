@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.ml.model.spark.dto;
 
-import org.wso2.carbon.ml.database.dto.ModelSummary;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
 import java.io.Serializable;

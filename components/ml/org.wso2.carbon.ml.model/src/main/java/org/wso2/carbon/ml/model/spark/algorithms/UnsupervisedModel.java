@@ -24,15 +24,15 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClusterModelSummary;
-import org.wso2.carbon.ml.database.dto.MLModel;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToVector;
 
 import java.sql.Time;

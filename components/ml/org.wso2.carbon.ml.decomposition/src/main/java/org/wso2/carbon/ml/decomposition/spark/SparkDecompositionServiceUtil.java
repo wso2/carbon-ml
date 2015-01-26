@@ -24,9 +24,9 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.dto.Feature;
-import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.decomposition.exceptions.DecompositionException;
 import org.wso2.carbon.ml.decomposition.exceptions.SparkConfigException;
@@ -36,9 +36,11 @@ import org.wso2.carbon.ml.decomposition.internal.SparkSettings;
 import org.wso2.carbon.ml.decomposition.internal.ds.DecompositionServiceValueHolder;
 import org.wso2.carbon.ml.decomposition.spark.transformations.HeaderRemovingFilter;
 import org.wso2.carbon.ml.decomposition.spark.transformations.LineToDataPointMapper;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
