@@ -31,9 +31,9 @@ import org.apache.spark.mllib.regression.LassoModel;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
 import org.apache.spark.mllib.regression.RidgeRegressionModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.dto.MLModel;
-import org.wso2.carbon.ml.database.dto.Workflow;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
@@ -42,6 +42,7 @@ import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToLabeledPoint;
+
 import scala.Tuple2;
 
 import java.sql.Time;
