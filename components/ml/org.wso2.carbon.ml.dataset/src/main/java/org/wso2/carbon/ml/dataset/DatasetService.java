@@ -146,7 +146,20 @@ public interface DatasetService {
     public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
             String groupByFeature) throws DatasetServiceException;
 
-    /**
+	/**
+	 * Returns sample data for selected features
+	 * 
+	 * @param datasetID
+	 *            Unique Identifier of the data-set
+	 * @param featureListString
+	 *            String containing feature name list
+	 * @return A JSON array of data points
+	 * @throws DatasetServiceException
+	 */
+	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+	                                                                                 throws DatasetServiceException;
+	
+	/**
      * Returns the summary statistics for a given feature of a given data-set
      *
      * @param datasetID     Unique Identifier of the data-set

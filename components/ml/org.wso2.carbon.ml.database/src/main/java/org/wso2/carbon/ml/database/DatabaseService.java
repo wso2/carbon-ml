@@ -125,6 +125,18 @@ public interface DatabaseService {
     public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
         String groupByFeature) throws DatabaseHandlerException;
 
+	/**
+	 * Returns sample data for selected features
+	 * 
+	 * @param datasetID
+	 *            Unique Identifier of the data-set
+	 * @param featureListString
+	 *            String containing feature name list
+	 * @return A JSON array of data points
+	 * @throws DatasetServiceException
+	 */
+	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+			throws DatabaseHandlerException;
 
     /**
      * Returns a set of features in a given range, from the alphabetically ordered set

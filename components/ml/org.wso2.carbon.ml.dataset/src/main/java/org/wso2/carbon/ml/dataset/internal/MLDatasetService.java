@@ -347,6 +347,27 @@ public class MLDatasetService implements DatasetService {
         }
     }
 
+	/**
+	 * Returns sample data for selected features
+	 * 
+	 * @param datasetID
+	 *            Unique Identifier of the data-set
+	 * @param featureListString
+	 *            String containing feature name list
+	 * @return A JSON array of data points
+	 * @throws DatasetServiceException
+	 */
+	@Override
+	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+	                                                                                 throws DatasetServiceException {
+		try {
+            DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
+			return dbService.getChartSamplePoints(datasetID, featureListString);
+		} catch (DatabaseHandlerException e) {
+			throw new DatasetServiceException("Failed to retrieve sample points: " + e.getMessage(), e);
+		}
+	}
+
     /**
      * Returns the summary statistics for a given feature of a given data-set
      *
