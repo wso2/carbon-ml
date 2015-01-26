@@ -26,6 +26,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.dto.Feature;
 import org.wso2.carbon.ml.database.dto.FeatureSummary;
 import org.wso2.carbon.ml.database.dto.HyperParameter;
+import org.wso2.carbon.ml.database.dto.MLModel;
 import org.wso2.carbon.ml.database.dto.ModelSummary;
 import org.wso2.carbon.ml.database.dto.SamplePoints;
 import org.wso2.carbon.ml.database.dto.Workflow;
@@ -796,10 +797,10 @@ public class MLDatabaseService implements DatabaseService{
      * @param model            Machine learning model
      * @param modelSummary     Machine learning model summary
      * @param executionEndTime Model execution end time
-     * @param <T>              Type of machine learning  model
+     * @param model            Machine learning  model
      * @throws DatabaseHandlerException
      */
-    public <T> void updateModel(String modelID, T model,
+    public void updateModel(String modelID, MLModel model,
                                 ModelSummary modelSummary, Time executionEndTime)
             throws DatabaseHandlerException {
         Connection connection = null;

@@ -224,10 +224,10 @@ public interface DatabaseService {
      * @param model
      * @param modelSummary
      * @param executionEndTime
-     * @param <T>
+     * @param model
      * @throws DatabaseHandlerException
      */
-    public <T> void updateModel(String modelID, T model,
+    public void updateModel(String modelID, MLModel model,
                                 ModelSummary modelSummary, Time executionEndTime)
             throws DatabaseHandlerException;
 

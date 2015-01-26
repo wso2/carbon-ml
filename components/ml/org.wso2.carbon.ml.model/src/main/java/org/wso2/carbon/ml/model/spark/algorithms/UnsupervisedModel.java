@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
 import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
 import org.wso2.carbon.ml.model.spark.dto.ClusterModelSummary;
-import org.wso2.carbon.ml.model.spark.dto.MLModel;
+import org.wso2.carbon.ml.database.dto.MLModel;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToVector;
 
 import java.sql.Time;
