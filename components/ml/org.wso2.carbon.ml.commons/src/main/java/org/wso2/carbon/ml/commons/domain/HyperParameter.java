@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
+import java.io.Serializable;
+
 /**
  * DTO class for JAXB binding of MLAlgorithmConfigurationParser
  */
-public class HyperParameter {
+public class HyperParameter implements Serializable {
+    private static final long serialVersionUID = -2314030361825726083L;
     private String parameter;
     private String value;
 
