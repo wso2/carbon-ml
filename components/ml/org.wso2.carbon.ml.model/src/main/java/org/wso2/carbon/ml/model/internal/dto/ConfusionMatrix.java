@@ -90,4 +90,11 @@ public class ConfusionMatrix {
     public void setFalseNegatives(long falseNegatives) {
         this.falseNegatives = falseNegatives;
     }
+
+    @Override
+    public String toString() {
+        return "ConfusionMatrix [truePositives=" + truePositives + ", trueNegatives=" + trueNegatives
+                + ", falsePositives=" + falsePositives + ", falseNegatives=" + falseNegatives + "]";
+    }
+    
 }
