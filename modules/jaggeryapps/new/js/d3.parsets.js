@@ -423,7 +423,7 @@
     var body = d3.select("body");
     var tooltip = body.append("div")
         .style("display", "none")
-        .attr("class", "parsets tooltip");
+        .attr("class", "parsets parsets-tooltip");
 
     return d3.rebind(parsets, event, "on").value(1).width(960).height(600);
 

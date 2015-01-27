@@ -48,10 +48,6 @@
         <!-- secondary header - app bar -->
         <div id="nav" class="row wr-app-bar">
             <div class="col-md-9 wr-action-container">
-                <div class="wr-project">
-                    <!--span class="title">PROJECT \ </span><span>My Test Project#1</span-->
-                </div>
-
                 <div class="wr-action-btn-bar">
                     <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
                     <!--a href="#" class="cu-btn btn-save">Save and Create</a-->
