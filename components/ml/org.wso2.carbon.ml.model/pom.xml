@@ -87,10 +87,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>
-                            org.wso2.carbon.ml.model.internal.*
+                            org.wso2.carbon.ml.model.internal.ds.*
                         </Private-Package>
                         <Export-Package>
-                            !org.wso2.carbon.ml.model.internal.*,
+                            !org.wso2.carbon.ml.model.internal.ds.*,
                             org.wso2.carbon.ml.model.*,
                         </Export-Package>
                         <Import-Package>
