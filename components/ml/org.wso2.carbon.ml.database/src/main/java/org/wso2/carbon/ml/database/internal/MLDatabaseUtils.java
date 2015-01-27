@@ -18,12 +18,16 @@
 
 package org.wso2.carbon.ml.database.internal;
 
+import org.wso2.carbon.ml.commons.domain.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains utility methods for database resources.
@@ -138,5 +142,13 @@ public class MLDatabaseUtils {
             throw new DatabaseHandlerException(
                     "An error occurred while enabling autocommit: " + e.getMessage(), e);
         }
+    }
+    
+    public static Map<String, String> getHyperParamsAsAMap(List<HyperParameter> hyperParams) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (HyperParameter hyperParameter : hyperParams) {
+            map.put(hyperParameter.getParameter(), hyperParameter.getValue());
+        }
+        return map;
     }
 }

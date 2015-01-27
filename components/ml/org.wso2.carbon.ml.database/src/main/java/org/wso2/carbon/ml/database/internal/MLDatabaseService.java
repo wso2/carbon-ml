@@ -919,7 +919,8 @@ public class MLDatabaseService implements DatabaseService{
                 mlWorkflow.setAlgorithmName(result.getString(2));
                 mlWorkflow.setResponseVariable(result.getString(3));
                 mlWorkflow.setTrainDataFraction(result.getDouble(4));
-                mlWorkflow.setHyperParameters((Map<String, String>) result.getObject(5));
+                List<HyperParameter> hyperParameters = (List<HyperParameter>) result.getObject(5);
+                mlWorkflow.setHyperParameters(MLDatabaseUtils.getHyperParamsAsAMap(hyperParameters));
             }
             return mlWorkflow;
         } catch (SQLException e) {
