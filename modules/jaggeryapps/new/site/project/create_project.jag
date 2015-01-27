@@ -248,7 +248,7 @@ $( document ).ready(function() {
 		$('#project-description-error').empty();
 	});
 
-	$('#project-description').on('keydown',function(e){
+	$('#project-description').on('keypress',function(e){
         if(e.which == 9){ // tab key
             $('#project-description-error').empty();     
         }

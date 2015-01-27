@@ -6,7 +6,7 @@
                   {
                         "name": "Number of Iterations",
                         "type": "integer"
-                  }
+                  },
                   {
                   	"name": "Learning Rate",
                   	"type": "double"
@@ -20,6 +20,10 @@
                   },
                   {
                         "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
                         "type": "double"
                   }
 		]
@@ -48,7 +52,43 @@
                         "type": "double"
                   },
                   {
-                        "name": "Mini-Mini-Batch"
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+            ]
+      },
+      "nb": {
+            "displayName": "Naive Bayes",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Lambda",
+                        "type": "double"
+                  }
+            ]
+      },
+      "dt": {
+            "displayName": "Decision Tree",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Classes",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Maximum Depth",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Maximum Bin Size",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Impurity",
+                        "type": [
+                                    {"name": "Gini"},
+                                    {"name": "Entropy"}
+                                ]
                   }
             ]
       }

@@ -4,34 +4,40 @@
     var password = request.getParameter("password");
     var site = require("/site/conf/site.json");
     var carbon = require('carbon');
+
+    var message = "";
+    var statusCode = 200;
+    response.contentType = 'application/json';    
     
     try{
         var server = new carbon.server.Server("https://" + site.hostname+":" + site.httpsport + "/admin");
         var success = server.authenticate(username,password);
+
         if (success === true) {
             var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
             var tenantDomain = MultitenantUtils.getTenantDomain(username);
             var tenantId = carbon.server.tenantId({'domain': tenantDomain});
 
-            session.put("logged.user",username);
-            session.put("tenantId",tenantId);
+            session.put("logged.user", username);
+            session.put("tenantId", tenantId);
 
-            response.status = 200;
-            response.contentType = 'application/json';
-            response.content = { status : 'login success' };     
+            message = 'login success';            
             
         } else {
-            response.status = 401;
-            response.contentType = 'application/json';
-            response.content = { status : 'invalid user name or password' };
-        }
+            message = 'Login did not work, check your user name and password and try again';
+            statusCode = 401;
+        }   
+        
     } catch(e) {
 
-        var message = "An error occured while authenticating user: " + username+ " error message: "+e.message;
-        log.error(message);
+        var errorMessage = "An error occured while authenticating user: " + username+ " error message: "+e.message;        
+        log.error(errorMessage);
+
+        message = errorMessage;
+        statusCode = 500;
         
-        response.status = 500;
-        response.contentType = 'application/json';
-        response.content = { status : message }; 
+    } finally{
+        response.status = statusCode;
+        response.content = { status: message};
     }
 %>

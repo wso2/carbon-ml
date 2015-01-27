@@ -30,7 +30,7 @@
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
+					<a href="../logout/logout.jag" class="filter-item">Logout</a>
 				</div>
 			</div>			
 		</div>
@@ -43,13 +43,13 @@
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
 		<div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
+			<span class="title">PROJECT \ </span><span id="title"></span>
 		</div>
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
 			<a href="#" class="cu-btn btn-save">Save and Create</a-->
-			<a href="#" class="cu-btn btn-cancel">Cancel</a>
+			<a href="../project/projects.jag" class="cu-btn btn-cancel">Cancel</a>
 		</div>
 	</div>
 
@@ -99,7 +99,7 @@
 
 
 
-	            <label class="input-label">Set Hyper-Parameters for Numerical Prediction\ <strong id="display-name"></strong> <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+	            <label class="input-label">Set Hyper-Parameters for <span id="algo-cat"></span>\ <strong id="display-name"></strong> <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 	            <div class="spcr-2"></div>
 
 				<!--label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -143,6 +143,7 @@
 <script type="text/javascript">
 
 var doubleRegEx = /^[+-]?\d+(\.\d+)?$/g;
+var integerRegEx = /^\d+$/g;
 
 $( document ).ready(function() {
 
@@ -152,22 +153,35 @@ $( document ).ready(function() {
 	      }
 	});
 	var projid = getParameterByName('projid');
-    var projna = getParameterByName('projna');
-    //var datid = getParameterByName('datid');
-    //var datname = getParameterByName('datname');
+    var projna = getParameterByName('projna');    
     var wfid = getParameterByName('wfid');
     var wfname = getParameterByName('wfname');
-    var algo = getParameterByName('algo');
+    var algo = getParameterByName('algo');    
+    var algoCat = getParameterByName('algocat');
+    
+    if ( algoCat === 'CATEGORICAL') { //TODO: move constants to a separate file
+    	$('#algo-cat').text('Classification');    	
+    } else {
+    	$('#algo-cat').text('Numerical Prediction');
+    }
+    $('#title').text(projna);
+    
 
 	$.ajax({
-            url: './ajax/GetParameters.jag',
-            data: {algorithm: algo},
-            success: function(res){
-                buildHyperparametersUI(res.parameters);
-            },
-            error: function(res){
+        url: './ajax/GetParameters.jag',
+        data: {algorithm: algo, wfid: wfid},
+        success: function(res){
+            var parameters = buildHyperparametersUI(res.parameters);                
+            var responseVarSelector = buildResponseSelector(wfid, algoCat);
                 
-            }
+            $('#hyper-parameters').html(parameters + responseVarSelector);
+            buildEvents('.hyper-double, .hyper-integer');                
+        },
+        error: function(res){
+            var msg = '<span class="form-val-error">' + res.responseJSON.error + '<span>';
+            $('#hyper-parameters').html(msg);
+                
+        }
     });
 
 	$('#btn-build').on('click', function(e){
@@ -175,26 +189,42 @@ $( document ).ready(function() {
 		$('.hyper-double').each(function(e){
             var value = $(this).val();
             if(!isValidDouble(value)){
-            	showErrorMessage($(this).next('.form-val-error'),'* double number is required');
+            	showErrorMessage($(this).next('.form-val-error'),'* double is required');
             }
             
 		});
 
-	});	
+		$('.hyper-integer').each(function(e) {
+			var value = $(this).val();
+			if(!isValidInteger(value)) {
+			    showErrorMessage($(this).next('.form-val-error'),'* integer is required');	
+			}
+		});
+
+	});
 
 	 $('#btn-prev').on('click', function(e){
         e.preventDefault();
         window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
     });
-
 }); 
 
 function isValidDouble(number){
     return number.match(doubleRegEx) != null;
 }
 
+function isValidInteger(number) {
+	return number.match(integerRegEx) != null;
+}
+
 function showErrorMessage(element, message){
     $(element).text(message);
+}
+
+function buildEvents(element){
+	$(element).on('keypress', function(e) {
+        showErrorMessage($(this).next('.form-val-error'), '');
+	});
 }
 
 function buildHyperparametersUI(parameters){
@@ -206,13 +236,13 @@ function buildHyperparametersUI(parameters){
     var allHyperparameters = '';
     var hyperParameters = parameters.hyperParameters;
     for(var i=0; i < hyperParameters.length; i++){
-    	if( i == 1){
+    	if (typeof(hyperParameters[i].type) == 'object') {
     		allHyperparameters += buildDropdown(hyperParameters[i]);
     	} else {
     		allHyperparameters += buildInputbox(hyperParameters[i]); 
     	}
     }
-    $('#hyper-parameters').html(allHyperparameters); 
+    return allHyperparameters;     
 }
 
 function buildInputbox(parameter){
@@ -235,14 +265,35 @@ function buildDropdown(parameter){
         var type = parameter.type[i];
         controller += '<option value="'+type.name+'">'+type.name+'</option>';
 	}
-	controller += '</select></div>'
+	controller += '</select></div>';
 	
 	return label+controller;
 }
 
 function buildLabel(label){	
-	return '<label class="input-label">'+label+'<span class="help-tip glyphicon glyphicon-question-sign">'+
-           '</span></label>';
+	return '<label class="input-label">' + label + '<span class="help-tip glyphicon glyphicon-question-sign">'+
+           '</span></label>';}
+
+function buildResponseSelector(workflowId, algoCategory) {
+	var controller = '<div class="input-control text"> <select>';
+    var label = buildLabel('Response Variable');
+	$.ajax({
+        url: './ajax/GetFeatures.jag',
+        data: {wfid: workflowId, algocat: algoCategory},
+        async: false,
+        success: function(res){
+        	var features = res.features;        	
+        	for (var i=0; i<features.length; i++) {
+        		controller += '<option value="' + features[i]+'">' + features[i] + '</option>';
+        	}
+        	controller += '</select></div>';        	
+        },
+        error: function(res){ //TODO: error handling...
+        	console.log(res);
+        }
+	});
+
+	return label + controller;
 }
 
 </script>

@@ -3,20 +3,35 @@
     var carbon = require('carbon');    
     var hyperParameters = require('../../../includes/ml-algorithm-hyperparameters.json');    
     var algorithm = request.getParameter('algorithm');   
+    var workflowId = request.getParameter('wfid');
+    
+    var statusCode = 200;
+    var output = '';
 
-    log.info('selected algo: '+algorithm);
 
-    try{
-                
-        response.contentType = 'application/json';
-        
+    try{        
         if (algorithm === 'lgreg'){
-            response.content = { parameters : hyperParameters.lgreg };
-        }
+            output = { parameters : hyperParameters.lgreg };
+        } else if (algorithm === 'svm') {
+            output = { parameters : hyperParameters.svm };
+        } else if ( algorithm === 'nb') {
+            output = { parameters : hyperParameters.nb };
+        } else if ( algorithm === 'dt'){
+            output = { parameters : hyperParameters.dt };
+        } else {
+            statusCode = 400;
+            output = { error: 'Requested algorithm type: ' + algorithm + ' is not supported'};
+        }              
         
-        
-    }catch(e){
-        throw new Error("An error has occurred, while creating workflow for project :"+projectId);
+    } catch(e) {
+        var msg = "An error has occurred, while reading parameters for workflow : " + 
+                   workflowId + " error message: " + e.message;
+        log.error(msg);
+        output = { error: msg};
+    } finally {
+        response.contentType = 'application/json';
+        response.content = output;
+        response.status = statusCode;
     }  
     
 %>
