@@ -179,7 +179,7 @@ public class MLDatasetService implements DatasetService {
     
     /**
      * 
-     * @param fileName      Path of the dataset to calculate summary statistics
+     * @param fileName      Name of the data-set file with extension, to calculate summary statistics
      * @param datasetID     Unique Identifier of the data-set
      * @param projectID     Unique Identifier of the project associated with the dataset
      * @return              Number of features in the data-set
