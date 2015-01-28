@@ -42,7 +42,7 @@ public class MLProjectManagementDS {
                                                        projectManagementService, null);
             logger.info("ML Project Management Service Started.");
             // TODO: Read from a config file
-            logger.info("http://localhost:9763/new");
+            logger.info("http://localhost:9763/ml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

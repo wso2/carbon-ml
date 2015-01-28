@@ -34,11 +34,11 @@ public class DecisionTree implements Serializable {
      * This method trains a decision tree model
      *
      * @param train               Training dataset as a JavaRDD of labeled points
-     * @param noOfClasses         No of classes
-     * @param categoricalFeatures Categorical features
-     * @param impurityCriteria    Impurity criteria
+     * @param noOfClasses         Number of classes
+     * @param categoricalFeatures Map containing categorical feature indices and number of categories for each feature
+     * @param impurityCriteria    Impurity criteria - "gini" or "entropy" for classification, "variance" for regression
      * @param maxTreeDepth        Maximum tree depth
-     * @param maxBins             Maximum no of bins
+     * @param maxBins             Maximum number of bins
      * @return Decision tree model
      */
     public DecisionTreeModel train(JavaRDD<LabeledPoint> train, int noOfClasses,

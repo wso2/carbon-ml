@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
+import java.io.Serializable;
+
 /**
  * DTO class to store a machine learning feature
  */
-public class Feature {
+public class Feature implements Serializable {
+    private static final long serialVersionUID = 994212826030625015L;
     private String name;
     private int index;
     private String type;
