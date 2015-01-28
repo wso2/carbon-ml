@@ -10,15 +10,17 @@
     try {
     	var dsSrv = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
     	var features = dsSrv.getFeatureNames(workflowId, algoCat);
+        
         var featuresOfThisCat = [];
     	for (var i=0; i<features.size(); i++) {
     		featuresOfThisCat.push(features.get(i));
     	}
-    	output = { features: featuresOfThisCat};
+    	output = { features: featuresOfThisCat };
 
-    } catch (e) { //TODO: proper error handling        
+    } catch (e) {      
         statusCode = 500;
-        output = 'error';
+        output = 'An error has occurred while features associated with workflow: ' + workflowId + ' error message:' +
+                  e.message;
 
     } finally {
         response.contentType = 'application/json';

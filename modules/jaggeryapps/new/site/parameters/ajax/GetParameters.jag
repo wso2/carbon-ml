@@ -1,6 +1,7 @@
 <%
     var log = new Log();
     var carbon = require('carbon');    
+    
     var hyperParameters = require('../../../includes/ml-algorithm-hyperparameters.json');    
     var algorithm = request.getParameter('algorithm');   
     var workflowId = request.getParameter('wfid');
@@ -19,7 +20,7 @@
         } else if ( algorithm === 'dt'){
             output = { parameters : hyperParameters.dt };
         } else {
-            statusCode = 400;
+            statusCode = 400; // bad request
             output = { error: 'Requested algorithm type: ' + algorithm + ' is not supported'};
         }              
         

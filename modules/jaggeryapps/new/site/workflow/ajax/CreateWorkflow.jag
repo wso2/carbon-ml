@@ -7,26 +7,26 @@
     
     var projectId = request.getParameter('projid');
     var workflowName = request.getParameter('wfname'); 
+    
+    response.contentType = 'application/json';
 
     try {
         workflowId = uuid.generate();
         prjMgntServ.createNewWorkflow(workflowId, workflowId, projectId, workflowName);
-        prjMgntServ.setDefaultFeatureSettings(projectId, workflowId);
+        prjMgntServ.setDefaultFeatureSettings(projectId, workflowId);        
         
-        response.contentType = 'application/json';
         response.status = 200;
-        response.content = { wfid : workflowId };
-        
+        response.content = { wfid : workflowId };        
         
     } catch(e) {
         var errorMessage = 'An error has occurred while creating workflow for project id: ' + projectId + 
                       ' error message: ' + e.message;
 
+        log.error(errorMessage);
+
         response.contentType = 'application/json';
         response.status = 500;
-        response.content = { message : errorMessage };
-
-        log.error(errorMessage);
+        response.content = { message : errorMessage };        
     }  
     
 %>

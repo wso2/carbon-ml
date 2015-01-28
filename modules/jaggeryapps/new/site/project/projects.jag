@@ -16,10 +16,6 @@
     
 </head>
 
-<%
-	session.put( 'tenantId', 'admin');
-%>
-
 <body>
 
     <div class="container col-lg-12 col-md-12 col-sm-12">
@@ -140,7 +136,7 @@
                 },
                 success: function(res) {
 
-                    console.log("DELETED");
+                    //TODO: error message
                 },
                 error: function(res) {
                     var message = "An error occurred while retrieving tenant projects.";
@@ -160,13 +156,11 @@
             		wfid : workflowId
             	},
             	success: function(res){
-            		console.log("success: "+res);
-
+                    console.log(res);
             	},
             	error: function(res){
-            		console.log("error: "+res);
-
-            	}
+                    console.log(res);
+                }
             });
 
             $('#accordion').empty();
@@ -185,7 +179,7 @@
                     
                     //TODO: add project description load                    
                     var tenantProjects = JSON.parse(data);
-                    //tenantProjects = []; // uncomment to test no projects case
+                    
                     if (tenantProjects.length == 0) {
                         var accordionPanelNoProjects = 
                         '<div class="ctrl-info-panel col-md-12 col-centered">'+
@@ -273,8 +267,8 @@
                                                                         '<a href="'+createWorkflow+'" class="cu-level2-btn btn-configure-dark">Configure</a>' +
                                                                         '<a id="del-wf" href="#" class="cu-level2-btn btn-delete-dark" onclick=" return deleteWorkflow(' +workflowId+ ')">Delete</a>' +
                                                                     '</td>' +
-                                                                '</tr>'; 
-                                                                console.log("return deleteWorkflow(' + workflowId + ')");                                       
+                                                                '</tr>';
+                                                                                                       
                                         };
 
                                             accordionPanel += '' +
@@ -296,8 +290,7 @@
                 error: function() {
                     var message = "An error occurred while retrieving tenant projects.";
                 }
-            });
-            console.log("TEST 2");
+            });            
         }        
 
     </script>
