@@ -50,7 +50,7 @@ public class MLModelUtils {
 
     /**
      * @param feature         Feature name
-     * @param headerRow       HeaderFilter row
+     * @param headerRow       First row (header) in the data file
      * @param columnSeparator Column separator character
      * @return Index of the response variable
      */
@@ -117,7 +117,7 @@ public class MLModelUtils {
 
     /**
      * @param sparkConfigXML Spark configuration parameters
-     * @return Return SparkConf object
+     * @return Returns SparkConf object
      * @throws SparkConfigurationParserException
      */
     public static SparkConf getSparkConf(String sparkConfigXML) throws SparkConfigurationParserException {

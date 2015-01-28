@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.commons.domain.HyperParameter;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -38,6 +37,7 @@ import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
+import org.wso2.carbon.ml.model.spark.algorithms.UnsupervisedModel;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
 
@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLASSIFICATION;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLUSTERING;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DATASET_SIZE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.HIGH;
@@ -179,6 +180,11 @@ public class SparkModelService implements ModelService {
                 SparkConf sparkConf = MLModelUtils.getSparkConf(SPARK_CONFIG_XML);
                 SupervisedModel supervisedModel = new SupervisedModel();
                 supervisedModel.buildModel(modelID, workflow, sparkConf);
+            } else if (CLUSTERING.equals((algorithmType))) {
+                // create a new spark configuration
+                SparkConf sparkConf = MLModelUtils.getSparkConf(SPARK_CONFIG_XML);
+                UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
+                unsupervisedModel.buildModel(modelID, workflow, sparkConf);
             }
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while saving model to database: " + e.getMessage(), e);
