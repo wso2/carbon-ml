@@ -25,6 +25,7 @@ import java.util.List;
  * DTO class to hold a deployable machine learning model
  */
 public class MLModel implements Serializable {
+    private static final long serialVersionUID = -1310680827450949233L;
     private String algorithmName;
     private List<Feature> features;
     private Serializable model;

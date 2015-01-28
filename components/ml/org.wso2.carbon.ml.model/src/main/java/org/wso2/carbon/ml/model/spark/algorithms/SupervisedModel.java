@@ -195,7 +195,7 @@ public class SupervisedModel {
                     Integer.parseInt(hyperParameters.get(MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel,
-                    trainingData);
+                    testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             mlModel.setModel(decisionTreeModel);

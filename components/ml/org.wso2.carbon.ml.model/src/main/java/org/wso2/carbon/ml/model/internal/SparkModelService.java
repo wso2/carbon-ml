@@ -27,6 +27,7 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.HyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -220,6 +221,26 @@ public class SparkModelService implements ModelService {
         }
         return modelSummary;
     }
+    
+    /**
+     * @param modelID Model ID
+     * @return {@link MLModel} object
+     * @throws ModelServiceException
+     */
+    public MLModel getModel(String modelID) throws ModelServiceException {
+        MLModel modelSummary = null;
+        try {
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            modelSummary = dbService.getModel(modelID);
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occurred while retrieving model summary: " + e.getMessage(), e);
+        }
+        return modelSummary;
+    }
+
 
     /**
      * @param modelSettings Model settings

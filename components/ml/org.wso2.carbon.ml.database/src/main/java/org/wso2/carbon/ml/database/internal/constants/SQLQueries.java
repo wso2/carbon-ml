@@ -87,6 +87,9 @@ public class SQLQueries {
 
     public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE "
                                                    + "MODEL_ID=?";
+    
+    public static final String GET_MODEL = "SELECT MODEL FROM ML_MODEL WHERE "
+            + "MODEL_ID=?";
 
     public static final String GET_ML_MODEL_SETTINGS =
             "SELECT ALGORITHM_CLASS,ALGORITHM_NAME,RESPONSE,TRAIN_DATA_FRACTION,HYPER_PARAMETERS " +
