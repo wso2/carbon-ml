@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.model;
 
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.HyperParameter;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
@@ -96,5 +97,17 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
+            throws ModelServiceException;
+
+    /**
+     * This method retuns a list of k-means cluster points
+     *
+     * @param datasetURL   Dataset URL
+     * @param features     List containing feature names
+     * @param noOfClusters Number of clusters
+     * @return Returns a list of cluster points
+     * @throws ModelServiceException
+     */
+    public List<ClusterPoint> getClusterPoints(String datasetURL, List<String> features, int noOfClusters)
             throws ModelServiceException;
 }

@@ -21,7 +21,11 @@ package org.wso2.carbon.ml.model.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.linalg.Vector;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.HyperParameter;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -36,10 +40,16 @@ import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithm;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
+import org.wso2.carbon.ml.model.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.model.spark.algorithms.SupervisedModel;
 import org.wso2.carbon.ml.model.spark.algorithms.UnsupervisedModel;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.model.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.model.spark.transformations.MissingValuesFilter;
+import org.wso2.carbon.ml.model.spark.transformations.TokensToVectors;
+import scala.Tuple2;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -47,6 +57,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLASSIFICATION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.CLUSTERING;
@@ -56,19 +67,20 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.HIGH;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.INTERPRETABILITY;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.LARGE;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MEDIUM;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ML_ALGORITHMS_CONFIG_XML;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NUMERICAL_PREDICTION;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SMALL;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.SPARK_CONFIG_XML;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.TEXTUAL;
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.YES;
 
 public class SparkModelService implements ModelService {
     private static final Log logger = LogFactory.getLog(SparkModelService.class);
     private MLAlgorithms mlAlgorithms;
+    private SparkConf sparkConf;
 
-    public SparkModelService() throws MLAlgorithmParserException {
-        mlAlgorithms = MLModelUtils.getMLAlgorithms(ML_ALGORITHMS_CONFIG_XML);
+    public SparkModelService(String mlAlgorithmsConfigFilePath, String sparkConfFilePath)
+            throws MLAlgorithmParserException, SparkConfigurationParserException {
+        mlAlgorithms = MLModelUtils.getMLAlgorithms(mlAlgorithmsConfigFilePath);
+        sparkConf = MLModelUtils.getSparkConf(sparkConfFilePath);
     }
 
     /**
@@ -176,21 +188,14 @@ public class SparkModelService implements ModelService {
             String algorithmType = workflow.getAlgorithmClass();
             if (CLASSIFICATION.equals(algorithmType) || NUMERICAL_PREDICTION.equals(
                     algorithmType)) {
-                // create a new spark configuration
-                SparkConf sparkConf = MLModelUtils.getSparkConf(SPARK_CONFIG_XML);
                 SupervisedModel supervisedModel = new SupervisedModel();
                 supervisedModel.buildModel(modelID, workflow, sparkConf);
             } else if (CLUSTERING.equals((algorithmType))) {
-                // create a new spark configuration
-                SparkConf sparkConf = MLModelUtils.getSparkConf(SPARK_CONFIG_XML);
                 UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
                 unsupervisedModel.buildModel(modelID, workflow, sparkConf);
             }
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while saving model to database: " + e.getMessage(), e);
-        } catch (SparkConfigurationParserException e) {
-            throw new ModelServiceException("An error occurred while parsing spark configuration: " + e.getMessage(),
-                    e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
@@ -320,6 +325,74 @@ public class SparkModelService implements ModelService {
             return confusionMatrix;
         } catch (ModelServiceException e) {
             throw new ModelServiceException("An error occured while generating confusion matrix: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method retuns a list of k-means cluster points
+     *
+     * @param datasetURL   Dataset URL
+     * @param features     List containing feature names
+     * @param noOfClusters Number of clusters
+     * @return Returns a list of cluster points
+     * @throws ModelServiceException
+     */
+    public List<ClusterPoint> getClusterPoints(String datasetURL, List<String> features, int noOfClusters)
+            throws ModelServiceException {
+        // assign current thread context class loader to a variable
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        try {
+            final List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+            if (datasetURL == null || datasetURL.equals("")) {
+                throw new ModelServiceException("Argument: datasetURL is either null or empty");
+            }
+            if (features == null) {
+                throw new ModelServiceException("Argument: features is null");
+            }
+            if (noOfClusters < 1) {
+                throw new ModelServiceException("Number of clusters can't be less than 1");
+            }
+            // class loader is switched to JavaSparkContext.class's class loader
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            // create a new spark configuration
+            sparkConf.setAppName(datasetURL);
+            // create a new java spark context
+            JavaSparkContext sc = new JavaSparkContext(sparkConf);
+            // parse lines in the dataset
+            JavaRDD<String> lines = sc.textFile(datasetURL);
+            // get header line
+            String headerRow = lines.take(1).get(0);
+            // get column separator
+            String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
+            Pattern pattern = Pattern.compile(columnSeparator);
+            // get selected feature indices
+            final List<Integer> featureIndices = new ArrayList<Integer>();
+            for (String feature : features) {
+                featureIndices.add(MLModelUtils.getFeatureIndex(feature, headerRow, columnSeparator));
+            }
+            // Convert ramdomly selected 10000 rows to feature vectors
+            JavaRDD<Vector> featureVectors = lines.filter(new HeaderFilter(headerRow))
+                    .sample(false, 10000 / lines.count()).map(new LineToTokens(pattern))
+                    .filter(new MissingValuesFilter())
+                    .map(new TokensToVectors(featureIndices));
+            KMeans kMeans = new KMeans();
+            KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
+            // Populate cluster points list with predicted clusters and features
+            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(featureVectors).zip(featureVectors)
+                    .collect();
+            for (Tuple2<Integer, Vector> kMeansPrediction : kMeansPredictions) {
+                ClusterPoint clusterPoint = new ClusterPoint();
+                clusterPoint.setCluster(kMeansPrediction._1());
+                clusterPoint.setFeatures(kMeansPrediction._2().toArray());
+                clusterPoints.add(clusterPoint);
+            }
+            sc.stop();
+            return clusterPoints;
+        } catch (ModelServiceException e) {
+            throw new ModelServiceException("An error occured while generating cluster points: " + e.getMessage(), e);
+        } finally {
+            // switch class loader back to thread context class loader
+            Thread.currentThread().setContextClassLoader(tccl);
         }
     }
 }

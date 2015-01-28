@@ -49,8 +49,8 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
     public LabeledPoint call(double[] tokens) throws ModelServiceException {
         try {
             double response = tokens[responseIndex];
-            double[] features = new double[tokens.length];
-            for (int i = 0; i < tokens.length; ++i) {
+            double[] features = new double[tokens.length-1];
+            for (int i = 0; i < tokens.length-1; i++) {
                 // if not response
                 if (responseIndex != i) {
                     features[i] = tokens[i];

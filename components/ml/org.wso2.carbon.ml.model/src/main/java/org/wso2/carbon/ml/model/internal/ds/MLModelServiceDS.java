@@ -23,6 +23,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.model.ModelService;
 import org.wso2.carbon.ml.model.internal.SparkModelService;
+import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.*;
 
 /**
  * @scr.component name="modelService" immediate="true"
@@ -36,7 +37,7 @@ public class MLModelServiceDS {
 
     protected void activate(ComponentContext context) {
         try {
-            ModelService modelService = new SparkModelService();
+            ModelService modelService = new SparkModelService(ML_ALGORITHMS_CONFIG_XML,SPARK_CONFIG_XML);
             MLModelServiceValueHolder.registerModelService(modelService);
             context.getBundleContext().registerService(ModelService.class.getName(), modelService, null);
 
