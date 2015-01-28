@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.model;
 
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.HyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
@@ -63,6 +64,13 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public ModelSummary getModelSummary(String modelID) throws ModelServiceException;
+    
+    /**
+     * @param modelID Model ID
+     * @return {@link MLModel} object
+     * @throws ModelServiceException
+     */
+    public MLModel getModel(String modelID) throws ModelServiceException;
 
     /**
      * @param modelSettings Model settings

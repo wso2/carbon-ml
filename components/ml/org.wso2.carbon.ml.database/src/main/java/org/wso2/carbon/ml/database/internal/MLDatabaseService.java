@@ -704,6 +704,41 @@ public class MLDatabaseService implements DatabaseService{
     }
     
     /**
+     * This method returns machine learning model
+     *
+     * @param modelID Model ID
+     * @return {@link MLModel} instance
+     * @throws DatabaseHandlerException
+     */
+    public MLModel getModel(String modelID) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            getStatement = connection.prepareStatement(SQLQueries.GET_MODEL);
+            getStatement.setString(1, modelID);
+            result = getStatement.executeQuery();
+            if (result.first()) {
+                return (MLModel) result.getObject(1);
+            } else {
+                throw new DatabaseHandlerException("Invalid model ID: " + modelID);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while reading model for " +
+                    modelID + " from the database: " + e.getMessage(),
+                    e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
+        }
+
+    }
+    
+    /**
      * This method inserts model settings to database
      *
      * @param modelSettingsID   Model settings ID

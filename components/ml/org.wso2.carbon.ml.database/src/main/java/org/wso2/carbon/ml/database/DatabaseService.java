@@ -238,6 +238,14 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
+    
+    /**
+    *
+    * @param modelID
+    * @return {@link MLModel}
+    * @throws DatabaseHandlerException
+    */
+   public MLModel getModel(String modelID) throws DatabaseHandlerException;
 
     /**
      *
