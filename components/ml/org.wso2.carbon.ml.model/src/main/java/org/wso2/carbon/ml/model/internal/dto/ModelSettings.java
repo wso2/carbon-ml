@@ -141,4 +141,12 @@ public class ModelSettings {
     public void setDatasetURL(String datasetURL) {
         this.datasetURL = datasetURL;
     }
+
+    @Override
+    public String toString() {
+        return "ModelSettings [modelSettingsID=" + modelSettingsID + ", workflowID=" + workflowID + ", algorithmType="
+                + algorithmType + ", algorithmName=" + algorithmName + ", response=" + response + ", datasetURL="
+                + datasetURL + ", trainDataFraction=" + trainDataFraction + ", hyperParameters=" + hyperParameters
+                + "]";
+    }
 }

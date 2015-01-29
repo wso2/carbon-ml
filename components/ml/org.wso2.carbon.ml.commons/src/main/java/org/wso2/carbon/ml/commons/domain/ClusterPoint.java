@@ -19,7 +19,7 @@
 package org.wso2.carbon.ml.commons.domain;
 
 /**
- * DTO class to store two feature k-means cluster point
+ * DTO class to store k-means cluster point
  */
 public class ClusterPoint {
     private double[] features;

@@ -78,17 +78,44 @@ public class SparkModelService implements ModelService {
     private MLAlgorithms mlAlgorithms;
     private SparkConf sparkConf;
 
+    /**
+     * Spark Model Service Constructor
+     *
+     * @param mlAlgorithmsConfigFilePath XML configuration file containing default parameters for ML algorithms
+     * @param sparkConfFilePath          XML configuration file containing spark settings
+     * @throws ModelServiceException
+     * @throws MLAlgorithmParserException
+     * @throws SparkConfigurationParserException
+     */
     public SparkModelService(String mlAlgorithmsConfigFilePath, String sparkConfFilePath)
-            throws MLAlgorithmParserException, SparkConfigurationParserException {
-        mlAlgorithms = MLModelUtils.getMLAlgorithms(mlAlgorithmsConfigFilePath);
-        sparkConf = MLModelUtils.getSparkConf(sparkConfFilePath);
+            throws ModelServiceException, MLAlgorithmParserException, SparkConfigurationParserException {
+        try {
+            if (mlAlgorithmsConfigFilePath == null || mlAlgorithmsConfigFilePath == "") {
+                throw new ModelServiceException("Argument: mlAlgorithmsConfigFilePath is either null or empty");
+            }
+            if (sparkConfFilePath == null || sparkConfFilePath == "") {
+                throw new ModelServiceException("Argument: sparkConfFilePath is either null or empty");
+            }
+            mlAlgorithms = MLModelUtils.getMLAlgorithms(mlAlgorithmsConfigFilePath);
+            sparkConf = MLModelUtils.getSparkConf(sparkConfFilePath);
+        } catch (MLAlgorithmParserException e) {
+            throw new MLAlgorithmParserException("An error occurred while parsing ml-algorithms.xml: " + e.getMessage(),
+                    e);
+        } catch (SparkConfigurationParserException e) {
+            throw new SparkConfigurationParserException("An error occurred while parsing spark-config.xml: "
+                    + e.getMessage(), e);
+        }
     }
 
     /**
      * @param algorithm Name of the machine learning algorithm
      * @return List containing hyper parameters
+     * @throws ModelServiceException
      */
-    public List<HyperParameter> getHyperParameters(String algorithm) {
+    public List<HyperParameter> getHyperParameters(String algorithm) throws ModelServiceException {
+        if (algorithm == null || algorithm == "") {
+            throw new ModelServiceException("Argument: algorithm is either null or empty");
+        }
         List<HyperParameter> hyperParameters = null;
         for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()) {
             if (algorithm.equals(mlAlgorithm.getName())) {
@@ -102,8 +129,12 @@ public class SparkModelService implements ModelService {
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
      * @return List of algorithm names
+     * @throws ModelServiceException
      */
-    public List<String> getAlgorithmsByType(String algorithmType) {
+    public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException {
+        if (algorithmType == null || algorithmType == "") {
+            throw new ModelServiceException("Argument: algorithmType is either null or empty");
+        }
         List<String> algorithms = new ArrayList();
         for (MLAlgorithm algorithm : mlAlgorithms.getAlgorithms()) {
             if (algorithmType.equals(algorithm.getType())) {
@@ -118,9 +149,16 @@ public class SparkModelService implements ModelService {
      * @param userResponse  User's response to a questionnaire about machine learning task
      * @return Map containing names of recommended machine learning algorithms and
      * recommendation scores (out of 5) for each algorithm
+     * @throws ModelServiceException
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
-            Map<String, String> userResponse) {
+            Map<String, String> userResponse) throws ModelServiceException {
+        if (algorithmType == null || algorithmType == "") {
+            throw new ModelServiceException("Argument: algorithmType is either null or empty");
+        }
+        if (userResponse == null || userResponse.size() == 0) {
+            throw new ModelServiceException("Argument: userResponse is either null or empty");
+        }
         Map<String, Double> recommendations = new HashMap<String, Double>();
         List<MLAlgorithm> algorithms = new ArrayList();
         for (MLAlgorithm mlAlgorithm : mlAlgorithms.getAlgorithms()) {
@@ -221,7 +259,7 @@ public class SparkModelService implements ModelService {
         }
         return modelSummary;
     }
-    
+
     /**
      * @param modelID Model ID
      * @return {@link MLModel} object
@@ -241,13 +279,15 @@ public class SparkModelService implements ModelService {
         return modelSummary;
     }
 
-
     /**
      * @param modelSettings Model settings
      * @throws ModelServiceException
      */
     public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException {
         try {
+            if (modelSettings == null) {
+                throw new ModelServiceException("Argument: modelSettings is null");
+            }
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModelSettings(modelSettings.getModelSettingsID(),
                     modelSettings.getWorkflowID(), modelSettings.getAlgorithmType(),

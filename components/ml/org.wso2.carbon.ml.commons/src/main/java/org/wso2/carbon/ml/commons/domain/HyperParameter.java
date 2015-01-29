@@ -55,4 +55,9 @@ public class HyperParameter implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "HyperParameter [parameter=" + parameter + ", value=" + value + "]";
+    }
 }
