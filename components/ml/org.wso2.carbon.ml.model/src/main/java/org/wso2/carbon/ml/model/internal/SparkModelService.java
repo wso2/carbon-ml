@@ -403,7 +403,7 @@ public class SparkModelService implements ModelService {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            final List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+            List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
             if (datasetURL == null || datasetURL.equals("")) {
                 throw new ModelServiceException("Argument: datasetURL is either null or empty");
             }
@@ -427,13 +427,17 @@ public class SparkModelService implements ModelService {
             String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             Pattern pattern = Pattern.compile(columnSeparator);
             // get selected feature indices
-            final List<Integer> featureIndices = new ArrayList<Integer>();
+            List<Integer> featureIndices = new ArrayList<Integer>();
             for (String feature : features) {
                 featureIndices.add(MLModelUtils.getFeatureIndex(feature, headerRow, columnSeparator));
             }
             // Convert ramdomly selected 10000 rows to feature vectors
+            double sampleFraction = 10000.0 / (lines.count() - 1);
+            if (sampleFraction > 1.0) {
+                sampleFraction = 1.0;
+            }
             JavaRDD<Vector> featureVectors = lines.filter(new HeaderFilter(headerRow))
-                    .sample(false, 10000 / lines.count()).map(new LineToTokens(pattern))
+                    .sample(false, sampleFraction).map(new LineToTokens(pattern))
                     .filter(new MissingValuesFilter())
                     .map(new TokensToVectors(featureIndices));
             KMeans kMeans = new KMeans();
