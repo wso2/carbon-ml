@@ -431,15 +431,21 @@ public class SparkModelService implements ModelService {
             for (String feature : features) {
                 featureIndices.add(MLModelUtils.getFeatureIndex(feature, headerRow, columnSeparator));
             }
-            // Convert ramdomly selected 10000 rows to feature vectors
+            JavaRDD<Vector> featureVectors = null;
             double sampleFraction = 10000.0 / (lines.count() - 1);
-            if (sampleFraction > 1.0) {
-                sampleFraction = 1.0;
+            // Use entire dataset if number of records is less than or equal to 10000
+            if (sampleFraction >= 1.0) {
+                featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
             }
-            JavaRDD<Vector> featureVectors = lines.filter(new HeaderFilter(headerRow))
-                    .sample(false, sampleFraction).map(new LineToTokens(pattern))
-                    .filter(new MissingValuesFilter())
-                    .map(new TokensToVectors(featureIndices));
+            // Use ramdomly selected 10000 rows if number of records is > 10000
+            else {
+                featureVectors = lines.filter(new HeaderFilter(headerRow))
+                        .sample(false, sampleFraction).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
+            }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
             // Populate cluster points list with predicted clusters and features
