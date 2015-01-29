@@ -4,19 +4,37 @@
     
     try{
         var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+        var mlModelService = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
         
         var projectId = request.getParameter("projectId");
         var datasetId = mlDatasetService.getDatasetId(projectId);
+        var datasetUrl = mlDatasetService.getDatasetUrl(datasetId);        
 
-        var featureArray = [];
-        featureArray[0] = request.getParameter("numericalFeatureIndependent");
-        featureArray[1] = request.getParameter("numericalFeatureDependent");
+        var firstNumericalFeature = request.getParameter("numericalFeatureIndependent");
+        var secondNumericalFeature = request.getParameter("numericalFeatureDependent");
+        var noOfClusters = request.getParameter("noOfClusters");
+
+        var ArrayList = java.util.ArrayList;
+        var featuresList = new ArrayList();
+
+        featuresList.add(firstNumericalFeature);
+        featuresList.add(secondNumericalFeature);
         
-        var samplePoints = mlDatasetService.getChartSamplePoints(datasetId,featureArray).toString();
+        var samplePoints = mlModelService.getClusterPoints(datasetUrl, featuresList, noOfClusters);
+
+        var clusterPoints = [];
+
+        for (var i = 0; i < samplePoints.size(); i++) {
+            var clusterPoint = [];
+            clusterPoint[0] = samplePoints.get(i).getFeatures()[0];
+            clusterPoint[1] = samplePoints.get(i).getFeatures()[1];
+            clusterPoint[2] = samplePoints.get(i).getCluster();
+            clusterPoints[i] = clusterPoint;
+        }
 
         response.status = 200;
         response.contentType = "application/Json";
-        response.content = samplePoints;
+        response.content = clusterPoints;
 
     } catch(e) {
         var message = "An error occured while fetching sample points from dataset: " + datasetId;
