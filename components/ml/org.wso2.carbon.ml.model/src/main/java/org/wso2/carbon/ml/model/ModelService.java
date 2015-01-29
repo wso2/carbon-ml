@@ -34,13 +34,13 @@ public interface ModelService {
      * @param algorithm Name of the machine learning algorithm
      * @return List containing hyper parameters
      */
-    public List<HyperParameter> getHyperParameters(String algorithm);
+    public List<HyperParameter> getHyperParameters(String algorithm) throws ModelServiceException;
 
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
      * @return List of algorithm names
      */
-    public List<String> getAlgorithmsByType(String algorithmType);
+    public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException;
 
     /**
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
@@ -49,7 +49,7 @@ public interface ModelService {
      * scores (out of 5) for each algorithm
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
-            Map<String, String> userResponse);
+            Map<String, String> userResponse) throws ModelServiceException;
 
     /**
      * @param modelID    Model ID
@@ -64,7 +64,7 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public ModelSummary getModelSummary(String modelID) throws ModelServiceException;
-    
+
     /**
      * @param modelID Model ID
      * @return {@link MLModel} object
