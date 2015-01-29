@@ -55,14 +55,14 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
-        <dependency>
+        <!-- dependency>
         	<groupId>org.wso2.carbon</groupId>
 		    <artifactId>org.wso2.carbon.identity.entitlement</artifactId>
 		</dependency>
 		<dependency>
 	    	<groupId>org.wso2.carbon</groupId>
 		    <artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
-		</dependency>
+		</dependency-->
     </dependencies>
     <build>
         <plugins>

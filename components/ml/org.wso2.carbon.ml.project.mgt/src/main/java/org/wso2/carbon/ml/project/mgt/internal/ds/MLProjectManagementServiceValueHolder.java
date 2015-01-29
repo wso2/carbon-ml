@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.ml.project.mgt.internal.ds;
 
-import org.wso2.carbon.identity.notification.mgt.NotificationSender;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
 

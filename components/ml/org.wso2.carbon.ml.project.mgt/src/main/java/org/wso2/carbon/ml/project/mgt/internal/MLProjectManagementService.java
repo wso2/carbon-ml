@@ -20,9 +20,6 @@ package org.wso2.carbon.ml.project.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.entitlement.NotificationConstants;
-import org.wso2.carbon.identity.notification.mgt.NotificationSender;
-import org.wso2.carbon.identity.notification.mgt.bean.PublisherEvent;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
