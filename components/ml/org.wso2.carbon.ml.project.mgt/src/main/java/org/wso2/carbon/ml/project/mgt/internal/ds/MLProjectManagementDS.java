@@ -21,11 +21,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
+import org.wso2.carbon.identity.notification.mgt.NotificationSender;
+import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
+import org.wso2.carbon.ml.project.mgt.internal.MLProjectManagementService;
 
 /**
  * ML Project Management Service component.
+ * 
  * @scr.component name="projectManagementService" immediate="true"
+ * @scr.reference name="databaseService" interface="org.wso2.carbon.ml.database.DatabaseService" cardinality="1..1"
+ *                policy="dynamic" bind="setDatabaseService" unbind="unsetDatabaseService"
  * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic"
  *                bind="setHttpService" unbind="unsetHttpService"
  */
@@ -37,9 +43,9 @@ public class MLProjectManagementDS {
             
     protected void activate(ComponentContext context) {
         try {
-            ProjectManagementService projectManagementService = new ProjectManagementService();
-            context.getBundleContext().registerService(ProjectManagementService.class.getName(),
-                                                       projectManagementService, null);
+            ProjectManagementService projectManagementService = new MLProjectManagementService();
+            context.getBundleContext().registerService(ProjectManagementService.class.getName(), 
+                projectManagementService, null);
             logger.info("ML Project Management Service Started.");
             // TODO: Read from a config file
             logger.info("http://localhost:9763/ml");
@@ -52,6 +58,14 @@ public class MLProjectManagementDS {
         logger.info("ML Project Management Service Stopped.");
     }
     
+    protected void setDatabaseService(DatabaseService databaseService) {
+        MLProjectManagementServiceValueHolder.registerDatabaseService(databaseService);
+    }
+
+    protected void unsetDatabaseService(DatabaseService databaseService) {
+        MLProjectManagementServiceValueHolder.registerDatabaseService(null);
+    }
+    
     protected void setHttpService(HttpService httpService) {
         httpServiceInstance = httpService;
     }
@@ -59,4 +73,12 @@ public class MLProjectManagementDS {
     protected void unsetHttpService(HttpService httpService) {
         httpServiceInstance = null;
     }
+    
+    /*protected void setNotificationSender(NotificationSender notificationSender){
+        MLProjectManagementServiceValueHolder.registerNotificationSender(notificationSender);
+    }
+    
+    protected void unsetNotificationSender(NotificationSender notificationSender){
+        MLProjectManagementServiceValueHolder.registerNotificationSender(null);
+    }*/
 }

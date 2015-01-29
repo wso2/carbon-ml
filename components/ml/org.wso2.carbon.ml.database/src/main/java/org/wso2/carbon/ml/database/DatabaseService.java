@@ -125,18 +125,18 @@ public interface DatabaseService {
     public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
         String groupByFeature) throws DatabaseHandlerException;
 
-	/**
-	 * Returns sample data for selected features
-	 * 
-	 * @param datasetID
-	 *            Unique Identifier of the data-set
-	 * @param featureListString
-	 *            String containing feature name list
-	 * @return A JSON array of data points
-	 * @throws DatasetServiceException
-	 */
-	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
-			throws DatabaseHandlerException;
+    /**
+     * Returns sample data for selected features
+     * 
+     * @param datasetID
+     *            Unique Identifier of the data-set
+     * @param featureListString
+     *            String containing feature name list
+     * @return A JSON array of data points
+     * @throws DatasetServiceException
+     */
+    public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+            throws DatabaseHandlerException;
 
     /**
      * Returns a set of features in a given range, from the alphabetically ordered set
@@ -278,4 +278,101 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public String getDatasetId(String projectId) throws DatabaseHandlerException;
+    
+// Database Services related to Project Management Module.
+    
+    /**
+     * Creates a new project.
+     *
+     * @param projectID        Unique identifier for the project
+     * @param projectName      Name of the project
+     * @param description      Description of the project
+     * @throws                 DatabaseHandlerException
+     */
+    public void createProject(String projectID, String projectName, String description) throws DatabaseHandlerException;
+
+    /**
+     * Delete details of a given project from the database.
+     *
+     * @param projectId    Unique identifier for the project
+     * @throws             DatabaseHandlerException
+     */
+    public void deleteProject(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Assign a tenant to a given project.
+     *
+     * @param tenantID     Unique identifier for the current tenant.
+     * @param projectID    Unique identifier for the project.
+     * @throws             DatabaseHandlerException
+     */
+    public void addTenantToProject(String tenantID, String projectID) throws DatabaseHandlerException;
+
+    /**
+     * Get the project names and created dates, that a tenant is assigned to.
+     *
+     * @param tenantID     Unique identifier for the tenant.
+     * @return             An array of project ID, Name and the created date of the projects 
+     *                     associated with a given tenant.
+     * @throws             DatabaseHandlerException.
+     */
+    public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException;
+
+    /**
+     * Returns the ID of the data-set associated with the project.
+     *
+     * @param projectId    Unique identifier for the project.
+     * @return             ID of the data-set associated with the project.
+     * @throws             DatabaseHandlerException.
+     */
+    public String getdatasetID(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Creates a new work-flow.
+     *
+     * @param workflowID           Unique identifier for the new workflow.
+     * @param parentWorkflowID     Unique identifier for the workflow from which the current workflow
+     *                             is inherited from.
+     * @param projectID            Unique identifier for the project for which the workflow is created.
+     * @param datasetID            Unique identifier for the data-set associated with the workflow.
+     * @param workflowName         Name of the project.
+     * @throws                     DatabaseHandlerException
+     */
+    public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID
+            , String workflowName) throws DatabaseHandlerException;
+
+    /**
+     * Deletes a workflow.
+     *
+     * @param workflowID   Unique identifier of the workflow to be deleted
+     * @throws             DatabaseHandlerException
+     */
+    public void deleteWorkflow(String workflowID) throws DatabaseHandlerException;
+
+    /**
+     * Get a list of workflows associated with a given project.
+     *
+     * @param projectId    Unique identifier for the project for which the wokflows are needed
+     * @return             An array of workflow ID's and Names
+     * @throws             DatabaseHandlerException
+     */
+    public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Set the default values for feature properties of a given workflow.
+     *
+     * @param datasetID    Unique identifier of the data-set
+     * @param workflowID   Unique identifier of the current workflow
+     * @throws             DatabaseHandlerException
+     */
+    public void setDefaultFeatureSettings(String datasetID, String workflowID) throws DatabaseHandlerException;
+    
+    /**
+     * Update the name of a workflow.
+     * 
+     * @param workflowId    Unique identifier of the workflow
+     * @param name          New name for the workflow
+     * @throws              DatabaseHandlerException
+     */
+    public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
 }
