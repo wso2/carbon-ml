@@ -31,6 +31,10 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Machine Learner Project Management Component</name>
     <dependencies>
+    	<dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ml.database</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
@@ -51,6 +55,14 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
+        <!-- dependency>
+        	<groupId>org.wso2.carbon</groupId>
+		    <artifactId>org.wso2.carbon.identity.entitlement</artifactId>
+		</dependency>
+		<dependency>
+	    	<groupId>org.wso2.carbon</groupId>
+		    <artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
+		</dependency-->
     </dependencies>
     <build>
         <plugins>

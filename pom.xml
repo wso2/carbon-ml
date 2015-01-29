@@ -27,8 +27,21 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 Machine Learner - Aggregator Module</name>
-    <url>http://wso2.com/products/ml</url>
+    <url>http://wso2.com/products/machine-learner</url>
     <description>WSO2 Machine Learner (WSO2 ML)</description>
+
+     <parent>
+	<groupId>org.wso2</groupId>
+	<artifactId>wso2</artifactId>
+	<version>1</version>
+    </parent>
+    
+    <scm>
+	<url>https://github.com/wso2/product-ml.git</url>
+	<developerConnection>scm:git:https://github.com/wso2/product-ml.git</developerConnection>
+	<connection>scm:git:https://github.com/wso2/product-ml.git</connection>
+	<tag>HEAD</tag>
+    </scm>
 
     <licenses>
         <license>
@@ -467,6 +480,16 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
+	    <dependency>
+	       	<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
+		<version>${carbon.platform.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
+		<version>${carbon.platform.version}</version>
+	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
             <dependency>
