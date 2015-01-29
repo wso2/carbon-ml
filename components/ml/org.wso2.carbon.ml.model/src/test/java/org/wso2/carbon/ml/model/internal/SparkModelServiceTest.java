@@ -37,13 +37,6 @@ public class SparkModelServiceTest {
         features.add("y");
         String datasetURL = "src/test/resources/kMeansTest.csv";
         List<ClusterPoint> clusterPoints = sparkModelService.getClusterPoints(datasetURL, features, 3);
-        int cluster1Count = 0;
-        for (ClusterPoint clusterPoint : clusterPoints){
-            if (clusterPoint.getCluster() == 1)
-            {
-                cluster1Count+=1;
-            }
-        }
-//        Assert.assertEquals(cluster1Count,5);
+        Assert.assertEquals(clusterPoints.size(),10);
     }
 }
