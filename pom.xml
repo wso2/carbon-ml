@@ -467,6 +467,16 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
+	    <dependency>
+	       	<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
+		<version>${carbon.platform.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
+		<version>${carbon.platform.version}</version>
+	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
             <dependency>
