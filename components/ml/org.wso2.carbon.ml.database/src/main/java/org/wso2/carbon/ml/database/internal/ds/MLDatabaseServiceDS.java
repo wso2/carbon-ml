@@ -26,10 +26,12 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="databaseService" immediate="true"
- * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="1..1" policy="dynamic"  bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
+ * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService"
+ *                unbind="unsetConfigurationContextService"
+ * @scr.reference name="analytics.component" interface="org.wso2.carbon.analytics.dataservice.AnalyticsDataService"
+ *                cardinality="1..1" policy="dynamic" bind="setAnalyticsDataService"
+ *                unbind="unsetAnalyticsDataService"
  */
 public class MLDatabaseServiceDS {
 
@@ -60,4 +62,11 @@ public class MLDatabaseServiceDS {
         MLDatabaseServiceValueHolder.setContextService(null);
     }
 
+    protected void setAnalyticsDataService(AnalyticsDataService contextService) {
+        MLDatabaseServiceValueHolder.setContextService(contextService);
+    }
+
+    protected void unsetAnalyticsDataService(ConfigurationContextService contextService) {
+        MLDatabaseServiceValueHolder.setContextService(null);
+    }
 }

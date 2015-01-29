@@ -217,7 +217,7 @@ public interface DatabaseService {
      */
     public void insertModel(String modelID, String workflowID, Time executionStartTime)
             throws DatabaseHandlerException;
-
+    
     /**
      *
      * @param modelID
