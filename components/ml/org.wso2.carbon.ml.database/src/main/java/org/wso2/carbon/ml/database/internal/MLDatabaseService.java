@@ -91,7 +91,7 @@ public class MLDatabaseService implements DatabaseService{
                 throw new DatabaseHandlerException("Invalid dataset ID: " + datasetID);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occured while reading the Dataset " +
+            throw new DatabaseHandlerException("An error occurred while reading the Dataset " +
                     datasetID + " from the database: " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -129,7 +129,7 @@ public class MLDatabaseService implements DatabaseService{
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while inserting details of dataset " + datasetID +
+                "An error occurred while inserting details of dataset " + datasetID +
                 " to the database: " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -169,7 +169,7 @@ public class MLDatabaseService implements DatabaseService{
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while updating the data type of feature \"" + featureName +
+                "An error occurred while updating the data type of feature \"" + featureName +
                 "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -208,7 +208,7 @@ public class MLDatabaseService implements DatabaseService{
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while updating the feature \"" +
+            throw new DatabaseHandlerException("An error occurred while updating the feature \"" +
                     featureName + "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -247,7 +247,7 @@ public class MLDatabaseService implements DatabaseService{
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while updating the feature included option of feature \"" +
+                "An error occurred while updating the feature included option of feature \"" +
                         featureName + "\" of workflow " + workflowID + ": " + e, e);
         } finally {
             // Enable auto commit
@@ -305,7 +305,7 @@ public class MLDatabaseService implements DatabaseService{
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while updating the database " +
+            throw new DatabaseHandlerException("An error occurred while updating the database " +
                     "with summary statistics of the dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -495,7 +495,7 @@ public class MLDatabaseService implements DatabaseService{
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while retrieving the sample of " +
+            throw new DatabaseHandlerException("An error occurred while retrieving the sample of " +
                     "dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -552,7 +552,7 @@ public class MLDatabaseService implements DatabaseService{
             }
             return features;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException( "An error occured while retrieving features of " +
+            throw new DatabaseHandlerException( "An error occurred while retrieving features of " +
                     "the data set: " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -626,7 +626,7 @@ public class MLDatabaseService implements DatabaseService{
             result.first();
             return result.getString(1);
         } catch (SQLException e) {
-            throw new DatabaseHandlerException( "An error occured while retireving summary " +
+            throw new DatabaseHandlerException( "An error occurred while retireving summary " +
                     "statistics for the feature \"" + featureName + "\" of the data set " +
                     datasetID + ": " + e.getMessage(), e);
         } finally {
@@ -1089,7 +1089,7 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occured while inserting details of project: " + projectName + 
+            throw new DatabaseHandlerException("Error occurred while inserting details of project: " + projectName + 
                     " to the database: " + e.getMessage(), e);
         } finally {
             // enable auto commit
@@ -1121,7 +1121,7 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occured while deleting the project: " + projectId + ": " + 
+            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectId + ": " + 
                     e.getMessage(),e);
         } finally {
             // enable auto commit
@@ -1156,7 +1156,7 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occured while adding the tenant " + tenantID + " to the project "
+            throw new DatabaseHandlerException("Error occurred while adding the tenant " + tenantID + " to the project "
                     + projectID + ": " + e.getMessage(), e);
         } finally {
             // enable auto commit
@@ -1204,7 +1204,7 @@ public class MLDatabaseService implements DatabaseService{
             return projects;
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException( "Error occured while retrieving the projects of user " + tenantID + ": "
+            throw new DatabaseHandlerException( "Error occurred while retrieving the projects of user " + tenantID + ": "
                     + e.getMessage(),e);
         } finally {
             // close the database resources
@@ -1234,7 +1234,7 @@ public class MLDatabaseService implements DatabaseService{
             return result.getObject(1).toString();
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException( "Error occured while retrieving the Dataset Id of project " + projectId
+            throw new DatabaseHandlerException( "Error occurred while retrieving the Dataset Id of project " + projectId
                 + ": " + e.getMessage(), e);
         } finally {
             // close the database resources
@@ -1274,7 +1274,7 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while creating a new workflow " + workflowID + ": " +
+            throw new DatabaseHandlerException("An error occurred while creating a new workflow " + workflowID + ": " +
                     e.getMessage(),e);
         } finally {
             // enable auto commit
@@ -1347,7 +1347,7 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while deleting workflow " +
+            throw new DatabaseHandlerException("An error occurred while deleting workflow " +
                     workflowID + ": " + e.getMessage(),e);
         } finally {
             // enable auto commit
@@ -1394,7 +1394,7 @@ public class MLDatabaseService implements DatabaseService{
             return workFlows;
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException( "Error occured while retrieving the Dataset Id of project " + 
+            throw new DatabaseHandlerException( "Error occurred while retrieving the Dataset Id of project " + 
                     projectId + " : " + e.getMessage(), e);
         } finally {
             // close the database resources
@@ -1443,7 +1443,7 @@ public class MLDatabaseService implements DatabaseService{
         } catch (SQLException e) {
             // rollback the changes
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while setting details of dataset " + datasetID +
+            throw new DatabaseHandlerException("An error occurred while setting details of dataset " + datasetID +
                     " of the workflow " + datasetID + " to the database:" + e.getMessage(), e);
         } finally {
             // enable auto commit

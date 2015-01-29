@@ -48,7 +48,7 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
             }
             return keep;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while removing discarded rows: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while removing discarded rows: " + e.getMessage(), e);
         }
     }
 }

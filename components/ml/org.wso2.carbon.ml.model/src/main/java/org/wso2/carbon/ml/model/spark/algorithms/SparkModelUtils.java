@@ -210,7 +210,7 @@ public class SparkModelUtils {
             }
             return features;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while preprocessing data: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while preprocessing data: " + e.getMessage(), e);
         }
     }
 

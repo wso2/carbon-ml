@@ -63,7 +63,7 @@ public class DatabaseHandler {
             this.dataSource = (DataSource) initContext.lookup(mlDatabaseName);
         } catch (Exception e) {
             throw new DatabaseHandlerException(
-                "An error occured while connecting to ML database: " + e.getMessage(), e);
+                "An error occurred while connecting to ML database: " + e.getMessage(), e);
         }
     }
 
@@ -93,7 +93,7 @@ public class DatabaseHandler {
                 throw new DatabaseHandlerException("Invalid dataset ID: " + datasetID);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occured while reading the Dataset " +
+            throw new DatabaseHandlerException("An error occurred while reading the Dataset " +
                     datasetID + " from the database: " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -131,7 +131,7 @@ public class DatabaseHandler {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while inserting details of dataset " + datasetID +
+                "An error occurred while inserting details of dataset " + datasetID +
                 " to the database: " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -171,7 +171,7 @@ public class DatabaseHandler {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while updating the data type of feature \"" + featureName +
+                "An error occurred while updating the data type of feature \"" + featureName +
                 "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -210,7 +210,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while updating the feature \"" +
+            throw new DatabaseHandlerException("An error occurred while updating the feature \"" +
                     featureName + "\" of workflow " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -249,7 +249,7 @@ public class DatabaseHandler {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
-                "An error occured while updating the feature included option of feature \"" +
+                "An error occurred while updating the feature included option of feature \"" +
                         featureName + "\" of workflow " + workflowID + ": " + e, e);
         } finally {
             // Enable auto commit
@@ -305,7 +305,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while updating the database " +
+            throw new DatabaseHandlerException("An error occurred while updating the database " +
                     "with summary statistics of the dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -457,7 +457,7 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occured while retrieving the sample of " +
+            throw new DatabaseHandlerException("An error occurred while retrieving the sample of " +
                     "dataset " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -514,7 +514,7 @@ public class DatabaseHandler {
             }
             return features;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException( "An error occured while retrieving features of " +
+            throw new DatabaseHandlerException( "An error occurred while retrieving features of " +
                     "the data set: " + datasetID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -588,7 +588,7 @@ public class DatabaseHandler {
             result.first();
             return result.getString(1);
         } catch (SQLException e) {
-            throw new DatabaseHandlerException( "An error occured while retireving summary " +
+            throw new DatabaseHandlerException( "An error occurred while retireving summary " +
                     "statistics for the feature \"" + featureName + "\" of the data set " +
                     datasetID + ": " + e.getMessage(), e);
         } finally {

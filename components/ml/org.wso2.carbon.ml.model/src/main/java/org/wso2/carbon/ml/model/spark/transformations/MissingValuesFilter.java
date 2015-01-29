@@ -40,7 +40,7 @@ public class MissingValuesFilter implements Function<String[], Boolean> {
             }
             return keep;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while removing missing value rows: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while removing missing value rows: " + e.getMessage(), e);
         }
     }
 }

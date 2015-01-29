@@ -42,7 +42,7 @@ public class DoubleArrayToVector implements Function<double[], Vector> {
         try {
             return Vectors.dense(features);
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while transforming double array to vector: "
+            throw new ModelServiceException("An error occurred while transforming double array to vector: "
                     + e.getMessage(), e);
         }
     }

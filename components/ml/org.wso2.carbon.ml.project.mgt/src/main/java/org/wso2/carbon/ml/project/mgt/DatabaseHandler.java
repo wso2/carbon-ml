@@ -63,7 +63,7 @@ public class DatabaseHandler {
 			}
 			return databaseHandler;
 		} catch (Exception e) {
-			throw new DatabaseHandlerException("Error occured while connecting to database: " +
+			throw new DatabaseHandlerException("Error occurred while connecting to database: " +
 					e.getMessage(), e);
 		}
 	}
@@ -96,7 +96,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
 			throw new DatabaseHandlerException(
-			                                   "Error occured while inserting details of project: " +
+			                                   "Error occurred while inserting details of project: " +
 			                                		   projectName +
 			                                		   " to the database: " +
 			                                		   e.getMessage(),e);
@@ -129,7 +129,7 @@ public class DatabaseHandler {
 			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			throw new DatabaseHandlerException("Error occured while deleting the project: " +
+			throw new DatabaseHandlerException("Error occurred while deleting the project: " +
 					projectId + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
@@ -164,7 +164,7 @@ public class DatabaseHandler {
 			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			throw new DatabaseHandlerException("Error occured while adding the tenant " + tenantID +
+			throw new DatabaseHandlerException("Error occurred while adding the tenant " + tenantID +
 			                                   " to the project " + projectID + ": " +
 			                                   e.getMessage(),e);
 		} finally {
@@ -215,7 +215,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
 			throw new DatabaseHandlerException(
-			                                   "Error occured while retrieving the projects of user " +
+			                                   "Error occurred while retrieving the projects of user " +
 			                                		   tenantID + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
@@ -245,7 +245,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
 			throw new DatabaseHandlerException(
-			                                   "Error occured while retrieving the Dataset Id of project " +
+			                                   "Error occurred while retrieving the Dataset Id of project " +
 			                                		   projectId + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
@@ -285,7 +285,7 @@ public class DatabaseHandler {
 			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			throw new DatabaseHandlerException("An error occured while creating a new workflow " +
+			throw new DatabaseHandlerException("An error occurred while creating a new workflow " +
 					workflowID + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
@@ -349,7 +349,7 @@ public class DatabaseHandler {
 			}
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
-			throw new DatabaseHandlerException("An error occured while deleting workflow " +
+			throw new DatabaseHandlerException("An error occurred while deleting workflow " +
 					workflowID + ": " + e.getMessage(),e);
 		} finally {
 			// enable auto commit
@@ -398,7 +398,7 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			MLDatabaseUtil.rollBack(connection);
 			throw new DatabaseHandlerException(
-			                                   "Error occured while retrieving the Dataset Id of project " +
+			                                   "Error occurred while retrieving the Dataset Id of project " +
 			                                		   projectId + ": " + e.getMessage(),e);
 		} finally {
 			// close the database resources
@@ -448,7 +448,7 @@ public class DatabaseHandler {
 			// rollback the changes
 			MLDatabaseUtil.rollBack(connection);
 			throw new DatabaseHandlerException(
-			                                   "An error occured while setting details of dataset " +
+			                                   "An error occurred while setting details of dataset " +
 			                                		   datasetID + " of the workflow " +
 			                                		   datasetID + " to the database:" +
 			                                		   e.getMessage(), e);

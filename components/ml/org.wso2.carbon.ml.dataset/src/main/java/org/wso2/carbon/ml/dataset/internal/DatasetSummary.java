@@ -94,7 +94,7 @@ public class DatasetSummary {
                 this.columnData.add(new ArrayList<String>());
             }
         } catch (IOException e) {
-            throw new DatasetSummaryException("Error occured while reading from the dataset " +
+            throw new DatasetSummaryException("Error occurred while reading from the dataset " +
                     datasetID + ": " + e.getMessage(), e);
         }
     }
@@ -132,7 +132,7 @@ public class DatasetSummary {
             }
             return this.headerMap.size();
         } catch (DatabaseHandlerException e) {
-            throw new DatasetSummaryException("Error occured while Calculating summary statistics " +
+            throw new DatasetSummaryException("Error occurred while Calculating summary statistics " +
                     "for dataset " + this.datasetID + ": " + e.getMessage(), e);
         }
     }

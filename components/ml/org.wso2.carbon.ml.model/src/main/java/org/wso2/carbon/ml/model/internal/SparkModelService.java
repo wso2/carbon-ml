@@ -385,7 +385,7 @@ public class SparkModelService implements ModelService {
             confusionMatrix.setFalseNegatives(falseNegatives);
             return confusionMatrix;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while generating confusion matrix: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while generating confusion matrix: " + e.getMessage(), e);
         }
     }
 
@@ -460,7 +460,7 @@ public class SparkModelService implements ModelService {
             sc.stop();
             return clusterPoints;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while generating cluster points: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while generating cluster points: " + e.getMessage(), e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
