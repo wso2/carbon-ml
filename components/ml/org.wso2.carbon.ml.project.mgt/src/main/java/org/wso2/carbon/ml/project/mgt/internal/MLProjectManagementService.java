@@ -59,6 +59,27 @@ public class MLProjectManagementService implements ProjectManagementService{
             throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
         }
     }
+	
+	/**
+     * Creates a new project.
+     *
+     * @param tenantId         Id of the tenant.
+     * @param projectID        Unique identifier of the project.
+     * @param projectName      Name of the project.
+     * @param description      Description of the project.
+     * @throws                 ProjectManagementServiceException
+     */
+    @Override
+    public void createProject(String tenantId, String projectID, String projectName, String description)
+            throws ProjectManagementServiceException {
+        try {
+            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
+            dbService.createProject(tenantId, projectID, projectName, description);
+        } catch (DatabaseHandlerException e) {
+            logger.error("Failed to create the project: " + e.getMessage(), e);
+            throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
+        }
+    }
 
     /**
      * Delete details of a given project.

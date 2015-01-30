@@ -38,6 +38,18 @@ public interface ProjectManagementService {
 	 */
 	public void createProject(String projectID, String projectName, String description)
 			throws ProjectManagementServiceException;
+	
+    /**
+     * Creates a new project.
+     *
+     * @param tenantId tenant id.
+     * @param projectID Unique identifier of the project.
+     * @param projectName Name of the project.
+     * @param description Description of the project.
+     * @throws ProjectManagementServiceException
+     */
+    public void createProject(String tenantId, String projectID, String projectName, String description)
+            throws ProjectManagementServiceException;
 
 	/**
 	 * Delete details of a given project.
