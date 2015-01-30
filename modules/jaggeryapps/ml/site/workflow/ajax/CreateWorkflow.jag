@@ -23,8 +23,7 @@
                       ' error message: ' + e.message;
 
         log.error(errorMessage);
-
-        response.contentType = 'application/json';
+        
         response.status = 500;
         response.content = { message : errorMessage };        
     }  

@@ -15,8 +15,9 @@
     } catch(e) {
         var msg = 'An error has occurred, while deleting workflow :' + workflowId + ' error message: ' + e.message;
         log.error(msg);
+        
         statusMsg = msg;
-        statusCode = 500;
+        statusCode = 500; // internal server error
 
     } finally {
     	response.contentType = 'application/json';

@@ -349,8 +349,12 @@ $( document ).ready(function() {
                     'FEATURE_TYPE': selectedFeatureType,
                     'FEATURE_NAME': selectedFeature,
                     'wfid': workflowId
+                },
+                error: function(res){
+                    
                 }
             });
+
             // refresh datatable, preserving the current page
             $('#datasetTable').dataTable().fnStandingRedraw();
         });
@@ -373,6 +377,8 @@ $( document ).ready(function() {
                     'IS_FEATURE_SELECTED': selectionFlag,
                     'FEATURE_NAME': selectedFeature,
                     'wfid': workflowId
+                },
+                error : function(res){                    
                 }
             });
         });
@@ -390,6 +396,9 @@ $( document ).ready(function() {
                     'IMPUTE_OPTION': imputedMethod,
                     'FEATURE_NAME': selectedFeature,
                     'wfid': workflowId
+                },
+                error: function(res){
+
                 }
             });
         });

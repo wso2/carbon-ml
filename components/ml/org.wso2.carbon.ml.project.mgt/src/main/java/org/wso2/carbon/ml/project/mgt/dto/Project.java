@@ -27,12 +27,14 @@ public class Project {
     private String projectId;
     private String projectName;
     private Date  createdDate;
+    private String projectDescription;
     private List<Workflow> workflows;
 
-    public Project(String projectId, String projectName,
+    public Project(String projectId, String projectName, String description,
                    List<Workflow> workflows, Date createdDate) {
         this.projectId = projectId;
         this.projectName = projectName;
+        this.projectDescription = description;
         this.createdDate = createdDate;
         this.workflows = workflows;
     }
@@ -51,6 +53,14 @@ public class Project {
      */
     public String getProjectName() {
         return projectName;
+    }
+    
+    /**
+     * 
+     * @return Description of the project
+     */
+    public String getProjectDescription(){
+    	return projectDescription;
     }
 
     /**

@@ -14,6 +14,7 @@
             projectJson['projectID'] = allProjects.get(i).getProjectId();
             projectJson['projectName'] = allProjects.get(i).getProjectName();
             projectJson['projectCreatedDate'] = allProjects.get(i).getCreatedDate().toString();
+            projectJson['projectDescription'] = allProjects.get(i).getProjectDescription();
 
             var noOfWorkflows = projectJson['noOfWorkflows'] = allProjects.get(i).getWorkflows().size();
             projectJson['noOfWorkflows'] = noOfWorkflows;

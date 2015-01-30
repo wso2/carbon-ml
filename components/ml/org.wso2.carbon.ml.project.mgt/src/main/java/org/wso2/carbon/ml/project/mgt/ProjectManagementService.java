@@ -246,49 +246,49 @@ public class ProjectManagementService {
 		}
 	}
 
-	public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException {
-		try {
-			List<Project> projectsOfThisTenant = new ArrayList<Project>();
-			String[][] projects = this.getTenantProjects(tenantId);
-			if( projects == null){
-				return projectsOfThisTenant;
-			}
-			for (String[] project : projects) {
-				if(project == null){
-					continue;
-				}
-				String id = project[0];
-				String name = project[1];
-				Date createdDate = new SimpleDateFormat("yyyy-MM-dd").parse(project[2]);
+    public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException {
+        try {
+            List<Project> projectsOfThisTenant = new ArrayList<Project>();
+            String[][] projects = this.getTenantProjects(tenantId);
+            if (projects == null) {
+                return projectsOfThisTenant;
+            }
+            for (String[] project : projects) {
+                if (project == null) {
+                    continue;
+                }
+                String id = project[0];
+                String name = project[1];
+                Date createdDate = new SimpleDateFormat("yyyy-MM-dd").parse(project[2]);
+                String description = project[3];
 
-				List<Workflow> workflowsOfThisProject = new ArrayList<Workflow>();
+                List<Workflow> workflowsOfThisProject = new ArrayList<Workflow>();
 
-				String[][] workflows = getProjectWorkflows(id);
-				if(workflows != null) {
-					for (String[] workflow : workflows) {
-						if (workflow == null) {
-							continue;
-						}
-						String currentWorkflowId = workflow[0];
-						String currentWorkflowName = workflow[1];
+                String[][] workflows = getProjectWorkflows(id);
+                if (workflows != null) {
+                    for (String[] workflow : workflows) {
+                        if (workflow == null) {
+                            continue;
+                        }
+                        String currentWorkflowId = workflow[0];
+                        String currentWorkflowName = workflow[1];
 
-						Workflow currentWorkflow = new Workflow(currentWorkflowId, currentWorkflowName);
-						workflowsOfThisProject.add(currentWorkflow);
-					}
-				}
-                Project currentProject = new Project(id, name, workflowsOfThisProject,createdDate);
-				projectsOfThisTenant.add(currentProject);
-			}
-			return projectsOfThisTenant;
+                        Workflow currentWorkflow = new Workflow(currentWorkflowId, currentWorkflowName);
+                        workflowsOfThisProject.add(currentWorkflow);
+                    }
+                }
+                Project currentProject = new Project(id, name, description, workflowsOfThisProject, createdDate);
+                projectsOfThisTenant.add(currentProject);
+            }
+            return projectsOfThisTenant;
 
-		} catch (ParseException ex) {
-			throw new ProjectManagementServiceException(
-			    "An error has occurred while converting project creating date of tenant: " +tenantId+
-				    ex.getMessage(), ex);
-		} catch (ProjectManagementServiceException ex) {
-			throw new ProjectManagementServiceException(
-			    "An error has occurred while extracting projects of tenant: " +tenantId+
-					ex.getMessage(), ex);
-		}
-	}
+        } catch (ParseException ex) {
+            throw new ProjectManagementServiceException(
+                    "An error has occurred while converting project creating date of tenant: " + tenantId
+                            + ex.getMessage(), ex);
+        } catch (ProjectManagementServiceException ex) {
+            throw new ProjectManagementServiceException("An error has occurred while extracting projects of tenant: "
+                    + tenantId + ex.getMessage(), ex);
+        }
+    }
 }
