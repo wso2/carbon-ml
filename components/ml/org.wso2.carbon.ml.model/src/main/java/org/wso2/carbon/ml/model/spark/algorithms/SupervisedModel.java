@@ -72,6 +72,8 @@ public class SupervisedModel {
     public void buildModel(String modelID, Workflow workflow, SparkConf sparkConf)
             throws ModelServiceException {
         try {
+            //TODO check whether we can reuse Spark Context
+            // unique identifier for a spark job
             sparkConf.setAppName(modelID);
             // create a new java spark context
             JavaSparkContext sc = new JavaSparkContext(sparkConf);
@@ -146,6 +148,7 @@ public class SupervisedModel {
     private void buildLogisticRegressionModel(String modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
         try {
+            // TODO move following 2 lines to a helper method
             DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
             dbService.insertModel(modelID, workflow.getWorkflowID(),
                     new Time(System.currentTimeMillis()));
@@ -157,6 +160,7 @@ public class SupervisedModel {
                     hyperParameters.get(REGULARIZATION_TYPE),
                     Double.parseDouble(hyperParameters.get(REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(SGD_DATA_FRACTION)));
+            // clearing the threshold value to get a probability as the output of the prediction
             logisticRegressionModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(logisticRegressionModel,
                     testingData);
@@ -189,6 +193,7 @@ public class SupervisedModel {
                     new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
+            // Lochana: passing an empty map since we are not currently handling categorical Features
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
                     Integer.parseInt(hyperParameters.get(NUM_CLASSES)),
                     new HashMap<Integer, Integer>(), hyperParameters.get(IMPURITY),

@@ -102,6 +102,10 @@ public class SQLQueries {
     // Project Management Querries
     public static final String CREATE_PROJECT = "INSERT INTO ML_PROJECT(PROJECT_ID, NAME, DESCRIPTION, CREATED_TIME)" +
         " VALUES(?,?,?, CURRENT_TIMESTAMP())";
+    
+    //TODO merge with CREATE_PROJECT
+    public static final String CREATE_PROJECT_NEW = "INSERT INTO ML_PROJECT(PROJECT_ID, NAME, DESCRIPTION, TENANT_ID, CREATED_TIME)" +
+            " VALUES(?,?,?,?, CURRENT_TIMESTAMP())";
 
     public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE PROJECT_ID=?";
 

@@ -289,8 +289,21 @@ public interface DatabaseService {
      * @param description      Description of the project
      * @throws                 DatabaseHandlerException
      */
+    @Deprecated
     public void createProject(String projectID, String projectName, String description) throws DatabaseHandlerException;
 
+    /**
+     * Creates a new project.
+     *
+     * @param tenantId Id of the Tenant who creates this project
+     * @param projectID Unique identifier for the project
+     * @param projectName Name of the project
+     * @param description Description of the project
+     * @throws DatabaseHandlerException
+     */
+    public void createProject(String tenantId, String projectID, String projectName, String description)
+            throws DatabaseHandlerException;
+    
     /**
      * Delete details of a given project from the database.
      *
