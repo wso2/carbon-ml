@@ -1191,7 +1191,7 @@ public class MLDatabaseService implements DatabaseService{
             result.last();
             int size = result.getRow();
             if (size > 0) {
-                projects = new String[size][3];
+                projects = new String[size][4];
                 result.beforeFirst();
                 // put the result set to the string array
                 for (int i = 0; i < size; i++) {
@@ -1199,6 +1199,7 @@ public class MLDatabaseService implements DatabaseService{
                     projects[i][0] = result.getObject(1).toString();
                     projects[i][1] = result.getString(2);
                     projects[i][2] = result.getDate(3).toString();
+                    projects[i][3] = result.getString(4);
                 }
             }
             return projects;
