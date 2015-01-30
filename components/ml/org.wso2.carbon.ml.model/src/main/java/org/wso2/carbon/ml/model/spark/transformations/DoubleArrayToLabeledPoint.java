@@ -58,7 +58,7 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while transforming double array to labeled point: "
+            throw new ModelServiceException("An error occurred while transforming double array to labeled point: "
                     + e.getMessage(), e);
         }
     }

@@ -40,7 +40,7 @@ public class HeaderFilter implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while removing header row: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while removing header row: " + e.getMessage(), e);
         }
     }
 }

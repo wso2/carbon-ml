@@ -48,7 +48,7 @@ public class MeanImputation implements Function<String[], double[]> {
             }
             return features;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while applying mean imputation: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while applying mean imputation: " + e.getMessage(), e);
         }
     }
 }

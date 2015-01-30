@@ -166,7 +166,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building logistic regression model: "
+            throw new ModelServiceException("An error occurred while building logistic regression model: "
                     + e.getMessage(), e);
         }
     }
@@ -202,7 +202,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, classClassificationAndRegressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building decision tree model: " + e.getMessage(),
+            throw new ModelServiceException("An error occurred while building decision tree model: " + e.getMessage(),
                     e);
         }
 
@@ -240,7 +240,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, probabilisticClassificationModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building SVM model: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while building SVM model: " + e.getMessage(), e);
         }
     }
 
@@ -274,7 +274,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, regressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building linear regression model: "
+            throw new ModelServiceException("An error occurred while building linear regression model: "
                     + e.getMessage(), e);
         }
     }
@@ -310,7 +310,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, regressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building ridge regression model: "
+            throw new ModelServiceException("An error occurred while building ridge regression model: "
                     + e.getMessage(), e);
         }
     }
@@ -346,7 +346,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, regressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building lasso regression model: "
+            throw new ModelServiceException("An error occurred while building lasso regression model: "
                     + e.getMessage(), e);
         }
     }
@@ -379,7 +379,7 @@ public class SupervisedModel {
             dbService.updateModel(modelID, mlModel, classClassificationAndRegressionModelSummary,
                     new Time(System.currentTimeMillis()));
         } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occured while building naive bayes model: " + e.getMessage(),
+            throw new ModelServiceException("An error occurred while building naive bayes model: " + e.getMessage(),
                     e);
         }
     }

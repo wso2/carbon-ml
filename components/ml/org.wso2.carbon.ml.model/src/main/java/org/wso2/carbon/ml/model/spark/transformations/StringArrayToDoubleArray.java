@@ -32,7 +32,7 @@ public class StringArrayToDoubleArray implements Function<String[], double[]> {
             }
             return features;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occured while transforming tokens: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while transforming tokens: " + e.getMessage(), e);
         }
     }
 }

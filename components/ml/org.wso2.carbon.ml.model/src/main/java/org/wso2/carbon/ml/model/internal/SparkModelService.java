@@ -385,7 +385,7 @@ public class SparkModelService implements ModelService {
             confusionMatrix.setFalseNegatives(falseNegatives);
             return confusionMatrix;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while generating confusion matrix: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while generating confusion matrix: " + e.getMessage(), e);
         }
     }
 
@@ -403,7 +403,7 @@ public class SparkModelService implements ModelService {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            final List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+            List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
             if (datasetURL == null || datasetURL.equals("")) {
                 throw new ModelServiceException("Argument: datasetURL is either null or empty");
             }
@@ -427,15 +427,25 @@ public class SparkModelService implements ModelService {
             String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             Pattern pattern = Pattern.compile(columnSeparator);
             // get selected feature indices
-            final List<Integer> featureIndices = new ArrayList<Integer>();
+            List<Integer> featureIndices = new ArrayList<Integer>();
             for (String feature : features) {
                 featureIndices.add(MLModelUtils.getFeatureIndex(feature, headerRow, columnSeparator));
             }
-            // Convert ramdomly selected 10000 rows to feature vectors
-            JavaRDD<Vector> featureVectors = lines.filter(new HeaderFilter(headerRow))
-                    .sample(false, 10000 / lines.count()).map(new LineToTokens(pattern))
-                    .filter(new MissingValuesFilter())
-                    .map(new TokensToVectors(featureIndices));
+            JavaRDD<Vector> featureVectors = null;
+            double sampleFraction = 10000.0 / (lines.count() - 1);
+            // Use entire dataset if number of records is less than or equal to 10000
+            if (sampleFraction >= 1.0) {
+                featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
+            }
+            // Use ramdomly selected 10000 rows if number of records is > 10000
+            else {
+                featureVectors = lines.filter(new HeaderFilter(headerRow))
+                        .sample(false, sampleFraction).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
+            }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
             // Populate cluster points list with predicted clusters and features
@@ -450,7 +460,7 @@ public class SparkModelService implements ModelService {
             sc.stop();
             return clusterPoints;
         } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occured while generating cluster points: " + e.getMessage(), e);
+            throw new ModelServiceException("An error occurred while generating cluster points: " + e.getMessage(), e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);

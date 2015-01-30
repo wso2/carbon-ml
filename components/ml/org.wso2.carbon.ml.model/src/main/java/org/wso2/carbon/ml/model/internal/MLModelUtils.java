@@ -110,7 +110,7 @@ public class MLModelUtils {
             return (MLAlgorithms) jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
             throw new MLAlgorithmParserException(
-                    "An error occured while parsing: " + mlAlgorithmConfigXML + ": " + e.getMessage(), e);
+                    "An error occurred while parsing: " + mlAlgorithmConfigXML + ": " + e.getMessage(), e);
         }
 
     }
@@ -132,7 +132,7 @@ public class MLModelUtils {
             }
             return sparkConf;
         } catch (JAXBException e) {
-            throw new SparkConfigurationParserException("An error occured while parsing: " + sparkConfigXML + ": " +
+            throw new SparkConfigurationParserException("An error occurred while parsing: " + sparkConfigXML + ": " +
                     e.getMessage(), e);
         }
 

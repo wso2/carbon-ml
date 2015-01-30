@@ -949,6 +949,7 @@ function drawClusterDiagram() {
     dataObj["projectId"] = projectId;
     dataObj["numericalFeatureIndependent"] = numericalFeatureIndependent;
     dataObj["numericalFeatureDependent"] = numericalFeatureDependent;
+    dataObj["noOfClusters"] = noOfClusters;
 
     // make ajax call
     $.ajax({
@@ -956,20 +957,9 @@ function drawClusterDiagram() {
         url: "./ajax/fetchClusterDiagramSamplePoints.jag",
         data: dataObj,
         success: function(response) {
-        	
-            var arrayX = [];
-            var arrayY = [];
-
-            var dataArray = JSON.parse(response);
-            // create two arrays (x, y coordinates) from JSON objects
-            for (var i = 0; i < dataArray.length; i++) {
-                arrayX[i] = dataArray[i][numericalFeatureIndependent];
-                arrayY[i] = dataArray[i][numericalFeatureDependent];
-            }
-            //var finalValueArray = kmeans(arrayX, arrayY, noOfClusters);
-            var finalValueArray = kmeans(arrayX, arrayY, noOfClusters);
-            drawScatterPlot(finalValueArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
-            //kmeans_new(arrayX, arrayY, noOfClusters);
+            
+        	var dataArray = JSON.parse(response);
+            drawScatterPlot(dataArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
         },
         error: function(response) {
             var message = "An error occured while fetching sample points from dataset.";
