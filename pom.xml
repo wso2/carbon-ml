@@ -157,11 +157,6 @@
 		<type>mar</type>
 		<version>1.6.1-wso2v8</version>
 	    </dependency>
-	    <dependency>
-		<groupId>org.apache.ws.security</groupId>
-		<artifactId>wss4j</artifactId>
-		<version>${wss4j.version}</version>
-	    </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.engine</artifactId>
