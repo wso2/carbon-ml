@@ -217,7 +217,7 @@ public interface DatabaseService {
      */
     public void insertModel(String modelID, String workflowID, Time executionStartTime)
             throws DatabaseHandlerException;
-
+    
     /**
      *
      * @param modelID
@@ -298,15 +298,6 @@ public interface DatabaseService {
      * @throws             DatabaseHandlerException
      */
     public void deleteProject(String projectId) throws DatabaseHandlerException;
-
-    /**
-     * Assign a tenant to a given project.
-     *
-     * @param tenantID     Unique identifier for the current tenant.
-     * @param projectID    Unique identifier for the project.
-     * @throws             DatabaseHandlerException
-     */
-    public void addTenantToProject(String tenantID, String projectID) throws DatabaseHandlerException;
 
     /**
      * Get the project names and created dates, that a tenant is assigned to.

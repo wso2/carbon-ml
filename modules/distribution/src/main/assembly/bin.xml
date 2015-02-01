@@ -76,9 +76,9 @@
             <fileMode>755</fileMode>
         </fileSet>
 
-        <fileSet>
+        <!-- fileSet>
             <directory>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
             </directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <includes>
@@ -89,7 +89,7 @@
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/master-datasources.xml</exclude>
             </excludes>
-        </fileSet>
+        </fileSet-->
 
         <!--Multitenancy related file -->
         <fileSet>
@@ -107,11 +107,21 @@
 
         <fileSet>
             <directory>
-                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/
             </directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/etc</outputDirectory>
             <includes>
                 <include>**/bam.xml</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/analytics/
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/analytics</outputDirectory>
+            <includes>
+                <include>**/**</include>
             </includes>
         </fileSet>
 

@@ -145,6 +145,8 @@ public class SparkModelService implements ModelService {
     }
 
     /**
+     * TODO we need to improve this.
+     * 
      * @param algorithmType Type of the machine learning algorithm - e.g. Classification
      * @param userResponse  User's response to a questionnaire about machine learning task
      * @return Map containing names of recommended machine learning algorithms and
@@ -340,6 +342,7 @@ public class SparkModelService implements ModelService {
     }
 
     /**
+     * TODO currently valid only for probabilistic algorithms, we need to implement impls for other types.
      * This method returns a confusion matrix for a given threshold
      *
      * @param modelID   Model ID

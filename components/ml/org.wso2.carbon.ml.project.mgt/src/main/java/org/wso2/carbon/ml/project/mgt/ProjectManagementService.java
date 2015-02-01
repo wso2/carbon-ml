@@ -38,7 +38,7 @@ public interface ProjectManagementService {
 	 */
 	public void createProject(String projectID, String projectName, String description)
 			throws ProjectManagementServiceException;
-
+	
 	/**
 	 * Delete details of a given project.
 	 *
@@ -46,16 +46,6 @@ public interface ProjectManagementService {
 	 * @throws             ProjectManagementServiceException
 	 */
 	public void deleteProject(String projectId) throws ProjectManagementServiceException;
-
-	/**
-	 * Assign a tenant to a given project.
-	 *
-	 * @param tenantID     Unique identifier of the tenant
-	 * @param projectId    Unique identifier of the project
-	 * @throws             ProjectManagementServiceException
-	 */
-	public void addTenantToProject(String tenantID, String projectId)
-			throws ProjectManagementServiceException;
 
 	/**
 	 * Get the project names and created dates, that a tenant is assigned to.
