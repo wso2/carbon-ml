@@ -33,37 +33,37 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.dataset.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.model.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.project.mgt.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.database.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.decomposition.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>

@@ -110,11 +110,12 @@
                         </Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.ml.database.internal.*,
-                            org.wso2.carbon.ml.database.*,
+                            org.wso2.carbon.ml.database.*;version="${ml.exp.pkg.version}",
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.analytics.datasource.core.*;version=${carbon.analytics.version},
                             org.wso2.carbon.analytics.datasource.rdbms.*;version=${carbon.analytics.version},
+			    org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
                             org.apache.commons.logging,
                             org.json.*,
                             *;resolution:=optional

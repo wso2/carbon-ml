@@ -96,11 +96,16 @@
                         </Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.ml.test.internal.*,
-                            org.wso2.carbon.ml.test.*,
+                            org.wso2.carbon.ml.test.*;version="${ml.exp.pkg.version}",
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging,
                             org.apache.spark.*,
+			    org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.dataset.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.model.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.project.mgt.*;version="${ml.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

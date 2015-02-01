@@ -83,11 +83,14 @@
                         </Private-Package>
                         <Export-Package>
                             !org.wso2.carbon.ml.decomposition.internal.*,
-                            org.wso2.carbon.ml.decomposition.*,
+                            org.wso2.carbon.ml.decomposition.*;version="${ml.exp.pkg.version}",
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging,
                             org.apache.spark.*,
+			    org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
+                            org.wso2.carbon.ml.dataset.*;version="${ml.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

@@ -196,7 +196,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
 				<artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-				<version>${carbon.version}</version>
+				<version>${carbon.integration.version}</version>
 				<scope>test</scope>
 				<exclusions>
 					<exclusion>
@@ -490,32 +490,32 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.model</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.dataset</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.database</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.decomposition</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
 	    <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.commons</artifactId>
-                <version>${project.version}</version>
+                <version>${ml.version}</version>
             </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
@@ -586,11 +586,15 @@
     </build>
 
     <properties>
-        <carbon.version>4.3.0</carbon.version>
+        <!-- Product ML version-->
+	<ml.version>1.0.0-SNAPSHOT</ml.version>
+	<ml.exp.pkg.version>1.0.0-SNAPSHOT</ml.exp.pkg.version>
+	<ml.imp.pkg.version>[1.0.0, 1.1.0)</ml.imp.pkg.version>
+
+        <carbon.integration.version>4.3.0</carbon.integration.version>
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <ml.version>1.0.0-SNAPSHOT</ml.version>
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0-SNAPSHOT</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
