@@ -60,10 +60,6 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
@@ -107,7 +103,6 @@
                             org.apache.commons.math3.*,
                             org.apache.commons.csv.*,
                             org.apache.commons.lang.math.*,
-                            org.h2,
                             org.apache.commons.logging,
                             org.json.*,
                             *;resolution:=optional

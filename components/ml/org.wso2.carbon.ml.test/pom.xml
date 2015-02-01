@@ -36,10 +36,6 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
@@ -103,7 +99,6 @@
                             org.wso2.carbon.ml.test.*,
                         </Export-Package>
                         <Import-Package>
-                            org.h2,
                             org.apache.commons.logging,
                             org.apache.spark.*,
                             *;resolution:=optional

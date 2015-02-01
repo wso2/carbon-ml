@@ -36,10 +36,6 @@
             <artifactId>org.wso2.carbon.ml.database</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
@@ -86,7 +82,6 @@
                             org.wso2.carbon.ml.project.mgt.internal.*
                         </Private-Package>
                         <Import-Package>
-                            org.h2;version="[0.0.0,1.4.81)",
                             org.apache.commons.logging,
                             *;resolution:=optional
                         </Import-Package>

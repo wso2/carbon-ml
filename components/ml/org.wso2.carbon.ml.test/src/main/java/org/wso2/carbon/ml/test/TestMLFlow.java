@@ -87,7 +87,7 @@ public class TestMLFlow {
             log.info("**********************************************************");
             fis = new FileInputStream(file);
             // create project
-            projectMgtService.createProject("-1234",projectName, "mltest", "ml test");
+            projectMgtService.createProject(projectName, "mltest", "ml test");
             log.info("Created a project : " + projectName);
 //            projectMgtServiceß.addTenantToProject("-1234", projectName);
 //            log.info("Add Super Tenant to project : " + projectName);

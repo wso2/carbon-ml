@@ -60,27 +60,6 @@ public class MLProjectManagementService implements ProjectManagementService{
         }
     }
 	
-	/**
-     * Creates a new project.
-     *
-     * @param tenantId         Id of the tenant.
-     * @param projectID        Unique identifier of the project.
-     * @param projectName      Name of the project.
-     * @param description      Description of the project.
-     * @throws                 ProjectManagementServiceException
-     */
-    @Override
-    public void createProject(String tenantId, String projectID, String projectName, String description)
-            throws ProjectManagementServiceException {
-        try {
-            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
-            dbService.createProject(tenantId, projectID, projectName, description);
-        } catch (DatabaseHandlerException e) {
-            logger.error("Failed to create the project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
-        }
-    }
-
     /**
      * Delete details of a given project.
      *
@@ -95,26 +74,6 @@ public class MLProjectManagementService implements ProjectManagementService{
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to delete the project: " + e.getMessage(), e);
             throw new ProjectManagementServiceException("Failed to delete the project: " + e.getMessage(),e);
-        }
-    }
-
-    /**
-     * Assign a tenant to a given project.
-     *
-     * @param tenantID     Unique identifier of the tenant
-     * @param projectId    Unique identifier of the project
-     * @throws             ProjectManagementServiceException
-     */
-	@Override
-    public void addTenantToProject(String tenantID, String projectId)
-            throws ProjectManagementServiceException {
-        try {
-            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
-            dbService.addTenantToProject(tenantID, projectId);
-        } catch (DatabaseHandlerException e) {
-            logger.error("Failed to add the tenant to project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to add the tenant to project: " +
-                    e.getMessage(),e);
         }
     }
 

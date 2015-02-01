@@ -24,6 +24,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
 import org.wso2.carbon.analytics.datasource.core.AnalyticsException;
+import org.wso2.carbon.analytics.datasource.core.AnalyticsTableNotAvailableException;
+import org.wso2.carbon.analytics.datasource.core.Record;
+import org.wso2.carbon.analytics.datasource.core.RecordGroup;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
@@ -35,6 +39,8 @@ import org.wso2.carbon.ml.database.internal.ds.MLDatabaseServiceValueHolder;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -742,6 +748,26 @@ public class MLDatabaseService implements DatabaseService{
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
         }
+        
+//        String err = String.format("Failed to retrieve model %s.", modelID);
+//        int tid = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+//        List<String> ids = new ArrayList<String>();
+//        ids.add(modelID);
+//        try {
+//            RecordGroup[] records = analyticsDataService.get(tid, MLConstants.ML_MODEL_TABLE_NAME, null, ids);
+//            for (RecordGroup recordGroup : records) {
+//                for (Iterator<Record> iterator = analyticsDataService.readRecords(recordGroup); iterator.hasNext();) {
+//                    Record record = iterator.next();
+//                    return (MLModel) record.getValue(modelID);
+//                }
+//            }
+//        } catch (AnalyticsTableNotAvailableException e) {
+//            throw new DatabaseHandlerException(err, e);
+//        } catch (AnalyticsException e) {
+//            throw new DatabaseHandlerException(err, e);
+//        }
+//        
+//        return null;
 
     }
     
@@ -878,6 +904,21 @@ public class MLDatabaseService implements DatabaseService{
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
+        
+//        String err = String.format("Failed to insert model %s.", modelID);
+//        int tid = CarbonContext.getThreadLocalCarbonContext().getTenantId(); 
+//        Map<String, Object> data = new HashMap<String, Object>();
+//        data.put(modelID, model);
+//        Record record = new Record(tid, MLConstants.ML_MODEL_TABLE_NAME, data, System.currentTimeMillis());
+//        List<Record> records = new ArrayList<Record>();
+//        records.add(record);
+//        try {
+//            analyticsDataService.insert(records);
+//        } catch (AnalyticsTableNotAvailableException e) {
+//            throw new DatabaseHandlerException(err, e);
+//        } catch (AnalyticsException e) {
+//            throw new DatabaseHandlerException(err, e);
+//        }
     }
 
     /**
@@ -1076,40 +1117,41 @@ public class MLDatabaseService implements DatabaseService{
      * @param description      Description of the project
      * @throws                 DatabaseHandlerException
      */
-    public void createProject(String projectID, String projectName, String description)
-            throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement createProjectStatement = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT);
-            createProjectStatement.setString(1, projectID);
-            createProjectStatement.setString(2, projectName);
-            createProjectStatement.setString(3, description);
-            createProjectStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted details of project: " + projectName +
-                             ". Project ID: " + projectID.toString());
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while inserting details of project: " + projectName + 
-                    " to the database: " + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
-        }
-        
-    }
+//    public void createProject(String projectID, String projectName, String description)
+//            throws DatabaseHandlerException {
+//        Connection connection = null;
+//        PreparedStatement createProjectStatement = null;
+//        try {
+//            MLDataSource dbh = new MLDataSource();
+//            connection = dbh.getDataSource().getConnection();
+//            connection.setAutoCommit(false);
+//            createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT);
+//            createProjectStatement.setString(1, projectID);
+//            createProjectStatement.setString(2, projectName);
+//            createProjectStatement.setString(3, description);
+//            createProjectStatement.execute();
+//            connection.commit();
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Successfully inserted details of project: " + projectName +
+//                             ". Project ID: " + projectID.toString());
+//            }
+//        } catch (SQLException e) {
+//            MLDatabaseUtils.rollBack(connection);
+//            throw new DatabaseHandlerException("Error occurred while inserting details of project: " + projectName + 
+//                    " to the database: " + e.getMessage(), e);
+//        } finally {
+//            // enable auto commit
+//            MLDatabaseUtils.enableAutoCommit(connection);
+//            // close the database resources
+//            MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
+//        }
+//        
+//    }
     
     @Override
-    public void createProject(String tenantId, String projectID, String projectName, String description)
+    public void createProject(String projectID, String projectName, String description)
             throws DatabaseHandlerException {
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         Connection connection = null;
         PreparedStatement createProjectStatement = null;
         try {
@@ -1120,7 +1162,7 @@ public class MLDatabaseService implements DatabaseService{
             createProjectStatement.setString(1, projectID);
             createProjectStatement.setString(2, projectName);
             createProjectStatement.setString(3, description);
-            createProjectStatement.setString(4, tenantId);
+            createProjectStatement.setString(4, String.valueOf(tenantId));
             createProjectStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -1139,13 +1181,12 @@ public class MLDatabaseService implements DatabaseService{
         }
         
         try {
-            int tid = Integer.parseInt(tenantId);
-            if (!analyticsDataService.tableExists(tid, MLConstants.ML_MODEL_TABLE_NAME)) {
+            if (!analyticsDataService.tableExists(tenantId, MLConstants.ML_MODEL_TABLE_NAME)) {
 
                 // create Model database table for this tenant
-                MLDatabaseServiceValueHolder.getAnalyticsService().createTable(tid, MLConstants.ML_MODEL_TABLE_NAME);
+                analyticsDataService.createTable(tenantId, MLConstants.ML_MODEL_TABLE_NAME);
                 logger.info(String.format("Successfully created the table %s for tenant %s",
-                        MLConstants.ML_MODEL_TABLE_NAME, tid));
+                        MLConstants.ML_MODEL_TABLE_NAME, tenantId));
             }
         } catch (NumberFormatException e) {
             throw new DatabaseHandlerException("Tenant id cannot be parsed from: " + tenantId, e);
