@@ -17,9 +17,7 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.ml</groupId>
@@ -123,6 +121,18 @@
             </activation>
             <build>
                 <plugins>
+		    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+            <preparationGoals>clean install</preparationGoals>
+            <autoVersionSubmodules>false</autoVersionSubmodules>
+        </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -586,6 +596,8 @@
     </build>
 
     <properties>
+        <project.scm.id>my-scm-server</project.scm.id>
+
         <!-- Product ML version-->
 	<ml.version>1.0.0-SNAPSHOT</ml.version>
 	<ml.exp.pkg.version>1.0.0-SNAPSHOT</ml.exp.pkg.version>
