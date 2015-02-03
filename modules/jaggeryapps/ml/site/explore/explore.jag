@@ -1,0 +1,247 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a class="filter-item" href="../logout/logout.jag">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+		<div class="wr-project">
+			<span class="title">PROJECT \ </span><span id="project-name">[TODO]</span>
+		</div>
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
+			<a href="#" class="cu-btn btn-save">Save Form</a-->
+			<a href="../project/projects.jag" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a>
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Questions</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Algorithms</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
+	    </ul>
+
+		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+
+			<div role="tabpanel" class="wr-tabbed-container">
+
+			  <!-- Nav tabs/graphs -->
+			  <div class="wr-tabs-grphs">
+			  <ul class="nav nav-pills">
+				 <li role="presentation" class="active"><a href="#">Scatter Plot</a></li>
+				 <li role="presentation"><a href="#">Parallel Sets</a></li>
+				 <li role="presentation"><a href="#">Trellis Chart</a></li>
+				 <li role="presentation"><a href="#">Cluster Diagram</a></li>
+			  </ul>
+			  </div>
+
+
+			  <!-- Tab panes -->
+			  <div class="tab-content">
+			    <div role="tabpanel" class="tab-pane fade" id="home">
+			    	<h4>Pre Process Data</h4>	
+					<!-- data table -->
+				</div>
+			    <div role="tabpanel" class="tab-pane fade in active" id="explore">
+			    	
+			    	<div class="col-md-2 wr-left-nav">
+
+						<!-- filters -->
+						<div class="wr-filters">
+
+							<div class="filter-md">
+								<label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="input-control text">
+									<select class="form-control">
+									  <option>Class</option>
+									</select>
+								</div>
+							</div>
+
+							<div>
+								<label class="input-label-sm">Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="wr-filter-radio-group">
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox1" value="option1"> Age
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox2" value="option2"> BMI
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox3" value="option3"> DBP
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox3" value="option3"> DPF
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox3" value="option3"> PG2
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox3" value="option3"> SI2
+									</label>
+									<label class="checkbox">
+									  <input type="checkbox" id="inlineCheckbox3" value="option3"> TSFT
+									</label>									
+								</div>
+							</div>		
+
+							<br class="c-both" />					
+							
+
+						</div>
+						<!-- /filters -->	
+
+			    	</div>
+
+					<div class="col-md-10 wr-graph-content">
+
+						<!-- filters -->
+						<div class="wr-filters" style="display:none">
+
+							<div class="filter-sm">
+								<label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="input-control text">
+									<select class="form-control">
+									  <option>Age</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="filter-sm">
+								<label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="input-control text">
+									<select class="form-control">
+									  <option>BMI</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="filter-sm">
+								<label class="input-label-sm">Group by<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="input-control text">
+									<select class="form-control">
+									  <option>Class</option>
+									</select>
+								</div>
+							</div>
+							<br class="c-both" />
+
+						</div>
+						<!-- /filters -->					
+
+
+						<img src="../../images/tmp-graph.png" />
+
+			    	</div>			    	
+
+			    </div>
+			  </div>
+
+			</div>
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});	 
+}); 
+
+</script>
+
+</body>
+</html>

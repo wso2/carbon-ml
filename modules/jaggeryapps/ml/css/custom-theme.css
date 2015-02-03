@@ -331,6 +331,21 @@ a.ctrl-filter-category:hover {
 	color:#fff;
 }
 
+/* nav pills */
+.wr-tabs-grphs .nav-pills > li.active > a, .wr-tabs-grphs .nav-pills > li.active > a:hover, .wr-tabs-grphs .nav-pills > li.active > a:focus {
+	color: #fff;
+	background-color: #888;
+}
+
+.wr-tabs-grphs .nav-pills > li > a {
+	border-radius: 0px;
+}
+
+.wr-tabs-grphs {
+	border-bottom:1px solid #e4e4e4;
+	padding-bottom:10px;
+}
+
 /* buttons */
 .btn-primary {
 	color: #fff;

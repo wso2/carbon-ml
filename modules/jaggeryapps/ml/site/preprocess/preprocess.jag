@@ -1,0 +1,1010 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
+    <link rel="stylesheet" type="text/css" href="../../css/data.css">
+    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+
+    <script src="../../js/respond.min.js"></script>
+    
+    <script src="../../js/d3.v3.min.js"></script>
+    <script src="../../js/d3.js"></script>
+    <script src="../../js/nv.d3.js"></script>    
+    <script src="../../js/wso2.ml.graphs.js"></script>
+    
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>    
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %> 
+
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+		<div class="wr-project">
+			<span class="title">PROJECT \ </span><span id="title"></span>
+		</div>
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
+			<a href="#" class="cu-btn btn-save">Save Form</a-->
+            <a href="../project/projects.jag" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<a href="#" class="cu-btn btn-prev" id="prev-btn">Previous</a>
+			<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <ul class="nav nav-pills nav-wizard">
+	        <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+	    </ul>
+
+		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+
+			<div role="tabpanel" class="wr-tabbed-container">
+
+			  <!-- Nav tabs -->
+			  <!--ul class="nav nav-tabs" role="tablist">
+			    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Preprocess</a></li>			    
+			  </ul-->
+
+			  <!-- Tab panes -->
+			  <div class="tab-content">
+			    <div role="tabpanel" class="tab-pane fade in active" id="home">
+			    	<!--h4>Pre Process Data</h4-->				    	
+					<table id="datasetTable">
+                        <div>Summary Statistics for the first 10,000 data rows: </div>
+                        <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Input</th>
+                            <th>Type</th>
+                            <th>Summary Statistics</th>
+                            <th>Impute</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+				</div>
+			  </div>
+
+			</div>
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
+    
+<script src="../../js/d3.parsets.js"></script>
+<script src="../../js/figue.js"></script>
+
+<script type="text/javascript">
+
+// redraw charts upon changes in selections
+$(document).on('change','select[class="numFeaturesIndependentDropdown"], select[class="numFeaturesDependentDropdown"], select[class="catFeaturesDropdown"]',function() {
+    drawPlotsAjax();
+});
+$(document).on('change','input[class="categoricalFeatureNames"]',function() {
+	$("#parallelSets").html("Loading chart...");
+	drawParallelSets();
+});
+$(document).on('change','input[class="numericalFeatureNames"], select[id="categoricalFeature"]',function() {
+    $("#trellisChart").html("Loading chart...");
+    drawTrellisChart();
+});
+$(document).on('change','select[class="numericalFeatureIndependent"], select[class="numericalFeatureDependent"], select[class="noOfClusters"]',function() {
+    $("#clusterDiagram").html("Loading chart...");
+    drawClusterDiagram();
+});
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    var projid = getParameterByName('projid');
+    var projna = getParameterByName('projna');
+    //var datid = getParameterByName('datid');
+    //var datname = getParameterByName('datname');
+    var wfid = getParameterByName('wfid');
+    var wfname = getParameterByName('wfname');
+
+    $('#title').text(projna);
+
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+
+            '&wfid='+wfid+'&wfname='+wfname;        
+    });
+
+    $('#next-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+
+            '&wfid='+wfid+'&wfname='+wfname;
+    });
+
+
+	$('#datasetTable').dataTable({
+        "bServerSide": true,
+        "sAjaxSource": './ajax/PreProcess.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname,
+        "bProcessing": false,
+        "bLengthChange": false,
+        "bFilter": false,
+    });
+
+    // Preserve pagination when refreshing datatable 
+    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+        if(oSettings.oFeatures.bServerSide === false){
+            var before = oSettings._iDisplayStart;
+            oSettings.oApi._fnReDraw(oSettings);
+            oSettings._iDisplayStart = before;
+            oSettings.oApi._fnCalculateEnd(oSettings);
+        }
+        //draw the 'current' page
+        oSettings.oApi._fnDraw(oSettings);
+    };
+
+    $('#datasetTable').on('draw.dt', function() {
+        
+        $('.summaryStatistics').each(function() {
+            var jsonText = $(this).text();
+            //console.log('text: '+jsonText);
+            // TODO: handle JSON parsing errors
+            var jsonObj  = JSON.parse(jsonText); 
+
+
+            // clear text in this cell and draw graphs
+            $(this).text("");
+
+            //get feature type
+            var closestTr = $(this).closest('tr');
+            var FeatureType = closestTr.find('.fieldType option:selected').text();
+
+            var frequencies = jsonObj[0].values;
+            
+            // transform dataset
+            var dataArray = $.map(frequencies, function(value, index) {
+                return value[1];
+            });
+            
+            if (FeatureType == 'CATEGORICAL'){          
+                
+                var w = 40;
+                var h = 40;
+                var pie = d3.layout.pie();
+                
+                var outerRadius = w / 2;
+                var innerRadius = 0;
+                var arc = d3.svg.arc()
+                                .innerRadius(innerRadius)
+                                .outerRadius(outerRadius);
+
+                  var svg = d3.select(this)
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+			    .attr("class", "pieChart");
+
+                  var arcs = svg.selectAll("g.arc")
+                        .data(pie(dataArray))
+                        .enter()
+                        .append("g")
+                        .attr("class", "arc")
+                        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
+
+                  //var color = d3.scale.category20();
+                   var color = d3.scale.ordinal().range(["#D59C0C", "#3C2B02", '#614705', '#FFD64A', '#7A5C0F', '#FFF869', '#A8801C', '#F0D74C', '#D9AE21', '#FFC400', '#D9A90A', '#BFB011', '#B29E47', '#FFD64A', '#C6B902', '#C68202', '#95773B', '#8F6908', '#4F3903', '#FFDA00']);
+                   
+                  arcs.append("path")
+                    .attr("fill", function(d, i) {
+                        return color(i);
+                    })
+                    .attr("d", arc);
+                
+            }else{
+                
+                var w = 200;
+                var h = 40;                 
+                var barPadding = 1;
+                
+                // scaling this y-axis using a linear scaler 
+                var yScale = d3.scale.linear()
+                              .domain([0, d3.max(dataArray, function(d) {
+                                 return d;
+                               })])
+                               .range([0,h]);
+                
+                var svg = d3.select(this)
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h)
+		.attr("class", "barChart");
+                
+                svg.selectAll("rect")
+                    .data(dataArray)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {
+                        return i * (w / dataArray.length);
+                    })
+                    .attr("y", function(d) {
+                        return h - yScale(d);
+                    })
+                    .attr("width", w / dataArray.length - barPadding)
+                    .attr("height", function(d) {
+                        return yScale(d);
+                    })
+                    .attr("fill", '#D59C0C');
+            }
+        });
+        
+        // TODO: AJAX call per change in the data-table is an overhead
+        // use the AJAX methods given by the datatable and improve this section
+        $('.fieldType').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();            
+            var selectedFeatureType = this.options[e.target.selectedIndex].text;
+            var workflowId = getParameterByName('wfid');
+
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateFeatureType.jag",
+                data: {
+                    'FEATURE_TYPE': selectedFeatureType,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                },
+                error: function(res){
+                    
+                }
+            });
+
+            // refresh datatable, preserving the current page
+            $('#datasetTable').dataTable().fnStandingRedraw();
+        });
+
+        $('.includeFeature').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();
+            var selectionFlag = 'false';
+
+            if (this.checked) {
+                selectionFlag = 'true';
+            }
+
+            var workflowId = getParameterByName('wfid');
+            
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateInputSelection.jag",
+                data: {
+                    'IS_FEATURE_SELECTED': selectionFlag,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                },
+                error : function(res){                    
+                }
+            });
+        });
+
+        $('.imputeMethod').on('change', function(e) {
+            var closestTr = $(this).closest('tr');
+            var selectedFeature = closestTr.find('.feature').text();
+            var imputedMethod = this.options[e.target.selectedIndex].text;
+            var workflowId = getParameterByName('wfid');
+
+            $.ajax({
+                type: "POST",
+                url: "./ajax/UpdateImputeMethod.jag",
+                data: {
+                    'IMPUTE_OPTION': imputedMethod,
+                    'FEATURE_NAME': selectedFeature,
+                    'wfid': workflowId
+                },
+                error: function(res){
+
+                }
+            });
+        });
+
+    });
+});
+
+function drawScatterPlotBase() {
+    
+    var workflowId = getParameterByName('wfid');
+
+    $.ajax({
+        type: "POST",
+        url: "./ajax/getScatterPlotBaseInfo.jag",
+        data: {
+            'workflowId': workflowId
+        },
+        success: function(response) {
+        	
+        	var plotData = JSON.parse(response);            
+            var categoricalFeatureNames = plotData[0].replace('[', '').replace(']', '').split(',');
+            var numericalFeatureNames = plotData[1].replace('[', '').replace(']', '').split(',');
+
+            var graphString = "	<div class='col-md-3'><p>X-Axis:</p><select class='numFeaturesIndependentDropdown'>";
+            
+            for (var i = 0; i < numericalFeatureNames.length; i++) {
+
+                graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";
+            }
+            graphString += "</select><br><br><p>Y-Axis:</p><select class='numFeaturesDependentDropdown'>";
+            for (var i = 0; i < numericalFeatureNames.length; i++) {                
+                // make second option selected by default
+                if (i == 1) {
+                	graphString += "<option value='"+numericalFeatureNames[i]+"' selected>"+numericalFeatureNames[i]+"</option>";
+                }
+                else {
+                	graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";	
+                }                
+            }
+            graphString += "</select><br><br><p>Group By:</p><select class='catFeaturesDropdown'>";
+
+            for (var i = 0; i < categoricalFeatureNames.length; i++) {            
+                
+                graphString += "<option value='"+categoricalFeatureNames[i]+"'>"+categoricalFeatureNames[i]+"</option>";
+            }
+
+            graphString += "</select></div><div class='col-md-7'>" +
+            					"<div id='scatterPlotTitle' class='graphtitle'></div>" +
+            					"<div id='scatter'></div>" +
+            					"<div id='histogramIndependent' class='graph'>" +
+            					"<div id='histogramIndependentTitle' class='graphtitle'></div>" +
+            					"<svg></svg>" +
+            					"<div id='numFeatureIndependentSummary' class='graphSummary'></div>" +
+ 	           					"<div id='histogramDependent' class='graph'><div id='histogramDependentTitle' class='graphtitle'></div><svg></svg><div id='numFeatureDependentSummary' class='graphSummary'>" +
+            					"</div></div>" +
+            					"</div></div>";
+            $("#graphDiv").html(graphString);
+            drawPlotsAjax();
+        },
+        error: function(response) {
+            var message = "An error occured while retrieving dataset information.";
+            console.log(message);
+        }
+    });
+}
+
+function drawPlotsAjax() {
+
+	//TODO: put regex as golbal var
+	var projectId = getParameterByName('projid');
+    var numFeatureIndependent = $(".numFeaturesIndependentDropdown").val().replace(/^\s+|\s+$/g, '');
+    var numFeatureDependent = $(".numFeaturesDependentDropdown").val().replace(/^\s+|\s+$/g, '');
+    var catFeature = $(".catFeaturesDropdown").val().replace(/^\s+|\s+$/g, '');
+
+    $.ajax({
+		type: "POST",
+		url: "./ajax/fetchSamplePoints.jag",
+		data: {
+			'projectId': projectId,
+			'numFeatureIndependent': numFeatureIndependent,
+			'numFeatureDependent': numFeatureDependent,
+			'catFeature': catFeature
+		},
+		success: function (data) {
+		   drawScatterPlot(JSON.parse(data), "#scatter", numFeatureIndependent, numFeatureDependent);
+		   $("#scatterPlotTitle").html(numFeatureIndependent + " Vs. " + numFeatureDependent);
+		},
+		error: function () {
+		   var message = "An error occured while fetching sample points from dataset.";
+		   //TODO: handle this with new UI...
+		}
+    });
+
+    $.ajax({
+		type: "POST",
+		url: "./ajax/fetchSummaryStatistics.jag",
+		data: {
+			'projectId': projectId,
+			'numFeature': numFeatureIndependent
+		},
+		success: function (data) {
+		   var jsonObj = JSON.parse(data);
+		   var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp;  Median: " + jsonObj[0].median + "&emsp;&emsp;&emsp; Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   $("#histogramIndependentTitle").html(numFeatureIndependent);
+		   $("#numFeatureIndependentSummary").html(summary);
+
+		   // transform dataset
+		   drawHistogram(jsonObj, "#histogramIndependent");
+		},
+		error: function () {
+		   var message = "An error occurred while fetching summary statistics";
+		   //TODO: handle this with new UI...
+		}
+    });
+    $.ajax({
+		type: "POST",
+		url: "./ajax/fetchSummaryStatistics.jag",
+		data: {
+			'projectId': projectId,
+			'numFeature': numFeatureDependent
+		},
+		success: function (data) {
+		   var jsonObj = JSON.parse(data);
+		   var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp; Median: " + jsonObj[0].median + "&emsp;&emsp;&emsp; Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   $("#histogramDependentTitle").html(numFeatureDependent);
+		   $("#numFeatureDependentSummary").html(summary);
+
+		   // transform dataset
+		   drawHistogram(jsonObj, "#histogramDependent");
+		},
+		error: function () {
+		   var message = "An error occurred while fetching summary statistics";
+		   //TODO: handle this with new UI...
+		}
+    });
+}
+
+function drawHistogram(data, divID) {
+    $(divID + ' svg').empty();
+
+    nv.addGraph(function () {
+
+        var chart = nv.models.linePlusBarChart()
+                .margin({top: 30, right: 60, bottom: 50, left: 70})
+                .x(function (d, i) {
+                       return i
+                   })
+                .y(function (d) {
+                       return d[1]
+                   })
+                .color(["#C99614"])
+            ;
+
+        chart.xAxis
+            .showMaxMin(false)
+            .tickFormat(function (d) {
+                            return data[0].values[d][0];
+                        });
+
+        chart.y1Axis
+            .tickFormat(d3.format(',f'));
+
+        chart.y2Axis
+            .tickFormat(function (d) {
+                            return '$' + d3.format(',f')(d)
+                        });
+
+
+        chart.bars.forceY([0]);
+
+        d3.select(divID + ' svg')
+            .datum(data)
+            .transition().duration(500)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function drawParallelSetsBase() {
+    
+    var workflowId = getParameterByName('wfid');
+
+    $.ajax({
+        type: "POST",
+        url: "./ajax/getParallelSetsBaseInfo.jag",
+        data: {
+            'workflowId': workflowId
+        },
+        success: function(response) {
+
+            var categoricalFeatureNames = response.replace('[', '').replace(']', '').split(','); //TODO: try JSON.parse
+
+            var graphString = "<div class='col-md-3' id='categoricalFeatureSelect'><p id='categoricalFeatureTitle'>Categorical Features:</p>";
+
+            for (i = 0; i < categoricalFeatureNames.length; i++) {            
+                // first 5 categorical features are plotted by default
+                if (i <5){
+                    graphString += "<label><input type='checkbox' class='categoricalFeatureNames' value='"+categoricalFeatureNames[i]+"' checked> "+categoricalFeatureNames[i]+"</label><br>";
+                }
+                else {
+                    graphString += "<label><input type='checkbox' class='categoricalFeatureNames' value='"+categoricalFeatureNames[i]+"'> "+categoricalFeatureNames[i]+"</label><br>";
+                }
+            }
+            graphString += "</div><div class='col-md-7' id='parallelSets'>Loading chart...</div>";
+            $("#graphDiv").html(graphString);
+            drawParallelSets();
+        },
+        error: function(response) {
+            var message = "An error occured while retrieving dataset information.";
+            console.log(message);
+        }
+    });
+}
+
+function drawParallelSets() {
+
+    var projectId = getParameterByName('projid');
+
+    // get categorical feature list from checkbox selection
+    var catFeaturesDropdownValues = [];
+    $('.categoricalFeatureNames:checked').each(function() {
+        catFeaturesDropdownValues.push($(this).val().replace(/^\s+|\s+$/g, ''));
+    });
+
+    var noOfCategoricalFeatures = catFeaturesDropdownValues.length;
+
+    if (noOfCategoricalFeatures > 1) {
+        // create object for axaj call
+        dataObj = {};
+        dataObj["projectId"] = projectId;
+        dataObj["noOfCategoricalFeatures"] = noOfCategoricalFeatures;
+        for (var i = 0; i < noOfCategoricalFeatures; i++) {
+            var categoricalFeatureName = "categoricalFeature" + i;
+            dataObj[categoricalFeatureName] = catFeaturesDropdownValues[i];
+        }
+
+        // make ajax call
+        $.ajax({
+            type: "POST",
+            url: "./ajax/fetchCategoricalSamplePoints.jag",
+            data: dataObj,
+            success: function(response) {
+                // array for parsets dimensions with categorical feature names
+                var categoricalFeatureArray = [noOfCategoricalFeatures];
+                for (i = 0; i < noOfCategoricalFeatures; i++) {
+                    categoricalFeatureArray[i] = catFeaturesDropdownValues[i];
+                }
+
+                // clear the div contains parallel sets chart
+                $("#parallelSets").html("");
+                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(600).height(500);
+                var vis = d3.select("#parallelSets").append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
+
+                var plotData = JSON.parse(response);
+                // draw chart
+                vis.datum(plotData).call(chart);
+            },
+            error: function(response) {
+                var message = "An error occured while fetching sample points from dataset.";
+                console.log(message);
+            }
+        })
+    } else {
+        $("#parallelSets").html("Minimum of two categorical features required for Parallel Sets.");
+    }
+}
+
+function drawTrellisChartBase() {
+    
+    var workflowId = getParameterByName('wfid');
+
+    $.ajax({
+        type: "POST",
+        url: "./ajax/getTrellisChartBaseInfo.jag",
+        data: {
+            'workflowId': workflowId
+        },
+        success: function(response) {
+            
+            var plotData = JSON.parse(response);            
+            var categoricalFeatureNames = plotData[0].replace('[', '').replace(']', '').split(',');
+            var numericalFeatureNames = plotData[1].replace('[', '').replace(']', '').split(',');
+
+            var graphString = "<div class='col-md-3' id='categoricalFeatureSelect'><p id='categoricalFeatureTitle'>Categorical Feature:</p><select id='categoricalFeature'>";
+
+            for (var i = 0; i < categoricalFeatureNames.length; i++) {            
+                
+                graphString += "<option value='"+categoricalFeatureNames[i]+"'>"+categoricalFeatureNames[i]+"</option>";
+            }
+
+            graphString += "</select><br><br><p id='categoricalFeatureTitle'>Numerical features:</p>";
+
+            for (var i = 0; i < numericalFeatureNames.length; i++) {            
+                // first 4 categorical features are plotted by default
+                if (i < 4){
+                    graphString += "<label><input type='checkbox' class='numericalFeatureNames' value='"+numericalFeatureNames[i]+"' checked> "+numericalFeatureNames[i]+"</label><br>";
+                }
+                else {
+                    graphString += "<label><input type='checkbox' class='numericalFeatureNames' value='"+numericalFeatureNames[i]+"'> "+numericalFeatureNames[i]+"</label><br>";
+                }
+            }
+
+            graphString += "</div><div class='col-md-7' id='trellisChart'>Loading chart...</div>";
+            $("#graphDiv").html(graphString);
+            drawTrellisChart();
+        },
+        error: function(response) {
+            var message = "An error occured while retrieving dataset information.";
+            console.log(message);
+        }
+    });
+}
+
+function drawTrellisChart() {
+    var projectId = getParameterByName('projid');
+    // get selected categorical feature
+    var categoricalHeader = $("#categoricalFeature").val().replace(/^\s+|\s+$/g, '');
+    // get numerical feature list from checkbox selection
+    var numericalFeatureValues = [];
+    $('.numericalFeatureNames:checked').each(function() {
+        numericalFeatureValues.push($(this).val().replace(/^\s+|\s+$/g, ''));
+    });
+
+    var noOfNumericalFeatures = numericalFeatureValues.length;
+
+    // create object for axaj call
+    dataObj = {};
+    dataObj["projectId"] = projectId;
+    dataObj["categoricalFeature"] = categoricalHeader;
+    dataObj["noOfNumericalFeatures"] = noOfNumericalFeatures;
+    for (var i = 0; i < noOfNumericalFeatures; i++) {
+        var numericalFeatureName = "numericalFeature" + i;
+        dataObj[numericalFeatureName] = numericalFeatureValues[i];
+    }
+
+    // make ajax call
+    $.ajax({
+        type: "POST",
+        url: "./ajax/fetchTrellisChartSamplePoints.jag",
+        data: dataObj,
+        success: function(response) {
+
+            var plotData = JSON.parse(response);
+
+            /* D3.js Trellis Chart code */
+            var width = 960,
+                size = 150,
+                padding = 19.5;
+            var x = d3.scale.linear().range([padding / 2, size - padding / 2]);
+            var y = d3.scale.linear().range([size - padding / 2, padding / 2]);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+            var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+            var color = d3.scale.category10();
+            
+            var data = plotData;
+
+            var domainByTrait = {},
+                traits = d3.keys(data[0]).filter(
+                    function(d) {
+                        return d !== categoricalHeader;
+                    }),
+                n = traits.length;
+
+            traits.forEach(function(trait) {
+                domainByTrait[trait] = d3.extent(data, function(d) {
+                    return d[trait];
+                });
+            });
+
+            xAxis.tickSize(size * n);
+            yAxis.tickSize(-size * n);
+
+            var brush = d3.svg.brush().x(x).y(y).on("brushstart", brushstart)
+                .on("brush", brushmove).on("brushend", brushend);
+
+            $("#trellisChart").html("");
+            var svg = d3.select("#trellisChart").append("svg").attr("width",
+                    size * n + padding).attr("height", size * n + padding)
+                .append("g").attr("transform",
+                    "translate(" + padding + "," + padding / 2 + ")");
+
+            svg.selectAll(".x.axis").data(traits).enter().append("g").attr(
+                "class", "x axis").attr("transform", function(d, i) {
+                return "translate(" + (n - i - 1) * size + ",0)";
+            }).each(function(d) {
+                x.domain(domainByTrait[d]);
+                d3.select(this).call(xAxis);
+            });
+
+            svg.selectAll(".y.axis").data(traits).enter().append("g").attr(
+                "class", "y axis").attr("transform", function(d, i) {
+                return "translate(0," + i * size + ")";
+            }).each(function(d) {
+                y.domain(domainByTrait[d]);
+                d3.select(this).call(yAxis);
+            });
+
+            var cell = svg.selectAll(".cell").data(cross(traits, traits))
+                .enter().append("g").attr("class", "cell").attr(
+                    "transform",
+                    function(d) {
+                        return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")";
+                    }).each(plot);
+
+            // Titles for the diagonal
+            cell.filter(function(d) {
+                return d.i === d.j;
+            }).append("text").attr("x", padding).attr("y", padding).attr("dy",
+                ".71em").text(function(d) {
+                return d.x;
+            });
+
+            cell.call(brush);
+
+            function plot(p) {
+                var cell = d3.select(this);
+
+                x.domain(domainByTrait[p.x]);
+                y.domain(domainByTrait[p.y]);
+
+                cell.append("rect").attr("class", "frame").attr("x",
+                    padding / 2).attr("y", padding / 2).attr("width",
+                    size - padding).attr("height", size - padding);
+
+                cell.selectAll("circle").data(data).enter().append("circle")
+                    .attr("cx", function(d) {
+                        return x(d[p.x]);
+                    }).attr("cy", function(d) {
+                        return y(d[p.y]);
+                    }).attr("r", 0.7).style("fill", function(d) {
+                        // replace current header of categorical feature header with common header
+                        // can be accessed by color
+                        var dString = JSON.stringify(d);
+                        dString = dString.replace(categoricalHeader, "categoricalFeature");
+                        var dNew = JSON.parse(dString);
+                        return color(dNew.categoricalFeature);
+                    });
+            }
+            var brushCell;
+
+            // Clear the previously-active brush, if any.
+            function brushstart(p) {
+                if (brushCell !== this) {
+                    d3.select(brushCell).call(brush.clear());
+                    x.domain(domainByTrait[p.x]);
+                    y.domain(domainByTrait[p.y]);
+                    brushCell = this;
+                }
+            }
+
+            // Highlight the selected circles.
+            function brushmove(p) {
+                var e = brush.extent();
+                svg.selectAll("circle").classed(
+                    "hidden",
+                    function(d) {
+                        return e[0][0] > d[p.x] || d[p.x] > e[1][0] || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+                    });
+            }
+
+            // If the brush is empty, select all circles.
+            function brushend() {
+                if (brush.empty())
+                    svg.selectAll(".hidden").classed("hidden", false);
+            }
+
+            function cross(a, b) {
+                var c = [],
+                    n = a.length,
+                    m = b.length,
+                    i, j;
+                for (i = -1; ++i < n;)
+                    for (j = -1; ++j < m;)
+                        c.push({
+                            x: a[i],
+                            i: i,
+                            y: b[j],
+                            j: j
+                        });
+                return c;
+            }
+
+            d3.select(self.frameElement).style("height",
+                size * n + padding + 20 + "px");
+        },
+        error: function(response) {
+            var message = "An error occured while fetching sample points from dataset.";
+            console.log(message);
+        }
+    })
+}
+
+function drawClusterDiagramBase() {
+    
+    var workflowId = getParameterByName('wfid');
+
+    $.ajax({
+        type: "POST",
+        url: "./ajax/getClusterDiagramBaseInfo.jag",
+        data: {
+            'workflowId': workflowId
+        },
+        success: function(response) {
+
+            var numericalFeatureNames = response.replace('[', '').replace(']', '').split(','); //TODO: try JSON.parse
+
+            var graphString = "	<div class='col-md-3'><p>First Numerical Feature:</p><select class='numericalFeatureIndependent'>";
+            for (var i = 0; i < numericalFeatureNames.length; i++) {            
+                
+                graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";
+            }
+            graphString += "</select><br><br><p>Second Numerical Feature:</p><select class='numericalFeatureDependent'>";
+            for (var i = 0; i < numericalFeatureNames.length; i++) {                
+                // make second option selected by default
+                if (i == 1) {
+                	graphString += "<option value='"+numericalFeatureNames[i]+"' selected>"+numericalFeatureNames[i]+"</option>";
+                }
+                else {
+                	graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";	
+                }                
+            }
+            graphString += "</select><br><br><p>No. of Clusters:</p><select class='noOfClusters'><option value='1'>1</option><option value='2'>2</option><option value='3' selected>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option></select>";
+			graphString += "</div><div class='col-md-7' id='clusterDiagram'>Loading chart...</div>";
+
+            $("#graphDiv").html(graphString);
+            drawClusterDiagram();
+        },
+        error: function(response) {
+            var message = "An error occured while retrieving dataset information.";
+            console.log(message);
+        }
+    });
+}
+
+function drawClusterDiagram() {
+
+	var projectId = getParameterByName('projid');    
+    // get categorical feature list from checkbox selection
+    var numericalFeatureIndependent = $(".numericalFeatureIndependent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $(".numericalFeatureDependent").val().replace(/^\s+|\s+$/g, '');
+    var noOfClusters = $(".noOfClusters").val().replace(/^\s+|\s+$/g, '');
+    
+    // create object for axaj call
+    dataObj = {};
+    dataObj["projectId"] = projectId;
+    dataObj["numericalFeatureIndependent"] = numericalFeatureIndependent;
+    dataObj["numericalFeatureDependent"] = numericalFeatureDependent;
+    dataObj["noOfClusters"] = noOfClusters;
+
+    // make ajax call
+    $.ajax({
+        type: "POST",
+        url: "./ajax/fetchClusterDiagramSamplePoints.jag",
+        data: dataObj,
+        success: function(response) {
+            
+        	var dataArray = JSON.parse(response);
+            drawScatterPlot(dataArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
+        },
+        error: function(response) {
+            var message = "An error occured while fetching sample points from dataset.";
+            console.log(message);
+        }
+    })    
+}
+
+function kmeans(arrayX, arrayY, noOfClusters) {
+
+    // create input data object to k means from input array parameters
+    var pointArray = [];
+    for(var i = 0; i < arrayX.length; i++) {
+        var point = {};
+        point['x'] = arrayX[i];
+        point['y'] = arrayY[i];
+        pointArray[i] = point
+    }
+
+    var vectors = [];
+
+    for (var i = 0; i < pointArray.length; i++) {
+        vectors[i] = [parseFloat(pointArray[i]['x']), parseFloat(pointArray[i]['y'])];
+    }
+
+    var clusters = figue.kmeans(noOfClusters, vectors);
+
+    var finalValueArray = []; // array of array containing each point's coordinates and its cluster
+    if (clusters) {
+
+        for (var i = 0; i < vectors.length; i++) {
+            var index = clusters.assignments[i];
+            finalValueArray[i] = [vectors[i][0], vectors[i][1], index];
+        }
+        return finalValueArray;
+    }
+    else {
+        console.log("No result (too many clusters/too few different instances)");
+    }
+}
+// drawing a simple scatter graph
+function drawScatterPlot(data, cssClass, xLabel, yLabel) {
+    $(cssClass).empty();
+    var scatter = new ScatterPlot(data);
+
+    scatter.setPlotingAreaWidth(600);
+    scatter.setPlotingAreaHeight(400);
+    scatter.setMarkerSize("2");
+    scatter.setXAxisText(xLabel);
+    scatter.setYAxisText(yLabel);
+    scatter.plot(d3.select(cssClass));
+};
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+</script>
+
+</body>
+</html>
