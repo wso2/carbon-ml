@@ -54,7 +54,7 @@
                         <property>
                             <name>carbon.zip</name>
                             <value>
-                                ${basedir}/../../distribution/target/wso2ml-${project.version}.zip
+                                ${basedir}/../../distribution/target/wso2ml-${ml.version}.zip
                             </value>
                         </property>
                         <property>
@@ -160,7 +160,7 @@
                                 <artifactItem>
                                     <groupId>org.wso2.ml</groupId>
                                     <artifactId>wso2ml</artifactId>
-                                    <version>${project.version}</version>
+                                    <version>${ml.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${basedir}/target/tobeCopied/</outputDirectory>
@@ -200,7 +200,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2ml-${project.version}/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2ml-${ml.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>
@@ -221,7 +221,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2ml-${project.version}/repository/deployment/client/modules
+                                        ${basedir}/target/tobeCopied/wso2ml-${ml.version}/repository/deployment/client/modules
                                     </directory>
                                     <includes>
                                         <include>**/*.mar</include>

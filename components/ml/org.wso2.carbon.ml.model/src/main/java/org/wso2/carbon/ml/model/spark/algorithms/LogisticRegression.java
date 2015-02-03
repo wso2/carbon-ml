@@ -49,6 +49,7 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L2;
 public class LogisticRegression implements Serializable {
 
     /**
+     * TODO add another overloaded method to avoid Regularization.
      * This method uses stochastic gradient descent (SGD) algorithm to train a logistic regression model
      *
      * @param trainingDataset             Training dataset as a JavaRDD of labeled points

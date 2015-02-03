@@ -94,17 +94,17 @@
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="${project.artifactId}-${project.version}.zip"/>
+                                        <include name="${project.artifactId}-${ml.version}.zip"/>
                                     </fileset>
                                 </unzip>
 
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
                                       overwrite="false">
                                     <fileset
-                                            dir="${tempdir}/${project.artifactId}-${project.version}/repository/components/">
+                                            dir="${tempdir}/${project.artifactId}-${ml.version}/repository/components/">
                                     </fileset>
                                 </copy>
-                                <delete file="target/${project.artifactId}-${project.version}.zip"/>
+                                <delete file="target/${project.artifactId}-${ml.version}.zip"/>
                                 <delete dir="${tempdir}"/>
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">

@@ -102,6 +102,10 @@ public class SQLQueries {
     // Project Management Querries
     public static final String CREATE_PROJECT = "INSERT INTO ML_PROJECT(PROJECT_ID, NAME, DESCRIPTION, CREATED_TIME)" +
         " VALUES(?,?,?, CURRENT_TIMESTAMP())";
+    
+    //TODO merge with CREATE_PROJECT
+    public static final String CREATE_PROJECT_NEW = "INSERT INTO ML_PROJECT(PROJECT_ID, NAME, DESCRIPTION, TENANT_ID, CREATED_TIME)" +
+            " VALUES(?,?,?,?, CURRENT_TIMESTAMP())";
 
     public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE PROJECT_ID=?";
 
@@ -109,7 +113,7 @@ public class SQLQueries {
         "VALUES(?,?)";
 
     public static final String GET_TENANT_PROJECTS = "SELECT PROJECT_ID, NAME, CREATED_TIME, DESCRIPTION FROM  ML_PROJECT WHERE " +
-        "PROJECT_ID IN (SELECT PROJECT_ID FROM ML_TENANT_PROJECTS WHERE TENANT_ID=?)";
+        "TENANT_ID=?";
 
     public static final String CREATE_NEW_WORKFLOW = "INSERT INTO ML_WORKFLOW (WORKFLOW_ID, PARENT_WORKFLOW_ID, " +
         "PROJECT_ID, DATASET_ID,NAME) VALUES(?,?,?,?,?)";

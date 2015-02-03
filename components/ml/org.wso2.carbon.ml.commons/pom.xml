@@ -51,7 +51,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.ml.commons.*,
+                            org.wso2.carbon.ml.commons.*;version="${ml.exp.pkg.version}",
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging,

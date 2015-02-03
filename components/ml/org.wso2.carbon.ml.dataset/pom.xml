@@ -60,10 +60,6 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
@@ -100,16 +96,17 @@
                             org.wso2.carbon.ml.dataset.internal.*
                         </Private-Package>
                         <Export-Package>
-                        	!org.wso2.carbon.ml.dataset.internal.*,
-                            org.wso2.carbon.ml.dataset.*,
+                            !org.wso2.carbon.ml.dataset.internal.*,
+                            org.wso2.carbon.ml.dataset.*;version="${ml.exp.pkg.version}",
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.math3.*,
                             org.apache.commons.csv.*,
                             org.apache.commons.lang.math.*,
-                            org.h2,
                             org.apache.commons.logging,
                             org.json.*,
+    			    org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
+			    org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
