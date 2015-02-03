@@ -653,7 +653,7 @@
         <selenium.version>2.44.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
 	<wss4j.version>1.5.11-wso2v8-SNAPSHOT</wss4j.version>
-        <carbon.analytics.version>1.0.0-SNAPSHOT</carbon.analytics.version>
+        <carbon.analytics.version>1.0.0</carbon.analytics.version>
     </properties>
 
     <organization>
