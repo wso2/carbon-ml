@@ -175,10 +175,10 @@
                                 </featureArtifactDef>
 				<!-- carbon analytics features -->
 				<featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.analytics.core.server.feature:${carbon.analytics.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.core.server.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
 				<featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.analytics.datasource.feature:${carbon.analytics.version}
+                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.datasource.feature:${carbon.analytics.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
