@@ -87,24 +87,24 @@ public class TestMLFlow {
             log.info("**********************************************************");
             fis = new FileInputStream(file);
             // create project
-            projectMgtService.createProject(projectName, "mltest", "ml test");
-            log.info("Created a project : " + projectName);
+            String projectId = projectMgtService.createProject(projectName, "ml test");
+            log.info("Created a project : " + projectId);
 //            projectMgtServiceß.addTenantToProject("-1234", projectName);
 //            log.info("Add Super Tenant to project : " + projectName);
             // upload dataset
-            String datasetURL = datasetService.uploadDataset(fis, file.getName(), projectName);
+            String datasetURL = datasetService.uploadDataset(fis, file.getName(), projectId);
             log.info("Uploaded the data-set : " + datasetURL);
-            datasetService.calculateSummaryStatistics(file.getName(), projectName, projectName);
+            datasetService.calculateSummaryStatistics(file.getName(), projectName, projectId);
             log.info("Calculated summary stats of data-set: " + file.getName());
             // create a work-flow
-            projectMgtService.createNewWorkflow(projectName, projectName, projectName, projectName);
-            log.info("Created a work-flow: " + projectName);
-            // set deg
-            projectMgtService.setDefaultFeatureSettings(projectName, projectName);
-            log.info("Default feature settings are set for project: " + projectName);
+            String workflowId = projectMgtService.createWorkflowAndSetDefaultSettings(projectId, projectName);
+            log.info("Created a work-flow with default feature settings: " + workflowId);
+//            // set deg
+//            projectMgtService.setDefaultFeatureSettings(projectId, workflowId);
+//            log.info("Default feature settings are set for project: " + projectName);
 
             ModelSettings settings = new ModelSettings();
-            settings.setWorkflowID(projectName);
+//            settings.setWorkflowID(projectName);
             settings.setAlgorithmName("LOGISTIC_REGRESSION");
             settings.setAlgorithmType("Classification");
             settings.setDatasetURL(datasetURL);
@@ -114,14 +114,14 @@ public class TestMLFlow {
             List<HyperParameter> hyperParams = modelService.getHyperParameters("LOGISTIC_REGRESSION");
             settings.setHyperParameters(hyperParams);
 
-            modelService.insertModelSettings(settings);
+            modelService.insertModelSettings(workflowId, settings);
             log.info("Inserted model settings: " + settings);
 
-            modelService.buildModel(projectName, projectName);
-            log.info("Build model request is submitted for work-flow: " + projectName);
+            modelService.buildModel(workflowId, workflowId);
+            log.info("Build model request is submitted for work-flow: " + workflowId);
 
             long t = System.currentTimeMillis();
-            while (!modelService.isExecutionStarted(projectName)) {
+            while (!modelService.isExecutionStarted(workflowId)) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ignore) {
@@ -129,26 +129,26 @@ public class TestMLFlow {
             }
             log.info(String.format("Model execution started in %s milliseconds.", System.currentTimeMillis() - t));
             t = System.currentTimeMillis();
-            while (!modelService.isExecutionCompleted(projectName)) {
+            while (!modelService.isExecutionCompleted(workflowId)) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ignore) {
                 }
             }
             log.info(String.format("Model execution completed in %s milliseconds.", System.currentTimeMillis() - t));
-            ConfusionMatrix confusionMatrix = modelService.getConfusionMatrix(projectName, 0.5);
+            ConfusionMatrix confusionMatrix = modelService.getConfusionMatrix(workflowId, 0.5);
             log.info("Confusion matrix is generated for the model");
             if (confusionMatrix != null) {
                 log.info(confusionMatrix);
             } else {
-                log.info("Confusion matrix is null for work-flow id: " + projectName);
+                log.info("Confusion matrix is null for work-flow id: " + workflowId);
             }
 
             log.info("**********************************************************");
             log.info("*********************    Prediction    *******************");
             log.info("**********************************************************");
             // deserializing
-            MLModel mlModel = modelService.getModel(projectName);
+            MLModel mlModel = modelService.getModel(workflowId);
             log.info(String.format("Model of project %s is deserialized.", projectName));
 
             LogisticRegressionModel logisticModel = (LogisticRegressionModel) mlModel.getModel();
