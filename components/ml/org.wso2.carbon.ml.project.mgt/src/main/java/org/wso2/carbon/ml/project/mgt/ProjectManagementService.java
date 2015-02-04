@@ -36,8 +36,20 @@ public interface ProjectManagementService {
 	 * @param description      Description of the project.
 	 * @throws                 ProjectManagementServiceException
 	 */
+    @Deprecated
 	public void createProject(String projectID, String projectName, String description)
 			throws ProjectManagementServiceException;
+    
+    /**
+     * Creates a new project.
+     *
+     * @param projectName      Name of the project.
+     * @param description      Description of the project.
+     * @return project id.
+     * @throws                 ProjectManagementServiceException
+     */
+    public String createProject(String projectName, String description)
+            throws ProjectManagementServiceException;
 	
 	/**
 	 * Delete details of a given project.
@@ -74,8 +86,20 @@ public interface ProjectManagementService {
 	 * @param workflowName         Name of the project
 	 * @throws                     ProjectManagementServiceException
 	 */
+	@Deprecated
 	public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
 	                              String workflowName) throws ProjectManagementServiceException;
+	
+	/**
+     * Create a new machine learning work-flow and set the default settings.
+     *
+     * @param projectID            Unique identifier for the project for which the work-flow is created.
+     * @param workflowName         Name of the work-flow
+     * @return work-flow id
+     * @throws                     ProjectManagementServiceException
+     */
+	public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) 
+	        throws ProjectManagementServiceException;
 
 	/**
 	 * This method update the workflow name associated with given workflowID

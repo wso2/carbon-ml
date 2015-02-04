@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.project.mgt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Class contains services related to project and work-flow management
@@ -49,11 +51,36 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @throws                 ProjectManagementServiceException
      */
 	@Override
+	@Deprecated
     public void createProject(String projectID, String projectName, String description)
             throws ProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             dbService.createProject(projectID, projectName, description);
+        } catch (DatabaseHandlerException e) {
+            logger.error("Failed to create the project: " + e.getMessage(), e);
+            throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
+        }
+    }
+	
+	/**
+     * Creates a new project.
+     *
+     * @param projectName      Name of the project.
+     * @param description      Description of the project.
+     * @return project id.
+     * @throws                 ProjectManagementServiceException
+     */
+    @Override
+    public String createProject(String projectName, String description)
+            throws ProjectManagementServiceException {
+        try {
+            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
+            String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            String projectId = tenantDomain+"."+projectName;
+            dbService.createProject(projectId, projectName, description);
+            logger.info("Successfully created a ML project: "+projectId);
+            return projectId;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the project: " + e.getMessage(), e);
             throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
@@ -124,6 +151,7 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @throws                     ProjectManagementServiceException
      */
 	@Override
+	@Deprecated
     public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
                                   String workflowName) throws ProjectManagementServiceException {
         try {
@@ -131,6 +159,30 @@ public class MLProjectManagementService implements ProjectManagementService{
             String datasetID = getdatasetID(projectID);
             dbService.createNewWorkflow(workflowID, parentWorkflowID, projectID, datasetID,
                                         workflowName);
+            dbService.setDefaultFeatureSettings(datasetID, workflowID);
+        } catch (DatabaseHandlerException e) {
+            logger.error("Failed to create the workflow: " + e.getMessage(), e);
+            throw new ProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
+        }
+    }
+	
+	/**
+     * Create a new machine learning work-flow and set the default settings.
+     *
+     * @param projectID            Unique identifier for the project for which the work-flow is created.
+     * @param workflowName         Name of the work-flow
+     * @throws                     ProjectManagementServiceException
+     */
+    @Override
+    public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) throws ProjectManagementServiceException {
+        try {
+            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
+            String datasetID = getdatasetID(projectID);
+            String workflowID = projectID+"."+workflowName;
+            dbService.createWorkflow(workflowID, projectID, datasetID,
+                                        workflowName);
+            dbService.setDefaultFeatureSettings(datasetID, workflowID);
+            return workflowID;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the workflow: " + e.getMessage(), e);
             throw new ProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
@@ -202,6 +254,7 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @throws             DatasetServiceException
      */
 	@Override
+	@Deprecated
     public void setDefaultFeatureSettings(String projectID, String workflowID)
             throws ProjectManagementServiceException {
         try {
