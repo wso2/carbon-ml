@@ -189,15 +189,15 @@ $( document ).ready(function() {
 
     $('#title').text(projna);
 
-    $('.prev-btn').on('click', function(e){
+    $('.btn-prev').on('click', function(e){
         e.preventDefault();
         window.location.href = '../exprore/exprore.jag?projid='+projid+'&projna='+projna+
             '&wfid='+wfid+'&wfname='+wfname;        
     });
 
-    $('.next-btn').on('click', function(e){
+    $('.btn-next').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+
+        window.location.href = '../questions/questions.jag?projid='+projid+'&projna='+projna+
             '&wfid='+wfid+'&wfname='+wfname;
     });
 

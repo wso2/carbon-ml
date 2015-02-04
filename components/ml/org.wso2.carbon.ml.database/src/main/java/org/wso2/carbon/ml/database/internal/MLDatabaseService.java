@@ -630,28 +630,21 @@ public class MLDatabaseService implements DatabaseService{
      * (Categorical/Numerical), of the work-flow.
      *
      * @param workflowID    Unique identifier of the current work-flow
-     * @param featureType   Data-type of the feature
      * @return              A list of feature names
      * @throws              DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String workflowID, String featureType)
-            throws DatabaseHandlerException {
+    public List<String> getFeatureNames(String workflowID) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement getFeatureNamesStatement = null;
         ResultSet result = null;
         List<String> featureNames = new ArrayList<String>();
         try {
             connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(true);
+
             // Create a prepared statement and retrieve data-set configurations.
             getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES);
             getFeatureNamesStatement.setString(1, workflowID);
-            // Select the data type.
-            if (featureType.equalsIgnoreCase(FeatureType.CATEGORICAL)) {
-                getFeatureNamesStatement.setString(2, FeatureType.CATEGORICAL);
-            } else {
-                getFeatureNamesStatement.setString(2, FeatureType.NUMERICAL);
-            }
+
             result = getFeatureNamesStatement.executeQuery();
             // Convert the result in to a string array to e returned.
             while (result.next()) {
@@ -659,8 +652,8 @@ public class MLDatabaseService implements DatabaseService{
             }
             return featureNames;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException( "An error occurred while retrieving feature " +
-                    "names of the dataset for workflow: " + workflowID + ": " + e.getMessage(), e);
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset for workflow: " + workflowID + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
@@ -1603,4 +1596,34 @@ public class MLDatabaseService implements DatabaseService{
         }
     }
 
+    @Override
+    public String getFeatureType(String workflowId, String featureName) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        PreparedStatement getDefaultFeatureSettings = null;
+        ResultSet result = null;
+
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+
+            getDefaultFeatureSettings = connection.prepareStatement(SQLQueries.GET_FEATURE_TYPE);
+            getDefaultFeatureSettings.setString(1, workflowId);
+            getDefaultFeatureSettings.setString(2, featureName);
+
+            result = getDefaultFeatureSettings.executeQuery();
+
+            if (result.first()) {
+                return result.getString(1);
+            } else {
+                throw new DatabaseHandlerException("Invalid workflow Id: " + workflowId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while reading dataset type of feature: "
+                    + featureName + " of workflow Id: " + workflowId + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement, result);
+        }
+    }
 }

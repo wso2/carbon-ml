@@ -134,12 +134,10 @@ public interface DatasetService {
      * (Categorical/Numerical), of the work-flow.
      *
      * @param workflowID    Unique identifier of the current work-flow
-     * @param featureType   Data-type of the feature
      * @return              A list of feature names
      * @throws              DatasetServiceException
      */
-    public List<String> getFeatureNames(String workflowID, String featureType)
-            throws DatasetServiceException;
+    public List<String> getFeatureNames(String workflowID) throws DatasetServiceException;
 
     /**
      * Returns data points of the selected sample as coordinates of three
@@ -203,4 +201,13 @@ public interface DatasetService {
      * @throws DatasetServiceException
      */
     public String getDatasetId(String projectId) throws DatasetServiceException, DatabaseHandlerException;
+        
+    /**
+     * 
+     * @param workflowId
+     * @param featureName
+     * @return
+     * @throws DatasetServiceException
+     */
+    public String getFeatureType(String workflowId, String featureName) throws DatasetServiceException;
 }

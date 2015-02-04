@@ -325,11 +325,10 @@ public class MLDatasetService implements DatasetService {
      * @throws              DatasetServiceException
      */
     @Override
-    public List<String> getFeatureNames(String workflowID, String featureType)
-            throws DatasetServiceException {
+    public List<String> getFeatureNames(String workflowID) throws DatasetServiceException {
         try {
             DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-            return dbService.getFeatureNames(workflowID, featureType);
+            return dbService.getFeatureNames(workflowID);
         } catch (DatabaseHandlerException e) {
             throw new DatasetServiceException("Failed to retrieve feature names: "
                 + e.getMessage(), e);
@@ -443,6 +442,18 @@ public class MLDatasetService implements DatasetService {
         } catch (DatabaseHandlerException ex) {
             throw new DatasetServiceException("Failed to retrieve the dataset id associated with " +
                     " project id: " + projectId, ex);
+        }
+    }
+    
+    @Override
+    public String getFeatureType(String workflowId, String featureName) throws DatasetServiceException {
+        try {
+            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
+            return dbService.getFeatureType(workflowId, featureName);
+            
+        } catch (DatabaseHandlerException ex) {
+            throw new DatasetServiceException("An error occurred while reading dataset type of feature: " + featureName
+                    + " of workflow Id: " + workflowId + ex.getMessage(), ex);
         }
     }
 }

@@ -23,8 +23,7 @@ package org.wso2.carbon.ml.database.internal.constants;
  */
 public class SQLQueries {
 
-    public static final String GET_FEATURE_NAMES = "SELECT FEATURE_NAME FROM ML_FEATURE_SETTINGS WHERE WORKFLOW_ID=?" +
-        " AND TYPE=? AND INCLUDE=TRUE";
+    public static final String GET_FEATURE_NAMES = "SELECT FEATURE_NAME FROM ML_FEATURE_SETTINGS WHERE WORKFLOW_ID=? AND INCLUDE=TRUE";
 
     public static final String GET_FEATURES = "SELECT DEFAULT.FEATURE_NAME, DEFAULT.SUMMARY, WORKFLOW_SETTINGS.TYPE, " +
         "WORKFLOW_SETTINGS.INCLUDE, WORKFLOW_SETTINGS.IMPUTE_METHOD FROM (SELECT FEATURE_NAME, SUMMARY FROM " +
@@ -131,6 +130,8 @@ public class SQLQueries {
 
     public static final String INSERT_FEATURE_SETTINGS = "INSERT INTO ML_FEATURE_SETTINGS (WORKFLOW_ID, FEATURE_NAME," +
         " FEATURE_INDEX, TYPE, IMPUTE_METHOD, INCLUDE) VALUES(?,?,?,?,?,?)";
+    
+    public static final String GET_FEATURE_TYPE = "SELECT  TYPE FROM ML_FEATURE_SETTINGS  WHERE  WORKFLOW_ID  =  ? AND FEATURE_NAME = ?";
     
     /*
      * private Constructor to prevent any other class from instantiating.

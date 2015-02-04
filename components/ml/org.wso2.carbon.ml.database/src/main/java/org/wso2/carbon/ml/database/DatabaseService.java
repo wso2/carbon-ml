@@ -170,8 +170,7 @@ public interface DatabaseService {
      * @return              A list of feature names
      * @throws              DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String workflowID, String featureType)
-            throws DatabaseHandlerException;
+    public List<String> getFeatureNames(String workflowID) throws DatabaseHandlerException;
 
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
@@ -376,4 +375,13 @@ public interface DatabaseService {
      * @throws              DatabaseHandlerException
      */
     public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
+    
+    /**
+     * 
+     * @param workflowId
+     * @param featureName
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public String getFeatureType(String workflowId, String featureName) throws DatabaseHandlerException;
 }
