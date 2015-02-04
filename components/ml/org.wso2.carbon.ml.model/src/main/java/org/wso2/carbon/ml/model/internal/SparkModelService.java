@@ -300,6 +300,26 @@ public class SparkModelService implements ModelService {
                     modelSettings.getModelSettingsID() + " : " + e.getMessage(), e);
         }
     }
+    
+    /**
+     * @param modelSettings Model settings
+     * @throws ModelServiceException
+     */
+    public void insertModelSettings(String workflowId, ModelSettings modelSettings) throws ModelServiceException {
+        try {
+            if (modelSettings == null) {
+                throw new ModelServiceException("Argument: modelSettings is null");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            dbService.insertModelSettings(modelSettings.getModelSettingsID(),
+                    workflowId, modelSettings.getAlgorithmType(),
+                    modelSettings.getAlgorithmName(), modelSettings.getResponse(),
+                    modelSettings.getTrainDataFraction(), modelSettings.getHyperParameters());
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occurred while inserting model settings for " +
+                    modelSettings.getModelSettingsID() + " : " + e.getMessage(), e);
+        }
+    }
 
     /**
      * This method checks whether model execution is completed or not

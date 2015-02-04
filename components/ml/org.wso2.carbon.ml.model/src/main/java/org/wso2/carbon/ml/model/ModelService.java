@@ -77,6 +77,13 @@ public interface ModelService {
      * @throws ModelServiceException
      */
     public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException;
+    
+    /**
+     * @param workflowId work flow id
+     * @param modelSettings Model settings
+     * @throws ModelServiceException
+     */
+    public void insertModelSettings(String workflowId, ModelSettings modelSettings) throws ModelServiceException;
 
     /**
      * This method checks whether model execution is completed or not

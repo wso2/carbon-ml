@@ -28,6 +28,7 @@ import org.wso2.carbon.ml.commons.domain.HyperParameter;
  */
 public class ModelSettings {
     private String modelSettingsID;
+    @Deprecated
     private String workflowID;
     private String algorithmType;
     private String algorithmName;
