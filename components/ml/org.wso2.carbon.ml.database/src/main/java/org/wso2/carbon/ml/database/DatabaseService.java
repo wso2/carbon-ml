@@ -340,6 +340,19 @@ public interface DatabaseService {
      */
     public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID
             , String workflowName) throws DatabaseHandlerException;
+    
+    /**
+     * Creates a new work-flow.
+     *
+     * @param workflowID           Unique identifier for the new workflow.
+     * @param projectID            Unique identifier for the project for which the workflow is created.
+     * @param datasetID            Unique identifier for the data-set associated with the workflow.
+     * @param workflowName         Name of the project.
+     * @throws                     DatabaseHandlerException
+     */
+    public void createWorkflow(String workflowID, String projectID, String datasetID
+            , String workflowName) throws DatabaseHandlerException;
+
 
     /**
      * Deletes a workflow.

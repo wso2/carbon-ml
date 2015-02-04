@@ -1427,6 +1427,46 @@ public class MLDatabaseService implements DatabaseService{
     }
 
     /**
+     * Creates a new work-flow.
+     *
+     * @param workflowID           Unique identifier for the new workflow.
+     * @param projectID            Unique identifier for the project for which the workflow is created.
+     * @param datasetID            Unique identifier for the data-set associated with the workflow.
+     * @param workflowName         Name of the project.
+     * @throws                     DatabaseHandlerException
+     */
+    public void createWorkflow(String workflowID, String projectID, String datasetID
+            , String workflowName) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement createNewWorkflow = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            createNewWorkflow = connection.prepareStatement(SQLQueries.CREATE_NEW_WORKFLOW);
+            createNewWorkflow.setString(1, workflowID);
+            createNewWorkflow.setString(2, workflowID);
+            createNewWorkflow.setString(3, projectID);
+            createNewWorkflow.setString(4, datasetID);
+            createNewWorkflow.setString(5, workflowName);
+            createNewWorkflow.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully created workflow: " + workflowID);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while creating a new workflow " + workflowID + ": " +
+                    e.getMessage(),e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, createNewWorkflow);
+        }
+    }
+    
+    /**
      * Update the name of a workflow.
      * 
      * @param workflowId    Unique identifier of the workflow.
