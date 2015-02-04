@@ -17,9 +17,7 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.ml</groupId>
@@ -123,6 +121,18 @@
             </activation>
             <build>
                 <plugins>
+		    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+            <preparationGoals>clean install</preparationGoals>
+            <autoVersionSubmodules>false</autoVersionSubmodules>
+        </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -176,9 +186,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.registry</groupId>
                 <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.registry.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -224,9 +234,9 @@
 				<version>${selenium.version}</version>
 			</dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.identity.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- End of dependencies for test framework -->
@@ -476,14 +486,14 @@
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
 	    <dependency>
-	       	<groupId>org.wso2.carbon</groupId>
+	       	<groupId>org.wso2.carbon.identity</groupId>
 		<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
-		<version>${carbon.platform.version}</version>
+		<version>${carbon.identity.version}</version>
 	    </dependency>
 	    <dependency>
-		<groupId>org.wso2.carbon</groupId>
+		<groupId>org.wso2.carbon.identity</groupId>
 		<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
-		<version>${carbon.platform.version}</version>
+		<version>${carbon.identity.version}</version>
 	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
@@ -586,17 +596,26 @@
     </build>
 
     <properties>
+        <project.scm.id>my-scm-server</project.scm.id>
+
         <!-- Product ML version-->
 	<ml.version>1.0.0-SNAPSHOT</ml.version>
 	<ml.exp.pkg.version>1.0.0-SNAPSHOT</ml.exp.pkg.version>
 	<ml.imp.pkg.version>[1.0.0, 1.1.0)</ml.imp.pkg.version>
 
         <carbon.integration.version>4.3.0</carbon.integration.version>
+
+        <carbon.registry.version>4.3.0</carbon.registry.version>
+        <carbon.identity.version>4.3.2</carbon.identity.version>
+        <carbon.deployment.version>4.3.1</carbon.deployment.version>
+        <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>
+        <carbon.commons.version>4.3.4</carbon.commons.version>
+        <carbon.analytics.version>1.0.0</carbon.analytics.version>
+
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <!-- Jaggery dependency versions -->
-        <jaggery.version>0.9.0-SNAPSHOT</jaggery.version>
+        <jaggery.version>0.9.0</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
         <handlebars.feature.version>1.0.0</handlebars.feature.version>
         <markdown.feature.version>1.0.0</markdown.feature.version>
@@ -640,7 +659,7 @@
         <emma.version>2.1.5320</emma.version>
         <!-- Integration Test Dependency versions-->
         <test.framework.version>4.3.1</test.framework.version>
-        <test.framework.util.version>4.3.0-SNAPSHOT</test.framework.util.version>
+        <test.framework.util.version>4.3.1</test.framework.util.version>
         <json.version>2.0.0.wso2v1</json.version>
         <testng.version>6.8.5</testng.version>
         <osgi.core.version>4.2.0</osgi.core.version>
@@ -652,8 +671,6 @@
         <zookeeper.version>3.4.5</zookeeper.version>
         <selenium.version>2.44.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
-	<wss4j.version>1.5.11-wso2v8-SNAPSHOT</wss4j.version>
-        <carbon.analytics.version>1.0.0</carbon.analytics.version>
     </properties>
 
     <organization>
