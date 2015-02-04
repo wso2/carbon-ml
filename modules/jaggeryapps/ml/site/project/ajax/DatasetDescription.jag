@@ -2,10 +2,10 @@
     var log = new Log();
     var mlConfigs=require("/includes/ml.json");
     var carbon = require('carbon');
-    var workflowId = request.getParameter("wfid");
+    //var workflowId = request.getParameter("wfid");
     var projid = request.getParameter("projid");
 
-    if(projid == null || workflowId == null){
+    if(projid == null){
         throw new Error("Either project id or workflow id is null");
     }else{
         try{
@@ -15,7 +15,7 @@
 
             
                 var datasetID = datasetServ.getDatasetId(projid);
-                var features = datasetServ.getFeatures(datasetID, workflowId, start, length);
+                var features = datasetServ.getDefaultFeatures(datasetID, start, length);
                 var numOfFeatures = datasetServ.getFeatureCount(datasetID);
                 var json = {};
                 json['sEcho'] = request.getParameter("sEcho");
@@ -30,10 +30,10 @@
 
                     featureAsJson.push('<span class="feature">' + feature.getFieldName()
                         + '</span>');
-                    featureAsJson.push(checkboxRenderer(feature.isInput()));
-                    featureAsJson.push(listSelectionRenderer(mlConfigs.featureTypes, feature.getType().toString(),"fieldType"));
+                    //featureAsJson.push(checkboxRenderer(feature.isInput()));
+                    featureAsJson.push('<div class="featureType">' + feature.getType() + '</div>');
                     featureAsJson.push('<div class="summaryStatistics">' + feature.getSummaryStats() + "</div>");
-                    featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions, feature.getImputeOperation().toString(), "imputeMethod"));
+                    //featureAsJson.push(listSelectionRenderer(mlConfigs.imputeOptions, feature.getImputeOperation().toString(), "imputeMethod"));
                     pageContentAsJson.push(featureAsJson);
                 }
                 response.contentType = "application/json; charset=utf-8";

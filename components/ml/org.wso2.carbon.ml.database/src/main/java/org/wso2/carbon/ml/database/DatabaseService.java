@@ -150,6 +150,16 @@ public interface DatabaseService {
      */
     public List<FeatureSummary> getFeatures(String datasetID, String workflowID, int startIndex,
         int numberOfFeatures) throws DatabaseHandlerException;
+    
+    
+    /**
+     * This method extracts and retures default features available in a given dataset.
+     * @param datasetId The dataset id associated with this dataset.
+     * @return A list of FeatureSummaries.
+     * @throws DatabaseHandlerException
+     */
+    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
+            throws DatabaseHandlerException;
 
     /**
      * Returns the names of the features, belongs to a particular data-type

@@ -345,7 +345,7 @@
                 }
 
                 var projectId = $(this).data('projid');
-                var projectName = $(this).data('projectName');
+                var projectName = $(this).data('projectname');
 
                 $.ajax({
                     url : '../workflow/ajax/CreateWorkflow.jag',

@@ -572,6 +572,58 @@ public class MLDatabaseService implements DatabaseService{
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
         }
     }
+    
+    /**
+     * This method extracts and retures default features available in a given dataset.
+     * @param datasetId The dataset id associated with this dataset.
+     * @return A list of FeatureSummary.
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
+            throws DatabaseHandlerException {
+        List<FeatureSummary> features = new ArrayList<FeatureSummary>();
+        Connection connection = null;
+        PreparedStatement getDefaultFeatues = null;
+        ResultSet result = null;
+
+        try {
+            connection = dbh.getDataSource().getConnection();
+            getDefaultFeatues = connection.prepareStatement(SQLQueries.GET_DEFAULT_FEATURES);
+            
+            getDefaultFeatues.setString(1, datasetId);
+            getDefaultFeatues.setInt(2, numberOfFeatures);
+            getDefaultFeatues.setInt(3, startIndex);
+            
+            result = getDefaultFeatues.executeQuery();
+
+            while (result.next()) {
+                String featureType = FeatureType.NUMERICAL;
+                if (FeatureType.CATEGORICAL.equalsIgnoreCase(result.getString(3))) {
+                    featureType = FeatureType.CATEGORICAL;
+                }
+                // Set the impute option
+                String imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
+
+                String featureName = result.getString(1);
+
+                // Setting up default include flag
+                boolean isImportantFeature = true;
+
+                String summaryStat = result.getString(2);
+
+                features.add(new FeatureSummary(featureName, isImportantFeature, featureType, imputeOperation,
+                        summaryStat));
+            }
+            return features;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving features of " + "the data set: "
+                    + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatues, result);
+        }
+    }
 
     /**
      * Returns the names of the features, belongs to a particular data-type

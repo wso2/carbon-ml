@@ -302,6 +302,18 @@ public class MLDatasetService implements DatasetService {
             throw new DatasetServiceException("Failed to retrieve features: " + e.getMessage(), e);
         }
     }
+    
+    @Override
+    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
+            throws DatasetServiceException {
+        try {
+            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
+            return dbService.getDefaultFeatures(datasetId, startIndex, numberOfFeatures);
+        } catch (DatabaseHandlerException e) {
+            throw new DatasetServiceException("Failed to retrieve features for dataset Id: " + datasetId
+                    + e.getMessage(), e);
+        }
+    }
 
     /**
      * Returns the names of the features, belongs to a particular data-type

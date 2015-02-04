@@ -119,6 +119,15 @@ public interface DatasetService {
      */
     public List<FeatureSummary> getFeatures(String datasetID, String workflowID, int startIndex,
             int numberOfFeatures) throws DatasetServiceException;
+    
+    /**
+     * 
+     * @param datasetId The dataset id associated with this dataset
+     * @return A list of FeatureSummaries
+     * @throws DatasetServiceException
+     */
+    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
+            throws DatasetServiceException;
 
     /**
      * Returns the names of the features, belongs to a particular data-type
