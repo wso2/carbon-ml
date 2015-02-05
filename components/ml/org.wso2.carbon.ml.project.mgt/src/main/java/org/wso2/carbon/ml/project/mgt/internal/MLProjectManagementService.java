@@ -159,7 +159,6 @@ public class MLProjectManagementService implements ProjectManagementService{
             String datasetID = getdatasetID(projectID);
             dbService.createNewWorkflow(workflowID, parentWorkflowID, projectID, datasetID,
                                         workflowName);
-            dbService.setDefaultFeatureSettings(datasetID, workflowID);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the workflow: " + e.getMessage(), e);
             throw new ProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
