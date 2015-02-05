@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,24 +21,24 @@ package org.wso2.carbon.ml.project.mgt;
 import java.util.List;
 
 import org.wso2.carbon.ml.project.mgt.dto.Project;
-import org.wso2.carbon.ml.project.mgt.exceptions.MLProjectManagementServiceException;
+import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
 
 /**
  * Class contains services related to project and workflow management
  */
 public interface ProjectManagementService {
 	
-	/**
-	 * Creates a new project.
-	 *
-	 * @param projectID        Unique identifier of the project.
-	 * @param projectName      Name of the project.
-	 * @param description      Description of the project.
-	 * @throws                 MLProjectManagementServiceException
-	 */
-    @Deprecated
-	public void createProject(String projectID, String projectName, String description)
-			throws MLProjectManagementServiceException;
+//	/**
+//	 * Creates a new project.
+//	 *
+//	 * @param projectID        Unique identifier of the project.
+//	 * @param projectName      Name of the project.
+//	 * @param description      Description of the project.
+//	 * @throws                 ProjectManagementServiceException
+//	 */
+//    @Deprecated
+//	public void createProject(String projectID, String projectName, String description)
+//			throws ProjectManagementServiceException;
     
     /**
      * Creates a new project.
@@ -46,45 +46,49 @@ public interface ProjectManagementService {
      * @param projectName      Name of the project.
      * @param description      Description of the project.
      * @return project id.
-     * @throws                 MLProjectManagementServiceException
+     * @throws                 ProjectManagementServiceException
      */
+    @Deprecated
     public String createProject(String projectName, String description)
-            throws MLProjectManagementServiceException;
+            throws ProjectManagementServiceException;
+    
+    /**
+     * Creates a new project.
+     *
+     * @param projectName      Name of the project.
+     * @param description      Description of the project.
+     * @param datasetUri       Data-set URI
+     * @return project id.
+     * @throws                 ProjectManagementServiceException
+     */
+    public String createProject(String projectName, String description, String datasetUri)
+            throws ProjectManagementServiceException;
 	
 	/**
 	 * Delete details of a given project.
 	 *
 	 * @param projectId    Unique identifier of the project
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
-	public void deleteProject(String projectId) throws MLProjectManagementServiceException;
-	
-	/**
-     * Retrieve details of a given project.
-     *
-     * @param projectId    Unique identifier of the project
-	 * @return 
-     * @throws             MLProjectManagementServiceException
-     */
-    public String[] getProject(String projectId) throws MLProjectManagementServiceException;
+	public void deleteProject(String projectId) throws ProjectManagementServiceException;
 
 	/**
 	 * Get the project names and created dates, that a tenant is assigned to.
 	 *
 	 * @param tenantID     Unique identifier of the tenant
 	 * @return             An array of project ID, Name and the created date of the projects associated with a given tenant
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
-	public String[][] getTenantProjects(String tenantID) throws MLProjectManagementServiceException;
+	public String[][] getTenantProjects(String tenantID) throws ProjectManagementServiceException;
 
 	/**
 	 * Returns the ID of the data-set associated with the project.
 	 *
 	 * @param projectId    Unique identifier of the project
 	 * @return             Unique identifier of the data-set associated with the project
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
-	public String getdatasetID(String projectId) throws MLProjectManagementServiceException;
+	public String getdatasetID(String projectId) throws ProjectManagementServiceException;
 
 	/**
 	 * Create a new machine learning workflow.
@@ -93,11 +97,11 @@ public interface ProjectManagementService {
 	 * @param parentWorkflowID     Unique identifier for the workflow from which the current workflow is inherited from.
 	 * @param projectID            Unique identifier for the project for which the workflow is created.
 	 * @param workflowName         Name of the project
-	 * @throws                     MLProjectManagementServiceException
+	 * @throws                     ProjectManagementServiceException
 	 */
 	@Deprecated
 	public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
-	                              String workflowName) throws MLProjectManagementServiceException;
+	                              String workflowName) throws ProjectManagementServiceException;
 	
 	/**
      * Create a new machine learning work-flow and set the default settings.
@@ -105,38 +109,38 @@ public interface ProjectManagementService {
      * @param projectID            Unique identifier for the project for which the work-flow is created.
      * @param workflowName         Name of the work-flow
      * @return work-flow id
-     * @throws                     MLProjectManagementServiceException
+     * @throws                     ProjectManagementServiceException
      */
 	public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) 
-	        throws MLProjectManagementServiceException;
+	        throws ProjectManagementServiceException;
 
 	/**
 	 * This method update the workflow name associated with given workflowID
 	 * 
 	 * @param workflowID   Unique Identifier of this workflow
 	 * @param name         Updated name of the workflow
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
 	public void updateWorkflowName(String workflowID, String name)
-			                        throws MLProjectManagementServiceException;
+			                        throws ProjectManagementServiceException;
 
 	/**
 	 * Delete an existing workflow.
 	 *
 	 * @param workflowID   Unique identifier of the workflow to be deleted
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
-	public void deleteWorkflow(String workflowID) throws MLProjectManagementServiceException;
+	public void deleteWorkflow(String workflowID) throws ProjectManagementServiceException;
 
 	/**
 	 * Get the array of workflows in a project.
 	 *
 	 * @param projectId    Unique identifier for the project for which the wokflows are needed.
 	 * @return             An array of workflow ID's and Names
-	 * @throws             MLProjectManagementServiceException
+	 * @throws             ProjectManagementServiceException
 	 */
 	public String[][] getProjectWorkflows(String projectId)
-			throws MLProjectManagementServiceException;
+			throws ProjectManagementServiceException;
 
 	/**
 	 * Set the default values for feature properties, of a given workflow.
@@ -146,36 +150,34 @@ public interface ProjectManagementService {
 	 * @throws             DatasetServiceException
 	 */
 	public void setDefaultFeatureSettings(String projectID, String workflowID)
-			throws MLProjectManagementServiceException;
+			throws ProjectManagementServiceException;
 
 	/**
 	 * Get all the project associated with a tenant.
 	 * 
 	 * @param tenantId     Unique identifier of the tenant.
-	 * @return             List of projects.
-	 * @throws             MLProjectManagementServiceException
+	 * @return             List of procets.
+	 * @throws             ProjectManagementServiceException
 	 */
-	public List<Project> getAllProjects(String tenantId) throws MLProjectManagementServiceException;
+	public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException;
 
 	/**
-	 * Send email notification indicating model build has been successfully completed.
-	 * 
-	 * @param emailAddress             Email address to sent the mail.
-	 * @param emailTemplateParameters  Array of values for the parameters defined in the email template, in the exact 
-	 *                                 order. Email templates are defined in repository/conf/email/ml-email-templates.xml file.
-	 * @throws                         MLProjectManagementServiceException.
-	 */
-	public void sendModelBuildingCompleteNotification(String emailAddress, String[] emailTemplateParameters) 
-            throws MLProjectManagementServiceException;
+     * Send email notification indicating model build has been successfully completed.
+     * 
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
+     */
+	public void sendModelBuildingCompleteNotification(String userName, String emailAddress, String redirectUrl) 
+            throws ProjectManagementServiceException;
 
-	/**
-	 * Send email notification indicating model build has been failed.
-	 * 
-	 * @param emailAddress             Email address to sent the mail.
-	 * @param emailTemplateParameters  Array of values for the parameters defined in the email template, in the exact
-	 *                                 order. Email templates are defined in repository/conf/email/ml-email-templates.xml file.
-	 * @throws                         MLProjectManagementServiceException
-	 */
-	public void sendModelBuildingFailedNotification(String emailAddress, String[] emailTemplateParameters)
-            throws MLProjectManagementServiceException;
+    /**
+     * Send email notification indicating model build has been failed.
+     * 
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
+     */
+	public void sendModelBuildingFailedNotification(String userName, String emailAddress, String redirectUrl)
+            throws ProjectManagementServiceException;
 }

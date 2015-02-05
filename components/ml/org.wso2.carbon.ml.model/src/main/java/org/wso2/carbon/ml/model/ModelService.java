@@ -68,6 +68,13 @@ public interface ModelService {
      * @throws              ModelServiceException
      */
     public void buildModel(String modelID, String workflowID) throws ModelServiceException;
+    
+    /**
+     * @param workflowID Workflow ID
+     * @return model id.
+     * @throws ModelServiceException
+     */
+    public String buildModel(String workflowID) throws ModelServiceException;
 
     /**
      * Retrieve a summary of a built model.

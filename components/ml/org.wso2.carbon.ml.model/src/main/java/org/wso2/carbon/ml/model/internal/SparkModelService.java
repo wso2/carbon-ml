@@ -230,6 +230,7 @@ public class SparkModelService implements ModelService {
      * @param workflowID    Workflow ID
      * @throws              ModelServiceException
      */
+    @Deprecated
     public void buildModel(String modelID, String workflowID) throws ModelServiceException {
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the
@@ -256,6 +257,48 @@ public class SparkModelService implements ModelService {
                 UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
                 unsupervisedModel.buildModel(modelID, workflow, sparkConf);
             }
+        } catch (DatabaseHandlerException e) {
+            throw new ModelServiceException("An error occurred while saving model to database: " + e.getMessage(), e);
+        } finally {
+            // switch class loader back to thread context class loader
+            Thread.currentThread().setContextClassLoader(tccl);
+        }
+    }
+    
+    /**
+     * @param workflowID Workflow ID
+     * @return model id.
+     * @throws ModelServiceException
+     */
+    public String buildModel(String workflowID) throws ModelServiceException {
+        /**
+         * Spark looks for various configuration files using thread context class loader. Therefore, the
+         * class loader needs to be switched temporarily.
+         */
+        String modelID = workflowID;
+        // assign current thread context class loader to a variable
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        try {
+            // class loader is switched to JavaSparkContext.class's class loader
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            if (modelID == null || modelID.length() == 0) {
+                throw new ModelServiceException("Argument: modelID is either null or empty");
+            }
+            if (workflowID == null || workflowID.length() == 0) {
+                throw new ModelServiceException("Argument: workflowID is either null or empty");
+            }
+            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+            Workflow workflow = dbService.getWorkflow(workflowID);
+            String algorithmType = workflow.getAlgorithmClass();
+            if (CLASSIFICATION.equals(algorithmType) || NUMERICAL_PREDICTION.equals(
+                    algorithmType)) {
+                SupervisedModel supervisedModel = new SupervisedModel();
+                supervisedModel.buildModel(modelID, workflow, sparkConf);
+            } else if (CLUSTERING.equals((algorithmType))) {
+                UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
+                unsupervisedModel.buildModel(modelID, workflow, sparkConf);
+            }
+            return modelID;
         } catch (DatabaseHandlerException e) {
             throw new ModelServiceException("An error occurred while saving model to database: " + e.getMessage(), e);
         } finally {
