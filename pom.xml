@@ -498,32 +498,32 @@
 
             <!-- Dependencies on WSO2 Carbon ML components -->
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.model</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.dataset</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.database</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.decomposition</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
                 <version>${ml.version}</version>
             </dependency>
 	    <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.ml</groupId>
                 <artifactId>org.wso2.carbon.ml.commons</artifactId>
                 <version>${ml.version}</version>
             </dependency>

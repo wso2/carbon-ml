@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>ml-features</artifactId>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.ml</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -31,37 +31,37 @@
     <name>WSO2 Carbon Machine Learner</name>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.commons.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.dataset.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.model.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.project.mgt.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.database.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.decomposition.feature</artifactId>
             <version>${ml.version}</version>
             <type>zip</type>
@@ -90,12 +90,12 @@
                                 </properties>
                             </adviceFile>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.commons.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.dataset.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.model.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.project.mgt.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.database.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.decomposition.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.commons.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.dataset.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.model.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.project.mgt.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.database.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.decomposition.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

@@ -27,7 +27,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon</groupId>
+    <groupId>org.wso2.carbon.ml</groupId>
     <artifactId>ml-components</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Machine Learner Components</name>
