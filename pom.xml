@@ -456,7 +456,7 @@
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
             </dependency>
-	    <dependency>
+	    	<dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.utils</artifactId>
                 <version>${carbon.kernel.version}</version>
@@ -487,16 +487,16 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
-	    <dependency>
-	       	<groupId>org.wso2.carbon.identity</groupId>
-		<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
-		<version>${carbon.identity.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.wso2.carbon.identity</groupId>
-		<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
-		<version>${carbon.identity.version}</version>
-	    </dependency>
+	    	<dependency>
+		       	<groupId>org.wso2.carbon.identity</groupId>
+				<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
+				<version>${carbon.identity.version}</version>
+		    </dependency>
+		    <dependency>
+				<groupId>org.wso2.carbon.identity</groupId>
+				<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
+				<version>${carbon.identity.version}</version>
+		    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
             <dependency>
@@ -524,13 +524,29 @@
                 <artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
                 <version>${ml.version}</version>
             </dependency>
-	    <dependency>
+	    	<dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.commons</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
+			<!-- Dependencies on WSO2 for Axis2 mail Transporter -->
+            <dependency>
+	        	<groupId>org.apache.axis2</groupId>
+	        	<artifactId>axis2-transport-mail</artifactId>
+	        	<version>${axis2.transport.mail.version}</version>
+	        </dependency>
+	      	<dependency>
+	        	<groupId>org.apache.axis2</groupId>
+	        	<artifactId>axis2-transport-base</artifactId>
+	        	<version>${axis2.transport.base.version}</version>
+	      	</dependency>
+	      	<dependency>
+	        	<groupId>org.apache.axis2</groupId>
+	        	<artifactId>axis2</artifactId>
+	        	<version>${axis2.version}</version>
+	      	</dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -673,6 +689,9 @@
         <zookeeper.version>3.4.5</zookeeper.version>
         <selenium.version>2.44.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
+        <axis2.transport.mail.version>1.0.0</axis2.transport.mail.version>
+        <axis2.transport.base.version>1.0.0</axis2.transport.base.version>
+        <axis2.version>1.6.2</axis2.version>
     </properties>
 
     <organization>

@@ -24,6 +24,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
+import org.wso2.carbon.ml.project.mgt.constant.ProjectMgtConstants;
 import org.wso2.carbon.ml.project.mgt.dto.Project;
 import org.wso2.carbon.ml.project.mgt.dto.Workflow;
 import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
@@ -34,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Class contains services related to project and work-flow management
@@ -318,28 +318,32 @@ public class MLProjectManagementService implements ProjectManagementService{
     }
 	
 	/**
-     * Send an email notification.
+     * Send email notification indicating model build has been successfully completed.
      * 
-     * @param operation
-     * @param username
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
      */
-	@Override
-    public void sendNotification(String operation, String username) {
-       /* NotificationSender notificationSender = MLProjectManagementServiceValueHolder.getNotificationSender();
-        if (notificationSender != null) {
-            try {
-                PublisherEvent event = new PublisherEvent("userOperation");
-                event.addEventProperty("username", username);
-                event.addEventProperty("operation", NotificationConstants.EVENT_TYPE_PROFILE_UPDATE);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Invoking notification sender");
-                }
-                notificationSender.invoke(event);
-            } catch (Exception e) {
-                logger.error("Error while sending notifications on user operations", e);
-            }
-        } else {
-            logger.error("No registered notification sender found. Notification sending aborted");
-        }*/
+    @Override
+    public void sendModelBuildingCompleteNotification(String userName, String emailAddress, String redirectUrl) 
+            throws ProjectManagementServiceException {
+        EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
+        emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_COMPLETE_NOTIFICATION, userName, emailAddress,
+            redirectUrl);
+    }
+    
+    /**
+     * Send email notification indicating model build has been failed.
+     * 
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
+     */
+    @Override
+    public void sendModelBuildingFailedNotification(String userName, String emailAddress, String redirectUrl) 
+            throws ProjectManagementServiceException {
+        EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
+        emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_FAILED_NOTIFICATION, userName, emailAddress,
+            redirectUrl);
     }
 }

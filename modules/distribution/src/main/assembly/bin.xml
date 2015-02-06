@@ -267,5 +267,9 @@
             <outputDirectory>wso2ml-${pom.version}/repository/database</outputDirectory>
             <fileMode>666</fileMode>
         </file>
+	<file>
+            <source>src/main/conf/etc/ml-email-config.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/email/</outputDirectory>
+        </file>
     </files>
 </assembly>
