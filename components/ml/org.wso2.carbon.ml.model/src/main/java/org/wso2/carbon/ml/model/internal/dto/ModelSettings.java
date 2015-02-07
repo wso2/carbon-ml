@@ -33,6 +33,7 @@ public class ModelSettings {
     private String algorithmType;
     private String algorithmName;
     private String response;
+    //TODO: why we need dataset url here?
     private String datasetURL;
     private double trainDataFraction;
     private List<HyperParameter> hyperParameters;
