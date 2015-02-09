@@ -359,8 +359,9 @@ public class MLProjectManagementService implements ProjectManagementService{
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             return dbService.getProject(projectId);
         } catch (DatabaseHandlerException e) {
-            logger.error("Failed to delete the project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to delete the project: " + e.getMessage(),e);
+            logger.error("Failed to retrieve the project: " + projectId + " : " + e.getMessage(), e);
+            throw new ProjectManagementServiceException("Failed to retrieve the project: "  + projectId + " : " 
+                    + e.getMessage(),e);
         }
     }
 }
