@@ -51,6 +51,7 @@ public class EmailNotificationSender {
 
     private static final Log logger = LogFactory.getLog(EmailNotificationSender.class);
     private static final Pattern firstName = Pattern.compile(ProjectMgtConstants.USER_FIRST_NAME);
+    
     /**
      * Send the email of given type, to the given email address.
      * 
@@ -90,16 +91,16 @@ public class EmailNotificationSender {
             serviceClient.fireAndForget(payload);
             logger.info("Sending notification mail to " + emailAddress);
         } catch (AxisFault e) {
-            throw new ProjectManagementServiceException("An error occured while sending the email: " 
-                    + e.getMessage(), e);
+            throw new ProjectManagementServiceException("An error occured while sending the email: " + e.getMessage(),
+                e);
         } catch (ProjectManagementServiceException e) {
-            throw new ProjectManagementServiceException("An error occured while sending the email: "
+            throw new ProjectManagementServiceException("An error occured while retrieving email template: "
                     + e.getMessage(), e);
         }
     }
     
     /**
-     * Get the template of the given email type
+     * Get the template of the given email type from ml-email-config.xml file
      * 
      * @param type  Type of the email
      * @return      Template of the given email type

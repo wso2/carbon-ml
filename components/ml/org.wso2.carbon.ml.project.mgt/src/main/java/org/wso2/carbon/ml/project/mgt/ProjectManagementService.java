@@ -58,6 +58,15 @@ public interface ProjectManagementService {
 	 * @throws             ProjectManagementServiceException
 	 */
 	public void deleteProject(String projectId) throws ProjectManagementServiceException;
+	
+	/**
+     * Retrieve details of a given project.
+     *
+     * @param projectId    Unique identifier of the project
+	 * @return 
+     * @throws             ProjectManagementServiceException
+     */
+    public String[] getProject(String projectId) throws ProjectManagementServiceException;
 
 	/**
 	 * Get the project names and created dates, that a tenant is assigned to.
