@@ -1699,13 +1699,13 @@ public class MLDatabaseService implements DatabaseService{
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectId + ": " + 
+            throw new DatabaseHandlerException("Error occurred while retrieving the project: " + projectId + ": " + 
                     e.getMessage(),e);
         } finally {
             // enable auto commit
             MLDatabaseUtils.enableAutoCommit(connection);
             // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, deleteProjectStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, deleteProjectStatement, result);
         }
     }
 }
