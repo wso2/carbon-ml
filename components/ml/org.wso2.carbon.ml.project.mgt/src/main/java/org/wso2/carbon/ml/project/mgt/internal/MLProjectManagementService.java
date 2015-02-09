@@ -346,4 +346,22 @@ public class MLProjectManagementService implements ProjectManagementService{
         emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_FAILED_NOTIFICATION, userName, emailAddress,
             redirectUrl);
     }
+
+    /**
+     * Retrieve details of a given project.
+     *
+     * @param projectId    Unique identifier of the project
+     * @throws             ProjectManagementServiceException
+     */
+    @Override
+    public String[] getProject(String projectId) throws ProjectManagementServiceException {
+        try {
+            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
+            return dbService.getProject(projectId);
+        } catch (DatabaseHandlerException e) {
+            logger.error("Failed to retrieve the project: " + projectId + " : " + e.getMessage(), e);
+            throw new ProjectManagementServiceException("Failed to retrieve the project: "  + projectId + " : " 
+                    + e.getMessage(),e);
+        }
+    }
 }
