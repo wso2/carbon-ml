@@ -191,7 +191,7 @@ $( document ).ready(function() {
 
     $('.btn-prev').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../exprore/exprore.jag?projid='+projid+'&projna='+projna+
+        window.location.href = '../explore/explore.jag?projid='+projid+'&projna='+projna+
             '&wfid='+wfid+'&wfname='+wfname;        
     });
 

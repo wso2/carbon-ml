@@ -4,8 +4,7 @@
     var uuid = require('uuid');
 
     var datasetServ = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');    
-    var wfid = request.getParameter('wfid');
-    log.info(wfid);
+    var wfid = request.getParameter('wfid');    
 
     response.contentType = 'application/json';
 
@@ -16,8 +15,6 @@
         for( var i=0; i<featues.size(); i++) {
             allFeatues.push(featues.get(i));
         } 
-        log.info('len: '+ allFeatues);                      
-        
         response.status = 200;
         response.content = { names : allFeatues };        
         

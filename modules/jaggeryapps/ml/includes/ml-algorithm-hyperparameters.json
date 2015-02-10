@@ -91,5 +91,77 @@
                                 ]
                   }
             ]
+      },
+      "lr": {
+            "displayName": "Linear Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
+      },
+      "rr": {
+            "displayName": "Ridge Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
+      },
+      "lsor": {
+            "displayName": "Lasso Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization Type",
+                        "type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
       }
 }

@@ -94,13 +94,13 @@
 				    <select class="response-var"></select>
 				    <span class="form-val-error" id="workflow-name-error"></span>
 				</div>
-			</div>
+			
 
 			<div class="spcr-2"></div>		
 
 				<h4 class="h-option-head">
 					<label class="radio-inline">
-					  <input type="radio" name="inlineRadioOptions" id="algo-help-radio" value="option3"><span>Help us assist you selecting an OPTIMAL algorithm</span>
+					  <input type="radio" name="algoPick" id="algo-help-radio" value="option3"><span>Help us assist you selecting an OPTIMAL algorithm</span>
 					</label>
 				</h4>
 				<div id='algo-help'>
@@ -141,12 +141,12 @@
 
 				<h4 class="h-option-head">
 					<label class="radio-inline">
-					  <input type="radio" name="inlineRadioOptions" id="algo-select-radio" value="option3"><span>Or, select an Algorithm from the list</span>
+					  <input type="radio" name="algoPick" id="algo-select-radio" value="option3"><span>Or, select an Algorithm from the list</span>
 					</label>
 				</h4>
 				
 				<div class="spcr-2"></div>
-
+            </div>
 		</div>
 		<!-- /content -->
 
@@ -208,8 +208,24 @@ $( document ).ready(function() {
 
     $('.btn-next').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+
-            '&wfid='+wfid+'&wfname='+wfname;
+        
+        var feature = $('.response-var :selected').text();
+        var isDefaultAlgo = $('#algo-select-radio').is(':checked')
+
+        $.ajax({
+            url: './ajax/GetFeatureType.jag',
+            type: 'post',
+            data: { wfid: wfid, featureName: feature},
+            success: function(res){
+            	window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+
+               '&wfid='+wfid+'&wfname='+wfname+'&algocat='+getAlgorithmCategory(res.type)+'&idalgo='+isDefaultAlgo;
+            },
+            error: function(res){ //TODO: error handling....
+                console.log(res);	
+            }  
+        });
+
+        
     });
 	
 /*	$('#btn-next').on('click', function(){    
@@ -247,7 +263,15 @@ $( document ).ready(function() {
 	    }
 	    return true;
     }*/    
-}); 
+});
+
+function getAlgorithmCategory(responseVarType) {
+	if( responseVarType === 'CATEGORICAL'){
+		return 'Classification';
+	} else {
+		return 'Numerical_Prediction';
+	}
+} 
 
 </script>
 

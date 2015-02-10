@@ -56,7 +56,7 @@
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
 			<a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
-			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Build</a>
 		</div>
 	</div>
 </div>
@@ -69,11 +69,12 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-	        <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
-	        <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-	    </ul>	
+            <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Questions</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
+        </ul>
 	</div>
 </div>
 
@@ -88,112 +89,25 @@
 			<div class="wr-form col-lg-5 col-centered">
 
 				<h1 class="title">Algorithm</h1>
-
-
-				<label class="input-label">Algorithm type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-					<select class="form-control" id="algo-category">
-					  <option>Numerical Prediction</option>
-					  <option>Classification</option>
-					  <!--option>Clustering</option-->
-					</select>
-				</div>			
-
-				<div class="spcr-2"></div>		
-
-				<h4 class="h-option-head">
-					<label class="radio-inline">
-					  <input type="radio" name="inlineRadioOptions" id="algo-help-radio" value="option3"><span>Help us assist you selecting an OPTIMAL algorithm</span>
-					</label>
-				</h4>
-				<div id='algo-help'>
-				    <p>Select options from below selections and click NEXT button to see suggested optimal algorithms</p>
-
-				    <div class="spcr-2"></div>
-
-				    <label class="input-label">How important is the interpretability of the model?<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				    
-				    <div class="input-control text">
-					    <select class="form-control">
-					        <option>Very important</option>
-					        <option>Somewhat important</option>
-					        <option>Not important</option>
-					    </select>
-				        <!--span class="form-val-error">* Please select an option.</span-->
-				    </div>
-
-				    <label class="input-label">How big is your dataset?<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				    <div class="input-control text">
-					    <select class="form-control">
-					        <option>Less than 10,000 instances</option>
-					        <option>Between 10,000 - 100,000 instances</option>
-					        <option>More than 100,000 instances</option>
-					    </select>
-				    </div>	
-
-				    <label class="input-label">Is this a textual dataset?<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				    <div class="input-control file info-state" data-role="input-control">
-					    <select class="form-control">
-					        <option>Yes</option>
-					        <option>No</option>
-					    </select>
-	                </div>
-                </div>
-	            <!-- -->
-	            <div class="spcr-2"></div>
-
-				<h4 class="h-option-head">
-					<label class="radio-inline">
-					  <input type="radio" name="inlineRadioOptions" id="algo-select-radio" value="option3"><span>Or, select an Algorithm from the below list</span>
-					</label>
-				</h4>
 				
-				<div class="spcr-2"></div>
-                
-	                <div id="prediction-algo">
-	                    <p>Select an algorithm from below list and click NEXT button to set parameters for the selected algorithm</p>
-	                    <div class="radio">
-						    <label>
-						    <input type="radio" name="algo" id="optionsRadios1" value="option1" checked>
-						    Linear Regression
-						    </label>
-					    </div>						
-                	</div>
+				<div class="spcr-2"></div>       
 
-                	<div id="classification-algo">
-                	    <p>Select an algorithm from below list and click NEXT button to set parameters for the selected algorithm</p>
-		                <div class="radio">
-						  <label>
-						    <input type="radio" name="algo" id="optionsRadios1" value="lgreg" checked>
-						    Logistic Regression
-						  </label>
-						</div>
-						<div class="radio">
-						  <label>
-						    <input type="radio" name="algo" id="optionsRadios2" value="svm">
-						    Support Vector Machine
-						  </label>
-						</div>
-						<div class="radio">
-						  <label>
-						    <input type="radio" name="algo" id="optionsRadios3" value="nb">
-						    Naive Bayes
-						  </label>
-						</div>
-						<div class="radio">
-						  <label>
-						    <input type="radio" name="algo" id="optionsRadios3" value="dt">
-						    Decision Tree
-						  </label>
-						</div>
-                	</div>
+                <div id="classification-algo">
+                	<p>Select an algorithm from below list</p>		              
+                </div>
+
+                <div class="hyper-parameters">
+                </div>
+			</div>
+			
+				
 			</div>
 
 		</div>
-		<!-- /content -->
+			<!-- /content -->
 
 
-	</div>
+
 </div>
 <!-- /content/body -->
 
@@ -225,38 +139,53 @@ $( document ).ready(function() {
 	      }
 	});
 
-	$('#algo-help').hide();
+	/*$('#algo-help').hide();
     $('#prediction-algo').hide();
-    $('#classification-algo').hide();
+    $('#classification-algo').hide();*/
 
     var projid = getParameterByName('projid');
-    var projna = getParameterByName('projna');
-    //var datid = getParameterByName('datid');
-    //var datname = getParameterByName('datname');
+    var projna = getParameterByName('projna');    
     var wfid = getParameterByName('wfid');
-    var wfname = getParameterByName('wfname');    
+    var wfname = getParameterByName('wfname');
+
+    var algocat = getParameterByName('algocat');
+    var idalgo = getParameterByName('idalgo');    
 
     $('#title').text(projna);
 
+    if(idalgo) { // default algorithms
+        $.ajax({
+        	url: './ajax/GetAlgorithmsByType.jag',
+        	method: 'post',
+        	data: {algocat: algocat},
+        	success: function(res){
+        		var algos = res.names;
+        		for(var i=0; i<algos.length; i++) {
+        		    $('#classification-algo').append(buildAlgorithmUx(algos[i]));
+        		}
+        		bindEvents();        		
+        	},
+        	error: function(res){ //TODO: error messages
+        	    console.log(res);	
+        	}
+        });
+    } else { // recomended algorithms
+        
+    }
+
     $('#btn-prev').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../data/data.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
+        window.location.href = '../questions/questions.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
     });
 
     $('#btn-next').on('click', function(e){
-    	e.preventDefault();
-		var algoCategory = $('#algo-category').val();
-		if (algoCategory === 'Classification') { //TODO: move to common constant file?
-			algoCategory = 'CATEGORICAL';
-		} else {
-			algoCategory = 'NUMERICAL';
-		}
+    	e.preventDefault();    	
+        window.location.href = '../build/build.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname+'&algocat='+algocat;
+    }); 
 
-    	var selectedAlgo = $('input[name=algo]:checked').val();
-        window.location.href = '../parameters/parameters.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname+'&algo='+selectedAlgo+'&algocat='+algoCategory;
-    });    
 
-    $('#algo-help-radio').on('click', function(){
+
+   /* $('#algo-help-radio').on('click', function(){
         $('#algo-help').show();
         $('#prediction-algo').hide();
         $('#classification-algo').hide();
@@ -271,7 +200,7 @@ $( document ).ready(function() {
 
     $('#algo-category').on('change', function(e){
         var algoCategory = $('#algo-category').val();
-        /*$.ajax({
+        $.ajax({
             url: './ajax/GetAlgorithms.jag',
             method: 'post',
             data: {algocat: algoCategory},
@@ -281,7 +210,7 @@ $( document ).ready(function() {
             error: function(res){
             	console.log(res);
             }
-        });*/
+        });
         
         if($('#algo-help-radio').is(":checked")){
         	$('#algo-help').show();
@@ -291,12 +220,12 @@ $( document ).ready(function() {
 
         if($('#algo-select-radio').is(":checked")){
             showAlgoriths(algoCategory);	
-        }    
+        }*/    
         
-    });
+    //});
 }); 
 
-	function showAlgoriths(type){
+/*	function showAlgoriths(type){
 		if(type == 'Numerical Prediction'){
 	        $('#prediction-algo').show();
 	        $('#classification-algo').hide();
@@ -304,7 +233,111 @@ $( document ).ready(function() {
 	        $('#prediction-algo').hide();
 	        $('#classification-algo').show();
 	    } 
+	}*/
+function buildAlgorithmUx(algoName){
+	var ux = '<div class="radio">' +
+			 '<label>' +
+			 '<input type="radio" name="algo" class="algo-pick" value="' + getShortName(algoName) + '">' +
+		     algoName +
+			 '</label>' +
+			 '</div>';
+	return ux;
+}
+
+function getShortName(algorithm){
+    if(algorithm == 'Logistic Regression') {
+    	return 'lgreg';
+    }
+
+    if(algorithm == 'Support Vector Machine') {
+        return 'svm';
+    }
+
+    if(algorithm == 'Naive Bayes') {
+    	return 'nb';
+    }
+
+    if(algorithm == 'Decision Tree') {
+    	return 'dt';
+    }
+
+    if (algorithm == 'Linear Regression'){
+    	return 'lr';
+    }
+
+    if (algorithm == 'Ridge Regression'){
+    	return 'rr';
+    }
+
+    if (algorithm == 'Lasso Regression'){
+    	return 'lsor';
+    }   
+}
+
+function bindEvents() {
+	$('.algo-pick').on('click', function(e){
+		var name = $(this).val();
+        $.ajax({
+    	    url: '../parameters/ajax/GetParameters.jag',
+    	    method: 'post',
+    	    data: {algorithm: name},
+    	    success: function(res){
+                $('.hyper-parameters').html(buildHyperparametersUI(res.parameters));
+    	    },
+    	    error: function(res){
+                console.log(res);
+    	    }
+
+        });
+	});    
+}
+
+function buildHyperparametersUI(parameters){
+	
+	// update algorith's display name
+	var algoDisplayName = parameters.displayName;   
+    
+    var allHyperparameters = '<p>' + algoDisplayName + '</p>';
+    var hyperParameters = parameters.hyperParameters;
+    for(var i=0; i < hyperParameters.length; i++){
+    	if (typeof(hyperParameters[i].type) == 'object') {
+    		allHyperparameters += buildDropdown(hyperParameters[i]);
+    	} else {
+    		allHyperparameters += buildInputbox(hyperParameters[i]); 
+    	}
+    }
+    return allHyperparameters;     
+}
+
+function buildInputbox(parameter){
+    
+    var type = parameter.type;
+    
+    var label = buildLabel(parameter.name);
+    
+    var controller = '<div class="input-control text">' +
+                     '<input class="hyper-'+type+'"'+'type="text" value="" placeholder="input text"/>'+
+				     '<span class="form-val-error" id="file-upload-error"></span>' +
+				     '</div>';
+	return label + controller;
+}
+
+function buildDropdown(parameter){
+	var label = buildLabel(parameter.name);
+	var controller = '<div class="input-control text"> <select>'
+	for(var i=0; i<parameter.type.length; i++){
+        var type = parameter.type[i];
+        controller += '<option value="'+type.name+'">'+type.name+'</option>';
 	}
+	controller += '</select></div>';
+	
+	return label+controller;
+}
+
+function buildLabel(label){	
+	return '<label class="input-label">' + label + '<span class="help-tip glyphicon glyphicon-question-sign">'+
+           '</span></label>';}
+
 	
 </script>
 

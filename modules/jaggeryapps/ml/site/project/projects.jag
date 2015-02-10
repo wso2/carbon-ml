@@ -138,11 +138,9 @@
                 data: {
                     'projectID': projectID
                 },
-                success: function(res) {
-
-                    //TODO: error message
+                success: function(res) {                    
                 },
-                error: function(res) {
+                error: function(res) { //TODO: display error
                     var message = "An error occurred while retrieving tenant projects.";
                 }
             });
@@ -293,7 +291,9 @@
                                                                     '</td>' +
                                                                     '<td>' +
                                                                         '<a href="#" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model"><span>View</span></a>' +
-                                                                        '<a href="#" class="cu-level2-btn btn-configure-dark">Configure</a>' +
+                                                                        '<a href="#" class="cu-level2-btn btn-configure-dark" data-workflowId="'+wfid+'" ' + 
+                                                                        'data-projId="' + projid + '"' +
+                                                                        'data-projectName="' + projna + '">Configure</a>' +
                                                                         '<a class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+wfid+'">Delete</a>' +
                                                                     '</td>' +
                                                                 '</tr>';
@@ -325,9 +325,17 @@
         }
 
         function bindEvents() {
+            
+            $('.btn-configure-dark').on('click', function(e) {
+                e.preventDefault();
+                
+                var projectId = $(this).data('projid');
+                var workflowid = $(this).data('workflowid');
+                var projectName = $(this).data('projectname');
 
-            //$( "#create-analysis" ).unbind();
-
+                window.location.href = '../explore/explore.jag?projid='+projectId+'&projna='+projectName+'&wfid='+workflowid;
+            });
+            
             $('.create-analysis').on('click', function(e){
                 e.preventDefault();
                                 
