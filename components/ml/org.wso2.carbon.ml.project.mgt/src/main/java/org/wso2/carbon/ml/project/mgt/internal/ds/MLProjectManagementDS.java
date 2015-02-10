@@ -24,6 +24,7 @@ import org.osgi.service.http.HttpService;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
 import org.wso2.carbon.ml.project.mgt.internal.MLProjectManagementService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * ML Project Management Service component.
@@ -33,6 +34,9 @@ import org.wso2.carbon.ml.project.mgt.internal.MLProjectManagementService;
  *                policy="dynamic" bind="setDatabaseService" unbind="unsetDatabaseService"
  * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic"
  *                bind="setHttpService" unbind="unsetHttpService"
+ * @scr.reference name="configurationcontext.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" 
+ *                unbind="unsetConfigurationContextService"            
  */
 public class MLProjectManagementDS {
 
@@ -73,11 +77,11 @@ public class MLProjectManagementDS {
         httpServiceInstance = null;
     }
     
-    /*protected void setNotificationSender(NotificationSender notificationSender){
-        MLProjectManagementServiceValueHolder.registerNotificationSender(notificationSender);
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService){
+        MLProjectManagementServiceValueHolder.registerConfigurationContextService(configurationContextService);
     }
-    
-    protected void unsetNotificationSender(NotificationSender notificationSender){
-        MLProjectManagementServiceValueHolder.registerNotificationSender(null);
-    }*/
+        
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService){
+        MLProjectManagementServiceValueHolder.registerConfigurationContextService(null);
+    }
 }

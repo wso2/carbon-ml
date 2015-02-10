@@ -39,8 +39,19 @@
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
         </dependency>
+        <dependency>
+	        <groupId>org.apache.axis2</groupId>
+	        <artifactId>axis2-transport-mail</artifactId>
+	    </dependency>
+	    <dependency>
+	       	<groupId>org.apache.axis2</groupId>
+	       	<artifactId>axis2-transport-base</artifactId>
+	    </dependency>
+	    <dependency>
+	       	<groupId>org.apache.axis2</groupId>
+	       	<artifactId>axis2</artifactId>
+	    </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -66,6 +77,8 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.project.mgt</bundleDef>
                                 <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
+                                <bundleDef>org.apache.axis2:axis2-transport-mail</bundleDef>
+                                <bundleDef>org.apache.axis2:axis2-transport-base</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
@@ -73,5 +86,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

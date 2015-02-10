@@ -51,14 +51,22 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
-        <!-- dependency>
-        	<groupId>org.wso2.carbon</groupId>
-		    <artifactId>org.wso2.carbon.identity.entitlement</artifactId>
-		</dependency>
-		<dependency>
-	    	<groupId>org.wso2.carbon</groupId>
-		    <artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
-		</dependency-->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.axis2</groupId>
+        	<artifactId>axis2-transport-mail</artifactId>
+        </dependency>
+      	<dependency>
+        	<groupId>org.apache.axis2</groupId>
+        	<artifactId>axis2-transport-base</artifactId>
+      	</dependency>
+      	<dependency>
+        	<groupId>org.apache.axis2</groupId>
+        	<artifactId>axis2</artifactId>
+      	</dependency>
     </dependencies>
     <build>
         <plugins>
@@ -83,7 +91,7 @@
                         </Private-Package>
                         <Import-Package>
                             org.apache.commons.logging,
-			    org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
+			    			org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
                             org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",			    
                             *;resolution:=optional
                         </Import-Package>

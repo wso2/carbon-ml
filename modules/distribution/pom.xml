@@ -116,7 +116,6 @@
                                 <move todir="${tempdir}/web/" includeemptydirs="false">
                                     <fileset dir="${tempdir}/web/">
                                         <exclude name="**/_demo/**"/>
-                                        -SNAPSHOT
                                         <exclude name="**/_docs/**"/>
                                         <exclude name="**/yui/**"/>
                                         <exclude name="**/ajax/**"/>

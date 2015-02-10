@@ -1636,23 +1636,27 @@ public class MLDatabaseService implements DatabaseService{
         }
     }
 
+    /**
+     * Retrieves the type of a feature.
+     * 
+     * @param workflowId    Unique identifier of the workflow
+     * @param featureName   Name of the feature
+     * @return              Type of the feature (Categorical/Numerical)
+     * @throws              DatabaseHandlerException
+     */
     @Override
     public String getFeatureType(String workflowId, String featureName) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         PreparedStatement getDefaultFeatureSettings = null;
         ResultSet result = null;
-
         try {
             MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
-
             getDefaultFeatureSettings = connection.prepareStatement(SQLQueries.GET_FEATURE_TYPE);
             getDefaultFeatureSettings.setString(1, workflowId);
             getDefaultFeatureSettings.setString(2, featureName);
-
             result = getDefaultFeatureSettings.executeQuery();
-
             if (result.first()) {
                 return result.getString(1);
             } else {
@@ -1664,6 +1668,44 @@ public class MLDatabaseService implements DatabaseService{
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement, result);
+        }
+    }
+
+    /**
+     * Retrieve Details of a Project (Name, Description, DatasetUri)
+     * 
+     * @param projectId     Unique identifier of the project
+     * @return              DatabaseHandlerException
+     */
+    @Override
+    public String[] getProject(String projectId) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement deleteProjectStatement = null;
+        ResultSet result = null;
+        String ProjectDetails[] = new String[3];
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            deleteProjectStatement = connection.prepareStatement(SQLQueries.GET_PROJECT);
+            deleteProjectStatement.setString(1, projectId);
+            result = deleteProjectStatement.executeQuery();
+            if (result.first()) {
+                ProjectDetails[0] = result.getString(1);
+                ProjectDetails[1] = result.getString(2);
+                ProjectDetails[2] = result.getString(3);
+                return ProjectDetails;
+            } else {
+                throw new DatabaseHandlerException("Invalid project Id: " + projectId);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while retrieving the project: " + projectId + ": " + 
+                    e.getMessage(),e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, deleteProjectStatement, result);
         }
     }
 }

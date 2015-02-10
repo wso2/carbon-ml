@@ -19,11 +19,12 @@ package org.wso2.carbon.ml.project.mgt.internal.ds;
 
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class MLProjectManagementServiceValueHolder {
     private static DatabaseService databaseService;
     private static ProjectManagementService projectManagementService;
-    //private static NotificationSender notificationSender;
+    private static ConfigurationContextService configurationContextService;
 
     public static  void registerDatabaseService(DatabaseService databaseService){
         MLProjectManagementServiceValueHolder.databaseService = databaseService;
@@ -41,11 +42,11 @@ public class MLProjectManagementServiceValueHolder {
         return projectManagementService;
     }
 
-    /*public static NotificationSender getNotificationSender() {
-        return notificationSender;
+    public static void registerConfigurationContextService(ConfigurationContextService configurationContextService) {
+        MLProjectManagementServiceValueHolder.configurationContextService = configurationContextService;
     }
-
-    public static void registerNotificationSender(NotificationSender notificationSender) {
-        MLProjectManagementServiceValueHolder.notificationSender = notificationSender;
-    }*/
+    
+    public static ConfigurationContextService getConfigurationContextService() {
+        return configurationContextService;
+    }
 }

@@ -58,6 +58,15 @@ public interface ProjectManagementService {
 	 * @throws             ProjectManagementServiceException
 	 */
 	public void deleteProject(String projectId) throws ProjectManagementServiceException;
+	
+	/**
+     * Retrieve details of a given project.
+     *
+     * @param projectId    Unique identifier of the project
+	 * @return 
+     * @throws             ProjectManagementServiceException
+     */
+    public String[] getProject(String projectId) throws ProjectManagementServiceException;
 
 	/**
 	 * Get the project names and created dates, that a tenant is assigned to.
@@ -149,10 +158,22 @@ public interface ProjectManagementService {
 	public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException;
 
 	/**
-	 * Send an email notification.
-	 * 
-	 * @param operation
-	 * @param username
-	 */
-    void sendNotification(String operation, String username);
+     * Send email notification indicating model build has been successfully completed.
+     * 
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
+     */
+	public void sendModelBuildingCompleteNotification(String userName, String emailAddress, String redirectUrl) 
+            throws ProjectManagementServiceException;
+
+    /**
+     * Send email notification indicating model build has been failed.
+     * 
+     * @param emailAddress  Email adress to sent the mail
+     * @param redirectUrl   Redirect link to be included in the mail
+     * @throws              ProjectManagementServiceException
+     */
+	public void sendModelBuildingFailedNotification(String userName, String emailAddress, String redirectUrl)
+            throws ProjectManagementServiceException;
 }

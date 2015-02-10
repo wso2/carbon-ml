@@ -390,11 +390,20 @@ public interface DatabaseService {
     public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
     
     /**
+     * Retrieves the type of a feature.
      * 
-     * @param workflowId
-     * @param featureName
-     * @return
-     * @throws DatabaseHandlerException
+     * @param workflowId    Unique identifier of the workflow
+     * @param featureName   Name of the feature
+     * @return              Type of the feature (Categorical/Numerical)
+     * @throws              DatabaseHandlerException
      */
     public String getFeatureType(String workflowId, String featureName) throws DatabaseHandlerException;
+
+    /**
+     * Retrieve Details of a Project (Name, Description, DatasetUri)
+     * 
+     * @param projectId     Unique identifier of the project
+     * @return              DatabaseHandlerException
+     */
+    public String[] getProject(String projectId) throws DatabaseHandlerException;
 }
