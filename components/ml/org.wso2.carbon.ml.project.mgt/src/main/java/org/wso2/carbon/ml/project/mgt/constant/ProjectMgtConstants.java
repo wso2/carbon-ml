@@ -38,7 +38,4 @@ public class ProjectMgtConstants {
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
-    
-    public static final String USER_FIRST_NAME = "\\{first-name\\}";
-    public static final String REDIRECT_URL = "\\{redirect-url\\}";
 }
