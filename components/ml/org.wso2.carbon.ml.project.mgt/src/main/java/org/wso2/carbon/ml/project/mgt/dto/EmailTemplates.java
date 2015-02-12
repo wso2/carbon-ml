@@ -26,27 +26,27 @@ import org.wso2.carbon.ml.project.mgt.constant.ProjectMgtConstants;
 import java.util.List;
 
 /**
- * DTO class for JAXB binding of email template configuration.
+ * DTO class for JAXB binding of email templates.
  */
-@XmlRootElement(name = ProjectMgtConstants.CONFIGURATIONS)
+@XmlRootElement(name = ProjectMgtConstants.EMAIL_TEMPLATES)
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EmailConfigurations {
+public class EmailTemplates {
     
-    @XmlElement(name = ProjectMgtConstants.CONFIGURATION)
-    private List<EmailTemplate> emailConfigurations = null;
+    @XmlElement(name = ProjectMgtConstants.TEMPLATE)
+    private List<EmailTemplate> emailTemplates = null;
 
     /**
      * @return Returns a list of email templates.
      */
-    public List<EmailTemplate> getEmailConfigurations() {
-        return emailConfigurations;
+    public List<EmailTemplate> getEmailTemplates() {
+        return emailTemplates;
     }
 
     /**
      * @param algorithms Sets email templates.
      */
     public void setEmailTemplates(List<EmailTemplate> emailTemplate) {
-        this.emailConfigurations = emailTemplate;
+        this.emailTemplates = emailTemplate;
     }
     
     /**
@@ -56,7 +56,7 @@ public class EmailConfigurations {
      * @return      Email template of the given type
      */
     public EmailTemplate getEmailTemplate(String type) {
-        for (EmailTemplate emailTemplate : emailConfigurations) {
+        for (EmailTemplate emailTemplate : emailTemplates) {
             if (type.equalsIgnoreCase(emailTemplate.getType())) {
                 return emailTemplate;
             }

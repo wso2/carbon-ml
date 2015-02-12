@@ -27,29 +27,13 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EmailTemplate {
-    private String targetEpr;
     private String subject;
     private String body;
-    private String redirectPath;
     private String footer;
 
     @XmlAttribute
     private String type;
     
-    /**
-     * @return Returns targetEpr of the email.
-     */
-    public String getTargetEpr() {
-        return targetEpr;
-    }
-
-    /**
-     * @param targetEpr Sets targetEpr of the email.
-     */
-    public void setTargetEpr(String targetEpr) {
-        this.targetEpr = targetEpr;
-    }
-
     /**
      * @return Returns subject of the email.
      */
@@ -76,20 +60,6 @@ public class EmailTemplate {
      */
     public void setBody(String body) {
         this.body = body;
-    }
-
-    /**
-     * @return Returns redirectPath of the email.
-     */
-    public String getRedirectPath() {
-        return redirectPath;
-    }
-
-    /**
-     * @param redirectPath Sets redirectPath of the email.
-     */
-    public void setRedirectPath(String redirectPath) {
-        this.redirectPath = redirectPath;
     }
 
     /**

@@ -17,43 +17,46 @@
  -->
 
 <!-- 
-     Contains templates of  emails that to be sent upon Successfully model built and Model build failure.
+     Contains the body of the mail that to be sent upon the tenant configuration request by the 
+     admin of the tenant. This includes the password reset link, for the forgotten passwords.
   -->
 
-<configurations>
-<configuration type="modelBuildingCompleteNotification">
-    <targetEpr>https://localhost:9443/carbon/admin-mgt/validator_ajaxprocessor.jsp</targetEpr>       
+<emailTemplates>
+<template type="modelBuildingCompleteNotification">  
     <subject>WSO2 ML - Model Building Complete</subject>
     <body>
-Hi {first-name},
+Hi {1},
 
 The ML Model building has been successfully completed. 
 
 Please click the following link to view the summary of the model.
+
+{2}
     </body>
     <footer>
+...
 Best Regards,
 WSO2 ML Team
 http://www.wso2.com
     </footer>
-    <redirectPath></redirectPath>
-</configuration>
+</template>
 
-<configuration type="modelBuildingFailedNotification">
-    <targetEpr>https://localhost:9443/carbon/admin-mgt/validator_ajaxprocessor.jsp</targetEpr>       
+<template type="modelBuildingFailedNotification">    
     <subject>WSO2 ML - Model Building Failed</subject>
     <body>
-Hi {first-name},
+Hi {1},
 
 The ML Model building has been Failed. 
 
 Please click the following link to rebuild a model.
+
+{2}
     </body>
     <footer>
+...
 Best Regards,
 WSO2 ML Team
 http://www.wso2.com
     </footer>
-    <redirectPath></redirectPath>
-</configuration>
-</configurations>
+</template>
+</emailTemplates>

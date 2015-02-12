@@ -43,7 +43,7 @@ import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
 import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToVector;
 import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
-import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
+import org.wso2.carbon.ml.project.mgt.exceptions.MLProjectManagementServiceException;
 import org.wso2.carbon.ml.test.internal.ds.MLTestServiceValueHolder;
 import org.apache.spark.mllib.linalg.Vector;
 
@@ -171,7 +171,7 @@ public class TestMLFlow {
             log.error(e);
         } catch (DatasetServiceException e) {
             log.error(e);
-        } catch (ProjectManagementServiceException e) {
+        } catch (MLProjectManagementServiceException e) {
             log.error(e);
         } catch (ModelServiceException e) {
             log.error(e);

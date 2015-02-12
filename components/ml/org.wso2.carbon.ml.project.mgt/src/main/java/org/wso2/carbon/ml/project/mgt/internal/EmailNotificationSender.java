@@ -21,7 +21,6 @@ package org.wso2.carbon.ml.project.mgt.internal;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -41,40 +40,41 @@ import org.apache.axis2.transport.mail.MailConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.project.mgt.constant.ProjectMgtConstants;
-import org.wso2.carbon.ml.project.mgt.dto.EmailConfigurations;
+import org.wso2.carbon.ml.project.mgt.dto.EmailTemplates;
 import org.wso2.carbon.ml.project.mgt.dto.EmailTemplate;
-import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
+import org.wso2.carbon.ml.project.mgt.exceptions.MLEmailNotificationSenderException;
 import org.wso2.carbon.ml.project.mgt.internal.ds.MLProjectManagementServiceValueHolder;
 import org.wso2.carbon.utils.CarbonUtils;
 
+/**
+ * This class is used to send email notifications.
+ */
 public class EmailNotificationSender {
 
     private static final Log logger = LogFactory.getLog(EmailNotificationSender.class);
-    private static final Pattern firstName = Pattern.compile(ProjectMgtConstants.USER_FIRST_NAME);
     
     /**
      * Send the email of given type, to the given email address.
      * 
-     * @param type              Type of the email to be sent.
-     * @param emailAddress      Address to which the email is sent.
-     * @param redirectUrl       A redirect URL that should be sent in the email.
-     * @throws                  EmailAdaptorException
+     * @param emailTemplateType         Template to be used for the email. Email templates are defined in 
+     *                                  repository/conf/email/ml-email-templates.xml file.
+     * @param emailAddress              Email address to sent the mail.
+     * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
+     * @throws                          MLEmailNotificationSenderException
      */
-    void send(String type, String userName, String emailAddress, String redirectUrl) throws ProjectManagementServiceException {
+    public void send(String emailTemplateType, String emailAddress, String [] emailTemplateParameters) 
+            throws MLEmailNotificationSenderException {
         try {
             // Get the message template
-            EmailTemplate emailTemplate = EmailNotificationSender.getEmailTemplate(type);
+            EmailTemplate emailTemplate = EmailNotificationSender.getEmailTemplate(emailTemplateType);
 
             // Set the subject of the email.
             Map<String, String> headerMap = new HashMap<String, String>();
             headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, emailTemplate.getSubject());
             
             // Set the message body.
-            if (redirectUrl==null) {
-                redirectUrl = emailTemplate.getRedirectPath();
-            }
-            OMElement payload = EmailNotificationSender.setMessageBody(userName, emailTemplate.getBody(), 
-                emailTemplate.getFooter(), redirectUrl);
+            OMElement payload = EmailNotificationSender.setMessageBody(emailTemplate.getBody(), 
+                    emailTemplate.getFooter(), emailTemplateParameters);
         
             // Create a service client using configurations in axis2.xml
             ServiceClient serviceClient;
@@ -89,12 +89,12 @@ public class EmailNotificationSender {
             EmailNotificationSender.setProperties(serviceClient, headerMap, emailAddress);
             // Send the mail with the payload
             serviceClient.fireAndForget(payload);
-            logger.info("Sending notification mail to " + emailAddress);
+            logger.info("Notification email sent to " + emailAddress);
         } catch (AxisFault e) {
-            throw new ProjectManagementServiceException("An error occured while sending the email: " + e.getMessage(),
+            throw new MLEmailNotificationSenderException("An error occured while sending the email: " + e.getMessage(),
                 e);
-        } catch (ProjectManagementServiceException e) {
-            throw new ProjectManagementServiceException("An error occured while retrieving email template: "
+        } catch (MLEmailNotificationSenderException e) {
+            throw new MLEmailNotificationSenderException("An error occured while retrieving email template: "
                     + e.getMessage(), e);
         }
     }
@@ -102,22 +102,21 @@ public class EmailNotificationSender {
     /**
      * Get the template of the given email type from ml-email-config.xml file
      * 
-     * @param type  Type of the email
-     * @return      Template of the given email type
-     * @throws      EmailAdaptorException
+     * @param emailTemplateType Type of the email template
+     * @return                  Template of the given email type
+     * @throws                  MLEmailNotificationSenderException
      */
-    private static EmailTemplate getEmailTemplate(String type) throws ProjectManagementServiceException {
+    private static EmailTemplate getEmailTemplate(String emailTemplateType) throws MLEmailNotificationSenderException {
         String confXml = CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                ProjectMgtConstants.EMAIL_CONF_DIRECTORY + File.separator + ProjectMgtConstants.ML_EMAIL_CONF_FILE;
+                ProjectMgtConstants.EMAIL_CONF_DIRECTORY + File.separator + ProjectMgtConstants.ML_EMAIL_TEMPLATES_FILE;
         JAXBContext jaxbContext;
         try {
-            jaxbContext = JAXBContext.newInstance(EmailConfigurations.class);
+            jaxbContext = JAXBContext.newInstance(EmailTemplates.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            EmailConfigurations emailConfigurations = (EmailConfigurations)jaxbUnmarshaller.unmarshal(
-                    new File(confXml));
-            return emailConfigurations.getEmailTemplate(type);
+            EmailTemplates emailConfigurations = (EmailTemplates)jaxbUnmarshaller.unmarshal(new File(confXml));
+            return emailConfigurations.getEmailTemplate(emailTemplateType);
         } catch (JAXBException e) {
-            throw new ProjectManagementServiceException("An error occured while parsing email configurations from "
+            throw new MLEmailNotificationSenderException("An error occured while parsing email configurations from "
                     + confXml + " : " + e.getMessage(), e);
         }
     }
@@ -144,18 +143,20 @@ public class EmailNotificationSender {
     /**
      * Format the body of the email.
      * 
-     * @param body          Content that should goes to the body of the email.
-     * @param footer        Content that should goes to the footer of the email.
-     * @param redirectUrl   Redirecting URl to be included in the email.
-     * @return              Formatted body of the email.
+     * @param body                      Content that should goes to the body of the email.
+     * @param footer                    Content that should goes to the footer of the email.
+     * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
+     * @return                          Formatted body of the email.
      */
-    private static OMElement setMessageBody(String userName, String body, String footer, String redirectUrl) {
+    private static OMElement setMessageBody(String body, String footer, String[] emailTemplateParameters) {
         OMElement payload = OMAbstractFactory.getOMFactory().createOMElement(BaseConstants.DEFAULT_TEXT_WRAPPER, null);
         StringBuilder contents = new StringBuilder();
-        // set the user name
-        body = firstName.matcher(body).replaceAll(userName);
-        contents.append(body).append(System.getProperty("line.separator")).append(redirectUrl)
-                .append(System.getProperty("line.separator")).append(footer);
+        // Set all the parameters in the email body.
+        for (int i = 0 ; i < emailTemplateParameters.length ; i++){
+            body = body.replaceAll("\\{" + (i+1) + "\\}", emailTemplateParameters[i]);
+        }
+        contents.append(body).append(System.getProperty("line.separator")).append(System.getProperty("line.separator"))
+                .append(footer);
         payload.setText(contents.toString());
         return payload;
     }
