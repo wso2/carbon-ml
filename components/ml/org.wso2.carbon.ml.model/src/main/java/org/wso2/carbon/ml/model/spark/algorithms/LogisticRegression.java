@@ -52,19 +52,19 @@ public class LogisticRegression implements Serializable {
      * TODO add another overloaded method to avoid Regularization.
      * This method uses stochastic gradient descent (SGD) algorithm to train a logistic regression model
      *
-     * @param trainingDataset             Training dataset as a JavaRDD of labeled points
-     * @param noOfIterations              No of iterations
-     * @param initialLearningRate         Initial learning rate
-     * @param regularizationType          Regularization type : L1 or L2
-     * @param regularizationParameter     Regularization parameter
-     * @param dataFractionPerSGDIteration Data fraction per SGD iteration
-     * @return Logistic regression model
+     * @param trainingDataset               Training dataset as a JavaRDD of labeled points
+     * @param noOfIterations                No of iterations
+     * @param initialLearningRate           Initial learning rate
+     * @param regularizationType            Regularization type : L1 or L2
+     * @param regularizationParameter       Regularization parameter
+     * @param dataFractionPerSGDIteration   Data fraction per SGD iteration
+     * @return                              Logistic regression model
      */
     public LogisticRegressionModel trainWithSGD(JavaRDD<LabeledPoint> trainingDataset, double initialLearningRate,
             int noOfIterations, String regularizationType, double regularizationParameter,
             double dataFractionPerSGDIteration) {
-        LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate,
-                noOfIterations, regularizationParameter, dataFractionPerSGDIteration);
+        LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate, noOfIterations, 
+                regularizationParameter, dataFractionPerSGDIteration);
         if (L1.equals(regularizationType)) {
             lrSGD.optimizer().setUpdater(new L1Updater());
         } else if (L2.equals(regularizationType)) {
@@ -77,12 +77,12 @@ public class LogisticRegression implements Serializable {
     /**
      * This method uses LBFGS optimizer to train a logistic regression model for a given dataset
      *
-     * @param trainingDataset         Training dataset as a JavaRDD of labeled points
-     * @param noOfCorrections         No of corrections : Default 10
-     * @param convergenceTolerance    Convergence tolerance
-     * @param noOfIterations          No of iterations
-     * @param regularizationParameter Regularization parameter
-     * @return Logistic regression model
+     * @param trainingDataset           Training dataset as a JavaRDD of labeled points
+     * @param noOfCorrections           No of corrections : Default 10
+     * @param convergenceTolerance      Convergence tolerance
+     * @param noOfIterations            No of iterations
+     * @param regularizationParameter   Regularization parameter
+     * @return                          Logistic regression model
      */
     public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset, int noOfCorrections,
             double convergenceTolerance, int noOfIterations, double regularizationParameter) {
@@ -90,8 +90,7 @@ public class LogisticRegression implements Serializable {
         JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Vector>>() {
                     public Tuple2<Object, Vector> call(LabeledPoint p) {
-                        return new Tuple2<Object, Vector>(p.label(),
-                                MLUtils.appendBias(p.features()));
+                        return new Tuple2<Object, Vector>(p.label(), MLUtils.appendBias(p.features()));
                     }
                 });
         training.cache();
@@ -100,18 +99,16 @@ public class LogisticRegression implements Serializable {
                 new SquaredL2Updater(), noOfCorrections, convergenceTolerance, noOfIterations,
                 regularizationParameter, initialWeightsWithIntercept);
         Vector weightsWithIntercept = result._1();
-        return new LogisticRegressionModel(
-                Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(),
-                        weightsWithIntercept.size() - 1)), (weightsWithIntercept.toArray())
-                [weightsWithIntercept.size() - 1]);
+        return new LogisticRegressionModel(Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(),
+                weightsWithIntercept.size() - 1)), (weightsWithIntercept.toArray())[weightsWithIntercept.size() - 1]);
     }
 
     /**
      * This method performs a binary classification using a given model and a dataset
      *
-     * @param logisticRegressionModel Logistic regression model
-     * @param testingDataset          Testing dataset as a JavaRDD of LabeledPoints
-     * @return Tuple2 containing scores and labels
+     * @param logisticRegressionModel   Logistic regression model
+     * @param testingDataset            Testing dataset as a JavaRDD of LabeledPoints
+     * @return                          Tuple2 containing scores and labels
      */
     public JavaRDD<Tuple2<Object, Object>> test(final LogisticRegressionModel logisticRegressionModel,
             JavaRDD<LabeledPoint> testingDataset) {
@@ -124,5 +121,4 @@ public class LogisticRegression implements Serializable {
                 }
         );
     }
-
 }

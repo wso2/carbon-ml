@@ -44,27 +44,31 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.RANDO
 import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.UNSUPERVISED_ALGORITHM;
 
 public class UnsupervisedModel {
+    
     /**
+     * Build a model for a given workflow.
+     * 
      * @param modelID   Model ID
      * @param workflow  Workflow ID
      * @param sparkConf Spark configuration
-     * @throws ModelServiceException
+     * @throws          ModelServiceException
      */
     public void buildModel(String modelID, Workflow workflow, SparkConf sparkConf)
             throws ModelServiceException {
+        JavaSparkContext sparkContext = null;
         try {
             sparkConf.setAppName(modelID);
             // create a new java spark context
-            JavaSparkContext sc = new JavaSparkContext(sparkConf);
+            sparkContext = new JavaSparkContext(sparkConf);
             // parse lines in the dataset
             String datasetURL = workflow.getDatasetURL();
-            JavaRDD<String> lines = sc.textFile(datasetURL);
+            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
             // get header line
             String headerRow = lines.take(1).get(0);
             // get column separator
             String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             // apply pre processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(sc, workflow, lines, headerRow,
+            JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, lines, headerRow,
                     columnSeparator);
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
@@ -85,15 +89,18 @@ public class UnsupervisedModel {
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
             // stop spark context
-            sc.stop();
         } catch (ModelSpecificationException e) {
             throw new ModelServiceException("An error occurred while building supervised machine learning model: " +
                     e.getMessage(), e);
+        } finally {
+            if (sparkContext != null) {
+                sparkContext.stop();
+            }
         }
     }
 
     /**
-     * This method builds a k-means model
+     * This method builds a k-means model.
      *
      * @param modelID      Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints

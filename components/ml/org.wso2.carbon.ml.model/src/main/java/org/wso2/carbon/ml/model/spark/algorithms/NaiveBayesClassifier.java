@@ -33,9 +33,9 @@ public class NaiveBayesClassifier implements Serializable {
     /**
      * This method trains a naive bayes model
      *
-     * @param trainingData Training dataset as a JavaRDD of labeled points
-     * @param lambda       Lambda parameter
-     * @return Naive bayes model
+     * @param trainingData  Training dataset as a JavaRDD of labeled points
+     * @param lambda        Lambda parameter
+     * @return              Naive bayes model
      */
     public NaiveBayesModel train(JavaRDD<LabeledPoint> trainingData, double lambda) {
         return NaiveBayes.train(trainingData.rdd(), lambda);

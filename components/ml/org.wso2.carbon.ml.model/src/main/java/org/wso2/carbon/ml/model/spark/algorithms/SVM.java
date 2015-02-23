@@ -34,7 +34,7 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L2;
 
 public class SVM implements Serializable {
     /**
-     * This method uses stochastic gradient descent (SGD) algorithm to train a support vector machine (SVM) model
+     * This method uses stochastic gradient descent (SGD) algorithm to train a support vector machine (SVM) model.
      *
      * @param trainingDataset         Training dataset as a JavaRDD of LabeledPoints
      * @param noOfIterations          Number of iterarations
@@ -42,7 +42,7 @@ public class SVM implements Serializable {
      * @param regularizationParameter Regularization parameter
      * @param initialLearningRate     Initial learning rate (SGD step size)
      * @param miniBatchFraction       SGD minibatch fraction
-     * @return SVM model
+     * @return                        SVM model
      */
     public SVMModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations, String regularizationType,
             double regularizationParameter, double initialLearningRate, double miniBatchFraction) {
@@ -58,11 +58,12 @@ public class SVM implements Serializable {
     }
 
     /**
-     * SVM train - overload method with 2 parameters
-     * @param trainingDataset Training dataset as a JavaRDD of LabeledPoints
-     * @param noOfIterations Number of iterarations
-     * @param regularizationParameter Regularization parameter
-     * @return SVM model
+     * SVM train - overload method with 2 parameters.
+     * 
+     * @param trainingDataset           Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations            Number of iterarations
+     * @param regularizationParameter   Regularization parameter
+     * @return                          SVM model
      */
     public SVMModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations, double regularizationParameter) {
         SVMWithSGD svmWithSGD = new SVMWithSGD();
@@ -71,11 +72,11 @@ public class SVM implements Serializable {
     }
 
     /**
-     * This method performs a binary classification using a given SVM model and a dataset
+     * This method performs a binary classification using a given SVM model and a dataset.
      *
-     * @param svmModel       SVM model
-     * @param testingDataset Testing dataset as a JavaRDD of LabeledPoints
-     * @return Tuple2 containing scores and labels
+     * @param svmModel          SVM model
+     * @param testingDataset    Testing dataset as a JavaRDD of LabeledPoints
+     * @return                  Tuple2 containing scores and labels
      */
     public JavaRDD<Tuple2<Object, Object>> test(final SVMModel svmModel, JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(

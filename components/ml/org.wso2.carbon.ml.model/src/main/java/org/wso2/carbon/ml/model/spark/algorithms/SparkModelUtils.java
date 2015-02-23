@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.internal.MLModelUtils;
+import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
 import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
@@ -51,32 +52,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DISCARD;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.MEAN_IMPUTATION;
-
 public class SparkModelUtils {
 
     /**
      * Private constructor to prevent any other class from instantiating.
      */
     private SparkModelUtils() {
-        //
     }
 
     /**
      * A utility method to generate probabilistic classification model summary
      *
-     * @param scoresAndLabels Tuple2 containing scores and labels
-     * @return Probabilistic classification model summary
+     * @param scoresAndLabels   Tuple2 containing scores and labels
+     * @return                  Probabilistic classification model summary
      */
     public static ProbabilisticClassificationModelSummary generateProbabilisticClassificationModelSummary(
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels) {
-        ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = new
-                ProbabilisticClassificationModelSummary();
+        ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
+            new ProbabilisticClassificationModelSummary();
         // store predictions and actuals
-        List<PredictedVsActual> predictedVsActuals = new ArrayList();
-        DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT);
+        List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
+        DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
         for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
@@ -104,16 +100,16 @@ public class SparkModelUtils {
     /**
      * A utility method to generate regression model summary
      *
-     * @param predictionsAndLabels Tuple2 containing predicted and actual values
-     * @return Regression model summary
+     * @param predictionsAndLabels  Tuple2 containing predicted and actual values
+     * @return                      Regression model summary
      */
     public static ClassClassificationAndRegressionModelSummary generateRegressionModelSummary(
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels) {
         ClassClassificationAndRegressionModelSummary regressionModelSummary =
                 new ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
-        List<PredictedVsActual> predictedVsActuals = new ArrayList();
-        DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT);
+        List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
+        DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
         for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
@@ -122,14 +118,14 @@ public class SparkModelUtils {
         }
         regressionModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate mean squared error (MSE)
-        double MSE = new JavaDoubleRDD(predictionsAndLabels.map(
+        double meanSquaredError = new JavaDoubleRDD(predictionsAndLabels.map(
                 new Function<Tuple2<Double, Double>, Object>() {
                     public Object call(Tuple2<Double, Double> pair) {
                         return Math.pow(pair._1() - pair._2(), 2.0);
                     }
                 }
         ).rdd()).mean();
-        regressionModelSummary.setError(MSE);
+        regressionModelSummary.setError(meanSquaredError);
         return regressionModelSummary;
     }
 
@@ -144,7 +140,7 @@ public class SparkModelUtils {
         ClassClassificationAndRegressionModelSummary classClassificationModelSummary = new
                 ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
-        List<PredictedVsActual> predictedVsActuals = new ArrayList();
+        List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
         for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(scoreAndLabel._1());
@@ -153,8 +149,7 @@ public class SparkModelUtils {
         }
         classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate test error
-        double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>,
-                Boolean>() {
+        double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
             @Override
             public Boolean call(Tuple2<Double, Double> pl) {
                 return !pl._1().equals(pl._2());
@@ -185,18 +180,16 @@ public class SparkModelUtils {
             JavaRDD<String[]> tokens = data.map(lineToTokens);
             // get feature indices for discard imputation
             DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(
-                    MLModelUtils.getImputeFeatureIndices(
-                            workflow, DISCARD));
+                    MLModelUtils.getImputeFeatureIndices(workflow, MLModelConstants.DISCARD));
             // Discard the row if any of the impute indices content have a missing or NA value
             JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
             JavaRDD<double[]> features = null;
             // get feature indices for mean imputation
-            List<Integer> meanImputeIndices = MLModelUtils.getImputeFeatureIndices(workflow,
-                    MEAN_IMPUTATION);
+            List<Integer> meanImputeIndices = MLModelUtils.getImputeFeatureIndices(workflow, MLModelConstants
+                    .MEAN_IMPUTATION);
             if (meanImputeIndices.size() > 0) {
                 // calculate means for the whole dataset (sampleFraction = 1.0) or a sample
-                Map<Integer, Double> means = getMeans(sc, tokensDiscardedRemoved, meanImputeIndices,
-                        0.01);
+                Map<Integer, Double> means = getMeans(sc, tokensDiscardedRemoved, meanImputeIndices, 0.01);
                 // Replace missing values in impute indices with the mean for that column
                 MeanImputation meanImputation = new MeanImputation(means);
                 features = tokensDiscardedRemoved.map(meanImputation);
@@ -217,16 +210,16 @@ public class SparkModelUtils {
     /**
      * A utility method to perform mean imputation
      *
-     * @param sc                JavaSparkContext
+     * @param sparkContext                JavaSparkContext
      * @param tokens            JavaRDD of String[]
      * @param meanImputeIndices Indices of columns to impute
      * @param sampleFraction    Sample fraction used to calculate mean
      * @return Returns a map of impute indices and means
-     * @throws ModelServiceException
+     * @throws                  ModelServiceException
      */
-    private static Map<Integer, Double> getMeans(JavaSparkContext sc, JavaRDD<String[]> tokens,
+    private static Map<Integer, Double> getMeans(JavaSparkContext sparkContext, JavaRDD<String[]> tokens,
             List<Integer> meanImputeIndices, double sampleFraction) throws ModelServiceException {
-        Map<Integer, Double> imputeMeans = new HashMap();
+        Map<Integer, Double> imputeMeans = new HashMap<Integer, Double>();
         JavaRDD<String[]> missingValuesRemoved = tokens.filter(new MissingValuesFilter());
         JavaRDD<Vector> features = null;
         // calculate mean and populate mean imputation hashmap

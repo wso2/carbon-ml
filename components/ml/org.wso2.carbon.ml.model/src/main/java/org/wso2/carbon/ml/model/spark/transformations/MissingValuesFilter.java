@@ -32,8 +32,7 @@ public class MissingValuesFilter implements Function<String[], Boolean> {
         try {
             Boolean keep = true;
             for (String token : tokens) {
-                if (MLModelConstants.EMPTY.equals(token) || MLModelConstants.NA.equals
-                        (token)) {
+                if (MLModelConstants.EMPTY.equals(token) || MLModelConstants.NA.equals(token)) {
                     keep = false;
                     break;
                 }

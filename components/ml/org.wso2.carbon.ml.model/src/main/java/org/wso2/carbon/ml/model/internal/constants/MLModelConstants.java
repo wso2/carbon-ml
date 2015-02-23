@@ -95,11 +95,15 @@ public final class MLModelConstants {
     public static final String EMPTY = "";
     public static final String NA = "NA";
     public static final String DECIMAL_FORMAT = "#.00";
-    public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY =
-            "ClassClassificationAndRegressionModelSummary";
-    public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY =
-            "ProbabilisticClassificationModelSummary";
+    public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
+    public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
+    
+    public static final int K_MEANS_SAMPLE_SIZE = 10000;
+    
+    public static final int ML_ALGORITHM_WEIGHT_LEVEL_1 = 5;
+    public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
+    public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
 
     // enums
     public enum SUPERVISED_ALGORITHM {

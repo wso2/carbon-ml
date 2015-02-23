@@ -36,8 +36,7 @@ public class MeanImputation implements Function<String[], double[]> {
         try {
             double[] features = new double[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
-                if (MLModelConstants.EMPTY.equals(tokens[i]) || MLModelConstants.NA.equals
-                        (tokens[i])) {
+                if (MLModelConstants.EMPTY.equals(tokens[i]) || MLModelConstants.NA.equals(tokens[i])) {
                     // if mean imputation is set
                     if (meanImputation.containsKey(i)) {
                         features[i] = meanImputation.get(i);

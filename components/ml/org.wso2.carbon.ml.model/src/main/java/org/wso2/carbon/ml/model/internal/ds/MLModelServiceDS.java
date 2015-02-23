@@ -33,7 +33,7 @@ import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.*;
  */
 public class MLModelServiceDS {
 
-    private static final Log log = LogFactory.getLog(MLModelServiceDS.class);
+    private static final Log loggger = LogFactory.getLog(MLModelServiceDS.class);
 
     protected void activate(ComponentContext context) {
         try {
@@ -42,7 +42,7 @@ public class MLModelServiceDS {
             context.getBundleContext().registerService(ModelService.class.getName(), modelService, null);
 
         } catch (Throwable e) {
-            log.error("Could not create ModelService: " + e.getMessage(), e);
+            loggger.error("Could not create ModelService: " + e.getMessage(), e);
         }
     }
 
