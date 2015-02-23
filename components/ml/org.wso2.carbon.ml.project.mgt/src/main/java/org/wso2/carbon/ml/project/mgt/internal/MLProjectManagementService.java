@@ -27,7 +27,8 @@ import org.wso2.carbon.ml.project.mgt.ProjectManagementService;
 import org.wso2.carbon.ml.project.mgt.constant.ProjectMgtConstants;
 import org.wso2.carbon.ml.project.mgt.dto.Project;
 import org.wso2.carbon.ml.project.mgt.dto.Workflow;
-import org.wso2.carbon.ml.project.mgt.exceptions.ProjectManagementServiceException;
+import org.wso2.carbon.ml.project.mgt.exceptions.MLEmailNotificationSenderException;
+import org.wso2.carbon.ml.project.mgt.exceptions.MLProjectManagementServiceException;
 import org.wso2.carbon.ml.project.mgt.internal.ds.MLProjectManagementServiceValueHolder;
 
 import java.text.ParseException;
@@ -48,11 +49,11 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @param projectID        Unique identifier of the project.
      * @param projectName      Name of the project.
      * @param description      Description of the project.
-     * @throws                 ProjectManagementServiceException
+     * @throws                 MLProjectManagementServiceException
      */
 	@Override
 	public String createProject(String projectName, String description, String datasetUri)
-            throws ProjectManagementServiceException {
+            throws MLProjectManagementServiceException {
 	    try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
@@ -62,7 +63,7 @@ public class MLProjectManagementService implements ProjectManagementService{
             return projectId;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
         }
     }
 	
@@ -72,11 +73,11 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @param projectName      Name of the project.
      * @param description      Description of the project.
      * @return project id.
-     * @throws                 ProjectManagementServiceException
+     * @throws                 MLProjectManagementServiceException
      */
     @Override
     public String createProject(String projectName, String description)
-            throws ProjectManagementServiceException {
+            throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
@@ -86,7 +87,7 @@ public class MLProjectManagementService implements ProjectManagementService{
             return projectId;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to create the project: " + e.getMessage(),e);
         }
     }
 	
@@ -94,16 +95,16 @@ public class MLProjectManagementService implements ProjectManagementService{
      * Delete details of a given project.
      *
      * @param projectId    Unique identifier of the project
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
-    public void deleteProject(String projectId) throws ProjectManagementServiceException {
+    public void deleteProject(String projectId) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             dbService.deleteProject(projectId);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to delete the project: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to delete the project: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to delete the project: " + e.getMessage(),e);
         }
     }
 
@@ -112,16 +113,16 @@ public class MLProjectManagementService implements ProjectManagementService{
      *
      * @param tenantID     Unique identifier of the tenant
      * @return             An array of project ID, Name and the created date of the projects associated with a given tenant.
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
-    public String[][] getTenantProjects(String tenantID) throws ProjectManagementServiceException {
+    public String[][] getTenantProjects(String tenantID) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             return dbService.getTenantProjects(tenantID);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to get projects of tenant: " + tenantID + " : " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to get projects of tenant: " + tenantID + " : " +
+            throw new MLProjectManagementServiceException("Failed to get projects of tenant: " + tenantID + " : " +
                     e.getMessage(),e);
         }
     }
@@ -131,16 +132,16 @@ public class MLProjectManagementService implements ProjectManagementService{
      *
      * @param projectId    Unique identifier of the project
      * @return             Unique identifier of the data-set associated with the project
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
-    public String getdatasetID(String projectId) throws ProjectManagementServiceException {
+    public String getdatasetID(String projectId) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             return dbService.getdatasetID(projectId);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to return dataset ID. " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to return dataset ID: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to return dataset ID: " + e.getMessage(),e);
         }
     }
 
@@ -151,12 +152,12 @@ public class MLProjectManagementService implements ProjectManagementService{
      * @param parentWorkflowID     Unique identifier for the workflow from which the current workflow is inherited from.
      * @param projectID            Unique identifier for the project for which the workflow is created.
      * @param workflowName         Name of the project
-     * @throws                     ProjectManagementServiceException
+     * @throws                     MLProjectManagementServiceException
      */
 	@Override
 	@Deprecated
     public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID,
-                                  String workflowName) throws ProjectManagementServiceException {
+                                  String workflowName) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String datasetID = getdatasetID(projectID);
@@ -164,7 +165,7 @@ public class MLProjectManagementService implements ProjectManagementService{
                                         workflowName);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the workflow: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
         }
     }
 	
@@ -173,10 +174,10 @@ public class MLProjectManagementService implements ProjectManagementService{
      *
      * @param projectID            Unique identifier for the project for which the work-flow is created.
      * @param workflowName         Name of the work-flow
-     * @throws                     ProjectManagementServiceException
+     * @throws                     MLProjectManagementServiceException
      */
     @Override
-    public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) throws ProjectManagementServiceException {
+    public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String datasetID = getdatasetID(projectID);
@@ -187,7 +188,7 @@ public class MLProjectManagementService implements ProjectManagementService{
             return workflowID;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the workflow: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to create the workflow: " + e.getMessage(),e);
         }
     }
 
@@ -196,17 +197,17 @@ public class MLProjectManagementService implements ProjectManagementService{
      * 
      * @param workflowID   Unique Identifier of this workflow
      * @param name         Updated name of the workflow
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
     public void updateWorkflowName(String workflowID, String name)
-                                    throws ProjectManagementServiceException {
+                                    throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             dbService.updateWorkdflowName(workflowID, name);
 
         } catch (DatabaseHandlerException e) {
-            throw new ProjectManagementServiceException("An error has occurred while updating workflow: " + workflowID
+            throw new MLProjectManagementServiceException("An error has occurred while updating workflow: " + workflowID
                 + " error message: " + e.getMessage(),e);
         }
     }
@@ -215,16 +216,16 @@ public class MLProjectManagementService implements ProjectManagementService{
      * Delete an existing workflow.
      *
      * @param workflowID   Unique identifier of the workflow to be deleted
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
-    public void deleteWorkflow(String workflowID) throws ProjectManagementServiceException {
+    public void deleteWorkflow(String workflowID) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             dbService.deleteWorkflow(workflowID);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to delete the workflow: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to delete the workflow: " + e.getMessage(),e);
+            throw new MLProjectManagementServiceException("Failed to delete the workflow: " + e.getMessage(),e);
         }
     }
 
@@ -233,17 +234,17 @@ public class MLProjectManagementService implements ProjectManagementService{
      *
      * @param projectId    Unique identifier for the project for which the wokflows are needed
      * @return             An array of workflow ID's and Names
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
     public String[][] getProjectWorkflows(String projectId)
-            throws ProjectManagementServiceException {
+            throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             return dbService.getProjectWorkflows(projectId);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to get workflows of the project " + projectId + ": " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to get workflows of the project " + projectId + ": " +
+            throw new MLProjectManagementServiceException("Failed to get workflows of the project " + projectId + ": " +
                     e.getMessage(),e);
         }
     }
@@ -258,14 +259,14 @@ public class MLProjectManagementService implements ProjectManagementService{
 	@Override
 	@Deprecated
     public void setDefaultFeatureSettings(String projectID, String workflowID)
-            throws ProjectManagementServiceException {
+            throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String datasetID = getdatasetID(projectID);
             dbService.setDefaultFeatureSettings(datasetID, workflowID);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to set default feature settings: " + e.getMessage(), e);
-            throw new ProjectManagementServiceException("Failed to set default feature settings: " + e.getMessage(), e);
+            throw new MLProjectManagementServiceException("Failed to set default feature settings: " + e.getMessage(), e);
         }
     }
 
@@ -274,10 +275,10 @@ public class MLProjectManagementService implements ProjectManagementService{
      * 
      * @param tenantId     Unique identifier of the tenant.
      * @return             List of procets.
-     * @throws             ProjectManagementServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
-    public List<Project> getAllProjects(String tenantId) throws ProjectManagementServiceException {
+    public List<Project> getAllProjects(String tenantId) throws MLProjectManagementServiceException {
         try {
             List<Project> projectsOfThisTenant = new ArrayList<Project>();
             String[][] projects = this.getTenantProjects(tenantId);
@@ -312,41 +313,68 @@ public class MLProjectManagementService implements ProjectManagementService{
             }
             return projectsOfThisTenant;
         } catch (ParseException ex) {
-            throw new ProjectManagementServiceException("An error has occurred while converting project creating date" +
+            throw new MLProjectManagementServiceException("An error has occurred while converting project creating date" +
                 " of tenant: " + tenantId + " : " + ex.getMessage(), ex);
-        } catch (ProjectManagementServiceException e) {
-            throw new ProjectManagementServiceException("An error has occurred while extracting projects of tenant: "
+        } catch (MLProjectManagementServiceException e) {
+            throw new MLProjectManagementServiceException("An error has occurred while extracting projects of tenant: "
                     + tenantId +  " : " + e.getMessage(), e);
         }
     }
 	
-	/**
-     * Send email notification indicating model build has been successfully completed.
-     * 
-     * @param emailAddress  Email adress to sent the mail
-     * @param redirectUrl   Redirect link to be included in the mail
-     * @throws              ProjectManagementServiceException
-     */
-    @Override
-    public void sendModelBuildingCompleteNotification(String userName, String emailAddress, String redirectUrl) 
-            throws ProjectManagementServiceException {
-        EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
-        emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_COMPLETE_NOTIFICATION, userName, emailAddress,
-            redirectUrl);
-    }
-    
     /**
-     * Send email notification indicating model build has been failed.
-     * 
-     * @param emailAddress  Email adress to sent the mail
-     * @param redirectUrl   Redirect link to be included in the mail
-     * @throws              ProjectManagementServiceException
+     * Send email notification indicating model building has been successfully completed.
+     *
+     * @param emailAddress Email address to sent the mail
+     * @param redirectUrl Redirect link to be included in the mail
+     * @throws MLProjectManagementServiceException
      */
     @Override
-    public void sendModelBuildingFailedNotification(String userName, String emailAddress, String redirectUrl) 
-            throws ProjectManagementServiceException {
-        EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
-        emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_FAILED_NOTIFICATION, userName, emailAddress,
-            redirectUrl);
+    public void sendModelBuildingCompleteNotification(String emailAddress, String[] emailParameters)
+            throws MLProjectManagementServiceException {
+        try {
+            EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
+            emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_COMPLETE_NOTIFICATION, emailAddress,
+                    emailParameters);
+        } catch (MLEmailNotificationSenderException e) {
+            throw new MLProjectManagementServiceException("Failed to send the notification to: " + emailAddress + " : "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Send email notification indicating model building has been failed.
+     *
+     * @param emailAddress Email address to sent the mail
+     * @param redirectUrl Redirect link to be included in the mail
+     * @throws MLProjectManagementServiceException
+     */
+    @Override
+    public void sendModelBuildingFailedNotification(String emailAddress, String[] emailParameters)
+            throws MLProjectManagementServiceException {
+        try {
+            EmailNotificationSender emailNotificationSender = new EmailNotificationSender();
+            emailNotificationSender.send(ProjectMgtConstants.MODEL_BUILDING_FAILED_NOTIFICATION, emailAddress,
+                    emailParameters);
+        } catch (MLEmailNotificationSenderException e) {
+            throw new MLProjectManagementServiceException("Failed to send the notification to: " + emailAddress + " : "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Retrieve details of a given project.
+     *
+     * @param projectId Unique identifier of the project
+     * @throws MLProjectManagementServiceException
+     */
+    @Override
+    public String[] getProject(String projectId) throws MLProjectManagementServiceException {
+        try {
+            DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
+            return dbService.getProject(projectId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectManagementServiceException("Failed to retrieve the project: " + projectId + " : "
+                    + e.getMessage(), e);
+        }
     }
 }
