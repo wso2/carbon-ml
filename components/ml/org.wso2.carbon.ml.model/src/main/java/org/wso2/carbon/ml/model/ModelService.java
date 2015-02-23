@@ -31,97 +31,115 @@ import java.util.Map;
 
 public interface ModelService {
     /**
-     * @param algorithm Name of the machine learning algorithm
-     * @return List containing hyper parameters
+     * Retrieve the hyperparameters of an ML algorithm.
+     * 
+     * @param algorithm     Name of the machine learning algorithm
+     * @return              List containing hyper parameters
+     * @throws              ModelServiceException
      */
     public List<HyperParameter> getHyperParameters(String algorithm) throws ModelServiceException;
 
     /**
-     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @return List of algorithm names
+     * Retrieve ML algorithms belongs to a particular Category (i.e. Classification, Numerical Prediction, Clustering).
+     * 
+     * @param algorithmType     Type of the machine learning algorithm - e.g. Classification
+     * @return                  List of algorithm names
+     * @throws                  ModelServiceException
      */
     public List<String> getAlgorithmsByType(String algorithmType) throws ModelServiceException;
 
     /**
-     * @param algorithmType Type of the machine learning algorithm - e.g. Classification
-     * @param userResponse  User's response to a questionnaire about machine learning task
-     * @return Map containing names of recommended machine learning algorithms and recommendation
-     * scores (out of 5) for each algorithm
+     * Retrieve recommended algorithms.
+     * 
+     * @param algorithmType     Type of the machine learning algorithm - e.g. Classification
+     * @param userResponse      User's response to a questionnaire about machine learning task
+     * @return                  Map containing names of recommended machine learning algorithms and
+     *                          recommendation scores (out of 5) for each algorithm
+     * @throws                  ModelServiceException
      */
     public Map<String, Double> getRecommendedAlgorithms(String algorithmType,
             Map<String, String> userResponse) throws ModelServiceException;
 
     /**
-     * @param modelID    Model ID
-     * @param workflowID Workflow ID
-     * @throws ModelServiceException
+     * Build a model using the configuration of a workflow.
+     * 
+     * @param modelID       Model ID
+     * @param workflowID    Workflow ID
+     * @throws              ModelServiceException
      */
     public void buildModel(String modelID, String workflowID) throws ModelServiceException;
 
     /**
-     * @param modelID Model ID
-     * @return Model summary object
-     * @throws ModelServiceException
+     * Retrieve a summary of a built model.
+     * 
+     * @param modelID   Model ID
+     * @return          Model summary object
+     * @throws          ModelServiceException
      */
     public ModelSummary getModelSummary(String modelID) throws ModelServiceException;
 
     /**
-     * @param modelID Model ID
-     * @return {@link MLModel} object
-     * @throws ModelServiceException
+     * Retrieve the model using the ID.
+     * 
+     * @param modelID   Model ID
+     * @return          {@link MLModel} object
+     * @throws          ModelServiceException
      */
     public MLModel getModel(String modelID) throws ModelServiceException;
 
     /**
-     * @param modelSettings Model settings
-     * @throws ModelServiceException
+     * Save the model configurations.
+     * 
+     * @param modelSettings     Model settings
+     * @throws                  ModelServiceException
      */
     public void insertModelSettings(ModelSettings modelSettings) throws ModelServiceException;
     
     /**
-     * @param workflowId work flow id
-     * @param modelSettings Model settings
-     * @throws ModelServiceException
+     * Save model configurations.
+     * 
+     * @param modelSettings     Model settings
+     * @throws                  ModelServiceException
      */
     public void insertModelSettings(String workflowId, ModelSettings modelSettings) throws ModelServiceException;
 
     /**
-     * This method checks whether model execution is completed or not
+     * This method checks whether model execution is completed or not.
      *
-     * @param modelID Model ID
-     * @return Indicates whether model execution is completed or not
-     * @throws ModelServiceException
+     * @param modelID   Unique Identifier of the Model
+     * @return          Indicates whether model execution is completed or not
+     * @throws          ModelServiceException
      */
     public boolean isExecutionCompleted(String modelID) throws ModelServiceException;
 
     /**
-     * This method checks whether model execution is started or not
+     * This method checks whether model execution is started or not.
      *
-     * @param modelID Model ID
-     * @return Indicates whether model execution is started or not
-     * @throws ModelServiceException
+     * @param modelID   Unique Identifier of the Model
+     * @return          Indicates whether model execution is started or not
+     * @throws          ModelServiceException
      */
     public boolean isExecutionStarted(String modelID) throws ModelServiceException;
 
-    /**
-     * This method returns a confusion matrix for a given threshold
-     *
-     * @param modelID   Model ID
-     * @param threshold Probability threshold
-     * @return Returns a confusion matrix object
-     * @throws ModelServiceException
-     */
+   /**
+    * Returns a confusion matrix for a given threshold.
+    *
+    * @param modelID       Unique Identifier of the Model
+    * @param threshold     Probability threshold
+    * @return              Returns a confusion matrix object
+    * @throws              ModelServiceException
+    */
     public ConfusionMatrix getConfusionMatrix(String modelID, double threshold)
             throws ModelServiceException;
 
     /**
-     * This method retuns a list of k-means cluster points
+     * This method retuns a list of k-means cluster points.
      *
-     * @param datasetURL   Dataset URL
-     * @param features     List containing feature names
-     * @param noOfClusters Number of clusters
-     * @return Returns a list of cluster points
-     * @throws ModelServiceException
+     * @param datasetURL    Dataset URL
+     * @param features      List containing feature names
+     * @param noOfClusters  Number of clusters
+     * @return              Returns a list of cluster points
+     * @throws              ModelServiceException
      */
     public List<ClusterPoint> getClusterPoints(String datasetURL, List<String> features, int noOfClusters)
             throws ModelServiceException;

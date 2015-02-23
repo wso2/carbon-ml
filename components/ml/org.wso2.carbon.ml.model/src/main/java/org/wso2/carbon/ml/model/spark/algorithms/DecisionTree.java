@@ -51,9 +51,9 @@ public class DecisionTree implements Serializable {
     /**
      * This method applies a decision tree model to a given dataset
      *
-     * @param model Decision tree model
-     * @param test  Test dataset as a JavaRDD of labeled points
-     * @return JavaPairRDD containing predictions and labels
+     * @param model     Decision tree model
+     * @param test      Test dataset as a JavaRDD of labeled points
+     * @return          JavaPairRDD containing predictions and labels
      */
     public JavaPairRDD<Double, Double> test(final DecisionTreeModel model, JavaRDD<LabeledPoint>
             test) {

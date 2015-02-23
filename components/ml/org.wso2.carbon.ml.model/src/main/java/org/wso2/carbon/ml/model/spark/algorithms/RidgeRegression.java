@@ -13,12 +13,12 @@ public class RidgeRegression implements Serializable {
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a ridge regression model
      *
-     * @param trainingDataset         Training dataset as a JavaRDD of LabeledPoints
-     * @param noOfIterations          Number of iterarations
-     * @param initialLearningRate     Initial learning rate (SGD step size)
-     * @param regularizationParameter Regularization parameter
-     * @param miniBatchFraction       SGD minibatch fraction
-     * @return Ridge regression model
+     * @param trainingDataset           Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations            Number of iterarations
+     * @param initialLearningRate       Initial learning rate (SGD step size)
+     * @param regularizationParameter   Regularization parameter
+     * @param miniBatchFraction         SGD minibatch fraction
+     * @return                          Ridge regression model
      */
     public RidgeRegressionModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations,
             double initialLearningRate, double regularizationParameter, double miniBatchFraction) {
@@ -29,9 +29,9 @@ public class RidgeRegression implements Serializable {
     /**
      * This method applies ridge regression using a given model and a dataset
      *
-     * @param ridgeRegressionModel Ridge regression model
-     * @param testingDataset       Testing dataset as a JavaRDD of LabeledPoints
-     * @return Tuple2 containing predicted values and labels
+     * @param ridgeRegressionModel  Ridge regression model
+     * @param testingDataset        Testing dataset as a JavaRDD of LabeledPoints
+     * @return                      Tuple2 containing predicted values and labels
      */
     public JavaRDD<Tuple2<Double, Double>> test(final RidgeRegressionModel ridgeRegressionModel,
             JavaRDD<LabeledPoint> testingDataset) {

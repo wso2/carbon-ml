@@ -49,10 +49,12 @@ public class MLModelUtils {
     }
 
     /**
-     * @param feature         Feature name
-     * @param headerRow       First row (header) in the data file
-     * @param columnSeparator Column separator character
-     * @return Index of the response variable
+     * Retrieve the index of a feature in the dataset.
+     * 
+     * @param feature           Feature name
+     * @param headerRow         First row (header) in the data file
+     * @param columnSeparator   Column separator character
+     * @return                  Index of the response variable
      */
     public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) throws
             ModelServiceException {
@@ -68,8 +70,10 @@ public class MLModelUtils {
     }
 
     /**
-     * @param datasetURL Dataset URL
-     * @return Column separator character
+     * Retrieve the column separator of the CSV file.
+     * 
+     * @param datasetURL    Dataset URL
+     * @return              Column separator character
      */
     public static String getColumnSeparator(String datasetURL) throws ModelServiceException {
         if (datasetURL.endsWith(MLModelConstants.CSV)) {
@@ -82,9 +86,11 @@ public class MLModelUtils {
     }
 
     /**
-     * @param workflow     Machine learning workflow
-     * @param imputeOption Impute option
-     * @return Returns indices of features where discard row imputaion is applied
+     * Retrieve the indices of features where discard row imputaion is applied.
+     * 
+     * @param workflow      Machine learning workflow
+     * @param imputeOption  Impute option
+     * @return              Returns indices of features where discard row imputaion is applied
      */
     public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption)
             throws ModelServiceException {
@@ -98,9 +104,11 @@ public class MLModelUtils {
     }
 
     /**
-     * @param mlAlgorithmConfigXML Default configurations for machine learning algorithms
-     * @return Returns MLAlgorithms object
-     * @throws MLAlgorithmParserException
+     * Retrieve the ML algorithms from the repository/conf/etc/ml-algorithm.xml
+     * 
+     * @param mlAlgorithmConfigXML  Default configurations for machine learning algorithms
+     * @return                      Returns MLAlgorithms object
+     * @throws                      MLAlgorithmParserException
      */
     public static MLAlgorithms getMLAlgorithms(String mlAlgorithmConfigXML) throws MLAlgorithmParserException {
         try {
@@ -116,9 +124,11 @@ public class MLModelUtils {
     }
 
     /**
-     * @param sparkConfigXML Spark configuration parameters
-     * @return Returns SparkConf object
-     * @throws SparkConfigurationParserException
+     * Retrieve the Spark configurations from the repository/conf/etc/spark-config.xml
+     * 
+     * @param sparkConfigXML    Spark configuration parameters
+     * @return                  Returns SparkConf object
+     * @throws                  SparkConfigurationParserException
      */
     public static SparkConf getSparkConf(String sparkConfigXML) throws SparkConfigurationParserException {
         try {

@@ -31,11 +31,11 @@ import java.util.Map;
 public class DoubleArrayToVector implements Function<double[], Vector> {
 
     /**
-     * Function to transform double array into labeled point
+     * Function to transform double array into labeled point.
      *
-     * @param features double array of tokens
-     * @return Vector
-     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
+     * @param features  Double array of tokens
+     * @return          Vector
+     * @throws          ModelServiceException
      */
     @Override
     public Vector call(double[] features) throws ModelServiceException {

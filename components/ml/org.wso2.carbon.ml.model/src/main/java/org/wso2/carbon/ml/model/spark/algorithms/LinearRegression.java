@@ -32,11 +32,11 @@ public class LinearRegression implements Serializable {
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a linear regression model
      *
-     * @param trainingDataset     Training dataset as a JavaRDD of LabeledPoints
-     * @param noOfIterations      Number of iterarations
-     * @param initialLearningRate Initial learning rate (SGD step size)
-     * @param miniBatchFraction   SGD minibatch fraction
-     * @return Linear regression model
+     * @param trainingDataset       Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations        Number of iterarations
+     * @param initialLearningRate   Initial learning rate (SGD step size)
+     * @param miniBatchFraction     SGD minibatch fraction
+     * @return                      Linear regression model
      */
     public LinearRegressionModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations,
             double initialLearningRate, double miniBatchFraction) {
@@ -47,9 +47,9 @@ public class LinearRegression implements Serializable {
     /**
      * Linear regression train - overload method with 1 parameter
      *
-     * @param trainingDataset Training dataset as a JavaRDD of LabeledPoints
-     * @param noOfIterations  Number of iterarations
-     * @return Linear regression model
+     * @param trainingDataset   Training dataset as a JavaRDD of LabeledPoints
+     * @param noOfIterations    Number of iterarations
+     * @return                  Linear regression model
      */
     public LinearRegressionModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations) {
         return LinearRegressionWithSGD.train(trainingDataset.rdd(), noOfIterations);
@@ -60,7 +60,7 @@ public class LinearRegression implements Serializable {
      *
      * @param linearRegressionModel Linear regression model
      * @param testingDataset        Testing dataset as a JavaRDD of LabeledPoints
-     * @return Tuple2 containing predicted values and labels
+     * @return                      Tuple2 containing predicted values and labels
      */
     public JavaRDD<Tuple2<Double, Double>> test(final LinearRegressionModel linearRegressionModel,
             JavaRDD<LabeledPoint> testingDataset) {

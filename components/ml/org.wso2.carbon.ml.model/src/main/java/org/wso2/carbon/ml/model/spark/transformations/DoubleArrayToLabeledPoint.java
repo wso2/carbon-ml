@@ -41,9 +41,9 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
     /**
      * Function to transform double array into labeled point
      *
-     * @param tokens double array of tokens
-     * @return Labeled point
-     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
+     * @param tokens    Double array of tokens
+     * @return          Labeled point
+     * @throws          ModelServiceException
      */
     @Override
     public LabeledPoint call(double[] tokens) throws ModelServiceException {
