@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 
@@ -32,10 +34,22 @@ public class FileInputAdapter implements MLInputAdapter {
     @Override
     public InputStream readDataset(URI uri) throws MLInputAdapterException {
         try {
+            if (!uri.isAbsolute()) {
+                String uriString = uri.toString();
+                if (!uriString.startsWith("file://")) {
+                    uriString = "file://" + uriString;
+                    try {
+                        uri = new URI(uriString);
+                    } catch (URISyntaxException ignore) {
+                    }
+                }
+            }
             FileInputStream inputStream = new FileInputStream(new File(uri));
             return inputStream;
         } catch (FileNotFoundException e) {
-            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s", uri), e);
+            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", uri,e), e);
+        } catch (IllegalArgumentException e) {
+            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", uri,e), e);
         }
     }
 

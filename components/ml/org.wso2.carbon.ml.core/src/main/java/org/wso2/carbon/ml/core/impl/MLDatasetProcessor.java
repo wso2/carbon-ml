@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,7 +105,7 @@ public class MLDatasetProcessor {
                     input,
                     String.format("Null input stream read from the source data-set path: %s [data-set] %s",
                             dataset.getSourcePath(), dataset.getName()));
-            URI targetPath = ioFactory.getTargetPath(dataset.getName() + dataset.getTenantId());
+            String targetPath = ioFactory.getTargetPath(dataset.getName() + dataset.getTenantId());
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
             outputAdapter.writeDataset(targetPath, input);
 

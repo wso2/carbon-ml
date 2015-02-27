@@ -17,8 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.File;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +33,7 @@ import org.wso2.carbon.ml.core.utils.MLConstants;
 public class MLIOFactory {
     private static final Log log = LogFactory.getLog(MLIOFactory.class);
     private Properties configuration = new Properties();
+    private String propertyPrefix = "data.";
 
     public MLIOFactory(Properties properties) {
         configuration = properties;
@@ -41,7 +41,7 @@ public class MLIOFactory {
 
     public MLInputAdapter getInputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(type);
+        String className = configuration.getProperty(propertyPrefix + type);
         try {
             c = Class.forName(className);
             MLInputAdapter inputAdapter = (MLInputAdapter) c.newInstance();
@@ -56,7 +56,7 @@ public class MLIOFactory {
 
     public MLOutputAdapter getOutputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(type);
+        String className = configuration.getProperty(propertyPrefix + type);
         try {
             c = Class.forName(className);
             MLOutputAdapter outputAdapter = (MLOutputAdapter) c.newInstance();
@@ -69,25 +69,14 @@ public class MLIOFactory {
         return new FileOutputAdapter();
     }
 
-    public URI getTargetPath(String fileName) {
+    public String getTargetPath(String fileName) {
         String targetHome = configuration.getProperty(MLConstants.TARGET_HOME_PROP);
-        URI uri;
-        try {
-            if (targetHome == null) {
-                uri = new URI(fileName);
-            } else {
-                uri = new URI(targetHome + fileName);
-            }
-        } catch (URISyntaxException e) {
-            try {
-                return new URI(fileName);
-            } catch (URISyntaxException e1) {
-                log.warn(String.format("Failed to build the target path from [target home] %s [file name] %s",
-                        targetHome, fileName), e);
-                return null;
-            }
+        if (targetHome == null) {
+            return fileName;
+        } else {
+            return targetHome + File.separator + fileName;
         }
-        return uri;
+
     }
 
 }
