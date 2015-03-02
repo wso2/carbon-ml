@@ -19,9 +19,9 @@
 package org.wso2.carbon.ml.core.domain;
 
 public class SummaryStatisticsSettings {
-	private int histogramBins;
-	private int categoricalThreshold;
-	private int sampleSize;
+	private int histogramBins = 20;
+	private int categoricalThreshold = 20;
+	private int sampleSize = 10000;
 
 	/**
 	 * Returns the number of bins for the histogram.

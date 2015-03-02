@@ -18,9 +18,9 @@
 package org.wso2.carbon.ml.core.domain;
 
 public class DataUploadSettings {
-	private String uploadLocation;
-	private int inMemoryThreshold;
-	private long uploadLimit;
+	private String uploadLocation = "/tmp";
+	private int inMemoryThreshold = 1024;
+	private long uploadLimit = 20971520;
 
 	/**
 	 * Returns Data upload directory.
