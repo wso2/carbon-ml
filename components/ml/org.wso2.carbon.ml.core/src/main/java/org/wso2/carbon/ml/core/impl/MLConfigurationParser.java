@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.io.File;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +27,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
@@ -128,6 +131,36 @@ public class MLConfigurationParser {
                 "summary statistics settings: " + e.getMessage(), e);
         }
         return summaryStatisticsSettings;
+    }
+    
+    /**
+     * Parse properties from ml-config.xml.
+     *
+     * @return      Properties defined.
+     * @throws      MLConfigurationParserException
+     */
+    protected Properties getProperties() 
+            throws MLConfigurationParserException {
+        Properties properties = new Properties();
+        try {
+            NodeList nodes = this.document .getElementsByTagName(DatasetConfigurations.PROPERTIES).item(0).getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeName().equals(DatasetConfigurations.PROPERTY)) {
+                    NamedNodeMap attributes = node.getAttributes();
+                    String name = attributes.getNamedItem("name").getNodeValue();
+                    String value = attributes.getNamedItem("value").getNodeValue();
+                    properties.put(name, value);
+                } 
+            }
+            if(logger.isDebugEnabled()){
+                logger.info("Successfully parsed properties.");
+            }
+        } catch (Exception e) {
+            throw new MLConfigurationParserException( "An error occurred while retrieving " +
+                "properties from ml config: " + e.getMessage(), e);
+        }
+        return properties;
     }
     
     /**
