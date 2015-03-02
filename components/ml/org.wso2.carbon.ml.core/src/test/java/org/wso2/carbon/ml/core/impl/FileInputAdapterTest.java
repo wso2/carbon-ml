@@ -22,8 +22,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -41,7 +40,7 @@ public class FileInputAdapterTest {
         try {
             in = inputAdapter.readDataset(uri);
         } catch (Exception e) {
-            Assert.assertEquals(true, e instanceof MLInputAdapterException);
+            Assert.assertEquals(e instanceof MLInputAdapterException, true);
         }
 
         // test a full path
@@ -59,7 +58,7 @@ public class FileInputAdapterTest {
         try {
             in = inputAdapter.readDataset(uri);
         } catch (Exception e) {
-            Assert.assertEquals(true, e instanceof MLInputAdapterException);
+            Assert.assertEquals(e instanceof MLInputAdapterException, true);
         }
     }
 }

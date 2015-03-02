@@ -6,7 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -42,16 +42,16 @@ public class MLUtilsTest {
          int size = 10000;
          samplePoints = MLUtils.getSamplePoints(in, "csv", size);
         List<List<String>> columnData = samplePoints.getSamplePoints();
-        Assert.assertEquals(55, samplePoints.getSamplePoints().size());
+        Assert.assertEquals(samplePoints.getSamplePoints().size(), 55);
         int totalPoints = columnData.get(0).size();
-        Assert.assertEquals(size/55, totalPoints);
+        Assert.assertEquals(totalPoints, size/55);
         
         // extract all points
         in = inputAdapter.readDataset(uri);
         samplePoints = MLUtils.getSamplePoints(in, "csv", -1);
         columnData = samplePoints.getSamplePoints();
          totalPoints = columnData.get(0).size();
-        Assert.assertEquals(1000, totalPoints);
+        Assert.assertEquals(totalPoints, 1000);
         
     } catch (MLMalformedDatasetException e) {
         Assert.assertNull(e);
@@ -65,7 +65,7 @@ public class MLUtilsTest {
         samplePoints = MLUtils.getSamplePoints(in, "csv", 10);
     } catch (Exception e) {
         Assert.assertNotNull(e);
-        Assert.assertEquals(true, e instanceof MLMalformedDatasetException);
+        Assert.assertEquals(e instanceof MLMalformedDatasetException, true);
     }
       
       // null input stream
@@ -74,7 +74,7 @@ public class MLUtilsTest {
           samplePoints = MLUtils.getSamplePoints(in, "csv", 10);
       } catch (Exception e) {
           Assert.assertNotNull(e);
-          Assert.assertEquals(true, e instanceof MLMalformedDatasetException);
+          Assert.assertEquals(e instanceof MLMalformedDatasetException, true);
       }
       
       // test TSV file
@@ -84,9 +84,9 @@ public class MLUtilsTest {
       try {
         samplePoints = MLUtils.getSamplePoints(in, "tsv", 550);
         List<List<String>> columnData = samplePoints.getSamplePoints();
-        Assert.assertEquals(55, samplePoints.getSamplePoints().size());
+        Assert.assertEquals(samplePoints.getSamplePoints().size(), 55);
         int totalPoints = columnData.get(0).size();
-        Assert.assertEquals(550/55, totalPoints);
+        Assert.assertEquals(totalPoints, 550/55);
     } catch (Exception e) {
         Assert.assertNull(e);
     }

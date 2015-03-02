@@ -17,8 +17,11 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import java.util.Properties;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
 import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
@@ -29,16 +32,22 @@ public class MLConfigurationParserTest {
     public void testMLConfigParser() throws MLConfigurationParserException {
         MLConfigurationParser config = new MLConfigurationParser("src/test/resources/ml-config.xml");
         SummaryStatisticsSettings settings = config.getSummaryStatisticsSettings();
-        Assert.assertEquals(10000, settings.getSampleSize());
-        Assert.assertEquals(20, settings.getCategoricalThreshold());
-        Assert.assertEquals(20, settings.getHistogramBins());
+        Assert.assertEquals(settings.getSampleSize(), 10000);
+        Assert.assertEquals(settings.getCategoricalThreshold(), 20);
+        Assert.assertEquals(settings.getHistogramBins(), 20);
         
         DataUploadSettings dataUploadSettings = config.getDataUploadSettings();
-        Assert.assertEquals(1024, dataUploadSettings.getInMemoryThreshold());
-        Assert.assertEquals(20971520, dataUploadSettings.getUploadLimit());
-        Assert.assertEquals("USER_HOME", dataUploadSettings.getUploadLocation());
+        Assert.assertEquals(dataUploadSettings.getInMemoryThreshold(), 1024);
+        Assert.assertEquals(dataUploadSettings.getUploadLimit(), 20971520);
+        Assert.assertEquals(dataUploadSettings.getUploadLocation(), "USER_HOME");
         
-        Assert.assertEquals("jdbc/WSO2ML_DB", config.getDatabaseName());
+        Assert.assertEquals(config.getDatabaseName(), "jdbc/WSO2ML_DB");
+        
+        Properties properties = config.getProperties();
+        Assert.assertEquals(properties.size(), 2);
+        Assert.assertEquals(properties.containsKey(MLConstants.ML_THREAD_POOL_SIZE), true);
+        Assert.assertEquals(properties.get(MLConstants.TARGET_HOME_PROP), "/tmp");
+        
         
     }
     

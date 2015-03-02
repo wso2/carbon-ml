@@ -23,8 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
@@ -66,7 +65,7 @@ public class FileOutputAdapterTest {
         try {
             outputAdapter.writeDataset(outPath, in);
         } catch (Exception e) {
-            Assert.assertEquals(true, e instanceof MLOutputAdapterException);
+            Assert.assertEquals(e instanceof MLOutputAdapterException, true);
         }
         
     }
