@@ -41,7 +41,7 @@ public class MLUtils {
             int featureSize = headerMap.size();
             int[] missing = new int[featureSize];
             
-            if (sampleSize >= 0) {
+            if (sampleSize >= 0 && featureSize > 0) {
                 sampleSize = sampleSize / featureSize;
             }
             // List containing actual data of the sample.
