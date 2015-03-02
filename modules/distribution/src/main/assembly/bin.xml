@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2005-2010, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ ~ Copyright (c) 2014, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -47,6 +47,7 @@
                 <exclude>**/bin/wsdl2java.sh</exclude>
             </excludes>
         </fileSet>
+
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/modules</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/modules/</outputDirectory>
@@ -54,6 +55,17 @@
                 <include>*/**</include>
             </includes>
         </fileSet>
+        
+        <!--copying webapps-->
+		<fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps
+            </outputDirectory>
+            <includes>
+                <include>**/**.war</include>
+            </includes>
+        </fileSet>
+        
         <!--copying runtimes-->
         <fileSet>
             <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/lib/runtimes</directory>
@@ -75,22 +87,7 @@
             </includes>
             <fileMode>755</fileMode>
         </fileSet>
-
-        <!-- fileSet>
-            <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
-            </directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
-            <includes>
-                <include>**/identity.xml</include>
-            </includes>
-            <excludes>
-                <exclude>**/catalina-server.xml</exclude>
-                <exclude>**/log4j.properties</exclude>
-                <exclude>**/master-datasources.xml</exclude>
-            </excludes>
-        </fileSet-->
-
+        
         <!--Multitenancy related file -->
         <fileSet>
             <directory>
@@ -150,8 +147,7 @@
             </includes>
         </fileSet>
     </fileSets>
-
-
+	
     <files>
         <file>
             <source>src/main/conf/log4j.properties</source>
@@ -267,7 +263,7 @@
             <outputDirectory>wso2ml-${pom.version}/repository/database</outputDirectory>
             <fileMode>666</fileMode>
         </file>
-	<file>
+		<file>
             <source>src/main/conf/etc/ml-email-templates.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/email/</outputDirectory>
         </file>
