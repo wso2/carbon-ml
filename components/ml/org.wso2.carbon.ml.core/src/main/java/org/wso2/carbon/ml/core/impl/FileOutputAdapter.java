@@ -36,8 +36,8 @@ public class FileOutputAdapter implements MLOutputAdapter {
     public void writeDataset(String outPath, InputStream in) throws MLOutputAdapterException {
 
         if (in == null || outPath == null) {
-            throw new MLOutputAdapterException(String.format("Null argument values detected. Input stream: %s Out Path: %s",
-                    in, outPath));
+            throw new MLOutputAdapterException(String.format(
+                    "Null argument values detected. Input stream: %s Out Path: %s", in, outPath));
         }
         OutputStream out = null;
         try {
@@ -54,6 +54,14 @@ public class FileOutputAdapter implements MLOutputAdapter {
                 } catch (IOException e) {
                     throw new MLOutputAdapterException(String.format("Failed to close the output stream of file %s",
                             outPath), e);
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    throw new MLOutputAdapterException(String.format(
+                            "Failed to close the input stream after writing to file %s", outPath), e);
                 }
             }
         }

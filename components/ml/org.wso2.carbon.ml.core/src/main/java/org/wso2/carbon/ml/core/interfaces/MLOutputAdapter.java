@@ -31,7 +31,7 @@ public interface MLOutputAdapter {
      * 
      * @param outPath targeted path. eg: /test.txt It's up to the implementation to determine the full
      *            connection url.
-     * @param in {@link InputStream} to be written. This should not be closed by this method.
+     * @param in {@link InputStream} to be written. This should be closed by this method.
      * @throws MLOutputAdapterException on a write failure.
      */
     void writeDataset(String outPath, InputStream in) throws MLOutputAdapterException;
