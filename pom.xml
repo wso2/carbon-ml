@@ -509,6 +509,12 @@
                 <artifactId>org.wso2.carbon.ml.commons</artifactId>
                 <version>${ml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.rest.api</artifactId>
+                <version>${ml.version}</version>
+                <type>war</type>
+            </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
 			<!-- Dependencies on WSO2 for Axis2 mail Transporter -->
@@ -527,6 +533,59 @@
 	        	<artifactId>axis2</artifactId>
 	        	<version>${axis2.version}</version>
 	      	</dependency>
+
+            <!-- Dependencies for Rest API-->
+	      	<dependency>
+                    <groupId>org.wso2.carbon</groupId>
+                    <artifactId>org.wso2.carbon.user.core</artifactId>
+                    <version>${carbon.kernel.version}</version>
+                </dependency>
+	      	<dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+	            <version>${apache.cxf.jaxrs.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-core-asl</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>jaxen</groupId>
+	            <artifactId>jaxen</artifactId>
+	            <version>${jaxen.version}</version>
+	            <scope>provided</scope>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-mapper-asl</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-jaxrs</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>junit</groupId>
+	            <artifactId>junit</artifactId>
+	            <version>${junit.version}</version>
+	        </dependency>
+	        <dependency>
+                    <groupId>org.wso2.carbon.governance</groupId>
+                    <artifactId>org.wso2.carbon.governance.api</artifactId>
+                    <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.core</artifactId>
+            	<version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.core</artifactId>
+		<version>${carbon.registry.version}</version>
+	    </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -684,6 +743,14 @@
         <axis2.transport.mail.version>1.0.0</axis2.transport.mail.version>
         <axis2.transport.base.version>1.0.0</axis2.transport.base.version>
         <axis2.version>1.6.2</axis2.version>
+
+        <!--Rest API  Dependency versions -->
+        <codehaus.jackson.version>1.8.6</codehaus.jackson.version>
+        <apache.cxf.jaxrs.version>2.5.1</apache.cxf.jaxrs.version>
+        <junit.version>4.12</junit.version>
+        <jaxen.version>1.1.1</jaxen.version>
+        <xml.apis.version>1.4.01</xml.apis.version>
+        <apache.httpclient.version>4.3.5</apache.httpclient.version>
     </properties>
 
     <organization>
