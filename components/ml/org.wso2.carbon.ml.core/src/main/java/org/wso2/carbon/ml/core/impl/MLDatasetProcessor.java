@@ -32,6 +32,7 @@ import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
@@ -42,10 +43,12 @@ public class MLDatasetProcessor {
     private static final Log log = LogFactory.getLog(MLDatasetProcessor.class);
     private Properties configuration;
     private MLConfigurationParser mlConfiguration;
+    private ThreadExecutor threadExecutor;
 
     public MLDatasetProcessor(Properties properties, MLConfigurationParser configParser) {
         configuration = properties;
         mlConfiguration = configParser;
+        threadExecutor = new ThreadExecutor(properties);
     }
 
     /**
@@ -113,9 +116,11 @@ public class MLDatasetProcessor {
             SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(), mlConfiguration.getSummaryStatisticsSettings()
                     .getSampleSize());
 
-            // start summary stats generation in a new thread
+            // start summary stats generation in a new thread, pass data set version id
+            threadExecutor.execute(new SummaryStatsGenerator(mlConfiguration, samplePoints));
 
             // TODO persist into the ML db
+                // persist sample points
         } catch (MLInputAdapterException e) {
             throw new MLDataProcessingException(e);
         } catch (MLOutputAdapterException e) {
