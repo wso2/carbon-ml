@@ -67,26 +67,6 @@
       	    </exclusions> 
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.analytics</groupId>
-            <artifactId>org.wso2.carbon.analytics.dataservice</artifactId>
-            <version>${carbon.analytics.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene.wso2</groupId>
-			<artifactId>lucene</artifactId>
-            <version>4.10.3.wso2v1</version>
-        </dependency>
-        <dependency>
-			<groupId>org.wso2.carbon.analytics</groupId>
-			<artifactId>org.wso2.carbon.analytics.datasource.core</artifactId>
-			<version>${carbon.analytics.version}</version>
-		</dependency>
-         <dependency>
-<groupId>org.wso2.carbon.analytics</groupId>
-<artifactId>org.wso2.carbon.analytics.datasource.rdbms</artifactId>
-			<version>${carbon.analytics.version}</version>
-</dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
