@@ -24,7 +24,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.ImputeOption;
@@ -33,7 +32,6 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
-import org.wso2.carbon.ml.database.internal.ds.MLDatabaseServiceValueHolder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,11 +47,9 @@ public class MLDatabaseService implements DatabaseService {
 
     private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
     private MLDataSource dbh;
-    private AnalyticsDataService analyticsDataService;
     private static final String DB_CHECK_SQL = "SELECT * FROM ML_PROJECT";
 
     public MLDatabaseService() {
-        analyticsDataService = MLDatabaseServiceValueHolder.getAnalyticsService();
         try {
             dbh = new MLDataSource();
         } catch (Exception e) {
@@ -643,20 +639,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
-        }
-
-        try {
-            if (!analyticsDataService.tableExists(tenantId, MLConstants.ML_MODEL_TABLE_NAME)) {
-
-                // create Model database table for this tenant
-                analyticsDataService.createTable(tenantId, MLConstants.ML_MODEL_TABLE_NAME);
-                logger.info(String.format("Successfully created the table %s for tenant %s",
-                        MLConstants.ML_MODEL_TABLE_NAME, tenantId));
-            }
-        } catch (NumberFormatException e) {
-            throw new DatabaseHandlerException("Tenant id cannot be parsed from: " + tenantId, e);
-        } catch (AnalyticsException e) {
-            throw new DatabaseHandlerException(e.getMessage(), e);
         }
     }
 
