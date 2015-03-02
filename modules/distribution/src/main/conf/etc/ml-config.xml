@@ -11,6 +11,8 @@
         <categoricalThreshold>20</categoricalThreshold>
         <sampleSize>10000</sampleSize>
     </summaryStatisticsSettings>
+    <properties>
+    	<property name="ml.thread.pool.size" value="100" />
+    	<property name="target.home" value="/tmp" />
+    </properties>
 </mlSettings>
-
-
