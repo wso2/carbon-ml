@@ -30,10 +30,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.ml.core.domain.DataUploadSettings;
+import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
-import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
-import org.wso2.carbon.ml.dataset.internal.dto.DataUploadSettings;
-import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
 
 /**
  * Class contains methods for parsing configurations from ml-config XML file.
@@ -44,7 +44,7 @@ public class MLConfigurationParser {
     private Document document;
 
     MLConfigurationParser() throws MLConfigurationParserException {
-        new MLConfigurationParser(DatasetConfigurations.ML_CONFIG_XML);
+        new MLConfigurationParser(MLConstants.ML_CONFIG_XML);
     }
     
     MLConfigurationParser(String path) throws MLConfigurationParserException {
@@ -61,7 +61,7 @@ public class MLConfigurationParser {
             
         } catch (Exception e) {
             throw new MLConfigurationParserException("An error occurred while parsing " +
-                DatasetConfigurations.ML_CONFIG_XML + " : " + e.getMessage(), e);
+                MLConstants.ML_CONFIG_XML + " : " + e.getMessage(), e);
         }
     }
 
@@ -74,16 +74,16 @@ public class MLConfigurationParser {
     protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
         DataUploadSettings dataUploadSettings = new DataUploadSettings();
         try {
-            NodeList nodes = this.document.getElementsByTagName(DatasetConfigurations
+            NodeList nodes = this.document.getElementsByTagName(MLConstants
                 .UPLOAD_SETTINGS).item(0) .getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeName().equals(DatasetConfigurations.UPLOAD_LOCATION)) {
+                if (nodes.item(i).getNodeName().equals(MLConstants.UPLOAD_LOCATION)) {
                     dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
-                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations
+                } else if (nodes.item(i).getNodeName().equals(MLConstants
                     .IN_MEMORY_THRESHOLD)) {
                         dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
                             .getTextContent()));
-                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.UPLOAD_LIMIT)) {
+                } else if (nodes.item(i).getNodeName().equals(MLConstants.UPLOAD_LIMIT)) {
                     dataUploadSettings.setUploadLimit(Long .parseLong(nodes.item(i)
                         .getTextContent()));
                 }
@@ -108,17 +108,17 @@ public class MLConfigurationParser {
             throws MLConfigurationParserException {
         SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
         try {
-            NodeList nodes = this.document .getElementsByTagName(DatasetConfigurations
+            NodeList nodes = this.document .getElementsByTagName(MLConstants
                 .SUMMARY_STATISTICS_SETTINGS).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeName().equals(DatasetConfigurations.HISTOGRAM_BINS)) {
+                if (nodes.item(i).getNodeName().equals(MLConstants.HISTOGRAM_BINS)) {
                     summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
                         .getTextContent()));
                 } else if (nodes.item(i).getNodeName()
-                        .equals(DatasetConfigurations.CATEGORICAL_THRESHOLD)) {
+                        .equals(MLConstants.CATEGORICAL_THRESHOLD)) {
                     summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes
                         .item(i).getTextContent()));
-                } else if (nodes.item(i).getNodeName().equals(DatasetConfigurations.SAMPLE_SIZE)) {
+                } else if (nodes.item(i).getNodeName().equals(MLConstants.SAMPLE_SIZE)) {
                     summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
                         .getTextContent()));
                 }
@@ -143,10 +143,10 @@ public class MLConfigurationParser {
             throws MLConfigurationParserException {
         Properties properties = new Properties();
         try {
-            NodeList nodes = this.document .getElementsByTagName(DatasetConfigurations.PROPERTIES).item(0).getChildNodes();
+            NodeList nodes = this.document .getElementsByTagName(MLConstants.PROPERTIES).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
-                if (node.getNodeName().equals(DatasetConfigurations.PROPERTY)) {
+                if (node.getNodeName().equals(MLConstants.PROPERTY)) {
                     NamedNodeMap attributes = node.getAttributes();
                     String name = attributes.getNamedItem("name").getNodeValue();
                     String value = attributes.getNamedItem("value").getNodeValue();
@@ -171,7 +171,7 @@ public class MLConfigurationParser {
      */
     protected String getDatabaseName() throws MLConfigurationParserException{
         try{
-            return this.document.getElementsByTagName(DatasetConfigurations.DATABASE).item(0)
+            return this.document.getElementsByTagName(MLConstants.DATABASE).item(0)
                     .getTextContent();
         } catch(Exception e){
             throw new MLConfigurationParserException( "An error occurred while retrieving ML " +

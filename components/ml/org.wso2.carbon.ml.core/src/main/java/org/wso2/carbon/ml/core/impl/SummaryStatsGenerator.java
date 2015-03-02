@@ -34,12 +34,11 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
-import org.wso2.carbon.ml.dataset.internal.MLDatasetServiceValueHolder;
-import org.wso2.carbon.ml.dataset.internal.dto.SummaryStatisticsSettings;
 
 /**
  * Responsible for generating summary stats for a given set of sample points.
@@ -105,14 +104,14 @@ public class SummaryStatsGenerator implements Runnable {
             calculateStringColumnFrequencies();
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies();
-            // Update the database with calculated summary statistics.
-            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
-            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
-                    this.missing, this.unique, this.descriptiveStats, true);
+            // TODO Update the database with calculated summary statistics.
+//            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
+//            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
+//                    this.missing, this.unique, this.descriptiveStats, true);
             if (logger.isDebugEnabled()) {
                 logger.info("Summary statistics successfully generated for dataset: " + datasetID);
             }
-        } catch (DatabaseHandlerException e) {
+        } catch (Exception e) {
             logger.error("Error occurred while Calculating summary statistics " + "for dataset " + this.datasetID
                     + ": " + e.getMessage(), e);
         }
