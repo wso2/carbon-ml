@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.domain.DataUploadSettings;
 import org.wso2.carbon.ml.core.domain.MLDataset;
+import org.wso2.carbon.ml.core.domain.MLValueset;
 import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
@@ -114,6 +115,7 @@ public class MLDatasetProcessor {
         handleNull(dataset.getSourcePath(),
                 String.format("Null data source path provided [data-set] %s", dataset.getName()));
         InputStream input = null;
+        URI targetUri = null;
         try {
             // write the data-set to a server side location
             input = inputAdapter.readDataset(dataset.getSourcePath());
@@ -128,7 +130,8 @@ public class MLDatasetProcessor {
             // read the file that was written
             inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType());
             try {
-                input = inputAdapter.readDataset(new URI(targetPath));
+                targetUri = new URI(targetPath);
+                input = inputAdapter.readDataset(targetUri);
             } catch (URISyntaxException e) {
                 throw new MLDataProcessingException("Unable to read the data-set file from: "+targetPath, e);
             }
@@ -139,6 +142,12 @@ public class MLDatasetProcessor {
 
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(summaryStatsSettings, samplePoints));
+            
+            // build the MLValueSet
+            MLValueset valueSet = new MLValueset();
+            valueSet.setTenantId(dataset.getTenantId());
+            valueSet.setTargetPath(targetUri);
+            valueSet.setSamplePoints(samplePoints);
 
             // TODO persist into the ML db
             // persist sample points
