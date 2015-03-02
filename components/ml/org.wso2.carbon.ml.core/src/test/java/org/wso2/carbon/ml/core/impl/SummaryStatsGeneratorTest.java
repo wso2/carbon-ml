@@ -46,7 +46,7 @@ public class SummaryStatsGeneratorTest {
             Assert.assertNull(e);
         }
         MLConfigurationParser config = new MLConfigurationParser("src/test/resources/ml-config.xml");
-        summaryGen = new SummaryStatsGenerator(config.getSummaryStatisticsSettings(), samplePoints);
+        summaryGen = new SummaryStatsGenerator("mydataset100", config.getSummaryStatisticsSettings(), samplePoints);
     }
 
     @Test
