@@ -139,9 +139,11 @@ public class MLDatasetProcessor {
             // extract sample points
             SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(),
                     summaryStatsSettings.getSampleSize());
+            
+            String datasetVersionId = ""; // get this from DB
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(summaryStatsSettings, samplePoints));
+            threadExecutor.execute(new SummaryStatsGenerator(datasetVersionId, summaryStatsSettings, samplePoints));
             
             // build the MLValueSet
             MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), targetUri, samplePoints);

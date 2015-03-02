@@ -63,10 +63,11 @@ public class SummaryStatsGenerator implements Runnable {
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
 
-    private String datasetID;
+    private String datasetVersionId;
 
-    public SummaryStatsGenerator(SummaryStatisticsSettings summaryStatsSettings, SamplePoints samplePoints)
-            throws MLConfigurationParserException {
+    public SummaryStatsGenerator(String datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
+            SamplePoints samplePoints) throws MLConfigurationParserException {
+        this.datasetVersionId = datasetVersionId;
         this.summarySettings = summaryStatsSettings;
         this.headerMap = samplePoints.getHeader();
         this.columnData = samplePoints.getSamplePoints();
@@ -100,15 +101,15 @@ public class SummaryStatsGenerator implements Runnable {
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies();
             // TODO Update the database with calculated summary statistics.
-//            DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
-//            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
-//                    this.missing, this.unique, this.descriptiveStats, true);
+            // DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
+            // dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
+            // this.missing, this.unique, this.descriptiveStats, true);
             if (logger.isDebugEnabled()) {
-                logger.debug("Summary statistics successfully generated for dataset: " + datasetID);
+                logger.debug("Summary statistics successfully generated for dataset: " + datasetVersionId);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while Calculating summary statistics " + "for dataset " + this.datasetID
-                    + ": " + e.getMessage(), e);
+            logger.error("Error occurred while Calculating summary statistics " + "for dataset "
+                    + this.datasetVersionId + ": " + e.getMessage(), e);
         }
     }
 
@@ -132,7 +133,7 @@ public class SummaryStatsGenerator implements Runnable {
                 this.type[col] = FeatureType.NUMERICAL;
             }
         }
-        
+
         return type;
     }
 
@@ -156,7 +157,7 @@ public class SummaryStatsGenerator implements Runnable {
                 }
             }
         }
-        
+
         return descriptiveStats;
     }
 
@@ -184,7 +185,7 @@ public class SummaryStatsGenerator implements Runnable {
             }
             graphFrequencies.set(currentCol, frequencies);
         }
-        
+
         return graphFrequencies;
     }
 
@@ -223,7 +224,7 @@ public class SummaryStatsGenerator implements Runnable {
                 calculateIntervalFreqs(currentCol, noOfIntervals);
             }
         }
-        
+
         return graphFrequencies;
     }
 
@@ -252,7 +253,7 @@ public class SummaryStatsGenerator implements Runnable {
             frequencies.put(bin++, (int) stats.getN());
         }
         this.graphFrequencies.set(column, frequencies);
-        
+
         return graphFrequencies;
     }
 }
