@@ -476,6 +476,11 @@
             <!-- Dependencies on WSO2 Carbon ML components -->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.core</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.model</artifactId>
                 <version>${ml.version}</version>
             </dependency>

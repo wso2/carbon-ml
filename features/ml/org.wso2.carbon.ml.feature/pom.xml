@@ -30,6 +30,12 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon Machine Learner</name>
     <dependencies>
+    	<dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ml.core.feature</artifactId>
+            <version>${ml.version}</version>
+            <type>zip</type>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons.feature</artifactId>
@@ -90,6 +96,7 @@
                                 </properties>
                             </adviceFile>
                             <includedFeatures>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.core.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.commons.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.dataset.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.ml.model.feature</includedFeatureDef>

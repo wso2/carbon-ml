@@ -17,12 +17,15 @@
  */
 package org.wso2.carbon.ml.database;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 public interface DatabaseService {
 
@@ -122,6 +125,20 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * Returns a set of features in a given range, from the alphabetically ordered set
+     * of features, of a data-set.
+     *
+     * @param datasetID         Unique Identifier of the data-set
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatabaseHandlerException
+     */
+    public List<FeatureSummary> getFeatures(String datasetID, String modelId, int startIndex,
+                                            int numberOfFeatures) throws DatabaseHandlerException;
+
+
+    /**
      * This method extracts and retures default features available in a given dataset version
      * @param datasetVersionId The dataset varsion id associated with this dataset version
      * @return                 A list of FeatureSummaries
@@ -129,6 +146,16 @@ public interface DatabaseService {
      */
     public List<FeatureSummary> getDefaultFeatures(String datasetVersionId, int startIndex, int numberOfFeatures)
             throws DatabaseHandlerException;
+
+    /**
+     * Returns the names of the features, belongs to a particular data-type
+     * (Categorical/Numerical), of the work-flow.
+     *
+     * @param modelId       Unique identifier of the current model
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(String modelId) throws DatabaseHandlerException;
 
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
@@ -149,4 +176,132 @@ public interface DatabaseService {
      * @throws                     DatabaseHandlerException
      */
     public int getFeatureCount(String datasetVersionId) throws DatabaseHandlerException;
+
+    /**
+     * Update the database with all the summary statistics of the sample.
+     *
+     * @param datasetID         Unique Identifier of the data-set
+     * @param headerMap         Array of names of features
+     * @param type              Array of data-types of each feature
+     * @param graphFrequencies  List of Maps containing frequencies for graphs, of each feature
+     * @param missing           Array of Number of missing values in each feature
+     * @param unique            Array of Number of unique values in each feature
+     * @param descriptiveStats  Array of descriptiveStats object of each feature
+     * @param                   include Default value to set for the flag indicating the feature is an input or not
+     * @throws                  DatabaseHandlerException
+     */
+    public void updateSummaryStatistics(String datasetID,  Map<String, Integer> headerMap, String[] type,
+                                        List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
+                                        List<DescriptiveStatistics> descriptiveStats, Boolean include)
+            throws DatabaseHandlerException;
+
+    /**
+     * Set the default values for feature properties of a given workflow.
+     *
+     * @param datasetVersionId  Unique identifier of the data-set-version
+     * @param modelId           Unique identifier of the current model
+     * @throws                  DatabaseHandlerException
+     */
+    public void setDefaultFeatureSettings(String datasetVersionId, String modelId) throws DatabaseHandlerException;
+
+    /**
+     * Retrieves the type of a feature.
+     *
+     * @param modelId       Unique identifier of the model
+     * @param featureName   Name of the feature
+     * @return              Type of the feature (Categorical/Numerical)
+     * @throws              DatabaseHandlerException
+     */
+    public String getFeatureType(String modelId, String featureName) throws DatabaseHandlerException;
+
+    /**
+     * Change whether a feature should be included as an input or not
+     *
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param isInput       Boolean value indicating whether the feature is an input or not
+     * @throws              DatabaseHandlerException
+     */
+    public void updateFeatureInclusion(String featureName, String modelId, boolean isInput)
+            throws DatabaseHandlerException;
+
+    /**
+     * Update the impute method option of a given feature.
+     *
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param imputeOption  Updated impute option of the feature
+     * @throws              DatabaseHandlerException
+     */
+    public void updateImputeOption(String featureName, String modelId, String imputeOption)
+            throws DatabaseHandlerException;
+
+    /**
+     * Update the data type of a given feature.
+     *
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param featureType   Updated type of the feature
+     * @throws              DatabaseHandlerException
+     */
+    public void updateDataType(String featureName, String modelId, String featureType)
+            throws DatabaseHandlerException;
+
+    /**
+     * Creates a new project.
+     *
+     * @param projectID        Unique identifier for the project
+     * @param projectName      Name of the project
+     * @param description      Description of the project
+     * @throws                 DatabaseHandlerException
+     */
+    public void createProject(String projectID, String projectName, String description) throws DatabaseHandlerException;
+
+    /**
+     * Retrieve Details of a Project
+     *
+     * @param projectId     Unique identifier of the project
+     * @return              DatabaseHandlerException
+     */
+    public String[] getProject(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Delete details of a given project from the database.
+     *
+     * @param projectId    Unique identifier for the project
+     * @throws             DatabaseHandlerException
+     */
+    public void deleteProject(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Get the project names and created dates, that a tenant is assigned to.
+     *
+     * @param tenantID     Unique identifier for the tenant.
+     * @return             An array of project ID, Name and the created date of the projects
+     *                     associated with a given tenant.
+     * @throws             DatabaseHandlerException
+     */
+    public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException;
+
+    //TODO workflow to be replaced with analysis
+
+    public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID
+            , String workflowName) throws DatabaseHandlerException;
+
+    // TODO
+    public void createWorkflow(String workflowID, String projectID, String datasetID
+            , String workflowName) throws DatabaseHandlerException;
+
+    // TODO
+    public void deleteWorkflow(String workflowID) throws DatabaseHandlerException;
+
+    // TODO
+    public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException;
+
+    // TODO
+    public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
+
+    // TODO
+    public String getdatasetID(String projectId) throws DatabaseHandlerException;
+
 }

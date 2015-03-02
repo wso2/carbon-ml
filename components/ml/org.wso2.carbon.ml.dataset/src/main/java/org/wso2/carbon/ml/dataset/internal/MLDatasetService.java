@@ -275,7 +275,7 @@ public class MLDatasetService implements DatasetService {
             throws DatasetServiceException {
         try {
             DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-            dbService.updateIsIncludedFeature(featureName, workflowID, isInput);
+            dbService.updateFeatureInclusion(featureName, workflowID, isInput);
         } catch (DatabaseHandlerException e) {
             throw new DatasetServiceException( "Failed to update included option: "
                 + e.getMessage(), e);

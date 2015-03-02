@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.database.internal.ds;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.internal.MLDatabaseService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -30,9 +29,6 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService"
  *                unbind="unsetConfigurationContextService"
- * @scr.reference name="analytics.component" interface="org.wso2.carbon.analytics.dataservice.AnalyticsDataService"
- *                cardinality="1..1" policy="dynamic" bind="setAnalyticsDataService"
- *                unbind="unsetAnalyticsDataService"
  */
 public class MLDatabaseServiceDS {
 
@@ -62,11 +58,4 @@ public class MLDatabaseServiceDS {
         MLDatabaseServiceValueHolder.setContextService(null);
     }
 
-    protected void setAnalyticsDataService(AnalyticsDataService analytics) {
-        MLDatabaseServiceValueHolder.setAnalyticsService(analytics);
-    }
-
-    protected void unsetAnalyticsDataService(AnalyticsDataService analytics) {
-        MLDatabaseServiceValueHolder.setAnalyticsService(null);
-    }
 }

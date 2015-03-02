@@ -88,12 +88,6 @@
                                 </properties>
                             </adviceFile>
 			    <importFeatures>
-				<importFeatureDef>
-				    org.wso2.carbon.analytics.core.server:${carbon.analytics.version}
-				</importFeatureDef>
-				<importFeatureDef>
-                                    org.wso2.carbon.analytics.datasource:${carbon.analytics.version}
-                                </importFeatureDef>
 			    </importFeatures>
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.database</bundleDef>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mlSettings>
+    <database>jdbc/WSO2ML_DB</database>
+    <dataUploadSettings>
+        <uploadLocation>USER_HOME</uploadLocation>
+        <inMemoryThreshold>1024</inMemoryThreshold>
+        <uploadLimit>20971520</uploadLimit>
+    </dataUploadSettings>
+    <summaryStatisticsSettings>
+        <histogramBins>20</histogramBins>
+        <categoricalThreshold>20</categoricalThreshold>
+        <sampleSize>10000</sampleSize>
+    </summaryStatisticsSettings>
+    <properties>
+    	<property name="ml.thread.pool.size" value="100" />
+    	<property name="target.home" value="/tmp" />
+    </properties>
+</mlSettings>

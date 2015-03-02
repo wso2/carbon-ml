@@ -33,6 +33,9 @@ public class DatasetConfigurations {
     public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
     public static final String SAMPLE_SIZE = "sampleSize";
     
+    public static final String PROPERTIES = "properties";
+    public static final String PROPERTY = "property";
+    
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
