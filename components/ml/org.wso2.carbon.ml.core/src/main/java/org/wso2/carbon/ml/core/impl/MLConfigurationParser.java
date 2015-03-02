@@ -43,7 +43,7 @@ public class MLConfigurationParser {
     private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
     private Document document;
 
-    MLConfigurationParser() throws MLConfigurationParserException {
+    public MLConfigurationParser() throws MLConfigurationParserException {
         new MLConfigurationParser(MLConstants.ML_CONFIG_XML);
     }
     
