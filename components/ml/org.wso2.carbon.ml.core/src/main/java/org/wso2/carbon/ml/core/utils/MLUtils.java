@@ -39,6 +39,8 @@ public class MLUtils {
             int recordsCount = 0;
             CSVRecord row;
             int featureSize = headerMap.size();
+            int[] missing = new int[featureSize];
+            
             if (sampleSize >= 0) {
                 sampleSize = sampleSize / featureSize;
             }
@@ -56,12 +58,18 @@ public class MLUtils {
                 for (int currentCol = 0; currentCol < featureSize; currentCol++) {
                     // Append the cell to the respective column.
                     columnData.get(currentCol).add(row.get(currentCol));
+                    
+                    if (row.get(currentCol).isEmpty()) {
+                     // If the cell is empty, increase the missing value count.
+                        missing[currentCol]++;
+                    }
                 }
                 recordsCount++;
             }
             SamplePoints samplePoints = new SamplePoints();
             samplePoints.setHeader(headerMap);
             samplePoints.setSamplePoints(columnData);
+            samplePoints.setMissing(missing);
             return samplePoints;
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to parse the given input stream. Cause: "+e, e);
