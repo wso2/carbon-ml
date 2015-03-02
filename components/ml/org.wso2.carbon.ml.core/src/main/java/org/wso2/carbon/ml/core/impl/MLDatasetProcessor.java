@@ -45,10 +45,15 @@ public class MLDatasetProcessor {
     private MLConfigurationParser mlConfiguration;
     private ThreadExecutor threadExecutor;
 
-    public MLDatasetProcessor(Properties properties, MLConfigurationParser configParser) {
-        configuration = properties;
+    public MLDatasetProcessor(MLConfigurationParser configParser) {
         mlConfiguration = configParser;
-        threadExecutor = new ThreadExecutor(properties);
+        try {
+            configuration = configParser.getProperties();
+        } catch (MLConfigurationParserException ignore) {
+            log.warn("Failed to extract properties from ML configuration file.");
+            configuration = new Properties();
+        }
+        threadExecutor = new ThreadExecutor(configuration);
     }
 
     /**
