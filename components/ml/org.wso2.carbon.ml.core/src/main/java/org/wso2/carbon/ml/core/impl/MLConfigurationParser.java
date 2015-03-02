@@ -24,6 +24,7 @@ import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -43,12 +44,11 @@ public class MLConfigurationParser {
     private static final Log logger = LogFactory.getLog(MLConfigurationParser.class);
     private Document document;
 
-    public MLConfigurationParser() throws MLConfigurationParserException {
-        new MLConfigurationParser(MLConstants.ML_CONFIG_XML);
-    }
-    
-    MLConfigurationParser(String path) throws MLConfigurationParserException {
+    public MLConfigurationParser(String path) throws MLConfigurationParserException {
         try {
+            if (path == null || StringUtils.isEmpty(path)) {
+                path = MLConstants.ML_CONFIG_XML;
+            }
             File xmlFile = new File(path);
             if (xmlFile.exists()) {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -108,7 +108,7 @@ public class MLConfigurationParser {
             throws MLConfigurationParserException {
         SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
         try {
-            NodeList nodes = this.document .getElementsByTagName(MLConstants
+            NodeList nodes = this.document.getElementsByTagName(MLConstants
                 .SUMMARY_STATISTICS_SETTINGS).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
                 if (nodes.item(i).getNodeName().equals(MLConstants.HISTOGRAM_BINS)) {

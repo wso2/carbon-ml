@@ -39,7 +39,7 @@ public class MLCoreDS {
 
     protected void activate(ComponentContext context) {
         try {
-            MLConfigurationParser mlConfig = new MLConfigurationParser();
+            MLConfigurationParser mlConfig = new MLConfigurationParser(null);
             MLDatasetProcessor processor = new MLDatasetProcessor(mlConfig);
             MLDataset dataset = new MLDataset();
             dataset.setName("test-ml");

@@ -49,7 +49,7 @@ public class MLIOFactory {
         } catch (Exception e) {
             log.warn(String.format(
                     "Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
-                    className, FileInputAdapter.class.getName()), e);
+                    className, FileInputAdapter.class.getName()));
         }
         return new FileInputAdapter();
     }
@@ -64,7 +64,7 @@ public class MLIOFactory {
         } catch (Exception e) {
             log.warn(String.format(
                     "Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
-                    className, FileOutputAdapter.class.getName()), e);
+                    className, FileOutputAdapter.class.getName()));
         }
         return new FileOutputAdapter();
     }
