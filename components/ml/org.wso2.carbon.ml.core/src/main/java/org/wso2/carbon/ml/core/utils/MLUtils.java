@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.core.domain.MLValueset;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
 public class MLUtils {
@@ -91,5 +93,13 @@ public class MLUtils {
             }
             return CSVFormat.RFC4180;
         }
+    }
+    
+    public static MLValueset getMLValueSet(int tenantId, URI targetPath, SamplePoints samplePoints) {
+        MLValueset valueSet = new MLValueset();
+        valueSet.setTenantId(tenantId);
+        valueSet.setTargetPath(targetPath);
+        valueSet.setSamplePoints(samplePoints);
+        return valueSet;
     }
 }

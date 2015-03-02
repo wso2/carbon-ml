@@ -144,10 +144,7 @@ public class MLDatasetProcessor {
             threadExecutor.execute(new SummaryStatsGenerator(summaryStatsSettings, samplePoints));
             
             // build the MLValueSet
-            MLValueset valueSet = new MLValueset();
-            valueSet.setTenantId(dataset.getTenantId());
-            valueSet.setTargetPath(targetUri);
-            valueSet.setSamplePoints(samplePoints);
+            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), targetUri, samplePoints);
 
             // TODO persist into the ML db
             // persist sample points
