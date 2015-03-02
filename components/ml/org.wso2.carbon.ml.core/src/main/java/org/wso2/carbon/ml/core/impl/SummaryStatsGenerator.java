@@ -35,8 +35,6 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
-import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
@@ -58,8 +56,6 @@ public class SummaryStatsGenerator implements Runnable {
     private List<SortedMap<?, Integer>> graphFrequencies = new ArrayList<SortedMap<?, Integer>>();
     // Array containing histograms of each feature in the data-set.
     private EmpiricalDistribution[] histogram;
-    // Array containing number of missing values of each feature in the data-set.
-    private int[] missing;
     // Array containing number of unique values of each feature in the data-set.
     private int[] unique;
     // Array containing data-type of each feature in the data-set.
@@ -69,14 +65,13 @@ public class SummaryStatsGenerator implements Runnable {
 
     private String datasetID;
 
-    public SummaryStatsGenerator(MLConfigurationParser configuration, SamplePoints samplePoints)
+    public SummaryStatsGenerator(SummaryStatisticsSettings summaryStatsSettings, SamplePoints samplePoints)
             throws MLConfigurationParserException {
-        this.summarySettings = configuration.getSummaryStatisticsSettings();
+        this.summarySettings = summaryStatsSettings;
         this.headerMap = samplePoints.getHeader();
         this.columnData = samplePoints.getSamplePoints();
         int noOfFeatures = this.headerMap.size();
         // Initialize the lists.
-        this.missing = samplePoints.getMissing();
         this.unique = new int[noOfFeatures];
         this.type = new String[noOfFeatures];
         this.histogram = new EmpiricalDistribution[noOfFeatures];

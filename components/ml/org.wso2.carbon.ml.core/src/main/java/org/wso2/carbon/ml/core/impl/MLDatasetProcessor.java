@@ -24,7 +24,9 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.core.domain.DataUploadSettings;
 import org.wso2.carbon.ml.core.domain.MLDataset;
+import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
@@ -41,19 +43,23 @@ import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
  */
 public class MLDatasetProcessor {
     private static final Log log = LogFactory.getLog(MLDatasetProcessor.class);
-    private Properties configuration;
-    private MLConfigurationParser mlConfiguration;
+    private Properties mlProperties;
+    private DataUploadSettings dataUploadSettings;
+    private SummaryStatisticsSettings summaryStatsSettings;
     private ThreadExecutor threadExecutor;
 
     public MLDatasetProcessor(MLConfigurationParser configParser) {
-        mlConfiguration = configParser;
         try {
-            configuration = configParser.getProperties();
+            mlProperties = configParser.getProperties();
+            dataUploadSettings = configParser.getDataUploadSettings();
+            summaryStatsSettings = configParser.getSummaryStatisticsSettings();
         } catch (MLConfigurationParserException ignore) {
             log.warn("Failed to extract properties from ML configuration file.");
-            configuration = new Properties();
+            mlProperties = new Properties();
+            dataUploadSettings = new DataUploadSettings();
+            summaryStatsSettings = new SummaryStatisticsSettings();
         }
-        threadExecutor = new ThreadExecutor(configuration);
+        threadExecutor = new ThreadExecutor(mlProperties);
     }
 
     /**
@@ -92,7 +98,7 @@ public class MLDatasetProcessor {
      */
     public void process(MLDataset dataset) throws MLDataProcessingException {
 
-        MLIOFactory ioFactory = new MLIOFactory(configuration);
+        MLIOFactory ioFactory = new MLIOFactory(mlProperties);
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType());
         handleNull(
                 inputAdapter,
@@ -118,14 +124,14 @@ public class MLDatasetProcessor {
             outputAdapter.writeDataset(targetPath, input);
 
             // extract sample points
-            SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(), mlConfiguration.getSummaryStatisticsSettings()
-                    .getSampleSize());
+            SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(),
+                    summaryStatsSettings.getSampleSize());
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(mlConfiguration, samplePoints));
+            threadExecutor.execute(new SummaryStatsGenerator(summaryStatsSettings, samplePoints));
 
             // TODO persist into the ML db
-                // persist sample points
+            // persist sample points
         } catch (MLInputAdapterException e) {
             throw new MLDataProcessingException(e);
         } catch (MLOutputAdapterException e) {
