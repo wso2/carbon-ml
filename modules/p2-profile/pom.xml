@@ -173,13 +173,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon.deployment:org.wso2.carbon.webapp.mgt.server.feature:${carbon.deployment.version}
                                 </featureArtifactDef>
-				<!-- carbon analytics features -->
-				<featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.core.server.feature:${carbon.analytics.version}
-                                </featureArtifactDef>
-				<featureArtifactDef>
-                                    org.wso2.carbon.analytics:org.wso2.carbon.analytics.datasource.feature:${carbon.analytics.version}
-                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -312,15 +305,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.webapp.mgt.server.feature.group</id>
                                     <version>${carbon.deployment.version}</version>
-                                </feature>
-				<!-- carbon analytics features -->
-                                <feature>
-                                    <id>org.wso2.carbon.analytics.core.server.feature.group</id>
-				    <version>${carbon.analytics.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.analytics.datasource.feature.group</id>
-				    <version>${carbon.analytics.version}</version>
                                 </feature>
                             </features>
                         </configuration>

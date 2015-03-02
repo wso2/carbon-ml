@@ -22,11 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
-import org.wso2.carbon.analytics.datasource.core.AnalyticsException;
-import org.wso2.carbon.analytics.datasource.core.AnalyticsTableNotAvailableException;
-import org.wso2.carbon.analytics.datasource.core.Record;
-import org.wso2.carbon.analytics.datasource.core.RecordGroup;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -50,11 +45,9 @@ public class MLDatabaseService implements DatabaseService{
 
     private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
     private MLDataSource dbh;
-    private AnalyticsDataService analyticsDataService;
     private static final String DB_CHECK_SQL = "SELECT * FROM ML_PROJECT";
     
     public MLDatabaseService () {
-        analyticsDataService = MLDatabaseServiceValueHolder.getAnalyticsService();
         try {
             dbh = new MLDataSource();
         } catch (Exception e) {
@@ -1225,19 +1218,6 @@ public class MLDatabaseService implements DatabaseService{
             MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
         }
         
-        try {
-            if (!analyticsDataService.tableExists(tenantId, MLConstants.ML_MODEL_TABLE_NAME)) {
-
-                // create Model database table for this tenant
-                analyticsDataService.createTable(tenantId, MLConstants.ML_MODEL_TABLE_NAME);
-                logger.info(String.format("Successfully created the table %s for tenant %s",
-                        MLConstants.ML_MODEL_TABLE_NAME, tenantId));
-            }
-        } catch (NumberFormatException e) {
-            throw new DatabaseHandlerException("Tenant id cannot be parsed from: " + tenantId, e);
-        } catch (AnalyticsException e) {
-            throw new DatabaseHandlerException(e.getMessage(), e);
-        }
     }
 
     /**
