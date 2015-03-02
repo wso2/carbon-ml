@@ -19,6 +19,8 @@ package org.wso2.carbon.ml.core.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -123,6 +125,14 @@ public class MLDatasetProcessor {
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
             outputAdapter.writeDataset(targetPath, input);
 
+            // read the file that was written
+            inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType());
+            try {
+                input = inputAdapter.readDataset(new URI(targetPath));
+            } catch (URISyntaxException e) {
+                throw new MLDataProcessingException("Unable to read the data-set file from: "+targetPath, e);
+            }
+            
             // extract sample points
             SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(),
                     summaryStatsSettings.getSampleSize());

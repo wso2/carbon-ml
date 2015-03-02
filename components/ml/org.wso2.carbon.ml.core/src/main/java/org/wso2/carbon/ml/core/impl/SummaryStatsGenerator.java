@@ -43,7 +43,7 @@ import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
  */
 public class SummaryStatsGenerator implements Runnable {
     private SummaryStatisticsSettings summarySettings;
-    private static final Log logger = LogFactory.getLog(SummaryStatistics.class);
+    private static final Log logger = LogFactory.getLog(SummaryStatsGenerator.class);
     // List containing positions of columns with numerical data.
     private List<Integer> numericDataColumnPositions = new ArrayList<Integer>();
     // List containing positions of columns with string data.
@@ -104,7 +104,7 @@ public class SummaryStatsGenerator implements Runnable {
 //            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
 //                    this.missing, this.unique, this.descriptiveStats, true);
             if (logger.isDebugEnabled()) {
-                logger.info("Summary statistics successfully generated for dataset: " + datasetID);
+                logger.debug("Summary statistics successfully generated for dataset: " + datasetID);
             }
         } catch (Exception e) {
             logger.error("Error occurred while Calculating summary statistics " + "for dataset " + this.datasetID

@@ -34,6 +34,7 @@ public class MLCoreDS {
     private static final Log log = LogFactory.getLog(MLCoreDS.class);
 
     protected void activate(ComponentContext context) {
+        //FIXME this is temporary added for testing purposes.
         try {
             MLConfigurationParser mlConfig = new MLConfigurationParser(null);
             MLDatasetProcessor processor = new MLDatasetProcessor(mlConfig);
