@@ -31,6 +31,7 @@ import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 
 /**
+ * HDFS based output adapter for ML. Responsible for writing a given input stream to a given HDFS path.
  */
 public class HdfsOutputAdapter implements MLOutputAdapter {
 
@@ -44,7 +45,6 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
         FSDataOutputStream out = null;
         try {
             Configuration conf = new Configuration();
-//            conf.set("fs.default.name", "hdfs://localhost:9000");
             URI uri = URI.create(outPath);
             FileSystem hdfs = FileSystem.get(uri, conf);
             out = hdfs.create(new Path(uri), true);
