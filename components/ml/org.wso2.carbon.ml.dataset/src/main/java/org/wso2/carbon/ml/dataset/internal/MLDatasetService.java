@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
@@ -89,15 +90,15 @@ public class MLDatasetService implements DatasetService {
     /**
      * Returns a absolute path of a given data source.
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @return              Absolute path of a given data-set
+     * @param valueSetId     Unique Identifier of the value-set
+     * @return              Absolute path of a given value-set
      * @throws              DatasetServiceException
      */
     @Override
-    public String getDatasetUrl(String datasetID) throws DatasetServiceException {
+    public String getDatasetUrl(String valueSetId) throws DatasetServiceException {
         try {
             DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-            return dbService.getDatasetUrl(datasetID);
+            return dbService.getValueSetUri(valueSetId);
         } catch (DatabaseHandlerException e) {
             throw new DatasetServiceException("Failed to read dataset path from database: " +
                 e.getMessage(), e);
@@ -197,18 +198,33 @@ public class MLDatasetService implements DatasetService {
             }
             String dataSetFullPath = uploadDir+fileSeparator+projectID+fileSeparator+fileName;
 
+            // TODO
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            String datasetName = fileName;
+            String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            String comments = "";
+            String sourceType = "";
+            String targetType = "";
+            String dataType = "CSV";
+
             File targetFile = new File(dataSetFullPath);
             if (targetFile.isFile() && targetFile.canRead()) {
                 // Insert details of the file to the database.
                 DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-                dbService.insertDatasetDetails(datasetID, targetFile.getPath(), projectID);
+                //dbService.insertDatasetDetails(datasetID, targetFile.getPath(), projectID);
+                dbService.insertDatasetDetails(datasetName, String.valueOf(tenantId), username, comments, sourceType, targetType, dataType);
+
+                // dataset version
+                String datasetVersion = "1";
+
+                dbService.insertDatasetVersionDetails("1", String.valueOf(tenantId), datasetVersion);
                 // Generate summary statistics.
                 DatasetSummary summary = new DatasetSummary(targetFile, datasetID);
                 int noOfFeatures = summary.generateSummary(summaryStatSettings.getSampleSize(),
                     summaryStatSettings.getHistogramBins(), summaryStatSettings
                     .getCategoricalThreshold(), true, mlDatabaseName);
                 // Update the database with the data-set sample.
-                dbService.updateDatasetSample(datasetID, summary.samplePoints());
+                dbService.updateValueSetSample(datasetID, summary.samplePoints());
                 return noOfFeatures;
             } else {
                 throw new DatasetServiceException("");

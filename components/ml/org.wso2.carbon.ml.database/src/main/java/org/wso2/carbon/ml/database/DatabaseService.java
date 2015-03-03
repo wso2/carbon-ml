@@ -19,10 +19,10 @@ package org.wso2.carbon.ml.database;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.commons.domain.FeatureSummary;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -303,5 +303,40 @@ public interface DatabaseService {
 
     // TODO
     public String getdatasetID(String projectId) throws DatabaseHandlerException;
+
+    // TODO
+    public String getDatasetId(String projectId) throws DatabaseHandlerException;
+
+    // TODO
+    public String getModelId(String workflowId) throws DatabaseHandlerException;
+
+    // TODO
+    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException;
+
+    // TODO
+    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
+
+    // TODO
+    public void insertModel(String modelID, String workflowID, Time executionStartTime)
+            throws DatabaseHandlerException;
+
+    // TODO
+    public void updateModel(String modelID, MLModel model,
+                            ModelSummary modelSummary, Time executionEndTime)
+            throws DatabaseHandlerException;
+
+    // TODO
+    public MLModel getModel(String modelID) throws DatabaseHandlerException;
+
+    // TODO
+    public void insertModelSettings(String modelSettingsID, String workflowID, String
+            algorithmName, String algorithmClass, String response, double trainDataFraction,
+                                    List<HyperParameter> hyperparameters) throws DatabaseHandlerException;
+
+    // TODO
+    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException;
+
+    // TODO
+    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
 
 }

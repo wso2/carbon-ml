@@ -26,7 +26,7 @@ public class SQLQueries {
     public static final String INSERT_DATASET = "INSERT INTO ML_DATASET(NAME, TENANT_ID, USERNAME, COMMENTS, SOURCE_TYPE, TARGET_TYPE, DATA_TYPE) " +
             "VALUES(?,?,?,?,?,?,?)";
 
-    public static final String INSERT_DATASET_VERSION = "INSERT INTO ML_DATASET_VERSION(DATASET_ID, TEANANT_ID, VERSION) " +
+    public static final String INSERT_DATASET_VERSION = "INSERT INTO ML_DATASET_VERSION(DATASET_ID, TENANT_ID, VERSION) " +
             "VALUES(?,?,?)";
 
     public static final String INSERT_FEATURE_DEFAULTS = "INSERT INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, NAME, TYPE, INDEX, SUMMARY) " +
@@ -35,7 +35,7 @@ public class SQLQueries {
     public static final String INSERT_VALUE_SET = "INSERT INTO ML_VALUE_SET(DATASET_VERSION_ID, TENANT_ID, URI, SAMPLE_POINTS) " +
             "VALUES(?,?,?,?)";
 
-    public static final String UPDATE_SUMMARY_STATS = "MERGE INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, NAME, TYPE, INDEX, SUMMARY) " +
+    public static final String UPDATE_SUMMARY_STATS = "MERGE INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, FEATURE_NAME, TYPE, FEATURE_INDEX, SUMMARY) " +
             "VALUES(?,?,?,?,?)";
 
     public static final String GET_VALUE_SET_LOCATION = "SELECT URI FROM ML_VALUE_SET WHERE VALUE_SET_ID=?";
@@ -99,6 +99,23 @@ public class SQLQueries {
 
     public static final String GET_TENANT_PROJECTS = "SELECT PROJECT_ID, NAME, CREATED_TIME, DESCRIPTION FROM  ML_PROJECT WHERE " +
             "TENANT_ID=?";
+
+    // TODO
+    public static final String GET_MODEL_ID = " SELECT MODEL_ID FROM ML_MODEL WHERE WORKFLOW_ID = ?";
+
+    // TODO
+    public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE MODEL_ID=?";
+
+    // TODO
+    public static final String GET_MODEL = "SELECT MODEL FROM ML_MODEL WHERE MODEL_ID=?";
+
+    // TODO
+    public static final String GET_MODEL_EXE_END_TIME = " SELECT MODEL_EXECUTION_END_TIME FROM ML_MODEL WHERE " +
+            "MODEL_ID = ?";
+
+    // TODO
+    public static final String GET_MODEL_EXE_START_TIME = " SELECT MODEL_EXECUTION_START_TIME FROM ML_MODEL WHERE " +
+            "MODEL_ID = ?";
 
     /*
      * private Constructor to prevent any other class from instantiating.
