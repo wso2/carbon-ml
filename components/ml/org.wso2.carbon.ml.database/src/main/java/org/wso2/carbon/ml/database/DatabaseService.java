@@ -266,12 +266,11 @@ public interface DatabaseService {
     /**
      * Creates a new project.
      *
-     * @param projectID        Unique identifier for the project
      * @param projectName      Name of the project
      * @param description      Description of the project
      * @throws                 DatabaseHandlerException
      */
-    public void createProject(String projectID, String projectName, String description, String username) throws DatabaseHandlerException;
+    public void createProject(String projectName, String description, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Retrieve Details of a Project

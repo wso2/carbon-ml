@@ -56,9 +56,10 @@ public class MLProjectManagementService implements ProjectManagementService{
 	    try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String projectId = tenantDomain+"."+projectName;
-            dbService.createProject(projectId, projectName, description, username);
+            dbService.createProject(projectName, description, tenantId, username);
             logger.info("Successfully created a ML project: "+projectId);
             return projectId;
         } catch (DatabaseHandlerException e) {
@@ -81,9 +82,10 @@ public class MLProjectManagementService implements ProjectManagementService{
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String projectId = tenantDomain+"."+projectName;
-            dbService.createProject(projectId, projectName, description, username);
+            dbService.createProject(projectName, description, tenantId, username);
             logger.info("Successfully created a ML project: "+projectId);
             return projectId;
         } catch (DatabaseHandlerException e) {

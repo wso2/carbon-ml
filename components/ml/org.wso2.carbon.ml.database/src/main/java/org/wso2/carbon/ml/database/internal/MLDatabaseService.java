@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
@@ -658,9 +657,9 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void createProject(String projectID, String projectName, String description, String username)
+    public void createProject(String projectName, String description, int tenantId, String username)
             throws DatabaseHandlerException {
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
         Connection connection = null;
         PreparedStatement createProjectStatement = null;
         try {
@@ -668,7 +667,6 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT_NEW);
-            //createProjectStatement.setString(1, projectID);
             createProjectStatement.setString(1, projectName);
             createProjectStatement.setString(2, description);
             createProjectStatement.setInt(3, tenantId);
@@ -676,8 +674,7 @@ public class MLDatabaseService implements DatabaseService {
             createProjectStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted details of project: " + projectName +
-                        ". Project ID: " + projectID.toString());
+                logger.debug("Successfully inserted details of project: " + projectName);
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
