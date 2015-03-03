@@ -212,14 +212,14 @@ public class MLDatasetService implements DatasetService {
             if (targetFile.isFile() && targetFile.canRead()) {
                 // Insert details of the file to the database.
                 DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-                dbService.insertDatasetDetails(datasetName, String.valueOf(tenantId), username, comments, sourceType, targetType, dataType);
+                dbService.insertDatasetDetails(datasetName, tenantId, username, comments, sourceType, targetType, dataType);
 
                 // dataset version
-                long datasetId = dbService.getDatasetId(datasetName, String.valueOf(tenantId));
+                long datasetId = dbService.getDatasetId(datasetName, tenantId);
 
                 // TODO version
                 String datasetVersion = "1";
-                dbService.insertDatasetVersionDetails(datasetId, String.valueOf(tenantId), datasetVersion);
+                dbService.insertDatasetVersionDetails(datasetId, tenantId, datasetVersion);
                 // Generate summary statistics.
                 DatasetSummary summary = new DatasetSummary(targetFile, datasetId);
                 int noOfFeatures = summary.generateSummary(summaryStatSettings.getSampleSize(),
@@ -228,7 +228,7 @@ public class MLDatasetService implements DatasetService {
                 // Update the database with the value-set sample.
 //                dbService.updateValueSetSample(valueSetId, summary.samplePoints());
                 long datasetVersionId = dbService.getDatasetVersionId(datasetId, datasetVersion);
-                dbService.insertValueSet(datasetVersionId, String.valueOf(tenantId), targetFile.getPath(), summary.samplePoints());
+                dbService.insertValueSet(datasetVersionId, tenantId, targetFile.getPath(), summary.samplePoints());
                 return noOfFeatures;
             } else {
                 throw new DatasetServiceException("");

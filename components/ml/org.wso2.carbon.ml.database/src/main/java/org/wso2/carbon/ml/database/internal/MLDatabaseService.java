@@ -112,7 +112,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param dataType
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetDetails(String name, String tenantID, String username, String comments,
+    public void insertDatasetDetails(String name, int tenantID, String username, String comments,
                                      String sourceType, String targetType, String dataType)
             throws DatabaseHandlerException {
         Connection connection = null;
@@ -123,7 +123,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
             insertStatement.setString(1, name);
-            insertStatement.setString(2, tenantID);
+            insertStatement.setInt(2, tenantID);
             insertStatement.setString(3, username);
             insertStatement.setString(4, comments);
             insertStatement.setString(5, sourceType);
@@ -149,7 +149,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getDatasetId(String datasetName, String tenantId) throws DatabaseHandlerException {
+    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -158,7 +158,7 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
             statement.setString(1, datasetName);
-            statement.setString(2, tenantId);
+            statement.setInt(2, tenantId);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
@@ -176,7 +176,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersionDetails(long datasetId, String tenantId, String version) throws DatabaseHandlerException {
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -186,7 +186,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
             insertStatement.setLong(1, datasetId);
-            insertStatement.setString(2, tenantId);
+            insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, version);
             insertStatement.execute();
             connection.commit();
@@ -242,7 +242,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertValueSet(long datasetVersionId, String tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
+    public void insertValueSet(long datasetVersionId, int tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -251,7 +251,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);
             insertStatement.setLong(1, datasetVersionId);
-            insertStatement.setString(2, tenantId);
+            insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, uri);
             insertStatement.setObject(4, samplePoints);
             insertStatement.execute();
@@ -671,7 +671,7 @@ public class MLDatabaseService implements DatabaseService {
             //createProjectStatement.setString(1, projectID);
             createProjectStatement.setString(1, projectName);
             createProjectStatement.setString(2, description);
-            createProjectStatement.setString(3, String.valueOf(tenantId));
+            createProjectStatement.setInt(3, tenantId);
             createProjectStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -729,7 +729,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param projectID Unique identifier for the project.
      * @throws DatabaseHandlerException
      */
-    public void addTenantToProject(String tenantID, String projectID)
+    public void addTenantToProject(int tenantID, String projectID)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement addTenantStatement = null;
@@ -738,7 +738,7 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             addTenantStatement = connection.prepareStatement(SQLQueries.ADD_TENANT_TO_PROJECT);
-            addTenantStatement.setString(1, tenantID);
+            addTenantStatement.setInt(1, tenantID);
             addTenantStatement.setString(2, projectID);
             addTenantStatement.execute();
             connection.commit();
@@ -765,7 +765,7 @@ public class MLDatabaseService implements DatabaseService {
      *         associated with a given tenant.
      * @throws DatabaseHandlerException
      */
-    public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException {
+    public String[][] getTenantProjects(int tenantID) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement getTenantProjectsStatement = null;
         ResultSet result = null;
@@ -776,7 +776,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(true);
             getTenantProjectsStatement = connection.prepareStatement(SQLQueries.GET_TENANT_PROJECTS,
                     ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            getTenantProjectsStatement.setString(1, tenantID);
+            getTenantProjectsStatement.setInt(1, tenantID);
             result = getTenantProjectsStatement.executeQuery();
             // create a 2-d string array having the size of the result set
             result.last();

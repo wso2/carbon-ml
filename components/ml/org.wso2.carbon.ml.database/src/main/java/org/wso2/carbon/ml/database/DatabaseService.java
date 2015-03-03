@@ -51,7 +51,7 @@ public interface DatabaseService {
      * @param dataType
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetDetails(String name, String tenantID, String username, String comments,
+    public void insertDatasetDetails(String name, int tenantID, String username, String comments,
                                      String sourceType, String targetType, String dataType)
             throws DatabaseHandlerException;
 
@@ -61,7 +61,7 @@ public interface DatabaseService {
      * @return               Unique Id of the data-set
      * @throws DatabaseHandlerException
      */
-    public long getDatasetId(String datasetName, String tenantId) throws DatabaseHandlerException;
+    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException;
 
     /**
      * Insert the data-set-version details to the database
@@ -71,7 +71,7 @@ public interface DatabaseService {
      * @param version
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersionDetails(long datasetId, String tenantId, String version)
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version)
             throws DatabaseHandlerException;
 
     /**
@@ -94,7 +94,7 @@ public interface DatabaseService {
      * @param samplePoints
      * @throws DatabaseHandlerException
      */
-    public void insertValueSet(long datasetVersionId, String tenantId, String uri, SamplePoints samplePoints)
+    public void insertValueSet(long datasetVersionId, int tenantId, String uri, SamplePoints samplePoints)
             throws DatabaseHandlerException;
 
     /**
@@ -297,7 +297,7 @@ public interface DatabaseService {
      *                     associated with a given tenant.
      * @throws             DatabaseHandlerException
      */
-    public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException;
+    public String[][] getTenantProjects(int tenantID) throws DatabaseHandlerException;
 
     //TODO workflow to be replaced with analysis
 
