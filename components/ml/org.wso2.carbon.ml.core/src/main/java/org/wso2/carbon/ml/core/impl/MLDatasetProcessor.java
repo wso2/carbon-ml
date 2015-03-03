@@ -36,8 +36,10 @@ import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
+import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
@@ -47,19 +49,18 @@ import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 public class MLDatasetProcessor {
     private static final Log log = LogFactory.getLog(MLDatasetProcessor.class);
     private Properties mlProperties;
-    private DataUploadSettings dataUploadSettings;
     private SummaryStatisticsSettings summaryStatsSettings;
     private ThreadExecutor threadExecutor;
+    private DatabaseService databaseService;
 
     public MLDatasetProcessor(MLConfigurationParser configParser) {
         try {
             mlProperties = configParser.getProperties();
-            dataUploadSettings = configParser.getDataUploadSettings();
             summaryStatsSettings = configParser.getSummaryStatisticsSettings();
+            databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         } catch (MLConfigurationParserException ignore) {
             log.warn("Failed to extract properties from ML configuration file.");
             mlProperties = new Properties();
-            dataUploadSettings = new DataUploadSettings();
             summaryStatsSettings = new SummaryStatisticsSettings();
         }
         threadExecutor = new ThreadExecutor(mlProperties);
@@ -133,18 +134,21 @@ public class MLDatasetProcessor {
                 targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);
             } catch (URISyntaxException e) {
-                throw new MLDataProcessingException("Unable to read the data-set file from: "+targetPath, e);
+                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetPath, e);
             }
-            
+
             // extract sample points
             SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(),
                     summaryStatsSettings.getSampleSize());
-            
+
+            // persist data-set and data-set version in DB
+            persistDataset(dataset);
+
             String datasetVersionId = ""; // get this from DB
 
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(datasetVersionId, summaryStatsSettings, samplePoints));
-            
+
             // build the MLValueSet
             MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), targetUri, samplePoints);
 
@@ -167,6 +171,12 @@ public class MLDatasetProcessor {
                 }
             }
         }
+    }
+
+    private void persistDataset(MLDataset dataset) {
+
+//        databaseService.insertDatasetDetails(dataset.getName(), dataset.getTenantId(), dataset.getUserName(),
+//                dataset.getComments(), dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
     }
 
     private void handleNull(Object obj, String msg) throws MLDataProcessingException {

@@ -25,9 +25,15 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.core.domain.MLDataset;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.dataset.internal.MLDatasetServiceValueHolder;
 
 /**
  * @scr.component name="ml.core" immediate="true"
+ * @scr.reference name="databaseService"
+ * interface="org.wso2.carbon.ml.database.DatabaseService" cardinality="1..1"
+ * policy="dynamic" bind="setDatabaseService" unbind="unsetDatabaseService"
  */
 public class MLCoreDS {
 
@@ -55,6 +61,14 @@ public class MLCoreDS {
     }
 
     protected void deactivate(ComponentContext context) {
+    }
+    
+    protected void setDatabaseService(DatabaseService databaseService){
+        MLCoreServiceValueHolder.getInstance().registerDatabaseService(databaseService);
+    }
+
+    protected void unsetDatabaseService(DatabaseService databaseService){
+        MLCoreServiceValueHolder.getInstance().registerDatabaseService(databaseService);
     }
     
 }
