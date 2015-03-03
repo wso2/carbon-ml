@@ -58,6 +58,7 @@ public class SummaryStatsGenerator implements Runnable {
     private EmpiricalDistribution[] histogram;
     // Array containing number of unique values of each feature in the data-set.
     private int[] unique;
+    private int[] stringCellCount;
     // Array containing data-type of each feature in the data-set.
     private String[] type;
     // Map containing indices and names of features of the data-set.
@@ -71,6 +72,7 @@ public class SummaryStatsGenerator implements Runnable {
         this.summarySettings = summaryStatsSettings;
         this.headerMap = samplePoints.getHeader();
         this.columnData = samplePoints.getSamplePoints();
+        this.stringCellCount = samplePoints.getStringCellCount();
         int noOfFeatures = this.headerMap.size();
         // Initialize the lists.
         this.unique = new int[noOfFeatures];
@@ -121,8 +123,6 @@ public class SummaryStatsGenerator implements Runnable {
      * @throws DatasetSummaryException
      */
     protected String[] identifyColumnDataType() {
-        int[] stringCellCount = new int[this.headerMap.size()];
-
         // If atleast one cell contains strings, then the column is considered to has string data.
         for (int col = 0; col < headerMap.size(); col++) {
             if (stringCellCount[col] > 0) {
