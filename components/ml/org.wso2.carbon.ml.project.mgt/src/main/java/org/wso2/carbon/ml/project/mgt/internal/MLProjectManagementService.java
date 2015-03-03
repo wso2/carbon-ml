@@ -119,7 +119,7 @@ public class MLProjectManagementService implements ProjectManagementService{
     public String[][] getTenantProjects(String tenantID) throws MLProjectManagementServiceException {
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
-            return dbService.getTenantProjects(tenantID);
+            return dbService.getTenantProjects(Integer.parseInt(tenantID));
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to get projects of tenant: " + tenantID + " : " + e.getMessage(), e);
             throw new MLProjectManagementServiceException("Failed to get projects of tenant: " + tenantID + " : " +

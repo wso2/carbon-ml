@@ -189,6 +189,7 @@ public class MLDatasetService implements DatasetService {
     @Override
     public int calculateSummaryStatistics(String fileName, String datasetID, String projectID)
             throws DatasetServiceException {
+
         try {
             String uploadDir = dataUploadSettings.getUploadLocation();
             String fileSeparator = System.getProperty(DatasetConfigurations.FILE_SEPARATOR);
@@ -203,28 +204,31 @@ public class MLDatasetService implements DatasetService {
             String datasetName = fileName;
             String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String comments = "";
-            String sourceType = "";
-            String targetType = "";
+            String sourceType = "FILE";
+            String targetType = "FILE";
             String dataType = "CSV";
 
             File targetFile = new File(dataSetFullPath);
             if (targetFile.isFile() && targetFile.canRead()) {
                 // Insert details of the file to the database.
                 DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-                //dbService.insertDatasetDetails(datasetID, targetFile.getPath(), projectID);
-                dbService.insertDatasetDetails(datasetName, String.valueOf(tenantId), username, comments, sourceType, targetType, dataType);
+                dbService.insertDatasetDetails(datasetName, tenantId, username, comments, sourceType, targetType, dataType);
 
                 // dataset version
-                String datasetVersion = "1";
+                long datasetId = dbService.getDatasetId(datasetName, tenantId);
 
-                dbService.insertDatasetVersionDetails("1", String.valueOf(tenantId), datasetVersion);
+                // TODO version
+                String datasetVersion = "1";
+                dbService.insertDatasetVersionDetails(datasetId, tenantId, datasetVersion);
                 // Generate summary statistics.
-                DatasetSummary summary = new DatasetSummary(targetFile, datasetID);
+                DatasetSummary summary = new DatasetSummary(targetFile, datasetId);
                 int noOfFeatures = summary.generateSummary(summaryStatSettings.getSampleSize(),
                     summaryStatSettings.getHistogramBins(), summaryStatSettings
                     .getCategoricalThreshold(), true, mlDatabaseName);
-                // Update the database with the data-set sample.
-                dbService.updateValueSetSample(datasetID, summary.samplePoints());
+                // Update the database with the value-set sample.
+//                dbService.updateValueSetSample(valueSetId, summary.samplePoints());
+                long datasetVersionId = dbService.getDatasetVersionId(datasetId, datasetVersion);
+                dbService.insertValueSet(datasetVersionId, tenantId, targetFile.getPath(), summary.samplePoints());
                 return noOfFeatures;
             } else {
                 throw new DatasetServiceException("");

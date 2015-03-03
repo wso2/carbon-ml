@@ -112,7 +112,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param dataType
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetDetails(String name, String tenantID, String username, String comments,
+    public void insertDatasetDetails(String name, int tenantID, String username, String comments,
                                      String sourceType, String targetType, String dataType)
             throws DatabaseHandlerException {
         Connection connection = null;
@@ -123,7 +123,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
             insertStatement.setString(1, name);
-            insertStatement.setString(2, tenantID);
+            insertStatement.setInt(2, tenantID);
             insertStatement.setString(3, username);
             insertStatement.setString(4, comments);
             insertStatement.setString(5, sourceType);
@@ -149,7 +149,34 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersionDetails(String datasetId, String tenantId, String version) throws DatabaseHandlerException {
+    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
+            statement.setString(1, datasetName);
+            statement.setInt(2, tenantId);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                throw new DatabaseHandlerException(
+                        "No dataset id associated with dataset name: " + datasetName + " and tenant id:" + tenantId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while extracting dataset name: " + datasetName + " and tenant id:" + tenantId);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -158,8 +185,8 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
-            insertStatement.setString(1, datasetId);
-            insertStatement.setString(2, tenantId);
+            insertStatement.setLong(1, datasetId);
+            insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, version);
             insertStatement.execute();
             connection.commit();
@@ -215,7 +242,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertValueSet(String datasetVersionId, String tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
+    public void insertValueSet(long datasetVersionId, int tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -223,8 +250,8 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);
-            insertStatement.setString(1, datasetVersionId);
-            insertStatement.setString(2, tenantId);
+            insertStatement.setLong(1, datasetVersionId);
+            insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, uri);
             insertStatement.setObject(4, samplePoints);
             insertStatement.execute();
@@ -246,6 +273,33 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    @Override
+    public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION_ID);
+            statement.setLong(1, datasetId);
+            statement.setString(2, datasetVersion);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                throw new DatabaseHandlerException(
+                        "No dataset id associated with dataset id: " + datasetId + " and version:" + datasetVersion);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while extracting dataset id: " + datasetId + " and version:" + datasetVersion);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
     /**
      * Update the value-set table with a value-set sample.
      *
@@ -253,7 +307,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param valueSetSample SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
-    public void updateValueSetSample(String valueSet, SamplePoints valueSetSample)
+    public void updateValueSetSample(long valueSet, SamplePoints valueSetSample)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement updateStatement = null;
@@ -262,7 +316,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
             updateStatement.setObject(1, valueSetSample);
-            updateStatement.setString(2, valueSet);
+            updateStatement.setLong(2, valueSet);
             updateStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -614,10 +668,10 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT_NEW);
-            createProjectStatement.setString(1, projectID);
-            createProjectStatement.setString(2, projectName);
-            createProjectStatement.setString(3, description);
-            createProjectStatement.setString(4, String.valueOf(tenantId));
+            //createProjectStatement.setString(1, projectID);
+            createProjectStatement.setString(1, projectName);
+            createProjectStatement.setString(2, description);
+            createProjectStatement.setInt(3, tenantId);
             createProjectStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -675,7 +729,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param projectID Unique identifier for the project.
      * @throws DatabaseHandlerException
      */
-    public void addTenantToProject(String tenantID, String projectID)
+    public void addTenantToProject(int tenantID, String projectID)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement addTenantStatement = null;
@@ -684,7 +738,7 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             addTenantStatement = connection.prepareStatement(SQLQueries.ADD_TENANT_TO_PROJECT);
-            addTenantStatement.setString(1, tenantID);
+            addTenantStatement.setInt(1, tenantID);
             addTenantStatement.setString(2, projectID);
             addTenantStatement.execute();
             connection.commit();
@@ -711,7 +765,7 @@ public class MLDatabaseService implements DatabaseService {
      *         associated with a given tenant.
      * @throws DatabaseHandlerException
      */
-    public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException {
+    public String[][] getTenantProjects(int tenantID) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement getTenantProjectsStatement = null;
         ResultSet result = null;
@@ -722,7 +776,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(true);
             getTenantProjectsStatement = connection.prepareStatement(SQLQueries.GET_TENANT_PROJECTS,
                     ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            getTenantProjectsStatement.setString(1, tenantID);
+            getTenantProjectsStatement.setInt(1, tenantID);
             result = getTenantProjectsStatement.executeQuery();
             // create a 2-d string array having the size of the result set
             result.last();
@@ -803,7 +857,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param include          Default value to set for the flag indicating the feature is an input or not
      * @throws DatabaseHandlerException
      */
-    public void updateSummaryStatistics(String datasetVersionId, Map<String, Integer> headerMap, String[] type,
+    public void updateSummaryStatistics(long datasetVersionId, Map<String, Integer> headerMap, String[] type,
                                         List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
                                         List<DescriptiveStatistics> descriptiveStats, Boolean include)
             throws DatabaseHandlerException {
@@ -822,8 +876,9 @@ public class MLDatabaseService implements DatabaseService {
                         unique[columnIndex], descriptiveStats.get(columnIndex));
                 // Put the values to the database table. If the feature already exists, updates
                 // the row. If not, inserts as a new row.
-                updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
-                updateStatement.setString(1, datasetVersionId);
+                //updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
+                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
+                updateStatement.setLong(1, datasetVersionId);
                 updateStatement.setString(2, columnNameMapping.getKey());
                 updateStatement.setString(3, type[columnIndex].toString());
                 updateStatement.setInt(4, columnIndex);
