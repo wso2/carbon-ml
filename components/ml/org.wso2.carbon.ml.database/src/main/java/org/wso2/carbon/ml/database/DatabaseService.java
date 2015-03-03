@@ -19,8 +19,8 @@ package org.wso2.carbon.ml.database;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.sql.Time;
 import java.util.List;
@@ -28,60 +28,154 @@ import java.util.Map;
 import java.util.SortedMap;
 
 public interface DatabaseService {
-    
+
     /**
-     * Retrieves the path of the data-set having the given ID, from the
+     * Retrieves the path of the value-set having the given ID, from the
      * database.
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @return              Absolute path of a given data-set
+     * @param datasetID     Unique Identifier of the value-set
+     * @return              Absolute path of a given value-set
      * @throws              DatabaseHandlerException
      */
-    public String getDatasetUrl(String datasetID) throws DatabaseHandlerException;
+    public String getValueSetUri(String datasetID) throws DatabaseHandlerException;
 
     /**
-     * Insert the new data-set details to the the database.
+     * Insert the new data-set details to the the database
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @param filePath      Absolute path of the data-set
-     * @param projectID     Unique Identifier of the project
-     * @throws              DatabaseHandlerException
+     * @param name
+     * @param tenantID
+     * @param username
+     * @param comments
+     * @param sourceType
+     * @param targetType
+     * @param dataType
+     * @throws DatabaseHandlerException
      */
-    public void insertDatasetDetails(String datasetID, String filePath, String projectID)
+    public void insertDatasetDetails(String name, String tenantID, String username, String comments,
+                                     String sourceType, String targetType, String dataType)
             throws DatabaseHandlerException;
 
     /**
-     * Update the data type of a given feature.
+     * Insert the data-set-version details to the database
      *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param featureType   Updated type of the feature
-     * @throws              DatabaseHandlerException
+     * @param datasetId
+     * @param tenantId
+     * @param version
+     * @throws DatabaseHandlerException
      */
-    public void updateDataType(String featureName, String workflowID, String featureType)
+    public void insertDatasetVersionDetails(String datasetId, String tenantId, String version)
             throws DatabaseHandlerException;
 
     /**
-     * Update the impute method option of a given feature.
-     *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param imputeOption  Updated impute option of the feature
-     * @throws              DatabaseHandlerException
+     * Insert the feature defaults to the database
+     * @param datasetVersionId
+     * @param featureName
+     * @param type
+     * @param featureIndex
+     * @param summary
+     * @throws DatabaseHandlerException
      */
-    public void updateImputeOption(String featureName, String workflowID, String imputeOption)
+    public void insertFeatureDefaults(String datasetVersionId, String featureName, String type, int featureIndex, String summary)
             throws DatabaseHandlerException;
 
     /**
-     * Change whether a feature should be included as an input or not.
+     * Inser the value-set to the database
+     * @param datasetVersionId
+     * @param tenantId
+     * @param uri
+     * @param samplePoints
+     * @throws DatabaseHandlerException
+     */
+    public void insertValueSet(String datasetVersionId, String tenantId, String uri, SamplePoints samplePoints)
+            throws DatabaseHandlerException;
+
+    /**
+     * Update the value-set table with a data-set sample.
      *
-     * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
-     * @param isInput       Boolean value indicating whether the feature is an input or not
+     * @param valueSet          Unique Identifier of the value-set
+     * @param valueSetSample    SamplePoints object of the value-set
+     * @throws                  DatabaseHandlerException
+     */
+    public void updateValueSetSample(String valueSet, SamplePoints valueSetSample)
+            throws DatabaseHandlerException;
+
+    /**
+     * Returns data points of the selected sample as coordinates of three
+     * features, needed for the scatter plot.
+     *
+     * @param valueSetId        Unique Identifier of the value-set
+     * @param xAxisFeature      Name of the feature to use as the x-axis
+     * @param yAxisFeature      Name of the feature to use as the y-axis
+     * @param groupByFeature    Name of the feature to be grouped by (color code)
+     * @return                  A JSON array of data points
+     * @throws                  DatabaseHandlerException
+     */
+    public JSONArray getScatterPlotPoints(String valueSetId, String xAxisFeature, String yAxisFeature,
+                                          String groupByFeature) throws DatabaseHandlerException;
+
+    /**
+     * Returns sample data for selected features
+     *
+     * @param valueSet          Unique Identifier of the value-set
+     * @param featureListString String containing feature name list
+     * @return                  A JSON array of data points
+     * @throws                  DatabaseHandlerException
+     */
+    public JSONArray getChartSamplePoints(String valueSet, String featureListString)
+            throws DatabaseHandlerException;
+
+    /**
+     * Returns a set of features in a given range, from the alphabetically ordered set
+     * of features, of a data-set.
+     *
+     * @param datasetID         Unique Identifier of the data-set
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatabaseHandlerException
+     */
+    public List<FeatureSummary> getFeatures(String datasetID, String modelId, int startIndex,
+                                            int numberOfFeatures) throws DatabaseHandlerException;
+
+
+    /**
+     * This method extracts and retures default features available in a given dataset version
+     * @param datasetVersionId The dataset varsion id associated with this dataset version
+     * @return                 A list of FeatureSummaries
+     * @throws                 DatabaseHandlerException
+     */
+    public List<FeatureSummary> getDefaultFeatures(String datasetVersionId, int startIndex, int numberOfFeatures)
+            throws DatabaseHandlerException;
+
+    /**
+     * Returns the names of the features, belongs to a particular data-type
+     * (Categorical/Numerical), of the work-flow.
+     *
+     * @param modelId       Unique identifier of the current model
+     * @return              A list of feature names
      * @throws              DatabaseHandlerException
      */
-    public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
-            throws DatabaseHandlerException;
+    public List<String> getFeatureNames(String modelId) throws DatabaseHandlerException;
+
+    /**
+     * Retrieve and returns the Summary statistics for a given feature of a
+     * given data-set version, from the database
+     *
+     * @param datasetVersionId     Unique identifier of the data-set
+     * @param featureName          Name of the feature of which summary statistics are needed
+     * @return                     JSON string containing the summary statistics
+     * @throws                     DatabaseHandlerException
+     */
+    public String getSummaryStats(String datasetVersionId, String featureName) throws DatabaseHandlerException;
+
+    /**
+     * Returns the number of features of a given data-set version
+     *
+     * @param datasetVersionId     Unique identifier of the data-set version
+     * @return                     Number of features in the data-set version
+     * @throws                     DatabaseHandlerException
+     */
+    public int getFeatureCount(String datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Update the database with all the summary statistics of the sample.
@@ -97,199 +191,62 @@ public interface DatabaseService {
      * @throws                  DatabaseHandlerException
      */
     public void updateSummaryStatistics(String datasetID,  Map<String, Integer> headerMap, String[] type,
-        List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
-        List<DescriptiveStatistics> descriptiveStats, Boolean include)
-                throws DatabaseHandlerException;
+                                        List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
+                                        List<DescriptiveStatistics> descriptiveStats, Boolean include)
+            throws DatabaseHandlerException;
 
     /**
-     * Update the data-set table with a data-set sample.
+     * Set the default values for feature properties of a given workflow.
      *
-     * @param datasetID         Unique Identifier of the data-set
-     * @param datasetSample     SamplePoints object of the data-set
+     * @param datasetVersionId  Unique identifier of the data-set-version
+     * @param modelId           Unique identifier of the current model
      * @throws                  DatabaseHandlerException
      */
-    public void updateDatasetSample(String datasetID, SamplePoints datasetSample)
-            throws DatabaseHandlerException;
+    public void setDefaultFeatureSettings(String datasetVersionId, String modelId) throws DatabaseHandlerException;
 
     /**
-     * Returns data points of the selected sample as coordinates of three
-     * features, needed for the scatter plot.
+     * Retrieves the type of a feature.
      *
-     * @param datasetID         Unique Identifier of the data-set
-     * @param xAxisFeature      Name of the feature to use as the x-axis
-     * @param yAxisFeature      Name of the feature to use as the y-axis
-     * @param groupByFeature    Name of the feature to be grouped by (color code)
-     * @return                  A JSON array of data points
-     * @throws                  DatabaseHandlerException
-     */
-    public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
-        String groupByFeature) throws DatabaseHandlerException;
-
-    /**
-     * Returns sample data for selected features
-     * 
-     * @param datasetID
-     *            Unique Identifier of the data-set
-     * @param featureListString
-     *            String containing feature name list
-     * @return A JSON array of data points
-     * @throws DatasetServiceException
-     */
-    public JSONArray getChartSamplePoints(String datasetID, String featureListString)
-            throws DatabaseHandlerException;
-
-    /**
-     * Returns a set of features in a given range, from the alphabetically ordered set
-     * of features, of a data-set.
-     *
-     * @param datasetID         Unique Identifier of the data-set
-     * @param startIndex        Starting index of the set of features needed
-     * @param numberOfFeatures  Number of features needed, from the starting index
-     * @return                  A list of Feature objects
-     * @throws                  DatabaseHandlerException
-     */
-    public List<FeatureSummary> getFeatures(String datasetID, String workflowID, int startIndex,
-        int numberOfFeatures) throws DatabaseHandlerException;
-    
-    
-    /**
-     * This method extracts and retures default features available in a given dataset.
-     * @param datasetId The dataset id associated with this dataset.
-     * @return A list of FeatureSummaries.
-     * @throws DatabaseHandlerException
-     */
-    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
-            throws DatabaseHandlerException;
-
-    /**
-     * Returns the names of the features, belongs to a particular data-type
-     * (Categorical/Numerical), of the work-flow.
-     *
-     * @param workflowID    Unique identifier of the current work-flow
-     * @param featureType   Data-type of the feature
-     * @return              A list of feature names
+     * @param modelId       Unique identifier of the model
+     * @param featureName   Name of the feature
+     * @return              Type of the feature (Categorical/Numerical)
      * @throws              DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String workflowID) throws DatabaseHandlerException;
+    public String getFeatureType(String modelId, String featureName) throws DatabaseHandlerException;
 
     /**
-     * Retrieve and returns the Summary statistics for a given feature of a
-     * given data-set, from the database.
+     * Change whether a feature should be included as an input or not
      *
-     * @param datasetID     Unique identifier of the data-set
-     * @param featureName   Name of the feature of which summary statistics are needed
-     * @return              JSON string containing the summary statistics
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param isInput       Boolean value indicating whether the feature is an input or not
      * @throws              DatabaseHandlerException
      */
-    public String getSummaryStats(String datasetID, String featureName)
+    public void updateFeatureInclusion(String featureName, String modelId, boolean isInput)
             throws DatabaseHandlerException;
 
     /**
-     * Returns the number of features of a given data-set.
+     * Update the impute method option of a given feature.
      *
-     * @param datasetID     Unique identifier of the data-set
-     * @return              Number of features in the data-set
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param imputeOption  Updated impute option of the feature
      * @throws              DatabaseHandlerException
      */
-    public int getFeatureCount(String datasetID) throws DatabaseHandlerException;
-    
-    /**
-     * Returns model id associated with given workflow id
-     * 
-     * @param workflowId    Unique identifier of the work-flow
-     * @return model id     Unique identifier of the model associated with the work-flow
-     * @throws              DatabaseHandlerException
-     */
-    public String getModelId(String workflowId) throws DatabaseHandlerException;
-
-    /**
-     *
-     * @param modelSettingsID
-     * @param workflowID
-     * @param algorithmName
-     * @param algorithmClass
-     * @param response
-     * @param trainDataFraction
-     * @param hyperparameters
-     * @throws DatabaseHandlerException
-     */
-    public void insertModelSettings(String modelSettingsID, String workflowID, String
-            algorithmName, String algorithmClass, String response, double trainDataFraction,
-            List<HyperParameter> hyperparameters) throws DatabaseHandlerException;
-
-    /**
-     *
-     * @param modelID
-     * @param workflowID
-     * @param executionStartTime
-     * @throws DatabaseHandlerException
-     */
-    public void insertModel(String modelID, String workflowID, Time executionStartTime)
-            throws DatabaseHandlerException;
-    
-    /**
-     *
-     * @param modelID
-     * @param model
-     * @param modelSummary
-     * @param executionEndTime
-     * @param model
-     * @throws DatabaseHandlerException
-     */
-    public void updateModel(String modelID, MLModel model,
-                                ModelSummary modelSummary, Time executionEndTime)
+    public void updateImputeOption(String featureName, String modelId, String imputeOption)
             throws DatabaseHandlerException;
 
     /**
+     * Update the data type of a given feature.
      *
-     * @param modelID
-     * @return
-     * @throws DatabaseHandlerException
+     * @param featureName   Name of the feature to be updated
+     * @param modelId       Unique identifier of the current model
+     * @param featureType   Updated type of the feature
+     * @throws              DatabaseHandlerException
      */
-    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
-    
-    /**
-    *
-    * @param modelID
-    * @return {@link MLModel}
-    * @throws DatabaseHandlerException
-    */
-   public MLModel getModel(String modelID) throws DatabaseHandlerException;
+    public void updateDataType(String featureName, String modelId, String featureType)
+            throws DatabaseHandlerException;
 
-    /**
-     *
-     * @param workflowID
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException;
-
-    /**
-     *
-     * @param modelId
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException;
-
-    /**
-     *
-     * @param modelId
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
-
-    /**
-     *
-     * @param projectId
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public String getDatasetId(String projectId) throws DatabaseHandlerException;
-    
-// Database Services related to Project Management Module.
-    
     /**
      * Creates a new project.
      *
@@ -299,6 +256,14 @@ public interface DatabaseService {
      * @throws                 DatabaseHandlerException
      */
     public void createProject(String projectID, String projectName, String description) throws DatabaseHandlerException;
+
+    /**
+     * Retrieve Details of a Project
+     *
+     * @param projectId     Unique identifier of the project
+     * @return              DatabaseHandlerException
+     */
+    public String[] getProject(String projectId) throws DatabaseHandlerException;
 
     /**
      * Delete details of a given project from the database.
@@ -312,98 +277,66 @@ public interface DatabaseService {
      * Get the project names and created dates, that a tenant is assigned to.
      *
      * @param tenantID     Unique identifier for the tenant.
-     * @return             An array of project ID, Name and the created date of the projects 
+     * @return             An array of project ID, Name and the created date of the projects
      *                     associated with a given tenant.
-     * @throws             DatabaseHandlerException.
+     * @throws             DatabaseHandlerException
      */
     public String[][] getTenantProjects(String tenantID) throws DatabaseHandlerException;
 
-    /**
-     * Returns the ID of the data-set associated with the project.
-     *
-     * @param projectId    Unique identifier for the project.
-     * @return             ID of the data-set associated with the project.
-     * @throws             DatabaseHandlerException.
-     */
-    public String getdatasetID(String projectId) throws DatabaseHandlerException;
+    //TODO workflow to be replaced with analysis
 
-    /**
-     * Creates a new work-flow.
-     *
-     * @param workflowID           Unique identifier for the new workflow.
-     * @param parentWorkflowID     Unique identifier for the workflow from which the current workflow
-     *                             is inherited from.
-     * @param projectID            Unique identifier for the project for which the workflow is created.
-     * @param datasetID            Unique identifier for the data-set associated with the workflow.
-     * @param workflowName         Name of the project.
-     * @throws                     DatabaseHandlerException
-     */
     public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID
             , String workflowName) throws DatabaseHandlerException;
-    
-    /**
-     * Creates a new work-flow.
-     *
-     * @param workflowID           Unique identifier for the new workflow.
-     * @param projectID            Unique identifier for the project for which the workflow is created.
-     * @param datasetID            Unique identifier for the data-set associated with the workflow.
-     * @param workflowName         Name of the project.
-     * @throws                     DatabaseHandlerException
-     */
+
+    // TODO
     public void createWorkflow(String workflowID, String projectID, String datasetID
             , String workflowName) throws DatabaseHandlerException;
 
-
-    /**
-     * Deletes a workflow.
-     *
-     * @param workflowID   Unique identifier of the workflow to be deleted
-     * @throws             DatabaseHandlerException
-     */
+    // TODO
     public void deleteWorkflow(String workflowID) throws DatabaseHandlerException;
 
-    /**
-     * Get a list of workflows associated with a given project.
-     *
-     * @param projectId    Unique identifier for the project for which the wokflows are needed
-     * @return             An array of workflow ID's and Names
-     * @throws             DatabaseHandlerException
-     */
+    // TODO
     public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException;
 
-    /**
-     * Set the default values for feature properties of a given workflow.
-     *
-     * @param datasetID    Unique identifier of the data-set
-     * @param workflowID   Unique identifier of the current workflow
-     * @throws             DatabaseHandlerException
-     */
-    public void setDefaultFeatureSettings(String datasetID, String workflowID) throws DatabaseHandlerException;
-    
-    /**
-     * Update the name of a workflow.
-     * 
-     * @param workflowId    Unique identifier of the workflow
-     * @param name          New name for the workflow
-     * @throws              DatabaseHandlerException
-     */
+    // TODO
     public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
-    
-    /**
-     * Retrieves the type of a feature.
-     * 
-     * @param workflowId    Unique identifier of the workflow
-     * @param featureName   Name of the feature
-     * @return              Type of the feature (Categorical/Numerical)
-     * @throws              DatabaseHandlerException
-     */
-    public String getFeatureType(String workflowId, String featureName) throws DatabaseHandlerException;
 
-    /**
-     * Retrieve Details of a Project (Name, Description, DatasetUri)
-     * 
-     * @param projectId     Unique identifier of the project
-     * @return              DatabaseHandlerException
-     */
-    public String[] getProject(String projectId) throws DatabaseHandlerException;
+    // TODO
+    public String getdatasetID(String projectId) throws DatabaseHandlerException;
+
+    // TODO
+    public String getDatasetId(String projectId) throws DatabaseHandlerException;
+
+    // TODO
+    public String getModelId(String workflowId) throws DatabaseHandlerException;
+
+    // TODO
+    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException;
+
+    // TODO
+    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
+
+    // TODO
+    public void insertModel(String modelID, String workflowID, Time executionStartTime)
+            throws DatabaseHandlerException;
+
+    // TODO
+    public void updateModel(String modelID, MLModel model,
+                            ModelSummary modelSummary, Time executionEndTime)
+            throws DatabaseHandlerException;
+
+    // TODO
+    public MLModel getModel(String modelID) throws DatabaseHandlerException;
+
+    // TODO
+    public void insertModelSettings(String modelSettingsID, String workflowID, String
+            algorithmName, String algorithmClass, String response, double trainDataFraction,
+                                    List<HyperParameter> hyperparameters) throws DatabaseHandlerException;
+
+    // TODO
+    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException;
+
+    // TODO
+    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
+
 }
