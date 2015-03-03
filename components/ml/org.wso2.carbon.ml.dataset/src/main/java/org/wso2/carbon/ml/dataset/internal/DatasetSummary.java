@@ -17,9 +17,6 @@
  */
 package org.wso2.carbon.ml.dataset.internal;
 
-import java.io.*;       
-import java.util.*;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -35,6 +32,9 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.internal.constants.DatasetConfigurations;
+
+import java.io.*;
+import java.util.*;
 
 
 /**
@@ -64,7 +64,7 @@ public class DatasetSummary {
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
 
-    private String datasetID;
+    private long datasetID;
     private CSVParser parser;
 
     /**
@@ -74,7 +74,7 @@ public class DatasetSummary {
      * @param datasetID     Unique Identifier of the data-set.
      * @throws              DatasetSummaryException
      */
-    protected DatasetSummary(File csvDataFile, String datasetID) throws DatasetSummaryException {
+    protected DatasetSummary(File csvDataFile, long datasetID) throws DatasetSummaryException {
         this.datasetID = datasetID;
         try {
             Reader reader = new InputStreamReader(new FileInputStream(csvDataFile

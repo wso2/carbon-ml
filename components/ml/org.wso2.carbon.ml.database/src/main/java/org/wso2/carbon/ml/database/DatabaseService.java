@@ -56,6 +56,14 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * @param datasetName    Name of the data-set
+     * @param tenantId       Tenant Id
+     * @return               Unique Id of the data-set
+     * @throws DatabaseHandlerException
+     */
+    public long getDatasetId(String datasetName, String tenantId) throws DatabaseHandlerException;
+
+    /**
      * Insert the data-set-version details to the database
      *
      * @param datasetId
@@ -63,7 +71,7 @@ public interface DatabaseService {
      * @param version
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersionDetails(String datasetId, String tenantId, String version)
+    public void insertDatasetVersionDetails(long datasetId, String tenantId, String version)
             throws DatabaseHandlerException;
 
     /**
@@ -79,24 +87,32 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
-     * Inser the value-set to the database
+     * Insert the value-set to the database
      * @param datasetVersionId
      * @param tenantId
      * @param uri
      * @param samplePoints
      * @throws DatabaseHandlerException
      */
-    public void insertValueSet(String datasetVersionId, String tenantId, String uri, SamplePoints samplePoints)
+    public void insertValueSet(long datasetVersionId, String tenantId, String uri, SamplePoints samplePoints)
             throws DatabaseHandlerException;
+
+    /**
+     * @param datasetId
+     * @param datasetVersion
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException;
 
     /**
      * Update the value-set table with a data-set sample.
      *
-     * @param valueSet          Unique Identifier of the value-set
+     * @param valueSetId        Unique Identifier of the value-set
      * @param valueSetSample    SamplePoints object of the value-set
      * @throws                  DatabaseHandlerException
      */
-    public void updateValueSetSample(String valueSet, SamplePoints valueSetSample)
+    public void updateValueSetSample(long valueSetId, SamplePoints valueSetSample)
             throws DatabaseHandlerException;
 
     /**
@@ -190,7 +206,7 @@ public interface DatabaseService {
      * @param                   include Default value to set for the flag indicating the feature is an input or not
      * @throws                  DatabaseHandlerException
      */
-    public void updateSummaryStatistics(String datasetID,  Map<String, Integer> headerMap, String[] type,
+    public void updateSummaryStatistics(long datasetVersionID,  Map<String, Integer> headerMap, String[] type,
                                         List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
                                         List<DescriptiveStatistics> descriptiveStats, Boolean include)
             throws DatabaseHandlerException;
