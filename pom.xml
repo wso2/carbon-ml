@@ -229,6 +229,11 @@
                 <artifactId>spark</artifactId>
                 <version>${orbit.version.spark}</version>
             </dependency>
+ 	    <dependency>
+        	<groupId>org.apache.hadoop</groupId>
+        	<artifactId>hadoop-client</artifactId>
+        	<version>${hadoop.version}</version>
+	    </dependency>
             <dependency>
                 <groupId>io.netty.wso2</groupId>
                 <artifactId>netty-all</artifactId>
@@ -683,6 +688,9 @@
 
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+
+	<hadoop.version>2.6</hadoop.version>
+
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>

@@ -36,6 +36,14 @@
             <artifactId>org.wso2.carbon.ml.database</artifactId>
         </dependency>
         <dependency>
+	    <groupId>org.apache.hadoop</groupId>
+	    <artifactId>hadoop-client</artifactId>
+        </dependency>
+	<dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+            </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
@@ -50,10 +58,6 @@
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark.wso2</groupId>
-            <artifactId>spark</artifactId>
         </dependency>
         <dependency>
             <groupId>org.json.wso2</groupId>
