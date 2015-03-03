@@ -28,6 +28,7 @@ import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 
 /**
+ * Implementation of {@link MLInputAdapter} for regular file system.
  */
 public class FileInputAdapter implements MLInputAdapter {
 
