@@ -46,7 +46,6 @@ public class MLProjectManagementService implements ProjectManagementService{
 	/**
      * Creates a new project.
      *
-     * @param projectID        Unique identifier of the project.
      * @param projectName      Name of the project.
      * @param description      Description of the project.
      * @throws                 MLProjectManagementServiceException
@@ -57,8 +56,9 @@ public class MLProjectManagementService implements ProjectManagementService{
 	    try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String projectId = tenantDomain+"."+projectName;
-            dbService.createProject(projectId, projectName, description);
+            dbService.createProject(projectId, projectName, description, username);
             logger.info("Successfully created a ML project: "+projectId);
             return projectId;
         } catch (DatabaseHandlerException e) {
@@ -81,8 +81,9 @@ public class MLProjectManagementService implements ProjectManagementService{
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String tenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            String username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             String projectId = tenantDomain+"."+projectName;
-            dbService.createProject(projectId, projectName, description);
+            dbService.createProject(projectId, projectName, description, username);
             logger.info("Successfully created a ML project: "+projectId);
             return projectId;
         } catch (DatabaseHandlerException e) {
@@ -184,7 +185,8 @@ public class MLProjectManagementService implements ProjectManagementService{
             String workflowID = projectID+"."+workflowName;
             dbService.createWorkflow(workflowID, projectID, datasetID,
                                         workflowName);
-            dbService.setDefaultFeatureSettings(datasetID, workflowID);
+            // TODO create model and insert default feature settings
+            //dbService.setDefaultFeatureSettings(datasetID, workflowID);
             return workflowID;
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to create the workflow: " + e.getMessage(), e);
@@ -254,7 +256,7 @@ public class MLProjectManagementService implements ProjectManagementService{
      *
      * @param workflowID   Unique Identifier of the new workflow
      * @param datasetID    Unique Identifier of the data-set associated with the workflow
-     * @throws             DatasetServiceException
+     * @throws             MLProjectManagementServiceException
      */
 	@Override
 	@Deprecated
@@ -263,7 +265,9 @@ public class MLProjectManagementService implements ProjectManagementService{
         try {
             DatabaseService dbService = MLProjectManagementServiceValueHolder.getDatabaseService();
             String datasetID = getdatasetID(projectID);
-            dbService.setDefaultFeatureSettings(datasetID, workflowID);
+            // TODO create model and set default settings
+            //dbService.setDefaultFeatureSettings(datasetID, workflowID);
+            dbService.setDefaultFeatureSettings(1, 1);
         } catch (DatabaseHandlerException e) {
             logger.error("Failed to set default feature settings: " + e.getMessage(), e);
             throw new MLProjectManagementServiceException("Failed to set default feature settings: " + e.getMessage(), e);

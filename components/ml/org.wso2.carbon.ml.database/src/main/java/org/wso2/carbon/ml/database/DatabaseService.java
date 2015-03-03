@@ -33,11 +33,11 @@ public interface DatabaseService {
      * Retrieves the path of the value-set having the given ID, from the
      * database.
      *
-     * @param datasetID     Unique Identifier of the value-set
+     * @param valueSetId    Unique Identifier of the value-set
      * @return              Absolute path of a given value-set
      * @throws              DatabaseHandlerException
      */
-    public String getValueSetUri(String datasetID) throws DatabaseHandlerException;
+    public String getValueSetUri(long valueSetId) throws DatabaseHandlerException;
 
     /**
      * Insert the new data-set details to the the database
@@ -83,7 +83,7 @@ public interface DatabaseService {
      * @param summary
      * @throws DatabaseHandlerException
      */
-    public void insertFeatureDefaults(String datasetVersionId, String featureName, String type, int featureIndex, String summary)
+    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, String summary)
             throws DatabaseHandlerException;
 
     /**
@@ -126,18 +126,18 @@ public interface DatabaseService {
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getScatterPlotPoints(String valueSetId, String xAxisFeature, String yAxisFeature,
+    public JSONArray getScatterPlotPoints(long valueSetId, String xAxisFeature, String yAxisFeature,
                                           String groupByFeature) throws DatabaseHandlerException;
 
     /**
      * Returns sample data for selected features
      *
-     * @param valueSet          Unique Identifier of the value-set
+     * @param valueSetId        Unique Identifier of the value-set
      * @param featureListString String containing feature name list
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getChartSamplePoints(String valueSet, String featureListString)
+    public JSONArray getChartSamplePoints(long valueSetId, String featureListString)
             throws DatabaseHandlerException;
 
     /**
@@ -160,7 +160,7 @@ public interface DatabaseService {
      * @return                 A list of FeatureSummaries
      * @throws                 DatabaseHandlerException
      */
-    public List<FeatureSummary> getDefaultFeatures(String datasetVersionId, int startIndex, int numberOfFeatures)
+    public List<FeatureSummary> getDefaultFeatures(long datasetVersionId, int startIndex, int numberOfFeatures)
             throws DatabaseHandlerException;
 
     /**
@@ -171,7 +171,7 @@ public interface DatabaseService {
      * @return              A list of feature names
      * @throws              DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String modelId) throws DatabaseHandlerException;
+    public List<String> getFeatureNames(long modelId) throws DatabaseHandlerException;
 
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
@@ -182,7 +182,7 @@ public interface DatabaseService {
      * @return                     JSON string containing the summary statistics
      * @throws                     DatabaseHandlerException
      */
-    public String getSummaryStats(String datasetVersionId, String featureName) throws DatabaseHandlerException;
+    public String getSummaryStats(long datasetVersionId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version
@@ -191,12 +191,12 @@ public interface DatabaseService {
      * @return                     Number of features in the data-set version
      * @throws                     DatabaseHandlerException
      */
-    public int getFeatureCount(String datasetVersionId) throws DatabaseHandlerException;
+    public int getFeatureCount(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Update the database with all the summary statistics of the sample.
      *
-     * @param datasetID         Unique Identifier of the data-set
+     * @param datasetVersionID  Unique Identifier of the data-set-version
      * @param headerMap         Array of names of features
      * @param type              Array of data-types of each feature
      * @param graphFrequencies  List of Maps containing frequencies for graphs, of each feature
@@ -218,7 +218,7 @@ public interface DatabaseService {
      * @param modelId           Unique identifier of the current model
      * @throws                  DatabaseHandlerException
      */
-    public void setDefaultFeatureSettings(String datasetVersionId, String modelId) throws DatabaseHandlerException;
+    public void setDefaultFeatureSettings(long datasetVersionId, long modelId) throws DatabaseHandlerException;
 
     /**
      * Retrieves the type of a feature.
@@ -228,7 +228,7 @@ public interface DatabaseService {
      * @return              Type of the feature (Categorical/Numerical)
      * @throws              DatabaseHandlerException
      */
-    public String getFeatureType(String modelId, String featureName) throws DatabaseHandlerException;
+    public String getFeatureType(long modelId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Change whether a feature should be included as an input or not
@@ -238,7 +238,7 @@ public interface DatabaseService {
      * @param isInput       Boolean value indicating whether the feature is an input or not
      * @throws              DatabaseHandlerException
      */
-    public void updateFeatureInclusion(String featureName, String modelId, boolean isInput)
+    public void updateFeatureInclusion(String featureName, long modelId, boolean isInput)
             throws DatabaseHandlerException;
 
     /**
@@ -249,7 +249,7 @@ public interface DatabaseService {
      * @param imputeOption  Updated impute option of the feature
      * @throws              DatabaseHandlerException
      */
-    public void updateImputeOption(String featureName, String modelId, String imputeOption)
+    public void updateImputeOption(String featureName, long modelId, String imputeOption)
             throws DatabaseHandlerException;
 
     /**
@@ -260,7 +260,7 @@ public interface DatabaseService {
      * @param featureType   Updated type of the feature
      * @throws              DatabaseHandlerException
      */
-    public void updateDataType(String featureName, String modelId, String featureType)
+    public void updateDataType(String featureName, long modelId, String featureType)
             throws DatabaseHandlerException;
 
     /**
@@ -271,7 +271,7 @@ public interface DatabaseService {
      * @param description      Description of the project
      * @throws                 DatabaseHandlerException
      */
-    public void createProject(String projectID, String projectName, String description) throws DatabaseHandlerException;
+    public void createProject(String projectID, String projectName, String description, String username) throws DatabaseHandlerException;
 
     /**
      * Retrieve Details of a Project
@@ -288,6 +288,60 @@ public interface DatabaseService {
      * @throws             DatabaseHandlerException
      */
     public void deleteProject(String projectId) throws DatabaseHandlerException;
+
+    /**
+     * Insert Analysis to the database
+     * @param projectId
+     * @param name
+     * @param tenantId
+     * @param comments
+     * @throws DatabaseHandlerException
+     */
+    public void insertAnalysis(long projectId, String name, int tenantId, String comments) throws DatabaseHandlerException;
+
+    /**
+     * Insert Model to the database
+     * @param analysisId
+     * @param tenantId
+     * @param outputModel
+     * @param username
+     * @throws DatabaseHandlerException
+     */
+    public void insertModel(long analysisId, long valueSetId, int tenantId, String outputModel, String username) throws DatabaseHandlerException;
+
+    /**
+     * Insert model configuration to the database
+     * @param modelId
+     * @param key
+     * @param value
+     * @param type
+     * @throws DatabaseHandlerException
+     */
+    public void insertModelConfiguration(long modelId, String key, String value, String type) throws DatabaseHandlerException;
+
+    /**
+     * Insert Hyper-parameter to the database
+     * @param modelId
+     * @param name
+     * @param tenantId
+     * @param value
+     * @param lastModifiedUser
+     */
+    public void insertHyperParameter(long modelId, String name, int tenantId, String value, String lastModifiedUser)
+            throws DatabaseHandlerException;
+
+    /**
+     * Insert feature-customized to the database
+     * @param modelId
+     * @param tenantId
+     * @param featureName
+     * @param imputeOption
+     * @param inclusion
+     * @param lastModifiedUser
+     * @throws DatabaseHandlerException
+     */
+    public void insertFeatureCustomized(long modelId, int tenantId, String featureName, String imputeOption,
+                                        boolean inclusion, String lastModifiedUser) throws DatabaseHandlerException;
 
     /**
      * Get the project names and created dates, that a tenant is assigned to.
