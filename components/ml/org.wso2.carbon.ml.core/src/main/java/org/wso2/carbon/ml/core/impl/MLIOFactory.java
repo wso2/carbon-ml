@@ -33,9 +33,6 @@ import org.wso2.carbon.ml.core.utils.MLConstants;
 public class MLIOFactory {
     private static final Log log = LogFactory.getLog(MLIOFactory.class);
     private Properties configuration = new Properties();
-    private String propertyPrefix = "data.";
-    private String propertyInSuffix = ".in";
-    private String propertyOutSuffix = ".out";
 
     public MLIOFactory(Properties properties) {
         configuration = properties;
@@ -43,7 +40,7 @@ public class MLIOFactory {
 
     public MLInputAdapter getInputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(propertyPrefix + type + propertyInSuffix);
+        String className = configuration.getProperty(type);
         try {
             c = Class.forName(className);
             MLInputAdapter inputAdapter = (MLInputAdapter) c.newInstance();
@@ -58,7 +55,7 @@ public class MLIOFactory {
 
     public MLOutputAdapter getOutputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(propertyPrefix + type + propertyOutSuffix);
+        String className = configuration.getProperty(type);
         try {
             c = Class.forName(className);
             MLOutputAdapter outputAdapter = (MLOutputAdapter) c.newInstance();
