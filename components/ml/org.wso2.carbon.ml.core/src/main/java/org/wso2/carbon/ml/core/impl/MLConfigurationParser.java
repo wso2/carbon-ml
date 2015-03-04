@@ -104,7 +104,7 @@ public class MLConfigurationParser {
      * @return      Summary statistics settings
      * @throws      MLConfigurationParserException
      */
-    protected SummaryStatisticsSettings getSummaryStatisticsSettings() 
+    public SummaryStatisticsSettings getSummaryStatisticsSettings() 
             throws MLConfigurationParserException {
         SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
         try {
@@ -139,7 +139,7 @@ public class MLConfigurationParser {
      * @return      Properties defined.
      * @throws      MLConfigurationParserException
      */
-    protected Properties getProperties() 
+    public Properties getProperties() 
             throws MLConfigurationParserException {
         Properties properties = new Properties();
         try {

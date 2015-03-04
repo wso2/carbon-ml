@@ -25,9 +25,9 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
@@ -53,16 +53,10 @@ public class MLDatasetProcessor {
     private ThreadExecutor threadExecutor;
     private DatabaseService databaseService;
 
-    public MLDatasetProcessor(MLConfigurationParser configParser) {
-        try {
-            mlProperties = configParser.getProperties();
-            summaryStatsSettings = configParser.getSummaryStatisticsSettings();
-            databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        } catch (MLConfigurationParserException ignore) {
-            log.warn("Failed to extract properties from ML configuration file.");
-            mlProperties = new Properties();
-            summaryStatsSettings = new SummaryStatisticsSettings();
-        }
+    public MLDatasetProcessor() {
+        mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
+        summaryStatsSettings = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings();
+        databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         threadExecutor = new ThreadExecutor(mlProperties);
     }
 
@@ -104,26 +98,20 @@ public class MLDatasetProcessor {
 
         MLIOFactory ioFactory = new MLIOFactory(mlProperties);
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType());
-        handleNull(
-                inputAdapter,
-                String.format("Invalid data source type: %s [data-set] %s", dataset.getDataSourceType(),
-                        dataset.getName()));
+        handleNull(inputAdapter, String.format("Invalid data source type: %s [data-set] %s", 
+                dataset.getDataSourceType(), dataset.getName()));
         MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType());
-        handleNull(
-                outputAdapter,
-                String.format("Invalid data target type: %s [data-set] %s", dataset.getDataTargetType(),
-                        dataset.getName()));
-        handleNull(dataset.getSourcePath(),
-                String.format("Null data source path provided [data-set] %s", dataset.getName()));
+        handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
+                dataset.getDataTargetType(), dataset.getName()));
+        handleNull(dataset.getSourcePath(), String.format("Null data source path provided [data-set] %s", 
+                dataset.getName()));
         InputStream input = null;
         URI targetUri = null;
         try {
             // write the data-set to a server side location
             input = inputAdapter.readDataset(dataset.getSourcePath());
-            handleNull(
-                    input,
-                    String.format("Null input stream read from the source data-set path: %s [data-set] %s",
-                            dataset.getSourcePath(), dataset.getName()));
+            handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
+                    dataset.getSourcePath(), dataset.getName()));
             String targetPath = ioFactory.getTargetPath(dataset.getName() + dataset.getTenantId());
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
             outputAdapter.writeDataset(targetPath, input);
