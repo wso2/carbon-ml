@@ -35,6 +35,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.core.domain.SummaryStats;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
@@ -58,6 +59,7 @@ public class SummaryStatsGenerator implements Runnable {
     private EmpiricalDistribution[] histogram;
     // Array containing number of unique values of each feature in the data-set.
     private int[] unique;
+    private int[] missing;
     private int[] stringCellCount;
     // Array containing data-type of each feature in the data-set.
     private String[] type;
@@ -72,6 +74,7 @@ public class SummaryStatsGenerator implements Runnable {
         this.summarySettings = summaryStatsSettings;
         this.headerMap = samplePoints.getHeader();
         this.columnData = samplePoints.getSamplePoints();
+        this.missing = samplePoints.getMissing();
         this.stringCellCount = samplePoints.getStringCellCount();
         int noOfFeatures = this.headerMap.size();
         // Initialize the lists.
@@ -102,6 +105,7 @@ public class SummaryStatsGenerator implements Runnable {
             calculateStringColumnFrequencies();
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies();
+            SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
             // TODO Update the database with calculated summary statistics.
             // DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
             // dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
