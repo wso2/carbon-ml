@@ -183,7 +183,7 @@ public class MLDatasetProcessor {
     private void persistValueSet(long datasetVersionId, MLValueset valueSet) throws MLDataProcessingException {
 
         try {
-            databaseService.insertValueSet(datasetVersionId, valueSet.getTenantId(),
+            databaseService.insertValueSet(datasetVersionId, valueSet.getName(), valueSet.getTenantId(),
                     valueSet.getTargetPath().getPath(), valueSet.getSamplePoints());
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
