@@ -141,7 +141,7 @@ public class MLDatasetProcessor {
             }
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(String.valueOf(datasetVersionId), summaryStatsSettings,
+            threadExecutor.execute(new SummaryStatsGenerator(datasetVersionId, summaryStatsSettings,
                     samplePoints));
             
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
