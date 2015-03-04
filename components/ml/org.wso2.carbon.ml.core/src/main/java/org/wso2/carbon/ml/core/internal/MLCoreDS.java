@@ -27,7 +27,6 @@ import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.dataset.internal.MLDatasetServiceValueHolder;
 
 /**
  * @scr.component name="ml.core" immediate="true"
@@ -40,10 +39,15 @@ public class MLCoreDS {
     private static final Log log = LogFactory.getLog(MLCoreDS.class);
 
     protected void activate(ComponentContext context) {
-        //FIXME this is temporary added for testing purposes.
+        
         try {
+            //TODO: Keep. Following is the one-time parsing of ml configurations 
             MLConfigurationParser mlConfig = new MLConfigurationParser(null);
-            MLDatasetProcessor processor = new MLDatasetProcessor(mlConfig);
+            MLCoreServiceValueHolder.getInstance().setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
+            MLCoreServiceValueHolder.getInstance().setMlProperties(mlConfig.getProperties());
+            
+            //FIXME this is temporary added for testing purposes.
+            MLDatasetProcessor processor = new MLDatasetProcessor();
             MLDataset dataset = new MLDataset();
             dataset.setName("test-ml");
             dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
