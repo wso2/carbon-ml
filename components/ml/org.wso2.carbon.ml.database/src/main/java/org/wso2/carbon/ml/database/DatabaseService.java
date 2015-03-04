@@ -312,6 +312,24 @@ public interface DatabaseService {
     public void createProject(String projectName, String description, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
+     * Get the unique Id of the project
+     * @param tenantId        tenant Id
+     * @param userName        username of the project
+     * @param projectName     name of the project
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+
+    /**
+     * Delete the project
+     * @param tenantId
+     * @param userName
+     * @param projectName
+     * @throws DatabaseHandlerException
+     */
+    public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+    /**
      * Retrieve Details of a Project
      *
      * @param projectId     Unique identifier of the project
