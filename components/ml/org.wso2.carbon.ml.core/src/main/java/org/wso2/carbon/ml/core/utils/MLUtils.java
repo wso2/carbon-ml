@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang.math.NumberUtils;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.domain.MLValueset;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
@@ -42,6 +43,7 @@ public class MLUtils {
             CSVRecord row;
             int featureSize = headerMap.size();
             int[] missing = new int[featureSize];
+            int[] stringCellCount = new int[featureSize];
             
             if (sampleSize >= 0 && featureSize > 0) {
                 sampleSize = sampleSize / featureSize;
@@ -64,6 +66,10 @@ public class MLUtils {
                     if (row.get(currentCol).isEmpty()) {
                      // If the cell is empty, increase the missing value count.
                         missing[currentCol]++;
+                    } else {
+                        if (!NumberUtils.isNumber(row.get(currentCol))) {
+                            stringCellCount[currentCol]++;
+                        }
                     }
                 }
                 recordsCount++;
@@ -72,6 +78,7 @@ public class MLUtils {
             samplePoints.setHeader(headerMap);
             samplePoints.setSamplePoints(columnData);
             samplePoints.setMissing(missing);
+            samplePoints.setStringCellCount(stringCellCount);
             return samplePoints;
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to parse the given input stream. Cause: "+e, e);
