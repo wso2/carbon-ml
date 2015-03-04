@@ -110,6 +110,25 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * Check whether the given database name exists in the given tenantId
+     * @param tenantId                 tenant Id
+     * @param datasetName              name of the data-set
+     * @return                         true if the name exists
+     * @throws DatabaseHandlerException
+     */
+    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException;
+
+    /**
+     * Check whether the given database version exists for the given data-set name and tenant ID
+     * @param tenantId                 tenantId
+     * @param datasetName              name of the data-set
+     * @param datasetVersion           version of the data-set
+     * @return                         true if the version of the data-set exists
+     * @throws DatabaseHandlerException
+     */
+    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion) throws DatabaseHandlerException;
+
+    /**
      * @param datasetId
      * @param datasetVersion
      * @return

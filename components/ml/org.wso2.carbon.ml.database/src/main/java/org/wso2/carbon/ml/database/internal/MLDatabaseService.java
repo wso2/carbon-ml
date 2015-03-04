@@ -309,6 +309,53 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
+    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET);
+            statement.setInt(1, tenantId);
+            statement.setString(2, datasetName);
+            result = statement.executeQuery();
+            return result.first();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while searching for dataset of tenant id: " + tenantId
+                            + " and dataset name:" + datasetName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION);
+            statement.setString(1, datasetName);
+            statement.setInt(2, tenantId);
+            statement.setString(3, datasetVersion);
+            result = statement.executeQuery();
+            return result.first();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while searching for dataset version of tenant id: " + tenantId
+                            + ", dataset name:" + datasetName + " and dataset version:" + datasetVersion);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
     public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException {
 
         Connection connection = null;
