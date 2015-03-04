@@ -52,6 +52,9 @@ public class MLDatasetProcessor {
     private SummaryStatisticsSettings summaryStatsSettings;
     private ThreadExecutor threadExecutor;
     private DatabaseService databaseService;
+    private String propertyPrefix = "data.";
+    private String propertyInSuffix = ".in";
+    private String propertyOutSuffix = ".out";
 
     public MLDatasetProcessor() {
         mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
@@ -97,10 +100,10 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset) throws MLDataProcessingException {
 
         MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType());
+        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataSourceType()+ propertyInSuffix);
         handleNull(inputAdapter, String.format("Invalid data source type: %s [data-set] %s", 
                 dataset.getDataSourceType(), dataset.getName()));
-        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType());
+        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(propertyPrefix + dataset.getDataTargetType() +propertyOutSuffix);
         handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
                 dataset.getDataTargetType(), dataset.getName()));
         handleNull(dataset.getSourcePath(), String.format("Null data source path provided [data-set] %s", 
@@ -117,7 +120,7 @@ public class MLDatasetProcessor {
             outputAdapter.writeDataset(targetPath, input);
 
             // read the file that was written
-            inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType());
+            inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataTargetType() + propertyInSuffix);
             try {
                 targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);
