@@ -111,7 +111,7 @@ public interface ProjectManagementService {
      * @return work-flow id
      * @throws                     MLProjectManagementServiceException
      */
-	public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName) 
+	public String createWorkflowAndSetDefaultSettings (String projectID, String workflowName)
 	        throws MLProjectManagementServiceException;
 
 	/**
