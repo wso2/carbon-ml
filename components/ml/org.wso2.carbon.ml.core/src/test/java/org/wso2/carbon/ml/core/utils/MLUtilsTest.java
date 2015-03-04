@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.testng.Assert;
@@ -87,5 +90,13 @@ public class MLUtilsTest {
         } catch (Exception e) {
             Assert.assertNull(e);
         }
+    }
+    
+    @Test
+    public void getDate() {
+        String date = MLUtils.getDate();
+        Assert.assertEquals(date.contains("-"), true);
+        Assert.assertEquals(date.contains("_"), true);
+        Assert.assertEquals(date.contains(":"), true);
     }
 }

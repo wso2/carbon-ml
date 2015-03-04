@@ -26,6 +26,7 @@ import org.wso2.carbon.ml.commons.domain.SamplePoints;
  */
 public class MLValueset {
 
+    private String name;
     private int tenantId;
     
     /*
@@ -56,6 +57,14 @@ public class MLValueset {
 
     public void setSamplePoints(SamplePoints samplePoints) {
         this.samplePoints = samplePoints;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

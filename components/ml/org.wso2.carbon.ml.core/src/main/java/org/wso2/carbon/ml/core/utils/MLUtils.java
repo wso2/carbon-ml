@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -102,11 +105,18 @@ public class MLUtils {
         }
     }
     
-    public static MLValueset getMLValueSet(int tenantId, URI targetPath, SamplePoints samplePoints) {
+    public static MLValueset getMLValueSet(int tenantId, String name, URI targetPath, SamplePoints samplePoints) {
         MLValueset valueSet = new MLValueset();
         valueSet.setTenantId(tenantId);
+        valueSet.setName(name);
         valueSet.setTargetPath(targetPath);
         valueSet.setSamplePoints(samplePoints);
         return valueSet;
+    }
+    
+    public static String getDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

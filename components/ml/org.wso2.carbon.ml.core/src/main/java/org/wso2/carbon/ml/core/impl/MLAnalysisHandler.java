@@ -19,30 +19,30 @@ package org.wso2.carbon.ml.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.core.domain.MLProject;
+import org.wso2.carbon.ml.core.domain.MLAnalysis;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 /**
- * {@link MLProjectHandler} is responsible for handling/delegating all the project management requests.
+ * {@link MLAnalysisHandler} is responsible for handling/delegating all the project management requests.
  */
-public class MLProjectHandler {
-    private static final Log log = LogFactory.getLog(MLProjectHandler.class);
+public class MLAnalysisHandler {
+    private static final Log log = LogFactory.getLog(MLAnalysisHandler.class);
     private DatabaseService databaseService;
 
-    public MLProjectHandler() {
+    public MLAnalysisHandler() {
         databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
     }
     
-    public void createProject(MLProject project) {
-        //TODO persist a project
+    public void createAnalysis(MLAnalysis analysis) {
+        //TODO persist an analysis
     }
     
-    public void deleteProject(int tenantId, String userName, String projectName) {
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) {
         //TODO
     }
     
-    public String getProjectId(int tenantId, String userName, String projectName) {
+    public String getAnalysisId(int tenantId, String userName, String analysisName) {
         //TODO
         return null;
     }

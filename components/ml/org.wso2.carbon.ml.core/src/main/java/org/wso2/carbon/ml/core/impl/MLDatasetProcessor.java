@@ -93,7 +93,7 @@ public class MLDatasetProcessor {
         // TODO call db and check whether the same version is existed for this dataset name in this tenant.
         return false;
     }
-
+    
     /**
      * Process a given data-set; read the data-set as a stream, extract meta-data, persist the data-set in a target path
      * and persist meta-data in ML db.
@@ -152,9 +152,11 @@ public class MLDatasetProcessor {
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(String.valueOf(datasetVersionId), summaryStatsSettings,
                     samplePoints));
+            
+            String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
             // build the MLValueSet
-            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), targetUri, samplePoints);
+            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), valueSetName, targetUri, samplePoints);
             persistValueSet(datasetVersionId, valueSet);
 
             // TODO persist into the ML db
