@@ -49,9 +49,9 @@ public class MLAnalysisHandler {
         //TODO
     }
     
-    public String getAnalysisId(int tenantId, String userName, String analysisName) {
+    public long getAnalysisId(int tenantId, String userName, String analysisName) {
         //TODO
-        return null;
+        return 0;
     }
 
 
