@@ -25,7 +25,7 @@ import java.util.SortedMap;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 /**
- * Represent an Analysis in ML.
+ * Represent SummaryStats in ML.
  */
 public class SummaryStats {
 
