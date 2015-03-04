@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.utils.MLConstants;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 /**
  * Read data from WSO2 BAM.
@@ -45,13 +46,12 @@ public class BAMInputAdapter implements MLInputAdapter {
     private CloseableHttpClient httpClient = null;
     private CloseableHttpResponse response = null;
     private String [] uriResourceParameters;
-    //TODO: read the sample size from the MLConfigurationParser
-    private static final int sampleSize = 10000;
     
     @Override
     public InputStream readDataset(URI uri) throws MLInputAdapterException {
         try {
             if (isValidTable(uri)) {
+                int sampleSize = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
                 // retrieve the data from BAM
                 HttpGet get = new HttpGet(getUriWithSampleSize(uri, sampleSize));
                 response = httpClient.execute(get);
