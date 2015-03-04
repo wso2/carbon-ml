@@ -329,6 +329,15 @@ public interface DatabaseService {
     public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     /**
+     * Delete the analysis
+     * @param tenantId
+     * @param userName
+     * @param analysisName
+     * @throws DatabaseHandlerException
+     */
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
+
+    /**
      * Insert Model to the database
      * @param analysisId
      * @param tenantId

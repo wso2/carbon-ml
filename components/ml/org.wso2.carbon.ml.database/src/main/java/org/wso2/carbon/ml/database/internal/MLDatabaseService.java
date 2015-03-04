@@ -821,6 +821,36 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_ANALYSIS);
+            preparedStatement.setString(1, analysisName);
+            preparedStatement.setInt(2, tenantId);
+            preparedStatement.setString(3, userName);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the analysis: " + analysisName);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting the analysis: " + analysisName + ": " +
+                    e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
+        }
+    }
+
+    @Override
     public void insertModel(long analysisId, long valueSetId, int tenantId, String outputModel, String username) throws DatabaseHandlerException {
 
         Connection connection = null;
