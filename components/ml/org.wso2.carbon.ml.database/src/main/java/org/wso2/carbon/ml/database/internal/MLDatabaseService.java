@@ -207,7 +207,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, Clob summary)
+    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, String summary)
             throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -220,7 +220,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(2, featureName);
             insertStatement.setString(3, type);
             insertStatement.setInt(4, featureIndex);
-            insertStatement.setClob(5, summary);
+            insertStatement.setString(5, summary);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {

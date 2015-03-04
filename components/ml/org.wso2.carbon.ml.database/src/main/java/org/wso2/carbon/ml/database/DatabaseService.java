@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
-import java.sql.Clob;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ public interface DatabaseService {
      * @param summary
      * @throws DatabaseHandlerException
      */
-    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, Clob summary)
+    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, String summary)
             throws DatabaseHandlerException;
 
     /**
