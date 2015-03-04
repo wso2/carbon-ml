@@ -17,17 +17,11 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
@@ -41,6 +35,12 @@ import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Properties;
 
 /**
  * This object is responsible for reading a data-set using a {@link MLInputAdapter}, extracting meta-data, persist in ML
@@ -172,7 +172,7 @@ public class MLDatasetProcessor {
 
         try {
             databaseService.insertValueSet(datasetVersionId, valueSet.getName(), valueSet.getTenantId(),
-                    valueSet.getTargetPath().getPath(), valueSet.getSamplePoints());
+                    valueSet.getUserName(), valueSet.getTargetPath().getPath(), valueSet.getSamplePoints());
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }
@@ -197,7 +197,7 @@ public class MLDatasetProcessor {
                     dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
             long datasetId = databaseService.getDatasetId(name, tenantId);
             dataset.setId(datasetId);
-            databaseService.insertDatasetVersionDetails(datasetId, tenantId, dataset.getVersion());
+            databaseService.insertDatasetVersionDetails(datasetId, tenantId,dataset.getUserName(), dataset.getVersion());
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }

@@ -26,14 +26,14 @@ public class SQLQueries {
     public static final String INSERT_DATASET = "INSERT INTO ML_DATASET(NAME, TENANT_ID, USERNAME, COMMENTS, SOURCE_TYPE, TARGET_TYPE, DATA_TYPE) " +
             "VALUES(?,?,?,?,?,?,?)";
 
-    public static final String INSERT_DATASET_VERSION = "INSERT INTO ML_DATASET_VERSION(DATASET_ID, TENANT_ID, VERSION) " +
-            "VALUES(?,?,?)";
+    public static final String INSERT_DATASET_VERSION = "INSERT INTO ML_DATASET_VERSION(DATASET_ID, TENANT_ID, USERNAME, VERSION) " +
+            "VALUES(?,?,?,?)";
 
     public static final String INSERT_FEATURE_DEFAULTS = "INSERT INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, FEATURE_NAME, TYPE, FEATURE_INDEX, SUMMARY) " +
             "VALUES(?,?,?,?,?)";
 
-    public static final String INSERT_VALUE_SET = "INSERT INTO ML_VALUE_SET(DATASET_VERSION_ID, NAME, TENANT_ID, URI, SAMPLE_POINTS) " +
-            "VALUES(?,?,?,?,?)";
+    public static final String INSERT_VALUE_SET = "INSERT INTO ML_VALUE_SET(DATASET_VERSION_ID, NAME, TENANT_ID, USERNAME, URI, SAMPLE_POINTS) " +
+            "VALUES(?,?,?,?,?,?)";
 
     public static final String UPDATE_SUMMARY_STATS = "MERGE INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, FEATURE_NAME, TYPE, FEATURE_INDEX, SUMMARY) " +
             "VALUES(?,?,?,?,?)";

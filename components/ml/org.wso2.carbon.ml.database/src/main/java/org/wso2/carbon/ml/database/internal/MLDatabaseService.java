@@ -175,7 +175,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version) throws DatabaseHandlerException {
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String username, String version) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -186,7 +186,8 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
             insertStatement.setLong(1, datasetId);
             insertStatement.setInt(2, tenantId);
-            insertStatement.setString(3, version);
+            insertStatement.setString(3, username);
+            insertStatement.setString(4, version);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -241,7 +242,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertValueSet(long datasetVersionId, String name, int tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
+    public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -252,8 +253,9 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setLong(1, datasetVersionId);
             insertStatement.setString(2, name);
             insertStatement.setInt(3, tenantId);
-            insertStatement.setString(4, uri);
-            insertStatement.setObject(5, samplePoints);
+            insertStatement.setString(4, username);
+            insertStatement.setString(5, uri);
+            insertStatement.setObject(6, samplePoints);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {

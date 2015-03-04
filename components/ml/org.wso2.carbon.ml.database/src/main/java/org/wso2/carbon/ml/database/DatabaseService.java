@@ -71,7 +71,7 @@ public interface DatabaseService {
      * @param version
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version)
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String username, String version)
             throws DatabaseHandlerException;
 
     /**
@@ -94,7 +94,7 @@ public interface DatabaseService {
      * @param samplePoints
      * @throws DatabaseHandlerException
      */
-    public void insertValueSet(long datasetVersionId, String name, int tenantId, String uri, SamplePoints samplePoints)
+    public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, SamplePoints samplePoints)
             throws DatabaseHandlerException;
 
     /**
