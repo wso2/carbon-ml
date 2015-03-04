@@ -110,6 +110,25 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * Check whether the given database name exists in the given tenantId
+     * @param tenantId                 tenant Id
+     * @param datasetName              name of the data-set
+     * @return                         true if the name exists
+     * @throws DatabaseHandlerException
+     */
+    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException;
+
+    /**
+     * Check whether the given database version exists for the given data-set name and tenant ID
+     * @param tenantId                 tenantId
+     * @param datasetName              name of the data-set
+     * @param datasetVersion           version of the data-set
+     * @return                         true if the version of the data-set exists
+     * @throws DatabaseHandlerException
+     */
+    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion) throws DatabaseHandlerException;
+
+    /**
      * @param datasetId
      * @param datasetVersion
      * @return
@@ -293,6 +312,24 @@ public interface DatabaseService {
     public void createProject(String projectName, String description, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
+     * Get the unique Id of the project
+     * @param tenantId        tenant Id
+     * @param userName        username of the project
+     * @param projectName     name of the project
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+
+    /**
+     * Delete the project
+     * @param tenantId
+     * @param userName
+     * @param projectName
+     * @throws DatabaseHandlerException
+     */
+    public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+    /**
      * Retrieve Details of a Project
      *
      * @param projectId     Unique identifier of the project
@@ -327,6 +364,15 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
+
+    /**
+     * Delete the analysis
+     * @param tenantId
+     * @param userName
+     * @param analysisName
+     * @throws DatabaseHandlerException
+     */
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     /**
      * Insert Model to the database

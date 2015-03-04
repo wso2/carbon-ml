@@ -309,6 +309,53 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
+    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET);
+            statement.setInt(1, tenantId);
+            statement.setString(2, datasetName);
+            result = statement.executeQuery();
+            return result.first();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while searching for dataset of tenant id: " + tenantId
+                            + " and dataset name:" + datasetName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION);
+            statement.setString(1, datasetName);
+            statement.setInt(2, tenantId);
+            statement.setString(3, datasetVersion);
+            result = statement.executeQuery();
+            return result.first();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while searching for dataset version of tenant id: " + tenantId
+                            + ", dataset name:" + datasetName + " and dataset version:" + datasetVersion);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
     public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -702,7 +749,7 @@ public class MLDatabaseService implements DatabaseService {
             MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            createProjectStatement = connection.prepareStatement(SQLQueries.CREATE_PROJECT_NEW);
+            createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
             createProjectStatement.setString(1, projectName);
             createProjectStatement.setString(2, description);
             createProjectStatement.setInt(3, tenantId);
@@ -724,6 +771,66 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    @Override
+    public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_PROJECT_ID);
+            statement.setString(1, projectName);
+            statement.setInt(2, tenantId);
+            statement.setString(2, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                throw new DatabaseHandlerException(
+                        "No project id associated with project name: " + projectName + ", tenant Id:" + tenantId
+                                + " and username:" + userName);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while extracting project id for project name:" + projectName
+                            + ", tenant Id:" + tenantId + " and username:" + userName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
+            preparedStatement.setString(1, projectName);
+            preparedStatement.setInt(2, tenantId);
+            preparedStatement.setString(3, userName);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the project: " + projectName);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectName + ": " +
+                    e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
+        }
+    }
+
     /**
      * Delete details of a given project from the database.
      *
@@ -737,7 +844,7 @@ public class MLDatabaseService implements DatabaseService {
             MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            deleteProjectStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
+            deleteProjectStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT_GIVEN_ID);
             deleteProjectStatement.setString(1, projectId);
             deleteProjectStatement.execute();
             connection.commit();
@@ -817,6 +924,36 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_ANALYSIS);
+            preparedStatement.setString(1, analysisName);
+            preparedStatement.setInt(2, tenantId);
+            preparedStatement.setString(3, userName);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the analysis: " + analysisName);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting the analysis: " + analysisName + ": " +
+                    e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
         }
     }
 
