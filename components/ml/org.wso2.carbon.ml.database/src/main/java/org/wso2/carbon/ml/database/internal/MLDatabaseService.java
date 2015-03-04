@@ -276,6 +276,39 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
+    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATA_SOURCE);
+            insertStatement.setLong(1, valuesetId);
+            insertStatement.setInt(2, tenantId);
+            insertStatement.setString(3, username);
+            insertStatement.setString(4, key);
+            insertStatement.setString(6, value);
+            insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the data source");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException(
+                    "An error occurred while inserting data source " +
+                            " to the database: " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
+
+    @Override
     public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException {
 
         Connection connection = null;

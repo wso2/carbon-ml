@@ -98,6 +98,18 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * Insert data-source to the database
+     * @param valuesetId
+     * @param tenantId
+     * @param username
+     * @param key
+     * @param value
+     * @throws DatabaseHandlerException
+     */
+    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value)
+            throws DatabaseHandlerException;
+
+    /**
      * @param datasetId
      * @param datasetVersion
      * @return

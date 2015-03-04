@@ -35,6 +35,8 @@ public class SQLQueries {
     public static final String INSERT_VALUE_SET = "INSERT INTO ML_VALUE_SET(DATASET_VERSION_ID, NAME, TENANT_ID, USERNAME, URI, SAMPLE_POINTS) " +
             "VALUES(?,?,?,?,?,?)";
 
+    public static final String INSERT_DATA_SOURCE = "INSERT INTO ML_DATA_SOURCE(VALUE_SET_ID, TENANT_ID, USERNAME, KEY, VALUE) VALUES (?,?,?,?,?)";
+
     public static final String UPDATE_SUMMARY_STATS = "MERGE INTO ML_FEATURE_DEFAULTS(DATASET_VERSION_ID, FEATURE_NAME, TYPE, FEATURE_INDEX, SUMMARY) " +
             "VALUES(?,?,?,?,?)";
 
