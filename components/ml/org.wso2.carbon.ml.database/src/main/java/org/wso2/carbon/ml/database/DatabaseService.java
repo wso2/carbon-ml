@@ -71,7 +71,7 @@ public interface DatabaseService {
      * @param version
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersionDetails(long datasetId, int tenantId, String version)
+    public void insertDatasetVersionDetails(long datasetId, int tenantId, String username, String version)
             throws DatabaseHandlerException;
 
     /**
@@ -94,7 +94,19 @@ public interface DatabaseService {
      * @param samplePoints
      * @throws DatabaseHandlerException
      */
-    public void insertValueSet(long datasetVersionId, String name, int tenantId, String uri, SamplePoints samplePoints)
+    public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, SamplePoints samplePoints)
+            throws DatabaseHandlerException;
+
+    /**
+     * Insert data-source to the database
+     * @param valuesetId
+     * @param tenantId
+     * @param username
+     * @param key
+     * @param value
+     * @throws DatabaseHandlerException
+     */
+    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value)
             throws DatabaseHandlerException;
 
     /**
@@ -212,6 +224,14 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
+     * Update the database with the summary stats of data-set-version
+     * @param datasetVersionId  Unique Id of the data-set-version
+     * @param summaryStats      Summary stats
+     * @throws DatabaseHandlerException
+     */
+    public void updateSummaryStatistics(long datasetVersionId, SummaryStats summaryStats) throws DatabaseHandlerException;
+
+    /**
      * Set the default values for feature properties of a given workflow.
      *
      * @param datasetVersionId  Unique identifier of the data-set-version
@@ -296,7 +316,17 @@ public interface DatabaseService {
      * @param comments
      * @throws DatabaseHandlerException
      */
-    public void insertAnalysis(long projectId, String name, int tenantId, String comments) throws DatabaseHandlerException;
+    public void insertAnalysis(long projectId, String name, int tenantId, String username, String comments) throws DatabaseHandlerException;
+
+    /**
+     * Get the analysis Id of a given tenant id, username, analysis combination
+     * @param tenantId
+     * @param userName
+     * @param analysisName
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     /**
      * Insert Model to the database

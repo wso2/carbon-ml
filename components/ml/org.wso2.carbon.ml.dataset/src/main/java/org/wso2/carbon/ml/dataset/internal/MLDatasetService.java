@@ -219,16 +219,17 @@ public class MLDatasetService implements DatasetService {
 
                 // TODO version
                 String datasetVersion = "1";
-                dbService.insertDatasetVersionDetails(datasetId, tenantId, datasetVersion);
+                dbService.insertDatasetVersionDetails(datasetId, tenantId, username, datasetVersion);
+                long datasetVersionId = dbService.getDatasetVersionId(datasetId, datasetVersion);
+
                 // Generate summary statistics.
-                DatasetSummary summary = new DatasetSummary(targetFile, datasetId);
+                DatasetSummary summary = new DatasetSummary(targetFile, datasetVersionId);
                 int noOfFeatures = summary.generateSummary(summaryStatSettings.getSampleSize(),
                     summaryStatSettings.getHistogramBins(), summaryStatSettings
                     .getCategoricalThreshold(), true, mlDatabaseName);
                 // Update the database with the value-set sample.
 //                dbService.updateValueSetSample(valueSetId, summary.samplePoints());
-                long datasetVersionId = dbService.getDatasetVersionId(datasetId, datasetVersion);
-                dbService.insertValueSet(datasetVersionId, fileName, tenantId, targetFile.getPath(), summary.samplePoints());
+                dbService.insertValueSet(datasetVersionId, fileName, tenantId, username, targetFile.getPath(), summary.samplePoints());
                 return noOfFeatures;
             } else {
                 throw new DatasetServiceException("");
