@@ -77,4 +77,10 @@ public class MLProject {
         this.createdTime = createdTime;
     }
 
+    @Override
+    public String toString() {
+        return "MLProject [name=" + name + ", tenantId=" + tenantId + ", userName=" + userName + ", description="
+                + description + ", createdTime=" + createdTime + "]";
+    }
+
 }
