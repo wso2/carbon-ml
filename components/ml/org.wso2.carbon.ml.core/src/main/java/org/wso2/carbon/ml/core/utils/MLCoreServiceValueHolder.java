@@ -17,11 +17,16 @@
  */
 package org.wso2.carbon.ml.core.utils;
 
+import java.util.Properties;
+
+import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 public class MLCoreServiceValueHolder {
     private static volatile MLCoreServiceValueHolder instance;
     private DatabaseService databaseService;
+    private SummaryStatisticsSettings summaryStatSettings;
+    private Properties mlProperties;
 
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -35,10 +40,26 @@ public class MLCoreServiceValueHolder {
     }
 
     public void registerDatabaseService(DatabaseService service) {
-        databaseService = service;
+        this.databaseService = service;
     }
 
     public DatabaseService getDatabaseService() {
         return databaseService;
+    }
+
+    public SummaryStatisticsSettings getSummaryStatSettings() {
+        return summaryStatSettings;
+    }
+
+    public void setSummaryStatSettings(SummaryStatisticsSettings summaryStatSettings) {
+        this.summaryStatSettings = summaryStatSettings;
+    }
+
+    public Properties getMlProperties() {
+        return mlProperties;
+    }
+
+    public void setMlProperties(Properties mlProperties) {
+        this.mlProperties = mlProperties;
     }
 }
