@@ -28,6 +28,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.SummaryStats;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
@@ -64,18 +65,18 @@ public class DatasetSummary {
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
 
-    private long datasetID;
+    private long datasetVersion;
     private CSVParser parser;
 
     /**
      * Constructor to create the parser for the data-set and initialize the lists.
      *
-     * @param csvDataFile   File object of the data-set CSV file.
-     * @param datasetID     Unique Identifier of the data-set.
-     * @throws              DatasetSummaryException
+     * @param csvDataFile          File object of the data-set CSV file.
+     * @param datasetVersionId     Unique Identifier of the data-set.
+     * @throws                     DatasetSummaryException
      */
-    protected DatasetSummary(File csvDataFile, long datasetID) throws DatasetSummaryException {
-        this.datasetID = datasetID;
+    protected DatasetSummary(File csvDataFile, long datasetVersionId) throws DatasetSummaryException {
+        this.datasetVersion = datasetVersionId;
         try {
             Reader reader = new InputStreamReader(new FileInputStream(csvDataFile
                     .getAbsolutePath()),DatasetConfigurations.UTF_8);
@@ -95,7 +96,7 @@ public class DatasetSummary {
             }
         } catch (IOException e) {
             throw new DatasetSummaryException("Error occurred while reading from the dataset " +
-                    datasetID + ": " + e.getMessage(), e);
+                    datasetVersionId + ": " + e.getMessage(), e);
         }
     }
 
@@ -125,15 +126,18 @@ public class DatasetSummary {
             calculateNumericColumnFrequencies(categoricalThreshold, noOfIntervals);
             // Update the database with calculated summary statistics.
             DatabaseService dbService =  MLDatasetServiceValueHolder.getDatabaseService();
-            dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type,
-                this.graphFrequencies, this.missing, this.unique, this.descriptiveStats, include);
+//            dbService.updateSummaryStatistics(this.datasetVersion, headerMap, this.type,
+//                this.graphFrequencies, this.missing, this.unique, this.descriptiveStats, include);
+            SummaryStats summaryStats = new SummaryStats(this.headerMap,this.type, this.graphFrequencies,
+                    this.missing, this.unique, this.descriptiveStats);
+            dbService.updateSummaryStatistics(this.datasetVersion, summaryStats);
             if(logger.isDebugEnabled()){
-                logger.info("Summary statistics successfully generated for dataset: " + datasetID);
+                logger.info("Summary statistics successfully generated for dataset: " + datasetVersion);
             }
             return this.headerMap.size();
         } catch (DatabaseHandlerException e) {
             throw new DatasetSummaryException("Error occurred while Calculating summary statistics " +
-                    "for dataset " + this.datasetID + ": " + e.getMessage(), e);
+                    "for dataset " + this.datasetVersion + ": " + e.getMessage(), e);
         }
     }
 

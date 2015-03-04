@@ -722,7 +722,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertAnalysis(long projectId, String name, int tenantId, String comments) throws DatabaseHandlerException {
+    public void insertAnalysis(long projectId, String name, int tenantId, String username, String comments) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -734,7 +734,8 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setLong(1, projectId);
             insertStatement.setString(2, name);
             insertStatement.setInt(3, tenantId);
-            insertStatement.setString(4, comments);
+            insertStatement.setString(4, username);
+            insertStatement.setString(5, comments);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -751,6 +752,36 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
+
+    @Override
+    public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ANALYSIS_ID);
+            statement.setString(1, analysisName);
+            statement.setInt(2, tenantId);
+            statement.setString(3,userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                throw new DatabaseHandlerException(
+                        "No analysis id associated with analysis name: " + analysisName + ", tenant id:" + tenantId
+                                + " and username:" + userName);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    " An error has occurred while extracting analysis id for analysis name: " + analysisName
+                            + ", tenant id:" + tenantId + " and username:" + userName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
 
@@ -1051,6 +1082,48 @@ public class MLDatabaseService implements DatabaseService {
                 updateStatement.setString(3, type[columnIndex].toString());
                 updateStatement.setInt(4, columnIndex);
                 updateStatement.setString(5, summaryStat.toString());
+                updateStatement.execute();
+            }
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the summary statistics for dataset version " + datasetVersionId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while updating the database " +
+                    "with summary statistics of the dataset " + datasetVersionId + ": " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
+        }
+    }
+
+    @Override
+    public void updateSummaryStatistics(long datasetVersionId, SummaryStats summaryStats) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            JSONArray summaryStatJson;
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            int columnIndex;
+            for (Map.Entry<String, Integer> columnNameMapping : summaryStats.getHeaderMap().entrySet()) {
+                columnIndex = columnNameMapping.getValue();
+                // Get the JSON representation of the column summary.
+                summaryStatJson = createJson(summaryStats.getType()[columnIndex], summaryStats.getGraphFrequencies().get(columnIndex),
+                        summaryStats.getMissing()[columnIndex], summaryStats.getUnique()[columnIndex],
+                        summaryStats.getDescriptiveStats().get(columnIndex));
+
+                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
+                updateStatement.setLong(1, datasetVersionId);
+                updateStatement.setString(2, columnNameMapping.getKey());
+                updateStatement.setString(3, summaryStats.getType()[columnIndex]);
+                updateStatement.setInt(4, columnIndex);
+                updateStatement.setString(5, summaryStatJson.toString());
                 updateStatement.execute();
             }
             connection.commit();
