@@ -20,10 +20,9 @@ package org.wso2.carbon.ml.commons.domain;
 /**
  * Represent an Analysis in ML.
  */
-public class MLAnalysis {
+public class MLModelNew {
 
     private String id;
-    private long projectId;
     private String name;
     private int tenantId;
     private String userName;
@@ -67,14 +66,6 @@ public class MLAnalysis {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
     }
 
 }

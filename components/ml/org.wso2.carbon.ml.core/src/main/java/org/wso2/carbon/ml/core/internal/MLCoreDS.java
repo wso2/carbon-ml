@@ -22,7 +22,7 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.ml.core.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;

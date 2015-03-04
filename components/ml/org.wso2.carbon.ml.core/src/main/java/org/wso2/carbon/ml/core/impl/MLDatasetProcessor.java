@@ -25,10 +25,10 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.commons.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.core.domain.MLDataset;
-import org.wso2.carbon.ml.core.domain.MLValueset;
-import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;

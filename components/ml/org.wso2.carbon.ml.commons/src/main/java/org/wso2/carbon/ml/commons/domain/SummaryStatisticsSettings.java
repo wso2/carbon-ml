@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.core.domain;
+package org.wso2.carbon.ml.commons.domain;
 
 public class SummaryStatisticsSettings {
 	private int histogramBins = 20;

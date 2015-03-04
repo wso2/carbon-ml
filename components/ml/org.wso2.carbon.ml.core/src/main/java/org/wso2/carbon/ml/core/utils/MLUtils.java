@@ -23,8 +23,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
+import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.core.domain.MLValueset;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
 public class MLUtils {

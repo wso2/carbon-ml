@@ -15,11 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.core.domain;
+package org.wso2.carbon.ml.commons.domain;
 
 import java.net.URI;
-
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
 
 /**
  * Represent a Value-set in ML.
@@ -28,6 +26,7 @@ public class MLValueset {
 
     private String name;
     private int tenantId;
+    private String userName;
     
     /*
      * Target server side path of the data-set.
@@ -65,6 +64,14 @@ public class MLValueset {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }

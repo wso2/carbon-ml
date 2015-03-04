@@ -19,9 +19,11 @@ package org.wso2.carbon.ml.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.ml.core.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
  * {@link MLAnalysisHandler} is responsible for handling/delegating all the project management requests.
@@ -34,8 +36,12 @@ public class MLAnalysisHandler {
         databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
     }
     
-    public void createAnalysis(MLAnalysis analysis) {
-        //TODO persist an analysis
+    public void createAnalysis(MLAnalysis analysis) throws MLAnalysisHandlerException {
+        try {
+            databaseService.insertAnalysis(analysis.getProjectId(), analysis.getName(), analysis.getTenantId(), analysis.getComments());
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
     }
     
     public void deleteAnalysis(int tenantId, String userName, String analysisName) {

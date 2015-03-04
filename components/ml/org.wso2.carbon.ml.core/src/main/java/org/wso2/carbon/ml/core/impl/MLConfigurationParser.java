@@ -31,8 +31,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.wso2.carbon.ml.core.domain.DataUploadSettings;
-import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.DataUploadSettings;
+import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 

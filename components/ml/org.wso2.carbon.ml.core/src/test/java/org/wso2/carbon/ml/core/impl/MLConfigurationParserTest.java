@@ -21,8 +21,8 @@ import java.util.Properties;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.core.domain.DataUploadSettings;
-import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.DataUploadSettings;
+import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
