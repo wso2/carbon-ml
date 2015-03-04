@@ -241,7 +241,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertValueSet(long datasetVersionId, int tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
+    public void insertValueSet(long datasetVersionId, String name, int tenantId, String uri, SamplePoints samplePoints) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -250,9 +250,10 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);
             insertStatement.setLong(1, datasetVersionId);
-            insertStatement.setInt(2, tenantId);
-            insertStatement.setString(3, uri);
-            insertStatement.setObject(4, samplePoints);
+            insertStatement.setString(2, name);
+            insertStatement.setInt(3, tenantId);
+            insertStatement.setString(4, uri);
+            insertStatement.setObject(5, samplePoints);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {

@@ -94,7 +94,7 @@ public interface DatabaseService {
      * @param samplePoints
      * @throws DatabaseHandlerException
      */
-    public void insertValueSet(long datasetVersionId, int tenantId, String uri, SamplePoints samplePoints)
+    public void insertValueSet(long datasetVersionId, String name, int tenantId, String uri, SamplePoints samplePoints)
             throws DatabaseHandlerException;
 
     /**

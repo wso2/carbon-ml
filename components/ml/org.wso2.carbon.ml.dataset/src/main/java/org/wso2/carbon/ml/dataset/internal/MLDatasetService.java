@@ -228,7 +228,7 @@ public class MLDatasetService implements DatasetService {
                 // Update the database with the value-set sample.
 //                dbService.updateValueSetSample(valueSetId, summary.samplePoints());
                 long datasetVersionId = dbService.getDatasetVersionId(datasetId, datasetVersion);
-                dbService.insertValueSet(datasetVersionId, tenantId, targetFile.getPath(), summary.samplePoints());
+                dbService.insertValueSet(datasetVersionId, fileName, tenantId, targetFile.getPath(), summary.samplePoints());
                 return noOfFeatures;
             } else {
                 throw new DatasetServiceException("");
