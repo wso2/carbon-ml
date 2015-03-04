@@ -26,7 +26,6 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.core.domain.DataUploadSettings;
 import org.wso2.carbon.ml.core.domain.MLDataset;
 import org.wso2.carbon.ml.core.domain.MLValueset;
 import org.wso2.carbon.ml.core.domain.SummaryStatisticsSettings;
