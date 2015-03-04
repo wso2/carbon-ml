@@ -40,6 +40,7 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
@@ -144,13 +145,18 @@ public class MLDatasetProcessor {
             // persist data-set and data-set version in DB
             persistDataset(dataset);
 
-            String datasetVersionId = ""; // get this from DB
+            long datasetVersionId = retrieveDatasetVersion(dataset);
+            if (log.isDebugEnabled()) {
+                log.debug("datasetVersionId: " + datasetVersionId);
+            }
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(datasetVersionId, summaryStatsSettings, samplePoints));
+            threadExecutor.execute(new SummaryStatsGenerator(String.valueOf(datasetVersionId), summaryStatsSettings,
+                    samplePoints));
 
             // build the MLValueSet
             MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), targetUri, samplePoints);
+            persistValueSet(datasetVersionId, valueSet);
 
             // TODO persist into the ML db
             // persist sample points
@@ -173,10 +179,39 @@ public class MLDatasetProcessor {
         }
     }
 
-    private void persistDataset(MLDataset dataset) {
+    private void persistValueSet(long datasetVersionId, MLValueset valueSet) throws MLDataProcessingException {
 
-//        databaseService.insertDatasetDetails(dataset.getName(), dataset.getTenantId(), dataset.getUserName(),
-//                dataset.getComments(), dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
+        try {
+            databaseService.insertValueSet(datasetVersionId, valueSet.getTenantId(),
+                    valueSet.getTargetPath().getPath(), valueSet.getSamplePoints());
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+
+    private long retrieveDatasetVersion(MLDataset dataset) throws MLDataProcessingException {
+        long datasetVersionId;
+        try {
+            datasetVersionId = databaseService.getDatasetVersionId(dataset.getId(), dataset.getVersion());
+            return datasetVersionId;
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+
+    private void persistDataset(MLDataset dataset) throws MLDataProcessingException {
+
+        try {
+            String name = dataset.getName();
+            int tenantId = dataset.getTenantId();
+            databaseService.insertDatasetDetails(name, tenantId, dataset.getUserName(), dataset.getComments(),
+                    dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
+            long datasetId = databaseService.getDatasetId(name, tenantId);
+            dataset.setId(datasetId);
+            databaseService.insertDatasetVersionDetails(datasetId, tenantId, dataset.getVersion());
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
     }
 
     private void handleNull(Object obj, String msg) throws MLDataProcessingException {

@@ -24,6 +24,7 @@ import java.net.URI;
  */
 public class MLDataset {
 
+    private long id;
     private String name;
     private int tenantId;
     private String userName;
@@ -121,6 +122,21 @@ public class MLDataset {
 
     public void setDataTargetType(String dataTargetType) {
         this.dataTargetType = dataTargetType;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "MLDataset [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
+                + ", dataSourceType=" + dataSourceType + ", dataTargetType=" + dataTargetType + ", sourcePath="
+                + sourcePath + ", dataType=" + dataType + ", comments=" + comments + ", version=" + version + "]";
     }
     
 }
