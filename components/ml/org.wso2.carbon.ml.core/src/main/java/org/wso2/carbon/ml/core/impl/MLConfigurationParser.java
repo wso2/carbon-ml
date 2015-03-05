@@ -56,12 +56,12 @@ public class MLConfigurationParser {
                 dBuilder = dbFactory.newDocumentBuilder();
                 this.document = dBuilder.parse(xmlFile);
             } else {
-                throw new MLConfigurationParserException("File not found : "+path);
+                throw new MLConfigurationParserException("File not found : " + path);
             }
             
         } catch (Exception e) {
-            throw new MLConfigurationParserException("An error occurred while parsing " +
-                MLConstants.ML_CONFIG_XML + " : " + e.getMessage(), e);
+            throw new MLConfigurationParserException("An error occurred while parsing " + MLConstants.ML_CONFIG_XML
+                    + " : " + e.getMessage(), e);
         }
     }
 
@@ -74,21 +74,17 @@ public class MLConfigurationParser {
     protected DataUploadSettings getDataUploadSettings() throws MLConfigurationParserException {
         DataUploadSettings dataUploadSettings = new DataUploadSettings();
         try {
-            NodeList nodes = this.document.getElementsByTagName(MLConstants
-                .UPLOAD_SETTINGS).item(0) .getChildNodes();
+            NodeList nodes = this.document.getElementsByTagName(MLConstants.UPLOAD_SETTINGS).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
                 if (nodes.item(i).getNodeName().equals(MLConstants.UPLOAD_LOCATION)) {
                     dataUploadSettings.setUploadLocation(nodes.item(i).getTextContent());
-                } else if (nodes.item(i).getNodeName().equals(MLConstants
-                    .IN_MEMORY_THRESHOLD)) {
-                        dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i)
-                            .getTextContent()));
+                } else if (nodes.item(i).getNodeName().equals(MLConstants.IN_MEMORY_THRESHOLD)) {
+                    dataUploadSettings.setInMemoryThreshold(Integer.parseInt(nodes.item(i).getTextContent()));
                 } else if (nodes.item(i).getNodeName().equals(MLConstants.UPLOAD_LIMIT)) {
-                    dataUploadSettings.setUploadLimit(Long .parseLong(nodes.item(i)
-                        .getTextContent()));
+                    dataUploadSettings.setUploadLimit(Long.parseLong(nodes.item(i).getTextContent()));
                 }
             }
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.info("Successfully parsed data uploading settings.");
             }
         } catch (Exception e) {
@@ -104,31 +100,26 @@ public class MLConfigurationParser {
      * @return      Summary statistics settings
      * @throws      MLConfigurationParserException
      */
-    public SummaryStatisticsSettings getSummaryStatisticsSettings() 
-            throws MLConfigurationParserException {
+    public SummaryStatisticsSettings getSummaryStatisticsSettings() throws MLConfigurationParserException {
         SummaryStatisticsSettings summaryStatisticsSettings = new SummaryStatisticsSettings();
         try {
-            NodeList nodes = this.document.getElementsByTagName(MLConstants
-                .SUMMARY_STATISTICS_SETTINGS).item(0).getChildNodes();
+            NodeList nodes =
+                this.document.getElementsByTagName(MLConstants.SUMMARY_STATISTICS_SETTINGS).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
                 if (nodes.item(i).getNodeName().equals(MLConstants.HISTOGRAM_BINS)) {
-                    summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i)
-                        .getTextContent()));
-                } else if (nodes.item(i).getNodeName()
-                        .equals(MLConstants.CATEGORICAL_THRESHOLD)) {
-                    summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes
-                        .item(i).getTextContent()));
+                    summaryStatisticsSettings.setHistogramBins(Integer.parseInt(nodes.item(i).getTextContent()));
+                } else if (nodes.item(i).getNodeName().equals(MLConstants.CATEGORICAL_THRESHOLD)) {
+                    summaryStatisticsSettings.setCategoricalThreshold(Integer.parseInt(nodes.item(i).getTextContent()));
                 } else if (nodes.item(i).getNodeName().equals(MLConstants.SAMPLE_SIZE)) {
-                    summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i)
-                        .getTextContent()));
+                    summaryStatisticsSettings.setSampleSize(Integer.parseInt(nodes.item(i).getTextContent()));
                 }
             }
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.info("Successfully parsed summary statistics settings.");
             }
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving " +
-                "summary statistics settings: " + e.getMessage(), e);
+            throw new MLConfigurationParserException("An error occurred while retrieving summary statistics settings: "
+                    + e.getMessage(), e);
         }
         return summaryStatisticsSettings;
     }
@@ -139,11 +130,10 @@ public class MLConfigurationParser {
      * @return      Properties defined.
      * @throws      MLConfigurationParserException
      */
-    public Properties getProperties() 
-            throws MLConfigurationParserException {
+    public Properties getProperties() throws MLConfigurationParserException {
         Properties properties = new Properties();
         try {
-            NodeList nodes = this.document .getElementsByTagName(MLConstants.PROPERTIES).item(0).getChildNodes();
+            NodeList nodes = this.document.getElementsByTagName(MLConstants.PROPERTIES).item(0).getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
                 if (node.getNodeName().equals(MLConstants.PROPERTY)) {
@@ -151,14 +141,14 @@ public class MLConfigurationParser {
                     String name = attributes.getNamedItem("name").getNodeValue();
                     String value = attributes.getNamedItem("value").getNodeValue();
                     properties.put(name, value);
-                } 
+                }
             }
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.info("Successfully parsed properties.");
             }
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving " +
-                "properties from ml config: " + e.getMessage(), e);
+            throw new MLConfigurationParserException( "An error occurred while retrieving properties from ml config: "
+                    + e.getMessage(), e);
         }
         return properties;
     }
@@ -169,13 +159,27 @@ public class MLConfigurationParser {
      * @return      JNDI lookup name of the ML database
      * @throws      MLConfigurationParserException 
      */
-    protected String getDatabaseName() throws MLConfigurationParserException{
-        try{
-            return this.document.getElementsByTagName(MLConstants.DATABASE).item(0)
-                    .getTextContent();
-        } catch(Exception e){
-            throw new MLConfigurationParserException( "An error occurred while retrieving ML " +
-                "database name: " + e.getMessage(), e);
+    protected String getDatabaseName() throws MLConfigurationParserException {
+        try {
+            return this.document.getElementsByTagName(MLConstants.DATABASE).item(0).getTextContent();
+        } catch (Exception e) {
+            throw new MLConfigurationParserException( "An error occurred while retrieving ML database name: " + 
+                    e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Parse the BAM server URL from the ml-config.xml file
+     * 
+     * @return      BAM server URL
+     * @throws      MLConfigurationParserException 
+     */
+    public String getBamServerUrl() throws MLConfigurationParserException {
+        try {
+            return this.document.getElementsByTagName(MLConstants.BAM_SERVER_URL).item(0).getTextContent();
+        } catch (Exception e) {
+            throw new MLConfigurationParserException( "An error occurred while retrievingBAM Server url: " + 
+                    e.getMessage(), e);
         }
     }
 }

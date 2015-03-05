@@ -27,7 +27,8 @@ public class MLCoreServiceValueHolder {
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
     private Properties mlProperties;
-
+    private String  bamServerUrl;
+    
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
             synchronized (MLCoreServiceValueHolder.class) {
@@ -61,5 +62,13 @@ public class MLCoreServiceValueHolder {
 
     public void setMlProperties(Properties mlProperties) {
         this.mlProperties = mlProperties;
+    }
+
+    public String getBamServerUrl() {
+        return bamServerUrl;
+    }
+
+    public void setBamServerUrl(String bamServerUrl) {
+        this.bamServerUrl = bamServerUrl;
     }
 }

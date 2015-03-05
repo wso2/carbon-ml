@@ -47,6 +47,30 @@ public class BAMInputAdapter implements MLInputAdapter {
     private CloseableHttpResponse response = null;
     private String [] uriResourceParameters;
     
+    /**
+     * Read a data set from a table in BAM
+     * 
+     * @param tableResourcePath     Resource path of the table. Takes the format: {tableName}/{from}/{to}/{start}/{count}
+     *                              where {tableName}   Name of the table from which, the records are retrieved
+                                          {from}        The starting time to retrieve records from (optional)
+                                          {to}          The ending time to get records to (optional)
+                                          {start}       The paginated index from value (optional)
+                                          {count}       The paginated records count to be read (optional)
+                                    pass -1 for optional fields if they are not used.
+     * @return                      the given data-set as an {@link InputStream}
+     * @throws                      MLInputAdapterException
+     */
+    public InputStream readDataset(String tableResourcePath) throws MLInputAdapterException {
+        String tableUri = MLCoreServiceValueHolder.getInstance().getBamServerUrl() + "/analytics/tables/" + 
+                tableResourcePath;
+        try {
+            URI uri = new URI(tableUri);
+            return readDataset(uri);
+        } catch (URISyntaxException e) {
+            throw new MLInputAdapterException("Invalid URI Syntax: " + tableUri + " : " + e.getMessage(), e);
+        }
+    }
+    
     @Override
     public InputStream readDataset(URI uri) throws MLInputAdapterException {
         try {

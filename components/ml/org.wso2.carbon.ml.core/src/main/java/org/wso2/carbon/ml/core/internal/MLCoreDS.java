@@ -41,10 +41,11 @@ public class MLCoreDS {
     protected void activate(ComponentContext context) {
         
         try {
-            //TODO: Keep. Following is the one-time parsing of ml configurations 
+            //TODO: Keep. Following is the one-time parsing of ml configurations.
             MLConfigurationParser mlConfig = new MLConfigurationParser(null);
             MLCoreServiceValueHolder.getInstance().setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
             MLCoreServiceValueHolder.getInstance().setMlProperties(mlConfig.getProperties());
+            MLCoreServiceValueHolder.getInstance().setBamServerUrl(mlConfig.getBamServerUrl());
             
             //FIXME this is temporary added for testing purposes.
             MLDatasetProcessor processor = new MLDatasetProcessor();
