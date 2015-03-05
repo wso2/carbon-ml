@@ -19,7 +19,7 @@ package org.wso2.carbon.ml.core.utils;
 
 public class MLConstants {
 
-    public static final String ML_CONFIG_XML = "repository/conf/etc/ml-config.xml";
+    public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";
     
     // Data-set upload configurations    
     public static final String UPLOAD_SETTINGS = "dataUploadSettings";

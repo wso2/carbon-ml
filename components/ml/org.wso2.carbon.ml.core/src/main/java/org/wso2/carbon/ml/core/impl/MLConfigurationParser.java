@@ -47,7 +47,7 @@ public class MLConfigurationParser {
     public MLConfigurationParser(String path) throws MLConfigurationParserException {
         try {
             if (path == null || StringUtils.isEmpty(path)) {
-                path = MLConstants.ML_CONFIG_XML;
+                path = MLConstants.MACHINE_LEARNER_XML;
             }
             File xmlFile = new File(path);
             if (xmlFile.exists()) {
@@ -60,7 +60,7 @@ public class MLConfigurationParser {
             }
             
         } catch (Exception e) {
-            throw new MLConfigurationParserException("An error occurred while parsing " + MLConstants.ML_CONFIG_XML
+            throw new MLConfigurationParserException("An error occurred while parsing " + MLConstants.MACHINE_LEARNER_XML
                     + " : " + e.getMessage(), e);
         }
     }
@@ -88,7 +88,7 @@ public class MLConfigurationParser {
                 logger.info("Successfully parsed data uploading settings.");
             }
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving data " +
+            throw new MLConfigurationParserException("An error occurred while retrieving data " +
                 "upload settings: " + e.getMessage(), e);
         }
         return dataUploadSettings;
@@ -147,7 +147,7 @@ public class MLConfigurationParser {
                 logger.info("Successfully parsed properties.");
             }
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving properties from ml config: "
+            throw new MLConfigurationParserException("An error occurred while retrieving properties from ml config: "
                     + e.getMessage(), e);
         }
         return properties;
@@ -163,7 +163,7 @@ public class MLConfigurationParser {
         try {
             return this.document.getElementsByTagName(MLConstants.DATABASE).item(0).getTextContent();
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrieving ML database name: " + 
+            throw new MLConfigurationParserException("An error occurred while retrieving ML database name: " + 
                     e.getMessage(), e);
         }
     }
@@ -178,7 +178,7 @@ public class MLConfigurationParser {
         try {
             return this.document.getElementsByTagName(MLConstants.BAM_SERVER_URL).item(0).getTextContent();
         } catch (Exception e) {
-            throw new MLConfigurationParserException( "An error occurred while retrievingBAM Server url: " + 
+            throw new MLConfigurationParserException("An error occurred while retrieving BAM Server url: " + 
                     e.getMessage(), e);
         }
     }
