@@ -36,10 +36,9 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
+import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
-import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 /**
  * Responsible for generating summary stats for a given set of sample points.
