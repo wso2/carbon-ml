@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -19,6 +19,8 @@ package org.wso2.carbon.ml.core.exceptions;
 
 public class DatasetSummaryException extends Exception {
 	
+    private static final long serialVersionUID = 2242488353030239918L;
+
     public DatasetSummaryException(String message) {
         super(message);
     }
