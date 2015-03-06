@@ -40,18 +40,27 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertAnalysis(analysis.getProjectId(), analysis.getName(), analysis.getTenantId(),
                     analysis.getUserName(), analysis.getComments());
+            log.info(String.format("[Created] %s", analysis));
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }
     }
     
-    public void deleteAnalysis(int tenantId, String userName, String analysisName) {
-        //TODO
+    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
+        try {
+            databaseService.deleteAnalysis(tenantId, userName, analysisName);
+            log.info(String.format("[Deleted] [analysis] %s of [user] %s of [tenant] %s", analysisName, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
     }
     
-    public long getAnalysisId(int tenantId, String userName, String analysisName) {
-        //TODO
-        return 0;
+    public long getAnalysisId(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAnalysisId(tenantId, userName, analysisName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
     }
 
 

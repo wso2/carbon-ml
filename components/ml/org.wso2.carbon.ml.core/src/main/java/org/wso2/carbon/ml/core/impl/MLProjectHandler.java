@@ -20,8 +20,10 @@ package org.wso2.carbon.ml.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLProject;
+import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
  * {@link MLProjectHandler} is responsible for handling/delegating all the project management requests.
@@ -34,17 +36,30 @@ public class MLProjectHandler {
         databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
     }
     
-    public void createProject(MLProject project) {
-        //TODO persist a project
+    public void createProject(MLProject project) throws MLProjectHandlerException {
+        try {
+            databaseService.createProject(project.getName(), project.getDescription(), project.getTenantId(), project.getUserName());
+            log.info(String.format("[Created] %s", project));
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e);
+        }
     }
     
-    public void deleteProject(int tenantId, String userName, String projectName) {
-        //TODO
+    public void deleteProject(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
+        try {
+            databaseService.deleteProject(tenantId, userName, projectName);
+            log.info(String.format("[Deleted] [project] %s of [user] %s of [tenant] %s", projectName, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e);
+        }
     }
     
-    public String getProjectId(int tenantId, String userName, String projectName) {
-        //TODO
-        return null;
+    public long getProjectId(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
+        try {
+            return databaseService.getProjectId(tenantId, userName, projectName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e);
+        }
     }
 
 

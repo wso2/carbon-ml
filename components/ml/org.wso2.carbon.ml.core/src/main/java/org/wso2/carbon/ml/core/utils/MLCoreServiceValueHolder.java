@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -27,7 +27,8 @@ public class MLCoreServiceValueHolder {
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
     private Properties mlProperties;
-
+    private String  bamServerUrl;
+    
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
             synchronized (MLCoreServiceValueHolder.class) {
@@ -61,5 +62,13 @@ public class MLCoreServiceValueHolder {
 
     public void setMlProperties(Properties mlProperties) {
         this.mlProperties = mlProperties;
+    }
+
+    public String getBamServerUrl() {
+        return bamServerUrl;
+    }
+
+    public void setBamServerUrl(String bamServerUrl) {
+        this.bamServerUrl = bamServerUrl;
     }
 }

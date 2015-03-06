@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mlSettings>
+    <!--
+        JNDI name of the data source to be used by the Machine Learner.
+        This data source should be defined in the master-datasources.xml file
+        in conf/datasources directory.
+    -->
+    <database>jdbc/WSO2ML_DB</database>
+
+    <!-- 
+        Configurations to control data set file uploading.
+    -->
+    <dataUploadSettings>
+        <uploadLocation>USER_HOME</uploadLocation>
+        <inMemoryThreshold>1024</inMemoryThreshold>
+        <uploadLimit>20971520</uploadLimit>
+    </dataUploadSettings>
+
+    <!--
+        Configurations to calculate summary statistics from a dataset.
+            histogramBins : Number of intervals in a histogram.
+            categoricalThreshold : The maximum number of categories that can have
+                                   in a non-string categorical feature. If exeeds,
+                                   the feature will be treated as a numerical feature.
+            sampleSize : Size of the dataset sample which will be used for summary statistics
+                         calculation and visualization.
+    -->
+    <summaryStatisticsSettings>
+        <histogramBins>20</histogramBins>
+        <categoricalThreshold>20</categoricalThreshold>
+        <sampleSize>10000</sampleSize>
+    </summaryStatisticsSettings>
+
+    <!-- 
+    -->
+    <properties>
+    	<property name="ml.thread.pool.size" value="100" />
+    	<property name="target.home" value="/tmp" />
+	<property name="data.file.in" value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
+        <property name="data.file.out" value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+    </properties>
+
+    <!--
+    Server URL of the remote BAM server used to get data. Must
+    be specified in protocol://hostname:port format.
+    -->
+    <BAMServerURL>http://localhost:9763</BAMServerURL>
+</mlSettings>

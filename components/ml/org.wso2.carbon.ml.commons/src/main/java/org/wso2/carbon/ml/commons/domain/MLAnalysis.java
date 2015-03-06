@@ -77,4 +77,10 @@ public class MLAnalysis {
         this.projectId = projectId;
     }
 
+    @Override
+    public String toString() {
+        return "MLAnalysis [projectId=" + projectId + ", name=" + name + ", tenantId=" + tenantId + ", userName="
+                + userName + ", comments=" + comments + "]";
+    }
+
 }

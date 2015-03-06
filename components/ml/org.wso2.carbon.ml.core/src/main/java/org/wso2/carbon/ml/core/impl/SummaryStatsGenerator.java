@@ -36,8 +36,9 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
-import org.wso2.carbon.ml.dataset.exceptions.DatasetSummaryException;
-import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.database.DatabaseService;
 
 /**
  * Responsible for generating summary stats for a given set of sample points.
@@ -66,9 +67,9 @@ public class SummaryStatsGenerator implements Runnable {
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
 
-    private String datasetVersionId;
+    private long datasetVersionId;
 
-    public SummaryStatsGenerator(String datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
+    public SummaryStatsGenerator(long datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
             SamplePoints samplePoints) throws MLConfigurationParserException {
         this.datasetVersionId = datasetVersionId;
         this.summarySettings = summaryStatsSettings;
@@ -107,9 +108,8 @@ public class SummaryStatsGenerator implements Runnable {
             calculateNumericColumnFrequencies();
             SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
             // TODO Update the database with calculated summary statistics.
-            // DatabaseService dbService = MLDatasetServiceValueHolder.getDatabaseService();
-            // dbService.updateSummaryStatistics(this.datasetID, headerMap, this.type, this.graphFrequencies,
-            // this.missing, this.unique, this.descriptiveStats, true);
+            DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+            dbService.updateSummaryStatistics(datasetVersionId, stats);
             if (logger.isDebugEnabled()) {
                 logger.debug("Summary statistics successfully generated for dataset: " + datasetVersionId);
             }

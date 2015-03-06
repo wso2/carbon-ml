@@ -23,6 +23,7 @@ import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
@@ -34,7 +35,6 @@ import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.dataset.exceptions.MLConfigurationParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,7 +141,7 @@ public class MLDatasetProcessor {
             }
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(String.valueOf(datasetVersionId), summaryStatsSettings,
+            threadExecutor.execute(new SummaryStatsGenerator(datasetVersionId, summaryStatsSettings,
                     samplePoints));
             
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
