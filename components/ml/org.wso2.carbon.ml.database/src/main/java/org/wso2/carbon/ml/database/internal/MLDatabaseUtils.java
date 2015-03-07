@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.ml.database.internal;
 
-import org.wso2.carbon.ml.commons.domain.HyperParameter;
+import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.sql.Connection;

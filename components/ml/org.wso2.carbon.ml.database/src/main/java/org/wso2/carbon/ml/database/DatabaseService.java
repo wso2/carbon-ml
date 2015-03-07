@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.database;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.sql.Time;
@@ -96,6 +97,8 @@ public interface DatabaseService {
      */
     public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, SamplePoints samplePoints)
             throws DatabaseHandlerException;
+    
+    public long getValueSetId(String valueSetName, int tenantId) throws DatabaseHandlerException;
 
     /**
      * Insert data-source to the database
@@ -364,6 +367,8 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
+    
+    public long getModelId(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
 
     /**
      * Delete the analysis
@@ -382,7 +387,7 @@ public interface DatabaseService {
      * @param username
      * @throws DatabaseHandlerException
      */
-    public void insertModel(long analysisId, long valueSetId, int tenantId, String outputModel, String username) throws DatabaseHandlerException;
+    public void insertModel(long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Insert model configuration to the database
@@ -415,7 +420,7 @@ public interface DatabaseService {
      * @param lastModifiedUser
      * @throws DatabaseHandlerException
      */
-    public void insertFeatureCustomized(long modelId, int tenantId, String featureName, String imputeOption,
+    public void insertFeatureCustomized(long modelId, int tenantId, String featureName, String type, String imputeOption,
                                         boolean inclusion, String lastModifiedUser) throws DatabaseHandlerException;
 
     /**
@@ -483,5 +488,13 @@ public interface DatabaseService {
 
     // TODO
     public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
+
+    void insertFeatureCustomized(long modelId, List<MLCustomizedFeature> customizedFeatures)
+            throws DatabaseHandlerException;
+
+    void insertModelConfigurations(long modelId, List<MLModelConfiguration> modelConfigs)
+            throws DatabaseHandlerException;
+
+    void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters) throws DatabaseHandlerException;
 
 }
