@@ -55,7 +55,8 @@ public class MLConfigurationParserTest {
         try {
 
             @SuppressWarnings("unused")
-            MLConfigurationParser config = new MLConfigurationParser("src/test/resources/ml-config-temp.xml");
+            MLConfigurationParser parser = new MLConfigurationParser();
+            MLConfiguration config = parser.getMLConfiguration("src/test/resources/ml-config-temp.xml");
         } catch (Exception e) {
             Assert.assertEquals(true, e instanceof MLConfigurationParserException);
         }

@@ -26,6 +26,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
@@ -62,7 +63,8 @@ public class SummaryStatsGeneratorTest {
         } catch (MLMalformedDatasetException e) {
             Assert.assertNull(e);
         }
-        MLConfigurationParser config = new MLConfigurationParser("src/test/resources/ml-config.xml");
+        MLConfigurationParser parser = new MLConfigurationParser();
+        MLConfiguration config = parser.getMLConfiguration("src/test/resources/machine-learner.xml");
         summaryGen = new SummaryStatsGenerator(1, config.getSummaryStatisticsSettings(), samplePoints);
     }
 
