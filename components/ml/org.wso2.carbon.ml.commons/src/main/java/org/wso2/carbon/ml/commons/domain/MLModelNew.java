@@ -18,22 +18,39 @@
 package org.wso2.carbon.ml.commons.domain;
 
 /**
- * Represent an Analysis in ML.
+ * Represent a Model in ML.
  */
 public class MLModelNew {
 
-    private String id;
     private String name;
     private int tenantId;
     private String userName;
-    private String comments;
+    private String createdTime;
+    private String analysisName;
+    private String valueSetName;
 
-    public String getId() {
-        return id;
+    public int getTenantId() {
+        return tenantId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
     }
 
     public String getName() {
@@ -44,28 +61,26 @@ public class MLModelNew {
         this.name = name;
     }
 
-    public int getTenantId() {
-        return tenantId;
+    public String getValueSetName() {
+        return valueSetName;
     }
 
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
+    public void setValueSetName(String valueSetName) {
+        this.valueSetName = valueSetName;
     }
 
-    public String getComments() {
-        return comments;
+    public String getAnalysisName() {
+        return analysisName;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setAnalysisName(String analysisName) {
+        this.analysisName = analysisName;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    @Override
+    public String toString() {
+        return "MLModelNew [name=" + name + ", tenantId=" + tenantId + ", userName=" + userName + ", createdTime="
+                + createdTime + ", analysisName=" + analysisName + ", valueSetName=" + valueSetName + "]";
     }
 
 }

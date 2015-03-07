@@ -26,7 +26,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
- * {@link MLAnalysisHandler} is responsible for handling/delegating all the project management requests.
+ * {@link MLAnalysisHandler} is responsible for handling/delegating all the analysis related requests.
  */
 public class MLAnalysisHandler {
     private static final Log log = LogFactory.getLog(MLAnalysisHandler.class);

@@ -29,12 +29,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.math.NumberUtils;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
 public class MLUtils {
@@ -134,5 +137,21 @@ public class MLUtils {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+    
+    /**
+     * Get {@link Properties} from a list of {@link MLProperty}
+     * @param mlProperties list of {@link MLProperty}
+     * @return {@link Properties}
+     */
+    public static Properties getProperties(List<MLProperty> mlProperties) {
+        Properties properties = new Properties();
+        for (MLProperty mlProperty : mlProperties) {
+            if (mlProperty != null) {
+                properties.put(mlProperty.getName(), mlProperty.getValue());
+            }
+        }
+        return properties;
+        
     }
 }

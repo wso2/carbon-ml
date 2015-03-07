@@ -16,15 +16,19 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.commons.domain.config;
 
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 
 /**
  * DTO class for JAXB binding of MLAlgorithmConfigurationParser
  */
+@XmlRootElement(name = "Algorithm")
 public class MLAlgorithm {
     private String name;
     private String type;
@@ -37,6 +41,7 @@ public class MLAlgorithm {
     /**
      * @return Returns machine learning algorithm name
      */
+    @XmlElement(name = "Name")
     public String getName() {
         return name;
     }
@@ -51,6 +56,7 @@ public class MLAlgorithm {
     /**
      * @return Returns machine learning algorithm type e.g. Classification
      */
+    @XmlElement(name = "Type")
     public String getType() {
         return type;
     }
@@ -65,6 +71,7 @@ public class MLAlgorithm {
     /**
      * @return Returns interpretability score (out of 5)
      */
+    @XmlElement(name = "Interpretability")
     public int getInterpretability() {
         return interpretability;
     }
@@ -79,6 +86,7 @@ public class MLAlgorithm {
     /**
      * @return Returns scalability score (out of 5)
      */
+    @XmlElement(name = "Scalability")
     public int getScalability() {
         return scalability;
     }
@@ -93,6 +101,7 @@ public class MLAlgorithm {
     /**
      * @return Returns multicollinearity score (out of 5)
      */
+    @XmlElement(name = "Multicollinearity")
     public int getMulticollinearity() {
         return multicollinearity;
     }
@@ -107,6 +116,7 @@ public class MLAlgorithm {
     /**
      * @return Returns dimensionality score (out of 5)
      */
+    @XmlElement(name = "Dimensionality")
     public int getDimensionality() {
         return dimensionality;
     }
@@ -121,6 +131,7 @@ public class MLAlgorithm {
     /**
      * @return Returns a list of hyper-parameters
      */
+    @XmlElement(name = "Parameters")
     public List<HyperParameter> getParameters() {
         return parameters;
     }

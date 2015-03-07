@@ -18,36 +18,35 @@
 
 package org.wso2.carbon.ml.core.impl;
 
-import java.util.Properties;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.commons.domain.DataUploadSettings;
-import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
-import org.wso2.carbon.ml.core.utils.MLConstants;
 
 public class MLConfigurationParserTest {
 
     @Test
     public void testMLConfigParser() throws MLConfigurationParserException {
-        MLConfigurationParser config = new MLConfigurationParser("src/test/resources/ml-config.xml");
-        SummaryStatisticsSettings settings = config.getSummaryStatisticsSettings();
-        Assert.assertEquals(settings.getSampleSize(), 10000);
-        Assert.assertEquals(settings.getCategoricalThreshold(), 20);
-        Assert.assertEquals(settings.getHistogramBins(), 20);
-
-        DataUploadSettings dataUploadSettings = config.getDataUploadSettings();
-        Assert.assertEquals(dataUploadSettings.getInMemoryThreshold(), 1024);
-        Assert.assertEquals(dataUploadSettings.getUploadLimit(), 20971520);
-        Assert.assertEquals(dataUploadSettings.getUploadLocation(), "USER_HOME");
-
-        Assert.assertEquals(config.getDatabaseName(), "jdbc/WSO2ML_DB");
-
-        Properties properties = config.getProperties();
-        Assert.assertEquals(properties.size(), 2);
-        Assert.assertEquals(properties.containsKey(MLConstants.ML_THREAD_POOL_SIZE), true);
-        Assert.assertEquals(properties.get(MLConstants.TARGET_HOME_PROP), "/tmp");
+        MLConfigurationParser configParser = new MLConfigurationParser();
+        MLConfiguration mlConfig = configParser.getMLConfiguration("src/test/resources/machine-learner.xml");
+        Assert.assertNotNull(mlConfig);
+        Assert.assertEquals(mlConfig.getDatabaseName(), "jdbc/WSO2ML_DB");
+        
+        Assert.assertNotNull(mlConfig.getMlAlgorithms());
+        Assert.assertNotNull(mlConfig.getMlAlgorithms().get(0));
+        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 8);
+        Assert.assertEquals(mlConfig.getMlAlgorithms().get(0).getName(), "LINEAR_REGRESSION");
+        
+        Assert.assertNotNull(mlConfig.getDataUploadSettings());
+        Assert.assertNotNull(mlConfig.getDataUploadSettings().getUploadLocation());
+        // checks the default value
+        Assert.assertEquals(mlConfig.getDataUploadSettings().getUploadLocation(), "/tmp");
+        Assert.assertEquals(mlConfig.getDataUploadSettings().getInMemoryThreshold(), 1024);
+        Assert.assertEquals(mlConfig.getDataUploadSettings().getUploadLimit(), 20971520);
+        
+        Assert.assertNotNull(mlConfig.getProperties());
+        Assert.assertEquals(mlConfig.getProperties().size(), 4);
+        Assert.assertEquals(mlConfig.getProperties().get(0).getName(), "ml.thread.pool.size");
 
     }
 

@@ -16,7 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.commons.domain;
+package org.wso2.carbon.ml.commons.domain.config;
+
+import javax.xml.bind.annotation.XmlElement;
 
 public class SummaryStatisticsSettings {
 	private int histogramBins = 20;
@@ -28,6 +30,7 @@ public class SummaryStatisticsSettings {
 	 *
 	 * @return Number of bins for the histogram
 	 */
+	@XmlElement(name = "HistogramBins")
 	public int getHistogramBins() {
 		return histogramBins;
 	}
@@ -46,6 +49,7 @@ public class SummaryStatisticsSettings {
 	 *
 	 * @return Threshold of unique values for selecting categorical data
 	 */
+	@XmlElement(name = "CategoricalThreshold")
 	public int getCategoricalThreshold() {
 		return categoricalThreshold;
 	}
@@ -64,6 +68,7 @@ public class SummaryStatisticsSettings {
 	 *
 	 * @return Size of the data sample
 	 */
+	@XmlElement(name = "SampleSize")
 	public int getSampleSize() {
 		return sampleSize;
 	}

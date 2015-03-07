@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
@@ -150,8 +150,6 @@ public class MLDatasetProcessor {
             MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), valueSetName, targetUri, samplePoints);
             persistValueSet(datasetVersionId, valueSet);
 
-            // TODO persist into the ML db
-            // persist sample points
         } catch (MLInputAdapterException e) {
             throw new MLDataProcessingException(e);
         } catch (MLOutputAdapterException e) {

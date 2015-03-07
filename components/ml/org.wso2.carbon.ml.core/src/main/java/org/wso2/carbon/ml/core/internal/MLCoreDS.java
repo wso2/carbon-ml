@@ -22,10 +22,13 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 /**
@@ -42,12 +45,15 @@ public class MLCoreDS {
         
         try {
             //TODO: Keep. Following is the one-time parsing of ml configurations.
-            MLConfigurationParser mlConfig = new MLConfigurationParser(null);
+            MLConfigurationParser mlConfigParser = new MLConfigurationParser();
+            MLConfiguration mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
             MLCoreServiceValueHolder.getInstance().setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
-            MLCoreServiceValueHolder.getInstance().setMlProperties(mlConfig.getProperties());
-            MLCoreServiceValueHolder.getInstance().setBamServerUrl(mlConfig.getBamServerUrl());
+            MLCoreServiceValueHolder.getInstance().setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
+            MLCoreServiceValueHolder.getInstance().setBamServerUrl(mlConfig.getBamServerURL());
+            MLCoreServiceValueHolder.getInstance().setDataUploadSettings(mlConfig.getDataUploadSettings());
+            MLCoreServiceValueHolder.getInstance().setAlgorithms(mlConfig.getMlAlgorithms());
             
-            //FIXME this is temporary added for testing purposes.
+            //FIXME this is temporarily added for testing purposes.
             MLDatasetProcessor processor = new MLDatasetProcessor();
             MLDataset dataset = new MLDataset();
             dataset.setName("test-ml");

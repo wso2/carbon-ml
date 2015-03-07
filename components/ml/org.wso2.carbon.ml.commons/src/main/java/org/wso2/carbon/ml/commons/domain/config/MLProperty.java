@@ -20,48 +20,31 @@ package org.wso2.carbon.ml.commons.domain.config;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * DTO class for JAXB binding of MLAlgorithmConfigurationParser
+ * DTO class for JAXB binding of MLProperty
  */
-public class HyperParameter implements Serializable {
+public class MLProperty implements Serializable {
     private static final long serialVersionUID = -2314030361825726083L;
-    private String parameter;
+    private String name;
     private String value;
-
-    /**
-     * @return Returns hyper-parameter name
-     */
-    @XmlElement(name = "Name")
-    public String getParameter() {
-        return parameter;
+    
+    @XmlAttribute(name = "name")
+    public String getName() {
+        return name;
     }
-
-    /**
-     * @param parameter Sets hyper-parameter name
-     */
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    /**
-     * @return Returns hyper-parameter value
-     */
-    @XmlElement(name = "Value")
+    @XmlAttribute(name = "value")
     public String getValue() {
         return value;
     }
-
-    /**
-     * @param value Sets hyper-parameter value
-     */
     public void setValue(String value) {
         this.value = value;
     }
+    
+    
 
-    @Override
-    public String toString() {
-        return "HyperParameter [parameter=" + parameter + ", value=" + value + "]";
-    }
 }

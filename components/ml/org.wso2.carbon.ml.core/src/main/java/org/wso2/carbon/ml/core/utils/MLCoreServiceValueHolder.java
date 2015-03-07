@@ -17,17 +17,22 @@
  */
 package org.wso2.carbon.ml.core.utils;
 
+import java.util.List;
 import java.util.Properties;
 
-import org.wso2.carbon.ml.commons.domain.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.commons.domain.config.DataUploadSettings;
+import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 public class MLCoreServiceValueHolder {
     private static volatile MLCoreServiceValueHolder instance;
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
+    private DataUploadSettings dataUploadSettings;
     private Properties mlProperties;
     private String  bamServerUrl;
+    private List<MLAlgorithm> algorithms;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -70,5 +75,21 @@ public class MLCoreServiceValueHolder {
 
     public void setBamServerUrl(String bamServerUrl) {
         this.bamServerUrl = bamServerUrl;
+    }
+
+    public List<MLAlgorithm> getAlgorithms() {
+        return algorithms;
+    }
+
+    public void setAlgorithms(List<MLAlgorithm> algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    public DataUploadSettings getDataUploadSettings() {
+        return dataUploadSettings;
+    }
+
+    public void setDataUploadSettings(DataUploadSettings dataUploadSettings) {
+        this.dataUploadSettings = dataUploadSettings;
     }
 }

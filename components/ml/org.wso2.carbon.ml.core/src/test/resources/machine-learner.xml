@@ -7,7 +7,6 @@
 
 	<!-- Configurations to control data set file uploading. -->
 	<DataUploadSettings>
-		<UploadLocation>USER_HOME</UploadLocation>
 		<InMemoryThreshold>1024</InMemoryThreshold>
 		<UploadLimit>20971520</UploadLimit>
 	</DataUploadSettings>
@@ -216,4 +215,5 @@
 			</Parameters>
 		</Algorithm>
 	</Algorithms>
+
 </MachineLearner>

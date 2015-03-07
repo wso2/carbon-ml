@@ -15,7 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.commons.domain;
+package org.wso2.carbon.ml.commons.domain.config;
+
+import javax.xml.bind.annotation.XmlElement;
 
 public class DataUploadSettings {
 	private String uploadLocation = "/tmp";
@@ -27,6 +29,7 @@ public class DataUploadSettings {
 	 *
 	 * @return absolute path of the data uploading directory
 	 */
+	@XmlElement(name = "UploadLocation")
 	public String getUploadLocation() {
 		return uploadLocation;
 	}
@@ -45,6 +48,7 @@ public class DataUploadSettings {
 	 *
 	 * @return Memory threshold in bytes
 	 */
+	@XmlElement(name = "InMemoryThreshold")
 	public int getInMemoryThreshold() {
 		return inMemoryThreshold;
 	}
@@ -63,6 +67,7 @@ public class DataUploadSettings {
 	 *
 	 * @return Maximum allowed size of a data set in bytes
 	 */
+	@XmlElement(name = "UploadLimit")
 	public long getUploadLimit() {
 		return uploadLimit;
 	}
