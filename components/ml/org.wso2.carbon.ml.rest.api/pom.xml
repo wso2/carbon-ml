@@ -129,7 +129,7 @@
 								<directory>src/main/webapp</directory>
 							</resource>
 						</webResources>
-						<warName>MachineLearner</warName>
+						<warName>api</warName>
 					</configuration>
 				</plugin>
             </plugins>
