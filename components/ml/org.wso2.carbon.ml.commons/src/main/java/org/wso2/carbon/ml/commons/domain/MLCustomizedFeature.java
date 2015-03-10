@@ -24,6 +24,7 @@ public class MLCustomizedFeature {
 
     private String type;
     private String name;
+    private int index;
     private boolean include;
     private String imputeOption;
     private int tenantId;

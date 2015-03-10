@@ -381,13 +381,14 @@ public interface DatabaseService {
 
     /**
      * Insert Model to the database
+     * @param name model name
      * @param analysisId
      * @param tenantId
      * @param outputModel
      * @param username
      * @throws DatabaseHandlerException
      */
-    public void insertModel(long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
+    public void insertModel(String name, long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Insert model configuration to the database
@@ -461,9 +462,6 @@ public interface DatabaseService {
     public String getModelId(String workflowId) throws DatabaseHandlerException;
 
     // TODO
-    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException;
-
-    // TODO
     public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
 
     // TODO
@@ -496,5 +494,35 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters) throws DatabaseHandlerException;
+
+    String getModelConfigurationValue(long modelId, String name) throws DatabaseHandlerException;
+
+    void updateModelSummary(long modelId, ModelSummary modelSummary) throws DatabaseHandlerException;
+
+    void updateModelStorage(long modelId, String storageType, String location) throws DatabaseHandlerException;
+
+    boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+
+    long getDatasetVersionId(long valuesetId) throws DatabaseHandlerException;
+
+    void insertFeatureCustomized(long modelId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
+
+    long getValueSetIdOfModel(long modelId) throws DatabaseHandlerException;
+
+    long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
+
+    String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
+
+    String getAStringModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+
+    double getADoubleModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+
+    List<MLHyperParameter> getHyperParametersOfModel(long modelId) throws DatabaseHandlerException;
+
+    Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
+
+    Workflow getWorkflow(long modelId) throws DatabaseHandlerException;
+
+    Map<String, String> getModelStorage(long modelId) throws DatabaseHandlerException;
 
 }

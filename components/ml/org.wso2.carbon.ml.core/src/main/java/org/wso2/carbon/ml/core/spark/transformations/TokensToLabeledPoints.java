@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
      * @throws          ModelServiceException
      */
     @Override
-    public LabeledPoint call(double[] tokens) throws ModelServiceException {
+    public LabeledPoint call(double[] tokens) throws MLModelBuilderException {
         try {
             double response = tokens[responseIndex];
             double[] features = new double[tokens.length];
@@ -59,7 +59,7 @@ public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
             }
             return new LabeledPoint(response, Vectors.dense(features));
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while transforming tokens to labeled points: "
+            throw new MLModelBuilderException("An error occurred while transforming tokens to labeled points: "
                     + e.getMessage(), e);
         }
     }

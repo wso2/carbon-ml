@@ -16,32 +16,28 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.commons.math3.stat.regression.ModelSpecificationException;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.summary.ClusterModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.model.exceptions.AlgorithmNameException;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.MLModelUtils;
-import org.wso2.carbon.ml.model.internal.ds.MLModelServiceValueHolder;
-import org.wso2.carbon.ml.model.spark.dto.ClusterModelSummary;
-import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToVector;
 
-import java.sql.Time;
 import java.util.Map;
-
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.ITERATIONS;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.NUM_CLUSTERS;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.RANDOM_SEED;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.UNSUPERVISED_ALGORITHM;
 
 public class UnsupervisedModel {
     
@@ -53,27 +49,35 @@ public class UnsupervisedModel {
      * @param sparkConf Spark configuration
      * @throws          ModelServiceException
      */
-    public void buildModel(String modelID, Workflow workflow, SparkConf sparkConf)
-            throws ModelServiceException {
+    public MLModel buildModel(MLModelConfigurationContext context)
+            throws MLModelBuilderException {
         JavaSparkContext sparkContext = null;
+        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         try {
-            sparkConf.setAppName(modelID);
-            // create a new java spark context
-            sparkContext = new JavaSparkContext(sparkConf);
-            // parse lines in the dataset
-            String datasetURL = workflow.getDatasetURL();
-            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
-            // get header line
-            String headerRow = lines.take(1).get(0);
-            // get column separator
-            String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
+            sparkContext = context.getSparkContext();
+            Workflow workflow = context.getFacts();
+            String headerRow = context.getHeaderRow();
+            String columnSeparator = context.getColumnSeparator();
+            long modelId = context.getModelId();
+            ModelSummary summaryModel = null;
+            
+//            sparkConf.setAppName(modelID);
+//            // create a new java spark context
+//            sparkContext = new JavaSparkContext(sparkConf);
+//            // parse lines in the dataset
+//            String datasetURL = workflow.getDatasetURL();
+//            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
+//            // get header line
+//            String headerRow = lines.take(1).get(0);
+//            // get column separator
+//            String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             // apply pre processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, lines, headerRow,
+            JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, context.getLines(), headerRow,
                     columnSeparator);
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
             JavaRDD<Vector> data = features.map(doubleArrayToVector);
-            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), RANDOM_SEED);
+            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED);
             JavaRDD<Vector> testingData = data.subtract(trainingData);
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
@@ -83,16 +87,20 @@ public class UnsupervisedModel {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
-                buildKMeansModel(modelID, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildKMeansModel(modelId, trainingData, testingData, workflow, mlModel);
                 break;
             default:
-                throw new AlgorithmNameException("Incorrect algorithm name");
+                throw new AlgorithmNameException("Incorrect algorithm name: "+workflow.getAlgorithmName()+" for model id: "+modelId);
             }
-            // stop spark context
-        } catch (ModelSpecificationException e) {
-            throw new ModelServiceException("An error occurred while building supervised machine learning model: " +
+            // persist model summary
+            databaseService.updateModelSummary(modelId, summaryModel);
+            
+            return mlModel;
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building unsupervised machine learning model: " +
                     e.getMessage(), e);
         } finally {
+            // stop spark context
             if (sparkContext != null) {
                 sparkContext.stop();
             }
@@ -109,25 +117,26 @@ public class UnsupervisedModel {
      * @param mlModel      Deployable machine learning model
      * @throws ModelServiceException
      */
-    private void buildKMeansModel(String modelID, JavaRDD<Vector> trainingData,
-            JavaRDD<Vector> testingData, Workflow workflow, MLModel mlModel) throws ModelServiceException {
+    private ModelSummary buildKMeansModel(long modelID, JavaRDD<Vector> trainingData,
+            JavaRDD<Vector> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
         try {
-            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
-            dbService.insertModel(modelID, workflow.getWorkflowID(),
-                    new Time(System.currentTimeMillis()));
+//            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
+//            dbService.insertModel(modelID, workflow.getWorkflowID(),
+//                    new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeans kMeans = new KMeans();
-            KMeansModel kMeansModel = kMeans.train(trainingData, Integer.parseInt(hyperParameters.get(NUM_CLUSTERS)),
-                    Integer.parseInt(hyperParameters.get(ITERATIONS)));
+            KMeansModel kMeansModel = kMeans.train(trainingData, Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
             double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
             double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
             clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
             clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(kMeansModel);
-            dbService.updateModel(modelID, mlModel, clusterModelSummary, new Time(System.currentTimeMillis()));
-        } catch (DatabaseHandlerException e) {
-            throw new ModelServiceException("An error occurred while building k-means model: " + e.getMessage(), e);
+            return clusterModelSummary;
+//            dbService.updateModel(modelID, mlModel, clusterModelSummary, new Time(System.currentTimeMillis()));
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);
         }
     }
 }

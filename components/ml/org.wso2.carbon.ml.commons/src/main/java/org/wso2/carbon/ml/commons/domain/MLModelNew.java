@@ -28,6 +28,8 @@ public class MLModelNew {
     private String createdTime;
     private String analysisName;
     private String valueSetName;
+    private String storageType;
+    private String storageDirectory;
 
     public int getTenantId() {
         return tenantId;
@@ -80,7 +82,24 @@ public class MLModelNew {
     @Override
     public String toString() {
         return "MLModelNew [name=" + name + ", tenantId=" + tenantId + ", userName=" + userName + ", createdTime="
-                + createdTime + ", analysisName=" + analysisName + ", valueSetName=" + valueSetName + "]";
+                + createdTime + ", analysisName=" + analysisName + ", valueSetName=" + valueSetName + ", storageType="
+                + storageType + ", storageDirectory=" + storageDirectory + "]";
+    }
+
+    public String getStorageType() {
+        return storageType;
+    }
+
+    public void setStorageType(String storageType) {
+        this.storageType = storageType;
+    }
+
+    public String getStorageDirectory() {
+        return storageDirectory;
+    }
+
+    public void setStorageDirectory(String storageDirectory) {
+        this.storageDirectory = storageDirectory;
     }
 
 }

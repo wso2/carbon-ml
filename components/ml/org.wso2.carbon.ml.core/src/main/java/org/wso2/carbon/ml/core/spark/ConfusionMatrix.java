@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.core.spark;
 
 /**
  * DTO class to store confusion matrix

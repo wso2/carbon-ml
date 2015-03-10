@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Workflow implements Serializable {
-    private String workflowID;
+    private long workflowID;
     private String datasetURL;
     private String algorithmName;
     private String algorithmClass;
@@ -35,14 +35,14 @@ public class Workflow implements Serializable {
     /**
      * @return Returns machine learning workflow ID
      */
-    public String getWorkflowID() {
+    public long getWorkflowID() {
         return workflowID;
     }
 
     /**
      * @param workflowID Sets machine learning workflow ID
      */
-    public void setWorkflowID(String workflowID) {
+    public void setWorkflowID(long workflowID) {
         this.workflowID = workflowID;
     }
 

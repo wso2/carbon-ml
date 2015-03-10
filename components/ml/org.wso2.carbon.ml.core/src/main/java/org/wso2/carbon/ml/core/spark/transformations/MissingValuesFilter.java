@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 /**
  * A filter to remove rows containing missing values
@@ -32,14 +32,14 @@ public class MissingValuesFilter implements Function<String[], Boolean> {
         try {
             Boolean keep = true;
             for (String token : tokens) {
-                if (MLModelConstants.EMPTY.equals(token) || MLModelConstants.NA.equals(token)) {
+                if (MLConstants.EMPTY.equals(token) || MLConstants.NA.equals(token)) {
                     keep = false;
                     break;
                 }
             }
             return keep;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while removing missing value rows: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while removing missing value rows: " + e.getMessage(), e);
         }
     }
 }

@@ -19,6 +19,9 @@ package org.wso2.carbon.ml.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -40,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -52,9 +57,6 @@ public class MLDatasetProcessor {
     private SummaryStatisticsSettings summaryStatsSettings;
     private ThreadExecutor threadExecutor;
     private DatabaseService databaseService;
-    private String propertyPrefix = "data.";
-    private String propertyInSuffix = ".in";
-    private String propertyOutSuffix = ".out";
 
     public MLDatasetProcessor() {
         mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
@@ -92,6 +94,46 @@ public class MLDatasetProcessor {
     }
     
     /**
+     * FIXME Do we need tenant id and user name??
+     * @param valuesetId
+     * @return
+     * @throws MLDataProcessingException
+     */
+    public long getDatasetVersionId(long valuesetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getDatasetVersionId(valuesetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<FeatureSummary> getDefaultFeatures(int tenantId, String userName, long valuesetId, int startIndex, int numberOfFeatures) throws MLDataProcessingException {
+        
+        long datasetVersionId = getDatasetVersionId(valuesetId);
+        try {
+            return databaseService.getDefaultFeatures(datasetVersionId, startIndex, numberOfFeatures);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public void deleteValueset(String valuesetName) {
+        //TODO
+    }
+    
+    public void deleteDataset(String datasetName) {
+        //TODO
+        
+    }
+    
+    public void deleteDatasetVersion(String datasetVersion) {
+        //TODO
+        
+    }
+    
+    
+    
+    /**
      * Process a given data-set; read the data-set as a stream, extract meta-data, persist the data-set in a target path
      * and persist meta-data in ML db.
      * 
@@ -100,10 +142,10 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset) throws MLDataProcessingException {
 
         MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataSourceType()+ propertyInSuffix);
+        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType()+ MLConstants.IN_SUFFIX);
         handleNull(inputAdapter, String.format("Invalid data source type: %s [data-set] %s", 
                 dataset.getDataSourceType(), dataset.getName()));
-        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(propertyPrefix + dataset.getDataTargetType() +propertyOutSuffix);
+        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() +MLConstants.OUT_SUFFIX);
         handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
                 dataset.getDataTargetType(), dataset.getName()));
         handleNull(dataset.getSourcePath(), String.format("Null data source path provided [data-set] %s", 
@@ -120,7 +162,7 @@ public class MLDatasetProcessor {
             outputAdapter.writeDataset(targetPath, input);
 
             // read the file that was written
-            inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataTargetType() + propertyInSuffix);
+            inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
             try {
                 targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);

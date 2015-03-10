@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -28,20 +28,21 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
 import org.apache.spark.mllib.stat.Statistics;
 import org.json.JSONArray;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.MLModelUtils;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
-import org.wso2.carbon.ml.model.spark.dto.ClassClassificationAndRegressionModelSummary;
-import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
-import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.spark.transformations.DiscardedRowsFilter;
-import org.wso2.carbon.ml.model.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
-import org.wso2.carbon.ml.model.spark.transformations.MissingValuesFilter;
-import org.wso2.carbon.ml.model.spark.transformations.StringArrayToDoubleArray;
-import org.wso2.carbon.ml.model.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
+import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
+import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
+import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 import scala.Tuple2;
 
@@ -72,7 +73,7 @@ public class SparkModelUtils {
             new ProbabilisticClassificationModelSummary();
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
-        DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
+        DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
         for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
@@ -109,7 +110,7 @@ public class SparkModelUtils {
                 new ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
-        DecimalFormat decimalFormat = new DecimalFormat(MLModelConstants.DECIMAL_FORMAT);
+        DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
         for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
@@ -171,8 +172,7 @@ public class SparkModelUtils {
      * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
      */
     public static JavaRDD<double[]> preProcess(JavaSparkContext sc, Workflow workflow, JavaRDD<String>
-            lines, String headerRow, String columnSeparator) throws ModelServiceException {
-        try {
+            lines, String headerRow, String columnSeparator) throws DatasetPreProcessingException {
             HeaderFilter headerFilter = new HeaderFilter(headerRow);
             JavaRDD<String> data = lines.filter(headerFilter);
             Pattern pattern = Pattern.compile(columnSeparator);
@@ -180,12 +180,12 @@ public class SparkModelUtils {
             JavaRDD<String[]> tokens = data.map(lineToTokens);
             // get feature indices for discard imputation
             DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(
-                    MLModelUtils.getImputeFeatureIndices(workflow, MLModelConstants.DISCARD));
+                    MLUtils.getImputeFeatureIndices(workflow, MLConstants.DISCARD));
             // Discard the row if any of the impute indices content have a missing or NA value
             JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
             JavaRDD<double[]> features = null;
             // get feature indices for mean imputation
-            List<Integer> meanImputeIndices = MLModelUtils.getImputeFeatureIndices(workflow, MLModelConstants
+            List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(workflow, MLConstants
                     .MEAN_IMPUTATION);
             if (meanImputeIndices.size() > 0) {
                 // calculate means for the whole dataset (sampleFraction = 1.0) or a sample
@@ -202,9 +202,7 @@ public class SparkModelUtils {
                 features = tokensDiscardedRemoved.map(new StringArrayToDoubleArray());
             }
             return features;
-        } catch (ModelServiceException e) {
-            throw new ModelServiceException("An error occurred while preprocessing data: " + e.getMessage(), e);
-        }
+       
     }
 
     /**
@@ -218,7 +216,7 @@ public class SparkModelUtils {
      * @throws                  ModelServiceException
      */
     private static Map<Integer, Double> getMeans(JavaSparkContext sparkContext, JavaRDD<String[]> tokens,
-            List<Integer> meanImputeIndices, double sampleFraction) throws ModelServiceException {
+            List<Integer> meanImputeIndices, double sampleFraction) throws DatasetPreProcessingException {
         Map<Integer, Double> imputeMeans = new HashMap<Integer, Double>();
         JavaRDD<String[]> missingValuesRemoved = tokens.filter(new MissingValuesFilter());
         JavaRDD<Vector> features = null;

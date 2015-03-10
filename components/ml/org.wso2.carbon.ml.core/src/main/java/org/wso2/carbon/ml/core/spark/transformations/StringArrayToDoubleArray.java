@@ -16,15 +16,15 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 public class StringArrayToDoubleArray implements Function<String[], double[]> {
 
     @Override
-    public double[] call(String[] tokens) throws ModelServiceException {
+    public double[] call(String[] tokens) throws MLModelBuilderException {
         try {
             double[] features = new double[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
@@ -32,7 +32,7 @@ public class StringArrayToDoubleArray implements Function<String[], double[]> {
             }
             return features;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while transforming tokens: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while transforming tokens: " + e.getMessage(), e);
         }
     }
 }

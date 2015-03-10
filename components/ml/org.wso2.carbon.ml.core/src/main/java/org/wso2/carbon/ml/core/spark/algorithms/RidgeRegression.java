@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.model.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;

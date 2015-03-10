@@ -19,11 +19,17 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.io.File;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
+import org.apache.spark.SparkConf;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.core.exceptions.SparkConfigurationParserException;
+import org.wso2.carbon.ml.core.spark.SparkProperty;
+import org.wso2.carbon.ml.core.spark.SparkSettings;
 
 /**
  * Class contains methods for parsing configurations from machine-learner.xml XML file.
@@ -43,6 +49,31 @@ public class MLConfigurationParser {
             throw new MLConfigurationParserException(
                     "An error occurred while parsing: " + mlConfigPath + ": " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Retrieve the Spark configurations from the repository/conf/etc/spark-config.xml
+     * 
+     * @param sparkConfigXML    Spark configuration parameters
+     * @return                  Returns SparkConf object
+     * @throws                  SparkConfigurationParserException
+     */
+    public SparkConf getSparkConf(String sparkConfigXML) throws SparkConfigurationParserException {
+        try {
+            File file = new File(sparkConfigXML);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SparkSettings.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            SparkSettings sparkSettings = (SparkSettings) jaxbUnmarshaller.unmarshal(file);
+            SparkConf sparkConf = new SparkConf();
+            for (SparkProperty sparkProperty : sparkSettings.getProperties()) {
+                sparkConf.set(sparkProperty.getName(), sparkProperty.getProperty());
+            }
+            return sparkConf;
+        } catch (JAXBException e) {
+            throw new SparkConfigurationParserException("An error occurred while parsing: " + sparkConfigXML + ": " +
+                    e.getMessage(), e);
+        }
+
     }
     
 }

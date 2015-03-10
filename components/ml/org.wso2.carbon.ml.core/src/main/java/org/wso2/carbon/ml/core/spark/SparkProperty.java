@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.internal.dto;
+package org.wso2.carbon.ml.core.spark;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;

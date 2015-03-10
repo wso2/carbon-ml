@@ -16,10 +16,10 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.dto;
+package org.wso2.carbon.ml.core.spark.summary;
 
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
 import java.io.Serializable;
 
@@ -29,7 +29,7 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
     private double testDataComputeCost;
 
     @Override public String getModelSummaryType() {
-        return MLModelConstants.CLUSTER_MODEL_SUMMARY;
+        return MLConstants.CLUSTER_MODEL_SUMMARY;
     }
 
     public double getTrainDataComputeCost() {

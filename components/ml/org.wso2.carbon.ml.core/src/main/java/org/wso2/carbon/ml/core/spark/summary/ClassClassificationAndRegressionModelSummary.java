@@ -16,10 +16,10 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.dto;
+package org.wso2.carbon.ml.core.spark.summary;
 
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 
 import java.io.Serializable;
 import java.util.List;
@@ -61,6 +61,6 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
 
     @Override
     public String getModelSummaryType() {
-        return MLModelConstants.CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY;
+        return MLConstants.CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY;
     }
 }

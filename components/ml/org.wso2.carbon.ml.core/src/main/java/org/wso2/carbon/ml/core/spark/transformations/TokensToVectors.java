@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class TokensToVectors implements Function<String[], Vector> {
     }
 
     @Override
-    public Vector call(String[] tokens) throws ModelServiceException {
+    public Vector call(String[] tokens) throws MLModelBuilderException {
         try {
             double[] features = new double[indices.size()];
             int i = 0;
@@ -46,7 +46,7 @@ public class TokensToVectors implements Function<String[], Vector> {
             }
             return Vectors.dense(features);
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while converting tokens to vectors: " + e.getMessage(),
+            throw new MLModelBuilderException("An error occurred while converting tokens to vectors: " + e.getMessage(),
                     e);
         }
     }

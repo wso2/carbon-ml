@@ -16,10 +16,10 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 /**
  * A filter to remove header row
@@ -40,7 +40,7 @@ public class HeaderFilter implements Function<String, Boolean> {
             }
             return isRow;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while removing header row: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while removing header row: " + e.getMessage(), e);
         }
     }
 }

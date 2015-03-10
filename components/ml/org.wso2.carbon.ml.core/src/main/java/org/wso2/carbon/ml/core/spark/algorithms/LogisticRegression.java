@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -32,8 +32,8 @@ import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.json.JSONArray;
-import org.wso2.carbon.ml.model.spark.dto.PredictedVsActual;
-import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -41,10 +41,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.DECIMAL_FORMAT;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L1;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L2;
 
 public class LogisticRegression implements Serializable {
 
@@ -65,9 +61,9 @@ public class LogisticRegression implements Serializable {
             double dataFractionPerSGDIteration) {
         LogisticRegressionWithSGD lrSGD = new LogisticRegressionWithSGD(initialLearningRate, noOfIterations, 
                 regularizationParameter, dataFractionPerSGDIteration);
-        if (L1.equals(regularizationType)) {
+        if (MLConstants.L1.equals(regularizationType)) {
             lrSGD.optimizer().setUpdater(new L1Updater());
-        } else if (L2.equals(regularizationType)) {
+        } else if (MLConstants.L2.equals(regularizationType)) {
             lrSGD.optimizer().setUpdater(new SquaredL2Updater());
         }
         lrSGD.setIntercept(true);

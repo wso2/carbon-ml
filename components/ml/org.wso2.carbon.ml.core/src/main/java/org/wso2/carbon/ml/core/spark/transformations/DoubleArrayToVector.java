@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.Map;
 
@@ -38,11 +38,11 @@ public class DoubleArrayToVector implements Function<double[], Vector> {
      * @throws          ModelServiceException
      */
     @Override
-    public Vector call(double[] features) throws ModelServiceException {
+    public Vector call(double[] features) throws MLModelBuilderException {
         try {
             return Vectors.dense(features);
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while transforming double array to vector: "
+            throw new MLModelBuilderException("An error occurred while transforming double array to vector: "
                     + e.getMessage(), e);
         }
     }

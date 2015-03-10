@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -25,12 +25,11 @@ import org.apache.spark.mllib.classification.SVMWithSGD;
 import org.apache.spark.mllib.optimization.L1Updater;
 import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+
 import scala.Tuple2;
 
 import java.io.Serializable;
-
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L1;
-import static org.wso2.carbon.ml.model.internal.constants.MLModelConstants.L2;
 
 public class SVM implements Serializable {
     /**
@@ -47,9 +46,9 @@ public class SVM implements Serializable {
     public SVMModel train(JavaRDD<LabeledPoint> trainingDataset, int noOfIterations, String regularizationType,
             double regularizationParameter, double initialLearningRate, double miniBatchFraction) {
         SVMWithSGD svmWithSGD = new SVMWithSGD();
-        if (regularizationType.equals(L1)) {
+        if (regularizationType.equals(MLConstants.L1)) {
             svmWithSGD.optimizer().setUpdater(new L1Updater()).setRegParam(regularizationParameter);
-        } else if (regularizationType.equals((L2))) {
+        } else if (regularizationType.equals((MLConstants.L2))) {
             svmWithSGD.optimizer().setUpdater(new SquaredL2Updater()).setRegParam(regularizationParameter);
         }
         svmWithSGD.optimizer().setNumIterations(noOfIterations).setStepSize(initialLearningRate)

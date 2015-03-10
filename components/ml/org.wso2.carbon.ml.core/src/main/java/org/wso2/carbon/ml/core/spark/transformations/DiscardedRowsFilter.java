@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.List;
 
@@ -40,14 +40,14 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
         try {
             Boolean keep = true;
             for (Integer index : indices) {
-                if (MLModelConstants.EMPTY.equals(tokens[index]) || MLModelConstants.NA.equals(tokens[index])) {
+                if (MLConstants.EMPTY.equals(tokens[index]) || MLConstants.NA.equals(tokens[index])) {
                     keep = false;
                     break;
                 }
             }
             return keep;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while removing discarded rows: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while removing discarded rows: " + e.getMessage(), e);
         }
     }
 }

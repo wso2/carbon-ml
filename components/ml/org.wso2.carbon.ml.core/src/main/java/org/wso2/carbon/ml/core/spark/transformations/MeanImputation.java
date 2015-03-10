@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.model.spark.transformations;
+package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.Map;
 
@@ -32,11 +32,11 @@ public class MeanImputation implements Function<String[], double[]> {
     }
 
     @Override
-    public double[] call(String[] tokens) throws ModelServiceException {
+    public double[] call(String[] tokens) throws MLModelBuilderException {
         try {
             double[] features = new double[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
-                if (MLModelConstants.EMPTY.equals(tokens[i]) || MLModelConstants.NA.equals(tokens[i])) {
+                if (MLConstants.EMPTY.equals(tokens[i]) || MLConstants.NA.equals(tokens[i])) {
                     // if mean imputation is set
                     if (meanImputation.containsKey(i)) {
                         features[i] = meanImputation.get(i);
@@ -47,7 +47,7 @@ public class MeanImputation implements Function<String[], double[]> {
             }
             return features;
         } catch (Exception e) {
-            throw new ModelServiceException("An error occurred while applying mean imputation: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while applying mean imputation: " + e.getMessage(), e);
         }
     }
 }
