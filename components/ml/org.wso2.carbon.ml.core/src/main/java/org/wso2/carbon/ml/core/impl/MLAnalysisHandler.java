@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
@@ -62,6 +64,21 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e);
         }
     }
+    
+    public MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAnalysis(tenantId, userName, analysisName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
 
+    public List<MLAnalysis> getAnalyses(int tenantId, String userName) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAllAnalyses(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
 
 }

@@ -529,4 +529,8 @@ public interface DatabaseService {
 
     List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
 
+    MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
+
+    List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
+
 }

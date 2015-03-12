@@ -15,8 +15,13 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.util.List;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -24,7 +29,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
@@ -53,10 +60,65 @@ public class AnalysisApiV10 extends MLRestAPI {
             analysis.setTenantId(tenantId);
             analysis.setUserName(userName);
             mlAnalysisHandler.createAnalysis(analysis);
-            
-            return Response.ok(analysis).build();
+            return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             logger.error("Error occured while creating an analysis : " + analysis+ " : " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/{analysisName}")
+    @Produces("application/json")
+    public Response getAnalysis(@PathParam("analysisName") String analysisName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLAnalysis analysis = mlAnalysisHandler.getAnalysis(tenantId, userName, analysisName);
+            if (analysis == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(analysis).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while retrieving an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisName, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Produces("application/json")
+    public Response getAllAnalyses() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLAnalysis> analyses = mlAnalysisHandler.getAnalyses(tenantId, userName);
+            return Response.ok(analyses).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
+                    tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @DELETE
+    @Path("/{analysisName}")
+    @Produces("application/json")
+    public Response deleteAnalysis(@PathParam("analysisName") String analysisName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.deleteAnalysis(tenantId, userName, analysisName);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while deleting an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

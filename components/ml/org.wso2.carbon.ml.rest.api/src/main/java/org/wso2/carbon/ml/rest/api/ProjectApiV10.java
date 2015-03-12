@@ -60,8 +60,7 @@ public class ProjectApiV10 extends MLRestAPI {
             project.setTenantId(tenantId);
             project.setUserName(userName);
             mlProjectHandler.createProject(project);
-
-            return Response.ok(project).build();
+            return Response.ok().build();
         } catch (MLProjectHandlerException e) {
             logger.error("Error occured while creating a project : " + project + " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
