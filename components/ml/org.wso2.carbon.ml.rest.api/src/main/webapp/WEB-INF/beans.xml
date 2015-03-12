@@ -36,8 +36,8 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <bean class="org.wso2.carbon.ml.rest.api.Project"/>
-            <bean class="org.wso2.carbon.ml.rest.api.Analysis"/>
+            <bean class="org.wso2.carbon.ml.rest.api.ProjectApiV10"/>
+            <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>

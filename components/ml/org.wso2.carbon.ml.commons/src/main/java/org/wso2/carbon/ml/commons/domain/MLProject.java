@@ -22,20 +22,12 @@ package org.wso2.carbon.ml.commons.domain;
  */
 public class MLProject {
 
-    private String id;
+    private long id;
     private String name;
     private int tenantId;
     private String userName;
     private String description;
     private String createdTime;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -81,6 +73,14 @@ public class MLProject {
     public String toString() {
         return "MLProject [name=" + name + ", tenantId=" + tenantId + ", userName=" + userName + ", description="
                 + description + ", createdTime=" + createdTime + "]";
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
 }

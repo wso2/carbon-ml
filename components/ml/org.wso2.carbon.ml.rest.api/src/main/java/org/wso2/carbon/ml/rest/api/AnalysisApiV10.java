@@ -15,7 +15,6 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,41 +23,40 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.domain.MLDataset;
-import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
-import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
+import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
+import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
  */
-@Path("/datasets")
-public class DatasetApiV10 extends MLRestAPI {
+@Path("/analyses")
+public class AnalysisApiV10 extends MLRestAPI {
 
-    private static final Log logger = LogFactory.getLog(DatasetApiV10.class);
-    private MLDatasetProcessor datasetProcessor;
+    private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
+    private MLAnalysisHandler mlAnalysisHandler;
     
-    public DatasetApiV10() {
-        datasetProcessor = new MLDatasetProcessor();
+    public AnalysisApiV10() {
+        mlAnalysisHandler = new MLAnalysisHandler();
     }
 
     /**
-     * Upload a new data-set.
+     * Create a new Analysis for a project.
      */
     @POST
     @Produces("application/json")
-    @Consumes("application/json")
-    public Response uploadDataset(MLDataset dataset) {
+    public Response createAnalysis(MLAnalysis analysis) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            dataset.setTenantId(tenantId);
-            dataset.setUserName(userName);
-            datasetProcessor.process(dataset);
+            analysis.setTenantId(tenantId);
+            analysis.setUserName(userName);
+            mlAnalysisHandler.createAnalysis(analysis);
             
-            return Response.ok(dataset).build();
-        } catch (MLDataProcessingException e) {
-            logger.error("Error occured while uploading a dataset : " + dataset+ " : " + e.getMessage());
+            return Response.ok(analysis).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error("Error occured while creating an analysis : " + analysis+ " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

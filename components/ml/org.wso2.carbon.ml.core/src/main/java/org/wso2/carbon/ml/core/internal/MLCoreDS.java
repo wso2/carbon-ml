@@ -60,18 +60,18 @@ public class MLCoreDS {
             valueHolder.setSparkConf(sparkConf);
             
             //FIXME this is temporarily added for testing purposes.
-            MLDatasetProcessor processor = new MLDatasetProcessor();
-            MLDataset dataset = new MLDataset();
-            dataset.setName("test-ml");
-            dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
-            dataset.setComments("test-ml");
-            dataset.setDataSourceType("file");
-            dataset.setDataTargetType("file");
-            dataset.setDataType("csv");
-            dataset.setTenantId(-1234);
-            dataset.setUserName("admin");
-            dataset.setVersion("1.0");
-            processor.process(dataset);
+//            MLDatasetProcessor processor = new MLDatasetProcessor();
+//            MLDataset dataset = new MLDataset();
+//            dataset.setName("test-ml");
+//            dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
+//            dataset.setComments("test-ml");
+//            dataset.setDataSourceType("file");
+//            dataset.setDataTargetType("file");
+//            dataset.setDataType("csv");
+//            dataset.setTenantId(-1234);
+//            dataset.setUserName("admin");
+//            dataset.setVersion("1.0");
+//            processor.process(dataset);
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }

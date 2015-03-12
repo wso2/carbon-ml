@@ -149,8 +149,11 @@ public class SQLQueries {
     // TODO to be removed
     public static final String DELETE_PROJECT_GIVEN_ID = "DELETE FROM ML_PROJECT WHERE PROJECT_ID=?";
 
-    public static final String GET_PROJECT = "SELECT PROJECT_NAME ,DESCRIPTION, TENANT_ID "
-            + "USERNAME, CREATED_TIME FROM ML_PROJECT WHERE PROJECT_ID=?";
+    public static final String GET_PROJECT = "SELECT PROJECT_ID ,DESCRIPTION, CREATED_TIME FROM ML_PROJECT "
+            + "WHERE NAME=? AND TENANT_ID = ? AND USERNAME = ? ";
+    
+    public static final String GET_ALL_PROJECTS = "SELECT NAME, PROJECT_ID ,DESCRIPTION, CREATED_TIME FROM ML_PROJECT "
+            + "WHERE TENANT_ID = ? AND USERNAME = ? ";
 
     public static final String ADD_TENANT_TO_PROJECT = "INSERT INTO ML_TENANT_PROJECTS (TENANT_ID, PROJECT_ID) "
             + "VALUES(?,?)";

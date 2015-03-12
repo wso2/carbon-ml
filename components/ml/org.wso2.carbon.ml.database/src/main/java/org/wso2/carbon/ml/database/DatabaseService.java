@@ -525,4 +525,8 @@ public interface DatabaseService {
 
     Map<String, String> getModelStorage(long modelId) throws DatabaseHandlerException;
 
+    MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+
+    List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
+
 }

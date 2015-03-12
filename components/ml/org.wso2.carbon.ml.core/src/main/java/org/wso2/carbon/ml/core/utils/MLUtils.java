@@ -172,12 +172,13 @@ public class MLUtils {
         return featureIndex;
     }
     
-    public static MLValueset getMLValueSet(int tenantId, String name, URI targetPath, SamplePoints samplePoints) {
+    public static MLValueset getMLValueSet(int tenantId, String userName, String name, URI targetPath, SamplePoints samplePoints) {
         MLValueset valueSet = new MLValueset();
         valueSet.setTenantId(tenantId);
         valueSet.setName(name);
         valueSet.setTargetPath(targetPath);
         valueSet.setSamplePoints(samplePoints);
+        valueSet.setUserName(userName);
         return valueSet;
     }
     

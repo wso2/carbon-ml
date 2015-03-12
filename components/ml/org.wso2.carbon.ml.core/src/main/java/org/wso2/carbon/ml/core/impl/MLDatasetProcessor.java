@@ -189,7 +189,7 @@ public class MLDatasetProcessor {
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
             // build the MLValueSet
-            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), valueSetName, targetUri, samplePoints);
+            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, targetUri, samplePoints);
             persistValueSet(datasetVersionId, valueSet);
 
         } catch (MLInputAdapterException e) {

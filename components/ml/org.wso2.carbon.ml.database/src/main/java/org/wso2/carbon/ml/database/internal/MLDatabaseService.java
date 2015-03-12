@@ -984,6 +984,73 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+    
+    @Override
+    public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_PROJECT);
+            statement.setString(1, projectName);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLProject project = new MLProject();
+                project.setName(projectName);
+                project.setId(result.getLong(1));
+                project.setDescription(result.getString(2));
+                project.setTenantId(tenantId);
+                project.setUserName(userName);
+                project.setCreatedTime(result.getString(3));
+                return project;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting project for project name:"
+                    + projectName + ", tenant Id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+    
+    @Override
+    public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        List<MLProject> projects = new ArrayList<MLProject>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ALL_PROJECTS);
+            statement.setInt(1, tenantId);
+            statement.setString(2, userName);
+            result = statement.executeQuery();
+            while (result.next()) {
+                MLProject project = new MLProject();
+                project.setName(result.getString(1));
+                project.setId(result.getLong(2));
+                project.setDescription(result.getString(3));
+                project.setTenantId(tenantId);
+                project.setUserName(userName);
+                project.setCreatedTime(result.getString(4));
+                projects.add(project);
+            }
+            return projects;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting all projects of"
+                    + " tenant Id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
 
     @Override
     public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
