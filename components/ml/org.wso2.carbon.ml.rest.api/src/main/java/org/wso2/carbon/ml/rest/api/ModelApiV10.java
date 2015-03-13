@@ -53,7 +53,7 @@ public class ModelApiV10 extends MLRestAPI {
     @POST
     @Produces("application/json")
     @Consumes("application/json")
-    public Response createProject(MLModelNew model) {
+    public Response createModel(MLModelNew model) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
