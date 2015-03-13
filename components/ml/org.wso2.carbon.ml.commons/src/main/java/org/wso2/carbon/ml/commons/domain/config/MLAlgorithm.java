@@ -23,7 +23,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 
 /**
  * DTO class for JAXB binding of MLAlgorithmConfigurationParser
@@ -36,7 +36,7 @@ public class MLAlgorithm {
     private int scalability;
     private int multicollinearity;
     private int dimensionality;
-    private List<HyperParameter> parameters;
+    private List<MLHyperParameter> parameters;
 
     /**
      * @return Returns machine learning algorithm name
@@ -132,14 +132,14 @@ public class MLAlgorithm {
      * @return Returns a list of hyper-parameters
      */
     @XmlElement(name = "Parameters")
-    public List<HyperParameter> getParameters() {
+    public List<MLHyperParameter> getParameters() {
         return parameters;
     }
 
     /**
      * @param parameters Sets hyper-parameters
      */
-    public void setParameters(List<HyperParameter> parameters) {
+    public void setParameters(List<MLHyperParameter> parameters) {
         this.parameters = parameters;
     }
 }

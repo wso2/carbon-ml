@@ -25,7 +25,7 @@ public class MLCustomizedFeature {
     private String type;
     private String name;
     private boolean include;
-    private String imputeOption;
+    private String imputeOption = ImputeOption.DISCARD;
     private int tenantId;
     private String userName;
     private String lastModifiedUser;

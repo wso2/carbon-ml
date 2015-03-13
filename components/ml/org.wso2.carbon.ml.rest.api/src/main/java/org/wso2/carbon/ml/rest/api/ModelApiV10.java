@@ -24,13 +24,18 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
+import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLStorage;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 
@@ -69,7 +74,7 @@ public class ModelApiV10 extends MLRestAPI {
     }
     
     @POST
-    @Path("/features/{modelId}")
+    @Path("/{modelId}/features")
     @Produces("application/json")
     @Consumes("application/json")
     public Response addCustomizedFeatures(@PathParam("modelId") long modelId, List<MLCustomizedFeature> customizedFeatures) {
@@ -81,8 +86,126 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while adding customized features for the model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occured while adding customized features for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}/features/defaults")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addDefaultsIntoCustomizedFeatures(@PathParam("modelId") long modelId, MLCustomizedFeature customizedValues) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            customizedValues.setTenantId(tenantId);
+            customizedValues.setUserName(userName);
+            customizedValues.setLastModifiedUser(userName);
+            
+            mlModelHandler.addDefaultsIntoCustomizedFeatures(modelId, customizedValues);
+            return Response.ok().build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding customized features for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}/configurations")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addModelConfiguration(@PathParam("modelId") long modelId, List<MLModelConfiguration> modelConfigs) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.addModelConfigurations(modelId, modelConfigs);
+            return Response.ok().build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding model configurations for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}/hyperParams")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addHyperParameters(@PathParam("modelId") long modelId, List<MLHyperParameter> hyperParameters) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.addHyperParameters(modelId, hyperParameters);
+            return Response.ok().build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding hyper parameters for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}/hyperParams/defaults")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addDefaultsIntoHyperParameters(@PathParam("modelId") long modelId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.addDefaultsIntoHyperParameters(modelId);
+            return Response.ok().build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding hyper parameters for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}/storages")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addStorage(@PathParam("modelId") long modelId, MLStorage storage) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.addStorage(modelId, storage);
+            return Response.ok().build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding storage for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{modelId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response buildModel(@PathParam("modelId") long modelId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.buildModel(tenantId, userName, modelId);
+            return Response.ok().build();
+        } catch (Exception e) {
+            logger.error(String.format(
+                    "Error occured while building the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

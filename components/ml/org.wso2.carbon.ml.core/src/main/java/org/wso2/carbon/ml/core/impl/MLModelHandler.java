@@ -37,7 +37,9 @@ import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
@@ -58,10 +60,13 @@ public class MLModelHandler {
     private DatabaseService databaseService;
     private Properties mlProperties;
     private ThreadExecutor threadExecutor;
+    private List<MLAlgorithm> algorithms;
 
     public MLModelHandler() {
-        databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        databaseService = valueHolder.getDatabaseService();
+        mlProperties = valueHolder.getMlProperties();
+        algorithms = valueHolder.getAlgorithms();
         threadExecutor = new ThreadExecutor(mlProperties);
     }
 
@@ -129,6 +134,15 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e);
         }
     }
+    
+    public void addDefaultsIntoCustomizedFeatures(long modelId, MLCustomizedFeature customizedValues)
+            throws MLModelHandlerException {
+        try {
+            databaseService.insertDefaultsIntoFeatureCustomized(modelId, customizedValues);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
+    }
 
     public void addCustomizedFeature(long modelId, MLCustomizedFeature customizedFeature)
             throws MLModelHandlerException {
@@ -155,15 +169,40 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e);
         }
     }
+    
+    public void addDefaultsIntoHyperParameters(long modelId) throws MLModelHandlerException {
+        try {
+            // read the algorithm name of this model
+            String algorithmName = databaseService.getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_NAME);
+            if (algorithmName == null) {
+                throw new MLModelHandlerException("You have to set the model configurations (algorithm name) before loading default hyper parameters for model [id] "+modelId);
+            }
+            // get the MLAlgorithm and then the hyper params of the model's algorithm
+            List<MLHyperParameter> hyperParameters = null;
+            for (MLAlgorithm mlAlgorithm : algorithms) {
+                if (algorithmName.equalsIgnoreCase(mlAlgorithm.getName())) {
+                    hyperParameters = mlAlgorithm.getParameters();
+                    break;
+                }
+            }
+            if (hyperParameters == null) {
+                throw new MLModelHandlerException("Cannot find the default hyper parameters for algorithm [name] "+algorithmName);
+            }
+            // add default hyper params
+            databaseService.insertHyperParameters(modelId, hyperParameters);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
+    }
 
     /**
      * @param type type of the storage file, hdfs etc.
      * @param location root directory of the file location.
      * @throws MLModelHandlerException
      */
-    public void addStorage(long modelId, String type, String location) throws MLModelHandlerException {
+    public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
         try {
-            databaseService.updateModelStorage(modelId, type, location);
+            databaseService.updateModelStorage(modelId, storage.getType(), storage.getLocation());
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
         }
@@ -293,4 +332,5 @@ public class MLModelHandler {
         }
 
     }
+
 }

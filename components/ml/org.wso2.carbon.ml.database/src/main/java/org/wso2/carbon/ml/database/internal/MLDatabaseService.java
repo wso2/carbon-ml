@@ -2077,6 +2077,47 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }
+    
+    @Override
+    public void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            // Insert the feature-customized to the database
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+
+                int tenantId = customizedValues.getTenantId();
+                String imputeOption = customizedValues.getImputeOption();
+                boolean inclusion = customizedValues.isInclude();
+                String lastModifiedUser = customizedValues.getLastModifiedUser();
+                String userName = customizedValues.getUserName();
+
+                insertStatement = connection.prepareStatement(SQLQueries.INSERT_DEFAULTS_INTO_FEATURE_CUSTOMIZED);
+                insertStatement.setLong(1, modelId);
+                insertStatement.setInt(2, tenantId);
+                insertStatement.setString(3, imputeOption);
+                insertStatement.setBoolean(4, inclusion);
+                insertStatement.setString(5, lastModifiedUser);
+                insertStatement.setString(6, userName);
+
+                insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the feature-customized");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while inserting feature-customized "
+                    + " to the database: " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
 
     @Override
     public void insertFeatureCustomized(long modelId, List<MLCustomizedFeature> customizedFeatures)
@@ -2732,7 +2773,7 @@ public class MLDatabaseService implements DatabaseService {
             // mlWorkflow.setDatasetURL(result.getString(1));
             // }
             List<Feature> mlFeatures = new ArrayList<Feature>();
-            getStatement = connection.prepareStatement(SQLQueries.GET_ALL_DEFAULT_FEATURES);
+            getStatement = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
             getStatement.setLong(1, modelId);
             result = getStatement.executeQuery();
             while (result.next()) {
@@ -2752,7 +2793,7 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setAlgorithmName(getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_NAME));
             mlWorkflow.setAlgorithmClass(getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_TYPE));
             mlWorkflow.setResponseVariable(getAStringModelConfiguration(modelId, MLConstants.RESPONSE));
-            mlWorkflow.setTrainDataFraction(getADoubleModelConfiguration(modelId, MLConstants.TRAIN_DATA_FRACTION));
+            mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(modelId, MLConstants.TRAIN_DATA_FRACTION)));
 
             // set hyper parameters
             mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(modelId));

@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -43,7 +44,7 @@ public class MLConfigHandler {
      * @param algorithmName name of the algorithm
      * @return list of {@link HyperParameter}
      */
-    public List<HyperParameter> getHyperParameters(String algorithmName) {
+    public List<MLHyperParameter> getHyperParameters(String algorithmName) {
         List<MLAlgorithm> algos = MLCoreServiceValueHolder.getInstance().getAlgorithms();
         if (algos != null && algorithmName != null) {
             for (MLAlgorithm mlAlgorithm : algos) {
@@ -52,7 +53,7 @@ public class MLConfigHandler {
                 }
             }
         }
-        return new ArrayList<HyperParameter>();
+        return new ArrayList<MLHyperParameter>();
     }
 
     /**

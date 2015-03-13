@@ -560,4 +560,7 @@ public interface DatabaseService {
     long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
 
+    void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues)
+            throws DatabaseHandlerException;
+
 }
