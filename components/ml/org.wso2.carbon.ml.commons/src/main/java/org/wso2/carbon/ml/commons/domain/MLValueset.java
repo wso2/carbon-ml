@@ -24,6 +24,7 @@ import java.net.URI;
  */
 public class MLValueset {
 
+    private long id;
     private String name;
     private int tenantId;
     private String userName;
@@ -72,6 +73,20 @@ public class MLValueset {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "MLValueset [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
+                + ", targetPath=" + targetPath + ", samplePoints=" + samplePoints + "]";
     }
 
 }

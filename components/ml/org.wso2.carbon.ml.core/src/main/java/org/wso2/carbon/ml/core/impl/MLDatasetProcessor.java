@@ -93,6 +93,71 @@ public class MLDatasetProcessor {
         return false;
     }
     
+    public List<MLDataset> getAllDatasetVersions(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getVersionsetOfDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getVersionset(tenantId, userName, datasetId, versionsetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLDataset> getAllDatasets(int tenantId, String userName) throws MLDataProcessingException {
+        try {
+            return databaseService.getAllDatasets(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLDataset getDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValuesetOfDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValuesetOfVersion(tenantId, userName, versionsetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getAllValuesets(int tenantId, String userName) throws MLDataProcessingException {
+        try {
+            return databaseService.getAllValuesets(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLValueset getValueset(int tenantId, String userName, long valuesetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValueset(tenantId, userName, valuesetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    
     /**
      * FIXME Do we need tenant id and user name??
      * @param valuesetId

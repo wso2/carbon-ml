@@ -119,7 +119,7 @@ public interface DatabaseService {
      * @return                         true if the name exists
      * @throws DatabaseHandlerException
      */
-    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException;
+    public boolean isDatasetNameExist(int tenantId, String userName, String datasetName) throws DatabaseHandlerException;
 
     /**
      * Check whether the given database version exists for the given data-set name and tenant ID
@@ -532,5 +532,29 @@ public interface DatabaseService {
     MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
+
+    MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
+
+    List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
+
+    List<MLDataset> getVersionsetOfDataset(int tenantId, String userName, long datasetId)
+            throws DatabaseHandlerException;
+
+    List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
+
+    MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
+
+    MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
+            throws DatabaseHandlerException;
+
+    List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId)
+            throws DatabaseHandlerException;
+
+    List<MLValueset> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
+
+    List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
+            throws DatabaseHandlerException;
+
+    MLValueset getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
 
 }

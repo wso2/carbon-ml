@@ -48,7 +48,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Create a new Analysis for a project.
+     * Create a new Analysis of a project.
      */
     @POST
     @Produces("application/json")

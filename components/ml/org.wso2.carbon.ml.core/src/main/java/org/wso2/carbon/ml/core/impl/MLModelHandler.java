@@ -76,11 +76,8 @@ public class MLModelHandler {
             int tenantId = model.getTenantId();
             String name = model.getName();
             String userName = model.getUserName();
-            String analysisName = model.getAnalysisName();
-            long analysisId = databaseService.getAnalysisId(tenantId, userName, analysisName);
-
-            String valueSetName = model.getValueSetName();
-            long valueSetId = databaseService.getValueSetId(valueSetName, tenantId);
+            long analysisId = model.getAnalysisId();
+            long valueSetId = model.getValueSetId();
             databaseService.insertModel(name, analysisId, valueSetId, tenantId, userName);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {
@@ -88,19 +85,29 @@ public class MLModelHandler {
         }
     }
 
-    public void deleteModel(int tenantId, String userName, String analysisName) throws MLModelHandlerException {
-        // TODO try {
-        // databaseService.deleteAnalysis(tenantId, userName, analysisName);
-        // log.info(String.format("[Deleted] [analysis] %s of [user] %s of [tenant] %s", analysisName, userName,
-        // tenantId));
-        // } catch (DatabaseHandlerException e) {
-        // throw new MLAnalysisHandlerException(e);
-        // }
+    public void deleteModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
+        // TODO 
     }
 
     public long getModelId(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModelId(tenantId, userName, modelName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
+    }
+    
+    public MLModelNew getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
+        try {
+            return databaseService.getModel(tenantId, userName, modelName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
+    }
+    
+    public List<MLModelNew> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
+        try {
+            return databaseService.getAllModels(tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
         }

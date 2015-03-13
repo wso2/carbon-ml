@@ -22,12 +22,13 @@ package org.wso2.carbon.ml.commons.domain;
  */
 public class MLModelNew {
 
+    private long id;
     private String name;
     private int tenantId;
     private String userName;
     private String createdTime;
-    private String analysisName;
-    private String valueSetName;
+    private long analysisId;
+    private long valueSetId;
     private String storageType;
     private String storageDirectory;
 
@@ -63,29 +64,6 @@ public class MLModelNew {
         this.name = name;
     }
 
-    public String getValueSetName() {
-        return valueSetName;
-    }
-
-    public void setValueSetName(String valueSetName) {
-        this.valueSetName = valueSetName;
-    }
-
-    public String getAnalysisName() {
-        return analysisName;
-    }
-
-    public void setAnalysisName(String analysisName) {
-        this.analysisName = analysisName;
-    }
-
-    @Override
-    public String toString() {
-        return "MLModelNew [name=" + name + ", tenantId=" + tenantId + ", userName=" + userName + ", createdTime="
-                + createdTime + ", analysisName=" + analysisName + ", valueSetName=" + valueSetName + ", storageType="
-                + storageType + ", storageDirectory=" + storageDirectory + "]";
-    }
-
     public String getStorageType() {
         return storageType;
     }
@@ -100,6 +78,37 @@ public class MLModelNew {
 
     public void setStorageDirectory(String storageDirectory) {
         this.storageDirectory = storageDirectory;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(long analysisId) {
+        this.analysisId = analysisId;
+    }
+
+    public long getValueSetId() {
+        return valueSetId;
+    }
+
+    public void setValueSetId(long valueSetId) {
+        this.valueSetId = valueSetId;
+    }
+
+    @Override
+    public String toString() {
+        return "MLModelNew [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
+                + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", valueSetId=" + valueSetId
+                + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + "]";
     }
 
 }
