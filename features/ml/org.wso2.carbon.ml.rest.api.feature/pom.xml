@@ -61,7 +61,7 @@
 									<type>war</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${basedir}/src/main/resources/</outputDirectory>
-									<destFileName>MachineLearner.war</destFileName>
+									<destFileName>api.war</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -84,7 +84,7 @@
                                 <resource>
                                     <directory>resources</directory>
                                     <includes>
-                                        <include>MachineLearner.war</include>
+                                        <include>api.war</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>
