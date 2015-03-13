@@ -149,7 +149,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException {
+    public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -159,16 +159,44 @@ public class MLDatabaseService implements DatabaseService {
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_ID);
             statement.setString(1, datasetName);
             statement.setInt(2, tenantId);
+            statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
             } else {
-                throw new DatabaseHandlerException("No dataset id associated with dataset name: " + datasetName
-                        + " and tenant id:" + tenantId);
+                return -1;
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting dataset name: " + datasetName
-                    + " and tenant id:" + tenantId);
+                    + " and tenant id:" + tenantId, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+    
+    @Override
+    public long getDatasetVersionId(long datasetId, String version, int tenantId, String userName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASETVERSION_ID);
+            statement.setLong(1, datasetId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            statement.setString(4, version);
+            
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset version id of [dataset] %s [version] %s [tenant] %s [user] %s", datasetId, version, tenantId, userName), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -457,7 +485,7 @@ public class MLDatabaseService implements DatabaseService {
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
-                valueset.setSamplePoints((SamplePoints)result.getClob(7));
+                valueset.setSamplePoints((SamplePoints)result.getObject(7));
                 valueset.setTenantId(tenantId);
                 valueset.setUserName(userName);
                 valuesets.add(valueset);
@@ -494,7 +522,7 @@ public class MLDatabaseService implements DatabaseService {
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
-                valueset.setSamplePoints((SamplePoints)result.getClob(7));
+                valueset.setSamplePoints((SamplePoints)result.getObject(7));
                 valueset.setTenantId(tenantId);
                 valueset.setUserName(userName);
                 valuesets.add(valueset);
@@ -532,7 +560,7 @@ public class MLDatabaseService implements DatabaseService {
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
-                valueset.setSamplePoints((SamplePoints)result.getClob(7));
+                valueset.setSamplePoints((SamplePoints)result.getObject(7));
                 valueset.setTenantId(tenantId);
                 valueset.setUserName(userName);
                 return valueset;
@@ -571,7 +599,7 @@ public class MLDatabaseService implements DatabaseService {
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
-                valueset.setSamplePoints((SamplePoints)result.getClob(7));
+                valueset.setSamplePoints((SamplePoints)result.getObject(7));
                 valueset.setTenantId(tenantId);
                 valueset.setUserName(userName);
                 valuesets.add(valueset);
@@ -644,13 +672,13 @@ public class MLDatabaseService implements DatabaseService {
             result = statement.executeQuery();
             if (result.first()) {
                 MLDataset versionset = new MLDataset();
-                versionset.setId(result.getLong(1));
-                versionset.setName(result.getString(2));
-                versionset.setComments(MLDatabaseUtils.toString(result.getClob(3)));
-                versionset.setDataSourceType(result.getString(4));
-                versionset.setDataTargetType(result.getString(5));
-                versionset.setDataType(result.getString(6));
-                versionset.setVersion(result.getString(7));
+                versionset.setId(versionsetId);
+                versionset.setName(result.getString(1));
+                versionset.setComments(MLDatabaseUtils.toString(result.getClob(2)));
+                versionset.setDataSourceType(result.getString(3));
+                versionset.setDataTargetType(result.getString(4));
+                versionset.setDataType(result.getString(5));
+                versionset.setVersion(result.getString(6));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 return versionset;
@@ -660,7 +688,7 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException(String.format(
                     "An error occurred while extracting version set for dataset id: %s versionset id: %s ", datasetId,
-                    versionsetId));
+                    versionsetId), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);

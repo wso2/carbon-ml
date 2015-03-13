@@ -301,11 +301,19 @@ public class MLDatasetProcessor {
         try {
             String name = dataset.getName();
             int tenantId = dataset.getTenantId();
-            databaseService.insertDatasetDetails(name, tenantId, dataset.getUserName(), dataset.getComments(),
-                    dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
-            long datasetId = databaseService.getDatasetId(name, tenantId);
+            String userName = dataset.getUserName();
+            String version = dataset.getVersion();
+            long datasetId = databaseService.getDatasetId(name, tenantId, userName);
+            if (datasetId == -1) {
+                databaseService.insertDatasetDetails(name, tenantId, userName, dataset.getComments(),
+                        dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
+                datasetId = databaseService.getDatasetId(name, tenantId, userName);
+            }
             dataset.setId(datasetId);
-            databaseService.insertDatasetVersionDetails(datasetId, tenantId,dataset.getUserName(), dataset.getVersion());
+            long datasetVersionId = databaseService.getDatasetVersionId(datasetId, version, tenantId, userName);
+            if (datasetVersionId == -1) {
+                databaseService.insertDatasetVersionDetails(datasetId, tenantId,userName, version);
+            }
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }

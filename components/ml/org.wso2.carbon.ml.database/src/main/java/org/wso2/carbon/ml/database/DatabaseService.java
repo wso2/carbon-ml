@@ -62,7 +62,7 @@ public interface DatabaseService {
      * @return               Unique Id of the data-set
      * @throws DatabaseHandlerException
      */
-    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException;
+    public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Insert the data-set-version details to the database
@@ -556,5 +556,8 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     MLValueset getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
+
+    long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
+            throws DatabaseHandlerException;
 
 }
