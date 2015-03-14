@@ -276,9 +276,9 @@ public class MLModelHandler {
 
     private void persistModel(long modelId, MLModel model) throws MLModelBuilderException {
         try {
-            Map<String, String> storageMap = databaseService.getModelStorage(modelId);
-            String storageType = storageMap.get(MLConstants.STORAGE_TYPE);
-            String storageLocation = storageMap.get(MLConstants.STORAGE_LOCATION);
+            MLStorage storage = databaseService.getModelStorage(modelId);
+            String storageType = storage.getType();
+            String storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -523,7 +523,7 @@ public interface DatabaseService {
 
     Workflow getWorkflow(long modelId) throws DatabaseHandlerException;
 
-    Map<String, String> getModelStorage(long modelId) throws DatabaseHandlerException;
+    MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
 
     MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
 
@@ -562,5 +562,7 @@ public interface DatabaseService {
 
     void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
+
+    long getDatasetVersionIdFromModelId(long modelId) throws DatabaseHandlerException;
 
 }

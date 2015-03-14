@@ -1682,23 +1682,23 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Map<String, String> getModelStorage(long modelId) throws DatabaseHandlerException {
+    public MLStorage getModelStorage(long modelId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        Map<String, String> map = new HashMap<String, String>();
+        MLStorage storage = new MLStorage();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_MODEL_STORAGE);
             statement.setLong(1, modelId);
             result = statement.executeQuery();
             if (result.first()) {
-                map.put(MLConstants.STORAGE_TYPE, result.getString(1));
-                map.put(MLConstants.STORAGE_LOCATION, result.getString(2));
-                return map;
+                storage.setType(result.getString(1));
+                storage.setLocation(result.getString(2));
+                return storage;
             } else {
-                throw new DatabaseHandlerException("No model storage is associated with model id: " + modelId);
+                return storage;
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting model storage for model id: "
@@ -2079,9 +2079,34 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
+    public long getDatasetVersionIdFromModelId(long modelId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION_ID_FROM_MODEL);
+            statement.setLong(1, modelId);
+            result = statement.executeQuery();
+            if (result.first()) {
+                return result.getLong(1);
+            } else {
+                return -1;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset version id of [model] %s ", modelId), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+    
+    @Override
     public void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
+        
+        long datasetVersionId = getDatasetVersionIdFromModelId(modelId);
         try {
             // Insert the feature-customized to the database
             connection = dbh.getDataSource().getConnection();
@@ -2100,6 +2125,7 @@ public class MLDatabaseService implements DatabaseService {
                 insertStatement.setBoolean(4, inclusion);
                 insertStatement.setString(5, lastModifiedUser);
                 insertStatement.setString(6, userName);
+                insertStatement.setLong(7, datasetVersionId);
 
                 insertStatement.execute();
             connection.commit();
