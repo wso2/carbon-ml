@@ -24,7 +24,6 @@ public class MLModelConfiguration {
 
     private String key;
     private String value;
-    private String type;
     
     public String getKey() {
         return key;
@@ -38,15 +37,9 @@ public class MLModelConfiguration {
     public void setValue(String value) {
         this.value = value;
     }
-    public String getType() {
-        return type;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
     @Override
     public String toString() {
-        return "MLModelConfiguration [key=" + key + ", value=" + value + ", type=" + type + "]";
+        return "MLModelConfiguration [key=" + key + ", value=" + value + "]";
     }
     @Override
     public int hashCode() {

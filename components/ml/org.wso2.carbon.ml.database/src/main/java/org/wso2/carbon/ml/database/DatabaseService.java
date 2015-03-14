@@ -398,18 +398,7 @@ public interface DatabaseService {
      * @param type
      * @throws DatabaseHandlerException
      */
-    public void insertModelConfiguration(long modelId, String key, String value, String type) throws DatabaseHandlerException;
-
-    /**
-     * Insert Hyper-parameter to the database
-     * @param modelId
-     * @param name
-     * @param tenantId
-     * @param value
-     * @param lastModifiedUser
-     */
-    public void insertHyperParameter(long modelId, String name, int tenantId, String value, String lastModifiedUser)
-            throws DatabaseHandlerException;
+    public void insertModelConfiguration(long modelId, String key, String value) throws DatabaseHandlerException;
 
     /**
      * Insert feature-customized to the database

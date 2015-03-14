@@ -1801,7 +1801,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModelConfiguration(long modelId, String key, String value, String type)
+    public void insertModelConfiguration(long modelId, String key, String value)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -1814,7 +1814,6 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setLong(1, modelId);
             insertStatement.setString(2, key);
             insertStatement.setString(3, value);
-            insertStatement.setString(4, type);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -1847,13 +1846,11 @@ public class MLDatabaseService implements DatabaseService {
             for (MLModelConfiguration mlModelConfiguration : modelConfigs) {
                 String key = mlModelConfiguration.getKey();
                 String value = mlModelConfiguration.getValue();
-                String type = mlModelConfiguration.getType();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL_CONFIGURATION);
                 insertStatement.setLong(1, modelId);
                 insertStatement.setString(2, key);
                 insertStatement.setString(3, value);
-                insertStatement.setString(4, type);
                 insertStatement.execute();
             }
             connection.commit();
@@ -1911,40 +1908,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertHyperParameter(long modelId, String name, int tenantId, String value, String lastModifiedUser)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the hyper parameter to the database
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
-            insertStatement.setLong(1, modelId);
-            insertStatement.setString(2, name);
-            insertStatement.setInt(3, tenantId);
-            insertStatement.setString(4, value);
-            insertStatement.setString(5, lastModifiedUser);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the hyper parameter");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting hyper parameter "
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    @Override
     public void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters)
             throws DatabaseHandlerException {
 
@@ -1957,16 +1920,12 @@ public class MLDatabaseService implements DatabaseService {
 
             for (MLHyperParameter mlHyperParameter : hyperParameters) {
                 String name = mlHyperParameter.getKey();
-                int tenantId = mlHyperParameter.getTenantId();
                 String value = mlHyperParameter.getValue();
-                String lastModifiedUser = mlHyperParameter.getLastModifiedUser();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
                 insertStatement.setLong(1, modelId);
                 insertStatement.setString(2, name);
-                insertStatement.setInt(3, tenantId);
-                insertStatement.setString(4, value);
-                insertStatement.setString(5, lastModifiedUser);
+                insertStatement.setString(3, value);
                 insertStatement.execute();
             }
 
