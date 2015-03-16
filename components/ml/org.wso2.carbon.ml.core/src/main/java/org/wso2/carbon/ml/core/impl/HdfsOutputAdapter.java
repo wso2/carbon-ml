@@ -42,6 +42,9 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
             throw new MLOutputAdapterException(String.format(
                     "Null argument values detected. Input stream: %s Out Path: %s", in, outPath));
         }
+        if (!outPath.startsWith("hdfs://")) {
+            outPath = "hdfs://localhost:9000".concat(outPath);
+        }
         FSDataOutputStream out = null;
         try {
             Configuration conf = new Configuration();
@@ -52,7 +55,6 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
         } catch (FileNotFoundException e) {
             throw new MLOutputAdapterException(e);
         } catch (IOException e) {
-            System.out.println(e);
             throw new MLOutputAdapterException(e);
         } finally {
             if (out != null) {

@@ -31,15 +31,15 @@ public class MLIOFactoryTest {
     @BeforeClass
     public void beforeClass() {
         Properties configuration = new Properties();
-        configuration.put("data.hdfs.input", "org.wso2.carbon.ml.core.impl.HdfsInputAdapter");
-        configuration.put("data.hdfs.output", "org.wso2.carbon.ml.core.impl.HdfsOutputAdapter");
+        configuration.put("hdfs.input", "org.wso2.carbon.ml.core.impl.HdfsInputAdapter");
+        configuration.put("hdfs.output", "org.wso2.carbon.ml.core.impl.HdfsOutputAdapter");
         configuration.put("target.home", "/tmp");
         ioFactory = new MLIOFactory(configuration);
     }
 
     @Test
     public void getInputAdapter() {
-        MLInputAdapter inputAdapter = ioFactory.getInputAdapter("data.hdfs.input");
+        MLInputAdapter inputAdapter = ioFactory.getInputAdapter("hdfs.input");
         Assert.assertEquals(inputAdapter instanceof HdfsInputAdapter, true);
 
         // default input adapter is file input adapter
@@ -50,7 +50,7 @@ public class MLIOFactoryTest {
 
     @Test
     public void getOutputAdapter() {
-        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter("data.hdfs.output");
+        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter("hdfs.output");
         Assert.assertEquals(outputAdapter instanceof HdfsOutputAdapter, true);
         
         // default output adapter is file output adapter

@@ -19,6 +19,9 @@ package org.wso2.carbon.ml.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -40,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -52,9 +57,6 @@ public class MLDatasetProcessor {
     private SummaryStatisticsSettings summaryStatsSettings;
     private ThreadExecutor threadExecutor;
     private DatabaseService databaseService;
-    private String propertyPrefix = "data.";
-    private String propertyInSuffix = ".in";
-    private String propertyOutSuffix = ".out";
 
     public MLDatasetProcessor() {
         mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
@@ -91,6 +93,111 @@ public class MLDatasetProcessor {
         return false;
     }
     
+    public List<MLDataset> getAllDatasetVersions(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getVersionsetOfDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getVersionset(tenantId, userName, datasetId, versionsetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLDataset> getAllDatasets(int tenantId, String userName) throws MLDataProcessingException {
+        try {
+            return databaseService.getAllDatasets(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLDataset getDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValuesetOfDataset(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValuesetOfVersion(tenantId, userName, versionsetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<MLValueset> getAllValuesets(int tenantId, String userName) throws MLDataProcessingException {
+        try {
+            return databaseService.getAllValuesets(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public MLValueset getValueset(int tenantId, String userName, long valuesetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getValueset(tenantId, userName, valuesetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    
+    /**
+     * FIXME Do we need tenant id and user name??
+     * @param valuesetId
+     * @return
+     * @throws MLDataProcessingException
+     */
+    public long getDatasetVersionId(long valuesetId) throws MLDataProcessingException {
+        try {
+            return databaseService.getDatasetVersionId(valuesetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<FeatureSummary> getDefaultFeatures(int tenantId, String userName, long valuesetId, int startIndex, int numberOfFeatures) throws MLDataProcessingException {
+        
+        long datasetVersionId = getDatasetVersionId(valuesetId);
+        try {
+            return databaseService.getDefaultFeatures(datasetVersionId, startIndex, numberOfFeatures);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public void deleteValueset(String valuesetName) {
+        //TODO
+    }
+    
+    public void deleteDataset(String datasetName) {
+        //TODO
+        
+    }
+    
+    public void deleteDatasetVersion(String datasetVersion) {
+        //TODO
+        
+    }
+    
+    
+    
     /**
      * Process a given data-set; read the data-set as a stream, extract meta-data, persist the data-set in a target path
      * and persist meta-data in ML db.
@@ -100,10 +207,10 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset) throws MLDataProcessingException {
 
         MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataSourceType()+ propertyInSuffix);
+        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType()+ MLConstants.IN_SUFFIX);
         handleNull(inputAdapter, String.format("Invalid data source type: %s [data-set] %s", 
                 dataset.getDataSourceType(), dataset.getName()));
-        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(propertyPrefix + dataset.getDataTargetType() +propertyOutSuffix);
+        MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() +MLConstants.OUT_SUFFIX);
         handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
                 dataset.getDataTargetType(), dataset.getName()));
         handleNull(dataset.getSourcePath(), String.format("Null data source path provided [data-set] %s", 
@@ -120,7 +227,7 @@ public class MLDatasetProcessor {
             outputAdapter.writeDataset(targetPath, input);
 
             // read the file that was written
-            inputAdapter = ioFactory.getInputAdapter(propertyPrefix + dataset.getDataTargetType() + propertyInSuffix);
+            inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
             try {
                 targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);
@@ -147,7 +254,7 @@ public class MLDatasetProcessor {
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
             // build the MLValueSet
-            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), valueSetName, targetUri, samplePoints);
+            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, targetUri, samplePoints);
             persistValueSet(datasetVersionId, valueSet);
 
         } catch (MLInputAdapterException e) {
@@ -194,11 +301,19 @@ public class MLDatasetProcessor {
         try {
             String name = dataset.getName();
             int tenantId = dataset.getTenantId();
-            databaseService.insertDatasetDetails(name, tenantId, dataset.getUserName(), dataset.getComments(),
-                    dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
-            long datasetId = databaseService.getDatasetId(name, tenantId);
+            String userName = dataset.getUserName();
+            String version = dataset.getVersion();
+            long datasetId = databaseService.getDatasetId(name, tenantId, userName);
+            if (datasetId == -1) {
+                databaseService.insertDatasetDetails(name, tenantId, userName, dataset.getComments(),
+                        dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
+                datasetId = databaseService.getDatasetId(name, tenantId, userName);
+            }
             dataset.setId(datasetId);
-            databaseService.insertDatasetVersionDetails(datasetId, tenantId,dataset.getUserName(), dataset.getVersion());
+            long datasetVersionId = databaseService.getDatasetVersionId(datasetId, version, tenantId, userName);
+            if (datasetVersionId == -1) {
+                databaseService.insertDatasetVersionDetails(datasetId, tenantId,userName, version);
+            }
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }

@@ -145,7 +145,7 @@ public class SparkDecompositionServiceUtil {
             sparkConf.setAppName(workflowID);
 
             DatabaseService dbService = DecompositionServiceValueHolder.getDatabaseService();
-            Workflow workflow = dbService.getWorkflow(workflowID);
+            Workflow workflow = dbService.getWorkflow(Long.parseLong(workflowID));
             String dataSetURL = workflow.getDatasetURL();
 
             JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);

@@ -18,9 +18,15 @@
 
 package org.wso2.carbon.ml.database.internal;
 
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectWriter;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
+import java.io.Reader;
+import java.io.StringWriter;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,21 +49,18 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      *
-     * @param connection        Connection to be closed
+     * @param connection Connection to be closed
      * @param preparedStatement PeparedStatement to be closed
-     * @param resultSet         ResultSet to be closed
+     * @param resultSet ResultSet to be closed
      */
-    public static void closeDatabaseResources(Connection connection,
-            PreparedStatement preparedStatement,
-            ResultSet resultSet) throws
-            DatabaseHandlerException {
+    public static void closeDatabaseResources(Connection connection, PreparedStatement preparedStatement,
+            ResultSet resultSet) throws DatabaseHandlerException {
         // Close the resultSet
         if (resultSet != null) {
             try {
                 resultSet.close();
             } catch (SQLException e) {
-                throw new DatabaseHandlerException("Could not close result set: " + e.getMessage(),
-                        e);
+                throw new DatabaseHandlerException("Could not close result set: " + e.getMessage(), e);
             }
         }
         // Close the connection
@@ -65,8 +68,7 @@ public class MLDatabaseUtils {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new DatabaseHandlerException(
-                        "Database error. Could not close statement: " + e.getMessage(), e);
+                throw new DatabaseHandlerException("Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
         // Close the statement
@@ -74,8 +76,7 @@ public class MLDatabaseUtils {
             try {
                 preparedStatement.close();
             } catch (SQLException e) {
-                throw new DatabaseHandlerException(
-                        "Database error. Could not close statement: " + e.getMessage(), e);
+                throw new DatabaseHandlerException("Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
     }
@@ -83,11 +84,11 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      *
-     * @param connection        Connection to be closed
+     * @param connection Connection to be closed
      * @param preparedStatement PeparedStatement to be closed
      */
-    public static void closeDatabaseResources(Connection connection,
-            PreparedStatement preparedStatement) throws DatabaseHandlerException {
+    public static void closeDatabaseResources(Connection connection, PreparedStatement preparedStatement)
+            throws DatabaseHandlerException {
         closeDatabaseResources(connection, preparedStatement, null);
     }
 
@@ -96,8 +97,7 @@ public class MLDatabaseUtils {
      *
      * @param connection Connection to be closed
      */
-    public static void closeDatabaseResources(Connection connection)
-            throws DatabaseHandlerException {
+    public static void closeDatabaseResources(Connection connection) throws DatabaseHandlerException {
         closeDatabaseResources(connection, null, null);
     }
 
@@ -106,8 +106,7 @@ public class MLDatabaseUtils {
      *
      * @param preparedStatement PeparedStatement to be closed
      */
-    public static void closeDatabaseResources(PreparedStatement preparedStatement)
-            throws DatabaseHandlerException {
+    public static void closeDatabaseResources(PreparedStatement preparedStatement) throws DatabaseHandlerException {
         closeDatabaseResources(null, preparedStatement, null);
     }
 
@@ -122,8 +121,8 @@ public class MLDatabaseUtils {
                 dbConnection.rollback();
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(
-                    "An error occurred while rolling back transactions: " + e.getMessage(), e);
+            throw new DatabaseHandlerException("An error occurred while rolling back transactions: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -132,18 +131,16 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection of which the auto-commit should be enabled
      */
-    public static void enableAutoCommit(Connection dbConnection)
-            throws DatabaseHandlerException {
+    public static void enableAutoCommit(Connection dbConnection) throws DatabaseHandlerException {
         try {
             if (dbConnection != null) {
                 dbConnection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(
-                    "An error occurred while enabling autocommit: " + e.getMessage(), e);
+            throw new DatabaseHandlerException("An error occurred while enabling autocommit: " + e.getMessage(), e);
         }
     }
-    
+
     public static Map<String, String> getHyperParamsAsAMap(List<HyperParameter> hyperParams) {
         Map<String, String> map = new HashMap<String, String>();
         for (HyperParameter hyperParameter : hyperParams) {
@@ -151,4 +148,18 @@ public class MLDatabaseUtils {
         }
         return map;
     }
+
+    public static String toString(Clob clob) throws DatabaseHandlerException {
+        Reader in;
+        try {
+            in = clob.getCharacterStream();
+            StringWriter w = new StringWriter();
+            IOUtils.copy(in, w);
+            String clobAsString = w.toString();
+            return clobAsString;
+        } catch (Exception e) {
+            throw new DatabaseHandlerException("Failed to convert clob to string");
+        }
+    }
+    
 }

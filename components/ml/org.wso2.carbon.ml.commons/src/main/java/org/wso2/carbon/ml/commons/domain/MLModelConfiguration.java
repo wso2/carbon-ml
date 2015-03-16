@@ -24,7 +24,6 @@ public class MLModelConfiguration {
 
     private String key;
     private String value;
-    private String type;
     
     public String getKey() {
         return key;
@@ -38,15 +37,32 @@ public class MLModelConfiguration {
     public void setValue(String value) {
         this.value = value;
     }
-    public String getType() {
-        return type;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
     @Override
     public String toString() {
-        return "MLModelConfiguration [key=" + key + ", value=" + value + ", type=" + type + "]";
+        return "MLModelConfiguration [key=" + key + ", value=" + value + "]";
+    }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((key == null) ? 0 : key.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MLModelConfiguration other = (MLModelConfiguration) obj;
+        if (key == null) {
+            if (other.key != null)
+                return false;
+        } else if (!key.equals(other.key))
+            return false;
+        return true;
     }
     
 }

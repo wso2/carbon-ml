@@ -62,7 +62,7 @@ public interface DatabaseService {
      * @return               Unique Id of the data-set
      * @throws DatabaseHandlerException
      */
-    public long getDatasetId(String datasetName, int tenantId) throws DatabaseHandlerException;
+    public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Insert the data-set-version details to the database
@@ -119,7 +119,7 @@ public interface DatabaseService {
      * @return                         true if the name exists
      * @throws DatabaseHandlerException
      */
-    public boolean isDatasetNameExist(int tenantId, String datasetName) throws DatabaseHandlerException;
+    public boolean isDatasetNameExist(int tenantId, String userName, String datasetName) throws DatabaseHandlerException;
 
     /**
      * Check whether the given database version exists for the given data-set name and tenant ID
@@ -381,13 +381,14 @@ public interface DatabaseService {
 
     /**
      * Insert Model to the database
+     * @param name model name
      * @param analysisId
      * @param tenantId
      * @param outputModel
      * @param username
      * @throws DatabaseHandlerException
      */
-    public void insertModel(long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
+    public void insertModel(String name, long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Insert model configuration to the database
@@ -397,18 +398,7 @@ public interface DatabaseService {
      * @param type
      * @throws DatabaseHandlerException
      */
-    public void insertModelConfiguration(long modelId, String key, String value, String type) throws DatabaseHandlerException;
-
-    /**
-     * Insert Hyper-parameter to the database
-     * @param modelId
-     * @param name
-     * @param tenantId
-     * @param value
-     * @param lastModifiedUser
-     */
-    public void insertHyperParameter(long modelId, String name, int tenantId, String value, String lastModifiedUser)
-            throws DatabaseHandlerException;
+    public void insertModelConfiguration(long modelId, String key, String value) throws DatabaseHandlerException;
 
     /**
      * Insert feature-customized to the database
@@ -461,9 +451,6 @@ public interface DatabaseService {
     public String getModelId(String workflowId) throws DatabaseHandlerException;
 
     // TODO
-    public Workflow getWorkflow(String workflowID) throws DatabaseHandlerException;
-
-    // TODO
     public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
 
     // TODO
@@ -496,5 +483,75 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters) throws DatabaseHandlerException;
+
+    String getModelConfigurationValue(long modelId, String name) throws DatabaseHandlerException;
+
+    void updateModelSummary(long modelId, ModelSummary modelSummary) throws DatabaseHandlerException;
+
+    void updateModelStorage(long modelId, String storageType, String location) throws DatabaseHandlerException;
+
+    boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+
+    long getDatasetVersionId(long valuesetId) throws DatabaseHandlerException;
+
+    void insertFeatureCustomized(long modelId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
+
+    long getValueSetIdOfModel(long modelId) throws DatabaseHandlerException;
+
+    long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
+
+    String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
+
+    String getAStringModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+
+    double getADoubleModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+
+    List<MLHyperParameter> getHyperParametersOfModel(long modelId) throws DatabaseHandlerException;
+
+    Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
+
+    Workflow getWorkflow(long modelId) throws DatabaseHandlerException;
+
+    MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
+
+    MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+
+    List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
+
+    MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
+
+    List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
+
+    MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
+
+    List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
+
+    List<MLDataset> getVersionsetOfDataset(int tenantId, String userName, long datasetId)
+            throws DatabaseHandlerException;
+
+    List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
+
+    MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
+
+    MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
+            throws DatabaseHandlerException;
+
+    List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId)
+            throws DatabaseHandlerException;
+
+    List<MLValueset> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
+
+    List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
+            throws DatabaseHandlerException;
+
+    MLValueset getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
+
+    long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
+            throws DatabaseHandlerException;
+
+    void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues)
+            throws DatabaseHandlerException;
+
+    long getDatasetVersionIdFromModelId(long modelId) throws DatabaseHandlerException;
 
 }

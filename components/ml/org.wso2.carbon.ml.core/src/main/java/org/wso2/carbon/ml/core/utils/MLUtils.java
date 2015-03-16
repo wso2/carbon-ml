@@ -35,8 +35,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.math.NumberUtils;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLValueset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
@@ -124,12 +126,59 @@ public class MLUtils {
         }
     }
     
-    public static MLValueset getMLValueSet(int tenantId, String name, URI targetPath, SamplePoints samplePoints) {
+    public static class ColumnSeparatorFactory {
+        public static String getColumnSeparator(String dataType) {
+            if ("TSV".equalsIgnoreCase(dataType)) {
+                return "\t";
+            }
+            return ",";
+        }
+    }
+    
+    /**
+     * Retrieve the indices of features where discard row imputaion is applied.
+     * 
+     * @param workflow      Machine learning workflow
+     * @param imputeOption  Impute option
+     * @return              Returns indices of features where discard row imputaion is applied
+     */
+    public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption) {
+        List<Integer> imputeFeatureIndices = new ArrayList();
+        for (Feature feature : workflow.getFeatures()) {
+            if (feature.getImputeOption().equals(imputeOption)) {
+                imputeFeatureIndices.add(feature.getIndex());
+            }
+        }
+        return imputeFeatureIndices;
+    }
+    
+    /**
+     * Retrieve the index of a feature in the dataset.
+     * 
+     * @param feature           Feature name
+     * @param headerRow         First row (header) in the data file
+     * @param columnSeparator   Column separator character
+     * @return                  Index of the response variable
+     */
+    public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) {
+        int featureIndex = 0;
+        String[] headerItems = headerRow.split(columnSeparator);
+        for (int i = 0; i < headerItems.length; i++) {
+            if (feature.equals(headerItems[i])) {
+                featureIndex = i;
+                break;
+            }
+        }
+        return featureIndex;
+    }
+    
+    public static MLValueset getMLValueSet(int tenantId, String userName, String name, URI targetPath, SamplePoints samplePoints) {
         MLValueset valueSet = new MLValueset();
         valueSet.setTenantId(tenantId);
         valueSet.setName(name);
         valueSet.setTargetPath(targetPath);
         valueSet.setSamplePoints(samplePoints);
+        valueSet.setUserName(userName);
         return valueSet;
     }
     
@@ -154,4 +203,5 @@ public class MLUtils {
         return properties;
         
     }
+    
 }

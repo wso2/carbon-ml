@@ -17,16 +17,13 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.spark.SparkConf;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
-import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -47,25 +44,30 @@ public class MLCoreDS {
             //TODO: Keep. Following is the one-time parsing of ml configurations.
             MLConfigurationParser mlConfigParser = new MLConfigurationParser();
             MLConfiguration mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
-            MLCoreServiceValueHolder.getInstance().setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
-            MLCoreServiceValueHolder.getInstance().setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
-            MLCoreServiceValueHolder.getInstance().setBamServerUrl(mlConfig.getBamServerURL());
-            MLCoreServiceValueHolder.getInstance().setDataUploadSettings(mlConfig.getDataUploadSettings());
-            MLCoreServiceValueHolder.getInstance().setAlgorithms(mlConfig.getMlAlgorithms());
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            
+            valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
+            valueHolder.setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
+            valueHolder.setBamServerUrl(mlConfig.getBamServerURL());
+            valueHolder.setDataUploadSettings(mlConfig.getDataUploadSettings());
+            valueHolder.setAlgorithms(mlConfig.getMlAlgorithms());
+            
+            SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+            valueHolder.setSparkConf(sparkConf);
             
             //FIXME this is temporarily added for testing purposes.
-            MLDatasetProcessor processor = new MLDatasetProcessor();
-            MLDataset dataset = new MLDataset();
-            dataset.setName("test-ml");
-            dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
-            dataset.setComments("test-ml");
-            dataset.setDataSourceType("file");
-            dataset.setDataTargetType("file");
-            dataset.setDataType("csv");
-            dataset.setTenantId(-1234);
-            dataset.setUserName("admin");
-            dataset.setVersion("1.0");
-            processor.process(dataset);
+//            MLDatasetProcessor processor = new MLDatasetProcessor();
+//            MLDataset dataset = new MLDataset();
+//            dataset.setName("test-ml");
+//            dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
+//            dataset.setComments("test-ml");
+//            dataset.setDataSourceType("file");
+//            dataset.setDataTargetType("file");
+//            dataset.setDataType("csv");
+//            dataset.setTenantId(-1234);
+//            dataset.setUserName("admin");
+//            dataset.setVersion("1.0");
+//            processor.process(dataset);
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }

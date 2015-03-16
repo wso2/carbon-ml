@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.utils;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.spark.SparkConf;
 import org.wso2.carbon.ml.commons.domain.config.DataUploadSettings;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
@@ -33,6 +34,7 @@ public class MLCoreServiceValueHolder {
     private Properties mlProperties;
     private String  bamServerUrl;
     private List<MLAlgorithm> algorithms;
+    private SparkConf sparkConf;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -91,5 +93,13 @@ public class MLCoreServiceValueHolder {
 
     public void setDataUploadSettings(DataUploadSettings dataUploadSettings) {
         this.dataUploadSettings = dataUploadSettings;
+    }
+
+    public SparkConf getSparkConf() {
+        return sparkConf;
+    }
+
+    public void setSparkConf(SparkConf sparkConf) {
+        this.sparkConf = sparkConf;
     }
 }

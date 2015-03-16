@@ -105,6 +105,8 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     // file formats
     public static final String CSV = ".csv";
     public static final String TSV = ".tsv";
+    public static final String IN_SUFFIX = ".in";
+    public static final String OUT_SUFFIX = ".out";
 
     // hyper-parameter names
     public static final String LEARNING_RATE = "Learning_Rate";
@@ -140,6 +142,9 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_1 = 5;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
+    
+    public static final String STORAGE_TYPE = "storageType";
+    public static final String STORAGE_LOCATION = "storageLocation";
 
     // enums
     public enum SUPERVISED_ALGORITHM {

@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.commons.domain;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Represent a Hyper Parameter in ML.
  */
@@ -24,9 +26,8 @@ public class MLHyperParameter {
 
     private String key;
     private String value;
-    private String lastModifiedUser;
-    private int tenantId;
 
+    @XmlElement(name = "Name")
     public String getKey() {
         return key;
     }
@@ -35,6 +36,7 @@ public class MLHyperParameter {
         this.key = key;
     }
 
+    @XmlElement(name = "Value")
     public String getValue() {
         return value;
     }
@@ -43,26 +45,9 @@ public class MLHyperParameter {
         this.value = value;
     }
 
-    public String getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(String lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
-
     @Override
     public String toString() {
-        return "MLHyperParameter [key=" + key + ", value=" + value + ", lastModifiedUser=" + lastModifiedUser
-                + ", tenantId=" + tenantId + "]";
+        return "MLHyperParameter [key=" + key + ", value=" + value + "]";
     }
 
 }

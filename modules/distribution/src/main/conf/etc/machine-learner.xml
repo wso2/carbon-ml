@@ -28,9 +28,9 @@
 	<Properties>
 		<Property name="ml.thread.pool.size" value="100" />
 		<Property name="target.home" value="/tmp" />
-		<Property name="data.file.in"
+		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
-		<Property name="data.file.out"
+		<Property name="file.out"
 			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
 	</Properties>
 

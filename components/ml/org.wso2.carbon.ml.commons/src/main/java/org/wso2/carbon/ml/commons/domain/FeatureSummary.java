@@ -27,14 +27,16 @@ public class FeatureSummary {
 	private String type;
 	private String imputeOperation;
 	private String summaryStats;
+	private int index;
 
 	public FeatureSummary(String fieldName, boolean isInput, String type,
-	        String imputeOperation, String summaryStats) {
+	        String imputeOperation, String summaryStats, int index) {
 		this.fieldName = fieldName;
 		this.isInput = isInput;
 		this.type = type;
 		this.imputeOperation = imputeOperation;
 		this.summaryStats = summaryStats;
+		this.index = index;
 	}
 
 	/**
@@ -128,4 +130,12 @@ public class FeatureSummary {
 	public void setImputeOperation(String imputeOperation) {
 		this.imputeOperation = imputeOperation;
 	}
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 }

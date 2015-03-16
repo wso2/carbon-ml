@@ -21,13 +21,13 @@ package org.wso2.carbon.ml.model.internal;
 import org.apache.spark.SparkConf;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.core.spark.SparkProperty;
+import org.wso2.carbon.ml.core.spark.SparkSettings;
 import org.wso2.carbon.ml.model.exceptions.MLAlgorithmParserException;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
 import org.wso2.carbon.ml.model.exceptions.SparkConfigurationParserException;
 import org.wso2.carbon.ml.model.internal.constants.MLModelConstants;
 import org.wso2.carbon.ml.model.internal.dto.MLAlgorithms;
-import org.wso2.carbon.ml.model.internal.dto.SparkProperty;
-import org.wso2.carbon.ml.model.internal.dto.SparkSettings;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
