@@ -222,7 +222,7 @@ public class MLDatasetProcessor {
             input = inputAdapter.readDataset(dataset.getSourcePath());
             handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
                     dataset.getSourcePath(), dataset.getName()));
-            String targetPath = ioFactory.getTargetPath(dataset.getName() +"-"+dataset.getTenantId()+"-"+MLUtils.getDate());
+            String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
             outputAdapter.writeDataset(targetPath, input);
 
