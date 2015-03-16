@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.spark.SparkConf;
+import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.ml.commons.domain.config.DataUploadSettings;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class MLCoreServiceValueHolder {
     private static volatile MLCoreServiceValueHolder instance;
@@ -35,6 +37,8 @@ public class MLCoreServiceValueHolder {
     private String  bamServerUrl;
     private List<MLAlgorithm> algorithms;
     private SparkConf sparkConf;
+    private ConfigurationContextService configurationContextService;
+    private OutputEventAdapterService outputEventAdapterService;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -102,4 +106,20 @@ public class MLCoreServiceValueHolder {
     public void setSparkConf(SparkConf sparkConf) {
         this.sparkConf = sparkConf;
     }
+
+    public void registerConfigurationContextService(ConfigurationContextService configurationContextService) {
+        this.configurationContextService = configurationContextService;
+    }
+    
+    public ConfigurationContextService getConfigurationContextService() {
+        return this.configurationContextService;
+    }
+
+    public void registerOutputEventAdapterService(OutputEventAdapterService outputEventAdapterService) {
+		this.outputEventAdapterService = outputEventAdapterService;
+	}
+    
+    public OutputEventAdapterService getOutputEventAdapterService() {
+		return this.outputEventAdapterService;
+	}
 }
