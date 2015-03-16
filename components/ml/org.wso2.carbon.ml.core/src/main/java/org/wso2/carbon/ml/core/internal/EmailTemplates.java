@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.ml.core.internal;
 
-import org.wso2.carbon.ml.core.utils.MLConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
