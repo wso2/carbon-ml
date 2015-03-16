@@ -289,7 +289,7 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelId +"-"+ MLUtils.getDate();
+            String outPath = storageLocation + File.separator +"model." +modelId +"."+ MLUtils.getDate();
             outputAdapter.writeDataset(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {
