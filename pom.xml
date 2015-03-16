@@ -230,7 +230,7 @@
                 <version>${orbit.version.spark}</version>
             </dependency>
  	    <dependency>
-        	<groupId>org.apache.hadoop</groupId>
+        	<groupId>org.wso2.apache.hadoop</groupId>
         	<artifactId>hadoop-client</artifactId>
         	<version>${hadoop.version}</version>
 	    </dependency>
@@ -709,7 +709,7 @@
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
-	<hadoop.version>2.6.0</hadoop.version>
+	<hadoop.version>2.2.0.wso2v1</hadoop.version>
 
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
