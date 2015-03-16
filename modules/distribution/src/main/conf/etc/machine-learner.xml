@@ -32,6 +32,12 @@
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
 			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+	    <Property name="hdfs.in"
+			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
+		<Property name="hdfs.out"
+			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
+	    <Property name="bam.in"
+			value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
 	</Properties>
 
 	<!-- Server URL of the remote BAM server used to get data. Must be specified 
