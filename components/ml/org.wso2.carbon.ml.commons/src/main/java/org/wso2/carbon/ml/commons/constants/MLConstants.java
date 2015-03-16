@@ -145,6 +145,15 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
+    
+    //Email Sender constants
+    public static final String ML_EMAIL_ADAPTER = "MLEmailAdapter";
+    public static final String EMAIL_CONF_DIRECTORY = "email";
+    public static final String ML_EMAIL_TEMPLATES_FILE = "ml-email-templates.xml";
+    public static final String EMAIL_TEMPLATES = "emailTemplates";
+    public static final String TEMPLATE = "template";
+    public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
+    public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
 
     // enums
     public enum SUPERVISED_ALGORITHM {
