@@ -184,7 +184,11 @@
                                 <featureArtifactDef>
                                 	org.wso2.carbon.deployment:org.wso2.carbon.as.runtimes.cxf.feature:${carbon.deployment.version}
                                 </featureArtifactDef>
-
+                                
+                                <!-- Email Adapter Feature -->
+                                <featureArtifactDef>
+                                     org.wso2.carbon.event-processing:org.wso2.carbon.event.output.adapter.server.feature:${carbon.event.processing.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -333,6 +337,12 @@
                             	<feature>
                                     <id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>
                                     <version>${carbon.deployment.version}</version>
+                                </feature>
+                                
+                                <!-- Email Adapter Feature -->
+                                <feature>
+                                    <id>org.wso2.carbon.event.output.adapter.server.feature.group</id>
+                                    <version>${carbon.event.processing.version}</version>
                                 </feature>
                             </features>
                         </configuration>

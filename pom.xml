@@ -532,7 +532,17 @@
             </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
-			<!-- Dependencies on WSO2 for Axis2 mail Transporter -->
+			<!-- Dependencies for Email Notification Sender -->
+			<dependency>
+	            <groupId>org.wso2.carbon.event-processing</groupId>
+	            <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
+	            <version>${carbon.event.processing.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.wso2.carbon.event-processing</groupId>
+	            <artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
+	            <version>${carbon.event.processing.version}</version>
+	        </dependency>
             <dependency>
 	        	<groupId>org.apache.axis2</groupId>
 	        	<artifactId>axis2-transport-mail</artifactId>
@@ -695,7 +705,7 @@
         <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>
         <carbon.commons.version>4.3.4</carbon.commons.version>
         <carbon.analytics.version>1.0.0</carbon.analytics.version>
-
+		<carbon.event.processing.version>2.0.4-SNAPSHOT</carbon.event.processing.version>
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
