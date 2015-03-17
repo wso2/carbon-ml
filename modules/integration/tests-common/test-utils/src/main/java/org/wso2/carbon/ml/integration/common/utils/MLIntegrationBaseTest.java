@@ -18,125 +18,70 @@
 
 package org.wso2.carbon.ml.integration.common.utils;
 
-import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URI;
 
-import org.testng.Assert;
-import org.wso2.carbon.automation.engine.configurations.UrlGenerationUtil;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
-import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.engine.context.beans.Tenant;
-import org.wso2.carbon.automation.engine.context.beans.User;
-import org.wso2.carbon.automation.test.utils.common.HomePageGenerator;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 /**
- * This is the base class for all Integration tests. Provides functions that are common 
+ * This is the base class for all Integration tests of ML. Provides functions that are common 
  * to all the integration tests in ML.
  */
-public abstract class MLIntegrationBaseTest {
+public abstract class MLIntegrationBaseTest extends MLBaseTest{
 
-    protected AutomationContext mlAutomationContext;
-    protected Tenant tenantInfo;
-    protected User userInfo;
-    protected TestUserMode userMode;
-
+	private static final Log logger = LogFactory.getLog(MLIntegrationBaseTest.class);
+    protected CloseableHttpResponse response = null;
+    
     protected void init() throws MLIntegrationBaseTestException {
-        try {
-            this.mlAutomationContext = new AutomationContext(MLIntegrationTestConstants.ML_SERVER_NAME, 
-                    TestUserMode.SUPER_TENANT_ADMIN);
-            //get the current tenant as the userType(TestUserMode)
-            this.tenantInfo = this.mlAutomationContext.getContextTenant();
-            //get the user information initialized with the system
-            this.userInfo = this.tenantInfo.getContextUser();
-        } catch (XPathExpressionException e) {
-            throw new MLIntegrationBaseTestException("Failed to get the ML automation context: ", e);
-        } 
+        super.init();
     }
-
+    
     /**
-     * Get the non-secured URL of a given service.
+     * Send a HTTP GET request to the given URI and return the response.
      * 
-     * @param serviceName   Name of the service of which URL is needed.
-     * @return              Non-secured URL of the service.
-     * @throws              MLIntegrationBaseTestException
+     * @param uri   End-point URI
+     * @return      Response from the endpoint
+     * @throws      ClientProtocolException
+     * @throws      IOException
      */
-    protected String getServiceUrlHttp(String serviceName) throws MLIntegrationBaseTestException {
-        String serviceUrl;
-        try {
-            serviceUrl = this.mlAutomationContext.getContextUrls().getServiceUrl() + "/" + serviceName;
-            validateServiceUrl(serviceUrl, this.tenantInfo);
-            return serviceUrl;
-        } catch (XPathExpressionException e) {
-            throw new MLIntegrationBaseTestException("An error occured while retrieving the service (http) URL: ", e);
-        }
-        
+    protected CloseableHttpResponse doGet(URI uri) throws ClientProtocolException, IOException {
+        CloseableHttpClient httpClient =  HttpClients.createDefault();
+        HttpGet get = new HttpGet(uri);
+    	get.setHeader(MLIntegrationTestConstants.CONTENT_TYPE, MLIntegrationTestConstants.APPLICATION_JSON);
+    	String token = userInfo.getUserName() + ":" + userInfo.getPassword();
+    	String encodedToken = new String(Base64.encodeBase64(token.getBytes()));
+    	get.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, MLIntegrationTestConstants.BASIC + encodedToken);
+    	return httpClient.execute(get);
     }
-
+    
     /**
-     * Get the secured URL of a given service.
+     * Send a HTTP GET request to the given URI and return the response.
      * 
-     * @param serviceName   Name of the service of which URL is needed.
-     * @return              Secured URL of the service.
-     * @throws              MLIntegrationBaseTestException
+     * @param uri               End-point URI
+     * @param parametersJson    Payload JSON string
+     * @return                  Response from the endpoint
+     * @throws                  ClientProtocolException
+     * @throws                  IOException
      */
-    protected String getServiceUrlHttps(String serviceName) throws MLIntegrationBaseTestException {
-        String serviceUrl;
-        try {
-            serviceUrl = this.mlAutomationContext.getContextUrls().getSecureServiceUrl() + "/" + serviceName;
-            validateServiceUrl(serviceUrl, this.tenantInfo);
-            return serviceUrl;
-        } catch (XPathExpressionException e) {
-            throw new MLIntegrationBaseTestException("An error occured while retrieving the secure service (https) "
-            		+ "URL: ", e);
-        }
-        
-    }
-
-    /**
-     * Get the URL of the carbon console login
-     * 
-     * @return  URL of the carbon console login
-     * @throws  MLIntegrationBaseTestException
-     */
-    protected String getCarbonLoginURL() throws MLIntegrationBaseTestException {
-        try {
-            return HomePageGenerator.getProductHomeURL(this.mlAutomationContext);
-        } catch (XPathExpressionException e) {
-            throw new MLIntegrationBaseTestException("An error occured while retrieving the Carbon login URL", e);
-        }
-    }
-
-    /**
-     * Get the web-app URL
-     * 
-     * @return  Web-app URL
-     * @throws  MLIntegrationBaseTestException
-     */
-    protected String getMLUiURL() throws MLIntegrationBaseTestException {
-        try {
-        	String mlWebAppUrl = UrlGenerationUtil.getWebAppURL(this.tenantInfo, this.mlAutomationContext.getInstance())
-        			.split("\\/t\\/")[0] + MLIntegrationTestConstants.ML_UI;
-        	return mlWebAppUrl;
-        } catch (XPathExpressionException e) {
-            throw new MLIntegrationBaseTestException("An error occured while retrieving the ML UI URL: ", e);
-        }
-    }
-
-    /**
-     * Checks whether the URl is a valid one for the tenant.
-     * 
-     * @param serviceUrl    URL to be validated.
-     * @param tenant        logged in tenant.
-     */
-    private void validateServiceUrl(String serviceUrl, Tenant tenant) {
-        // if user mode is null can not validate the service url
-        if (this.userMode != null) {
-            if (this.userMode == TestUserMode.TENANT_ADMIN || userMode == TestUserMode.TENANT_USER) {
-                Assert.assertTrue(serviceUrl.contains("/t/" + tenant.getDomain() + "/"), "invalid service url for"
-                		+ " tenant. " + serviceUrl);
-            } else {
-                Assert.assertFalse(serviceUrl.contains("/t/"), "Invalid service url:" + serviceUrl + " for tenant: " + tenant);
-            }
-        }
+    protected CloseableHttpResponse doPost(URI uri, String parametersJson) throws ClientProtocolException, IOException {
+        CloseableHttpClient httpClient =  HttpClients.createDefault();
+        HttpPost post = new HttpPost(uri);
+    	post.setHeader(MLIntegrationTestConstants.CONTENT_TYPE, MLIntegrationTestConstants.APPLICATION_JSON);
+    	String token = userInfo.getUserName() + ":" + userInfo.getPassword();
+    	String encodedToken = new String(Base64.encodeBase64(token.getBytes()));
+    	post.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, MLIntegrationTestConstants.BASIC + encodedToken);
+    	StringEntity params =new StringEntity(parametersJson);
+    	post.setEntity(params);
+    	return httpClient.execute(post);
     }
 }

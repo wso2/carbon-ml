@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.ml.integration.ui.test.mlui;
 
-import java.io.File;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
@@ -35,7 +33,6 @@ import org.wso2.carbon.ml.integration.ui.pages.mlui.DataImportPage;
 import org.wso2.carbon.ml.integration.ui.pages.mlui.DatasetSummaryPage;
 import org.wso2.carbon.ml.integration.ui.pages.mlui.MLUIHomePage;
 import org.wso2.carbon.ml.integration.ui.pages.mlui.MLUILoginPage;
-import org.wso2.carbon.ml.integration.ui.test.dto.MLProject;
 import org.wso2.carbon.ml.integration.ui.test.exceptions.ImportDataTestException;
 
 /**
@@ -54,7 +51,7 @@ public class ImportDataTestCase extends MLIntegrationUiBaseTest {
         super.init();
         driver = BrowserManager.getWebDriver();
         //TODO: Read "mlUI" from a constant
-        driver.get(getMLUiURL()+"/ml/");
+        driver.get(getMLUiUrl()+"/ml/");
     }
 
     /**

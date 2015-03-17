@@ -260,5 +260,9 @@
             <groupId>org.wso2.ml</groupId>
             <artifactId>test-utils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.json.wso2</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
     </dependencies>
 </project>
