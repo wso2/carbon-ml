@@ -36,7 +36,7 @@
             <artifactId>org.wso2.carbon.ml.database</artifactId>
         </dependency>
         <dependency>
-	    <groupId>org.apache.hadoop</groupId>
+	    <groupId>org.wso2.apache.hadoop</groupId>
 	    <artifactId>hadoop-client</artifactId>
         </dependency>
 	<dependency>
