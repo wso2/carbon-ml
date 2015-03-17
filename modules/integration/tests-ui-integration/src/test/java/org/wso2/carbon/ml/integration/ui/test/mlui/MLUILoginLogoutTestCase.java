@@ -45,7 +45,7 @@ public class MLUILoginLogoutTestCase extends MLIntegrationUiBaseTest {
     public void setUp() throws Exception {
         super.init();
         driver = BrowserManager.getWebDriver();
-        driver.get(getMLUiURL());
+        driver.get(getMLUiUrl());
     }
 
     /**

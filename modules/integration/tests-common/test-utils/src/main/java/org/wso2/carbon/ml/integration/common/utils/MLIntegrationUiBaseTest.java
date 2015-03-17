@@ -28,7 +28,7 @@ import org.wso2.carbon.ml.integration.common.utils.mapper.MlUiElementMapper;
  * This is the base class for all UI Integration tests of ML. Provides functions that are common 
  * to all the UI integration tests in ML.
  */
-public abstract class MLIntegrationUiBaseTest extends MLIntegrationBaseTest{
+public abstract class MLIntegrationUiBaseTest extends MLBaseTest{
 
     protected MlUiElementMapper mlUIElementMapper;
     protected WebDriver driver;
