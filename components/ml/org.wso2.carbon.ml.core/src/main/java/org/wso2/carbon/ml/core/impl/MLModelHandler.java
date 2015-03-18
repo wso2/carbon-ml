@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -84,7 +83,7 @@ public class MLModelHandler {
             String userName = model.getUserName();
             long analysisId = model.getAnalysisId();
             long valueSetId = model.getValueSetId();
-            databaseService.insertModel(name, analysisId, valueSetId, tenantId, userName);
+            databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
@@ -236,12 +235,12 @@ public class MLModelHandler {
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            long valuesetId = databaseService.getValueSetIdOfModel(modelId);
-            // long datasetVersionId = databaseService.getDatasetVersionId(valuesetId);
+            long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
+            // long datasetVersionId = databaseService.getDatasetVersionId(datasetVersionId);
             // long datasetId = databaseService.getDatasetId(datasetVersionId);
             String dataType = databaseService.getDataTypeOfModel(modelId);
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
-            String dataUrl = databaseService.getValueSetUri(valuesetId);
+            String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
             Workflow facts = databaseService.getWorkflow(modelId);
 

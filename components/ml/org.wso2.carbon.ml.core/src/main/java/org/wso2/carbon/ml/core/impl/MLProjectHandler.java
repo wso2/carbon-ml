@@ -40,7 +40,7 @@ public class MLProjectHandler {
     
     public void createProject(MLProject project) throws MLProjectHandlerException {
         try {
-            databaseService.createProject(project.getName(), project.getDescription(), project.getTenantId(), project.getUserName());
+            databaseService.insertProject(project);
             log.info(String.format("[Created] %s", project));
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e);

@@ -40,8 +40,7 @@ public class MLAnalysisHandler {
     
     public void createAnalysis(MLAnalysis analysis) throws MLAnalysisHandlerException {
         try {
-            databaseService.insertAnalysis(analysis.getProjectId(), analysis.getName(), analysis.getTenantId(),
-                    analysis.getUserName(), analysis.getComments());
+            databaseService.insertAnalysis(analysis);
             log.info(String.format("[Created] %s", analysis));
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);

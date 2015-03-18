@@ -36,15 +36,19 @@ public interface DatabaseService {
 
     public void insertProject(MLProject project) throws DatabaseHandlerException;
 
+    public void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException;
+
+    public void insertModel(MLModelNew model) throws DatabaseHandlerException;
+
     /**
      * Retrieves the path of the value-set having the given ID, from the
      * database.
      *
-     * @param valueSetId    Unique Identifier of the value-set
+     * @param datasetVersionId    Unique Identifier of the value-set
      * @return              Absolute path of a given value-set
      * @throws              DatabaseHandlerException
      */
-    public String getValueSetUri(long valueSetId) throws DatabaseHandlerException;
+    public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Insert the new data-set details to the the database
@@ -394,7 +398,7 @@ public interface DatabaseService {
      * @param username
      * @throws DatabaseHandlerException
      */
-    public void insertModel(String name, long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
+    public void insertModel(String name, long analysisId, long datasetVersionId, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Insert model configuration to the database
@@ -502,7 +506,7 @@ public interface DatabaseService {
 
     void insertFeatureCustomized(long modelId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
 
-    long getValueSetIdOfModel(long modelId) throws DatabaseHandlerException;
+    long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
 
     long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
 
@@ -558,6 +562,6 @@ public interface DatabaseService {
     void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
 
-    long getDatasetVersionIdFromModelId(long modelId) throws DatabaseHandlerException;
+    long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException;
 
 }
