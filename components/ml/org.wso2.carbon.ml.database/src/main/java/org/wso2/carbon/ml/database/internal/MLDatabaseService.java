@@ -204,14 +204,47 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    @Override
+    public void insertModel(MLModelNew model) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            // Insert the model to the database
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
+            insertStatement.setString(1, model.getName());
+            insertStatement.setLong(2, model.getAnalysisId());
+            insertStatement.setLong(3, model.getValueSetId());
+            insertStatement.setInt(4, model.getTenantId());
+            insertStatement.setString(5, model.getUserName());
+            insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the model");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while inserting model " + " to the database: "
+                    + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
+
     /**
      * Retrieves the path of the value-set having the given ID, from the database.
      *
-     * @param valueSetId Unique Identifier of the value-set
+     * @param datasetVersionId Unique Identifier of the value-set
      * @return Absolute path of a given value-set
      * @throws DatabaseHandlerException
      */
-    public String getValueSetUri(long valueSetId) throws DatabaseHandlerException {
+    public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -219,17 +252,17 @@ public class MLDatabaseService implements DatabaseService {
         try {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            getStatement = connection.prepareStatement(SQLQueries.GET_VALUE_SET_LOCATION);
-            getStatement.setLong(1, valueSetId);
+            getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION_LOCATION);
+            getStatement.setLong(1, datasetVersionId);
             result = getStatement.executeQuery();
             if (result.first()) {
                 return result.getNString(1);
             } else {
-                logger.error("Invalid value set ID: " + valueSetId);
-                throw new DatabaseHandlerException("Invalid value set ID: " + valueSetId);
+                logger.error("Invalid value set ID: " + datasetVersionId);
+                throw new DatabaseHandlerException("Invalid value set ID: " + datasetVersionId);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while reading the Value set " + valueSetId
+            throw new DatabaseHandlerException("An error occurred while reading the Value set " + datasetVersionId
                     + " from the database: " + e.getMessage(), e);
         } finally {
             // Close the database resources.
@@ -364,23 +397,23 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getValueSetIdOfModel(long modelId) throws DatabaseHandlerException {
+    public long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_VALUE_SET_ID_OF_MODEL);
+            statement = connection.prepareStatement(SQLQueries.SELECT_DATASET_VERSION_ID_OF_MODEL);
             statement.setLong(1, modelId);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
             } else {
-                throw new DatabaseHandlerException("No value-set id associated with the model id: " + modelId);
+                throw new DatabaseHandlerException("No dataset-version id associated with the model id: " + modelId);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting value-set for model: "
+            throw new DatabaseHandlerException(" An error has occurred while extracting dataset-version for model: "
                     + modelId);
         } finally {
             // Close the database resources.
@@ -2171,13 +2204,13 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public long getDatasetVersionIdFromModelId(long modelId) throws DatabaseHandlerException {
+    public long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION_ID_FROM_MODEL);
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_SCHEMA_ID_FROM_MODEL);
             statement.setLong(1, modelId);
             result = statement.executeQuery();
             if (result.first()) {
@@ -2198,7 +2231,7 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         
-        long datasetVersionId = getDatasetVersionIdFromModelId(modelId);
+        long datasetSchemaId = getDatasetSchemaIdFromModelId(modelId);
         try {
             // Insert the feature-customized to the database
             connection = dbh.getDataSource().getConnection();
@@ -2217,7 +2250,7 @@ public class MLDatabaseService implements DatabaseService {
                 insertStatement.setBoolean(4, inclusion);
                 insertStatement.setString(5, lastModifiedUser);
                 insertStatement.setString(6, userName);
-                insertStatement.setLong(7, datasetVersionId);
+                insertStatement.setLong(7, datasetSchemaId);
 
                 insertStatement.execute();
             connection.commit();
