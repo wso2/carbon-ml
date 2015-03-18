@@ -30,6 +30,12 @@ import java.util.SortedMap;
 
 public interface DatabaseService {
 
+    public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
+
+    public void insertDatasetVersion(MLValueset mlValueset) throws DatabaseHandlerException;
+
+    public void insertProject(MLProject project) throws DatabaseHandlerException;
+
     /**
      * Retrieves the path of the value-set having the given ID, from the
      * database.

@@ -71,6 +71,105 @@ public class MLDatabaseService implements DatabaseService {
 
     }
 
+    @Override
+    public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            // Insert the data-set details to the database.
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_SCHEMA);
+            insertStatement.setString(1, dataset.getName());
+            insertStatement.setInt(2, dataset.getTenantId());
+            insertStatement.setString(3, dataset.getUserName());
+            insertStatement.setString(4, dataset.getComments());
+            insertStatement.setString(5, dataset.getDataSourceType());
+            insertStatement.setString(6, dataset.getDataTargetType());
+            insertStatement.setString(7, dataset.getDataType());
+            insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the details of data set");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while inserting details of dataset "
+                    + " to the database: " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
+
+    @Override
+    public void insertDatasetVersion(MLValueset mlValueset) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);  // todo change query
+            insertStatement.setLong(1, 1);       // TODO dataset id
+            insertStatement.setString(2, mlValueset.getName());
+            insertStatement.setInt(3, mlValueset.getTenantId());
+            insertStatement.setString(4, mlValueset.getUserName());
+            insertStatement.setString(5, mlValueset.getTargetPath().getPath());
+            insertStatement.setObject(6, mlValueset.getSamplePoints());
+            insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the value set");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while inserting value set " + " to the database: "
+                    + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+
+    }
+
+    @Override
+    public void insertProject(MLProject project) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement createProjectStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
+            createProjectStatement.setString(1, project.getName());
+            createProjectStatement.setString(2, project.getDescription());
+            createProjectStatement.setInt(3, project.getTenantId());
+            createProjectStatement.setString(4, project.getUserName());
+            createProjectStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted details of project: " + project.getName());
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while inserting details of project: " + project.getName()
+                    + " to the database: " + e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
+        }
+    }
+
     /**
      * Retrieves the path of the value-set having the given ID, from the database.
      *
@@ -122,7 +221,7 @@ public class MLDatabaseService implements DatabaseService {
             // Insert the data-set details to the database.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_SCHEMA);
             insertStatement.setString(1, name);
             insertStatement.setInt(2, tenantID);
             insertStatement.setString(3, username);

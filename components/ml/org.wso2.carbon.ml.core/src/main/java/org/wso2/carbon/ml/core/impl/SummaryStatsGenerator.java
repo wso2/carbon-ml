@@ -109,7 +109,7 @@ public class SummaryStatsGenerator implements Runnable {
             SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
             // TODO Update the database with calculated summary statistics.
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-            dbService.updateSummaryStatistics(datasetVersionId, stats);
+            //dbService.updateSummaryStatistics(datasetVersionId, stats);
             if (logger.isDebugEnabled()) {
                 logger.debug("Summary statistics successfully generated for dataset: " + datasetVersionId);
             }
