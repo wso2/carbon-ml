@@ -19,15 +19,25 @@
 package org.wso2.carbon.ml.integration.common.utils;
 
 public class MLIntegrationTestConstants {
-    public static final String ML_SERVER_NAME = "ML";
-    public static final String ML_UI = "/ml/";
-    public static final String ML_UI_ELEMENT_MAPPER= "/mlUiMapper.properties";
-    public static final String CARBON_UI_ELEMENT_MAPPER= "/carbonUiMapper.properties";
+	public static final String ML_SERVER_NAME = "ML";
+	public static final String ML_UI = "/ml/";
+	public static final String ML_UI_ELEMENT_MAPPER = "/mlUiMapper.properties";
+	public static final String CARBON_UI_ELEMENT_MAPPER = "/carbonUiMapper.properties";
+
+	public static final String CARBON_CLIENT_TRUSTSTORE = "/keystores/products/client-truststore.jks";
+	public static final String CARBON_CLIENT_TRUSTSTORE_PASSWORD = "wso2carbon";
+	public static final String JKS = "JKS";
+	public static final String TLS = "TLS";
+
+	public static final String HTTPS = "https";
     
-    public static final String CARBON_CLIENT_TRUSTSTORE= "/keystores/products/client-truststore.jks";
-    public static final String CARBON_CLIENT_TRUSTSTORE_PASSWORD= "wso2carbon";
-    public static final String JKS= "JKS";
-    public static final String TLS= "TLS";
-    
-    public static final String HTTPS= "https";
+    // Constants related to REST calls
+	public static final String AUTHORIZATION_HEADER = "Authorization";
+	public static final String BASIC = "Basic ";
+	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String APPLICATION_JSON = "application/json";
+
+	public static final int HTTP_OK = 200;
+	public static final int HTTP_UNAUTHORIZED = 401;
+	public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
 }

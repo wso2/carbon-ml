@@ -35,14 +35,19 @@
 	</listeners>
 
 
-	<test name="metadata" preserve-order="true" parallel="false">
-		<packages>
-			<package name="org.wso2.carbon.ml.dataset.test" />
-		</packages>
-	</test>
-	<test name="Carbon-Login" preserve-order="true" verbose="2">
+ 	<!-- <test name="Dataset-Tests" preserve-order="true" verbose="2">
 		<classes>
-			<class name="org.wso2.carbon.ml.integration.test.services.CreateProjectTest"/>
+			<class name="org.wso2.carbon.ml.integration.test.services.dataset.CreateDatasetTestCase"/>
 		</classes>
-	</test>
+	</test> -->
+	 <test name="Dataset-Tests" preserve-order="true" verbose="2">
+        <packages>
+            <package name="org.wso2.carbon.ml.integration.test.services.dataset"/>
+        </packages>
+    </test>
+    <test name="Project-Tests" preserve-order="true" verbose="2">
+        <packages>
+            <package name="org.wso2.carbon.ml.integration.test.services.project"/>
+        </packages>
+    </test>
 </suite>
