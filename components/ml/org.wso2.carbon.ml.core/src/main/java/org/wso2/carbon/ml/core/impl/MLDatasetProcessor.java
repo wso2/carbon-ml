@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
-import org.wso2.carbon.ml.commons.domain.MLValueset;
+import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
@@ -123,7 +123,7 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+    public List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
         try {
             return databaseService.getValuesetOfDataset(tenantId, userName, datasetId);
         } catch (DatabaseHandlerException e) {
@@ -131,7 +131,7 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
+    public List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
         try {
             return databaseService.getValuesetOfVersion(tenantId, userName, versionsetId);
         } catch (DatabaseHandlerException e) {
@@ -139,7 +139,7 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<MLValueset> getAllValuesets(int tenantId, String userName) throws MLDataProcessingException {
+    public List<MLDatasetVersion> getAllValuesets(int tenantId, String userName) throws MLDataProcessingException {
         try {
             return databaseService.getAllValuesets(tenantId, userName);
         } catch (DatabaseHandlerException e) {
@@ -147,7 +147,7 @@ public class MLDatasetProcessor {
         }
     }
     
-    public MLValueset getValueset(int tenantId, String userName, long valuesetId) throws MLDataProcessingException {
+    public MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId) throws MLDataProcessingException {
         try {
             return databaseService.getValueset(tenantId, userName, valuesetId);
         } catch (DatabaseHandlerException e) {
@@ -245,13 +245,13 @@ public class MLDatasetProcessor {
                 log.debug("datasetSchemaId: " + datasetSchemaId);
             }
 
-            String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
+            String versionsetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
-            // build the MLValueSet
-            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, dataset.getVersion(), targetUri, samplePoints);
-            persistDatasetVersion(datasetSchemaId, valueSet);
+            // build the MLDatasetVersion
+            MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId, dataset.getUserName(), versionsetName, dataset.getVersion(), targetUri, samplePoints);
+            persistDatasetVersion(datasetVersion);
 
-            long datasetVersionId = retrieveDatasetVersionId(valueSet);
+            long datasetVersionId = retrieveDatasetVersionId(datasetVersion);
             if (log.isDebugEnabled()) {
                 log.debug("datasetVersionId: " + datasetVersionId);
             }
@@ -279,10 +279,10 @@ public class MLDatasetProcessor {
         }
     }
 
-    private void persistDatasetVersion(long datasetSchemaId, MLValueset valueSet) throws MLDataProcessingException {
+    private void persistDatasetVersion(MLDatasetVersion valueSet) throws MLDataProcessingException {
 
         try {
-            databaseService.insertDatasetVersion(datasetSchemaId, valueSet);
+            databaseService.insertDatasetVersion(valueSet);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }
@@ -298,7 +298,7 @@ public class MLDatasetProcessor {
         }
     }
 
-    private long retrieveDatasetVersionId(MLValueset valueset) throws MLDataProcessingException {
+    private long retrieveDatasetVersionId(MLDatasetVersion valueset) throws MLDataProcessingException {
         long datasetVersionId;
         try {
             datasetVersionId = databaseService.getValueSetId(valueset.getName(), valueset.getTenantId());
@@ -314,7 +314,6 @@ public class MLDatasetProcessor {
             String name = dataset.getName();
             int tenantId = dataset.getTenantId();
             String userName = dataset.getUserName();
-            String version = dataset.getVersion();
             long datasetId = databaseService.getDatasetId(name, tenantId, userName);
             if (datasetId == -1) {
                 databaseService.insertDatasetSchema(dataset);

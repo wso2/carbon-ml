@@ -40,6 +40,8 @@ public class MLProjectHandler {
     
     public void createProject(MLProject project) throws MLProjectHandlerException {
         try {
+            long datasetId = databaseService.getDatasetId(project.getDatasetName(), project.getTenantId(), project.getUserName());
+            project.setDatasetId(datasetId);
             databaseService.insertProject(project);
             log.info(String.format("[Created] %s", project));
         } catch (DatabaseHandlerException e) {

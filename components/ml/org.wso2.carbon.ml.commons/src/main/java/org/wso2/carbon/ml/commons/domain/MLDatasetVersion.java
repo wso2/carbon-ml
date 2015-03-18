@@ -20,11 +20,12 @@ package org.wso2.carbon.ml.commons.domain;
 import java.net.URI;
 
 /**
- * Represent a Value-set in ML.
+ * Represent a version-set in ML.
  */
-public class MLValueset {
+public class MLDatasetVersion {
 
     private long id;
+    private long datasetId;
     private String name;
     private String version;
     private int tenantId;
@@ -94,8 +95,17 @@ public class MLValueset {
 
     @Override
     public String toString() {
-        return "MLValueset [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
-                + ", targetPath=" + targetPath + ", samplePoints=" + samplePoints + "]";
+        return "MLValueset [id=" + id + ", datasetId=" + datasetId + ", name=" + name + ", version=" + version
+                + ", tenantId=" + tenantId + ", userName=" + userName + ", targetPath=" + targetPath
+                + ", samplePoints=" + samplePoints + "]";
+    }
+
+    public long getDatasetId() {
+        return datasetId;
+    }
+
+    public void setDatasetId(long datasetId) {
+        this.datasetId = datasetId;
     }
 
 }

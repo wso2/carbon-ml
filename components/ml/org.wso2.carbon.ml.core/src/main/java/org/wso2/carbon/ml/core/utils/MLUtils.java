@@ -36,7 +36,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.math.NumberUtils;
 import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.MLValueset;
+import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
@@ -172,9 +172,10 @@ public class MLUtils {
         return featureIndex;
     }
     
-    public static MLValueset getMLValueSet(int tenantId, String userName, String name, String version, URI targetPath, SamplePoints samplePoints) {
-        MLValueset valueSet = new MLValueset();
+    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name, String version, URI targetPath, SamplePoints samplePoints) {
+        MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
+        valueSet.setDatasetId(datasetId);
         valueSet.setName(name);
         valueSet.setVersion(version);
         valueSet.setTargetPath(targetPath);

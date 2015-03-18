@@ -106,7 +106,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersion(long datasetSchemaId, MLValueset mlValueset) throws DatabaseHandlerException {
+    public void insertDatasetVersion(MLDatasetVersion mlVersionSet) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -114,13 +114,13 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);  // todo change query
-            insertStatement.setLong(1, datasetSchemaId);
-            insertStatement.setString(2, mlValueset.getName());
-            insertStatement.setString(3, mlValueset.getVersion());
-            insertStatement.setInt(4, mlValueset.getTenantId());
-            insertStatement.setString(5, mlValueset.getUserName());
-            insertStatement.setString(6, mlValueset.getTargetPath().getPath());
-            insertStatement.setObject(7, mlValueset.getSamplePoints());
+            insertStatement.setLong(1, mlVersionSet.getDatasetId());
+            insertStatement.setString(2, mlVersionSet.getName());
+            insertStatement.setString(3, mlVersionSet.getVersion());
+            insertStatement.setInt(4, mlVersionSet.getTenantId());
+            insertStatement.setString(5, mlVersionSet.getUserName());
+            insertStatement.setString(6, mlVersionSet.getTargetPath().getPath());
+            insertStatement.setObject(7, mlVersionSet.getSamplePoints());
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -152,8 +152,9 @@ public class MLDatabaseService implements DatabaseService {
             createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
             createProjectStatement.setString(1, project.getName());
             createProjectStatement.setString(2, project.getDescription());
-            createProjectStatement.setInt(3, project.getTenantId());
-            createProjectStatement.setString(4, project.getUserName());
+            createProjectStatement.setLong(3, project.getDatasetId());
+            createProjectStatement.setInt(4, project.getTenantId());
+            createProjectStatement.setString(5, project.getUserName());
             createProjectStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -631,13 +632,13 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
+    public List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
             throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLValueset> valuesets = new ArrayList<MLValueset>();
+        List<MLDatasetVersion> valuesets = new ArrayList<MLDatasetVersion>();
 
         try {
             connection = dbh.getDataSource().getConnection();
@@ -647,7 +648,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLValueset valueset = new MLValueset();
+                MLDatasetVersion valueset = new MLDatasetVersion();
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
@@ -668,13 +669,13 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId)
+    public List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLValueset> valuesets = new ArrayList<MLValueset>();
+        List<MLDatasetVersion> valuesets = new ArrayList<MLDatasetVersion>();
 
         try {
             connection = dbh.getDataSource().getConnection();
@@ -684,7 +685,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLValueset valueset = new MLValueset();
+                MLDatasetVersion valueset = new MLDatasetVersion();
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
@@ -707,7 +708,7 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public MLValueset getValueset(int tenantId, String userName, long valuesetId)
+    public MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -722,7 +723,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.next()) {
-                MLValueset valueset = new MLValueset();
+                MLDatasetVersion valueset = new MLDatasetVersion();
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));
@@ -746,13 +747,13 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public List<MLValueset> getAllValuesets(int tenantId, String userName)
+    public List<MLDatasetVersion> getAllValuesets(int tenantId, String userName)
             throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLValueset> valuesets = new ArrayList<MLValueset>();
+        List<MLDatasetVersion> valuesets = new ArrayList<MLDatasetVersion>();
 
         try {
             connection = dbh.getDataSource().getConnection();
@@ -761,7 +762,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(2, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLValueset valueset = new MLValueset();
+                MLDatasetVersion valueset = new MLDatasetVersion();
                 valueset.setId(result.getLong(1));
                 valueset.setName(result.getString(3));
                 valueset.setTargetPath(new URI(result.getString(6)));

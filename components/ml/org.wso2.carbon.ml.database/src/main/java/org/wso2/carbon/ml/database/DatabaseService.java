@@ -32,7 +32,7 @@ public interface DatabaseService {
 
     public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
 
-    public void insertDatasetVersion(long datasetSchemaId, MLValueset mlValueset) throws DatabaseHandlerException;
+    public void insertDatasetVersion(MLDatasetVersion mlValueset) throws DatabaseHandlerException;
 
     public void insertProject(MLProject project) throws DatabaseHandlerException;
 
@@ -546,15 +546,15 @@ public interface DatabaseService {
     MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
             throws DatabaseHandlerException;
 
-    List<MLValueset> getValuesetOfDataset(int tenantId, String userName, long datasetId)
+    List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException;
 
-    List<MLValueset> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
+    List<MLDatasetVersion> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
 
-    List<MLValueset> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
+    List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
             throws DatabaseHandlerException;
 
-    MLValueset getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
+    MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
 
     long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
