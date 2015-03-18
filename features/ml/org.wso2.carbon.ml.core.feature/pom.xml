@@ -76,8 +76,18 @@
             <artifactId>commons-math3</artifactId>
         </dependency>
 	<dependency>
+            <groupId>org.wso2.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+        </dependency>
+	<dependency>
             <groupId>org.apache.spark.wso2</groupId>
             <artifactId>spark</artifactId>
+            <exclusions>
+          <exclusion>
+             <groupId>org.apache.hadoop</groupId>
+             <artifactId>hadoop-client</artifactId>
+          </exclusion>
+        </exclusions>
         </dependency>
         <dependency>
             <groupId>org.json.wso2</groupId>
@@ -254,6 +264,7 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.core</bundleDef>
                                 <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
                                 <bundleDef>asm.wso2:asm</bundleDef>
+                                <bundleDef>org.wso2.apache.hadoop:hadoop-client</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3</bundleDef>
                                 <bundleDef>org.apache.commons:commons-math3</bundleDef>
                                 <bundleDef>org.apache.derby:derby</bundleDef>
