@@ -36,6 +36,8 @@ public interface DatabaseService {
 
     public void insertProject(MLProject project) throws DatabaseHandlerException;
 
+    public void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException;
+
     /**
      * Retrieves the path of the value-set having the given ID, from the
      * database.
@@ -394,7 +396,7 @@ public interface DatabaseService {
      * @param username
      * @throws DatabaseHandlerException
      */
-    public void insertModel(String name, long analysisId, long valueSetId, int tenantId, String username) throws DatabaseHandlerException;
+    public void insertModel(String name, long analysisId, long datasetVersionId, int tenantId, String username) throws DatabaseHandlerException;
 
     /**
      * Insert model configuration to the database

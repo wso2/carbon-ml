@@ -171,6 +171,39 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    @Override
+    public void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            // Insert the analysis to the database.
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_ANALYSIS);
+            insertStatement.setLong(1, analysis.getProjectId());
+            insertStatement.setString(2, analysis.getName());
+            insertStatement.setInt(3, analysis.getTenantId());
+            insertStatement.setString(4, analysis.getUserName());
+            insertStatement.setString(5, analysis.getComments());
+            insertStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully inserted the analysis");
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while inserting analysis " + " to the database: "
+                    + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
+        }
+    }
+
     /**
      * Retrieves the path of the value-set having the given ID, from the database.
      *
@@ -1867,7 +1900,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModel(String name, long analysisId, long valueSetId, int tenantId, String username)
+    public void insertModel(String name, long analysisId, long datasetVersionId, int tenantId, String username)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -1879,7 +1912,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
             insertStatement.setString(1, name);
             insertStatement.setLong(2, analysisId);
-            insertStatement.setLong(3, valueSetId);
+            insertStatement.setLong(3, datasetVersionId);
             insertStatement.setInt(4, tenantId);
             insertStatement.setString(5, username);
             insertStatement.execute();
