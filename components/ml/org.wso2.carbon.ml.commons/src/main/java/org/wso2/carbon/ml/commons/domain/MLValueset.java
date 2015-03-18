@@ -26,6 +26,7 @@ public class MLValueset {
 
     private long id;
     private String name;
+    private String version;
     private int tenantId;
     private String userName;
     
@@ -81,6 +82,14 @@ public class MLValueset {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     @Override
