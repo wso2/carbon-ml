@@ -2477,7 +2477,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void updateSummaryStatistics(long datasetVersionId, SummaryStats summaryStats)
+    public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2495,11 +2495,16 @@ public class MLDatabaseService implements DatabaseService {
                         summaryStats.getUnique()[columnIndex], summaryStats.getDescriptiveStats().get(columnIndex));
 
                 updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
-                updateStatement.setLong(1, datasetVersionId);
+                updateStatement.setLong(1, datasetSchemaId);
                 updateStatement.setString(2, columnNameMapping.getKey());
                 updateStatement.setString(3, summaryStats.getType()[columnIndex]);
                 updateStatement.setInt(4, columnIndex);
-                updateStatement.setString(5, summaryStatJson.toString());
+                updateStatement.execute();
+
+                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SUMMARY);
+                updateStatement.setString(1, columnNameMapping.getKey());
+                updateStatement.setLong(2, datasetVersionId);
+                updateStatement.setString(3, summaryStatJson.toString());
                 updateStatement.execute();
             }
             connection.commit();

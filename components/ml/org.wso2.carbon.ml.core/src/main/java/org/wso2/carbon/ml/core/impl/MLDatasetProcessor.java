@@ -240,19 +240,24 @@ public class MLDatasetProcessor {
             // persist data-set and data-set version in DB
             persistDataset(dataset);
 
-            long datasetId = retrieveDatasetId(dataset);
+            long datasetSchemaId = retrieveDatasetSchemaId(dataset);
             if (log.isDebugEnabled()) {
-                log.debug("datasetId: " + datasetId);
+                log.debug("datasetSchemaId: " + datasetSchemaId);
             }
 
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
             // build the MLValueSet
             MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, targetUri, samplePoints);
-            persistDatasetVersion(datasetId, valueSet);
+            persistDatasetVersion(datasetSchemaId, valueSet);
+
+            long datasetVersionId = retrieveDatasetVersionId(valueSet);
+            if (log.isDebugEnabled()) {
+                log.debug("datasetVersionId: " + datasetVersionId);
+            }
 
             // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(datasetId, summaryStatsSettings,
+            threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId,  summaryStatsSettings,
                     samplePoints));
 
         } catch (MLInputAdapterException e) {
@@ -285,12 +290,22 @@ public class MLDatasetProcessor {
         }
     }
 
-    private long retrieveDatasetId(MLDataset dataset) throws MLDataProcessingException {
+    private long retrieveDatasetSchemaId(MLDataset dataset) throws MLDataProcessingException {
         long datasetId;
         try {
             //datasetVersionId = databaseService.getDatasetVersionId(dataset.getId(), dataset.getVersion());
             datasetId = databaseService.getDatasetId(dataset.getName(), dataset.getTenantId(), dataset.getUserName());
             return datasetId;
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+
+    private long retrieveDatasetVersionId(MLValueset valueset) throws MLDataProcessingException {
+        long datasetVersionId;
+        try {
+            datasetVersionId = databaseService.getValueSetId(valueset.getName(), valueset.getTenantId());
+            return datasetVersionId;
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }

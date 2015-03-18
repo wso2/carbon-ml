@@ -67,10 +67,12 @@ public class SummaryStatsGenerator implements Runnable {
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
 
+    private long datasetSchemaId;
     private long datasetVersionId;
 
-    public SummaryStatsGenerator(long datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
+    public SummaryStatsGenerator(long datasetSchemaId, long datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
             SamplePoints samplePoints) throws MLConfigurationParserException {
+        this.datasetSchemaId = datasetSchemaId;
         this.datasetVersionId = datasetVersionId;
         this.summarySettings = summaryStatsSettings;
         this.headerMap = samplePoints.getHeader();
@@ -109,12 +111,12 @@ public class SummaryStatsGenerator implements Runnable {
             SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
             // TODO Update the database with calculated summary statistics.
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-            //dbService.updateSummaryStatistics(datasetVersionId, stats);
+            dbService.updateSummaryStatistics(datasetSchemaId, datasetVersionId, stats);
             if (logger.isDebugEnabled()) {
-                logger.debug("Summary statistics successfully generated for dataset: " + datasetVersionId);
+                logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while Calculating summary statistics " + "for dataset "
+            logger.error("Error occurred while Calculating summary statistics " + "for dataset version "
                     + this.datasetVersionId + ": " + e.getMessage(), e);
         }
     }
