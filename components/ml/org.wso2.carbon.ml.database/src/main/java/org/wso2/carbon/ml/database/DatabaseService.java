@@ -32,7 +32,7 @@ public interface DatabaseService {
 
     public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
 
-    public void insertDatasetVersion(MLValueset mlValueset) throws DatabaseHandlerException;
+    public void insertDatasetVersion(long datasetSchemaId, MLValueset mlValueset) throws DatabaseHandlerException;
 
     public void insertProject(MLProject project) throws DatabaseHandlerException;
 

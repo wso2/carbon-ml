@@ -248,7 +248,7 @@ public class MLDatasetProcessor {
             String valueSetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
 
             // build the MLValueSet
-            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, targetUri, samplePoints);
+            MLValueset valueSet = MLUtils.getMLValueSet(dataset.getTenantId(), dataset.getUserName(), valueSetName, dataset.getVersion(), targetUri, samplePoints);
             persistDatasetVersion(datasetSchemaId, valueSet);
 
             long datasetVersionId = retrieveDatasetVersionId(valueSet);
@@ -279,10 +279,10 @@ public class MLDatasetProcessor {
         }
     }
 
-    private void persistDatasetVersion(long datasetId, MLValueset valueSet) throws MLDataProcessingException {
+    private void persistDatasetVersion(long datasetSchemaId, MLValueset valueSet) throws MLDataProcessingException {
 
         try {
-            databaseService.insertDatasetVersion(valueSet);
+            databaseService.insertDatasetVersion(datasetSchemaId, valueSet);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }

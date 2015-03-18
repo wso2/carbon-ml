@@ -106,7 +106,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersion(MLValueset mlValueset) throws DatabaseHandlerException {
+    public void insertDatasetVersion(long datasetSchemaId, MLValueset mlValueset) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -114,12 +114,13 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);  // todo change query
-            insertStatement.setLong(1, 1);       // TODO dataset id
+            insertStatement.setLong(1, datasetSchemaId);
             insertStatement.setString(2, mlValueset.getName());
-            insertStatement.setInt(3, mlValueset.getTenantId());
-            insertStatement.setString(4, mlValueset.getUserName());
-            insertStatement.setString(5, mlValueset.getTargetPath().getPath());
-            insertStatement.setObject(6, mlValueset.getSamplePoints());
+            insertStatement.setString(3, mlValueset.getVersion());
+            insertStatement.setInt(4, mlValueset.getTenantId());
+            insertStatement.setString(5, mlValueset.getUserName());
+            insertStatement.setString(6, mlValueset.getTargetPath().getPath());
+            insertStatement.setObject(7, mlValueset.getSamplePoints());
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
