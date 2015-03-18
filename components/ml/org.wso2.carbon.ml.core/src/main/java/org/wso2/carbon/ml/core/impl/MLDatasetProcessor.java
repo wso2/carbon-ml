@@ -282,8 +282,6 @@ public class MLDatasetProcessor {
     private void persistDatasetVersion(long datasetId, MLValueset valueSet) throws MLDataProcessingException {
 
         try {
-//            databaseService.insertValueSet(datasetVersionId, valueSet.getName(), valueSet.getTenantId(),
-//                    valueSet.getUserName(), valueSet.getTargetPath().getPath(), valueSet.getSamplePoints());
             databaseService.insertDatasetVersion(valueSet);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
@@ -293,7 +291,6 @@ public class MLDatasetProcessor {
     private long retrieveDatasetSchemaId(MLDataset dataset) throws MLDataProcessingException {
         long datasetId;
         try {
-            //datasetVersionId = databaseService.getDatasetVersionId(dataset.getId(), dataset.getVersion());
             datasetId = databaseService.getDatasetId(dataset.getName(), dataset.getTenantId(), dataset.getUserName());
             return datasetId;
         } catch (DatabaseHandlerException e) {
@@ -320,16 +317,10 @@ public class MLDatasetProcessor {
             String version = dataset.getVersion();
             long datasetId = databaseService.getDatasetId(name, tenantId, userName);
             if (datasetId == -1) {
-//                databaseService.insertDatasetDetails(name, tenantId, userName, dataset.getComments(),
-//                        dataset.getDataSourceType(), dataset.getDataTargetType(), dataset.getDataType());
                 databaseService.insertDatasetSchema(dataset);
                 datasetId = databaseService.getDatasetId(name, tenantId, userName);
             }
             dataset.setId(datasetId);
-//            long datasetVersionId = databaseService.getDatasetVersionId(datasetId, version, tenantId, userName);
-//            if (datasetVersionId == -1) {
-//                databaseService.insertDatasetVersionDetails(datasetId, tenantId,userName, version);
-//            }
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }
