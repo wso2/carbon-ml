@@ -34,13 +34,10 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
-import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -79,11 +76,6 @@ public class MLModelHandler {
      */
     public void createModel(MLModelNew model) throws MLModelHandlerException {
         try {
-            int tenantId = model.getTenantId();
-            String name = model.getName();
-            String userName = model.getUserName();
-            long analysisId = model.getAnalysisId();
-            long valueSetId = model.getVersionSetId();
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {

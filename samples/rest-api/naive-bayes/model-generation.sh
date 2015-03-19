@@ -1,13 +1,8 @@
 #!/bin/bash
 #@author nirmal (github: nirmal070125)
 echo "#create a dataset"
-path=$(pwd)
-sed -i "s~PATH~$path~g"  create-dataset
 curl -X POST -d @'create-dataset' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/datasets -k
-sleep 10
-# changing create-dataset file back to original
-sed -i "s~$path~PATH~g"  create-dataset
-
+sleep 5
 #get valueset id
 echo "#create a project"
 curl -X POST -d @'create-project' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/projects -k
@@ -39,5 +34,4 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW
 sleep 2
 echo "#build model"
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/models/1 -k -v
-sleep 10
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/models/1/predict -k -v -d @'prediction-test'
+sleep 2
