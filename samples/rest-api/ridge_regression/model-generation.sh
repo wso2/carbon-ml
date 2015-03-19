@@ -3,6 +3,7 @@
 echo "testing Linear Regression workflow"
 
 # creating a dataset
+echo "creating a dataset"
 path=$(pwd)
 sed -i "s~PATH~$path~g"  create-dataset
 curl -X POST -d @'create-dataset' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/datasets -k
@@ -52,6 +53,8 @@ sleep 2
 echo "#building the model"
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/models/1 -k -v
 sleep 2
+
+
 
 
 
