@@ -1,9 +1,0 @@
-{
-"name" : "diabetes",
-"dataSourceType" : "hdfs",
-"dataTargetType" : "hdfs",
-"sourcePath" : "hdfs://localhost:9000/ml/IndiansDiabetes.csv",
-"dataType" : "csv",
-"comments" : "diabetes",
-"version" : "1.0"
-}

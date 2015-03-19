@@ -48,6 +48,7 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
         FSDataOutputStream out = null;
         try {
             Configuration conf = new Configuration();
+            conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             URI uri = URI.create(outPath);
             FileSystem hdfs = FileSystem.get(uri, conf);
             out = hdfs.create(new Path(uri), true);
