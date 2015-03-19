@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "testing Linear Regression workflow"
+echo "testing Lasso Regression workflow"
 
 # creating a dataset
 echo "creating a dataset"
