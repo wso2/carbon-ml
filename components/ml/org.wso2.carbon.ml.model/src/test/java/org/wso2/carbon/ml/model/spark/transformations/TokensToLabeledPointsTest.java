@@ -24,6 +24,10 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 
 import java.util.regex.Pattern;
 

@@ -133,57 +133,44 @@
         <dependencies>
             <!-- Dependencies for Automation Test Framework-->
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
-	    <dependency>
-		<groupId>org.apache.rampart</groupId>
-		<artifactId>rampart</artifactId>
-		<type>mar</type>
-		<version>1.6.1-wso2v8</version>
-	    </dependency>
+				<groupId>org.apache.rampart</groupId>
+				<artifactId>rampart</artifactId>
+				<type>mar</type>
+				<version>1.6.1-wso2v8</version>
+		    </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.engine</artifactId>
-                <version>${test.framework.version}</version>
+                <version>${carbon.automation.version}</version>
                 <scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.carbon.automation</groupId>
 				<artifactId>org.wso2.carbon.automation.extensions</artifactId>
-				<version>${test.framework.version}</version>
+				<version>${carbon.automation.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.carbon.automation</groupId>
 				<artifactId>org.wso2.carbon.automation.test.utils</artifactId>
-				<version>${test.framework.version}</version>
+				<version>${carbon.automation.version}</version>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.wso2.carbon.registry</groupId>
-                <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
-                <version>${carbon.registry.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
-                <version>${test.framework.util.version}</version>
+                <version>${carbon.automation.utils.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.integration.common.tests</artifactId>
-                <version>${test.framework.util.version}</version>
-                <scope>test</scope>
-            </dependency>
+			    <groupId>org.wso2.carbon.automationutils</groupId>
+			    <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
+			    <version>${carbon.automation.utils.version}</version>
+			</dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
 				<artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-				<version>${carbon.integration.version}</version>
+				<version>${carbon.automation.utils.version}</version>
 				<scope>test</scope>
 				<exclusions>
 					<exclusion>
@@ -216,6 +203,26 @@
                 <version>${carbon.identity.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+		       <groupId>org.apache.httpcomponents</groupId>
+		       <artifactId>httpclient</artifactId>
+		       <version>${apache.httpclient.version}</version>
+		   </dependency>
+		   <dependency>
+			   <groupId>xml-apis</groupId>
+			   <artifactId>xml-apis</artifactId>
+			   <version>${xml.apis.version}</version>
+			</dependency>
+            <dependency>
+	            <groupId>org.wso2.ml</groupId>
+	            <artifactId>ui-pages</artifactId>
+	            <version>${ml.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.wso2.ml</groupId>
+	            <artifactId>test-utils</artifactId>
+	            <version>${ml.version}</version>
+	        </dependency>
             <!-- End of dependencies for test framework -->
 
             <!-- WSO2 Orbit dependencies for Spark orbit bundle -->
@@ -229,6 +236,11 @@
                 <artifactId>spark</artifactId>
                 <version>${orbit.version.spark}</version>
             </dependency>
+ 	    <dependency>
+        	<groupId>org.wso2.apache.hadoop</groupId>
+        	<artifactId>hadoop-client</artifactId>
+        	<version>${hadoop.version}</version>
+	    </dependency>
             <dependency>
                 <groupId>io.netty.wso2</groupId>
                 <artifactId>netty-all</artifactId>
@@ -472,8 +484,23 @@
 				<artifactId>org.wso2.carbon.identity.notification.mgt</artifactId>
 				<version>${carbon.identity.version}</version>
 		    </dependency>
+            <dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpcore</artifactId>
+		<version>${apache.httpcomponents.version}</version>
+	    </dependency>
+            <dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpclient</artifactId>
+		<version>${apache.httpcomponents.version}</version>
+	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.core</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.model</artifactId>
@@ -504,9 +531,25 @@
                 <artifactId>org.wso2.carbon.ml.commons</artifactId>
                 <version>${ml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ml.rest.api</artifactId>
+                <version>${ml.version}</version>
+                <type>war</type>
+            </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
-			<!-- Dependencies on WSO2 for Axis2 mail Transporter -->
+			<!-- Dependencies for Email Notification Sender -->
+			<dependency>
+	            <groupId>org.wso2.carbon.event-processing</groupId>
+	            <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
+	            <version>${carbon.event.processing.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.wso2.carbon.event-processing</groupId>
+	            <artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
+	            <version>${carbon.event.processing.version}</version>
+	        </dependency>
             <dependency>
 	        	<groupId>org.apache.axis2</groupId>
 	        	<artifactId>axis2-transport-mail</artifactId>
@@ -522,6 +565,59 @@
 	        	<artifactId>axis2</artifactId>
 	        	<version>${axis2.version}</version>
 	      	</dependency>
+
+            <!-- Dependencies for Rest API-->
+	      	<dependency>
+                    <groupId>org.wso2.carbon</groupId>
+                    <artifactId>org.wso2.carbon.user.core</artifactId>
+                    <version>${carbon.kernel.version}</version>
+                </dependency>
+	      	<dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+	            <version>${apache.cxf.jaxrs.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-core-asl</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>jaxen</groupId>
+	            <artifactId>jaxen</artifactId>
+	            <version>${jaxen.version}</version>
+	            <scope>provided</scope>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-mapper-asl</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-jaxrs</artifactId>
+	            <version>${codehaus.jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>junit</groupId>
+	            <artifactId>junit</artifactId>
+	            <version>${junit.version}</version>
+	        </dependency>
+	        <dependency>
+                    <groupId>org.wso2.carbon.governance</groupId>
+                    <artifactId>org.wso2.carbon.governance.api</artifactId>
+                    <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.core</artifactId>
+            	<version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.core</artifactId>
+		<version>${carbon.registry.version}</version>
+	    </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -613,12 +709,15 @@
         <carbon.registry.version>4.3.0</carbon.registry.version>
         <carbon.identity.version>4.3.2</carbon.identity.version>
         <carbon.deployment.version>4.3.1</carbon.deployment.version>
-        <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>
+        <carbon.multitenancy.version>4.3.4</carbon.multitenancy.version>
         <carbon.commons.version>4.3.4</carbon.commons.version>
         <carbon.analytics.version>1.0.0</carbon.analytics.version>
-
+		<carbon.event.processing.version>2.0.4-SNAPSHOT</carbon.event.processing.version>
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+	
+		<hadoop.version>2.2.0.wso2v1</hadoop.version>
+
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
@@ -663,8 +762,8 @@
         <commons.logging.version>1.1.1</commons.logging.version>
         <emma.version>2.1.5320</emma.version>
         <!-- Integration Test Dependency versions-->
-        <test.framework.version>4.3.1</test.framework.version>
-        <test.framework.util.version>4.3.1</test.framework.util.version>
+        <carbon.automation.version>4.3.1</carbon.automation.version>
+		<carbon.automation.utils.version>4.3.0</carbon.automation.utils.version>
         <json.version>2.0.0.wso2v1</json.version>
         <testng.version>6.8.5</testng.version>
         <osgi.core.version>4.2.0</osgi.core.version>
@@ -674,11 +773,20 @@
         <javax.transaction.version>1.1.1.v201105210645</javax.transaction.version>
         <guava.version>14.0.1</guava.version>
         <zookeeper.version>3.4.5</zookeeper.version>
-        <selenium.version>2.44.0</selenium.version>
+        <selenium.version>2.45.0</selenium.version>
         <orbit.version.asm>3.1.wso2v1</orbit.version.asm>
         <axis2.transport.mail.version>1.0.0</axis2.transport.mail.version>
         <axis2.transport.base.version>1.0.0</axis2.transport.base.version>
         <axis2.version>1.6.2</axis2.version>
+
+        <!--Rest API  Dependency versions -->
+        <codehaus.jackson.version>1.8.6</codehaus.jackson.version>
+        <apache.cxf.jaxrs.version>2.5.1</apache.cxf.jaxrs.version>
+        <junit.version>4.12</junit.version>
+        <jaxen.version>1.1.1</jaxen.version>
+        <xml.apis.version>1.4.01</xml.apis.version>
+        <apache.httpcomponents.version>4.4</apache.httpcomponents.version>
+        <apache.httpclient.version>4.3.5</apache.httpclient.version>
     </properties>
 
     <organization>

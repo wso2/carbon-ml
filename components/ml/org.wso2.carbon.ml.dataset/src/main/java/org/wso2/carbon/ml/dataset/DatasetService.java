@@ -39,7 +39,7 @@ public interface DatasetService {
      * @return Absolute path of a given data-set
      * @throws DatasetServiceException
      */
-    public String getDatasetUrl(String datasetID) throws DatasetServiceException;
+    public String getValueSetUri(long datasetID) throws DatasetServiceException;
 
     /**
      * Upload the data file.
@@ -65,7 +65,7 @@ public interface DatasetService {
 
     /**
      * 
-     * @param fileName      Name of the data-set file with extension, to calculate summary statistics
+     * @param filePath      Name of the data-set file with extension, to calculate summary statistics
      * @param datasetID     Unique Identifier of the data-set
      * @param projectID     Unique Identifier of the project associated with the dataset
      * @return              Number of features in the data-set
@@ -78,33 +78,33 @@ public interface DatasetService {
      * Update the data type of a given feature.
      *
      * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
+     * @param modelId       Unique identifier of the current model
      * @param featureType   Updated type of the feature
      * @throws              DatasetServiceException
      */
-    public void updateDataType(String featureName, String workflowID, String featureType)
+    public void updateDataType(String featureName, long modelId, String featureType)
             throws DatasetServiceException;
 
     /**
      * Update the impute option of a given feature.
      *
      * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
+     * @param modelId       Unique identifier of the current model
      * @param imputeOption  Updated impute option of the feature
      * @throws              DatasetServiceException
      */
-    public void updateImputeOption(String featureName, String workflowID, String imputeOption)
+    public void updateImputeOption(String featureName, long modelId, String imputeOption)
             throws DatasetServiceException;
 
     /**
      * change whether a feature should be included as an input or not.
      *
      * @param featureName   Name of the feature to be updated
-     * @param workflowID    Unique identifier of the current workflow
+     * @param modelId       Unique identifier of the current model
      * @param isInput       Boolean value indicating whether the feature is an input or not
      * @throws              DatasetServiceException
      */ 
-    public void updateIsIncludedFeature(String featureName, String workflowID, boolean isInput)
+    public void updateIsIncludedFeature(String featureName, long modelId, boolean isInput)
             throws DatasetServiceException;
 
     /**
@@ -122,22 +122,22 @@ public interface DatasetService {
     
     /**
      * 
-     * @param datasetId The dataset id associated with this dataset
-     * @return A list of FeatureSummaries
-     * @throws DatasetServiceException
+     * @param datasetVersionId  Unique identifier of the dataset version
+     * @return                  A list of FeatureSummaries
+     * @throws                  DatasetServiceException
      */
-    public List<FeatureSummary> getDefaultFeatures(String datasetId, int startIndex, int numberOfFeatures)
+    public List<FeatureSummary> getDefaultFeatures(long datasetVersionId, int startIndex, int numberOfFeatures)
             throws DatasetServiceException;
 
     /**
      * Returns the names of the features, belongs to a particular data-type
      * (Categorical/Numerical), of the work-flow.
      *
-     * @param workflowID    Unique identifier of the current work-flow
+     * @param modelId       Unique identifier of the current model
      * @return              A list of feature names
      * @throws              DatasetServiceException
      */
-    public List<String> getFeatureNames(String workflowID) throws DatasetServiceException;
+    public List<String> getFeatureNames(long modelId) throws DatasetServiceException;
 
     /**
      * Returns data points of the selected sample as coordinates of three
@@ -150,7 +150,7 @@ public interface DatasetService {
      * @return                  A JSON array of data points
      * @throws                  DatasetServiceException
      */
-    public JSONArray getScatterPlotPoints(String datasetID, String xAxisFeature, String yAxisFeature,
+    public JSONArray getScatterPlotPoints(long datasetID, String xAxisFeature, String yAxisFeature,
             String groupByFeature) throws DatasetServiceException;
 
 	/**
@@ -163,27 +163,27 @@ public interface DatasetService {
 	 * @return A JSON array of data points
 	 * @throws DatasetServiceException
 	 */
-	public JSONArray getChartSamplePoints(String datasetID, String featureListString)
+	public JSONArray getChartSamplePoints(long datasetID, String featureListString)
 	                                                                                 throws DatasetServiceException;
 	
 	/**
      * Returns the summary statistics for a given feature of a given data-set
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @param feature       Name of the feature of which summary statistics are needed
-     * @return              JSON string containing the summary statistics
-     * @throws              DatasetServiceException
+     * @param datasetVersionId     Unique Identifier of the data-set
+     * @param feature              Name of the feature of which summary statistics are needed
+     * @return                     JSON string containing the summary statistics
+     * @throws                     DatasetServiceException
      */
-    public String getSummaryStats(String datasetID, String feature) throws DatasetServiceException;
+    public String getSummaryStats(long datasetVersionId, String feature) throws DatasetServiceException;
 
     /**
      * Returns the number of features of a given data-set.
      *
-     * @param datasetID     Unique Identifier of the data-set
-     * @return              Number of features in the data-set
-     * @throws              DatasetServiceException
+     * @param datasetVersionId     Unique Identifier of the data-set-version
+     * @return                     Number of features in the data-set-version
+     * @throws                     DatasetServiceException
      */
-    public int getFeatureCount(String datasetID) throws DatasetServiceException;
+    public int getFeatureCount(long datasetVersionId) throws DatasetServiceException;
     
     /**
      * Returns the model id associated with a given workflow Id
@@ -204,10 +204,10 @@ public interface DatasetService {
         
     /**
      * 
-     * @param workflowId
+     * @param modelId
      * @param featureName
      * @return
      * @throws DatasetServiceException
      */
-    public String getFeatureType(String workflowId, String featureName) throws DatasetServiceException;
+    public String getFeatureType(long modelId, String featureName) throws DatasetServiceException;
 }

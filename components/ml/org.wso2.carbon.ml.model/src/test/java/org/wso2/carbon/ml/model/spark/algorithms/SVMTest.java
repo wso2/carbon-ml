@@ -25,11 +25,13 @@ import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.model.spark.dto.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.model.spark.transformations.DoubleArrayToLabeledPoint;
-import org.wso2.carbon.ml.model.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.model.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.model.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.domain.SVM;
+import org.wso2.carbon.ml.core.domain.SparkModelUtils;
+import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
 
 import java.util.HashMap;
 import java.util.regex.Pattern;

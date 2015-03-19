@@ -28,6 +28,9 @@ public class SamplePoints implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private List<List<String>> samplePoints = new ArrayList<List<String>>();
 	private Map<String, Integer> headerMap;
+	// Array containing number of missing values of each feature in the data-set.
+    private int[] missing;
+    private int[] stringCellCount;
 
 	/**
 	 * Returns the raw-data of the sample.
@@ -64,4 +67,20 @@ public class SamplePoints implements Serializable {
 	public void setHeader(Map<String, Integer> headerMap) {
 		this.headerMap = headerMap;
 	}
+
+    public int[] getMissing() {
+        return missing;
+    }
+
+    public void setMissing(int[] missing) {
+        this.missing = missing;
+    }
+
+    public int[] getStringCellCount() {
+        return stringCellCount;
+    }
+
+    public void setStringCellCount(int[] stringCellCount) {
+        this.stringCellCount = stringCellCount;
+    }
 }

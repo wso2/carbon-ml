@@ -1,0 +1,9 @@
+{
+"name" : "housing",
+"dataSourceType" : "file",
+"dataTargetType" : "file",
+"sourcePath" : "file://PATH/housing.csv",
+"dataType" : "csv",
+"comments" : "Boston housing dataset",
+"version" : "1.0"
+}

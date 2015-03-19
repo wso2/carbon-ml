@@ -19,11 +19,11 @@
 package org.wso2.carbon.ml.model;
 
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
-import org.wso2.carbon.ml.commons.domain.HyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
+import org.wso2.carbon.ml.core.spark.ConfusionMatrix;
 import org.wso2.carbon.ml.model.exceptions.ModelServiceException;
-import org.wso2.carbon.ml.model.internal.dto.ConfusionMatrix;
 import org.wso2.carbon.ml.model.internal.dto.ModelSettings;
 
 import java.util.List;

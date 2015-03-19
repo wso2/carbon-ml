@@ -1,5 +1,6 @@
 *.class
 target/
+test-output/
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 # Eclipse project files
@@ -23,3 +24,7 @@ hs_err_pid*
 .prefs
 sonar-pom.xml
 ._*
+*.mar
+*~
+*.em
+*.log

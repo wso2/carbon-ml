@@ -1,0 +1,5 @@
+{
+"name" : "lrboston",
+"description" : "This project tests ml workflow for linear regression",  
+"datasetName" : "housing"
+}

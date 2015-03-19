@@ -20,7 +20,7 @@ package org.wso2.carbon.ml.model.internal.dto;
 
 import java.util.List;
 
-import org.wso2.carbon.ml.commons.domain.HyperParameter;
+import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 
 /**
  * DTO class for JAXB binding of MLAlgorithmConfigurationParser
