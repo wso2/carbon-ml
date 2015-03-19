@@ -28,7 +28,7 @@ public class MLModelNew {
     private String userName;
     private String createdTime;
     private long analysisId;
-    private long valueSetId;
+    private long versionSetId;
     private String storageType;
     private String storageDirectory;
 
@@ -96,18 +96,18 @@ public class MLModelNew {
         this.analysisId = analysisId;
     }
 
-    public long getValueSetId() {
-        return valueSetId;
+    public long getVersionSetId() {
+        return versionSetId;
     }
 
-    public void setValueSetId(long valueSetId) {
-        this.valueSetId = valueSetId;
+    public void setVersionSetId(long versionSetId) {
+        this.versionSetId = versionSetId;
     }
 
     @Override
     public String toString() {
         return "MLModelNew [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
-                + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", valueSetId=" + valueSetId
+                + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", valueSetId=" + versionSetId
                 + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + "]";
     }
 

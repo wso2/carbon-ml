@@ -217,7 +217,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
             insertStatement.setString(1, model.getName());
             insertStatement.setLong(2, model.getAnalysisId());
-            insertStatement.setLong(3, model.getValueSetId());
+            insertStatement.setLong(3, model.getVersionSetId());
             insertStatement.setInt(4, model.getTenantId());
             insertStatement.setString(5, model.getUserName());
             insertStatement.execute();
@@ -1621,7 +1621,7 @@ public class MLDatabaseService implements DatabaseService {
                 MLModelNew model = new MLModelNew();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
-                model.setValueSetId(result.getLong(3));
+                model.setVersionSetId(result.getLong(3));
                 model.setCreatedTime(result.getString(4));
                 model.setStorageType(result.getString(5));
                 model.setStorageDirectory(result.getString(6));
@@ -1658,7 +1658,7 @@ public class MLDatabaseService implements DatabaseService {
                 MLModelNew model = new MLModelNew();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
-                model.setValueSetId(result.getLong(3));
+                model.setVersionSetId(result.getLong(3));
                 model.setCreatedTime(result.getString(4));
                 model.setStorageType(result.getString(5));
                 model.setStorageDirectory(result.getString(6));
