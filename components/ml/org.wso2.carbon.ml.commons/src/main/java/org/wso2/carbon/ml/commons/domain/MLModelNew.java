@@ -96,12 +96,12 @@ public class MLModelNew {
         this.analysisId = analysisId;
     }
 
-    public long getValueSetId() {
+    public long getVersionSetId() {
         return versionSetId;
     }
 
-    public void setValueSetId(long valueSetId) {
-        this.versionSetId = valueSetId;
+    public void setVersionSetId(long versionSetId) {
+        this.versionSetId = versionSetId;
     }
 
     @Override

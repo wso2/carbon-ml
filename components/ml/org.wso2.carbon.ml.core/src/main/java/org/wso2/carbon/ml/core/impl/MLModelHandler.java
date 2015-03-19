@@ -77,7 +77,7 @@ public class MLModelHandler {
             String name = model.getName();
             String userName = model.getUserName();
             long analysisId = model.getAnalysisId();
-            long valueSetId = model.getValueSetId();
+            long valueSetId = model.getVersionSetId();
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {
