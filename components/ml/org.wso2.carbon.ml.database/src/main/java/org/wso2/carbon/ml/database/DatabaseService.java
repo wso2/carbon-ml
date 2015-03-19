@@ -44,9 +44,9 @@ public interface DatabaseService {
      * Retrieves the path of the value-set having the given ID, from the
      * database.
      *
-     * @param datasetVersionId    Unique Identifier of the value-set
-     * @return              Absolute path of a given value-set
-     * @throws              DatabaseHandlerException
+     * @param datasetVersionId  Unique Identifier of the value-set
+     * @return                  Absolute path of a given value-set
+     * @throws                  DatabaseHandlerException
      */
     public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
@@ -67,10 +67,10 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
-     * @param datasetName    Name of the data-set
-     * @param tenantId       Tenant Id
-     * @return               Unique Id of the data-set
-     * @throws DatabaseHandlerException
+     * @param datasetName   Name of the data-set
+     * @param tenantId      Tenant Id
+     * @return              Unique Id of the data-set
+     * @throws              DatabaseHandlerException
      */
     public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
 
@@ -540,14 +540,6 @@ public interface DatabaseService {
     List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
 
     MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
-
-    MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
-            throws DatabaseHandlerException;
-
-    List<MLDatasetVersion> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
-
-    List<MLDatasetVersion> getAllVersionsOfDataset(int tenantId, String userName, long versionsetId)
-            throws DatabaseHandlerException;
 
     MLDatasetVersion getVersionset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
 
