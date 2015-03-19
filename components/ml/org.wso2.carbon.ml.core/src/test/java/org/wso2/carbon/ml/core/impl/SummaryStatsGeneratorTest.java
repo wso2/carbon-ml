@@ -65,7 +65,7 @@ public class SummaryStatsGeneratorTest {
         }
         MLConfigurationParser parser = new MLConfigurationParser();
         MLConfiguration config = parser.getMLConfiguration("src/test/resources/machine-learner.xml");
-        summaryGen = new SummaryStatsGenerator(1, config.getSummaryStatisticsSettings(), samplePoints);
+        summaryGen = new SummaryStatsGenerator(1, 1, config.getSummaryStatisticsSettings(), samplePoints);
     }
 
     @Test

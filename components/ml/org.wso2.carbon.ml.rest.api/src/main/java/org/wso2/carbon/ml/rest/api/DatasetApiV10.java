@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
-import org.wso2.carbon.ml.commons.domain.MLValueset;
+import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 
@@ -144,7 +144,7 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            List<MLValueset> valuesets = datasetProcessor.getValuesetOfDataset(tenantId, userName, datasetId);
+            List<MLDatasetVersion> valuesets = datasetProcessor.getValuesetOfDataset(tenantId, userName, datasetId);
             return Response.ok(valuesets).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all valuesets of dataset : " + datasetId+ " : " + e.getMessage());
@@ -161,7 +161,7 @@ public class DatasetApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         
         try {
-            List<MLValueset> valuesets = datasetProcessor.getAllValuesets(tenantId, userName);
+            List<MLDatasetVersion> valuesets = datasetProcessor.getAllValuesets(tenantId, userName);
             return Response.ok(valuesets).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all valuesets of tenant : " + tenantId+ " and user: "+userName+" : " + e.getMessage());
@@ -177,7 +177,7 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            List<MLValueset> valuesets = datasetProcessor.getValuesetOfVersion(tenantId, userName, versionsetId);
+            List<MLDatasetVersion> valuesets = datasetProcessor.getValuesetOfVersion(tenantId, userName, versionsetId);
             return Response.ok(valuesets).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all valuesets of versionset id : " + versionsetId+ " : " + e.getMessage());
@@ -193,7 +193,7 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            MLValueset valueset = datasetProcessor.getValueset(tenantId, userName, valuesetId);
+            MLDatasetVersion valueset = datasetProcessor.getValueset(tenantId, userName, valuesetId);
             if (valueset == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
