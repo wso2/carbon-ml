@@ -99,9 +99,9 @@ public class MLDatasetProcessor {
         }
     }
     
-    public MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId) throws MLDataProcessingException {
+    public MLDatasetVersion getVersionset(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
         try {
-            return databaseService.getVersionset(tenantId, userName, datasetId, versionsetId);
+            return databaseService.getVersionset(tenantId, userName, versionsetId);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }
@@ -123,38 +123,13 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+    public List<MLDatasetVersion> getAllValuesetsOfDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
         try {
             return databaseService.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
         }
     }
-    
-    public List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
-        try {
-            return databaseService.getAllVersionsOfDataset(tenantId, userName, versionsetId);
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
-        }
-    }
-    
-    public List<MLDatasetVersion> getAllValuesets(int tenantId, String userName) throws MLDataProcessingException {
-        try {
-            return databaseService.getAllValuesets(tenantId, userName);
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
-        }
-    }
-    
-    public MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId) throws MLDataProcessingException {
-        try {
-            return databaseService.getVersionset(tenantId, userName, valuesetId);
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
-        }
-    }
-    
     
     /**
      * FIXME Do we need tenant id and user name??

@@ -695,10 +695,10 @@ public class MLDatabaseService implements DatabaseService {
             }
             return versionsets;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting version sets for dataset id: "
+            throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } catch (URISyntaxException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting version sets for dataset id: "
+            throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } finally {
             // Close the database resources.
@@ -733,7 +733,7 @@ public class MLDatabaseService implements DatabaseService {
                 return null;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting valueset of valueset id: "
+            throw new DatabaseHandlerException("An error has occurred while extracting valueset of valueset id: "
                     + versionsetId, e);
         } catch (URISyntaxException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting valueset of valueset id: "
@@ -3153,5 +3153,4 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
-
 }
