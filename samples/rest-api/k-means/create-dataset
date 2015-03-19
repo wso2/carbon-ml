@@ -2,7 +2,7 @@
 "name" : "seeds",
 "dataSourceType" : "file",
 "dataTargetType" : "file",
-"sourcePath" : "file:///home/cdathuraliya/Work/ML/Working/product-ml/samples/rest-api/k-means/seeds.csv",
+"sourcePath" : "file://PATH/seeds.csv",
 "dataType" : "csv",
 "comments" : "seeds",
 "version" : "1.0"

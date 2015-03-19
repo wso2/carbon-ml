@@ -2,7 +2,7 @@
 "name" : "diabetes",
 "dataSourceType" : "file",
 "dataTargetType" : "file",
-"sourcePath" : "file:///Volumes/wso2/ml/test-rest/IndiansDiabetes.csv",
+"sourcePath" : "file://PATH/IndiansDiabetes.csv",
 "dataType" : "csv",
 "comments" : "diabetes",
 "version" : "1.0"

@@ -1,8 +1,31 @@
 #!/bin/bash
-#@author nirmal (github: nirmal070125)
+
+# Die on any error:
+set -e
+
 echo "#create a dataset"
+path=$(pwd)
+
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform
+        sed -i '' "s~PATH~$path~g"  create-dataset
+else
+    # Do something else under some other platform
+        sed -i "s~PATH~$path~g"  create-dataset
+fi
+
 curl -X POST -d @'create-dataset' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/datasets -k
 sleep 5
+# changing create-dataset file back to original
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform
+        sed -i '' "s~$path~PATH~g"  create-dataset
+else
+    # Do something else under some other platform
+        sed -i "s~$path~PATH~g"  create-dataset
+fi
+
 #get valueset id
 echo "#create a project"
 curl -X POST -d @'create-project' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/projects -k

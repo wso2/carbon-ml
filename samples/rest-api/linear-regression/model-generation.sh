@@ -2,13 +2,31 @@
 
 echo "testing Linear Regression workflow"
 
-# creating a dataset
+# Die on any error:
+set -e
+
+echo "#create a dataset"
 path=$(pwd)
-sed -i "s~PATH~$path~g"  create-dataset
+
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform
+        sed -i '' "s~PATH~$path~g"  create-dataset
+else
+    # Do something else under some other platform
+        sed -i "s~PATH~$path~g"  create-dataset
+fi
+
 curl -X POST -d @'create-dataset' -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -v https://localhost:9443/api/datasets -k
-sleep 10
+sleep 5
 # changing create-dataset file back to original
-sed -i "s~$path~PATH~g"  create-dataset
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform
+        sed -i '' "s~$path~PATH~g"  create-dataset
+else
+    # Do something else under some other platform
+        sed -i "s~$path~PATH~g"  create-dataset
+fi
 
 # creating a project
 echo "#creating a project"
