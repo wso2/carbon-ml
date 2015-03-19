@@ -7,7 +7,7 @@ Algorithm: K-Means
 Before Running
 ==============
 
-* Edit the create-dataset file's sourcePath value to point to the IndiansDiabetes.csv file.
+* Edit the create-dataset file's sourcePath value to point to the seeds.csv file.
 
 * Start WSO2 Machine Learner product with a fresh database.
 
