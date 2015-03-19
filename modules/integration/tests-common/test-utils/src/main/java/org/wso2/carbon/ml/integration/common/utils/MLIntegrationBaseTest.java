@@ -87,7 +87,7 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      */
     protected CloseableHttpResponse doHttpDelete(URI uri) throws ClientProtocolException, IOException {
         CloseableHttpClient httpClient =  HttpClients.createDefault();
-        HttpDelete delete = new HttpDelete();
+        HttpDelete delete = new HttpDelete(uri);
         delete.setHeader(MLIntegrationTestConstants.CONTENT_TYPE, MLIntegrationTestConstants.APPLICATION_JSON);
         delete.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
         return httpClient.execute(delete);
@@ -115,11 +115,44 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      * @throws              IOException
      * @throws              URISyntaxException
      */
-    protected CloseableHttpResponse uploadDatasetFromCSV(String DatasetName, String version, String resourcePath) throws 
-            ClientProtocolException, IOException, URISyntaxException {
+    protected CloseableHttpResponse uploadDatasetFromCSV(String DatasetName, String version, String resourcePath)
+            throws ClientProtocolException, IOException, URISyntaxException {
         String payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
                 + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
                 + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
         return doHttpPost(new URI("https://localhost:9443/api/datasets"), payload);
     }
+    
+    /**
+     * Create a project
+     * 
+     * @param ProjectName   Name for the project
+     * @return              response from the backend
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     */
+    protected CloseableHttpResponse createProject(String ProjectName, String datasetName) throws IOException, 
+        ClientProtocolException, URISyntaxException {
+        String payload = "{\"name\" : \"" + ProjectName + "\",\"description\" : \"Test Project\",\"datasetName\": \""
+                + datasetName + "\"}";
+        return doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+    }
+    
+    /**
+     * Create an Analysis
+     * 
+     * @param AnalysisName  Name for the Analysis
+     * @return              response from the backend
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     */
+    protected CloseableHttpResponse createAnalysis(String AnalysisName, int ProjectId) throws IOException, 
+        ClientProtocolException, URISyntaxException {
+        String payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + 
+                ProjectId + "}";
+        return doHttpPost(new URI("https://localhost:9443/api/analysis"), payload);
+    }
+    
 }

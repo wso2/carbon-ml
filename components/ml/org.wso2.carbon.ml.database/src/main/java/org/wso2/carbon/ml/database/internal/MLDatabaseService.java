@@ -1319,7 +1319,6 @@ public class MLDatabaseService implements DatabaseService {
 
     @Override
     public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -1338,6 +1337,7 @@ public class MLDatabaseService implements DatabaseService {
                 project.setTenantId(tenantId);
                 project.setUserName(userName);
                 project.setCreatedTime(result.getString(3));
+                
                 return project;
             } else {
                 return null;
