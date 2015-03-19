@@ -21,4 +21,4 @@ Outcome
 
 * Running the above script will result in a generation of logistic regression model for the provided data-set.
 
-* Model will be stored in the file system at /tmp (it is possible to configure this using create-model-storage json file) directory.
+* Model will be stored in the file system at /tmp (it is possible to configure destination path of the generated model using "create-model-storage" json file) directory.
