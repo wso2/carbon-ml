@@ -31,12 +31,15 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 
 public class CreateProjectsTestCase extends MLIntegrationBaseTest {
+    
+    private static String DatasetName = "SampleDataForCreateProjectTestCase";
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
+        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
     }
-    
+
     /**
      * Test creating a project.
      * 
@@ -46,24 +49,23 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      */
     @Test(groups = "wso2.ml.integration", description = "Create a project")
     public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"WSO2-ML-Test-Project\",\"description\" : \"Test Project\"}";
-        CloseableHttpResponse response = doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
-     * Test creating a project without the a duplicate project name.
+     * Test creating a project with a duplicate project name.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      */
-    // FIXME : this should fail, but not failing!!!!!!
-    @Test(groups = "wso2.ml.integration", description = "Create a project", dependsOnMethods="testCreateProject")
+    //FIXME: This should fail!!
+    @Test(groups = "wso2.ml.integration", description = "Create a project with duplicate Name", dependsOnMethods = 
+            "testCreateProject")
     public void testCreateProjectWithDuplicateName() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"WSO2-ML-Test-Project\",\"description\" : \"Test Project\"}";
-        CloseableHttpResponse response = doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -75,12 +77,27 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws IOException
      * @throws URISyntaxException
      */
-    // FIXME : this should fail, but not failing!!!!!!
-    @Test(groups = "wso2.ml.integration", description = "Create a project")
+    //FIXME: This should fail!!
+    @Test(groups = "wso2.ml.integration", description = "Create a project without name", dependsOnMethods = 
+            "testCreateProject")
     public void testCreateProjectWithoutName() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"description\" : \"Test Project\"}";
-        CloseableHttpResponse response = doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+        CloseableHttpResponse response = createProject(null, DatasetName);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        response.close();
+    }
+    
+    /**
+     * Test creating a project without the project name.
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test(groups = "wso2.ml.integration", description = "Create a project without a dataset")
+    public void testCreateProjectWithoutDataset() throws ClientProtocolException, IOException, URISyntaxException {
+        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase-2", null);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     

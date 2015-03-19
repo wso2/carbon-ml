@@ -31,12 +31,29 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 
 public class GetProjectsTestCase extends MLIntegrationBaseTest {
+    
+    private static final String projectName = "TestProjectForGetProjectTestcase";
+    private static final String DatasetName = "SampleDataForGetProjectTestCase";
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
-        String payload = "{\"name\" : \"WSO2-ML-Test-Project\",\"description\" : \"Test Project\"}";
-        doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
+        createProject(projectName, DatasetName);
+    }
+    
+    /**
+     * Test retrieving all projects.
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
+    public void testGetAllProjects() throws ClientProtocolException, IOException, URISyntaxException {
+        CloseableHttpResponse response = doHttpGet(new URI("https://localhost:9443/api/projects"));
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        response.close();
     }
     
     /**
@@ -48,7 +65,7 @@ public class GetProjectsTestCase extends MLIntegrationBaseTest {
      */
     @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
     public void testGetProject() throws ClientProtocolException, IOException, URISyntaxException {
-        CloseableHttpResponse response = doHttpGet(new URI("https://localhost:9443/api/projects"));
+        CloseableHttpResponse response = doHttpGet(new URI("https://localhost:9443/api/projects/" + projectName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
