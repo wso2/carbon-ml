@@ -156,7 +156,7 @@ public interface DatabaseService {
      * @param valueSetSample    SamplePoints object of the value-set
      * @throws                  DatabaseHandlerException
      */
-    public void updateValueSetSample(long valueSetId, SamplePoints valueSetSample)
+    public void updateVersionsetSample(long valueSetId, SamplePoints valueSetSample)
             throws DatabaseHandlerException;
 
     /**
@@ -502,8 +502,6 @@ public interface DatabaseService {
 
     boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
-    long getDatasetVersionId(long valuesetId) throws DatabaseHandlerException;
-
     void insertFeatureCustomized(long analysisId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
 
     long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
@@ -536,7 +534,7 @@ public interface DatabaseService {
 
     List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
 
-    List<MLDataset> getVersionsetOfDataset(int tenantId, String userName, long datasetId)
+    List<MLDatasetVersion> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException;
 
     List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
@@ -546,15 +544,12 @@ public interface DatabaseService {
     MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
             throws DatabaseHandlerException;
 
-    List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId)
-            throws DatabaseHandlerException;
-
     List<MLDatasetVersion> getAllValuesets(int tenantId, String userName) throws DatabaseHandlerException;
 
-    List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
+    List<MLDatasetVersion> getAllVersionsOfDataset(int tenantId, String userName, long versionsetId)
             throws DatabaseHandlerException;
 
-    MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
+    MLDatasetVersion getVersionset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
 
     long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;

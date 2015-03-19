@@ -631,7 +631,7 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
     
-    @Override
+    /*@Override
     public List<MLDatasetVersion> getValuesetOfVersion(int tenantId, String userName, long versionsetId)
             throws DatabaseHandlerException {
 
@@ -666,20 +666,19 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-    }
+    }*/
     
+    // DONE
     @Override
-    public List<MLDatasetVersion> getValuesetOfDataset(int tenantId, String userName, long datasetId)
+    public List<MLDatasetVersion> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLDatasetVersion> valuesets = new ArrayList<MLDatasetVersion>();
-
+        List<MLDatasetVersion> versionsets = new ArrayList<MLDatasetVersion>();
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_VALUESET_OF_DATASET);
+            statement = connection.prepareStatement(SQLQueries.GET_ALL_VERSIONSETS_OF_DATASET);
             statement.setLong(1, datasetId);
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
@@ -692,14 +691,14 @@ public class MLDatabaseService implements DatabaseService {
                 valueset.setSamplePoints((SamplePoints)result.getObject(7));
                 valueset.setTenantId(tenantId);
                 valueset.setUserName(userName);
-                valuesets.add(valueset);
+                versionsets.add(valueset);
             }
-            return valuesets;
+            return versionsets;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting value sets for dataset id: "
+            throw new DatabaseHandlerException(" An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } catch (URISyntaxException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting value sets for dataset id: "
+            throw new DatabaseHandlerException(" An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } finally {
             // Close the database resources.
@@ -707,18 +706,17 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
     
+    //DONE
     @Override
-    public MLDatasetVersion getValueset(int tenantId, String userName, long valuesetId)
+    public MLDatasetVersion getVersionset(int tenantId, String userName, long versionsetId)
             throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_VALUESET);
-            statement.setLong(1, valuesetId);
+            statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_USING_ID);
+            statement.setLong(1, versionsetId);
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
             result = statement.executeQuery();
@@ -736,25 +734,23 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting valueset of valueset id: "
-                    + valuesetId, e);
+                    + versionsetId, e);
         } catch (URISyntaxException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting valueset of valueset id: "
-                    + valuesetId, e);
+                    + versionsetId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
     
-    @Override
+    /*@Override
     public List<MLDatasetVersion> getAllValuesets(int tenantId, String userName)
             throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         List<MLDatasetVersion> valuesets = new ArrayList<MLDatasetVersion>();
-
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_VALUESETS);
@@ -780,20 +776,18 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-    }
+    }*/
 
-    @Override
-    public List<MLDataset> getVersionsetOfDataset(int tenantId, String userName, long datasetId)
+    /*@Override
+    public List<MLDataset> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         List<MLDataset> versionsets = new ArrayList<MLDataset>();
-
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_OF_DATASET);
+            statement = connection.prepareStatement(SQLQueries.GET_ALL_VERSIONSETS_OF_DATASET);
             statement.setLong(1, datasetId);
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
@@ -819,16 +813,14 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-    }
+    }*/
 
-    @Override
+   /* @Override
     public MLDataset getVersionset(int tenantId, String userName, long datasetId, long versionsetId)
             throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_USING_ID);
@@ -860,16 +852,15 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-    }
+    }*/
 
+    //DONE
     @Override
     public List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         List<MLDataset> datasets = new ArrayList<MLDataset>();
-
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_DATASETS);
@@ -898,13 +889,12 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    //DONE
     @Override
     public MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_USING_ID);
@@ -935,8 +925,8 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    @Override
-    public long getDatasetVersionId(long valuesetId) throws DatabaseHandlerException {
+    /*@Override
+    public long getDatasetId(long valuesetId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -958,8 +948,9 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-    }
+    }*/
 
+    //DONE
     @Override
     public long getDatasetId(long datasetVersionId) throws DatabaseHandlerException {
 
@@ -1019,7 +1010,7 @@ public class MLDatabaseService implements DatabaseService {
      * @throws DatabaseHandlerException
      */
     @Override
-    public void updateValueSetSample(long valueSet, SamplePoints valueSetSample) throws DatabaseHandlerException {
+    public void updateVersionsetSample(long valueSet, SamplePoints valueSetSample) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
