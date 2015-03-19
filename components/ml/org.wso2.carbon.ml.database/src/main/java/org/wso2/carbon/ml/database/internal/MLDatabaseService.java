@@ -2000,7 +2000,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModelConfigurations(long modelId, List<MLModelConfiguration> modelConfigs)
+    public void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2015,7 +2015,7 @@ public class MLDatabaseService implements DatabaseService {
                 String value = mlModelConfiguration.getValue();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL_CONFIGURATION);
-                insertStatement.setLong(1, modelId);
+                insertStatement.setLong(1, analysisId);
                 insertStatement.setString(2, key);
                 insertStatement.setString(3, value);
                 insertStatement.execute();
@@ -2075,7 +2075,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters)
+    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2090,7 +2090,7 @@ public class MLDatabaseService implements DatabaseService {
                 String value = mlHyperParameter.getValue();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
-                insertStatement.setLong(1, modelId);
+                insertStatement.setLong(1, analysisId);
                 insertStatement.setString(2, name);
                 insertStatement.setString(3, value);
                 insertStatement.execute();
@@ -2205,14 +2205,14 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException {
+    public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_SCHEMA_ID_FROM_MODEL);
-            statement.setLong(1, modelId);
+            statement.setLong(1, analysisId);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
@@ -2220,7 +2220,7 @@ public class MLDatabaseService implements DatabaseService {
                 return -1;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset version id of [model] %s ", modelId), e);
+            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset id of [analysis] %s ", analysisId), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -2228,11 +2228,11 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues) throws DatabaseHandlerException {
+    public void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         
-        long datasetSchemaId = getDatasetSchemaIdFromModelId(modelId);
+        long datasetSchemaId = getDatasetSchemaIdFromAnalysisId(analysisId);
         try {
             // Insert the feature-customized to the database
             connection = dbh.getDataSource().getConnection();
@@ -2245,7 +2245,7 @@ public class MLDatabaseService implements DatabaseService {
                 String userName = customizedValues.getUserName();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_DEFAULTS_INTO_FEATURE_CUSTOMIZED);
-                insertStatement.setLong(1, modelId);
+                insertStatement.setLong(1, analysisId);
                 insertStatement.setInt(2, tenantId);
                 insertStatement.setString(3, imputeOption);
                 insertStatement.setBoolean(4, inclusion);
@@ -2272,7 +2272,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertFeatureCustomized(long modelId, List<MLCustomizedFeature> customizedFeatures)
+    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2292,7 +2292,7 @@ public class MLDatabaseService implements DatabaseService {
                 String userName = mlCustomizedFeature.getUserName();
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-                insertStatement.setLong(1, modelId);
+                insertStatement.setLong(1, analysisId);
                 insertStatement.setInt(2, tenantId);
                 insertStatement.setString(3, featureName);
                 insertStatement.setString(4, type);
@@ -2321,7 +2321,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertFeatureCustomized(long modelId, MLCustomizedFeature customizedFeature)
+    public void insertFeatureCustomized(long analysisId, MLCustomizedFeature customizedFeature)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2340,7 +2340,7 @@ public class MLDatabaseService implements DatabaseService {
             String userName = customizedFeature.getUserName();
 
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-            insertStatement.setLong(1, modelId);
+            insertStatement.setLong(1, analysisId);
             insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, featureName);
             insertStatement.setString(4, type);
@@ -2975,14 +2975,14 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public String getAStringModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException {
+    public String getAStringModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement model = null;
         ResultSet result = null;
         try {
             connection = dbh.getDataSource().getConnection();
             model = connection.prepareStatement(SQLQueries.GET_A_MODEL_CONFIGURATION);
-            model.setLong(1, modelId);
+            model.setLong(1, analysisId);
             model.setString(2, configKey);
             result = model.executeQuery();
             if (result.first()) {
@@ -2993,7 +2993,7 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             String msg = String.format(
                     "An error occurred white retrieving [model config] %s  associated with [model id] %s : %s",
-                    configKey, modelId, e.getMessage());
+                    configKey, analysisId, e.getMessage());
             throw new DatabaseHandlerException(msg, e);
         } finally {
             // Close the database resources
