@@ -17,6 +17,7 @@ package org.wso2.carbon.ml.rest.api;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,9 +30,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLProject;
+import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
+import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
-import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
@@ -63,6 +65,105 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             logger.error("Error occured while creating an analysis : " + analysis+ " : " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{analysisId}/features")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId, List<MLCustomizedFeature> customizedFeatures) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.addCustomizedFeatures(analysisId, customizedFeatures);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{analysisId}/features/defaults")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId, MLCustomizedFeature customizedValues) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            customizedValues.setTenantId(tenantId);
+            customizedValues.setUserName(userName);
+            customizedValues.setLastModifiedUser(userName);
+            
+            mlAnalysisHandler.addDefaultsIntoCustomizedFeatures(analysisId, customizedValues);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{analysisId}/configurations")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addModelConfiguration(@PathParam("analysisId") long analysisId, List<MLModelConfiguration> modelConfigs) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.addModelConfigurations(analysisId, modelConfigs);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding model configurations for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{analysisId}/hyperParams")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addHyperParameters(@PathParam("analysisId") long analysisId, List<MLHyperParameter> hyperParameters) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.addHyperParameters(analysisId, hyperParameters);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{analysisId}/hyperParams/defaults")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addDefaultsIntoHyperParameters(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.addDefaultsIntoHyperParameters(analysisId);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

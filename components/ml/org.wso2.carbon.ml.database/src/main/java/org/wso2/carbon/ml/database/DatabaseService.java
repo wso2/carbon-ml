@@ -486,13 +486,13 @@ public interface DatabaseService {
     // TODO
     public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
 
-    void insertFeatureCustomized(long modelId, List<MLCustomizedFeature> customizedFeatures)
+    void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures)
             throws DatabaseHandlerException;
 
-    void insertModelConfigurations(long modelId, List<MLModelConfiguration> modelConfigs)
+    void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws DatabaseHandlerException;
 
-    void insertHyperParameters(long modelId, List<MLHyperParameter> hyperParameters) throws DatabaseHandlerException;
+    void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters) throws DatabaseHandlerException;
 
     String getModelConfigurationValue(long modelId, String name) throws DatabaseHandlerException;
 
@@ -504,7 +504,7 @@ public interface DatabaseService {
 
     long getDatasetVersionId(long valuesetId) throws DatabaseHandlerException;
 
-    void insertFeatureCustomized(long modelId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
+    void insertFeatureCustomized(long analysisId, MLCustomizedFeature customizedFeature) throws DatabaseHandlerException;
 
     long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
 
@@ -512,7 +512,7 @@ public interface DatabaseService {
 
     String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
 
-    String getAStringModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+    String getAStringModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
     double getADoubleModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
 
@@ -559,7 +559,7 @@ public interface DatabaseService {
     long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
 
-    void insertDefaultsIntoFeatureCustomized(long modelId, MLCustomizedFeature customizedValues)
+    void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
 
     long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException;

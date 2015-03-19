@@ -31,10 +31,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
-import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -60,13 +57,11 @@ public class MLModelHandler {
     private DatabaseService databaseService;
     private Properties mlProperties;
     private ThreadExecutor threadExecutor;
-    private List<MLAlgorithm> algorithms;
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         databaseService = valueHolder.getDatabaseService();
         mlProperties = valueHolder.getMlProperties();
-        algorithms = valueHolder.getAlgorithms();
         threadExecutor = new ThreadExecutor(mlProperties);
     }
 
@@ -121,75 +116,6 @@ public class MLModelHandler {
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
             return databaseService.isValidModelId(tenantId, userName, modelId);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-
-    public void addCustomizedFeatures(long modelId, List<MLCustomizedFeature> customizedFeatures)
-            throws MLModelHandlerException {
-        try {
-            databaseService.insertFeatureCustomized(modelId, customizedFeatures);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-    
-    public void addDefaultsIntoCustomizedFeatures(long modelId, MLCustomizedFeature customizedValues)
-            throws MLModelHandlerException {
-        try {
-            databaseService.insertDefaultsIntoFeatureCustomized(modelId, customizedValues);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-
-    public void addCustomizedFeature(long modelId, MLCustomizedFeature customizedFeature)
-            throws MLModelHandlerException {
-        try {
-            databaseService.insertFeatureCustomized(modelId, customizedFeature);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-
-    public void addModelConfigurations(long modelId, List<MLModelConfiguration> modelConfigs)
-            throws MLModelHandlerException {
-        try {
-            databaseService.insertModelConfigurations(modelId, modelConfigs);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-
-    public void addHyperParameters(long modelId, List<MLHyperParameter> hyperParameters) throws MLModelHandlerException {
-        try {
-            databaseService.insertHyperParameters(modelId, hyperParameters);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
-        }
-    }
-    
-    public void addDefaultsIntoHyperParameters(long modelId) throws MLModelHandlerException {
-        try {
-            // read the algorithm name of this model
-            String algorithmName = databaseService.getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_NAME);
-            if (algorithmName == null) {
-                throw new MLModelHandlerException("You have to set the model configurations (algorithm name) before loading default hyper parameters for model [id] "+modelId);
-            }
-            // get the MLAlgorithm and then the hyper params of the model's algorithm
-            List<MLHyperParameter> hyperParameters = null;
-            for (MLAlgorithm mlAlgorithm : algorithms) {
-                if (algorithmName.equalsIgnoreCase(mlAlgorithm.getName())) {
-                    hyperParameters = mlAlgorithm.getParameters();
-                    break;
-                }
-            }
-            if (hyperParameters == null) {
-                throw new MLModelHandlerException("Cannot find the default hyper parameters for algorithm [name] "+algorithmName);
-            }
-            // add default hyper params
-            databaseService.insertHyperParameters(modelId, hyperParameters);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
         }
