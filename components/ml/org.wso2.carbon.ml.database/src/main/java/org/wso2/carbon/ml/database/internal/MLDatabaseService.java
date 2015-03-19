@@ -2550,6 +2550,7 @@ public class MLDatabaseService implements DatabaseService {
 
         Connection connection = null;
         PreparedStatement updateStatement = null;
+        ResultSet result;
         try {
             JSONArray summaryStatJson;
             connection = dbh.getDataSource().getConnection();
@@ -2569,10 +2570,21 @@ public class MLDatabaseService implements DatabaseService {
                 updateStatement.setInt(4, columnIndex);
                 updateStatement.execute();
 
+                // Get feature id
+                updateStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_ID);
+                updateStatement.setLong(1, datasetSchemaId);
+                updateStatement.setString(2, columnNameMapping.getKey());
+                result = updateStatement.executeQuery();
+                long featureId = -1;
+                if(result.first()) {
+                   featureId  = result.getLong(1);
+                }
+
                 updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SUMMARY);
-                updateStatement.setString(1, columnNameMapping.getKey());
-                updateStatement.setLong(2, datasetVersionId);
-                updateStatement.setString(3, summaryStatJson.toString());
+                updateStatement.setLong(1, featureId);
+                updateStatement.setString(2, columnNameMapping.getKey());
+                updateStatement.setLong(3, datasetVersionId);
+                updateStatement.setString(4, summaryStatJson.toString());
                 updateStatement.execute();
             }
             connection.commit();
