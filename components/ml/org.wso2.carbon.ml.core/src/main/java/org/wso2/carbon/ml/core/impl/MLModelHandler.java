@@ -20,8 +20,11 @@ package org.wso2.carbon.ml.core.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,13 +34,16 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedModel;
@@ -77,7 +83,7 @@ public class MLModelHandler {
             String name = model.getName();
             String userName = model.getUserName();
             long analysisId = model.getAnalysisId();
-            long valueSetId = model.getValueSetId();
+            long valueSetId = model.getVersionSetId();
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {
@@ -86,7 +92,7 @@ public class MLModelHandler {
     }
 
     public void deleteModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
-        // TODO 
+        // TODO
     }
 
     public long getModelId(int tenantId, String userName, String modelName) throws MLModelHandlerException {
@@ -96,7 +102,7 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e);
         }
     }
-    
+
     public MLModelNew getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
@@ -104,7 +110,7 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e);
         }
     }
-    
+
     public List<MLModelNew> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.getAllModels(tenantId, userName);
@@ -189,8 +195,62 @@ public class MLModelHandler {
 
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
-            
+
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
+
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
+        } finally {
+            // switch class loader back to thread context class loader
+            Thread.currentThread().setContextClassLoader(tccl);
+        }
+    }
+
+    public List<?> predict(int tenantId, String userName, long modelId, String[] data) throws MLModelHandlerException,
+            MLModelBuilderException {
+
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                    modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        /**
+         * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
+         * needs to be switched temporarily.
+         */
+        // assign current thread context class loader to a variable
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        try {
+            // class loader is switched to JavaSparkContext.class's class loader
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            // long datasetVersionId = databaseService.getDatasetVersionId(datasetVersionId);
+            // long datasetId = databaseService.getDatasetId(datasetVersionId);
+            String dataType = databaseService.getDataTypeOfModel(modelId);
+            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
+            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+            Workflow facts = databaseService.getWorkflow(modelId);
+
+            MLModelConfigurationContext context = new MLModelConfigurationContext();
+            context.setModelId(modelId);
+            context.setColumnSeparator(columnSeparator);
+            context.setFacts(facts);
+            context.setDataToBePredicted(data);
+
+            JavaSparkContext sparkContext = null;
+            sparkConf.setAppName(String.valueOf(modelId));
+            // create a new java spark context
+            sparkContext = new JavaSparkContext(sparkConf);
+            context.setSparkContext(sparkContext);
+            
+            MLModel model = retrieveModel(modelId);
+
+            // predict
+            Predictor predictor = new Predictor(modelId, model, context);
+            List<?> predictions = predictor.predict();
+
+            log.info(String.format("Prediction from model [id] %s was successful.", modelId));
+            return predictions;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
@@ -214,11 +274,42 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator +"model." +modelId +"."+ MLUtils.getDate();
+            String outPath = storageLocation + File.separator + "model." + modelId + "." + MLUtils.getDate();
             outputAdapter.writeDataset(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);
+        }
+    }
+    
+    private MLModel retrieveModel(long modelId) throws MLModelBuilderException {
+        InputStream in = null;
+        ObjectInputStream ois = null;
+        try {
+            MLStorage storage = databaseService.getModelStorage(modelId);
+            String storageType = storage.getType();
+            String storageLocation = storage.getLocation();
+            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+            MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+            in = inputAdapter.readDataset(new URI(storageLocation));
+            ois = new ObjectInputStream(in);
+            return (MLModel) ois.readObject();
+            
+        } catch (Exception e) {
+            throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignore) {
+                }
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException ignore) {
+                }
+            }
         }
     }
 

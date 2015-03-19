@@ -109,7 +109,7 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            List<MLDataset> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
+            List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
             return Response.ok(versionsets).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all versions of dataset : " + datasetId+ " : " + e.getMessage());
@@ -118,88 +118,20 @@ public class DatasetApiV10 extends MLRestAPI {
     }
     
     @GET
-    @Path("/{datasetId}/versions/{versionsetId}")
+    @Path("/versions/{versionsetId}")
     @Produces("application/json")
-    public Response getVersionset(@PathParam("datasetId") long datasetId, @PathParam("versionsetId") long versionsetId) {
+    public Response getVersionset(@PathParam("versionsetId") long versionsetId) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            MLDataset versionset = datasetProcessor.getVersionset(tenantId, userName, datasetId, versionsetId);
+            MLDatasetVersion versionset = datasetProcessor.getVersionset(tenantId, userName, versionsetId);
             if (versionset == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(versionset).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all versions of dataset : " + datasetId+ " : " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-    
-    @GET
-    @Path("/{datasetId}/valuesets")
-    @Produces("application/json")
-    public Response getValuesetsOfDataset(@PathParam("datasetId") long datasetId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
-            List<MLDatasetVersion> valuesets = datasetProcessor.getValuesetOfDataset(tenantId, userName, datasetId);
-            return Response.ok(valuesets).build();
-        } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all valuesets of dataset : " + datasetId+ " : " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-    
-    @GET
-    @Path("/valuesets")
-    @Produces("application/json")
-    public Response getAllValuesets() {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        
-        try {
-            List<MLDatasetVersion> valuesets = datasetProcessor.getAllValuesets(tenantId, userName);
-            return Response.ok(valuesets).build();
-        } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all valuesets of tenant : " + tenantId+ " and user: "+userName+" : " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-    
-    @GET
-    @Path("/valuesets/versions/{versionsetId}")
-    @Produces("application/json")
-    public Response getValuesetsOfVersion(@PathParam("versionsetId") long versionsetId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
-            List<MLDatasetVersion> valuesets = datasetProcessor.getValuesetOfVersion(tenantId, userName, versionsetId);
-            return Response.ok(valuesets).build();
-        } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all valuesets of versionset id : " + versionsetId+ " : " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-    
-    @GET
-    @Path("/valuesets/{valuesetId}")
-    @Produces("application/json")
-    public Response getValueset(@PathParam("valuesetId") long valuesetId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
-            MLDatasetVersion valueset = datasetProcessor.getValueset(tenantId, userName, valuesetId);
-            if (valueset == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.ok(valueset).build();
-        } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all versions of valueset : " + valuesetId+ " : " + e.getMessage());
+            logger.error("Error occured while retrieving dataset versions: " + versionsetId + " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

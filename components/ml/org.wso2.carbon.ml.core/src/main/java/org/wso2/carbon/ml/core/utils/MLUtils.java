@@ -206,4 +206,15 @@ public class MLUtils {
         
     }
     
+    public static double[] toDoubleArray(String[] inArray) {
+        double[] outArray = new double[inArray.length];
+        int idx = 0;
+        for (String string : inArray) {
+            outArray[idx] = Double.parseDouble(string);
+            idx++;
+        }
+        
+        return outArray;
+    }
+    
 }

@@ -1,0 +1,9 @@
+{
+"name" : "housing",
+"dataSourceType" : "file",
+"dataTargetType" : "file",
+"sourcePath" : "file:///home/upul/git/wso2/product-ml/samples/rest-api/linear-regression/housing.csv",
+"dataType" : "csv",
+"comments" : "Boston housing dataset",
+"version" : "1.0"
+}

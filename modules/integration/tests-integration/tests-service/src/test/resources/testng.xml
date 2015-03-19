@@ -37,17 +37,17 @@
 
  	<!-- <test name="Dataset-Tests" preserve-order="true" verbose="2">
 		<classes>
-			<class name="org.wso2.carbon.ml.integration.test.services.dataset.CreateDatasetTestCase"/>
+			<class name="org.wso2.carbon.ml.dataset.test.CreateDatasetTestCase"/>
 		</classes>
 	</test> -->
 	 <test name="Dataset-Tests" preserve-order="true" verbose="2">
         <packages>
-            <package name="org.wso2.carbon.ml.integration.test.services.dataset"/>
+            <package name="org.wso2.carbon.ml.dataset.test"/>
         </packages>
     </test>
     <test name="Project-Tests" preserve-order="true" verbose="2">
         <packages>
-            <package name="org.wso2.carbon.ml.integration.test.services.project"/>
+            <package name="org.wso2.carbon.ml.project.test"/>
         </packages>
     </test>
 </suite>

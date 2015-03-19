@@ -16,14 +16,12 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.integration.test.services.dataset;
+package org.wso2.carbon.ml.dataset.test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
@@ -34,8 +32,6 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 
 public class CreateDatasetTestCase extends MLIntegrationBaseTest {
-
-    private static final Log logger = LogFactory.getLog(CreateDatasetTestCase.class);
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
@@ -51,10 +47,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      */
     @Test(groups = "wso2.ml.integration", description = "Create a dataset from a CSV file")
     public void testCreateDatasetFromFile() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"ForestCoverDataset1\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                        + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath("data/fcSample.csv") + "\","
-                        + "\"dataType\" : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"1.0\"}";
-        CloseableHttpResponse response = doPost(new URI("https://localhost:9443/api/datasets"), payload);
+        CloseableHttpResponse response = uploadDatasetFromCSV("ForestCoverDataset1", "1.0", "data/fcSample.csv");
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -69,10 +62,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
     @Test(groups = "wso2.ml.integration", description = "Create a new version of an existing dataset",
             dependsOnMethods="testCreateDatasetFromFile")
     public void testCreateNewDatasetVersion() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"ForestCoverDataset1\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                        + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath("data/fcSample.csv") + "\","
-                        + "\"dataType\" : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"2.0\"}";
-        CloseableHttpResponse response = doPost(new URI("https://localhost:9443/api/datasets"), payload);
+        CloseableHttpResponse response = uploadDatasetFromCSV("ForestCoverDataset1", "2.0", "data/fcSample.csv");
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -86,10 +76,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      */
     @Test(groups = "wso2.ml.integration", description = "Create a dataset from a non-existing CSV file")
     public void testCreateDatasetFromNonExistingFile() throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"ForestCoverDataset2\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                        + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath("data/xxx.csv") + "\",\"dataType\""
-                        + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"1.0\"}";
-        CloseableHttpResponse response = doPost(new URI("https://localhost:9443/api/datasets"), payload);
+        CloseableHttpResponse response = uploadDatasetFromCSV("ForestCoverDataset2", "1.0", "data/xxx.csv");
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine()
                 .getStatusCode());
         response.close();
@@ -112,7 +99,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
         String payload = "{\"name\" : \"ForestCoverDataset3\",\"dataSourceType\" : \"bam\",\"dataTargetType\" : "
                         + "\"file\"," + "\"sourcePath\" : \""+ bamTableUrl + "\",\"dataType\""
                         + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"1.0\"}";
-        CloseableHttpResponse response = doPost(new URI("https://localhost:9443/api/datasets"), payload);
+        CloseableHttpResponse response = doHttpPost(new URI("https://localhost:9443/api/datasets"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

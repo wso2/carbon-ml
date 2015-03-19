@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.integration.test.exceptions;
+package org.wso2.carbon.ml.integration.common.utils.exception;
 
 public class MLIntegrationTestException extends Exception {
 	private static final long serialVersionUID = 1L;

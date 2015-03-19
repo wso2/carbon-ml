@@ -16,51 +16,44 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.integration.test.services.project;
+package org.wso2.carbon.ml.project.test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.test.exceptions.MLIntegrationTestException;
 
-public class CreateProjectTestCase extends MLIntegrationBaseTest {
+public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
+    
+    private static final String projectName = "WSO2-ML-Test-Project";
 
-	private static final Log logger = LogFactory.getLog(CreateProjectTestCase.class);
-	
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
+        String payload = "{\"name\" : \"" + projectName + "\",\"description\" : \"Test Project\"}";
+        doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
     }
     
     /**
-     * Test creating a project.
+     * Test retrieving a project.
      * 
-     * @throws MLIntegrationTestException
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project")
-    public void testCreateProject() throws MLIntegrationTestException, ClientProtocolException,
-            IOException, URISyntaxException {
-        String payload = "{\"name\" : \"WSO2-ML-Test-Project\",\"description\" : \"Test Project\"}";
-        response = doPost(new URI("https://localhost:9443/api/projects"), payload);
+    @Test(groups = "wso2.ml.integration", description = "Delete an exsisting project")
+    public void testDeleteProject() throws ClientProtocolException, IOException, URISyntaxException {
+        CloseableHttpResponse response = doHttpDelete(new URI("https://localhost:9443/api/projects/" + projectName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        response.close();
     }
     
-    /*@Test(groups = "wso2.ml.integration", description = "Create a project")
-    public void testGetProjectId() throws MLIntegrationTestException, ClientProtocolException, IOException, 
-            URISyntaxException {
-        response = doGet(new URI("https://localhost:9443/api/datasets"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-    }*/
+    //TODO: Delete an non-existing project
 }

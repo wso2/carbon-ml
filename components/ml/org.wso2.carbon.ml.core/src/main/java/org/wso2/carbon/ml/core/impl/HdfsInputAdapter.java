@@ -50,6 +50,7 @@ public class HdfsInputAdapter implements MLInputAdapter {
                 }
             }
             Configuration conf = new Configuration();
+            conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             FileSystem file = FileSystem.get(uri, conf);
             FSDataInputStream inputStream = file.open(new Path(uri));
             return inputStream;
