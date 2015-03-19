@@ -10,6 +10,8 @@ import scala.Tuple2;
 import java.io.Serializable;
 
 public class RidgeRegression implements Serializable {
+    private static final long serialVersionUID = -4652546556448809559L;
+
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a ridge regression model
      *
@@ -37,6 +39,8 @@ public class RidgeRegression implements Serializable {
             JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Double, Double>>() {
+                    private static final long serialVersionUID = -1894306961652577838L;
+
                     public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                         Double predicted = ridgeRegressionModel.predict(labeledPoint.features());
                         return new Tuple2<Double, Double>(predicted, labeledPoint.label());

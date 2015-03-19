@@ -29,6 +29,8 @@ import java.io.Serializable;
 
 public class LinearRegression implements Serializable {
 
+    private static final long serialVersionUID = -5137378340857656687L;
+
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a linear regression model
      *
@@ -66,6 +68,8 @@ public class LinearRegression implements Serializable {
             JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Double, Double>>() {
+                    private static final long serialVersionUID = 2027559237268104710L;
+
                     public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                         Double predicted = linearRegressionModel.predict(labeledPoint.features());
                         return new Tuple2<Double, Double>(predicted, labeledPoint.label());

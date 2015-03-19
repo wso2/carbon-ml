@@ -143,7 +143,7 @@ public class MLUtils {
      * @return              Returns indices of features where discard row imputaion is applied
      */
     public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption) {
-        List<Integer> imputeFeatureIndices = new ArrayList();
+        List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
         for (Feature feature : workflow.getFeatures()) {
             if (feature.getImputeOption().equals(imputeOption)) {
                 imputeFeatureIndices.add(feature.getIndex());
