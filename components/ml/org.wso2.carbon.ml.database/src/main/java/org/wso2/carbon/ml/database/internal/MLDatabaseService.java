@@ -2205,14 +2205,14 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException {
+    public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_DATASET_SCHEMA_ID_FROM_MODEL);
-            statement.setLong(1, modelId);
+            statement.setLong(1, analysisId);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
@@ -2220,7 +2220,7 @@ public class MLDatabaseService implements DatabaseService {
                 return -1;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset version id of [model] %s ", modelId), e);
+            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset id of [analysis] %s ", analysisId), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -2232,7 +2232,7 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         
-        long datasetSchemaId = getDatasetSchemaIdFromModelId(analysisId);
+        long datasetSchemaId = getDatasetSchemaIdFromAnalysisId(analysisId);
         try {
             // Insert the feature-customized to the database
             connection = dbh.getDataSource().getConnection();

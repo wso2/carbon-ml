@@ -562,6 +562,6 @@ public interface DatabaseService {
     void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
 
-    long getDatasetSchemaIdFromModelId(long modelId) throws DatabaseHandlerException;
+    long getDatasetSchemaIdFromAnalysisId(long modelId) throws DatabaseHandlerException;
 
 }
