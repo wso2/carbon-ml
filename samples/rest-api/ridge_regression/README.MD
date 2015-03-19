@@ -7,8 +7,6 @@ Algorithm: Ridge-Regression
 Before Running
 ==============
 
-* Edit the create-dataset file's sourcePath value to point to the IndiansDiabetes.csv file.
-
 * Start WSO2 Machine Learner product with a fresh database.
 
 How to Run?

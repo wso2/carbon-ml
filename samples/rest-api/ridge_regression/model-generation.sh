@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "testing Linear Regression workflow"
+echo "testing Ridge Regression workflow"
 
 # creating a dataset
 echo "creating a dataset"
