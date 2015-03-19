@@ -1397,11 +1397,11 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Returns the number of features of a given data-set version
      *
-     * @param datasetVersionId Unique identifier of the data-set version
+     * @param datasetSchemaId Unique identifier of the data-set version
      * @return Number of features in the data-set version
      * @throws DatabaseHandlerException
      */
-    public int getFeatureCount(long datasetVersionId) throws DatabaseHandlerException {
+    public int getFeatureCount(long datasetSchemaId) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement getFeatues = null;
@@ -1412,7 +1412,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(true);
             // Create a prepared statement and extract data-set configurations.
             getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURE_COUNT);
-            getFeatues.setLong(1, datasetVersionId);
+            getFeatues.setLong(1, datasetSchemaId);
             result = getFeatues.executeQuery();
             if (result.first()) {
                 featureCount = result.getInt(1);
@@ -1420,7 +1420,7 @@ public class MLDatabaseService implements DatabaseService {
             return featureCount;
         } catch (SQLException e) {
             throw new DatabaseHandlerException(
-                    "An error occurred while retrieving feature count of the dataset version " + datasetVersionId
+                    "An error occurred while retrieving feature count of the dataset " + datasetSchemaId
                             + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
@@ -2548,6 +2548,8 @@ public class MLDatabaseService implements DatabaseService {
     public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats)
             throws DatabaseHandlerException {
 
+        int count = getFeatureCount(datasetSchemaId);
+        
         Connection connection = null;
         PreparedStatement updateStatement = null;
         try {
@@ -2562,12 +2564,14 @@ public class MLDatabaseService implements DatabaseService {
                         .get(columnIndex), summaryStats.getMissing()[columnIndex],
                         summaryStats.getUnique()[columnIndex], summaryStats.getDescriptiveStats().get(columnIndex));
 
-                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
-                updateStatement.setLong(1, datasetSchemaId);
-                updateStatement.setString(2, columnNameMapping.getKey());
-                updateStatement.setString(3, summaryStats.getType()[columnIndex]);
-                updateStatement.setInt(4, columnIndex);
-                updateStatement.execute();
+                if (count == 0) {
+                    updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
+                    updateStatement.setLong(1, datasetSchemaId);
+                    updateStatement.setString(2, columnNameMapping.getKey());
+                    updateStatement.setString(3, summaryStats.getType()[columnIndex]);
+                    updateStatement.setInt(4, columnIndex);
+                    updateStatement.execute();
+                }
 
                 updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SUMMARY);
                 updateStatement.setString(1, columnNameMapping.getKey());
