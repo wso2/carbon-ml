@@ -240,18 +240,24 @@ public class MLDatasetProcessor {
             // persist data-set and data-set version in DB
             persistDataset(dataset);
 
-            long datasetSchemaId = retrieveDatasetSchemaId(dataset);
+            long datasetSchemaId = dataset.getId();
             if (log.isDebugEnabled()) {
                 log.debug("datasetSchemaId: " + datasetSchemaId);
             }
 
-            String versionsetName = dataset.getName()+"-"+dataset.getVersion()+"-"+MLUtils.getDate();
+            String versionsetName = dataset.getName()+"-"+dataset.getVersion();
 
             // build the MLDatasetVersion
             MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId, dataset.getUserName(), versionsetName, dataset.getVersion(), targetUri, samplePoints);
-            persistDatasetVersion(datasetVersion);
-
             long datasetVersionId = retrieveDatasetVersionId(datasetVersion);
+            if (datasetVersionId != -1) {
+                // dataset version is already exist
+                throw new MLDataProcessingException(String.format("Dataset already exists; data set [name] %s [version] %s", dataset.getName(), dataset.getVersion()));
+            }
+            
+            persistDatasetVersion(datasetVersion);
+            datasetVersionId = retrieveDatasetVersionId(datasetVersion);
+
             if (log.isDebugEnabled()) {
                 log.debug("datasetVersionId: " + datasetVersionId);
             }
@@ -298,13 +304,13 @@ public class MLDatasetProcessor {
         }
     }
 
-    private long retrieveDatasetVersionId(MLDatasetVersion valueset) throws MLDataProcessingException {
+    private long retrieveDatasetVersionId(MLDatasetVersion versionset) {
         long datasetVersionId;
         try {
-            datasetVersionId = databaseService.getValueSetId(valueset.getName(), valueset.getTenantId());
+            datasetVersionId = databaseService.getValueSetId(versionset.getName(), versionset.getTenantId());
             return datasetVersionId;
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            return -1;
         }
     }
 
