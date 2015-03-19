@@ -32,6 +32,8 @@ public class MLModelConfigurationContext {
     private JavaRDD<String> lines;
     private String headerRow;
     private String columnSeparator;
+    private String[] dataToBePredicted;
+    
     public long getModelId() {
         return modelId;
     }
@@ -67,6 +69,12 @@ public class MLModelConfigurationContext {
     }
     public void setColumnSeparator(String columnSeparator) {
         this.columnSeparator = columnSeparator;
+    }
+    public String[] getDataToBePredicted() {
+        return dataToBePredicted;
+    }
+    public void setDataToBePredicted(String[] dataToBePredicted) {
+        this.dataToBePredicted = dataToBePredicted;
     }
     
     
