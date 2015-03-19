@@ -109,7 +109,7 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             int tenantId = carbonContext.getTenantId();
             String userName = carbonContext.getUsername();
-            List<MLDataset> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
+            List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
             return Response.ok(versionsets).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all versions of dataset : " + datasetId+ " : " + e.getMessage());
@@ -136,7 +136,7 @@ public class DatasetApiV10 extends MLRestAPI {
         }
     }
     
-    @GET
+    /*@GET
     @Path("/{datasetId}/valuesets")
     @Produces("application/json")
     public Response getValuesetsOfDataset(@PathParam("datasetId") long datasetId) {
@@ -202,5 +202,5 @@ public class DatasetApiV10 extends MLRestAPI {
             logger.error("Error occured while retrieving all versions of valueset : " + valuesetId+ " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-    }
+    }*/
 }
