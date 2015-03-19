@@ -26,6 +26,9 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.regression.LassoModel;
+import org.apache.spark.mllib.regression.LinearRegressionModel;
+import org.apache.spark.mllib.regression.RidgeRegressionModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
@@ -63,15 +66,17 @@ public class Predictor {
                     || MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
                 
                 SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(facts.getAlgorithmName());
+                
+                JavaSparkContext context = ctxt.getSparkContext();
+                List<double[]> dataList = new ArrayList<double[]>();
+                dataList.add(MLUtils.toDoubleArray(ctxt.getDataToBePredicted()));
+                context.parallelize(dataList);
+                JavaRDD<double[]> dataRDD = context.parallelize(dataList);
+                JavaRDD<Vector> dataVector = dataRDD.map(new DoubleArrayToVector());
+                
                 switch (supervisedAlgorithm) {
                 case LOGISTIC_REGRESSION:
-                    LogisticRegressionModel logisticModel = (LogisticRegressionModel) model.getModel();
-                    JavaSparkContext context = ctxt.getSparkContext();
-                    List<double[]> dataList = new ArrayList<double[]>();
-                    dataList.add(MLUtils.toDoubleArray(ctxt.getDataToBePredicted()));
-                    context.parallelize(dataList);
-                    JavaRDD<double[]> dataRDD = context.parallelize(dataList);
-                    JavaRDD<Vector> dataVector = dataRDD.map(new DoubleArrayToVector());
+                    LogisticRegressionModel logisticModel = (LogisticRegressionModel) model.getModel();                    
                     JavaRDD<Double> predictedData = logisticModel.predict(dataVector);
                     List<Double> predictedDataList = predictedData.collect();
                     for (Double double1 : predictedDataList) {
@@ -85,11 +90,29 @@ public class Predictor {
                 case NAIVE_BAYES:
                     break;
                 case LINEAR_REGRESSION:
-                    break;
+                    LinearRegressionModel lrModel = (LinearRegressionModel)model.getModel();
+                    JavaRDD<Double> testingData = lrModel.predict(dataVector);
+                    List<Double> predictions = testingData.collect();
+                    for (Double prediction : predictions) {
+                        log.info("Prediction: " + prediction);
+                    }
+                    return predictions;                    
                 case RIDGE_REGRESSION:
-                    break;
+                    RidgeRegressionModel ridgeModel = (RidgeRegressionModel)model.getModel();
+                    JavaRDD<Double> ridgeTestingData = ridgeModel.predict(dataVector);
+                    List<Double> ridgePredictions = ridgeTestingData.collect();
+                    for (Double prediction : ridgePredictions) {
+                        log.info("Prediction: " + prediction);
+                    }
+                    return ridgePredictions;                    
                 case LASSO_REGRESSION:
-                    break;
+                    LassoModel lassoModel = (LassoModel)model.getModel();
+                    JavaRDD<Double> lassoTestingData = lassoModel.predict(dataVector);
+                    List<Double> lassoPredictions = lassoTestingData.collect();
+                    for (Double prediction : lassoPredictions) {
+                        log.info("Prediction: " + prediction);
+                    }
+                    return lassoPredictions; 
                 default:
                     throw new AlgorithmNameException("Incorrect algorithm name");
                 }
