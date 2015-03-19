@@ -52,12 +52,12 @@
                         <property>
                             <name>carbon.zip</name>
                             <value>
-                                ${basedir}/../../distribution/target/wso2ml-${project.version}.zip
+                                ${basedir}/../../../distribution/target/wso2ml-${project.version}.zip
                             </value>
                         </property>
                         <property>
                             <name>samples.dir</name>
-                            <value>${basedir}/../../../samples/product</value>
+                            <value>${basedir}/../../../../samples/product</value>
                         </property>
                         <property>
                             <name>framework.resource.location</name>
