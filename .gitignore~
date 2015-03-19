@@ -24,5 +24,3 @@ hs_err_pid*
 .prefs
 sonar-pom.xml
 ._*
-*.mar
-*.~
