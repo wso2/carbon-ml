@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import org.apache.commons.math3.stat.regression.ModelSpecificationException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
@@ -29,7 +28,6 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
-import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClusterModelSummary;

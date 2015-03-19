@@ -30,6 +30,8 @@ import java.io.Serializable;
 
 public class NaiveBayesClassifier implements Serializable {
 
+    private static final long serialVersionUID = 9159185970866124812L;
+
     /**
      * This method trains a naive bayes model
      *
@@ -51,6 +53,8 @@ public class NaiveBayesClassifier implements Serializable {
     public JavaPairRDD<Double, Double> test(final NaiveBayesModel naiveBayesModel, JavaRDD<LabeledPoint>
             test) {
         return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
+            private static final long serialVersionUID = -8165253833889387018L;
+
             @Override
             public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                 return new Tuple2<Double, Double>(naiveBayesModel.predict(labeledPoint.features()),

@@ -30,6 +30,8 @@ import java.util.Map;
 
 public class DecisionTree implements Serializable {
 
+    private static final long serialVersionUID = 5725487832599918979L;
+
     /**
      * This method trains a decision tree model
      *
@@ -58,6 +60,8 @@ public class DecisionTree implements Serializable {
     public JavaPairRDD<Double, Double> test(final DecisionTreeModel model, JavaRDD<LabeledPoint>
             test) {
         return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
+            private static final long serialVersionUID = -7078534438332774197L;
+
             @Override
             public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                 return new Tuple2<Double, Double>(model.predict(labeledPoint.features()), labeledPoint.label());

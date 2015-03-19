@@ -10,6 +10,8 @@ import scala.Tuple2;
 import java.io.Serializable;
 
 public class LassoRegression implements Serializable {
+    private static final long serialVersionUID = -3473686703198790983L;
+
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a lasso regression model
      *
@@ -37,6 +39,8 @@ public class LassoRegression implements Serializable {
             JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Double, Double>>() {
+                    private static final long serialVersionUID = -156144873494491437L;
+
                     public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                         Double predicted = lassoModel.predict(labeledPoint.features());
                         return new Tuple2<Double, Double>(predicted, labeledPoint.label());

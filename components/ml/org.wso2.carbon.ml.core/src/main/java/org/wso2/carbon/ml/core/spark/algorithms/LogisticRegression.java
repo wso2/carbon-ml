@@ -22,7 +22,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.optimization.L1Updater;
@@ -31,18 +30,16 @@ import org.apache.spark.mllib.optimization.LogisticGradient;
 import org.apache.spark.mllib.optimization.SquaredL2Updater;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
-import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 
 import scala.Tuple2;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class LogisticRegression implements Serializable {
+
+    private static final long serialVersionUID = -8590453832704525074L;
 
     /**
      * TODO add another overloaded method to avoid Regularization.
@@ -85,6 +82,8 @@ public class LogisticRegression implements Serializable {
         int numFeatures = trainingDataset.take(1).get(0).features().size();
         JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Vector>>() {
+                    private static final long serialVersionUID = 8486284563910067157L;
+
                     public Tuple2<Object, Vector> call(LabeledPoint p) {
                         return new Tuple2<Object, Vector>(p.label(), MLUtils.appendBias(p.features()));
                     }
@@ -110,6 +109,8 @@ public class LogisticRegression implements Serializable {
             JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Object>>() {
+                    private static final long serialVersionUID = 910861043765821669L;
+
                     public Tuple2<Object, Object> call(LabeledPoint labeledPoint) {
                         Double score = logisticRegressionModel.predict(labeledPoint.features());
                         return new Tuple2<Object, Object>(score, labeledPoint.label());

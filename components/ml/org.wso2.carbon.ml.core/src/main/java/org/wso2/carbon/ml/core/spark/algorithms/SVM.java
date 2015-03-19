@@ -32,6 +32,8 @@ import scala.Tuple2;
 import java.io.Serializable;
 
 public class SVM implements Serializable {
+    private static final long serialVersionUID = 7331560994085961463L;
+
     /**
      * This method uses stochastic gradient descent (SGD) algorithm to train a support vector machine (SVM) model.
      *
@@ -80,6 +82,8 @@ public class SVM implements Serializable {
     public JavaRDD<Tuple2<Object, Object>> test(final SVMModel svmModel, JavaRDD<LabeledPoint> testingDataset) {
         return testingDataset.map(
                 new Function<LabeledPoint, Tuple2<Object, Object>>() {
+                    private static final long serialVersionUID = 4382737078158765112L;
+
                     public Tuple2<Object, Object> call(LabeledPoint labeledPoint) {
                         Double score = svmModel.predict(labeledPoint.features());
                         return new Tuple2<Object, Object>(score, labeledPoint.label());
