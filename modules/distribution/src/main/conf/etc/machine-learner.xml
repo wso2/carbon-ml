@@ -126,11 +126,11 @@
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
-				<Value>0.001</Value>
+				<Value>0.1</Value>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
-				<Value>L1</Value>
+				<Value>L2</Value>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
