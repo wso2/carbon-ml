@@ -2101,24 +2101,20 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures)
-            throws DatabaseHandlerException {
-
+    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures, int tenantId,
+            String userName) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement insertStatement = null;
         try {
             // Insert the feature-customized to the database
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-
             for (MLCustomizedFeature mlCustomizedFeature : customizedFeatures) {
-                int tenantId = mlCustomizedFeature.getTenantId();
                 String featureName = mlCustomizedFeature.getName();
                 String type = mlCustomizedFeature.getType();
                 String imputeOption = mlCustomizedFeature.getImputeOption();
                 boolean inclusion = mlCustomizedFeature.isInclude();
-                String lastModifiedUser = mlCustomizedFeature.getLastModifiedUser();
-                String userName = mlCustomizedFeature.getUserName();
+                String lastModifiedUser = userName;
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
                 insertStatement.setLong(1, analysisId);
@@ -2129,7 +2125,6 @@ public class MLDatabaseService implements DatabaseService {
                 insertStatement.setBoolean(6, inclusion);
                 insertStatement.setString(7, lastModifiedUser);
                 insertStatement.setString(8, userName);
-
                 insertStatement.execute();
             }
             connection.commit();
