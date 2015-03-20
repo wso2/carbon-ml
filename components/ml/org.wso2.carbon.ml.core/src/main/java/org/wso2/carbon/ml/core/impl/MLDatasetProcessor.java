@@ -234,6 +234,8 @@ public class MLDatasetProcessor {
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId,  summaryStatsSettings,
                     samplePoints));
+            
+            log.info(String.format("[Created] %s", dataset));
 
         } catch (MLInputAdapterException e) {
             throw new MLDataProcessingException(e);
