@@ -82,7 +82,7 @@ public class MLProjectHandler {
         }
     }
 
-    public MLProject getProject(int tenantId, String userName, long projectId) {
+    public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         // TODO Auto-generated method stub
         return null;
     }
