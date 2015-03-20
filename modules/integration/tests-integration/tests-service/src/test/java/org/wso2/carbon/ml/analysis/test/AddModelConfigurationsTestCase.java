@@ -18,15 +18,13 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -49,20 +47,10 @@ public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
         uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
         //Create a project
         createProject(projectName, DatasetName);
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        projectId = responseJson.getInt("id");
-        bufferedReader.close();
-        response.close();
+        projectId = getProjectId(projectName);
         //Create an analysis
         createAnalysis(analysisName, projectId);
-        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
-        bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        responseJson = new JSONObject(bufferedReader.readLine());
-        analysisId = responseJson.getInt("id");
-        bufferedReader.close();
-        response.close();
+        analysisId = getAnalysisId(analysisName);
     }
 
     /**
@@ -73,15 +61,17 @@ public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Add default values to customized features")
-    public void testAddDefaultsToCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Add model configurations to the analysis")
+    public void testSetModelConfigurations() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        String payload ="{\"include\" : true,\"imputeOption\": \"DISCARD\"}";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
-                "/features/defaults"), payload);
+        Map <String,String> configurations = new HashMap<String,String>();
+        configurations.put("algorithmName", "LOGISTIC_REGRESSION");
+        configurations.put("algorithmType", "Classification");
+        configurations.put("responseVariable", "Cover_Type");
+        configurations.put("trainDataFraction", "0.7");
+        setModelConfiguration(analysisId, configurations);
+        CloseableHttpResponse response = setModelConfiguration(analysisId, configurations);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
-    
-    //TODO: add non existing features
 }
