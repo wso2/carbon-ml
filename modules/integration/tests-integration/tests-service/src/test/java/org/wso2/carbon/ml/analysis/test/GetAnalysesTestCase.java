@@ -34,11 +34,11 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class GetAnalysisTestCase extends MLIntegrationBaseTest {
+public class GetAnalysesTestCase extends MLIntegrationBaseTest {
     
-    private static final String DatasetName = "SampleDataForGetAnalysisTestCase";
-    private static final String projectName = "TestProjectForGetAnalysisTestcase";
-    private static final String analysisName = "TestProjectForGetAnalysisTestcase";
+    private static final String DatasetName = "SampleDataForAnalysisTestCase";
+    private static final String projectName = "TestProjectForAnalysisTestcase";
+    private static final String analysisName = "TestAnalysisForGetAnalysesTestcase";
     private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
@@ -50,9 +50,9 @@ public class GetAnalysisTestCase extends MLIntegrationBaseTest {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONObject responseJson = new JSONObject(bufferedReader.readLine());
         projectId = responseJson.getInt("id");
-        response.close();
-        bufferedReader.close();
         createAnalysis(analysisName, projectId);
+        bufferedReader.close();
+        response.close();
     }
 
     /**
@@ -66,9 +66,10 @@ public class GetAnalysisTestCase extends MLIntegrationBaseTest {
     @Test(groups = "wso2.ml.integration", description = "Get all analyzes")
     public void testGetAllAnalyzes() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/"));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
     }
+    
     /**
      * Test retrieving an analysis by name.
      * 
@@ -77,10 +78,27 @@ public class GetAnalysisTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get an analysis by name", dependsOnMethods = "testGetAllAnalyzes")
-    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException, 
+    @Test(groups = "wso2.ml.integration", description = "Retrieve an analysis by name")
+    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisName));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        response.close();
+    }
+    
+    /**
+     * Test retrieving a non-existing analysis.
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
+     */
+    @Test(groups = "wso2.ml.integration", description = "Retrieve a non-existing analysis")
+    public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + "nonExistinfAnalysisName"));
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_NOT_FOUND, response.getStatusLine().getStatusCode());
+        response.close();
     }
 }

@@ -34,11 +34,10 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class GetAnalyzesTestCase extends MLIntegrationBaseTest {
+public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
     
     private static final String DatasetName = "SampleDataForAnalysisTestCase";
     private static final String projectName = "TestProjectForAnalysisTestcase";
-    private static final String analysisName = "TestAnalysisForGetAnalyzesTestcase";
     private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
@@ -50,40 +49,55 @@ public class GetAnalyzesTestCase extends MLIntegrationBaseTest {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONObject responseJson = new JSONObject(bufferedReader.readLine());
         projectId = responseJson.getInt("id");
-        createAnalysis(analysisName, projectId);
         bufferedReader.close();
         response.close();
     }
 
     /**
-     * Test retrieving an analysis by name.
+     * Test creating an analysis.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve an analysis by name")
-    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Create an analysis")
+    public void testCreateAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisName));
+        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", projectId);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
-     * Test retrieving a non-existing analysis.
+     * Test creating an analysis without the Name.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve a non-existing analysis")
-    public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Create an analysis without a name")
+    public void testCreateAnalysisWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/" + "nonExistinfAnalysisName"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_NOT_FOUND, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = createAnalysis(null, projectId);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
+    
+    /**
+     * Test creating an analysis without a project ID.
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
+     */
+    /*@Test(groups = "wso2.ml.integration", description = "Create an analysis without a ProjectId")
+    public void testCreateAnalysisWithoutProjectID() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", -1);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        response.close();
+    }*/
 }
