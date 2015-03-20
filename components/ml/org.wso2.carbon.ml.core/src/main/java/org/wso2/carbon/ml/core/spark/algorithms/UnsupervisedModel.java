@@ -59,16 +59,6 @@ public class UnsupervisedModel {
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
             
-//            sparkConf.setAppName(modelID);
-//            // create a new java spark context
-//            sparkContext = new JavaSparkContext(sparkConf);
-//            // parse lines in the dataset
-//            String datasetURL = workflow.getDatasetURL();
-//            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
-//            // get header line
-//            String headerRow = lines.take(1).get(0);
-//            // get column separator
-//            String columnSeparator = MLModelUtils.getColumnSeparator(datasetURL);
             // apply pre processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, context.getLines(), headerRow,
                     columnSeparator);
@@ -118,9 +108,6 @@ public class UnsupervisedModel {
     private ModelSummary buildKMeansModel(long modelID, JavaRDD<Vector> trainingData,
             JavaRDD<Vector> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
         try {
-//            DatabaseService dbService = MLModelServiceValueHolder.getDatabaseService();
-//            dbService.insertModel(modelID, workflow.getWorkflowID(),
-//                    new Time(System.currentTimeMillis()));
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(trainingData, Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
@@ -132,7 +119,6 @@ public class UnsupervisedModel {
             clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(kMeansModel);
             return clusterModelSummary;
-//            dbService.updateModel(modelID, mlModel, clusterModelSummary, new Time(System.currentTimeMillis()));
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);
         }
