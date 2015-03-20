@@ -1642,6 +1642,42 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+    
+    @Override
+    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ML_MODEL_FROM_ID);
+            statement.setLong(1, modelId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLModelNew model = new MLModelNew();
+                model.setId(modelId);
+                model.setName(result.getString(1));
+                model.setAnalysisId(result.getLong(2));
+                model.setVersionSetId(result.getLong(3));
+                model.setCreatedTime(result.getString(4));
+                model.setStorageType(result.getString(5));
+                model.setStorageDirectory(result.getString(6));
+                model.setTenantId(tenantId);
+                model.setUserName(userName);
+                return model;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting the model with model id: "
+                    + modelId + ", tenant id:" + tenantId + " and username:" + userName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
 
     @Override
     public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
@@ -2988,4 +3024,5 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+
 }
