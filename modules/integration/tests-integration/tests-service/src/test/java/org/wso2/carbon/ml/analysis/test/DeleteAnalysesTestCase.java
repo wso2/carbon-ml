@@ -31,17 +31,17 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class GetAnalysesTestCase extends MLIntegrationBaseTest {
+public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
     
-    private static final String DatasetName = "SampleDataForAnalysisTestCase";
-    private static final String projectName = "TestProjectForAnalysisTestcase";
-    private static final String analysisName = "TestAnalysisForGetAnalysesTestcase";
+    private static final String DatasetName = "SampleDataForDeleteAnalysisTestCase";
+    private static final String projectName = "TestProjectForDeleteAnalysisTestcase";
+    private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";
     private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
-     // Upload a dataset
+        // Upload a dataset
         uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
         //Create a project
         createProject(projectName, DatasetName);
@@ -51,49 +51,34 @@ public class GetAnalysesTestCase extends MLIntegrationBaseTest {
     }
 
     /**
-     * Test retrieving all analyzes.
+     * Test deleting an analysis by name.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get all analyzes")
-    public void testGetAllAnalyzes() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-    }
-    
-    /**
-     * Test retrieving an analysis by name.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve an analysis by name")
+    @Test(groups = "wso2.ml.integration", description = "Delete an analysis by name")
     public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
-     * Test retrieving a non-existing analysis.
+     * Test deleting a non-existing analysis.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve a non-existing analysis")
+    @Test(groups = "wso2.ml.integration", description = "Delete a non-existing analysis")
     public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + "nonExistinfAnalysisName"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_NOT_FOUND, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + "nonExistinfAnalysisName"));
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
 }

@@ -535,6 +535,8 @@ public interface DatabaseService {
     public List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
 
     public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
+    
+    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
 
@@ -554,5 +556,7 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     public long getDatasetSchemaIdFromAnalysisId(long modelId) throws DatabaseHandlerException;
+
+    void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
 }

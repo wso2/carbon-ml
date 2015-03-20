@@ -1334,10 +1334,12 @@ public class MLDatabaseService implements DatabaseService {
                 project.setName(projectName);
                 project.setId(result.getLong(1));
                 project.setDescription(result.getString(2));
+                project.setDatasetId(result.getLong(3));
                 project.setTenantId(tenantId);
                 project.setUserName(userName);
-                project.setCreatedTime(result.getString(3));
-                
+                project.setCreatedTime(result.getString(4));
+                MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                project.setDatasetName(dataset.getName());
                 return project;
             } else {
                 return null;
@@ -1371,7 +1373,10 @@ public class MLDatabaseService implements DatabaseService {
                 project.setDescription(result.getString(3));
                 project.setTenantId(tenantId);
                 project.setUserName(userName);
-                project.setCreatedTime(result.getString(4));
+                project.setDatasetId(result.getLong(4));
+                project.setCreatedTime(result.getString(5));
+                MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                project.setDatasetName(dataset.getName());
                 projects.add(project);
             }
             return projects;
@@ -1405,6 +1410,36 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectName + ": "
+                    + e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
+        }
+    }
+    
+    @Override
+    public void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_MODEL);
+            preparedStatement.setLong(1, modelId);
+            preparedStatement.setInt(2, tenantId);
+            preparedStatement.setString(3, userName);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the model [id]: " + modelId);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting the model [id] : " + modelId + ": "
                     + e.getMessage(), e);
         } finally {
             // enable auto commit
@@ -1635,6 +1670,42 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting the model with model name: "
                     + modelName + ", tenant id:" + tenantId + " and username:" + userName);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+    
+    @Override
+    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ML_MODEL_FROM_ID);
+            statement.setLong(1, modelId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLModelNew model = new MLModelNew();
+                model.setId(modelId);
+                model.setName(result.getString(1));
+                model.setAnalysisId(result.getLong(2));
+                model.setVersionSetId(result.getLong(3));
+                model.setCreatedTime(result.getString(4));
+                model.setStorageType(result.getString(5));
+                model.setStorageDirectory(result.getString(6));
+                model.setTenantId(tenantId);
+                model.setUserName(userName);
+                return model;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting the model with model id: "
+                    + modelId + ", tenant id:" + tenantId + " and username:" + userName);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -2986,4 +3057,5 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+
 }

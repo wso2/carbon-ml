@@ -219,5 +219,13 @@ public class MLUtils {
         
         return outArray;
     }
+
+    public static List<Double> toDoubleList(List<Object> inList) {
+        List<Double> outList = new ArrayList<Double>();
+        for (Object inListObj : inList) {
+            outList.add(new Double(inListObj.toString()));
+        }
+        return outList;
+    }
     
 }

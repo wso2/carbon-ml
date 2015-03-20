@@ -18,9 +18,13 @@
 
 package org.wso2.carbon.ml.integration.common.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.ClientProtocolException;
@@ -31,6 +35,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 /**
@@ -73,8 +80,10 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
         HttpPost post = new HttpPost(uri);
     	post.setHeader(MLIntegrationTestConstants.CONTENT_TYPE, MLIntegrationTestConstants.APPLICATION_JSON);
     	post.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
-    	StringEntity params =new StringEntity(parametersJson);
-    	post.setEntity(params);
+    	if(parametersJson != null) {
+    	    StringEntity params =new StringEntity(parametersJson);
+    	    post.setEntity(params);
+    	}
     	return httpClient.execute(post);
     }
     
@@ -184,6 +193,122 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
                     ProjectId + "}";
         }
         return doHttpPost(new URI(getServerUrlHttps() + "/api/analyses"), payload);
+    }
+    
+    /**
+     * Set feature defaults for an analysis
+     * 
+     * @param analysisId
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected CloseableHttpResponse setFeartureDefaults(int analysisId) throws ClientProtocolException, IOException, 
+            URISyntaxException, MLIntegrationBaseTestException {
+        String payload ="{\"include\" : true,\"imputeOption\": \"DISCARD\"}";
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/features/defaults"), payload);
+    }
+    
+    /**
+     * Set Model Configurations of an analysis
+     * 
+     * @param analysisId
+     * @param configurations
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected CloseableHttpResponse setModelConfiguration(int analysisId, Map<String,String> configurations) throws 
+            ClientProtocolException, IOException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload ="[";
+        for (Entry<String, String> property : configurations.entrySet()) {
+            payload = payload + "{\"key\":\"" + property.getKey() + "\",\"value\":\"" + property.getValue() + "\"},";
+        }
+        payload = payload.substring(0, payload.length()-1) + "]";
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/configurations"), payload);
+    }
+    
+    /**
+     * Get the ID of the project from the name
+     * 
+     * @param projectName
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected int getProjectId(String projectName) throws ClientProtocolException, IOException, URISyntaxException, 
+            MLIntegrationBaseTestException{
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+        bufferedReader.close();
+        response.close();
+        return responseJson.getInt("id");
+    }
+    
+    /**
+     * Get the ID of an analysis from the name
+     * 
+     * @param analysisName
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected int getAnalysisId(String analysisName) throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+        bufferedReader.close();
+        response.close();
+        return responseJson.getInt("id");
+    }
+    
+    /**
+     * Get a ID of the first version-set of a dataset
+     * 
+     * @param datasetId
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected int getAVersionSetIdOfDataset(int datasetId) throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + datasetId + "/versions"));
+        // Get the Id of the first dataset
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONArray responseJson = new JSONArray(bufferedReader.readLine());
+        JSONObject datsetVersionJson = (JSONObject) responseJson.get(0);
+        return datsetVersionJson.getInt("id");
+    }
+
+    /**
+     * Create a Model
+     * 
+     * @param name
+     * @param analysisId
+     * @param versionSetId
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected CloseableHttpResponse createModel(String name, int analysisId, int versionSetId) throws ClientProtocolException, 
+            IOException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload ="{\"name\" : \"" + name + "\",\"analysisId\" :" + analysisId + ",\"versionSetId\" :" +
+                versionSetId + "}";
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/models/"), payload);
     }
     
 }

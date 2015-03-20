@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -43,6 +45,7 @@ import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
+import akka.event.slf4j.Logger;
 import scala.Tuple2;
 
 import java.text.DecimalFormat;
@@ -53,6 +56,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class SparkModelUtils {
+    private static final Log log = LogFactory.getLog(SparkModelUtils.class);
 
     /**
      * Private constructor to prevent any other class from instantiating.
@@ -79,6 +83,9 @@ public class SparkModelUtils {
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
             predictedVsActuals.add(predictedVsActual);
+            if (log.isTraceEnabled()) {
+                log.trace("Predicted: "+predictedVsActual.getPredicted() + " ------ Actual: "+predictedVsActual.getActual());
+            }
         }
         probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // generate binary classification metrics
