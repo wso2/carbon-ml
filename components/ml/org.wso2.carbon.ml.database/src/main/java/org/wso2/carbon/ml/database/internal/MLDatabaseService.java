@@ -1334,10 +1334,12 @@ public class MLDatabaseService implements DatabaseService {
                 project.setName(projectName);
                 project.setId(result.getLong(1));
                 project.setDescription(result.getString(2));
+                project.setDatasetId(result.getLong(3));
                 project.setTenantId(tenantId);
                 project.setUserName(userName);
-                project.setCreatedTime(result.getString(3));
-                
+                project.setCreatedTime(result.getString(4));
+                MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                project.setDatasetName(dataset.getName());
                 return project;
             } else {
                 return null;
