@@ -33,7 +33,7 @@
 
 	<modules>
 		<module>tests-integration</module>
-		<module>tests-ui-integration</module>
+		<!-- <module>tests-ui-integration</module> -->
 		<module>tests-common</module>
 	</modules>
 
