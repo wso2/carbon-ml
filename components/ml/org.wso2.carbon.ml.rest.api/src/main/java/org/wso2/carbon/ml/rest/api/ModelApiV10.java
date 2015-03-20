@@ -171,19 +171,19 @@ public class ModelApiV10 extends MLRestAPI {
     }
     
     @DELETE
-    @Path("/{modelName}")
+    @Path("/{modelId}")
     @Produces("application/json")
-    public Response deleteModel(@PathParam("modelName") String modelName) {
+    public Response deleteModel(@PathParam("modelId") long modelId) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            mlModelHandler.deleteModel(tenantId, userName, modelName);
+            mlModelHandler.deleteModel(tenantId, userName, modelId);
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while deleting a model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelName, tenantId, userName, e.getMessage()));
+                    "Error occured while deleting a model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

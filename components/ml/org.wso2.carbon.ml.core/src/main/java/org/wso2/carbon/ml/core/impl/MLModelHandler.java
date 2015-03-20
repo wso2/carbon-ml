@@ -83,8 +83,13 @@ public class MLModelHandler {
         }
     }
 
-    public void deleteModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
-        // TODO
+    public void deleteModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
+        try {
+            databaseService.deleteModel(tenantId, userName, modelId);
+            log.info(String.format("[Deleted] Model [id] %s", modelId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
     }
 
     public long getModelId(int tenantId, String userName, String modelName) throws MLModelHandlerException {

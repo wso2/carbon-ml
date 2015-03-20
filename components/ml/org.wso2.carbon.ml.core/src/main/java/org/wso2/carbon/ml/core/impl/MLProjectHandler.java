@@ -82,4 +82,9 @@ public class MLProjectHandler {
         }
     }
 
+    public MLProject getProject(int tenantId, String userName, long projectId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

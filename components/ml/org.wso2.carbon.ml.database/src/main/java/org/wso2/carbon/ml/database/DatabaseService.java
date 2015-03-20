@@ -557,4 +557,6 @@ public interface DatabaseService {
 
     public long getDatasetSchemaIdFromAnalysisId(long modelId) throws DatabaseHandlerException;
 
+    void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+
 }
