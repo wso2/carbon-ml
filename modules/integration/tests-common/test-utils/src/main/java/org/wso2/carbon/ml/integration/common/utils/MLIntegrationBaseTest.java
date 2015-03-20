@@ -114,13 +114,28 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      * @throws              ClientProtocolException
      * @throws              IOException
      * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException 
      */
     protected CloseableHttpResponse uploadDatasetFromCSV(String DatasetName, String version, String resourcePath)
-            throws ClientProtocolException, IOException, URISyntaxException {
-        String payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
-        return doHttpPost(new URI("https://localhost:9443/api/datasets"), payload);
+            throws ClientProtocolException, IOException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload;
+        if (DatasetName == null) {
+            payload = "{\"dataSourceType\" : \"file\",\"dataTargetType\" : \"file\",\"sourcePath\" : \"" +
+                    getResourceAbsolutePath(resourcePath) + "\",\"dataType\":\"csv\"," + "\"comments\":\"fcSample\"," +
+                    "\"version\" : \"" + version + "\"}";
+        } else if (version == null) {
+            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
+                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
+                    + " : \"csv\"," + "\"comments\" : \"fcSample\"}";
+        } else if (resourcePath == null) {
+            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
+                    + "\"file\",\"dataType\":\"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
+        } else {
+            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
+                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
+                    + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
+        }
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/datasets"), payload);
     }
     
     /**
@@ -131,12 +146,20 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      * @throws              ClientProtocolException
      * @throws              IOException
      * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException 
      */
     protected CloseableHttpResponse createProject(String ProjectName, String datasetName) throws IOException, 
-        ClientProtocolException, URISyntaxException {
-        String payload = "{\"name\" : \"" + ProjectName + "\",\"description\" : \"Test Project\",\"datasetName\": \""
-                + datasetName + "\"}";
-        return doHttpPost(new URI("https://localhost:9443/api/projects"), payload);
+        ClientProtocolException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload;
+        if (ProjectName == null) {
+            payload = "{\"description\" : \"Test Project\",\"datasetName\": \"" + datasetName + "\"}";
+        } else if (datasetName == null) {
+            payload = "{\"name\" : \"" + ProjectName + "\",\"description\" : \"Test Project\"}";
+        } else {
+            payload = "{\"name\" : \"" + ProjectName + "\",\"description\" : \"Test Project\",\"datasetName\": \""
+                    + datasetName + "\"}";
+        }
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/projects"), payload);
     }
     
     /**
@@ -147,12 +170,20 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      * @throws              ClientProtocolException
      * @throws              IOException
      * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException 
      */
     protected CloseableHttpResponse createAnalysis(String AnalysisName, int ProjectId) throws IOException, 
-        ClientProtocolException, URISyntaxException {
-        String payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + 
-                ProjectId + "}";
-        return doHttpPost(new URI("https://localhost:9443/api/analysis"), payload);
+        ClientProtocolException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload;
+        if (AnalysisName == null) {
+            payload = "{\"comments\":\"Test Analysis\",\"projectId\":" + ProjectId + "}";
+        } else if (ProjectId == -1) {
+            payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\"}";
+        } else {
+            payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + 
+                    ProjectId + "}";
+        }
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/analyzes"), payload);
     }
     
 }

@@ -53,6 +53,10 @@ public class ProjectApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response createProject(MLProject project) {
+        if (project.getName() == null || project.getName().isEmpty() || project.getDatasetName() == null || 
+                project.getDatasetName().isEmpty() ) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
@@ -122,4 +126,6 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+    
+    //TODO: Add a method to get analyses anuder a project
 }

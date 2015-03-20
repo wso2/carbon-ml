@@ -39,7 +39,7 @@ import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
  */
-@Path("/analyses")
+@Path("/analyzes")
 public class AnalysisApiV10 extends MLRestAPI {
 
     private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
@@ -55,6 +55,9 @@ public class AnalysisApiV10 extends MLRestAPI {
     @POST
     @Produces("application/json")
     public Response createAnalysis(MLAnalysis analysis) {
+        if (analysis.getName() == null || analysis.getName().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
@@ -210,6 +213,9 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisName}")
     @Produces("application/json")
     public Response deleteAnalysis(@PathParam("analysisName") String analysisName) {
+        if (analysisName == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();

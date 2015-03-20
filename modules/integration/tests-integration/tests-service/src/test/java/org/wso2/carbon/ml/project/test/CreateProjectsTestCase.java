@@ -29,6 +29,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 public class CreateProjectsTestCase extends MLIntegrationBaseTest {
     
@@ -46,9 +47,11 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(groups = "wso2.ml.integration", description = "Create a project")
-    public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException {
+    public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException, 
+            MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
@@ -60,11 +63,13 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     //FIXME: This should fail!!
     @Test(groups = "wso2.ml.integration", description = "Create a project with duplicate Name", dependsOnMethods = 
             "testCreateProject")
-    public void testCreateProjectWithDuplicateName() throws ClientProtocolException, IOException, URISyntaxException {
+    public void testCreateProjectWithDuplicateName() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
@@ -76,13 +81,14 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
-    //FIXME: This should fail!!
     @Test(groups = "wso2.ml.integration", description = "Create a project without name", dependsOnMethods = 
             "testCreateProject")
-    public void testCreateProjectWithoutName() throws ClientProtocolException, IOException, URISyntaxException {
+    public void testCreateProjectWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject(null, DatasetName);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -92,13 +98,14 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
      */
     @Test(groups = "wso2.ml.integration", description = "Create a project without a dataset")
-    public void testCreateProjectWithoutDataset() throws ClientProtocolException, IOException, URISyntaxException {
+    public void testCreateProjectWithoutDataset() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase-2", null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine()
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
                 .getStatusCode());
         response.close();
     }
-    
 }

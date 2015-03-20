@@ -29,6 +29,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 public class GetProjectsTestCase extends MLIntegrationBaseTest {
     
@@ -48,10 +49,12 @@ public class GetProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
-    public void testGetAllProjects() throws ClientProtocolException, IOException, URISyntaxException {
-        CloseableHttpResponse response = doHttpGet(new URI("https://localhost:9443/api/projects"));
+    public void testGetAllProjects() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -62,11 +65,15 @@ public class GetProjectsTestCase extends MLIntegrationBaseTest {
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
-    public void testGetProject() throws ClientProtocolException, IOException, URISyntaxException {
-        CloseableHttpResponse response = doHttpGet(new URI("https://localhost:9443/api/projects/" + projectName));
+    public void testGetProject() throws ClientProtocolException, IOException, URISyntaxException, 
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
+    
+    //TODO: Add retrieving a non existing project
 }

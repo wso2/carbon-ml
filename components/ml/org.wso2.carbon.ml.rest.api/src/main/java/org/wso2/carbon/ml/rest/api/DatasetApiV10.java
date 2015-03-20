@@ -53,6 +53,11 @@ public class DatasetApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response uploadDataset(MLDataset dataset) {
+        if (dataset.getName() == null || dataset.getName().isEmpty() || dataset.getSourcePath() == null || 
+                dataset.getVersion() == null || dataset.getDataSourceType() == null || dataset.getDataSourceType()
+                .isEmpty() || dataset.getDataType() == null || dataset.getDataType().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();
