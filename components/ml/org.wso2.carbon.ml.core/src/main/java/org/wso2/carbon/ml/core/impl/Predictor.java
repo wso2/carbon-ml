@@ -89,7 +89,15 @@ public class Predictor {
                     }
                     return predictedDataList;
                 case DECISION_TREE:
-                    break;
+                    DecisionTreeModel decisionTreeModel = (DecisionTreeModel) model.getModel();
+                    RDD<Vector> dataVectorRDD = dataVector.rdd();
+                    RDD<Object> decisionTreePredictedData = decisionTreeModel.predict(dataVectorRDD);
+
+                    List<Object> decisionTreePredictedDataList = decisionTreePredictedData.toJavaRDD().collect();
+                    for (Double decisionTreeDouble : MLUtils.toDoubleList(decisionTreePredictedDataList)) {
+                        log.info("Prediction: " + decisionTreeDouble);
+                    }
+                    return decisionTreePredictedDataList;
                 case SVM:
                     SVMModel svmModel = (SVMModel) model.getModel();
                     JavaRDD<Double> svmPredictedData = svmModel.predict(dataVector);
