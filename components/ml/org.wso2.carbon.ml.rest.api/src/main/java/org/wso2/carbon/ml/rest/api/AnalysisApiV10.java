@@ -39,7 +39,7 @@ import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
  */
-@Path("/analyzes")
+@Path("/analyses")
 public class AnalysisApiV10 extends MLRestAPI {
 
     private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
