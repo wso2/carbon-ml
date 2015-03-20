@@ -16,14 +16,17 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.project.test;
+package org.wso2.carbon.ml.analysis.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,47 +34,53 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
+public class GetAnalysisTestCase extends MLIntegrationBaseTest {
     
-    private static final String projectName = "TestProjectForDeleteProjectTestcase";
-    private static final String DatasetName = "SampleDataForDeleteProjectTestCase";
+    private static final String DatasetName = "SampleDataForGetAnalysisTestCase";
+    private static final String projectName = "TestProjectForGetAnalysisTestcase";
+    private static final String analysisName = "TestProjectForGetAnalysisTestcase";
+    private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
         uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
         createProject(projectName, DatasetName);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+        projectId = responseJson.getInt("id");
+        response.close();
+        bufferedReader.close();
+        createAnalysis(analysisName, projectId);
     }
-    
+
     /**
-     * Test deleting a project.
+     * Test retrieving all analyzes.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete an exsisting project")
-    public void testDeleteProject() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Get all analyzes")
+    public void testGetAllAnalyzes() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
     }
-    
     /**
-     * Test deleting a non-existing project.
+     * Test retrieving an analysis by name.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete an exsisting project")
-    public void testDeleteNonExistingProject() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Get an analysis by name", dependsOnMethods = "testGetAllAnalyzes")
+    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + "NonExistingProjectName"));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
     }
 }

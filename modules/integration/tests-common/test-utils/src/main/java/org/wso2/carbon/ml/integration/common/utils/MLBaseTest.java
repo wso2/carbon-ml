@@ -53,6 +53,28 @@ public abstract class MLBaseTest {
             throw new MLIntegrationBaseTestException("Failed to get the ML automation context: ", e);
         } 
     }
+    
+    /**
+     * Get the secured URL of a given service.
+     * 
+     * @return              Secured URL of the service.
+     * @throws              MLIntegrationBaseTestException
+     */
+    protected String getServerUrlHttps() throws MLIntegrationBaseTestException {
+        // TODO : Read from configs
+        return "https://localhost:9443";
+    }
+    
+    /**
+     * Get the Server URL.
+     * 
+     * @return              Non-secured URL of the service.
+     * @throws              MLIntegrationBaseTestException
+     */
+    protected String getServerUrlHttp() throws MLIntegrationBaseTestException {
+        // TODO : Read from configs
+        return "http://localhost:9763";
+    }
 
     /**
      * Get the non-secured URL of a given service.
@@ -73,6 +95,7 @@ public abstract class MLBaseTest {
         
     }
 
+    
     /**
      * Get the secured URL of a given service.
      * 
@@ -90,7 +113,6 @@ public abstract class MLBaseTest {
             throw new MLIntegrationBaseTestException("An error occured while retrieving the secure service (https) "
             		+ "URL: ", e);
         }
-        
     }
 
     /**
