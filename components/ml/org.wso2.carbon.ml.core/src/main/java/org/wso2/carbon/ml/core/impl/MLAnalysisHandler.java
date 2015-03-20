@@ -56,10 +56,10 @@ public class MLAnalysisHandler {
         }
     }
     
-    public void addCustomizedFeatures(long analysisId, List<MLCustomizedFeature> customizedFeatures)
+    public void addCustomizedFeatures(long analysisId, List<MLCustomizedFeature> customizedFeatures, int tenantId, String userName)
             throws MLAnalysisHandlerException {
         try {
-            databaseService.insertFeatureCustomized(analysisId, customizedFeatures);
+            databaseService.insertFeatureCustomized(analysisId, customizedFeatures, tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }

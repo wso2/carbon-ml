@@ -81,7 +81,7 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            mlAnalysisHandler.addCustomizedFeatures(analysisId, customizedFeatures);
+            mlAnalysisHandler.addCustomizedFeatures(analysisId, customizedFeatures, tenantId, userName);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             logger.error(String.format(
@@ -103,7 +103,6 @@ public class AnalysisApiV10 extends MLRestAPI {
             customizedValues.setTenantId(tenantId);
             customizedValues.setUserName(userName);
             customizedValues.setLastModifiedUser(userName);
-            
             mlAnalysisHandler.addDefaultsIntoCustomizedFeatures(analysisId, customizedValues);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {

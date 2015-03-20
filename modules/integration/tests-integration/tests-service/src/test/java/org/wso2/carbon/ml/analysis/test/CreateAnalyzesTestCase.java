@@ -16,13 +16,17 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.project.test;
+package org.wso2.carbon.ml.analysis.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,81 +34,70 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class CreateProjectsTestCase extends MLIntegrationBaseTest {
+public class CreateAnalyzesTestCase extends MLIntegrationBaseTest {
     
-    private static String DatasetName = "SampleDataForCreateProjectTestCase";
+    private static final String DatasetName = "SampleDataForAnalysisTestCase";
+    private static final String projectName = "TestProjectForAnalysisTestcase";
+    private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
         uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
+        createProject(projectName, DatasetName);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+        projectId = responseJson.getInt("id");
+        bufferedReader.close();
+        response.close();
     }
 
     /**
-     * Test creating a project.
+     * Test creating an analysis.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project")
-    public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException, 
+    @Test(groups = "wso2.ml.integration", description = "Create an analysis")
+    public void testCreateAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
+        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", projectId);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
-     * Test creating a project with a duplicate project name.
+     * Test creating an analysis without the Name.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    //FIXME: This should fail!!
-    @Test(groups = "wso2.ml.integration", description = "Create a project with duplicate Name", dependsOnMethods = 
-            "testCreateProject")
-    public void testCreateProjectWithDuplicateName() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Create an analysis without a name")
+    public void testCreateAnalysisWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
-    }
-    
-    /**
-     * Test creating a project without the project name.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    @Test(groups = "wso2.ml.integration", description = "Create a project without name", dependsOnMethods = 
-            "testCreateProject")
-    public void testCreateProjectWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject(null, DatasetName);
+        CloseableHttpResponse response = createAnalysis(null, projectId);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
-     * Test creating a project without the project name.
+     * Test creating an analysis without a project ID.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project without a dataset")
-    public void testCreateProjectWithoutDataset() throws ClientProtocolException, IOException, URISyntaxException,
+    /*@Test(groups = "wso2.ml.integration", description = "Create an analysis without a ProjectId")
+    public void testCreateAnalysisWithoutProjectID() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase-2", null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
-                .getStatusCode());
+        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", -1);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
-    }
+    }*/
 }

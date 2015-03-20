@@ -488,8 +488,8 @@ public interface DatabaseService {
     // TODO
     public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
 
-    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures)
-            throws DatabaseHandlerException;
+    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures,int tenantId,
+            String userName) throws DatabaseHandlerException;
 
     public void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws DatabaseHandlerException;

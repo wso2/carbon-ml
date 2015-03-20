@@ -55,7 +55,7 @@ public abstract class MLBaseTest {
     }
     
     /**
-     * Get the secured URL of a given service.
+     * Get the secured URL of the ml Server.
      * 
      * @return              Secured URL of the service.
      * @throws              MLIntegrationBaseTestException
