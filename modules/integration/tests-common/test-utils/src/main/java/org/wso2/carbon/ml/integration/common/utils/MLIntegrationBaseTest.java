@@ -183,7 +183,7 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
             payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + 
                     ProjectId + "}";
         }
-        return doHttpPost(new URI(getServerUrlHttps() + "/api/analyzes"), payload);
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/analyses"), payload);
     }
     
 }

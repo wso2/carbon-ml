@@ -57,7 +57,7 @@ public class AddFeaturesTestCase extends MLIntegrationBaseTest {
         response.close();
         //Create an analysis
         createAnalysis(analysisName, projectId);
-        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisName));
+        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
         bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         responseJson = new JSONObject(bufferedReader.readLine());
         analysisId = responseJson.getInt("id");
@@ -77,7 +77,7 @@ public class AddFeaturesTestCase extends MLIntegrationBaseTest {
     public void testAddDefaultsToCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         String payload ="{\"include\" : true,\"imputeOption\": \"DISCARD\"}";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisId + 
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
                 "/features/defaults"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
@@ -95,9 +95,11 @@ public class AddFeaturesTestCase extends MLIntegrationBaseTest {
     public void testAddCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         String payload ="[{\"type\" :\"CATEGORICAL\",\"include\" : true,\"imputeOption\":\"DISCARD\",\"name\":\"Cover_Type\"}]";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyzes/" + analysisId + 
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
                 "/features"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
+    
+    //TODO: add non existing features
 }

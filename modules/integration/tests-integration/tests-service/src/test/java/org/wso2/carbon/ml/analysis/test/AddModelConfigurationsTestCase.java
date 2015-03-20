@@ -34,16 +34,20 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class CreateAnalyzesTestCase extends MLIntegrationBaseTest {
+public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
     
-    private static final String DatasetName = "SampleDataForAnalysisTestCase";
-    private static final String projectName = "TestProjectForAnalysisTestcase";
+    private static final String DatasetName = "SampleDataForAddModelConfigsTestCase";
+    private static final String projectName = "TestProjectForAddModelConfigsTestcase";
+    private static final String analysisName = "TestAnalysisForAddModelConfigsTestcase";
     private static int projectId;
+    private static int analysisId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
+        // Upload a dataset
         uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
+        //Create a project
         createProject(projectName, DatasetName);
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -51,53 +55,33 @@ public class CreateAnalyzesTestCase extends MLIntegrationBaseTest {
         projectId = responseJson.getInt("id");
         bufferedReader.close();
         response.close();
+        //Create an analysis
+        createAnalysis(analysisName, projectId);
+        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
+        bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        responseJson = new JSONObject(bufferedReader.readLine());
+        analysisId = responseJson.getInt("id");
+        bufferedReader.close();
+        response.close();
     }
 
     /**
-     * Test creating an analysis.
+     * Test adding default values to customized features an analysis.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create an analysis")
-    public void testCreateAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(groups = "wso2.ml.integration", description = "Add default values to customized features")
+    public void testAddDefaultsToCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", projectId);
+        String payload ="{\"include\" : true,\"imputeOption\": \"DISCARD\"}";
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
+                "/features/defaults"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
-    /**
-     * Test creating an analysis without the Name.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    @Test(groups = "wso2.ml.integration", description = "Create an analysis without a name")
-    public void testCreateAnalysisWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createAnalysis(null, projectId);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
-        response.close();
-    }
-    
-    /**
-     * Test creating an analysis without a project ID.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    /*@Test(groups = "wso2.ml.integration", description = "Create an analysis without a ProjectId")
-    public void testCreateAnalysisWithoutProjectID() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", -1);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
-        response.close();
-    }*/
+    //TODO: add non existing features
 }
