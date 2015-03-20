@@ -1,9 +1,9 @@
 {
-"name" : "housing",
+"name" : "winequality",
 "dataSourceType" : "file",
 "dataTargetType" : "file",
-"sourcePath" : "file://PATH/housing.csv",
+"sourcePath" : "file://PATH/winequality-red.csv",
 "dataType" : "csv",
-"comments" : "Boston housing dataset",
+"comments" : "Wine quality dataset",
 "version" : "1.0"
 }
