@@ -35,7 +35,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 /**
@@ -268,6 +270,45 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
         bufferedReader.close();
         response.close();
         return responseJson.getInt("id");
+    }
+    
+    /**
+     * Get a ID of the first version-set of a dataset
+     * 
+     * @param datasetId
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected int getAVersionSetIdOfDataset(int datasetId) throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + datasetId + "/versions"));
+        // Get the Id of the first dataset
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONArray responseJson = new JSONArray(bufferedReader.readLine());
+        JSONObject datsetVersionJson = (JSONObject) responseJson.get(0);
+        return datsetVersionJson.getInt("id");
+    }
+
+    /**
+     * Create a Model
+     * 
+     * @param name
+     * @param analysisId
+     * @param versionSetId
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected CloseableHttpResponse createModel(String name, int analysisId, int versionSetId) throws ClientProtocolException, 
+            IOException, URISyntaxException, MLIntegrationBaseTestException {
+        String payload ="{\"name\" : \"" + name + "\",\"analysisId\" :" + analysisId + ",\"versionSetId\" :" +
+                versionSetId + "}";
+        return doHttpPost(new URI(getServerUrlHttps() + "/api/models/"), payload);
     }
     
 }

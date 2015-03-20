@@ -55,4 +55,9 @@
             <package name="org.wso2.carbon.ml.analysis.test"/>
         </packages>
     </test>
+    <test name="Model-Tests" preserve-order="true" verbose="2">
+        <packages>
+            <package name="org.wso2.carbon.ml.model.test"/>
+        </packages>
+    </test>
 </suite>
