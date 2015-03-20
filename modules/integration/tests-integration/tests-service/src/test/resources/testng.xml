@@ -50,4 +50,9 @@
             <package name="org.wso2.carbon.ml.project.test"/>
         </packages>
     </test>
+    <test name="Analysis-Tests" preserve-order="true" verbose="2">
+        <packages>
+            <package name="org.wso2.carbon.ml.analysis.test"/>
+        </packages>
+    </test>
 </suite>
