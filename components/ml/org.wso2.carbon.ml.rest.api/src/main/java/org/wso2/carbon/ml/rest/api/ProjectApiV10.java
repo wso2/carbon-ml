@@ -93,6 +93,27 @@ public class ProjectApiV10 extends MLRestAPI {
     }
     
     @GET
+    @Path("/{projectId}")
+    @Produces("application/json")
+    public Response getProject(@PathParam("projectId") long projectId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLProject project = mlProjectHandler.getProject(tenantId, userName, projectId);
+            if (project == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(project).build();
+        } catch (MLProjectHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while retrieving a project [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    projectId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
     @Produces("application/json")
     public Response getAllProjects() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();

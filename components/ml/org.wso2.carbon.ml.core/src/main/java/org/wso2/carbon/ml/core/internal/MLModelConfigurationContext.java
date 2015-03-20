@@ -19,6 +19,7 @@ package org.wso2.carbon.ml.core.internal;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 
 /**
@@ -27,6 +28,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 public class MLModelConfigurationContext {
 
     private long modelId;
+    private MLModelNew model;
     private Workflow facts;
     private JavaSparkContext sparkContext;
     private JavaRDD<String> lines;
@@ -75,6 +77,12 @@ public class MLModelConfigurationContext {
     }
     public void setDataToBePredicted(String[] dataToBePredicted) {
         this.dataToBePredicted = dataToBePredicted;
+    }
+    public MLModelNew getModel() {
+        return model;
+    }
+    public void setModel(MLModelNew model) {
+        this.model = model;
     }
     
     

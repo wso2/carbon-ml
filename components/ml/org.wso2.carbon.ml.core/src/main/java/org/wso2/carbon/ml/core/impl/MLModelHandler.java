@@ -83,8 +83,13 @@ public class MLModelHandler {
         }
     }
 
-    public void deleteModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
-        // TODO
+    public void deleteModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
+        try {
+            databaseService.deleteModel(tenantId, userName, modelId);
+            log.info(String.format("[Deleted] Model [id] %s", modelId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
     }
 
     public long getModelId(int tenantId, String userName, String modelName) throws MLModelHandlerException {
@@ -149,6 +154,7 @@ public class MLModelHandler {
                     modelId, tenantId, userName);
             throw new MLModelHandlerException(msg);
         }
+        
 
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
@@ -157,6 +163,7 @@ public class MLModelHandler {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
+            MLModelNew model = databaseService.getModel(tenantId, userName, modelId);
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
@@ -172,6 +179,7 @@ public class MLModelHandler {
             context.setModelId(modelId);
             context.setColumnSeparator(columnSeparator);
             context.setFacts(facts);
+            context.setModel(model);
 
             JavaSparkContext sparkContext = null;
             sparkConf.setAppName(String.valueOf(modelId));
@@ -252,11 +260,12 @@ public class MLModelHandler {
         }
     }
 
-    private void persistModel(long modelId, MLModel model) throws MLModelBuilderException {
+    private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
+            
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -266,7 +275,7 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + "model." + modelId + "." + MLUtils.getDate();
+            String outPath = storageLocation + File.separator + modelName + "." + MLUtils.getDate();
             outputAdapter.writeDataset(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {
@@ -334,7 +343,7 @@ public class MLModelHandler {
                             "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
                 }
 
-                persistModel(id, model);
+                persistModel(id, ctxt.getModel().getName(), model);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
             }

@@ -164,11 +164,14 @@ public class MLUtils {
         int featureIndex = 0;
         String[] headerItems = headerRow.split(columnSeparator);
         for (int i = 0; i < headerItems.length; i++) {
-            if (feature.equals(headerItems[i])) {
-                featureIndex = i;
-                break;
+            if (headerItems[i] != null) {
+                String column = headerItems[i].replace("\"", "").trim();
+                if (feature.equals(column)) {
+                    featureIndex = i;
+                    break;
+                }
             }
-        }
+        }        
         return featureIndex;
     }
     
@@ -215,6 +218,14 @@ public class MLUtils {
         }
         
         return outArray;
+    }
+
+    public static List<Double> toDoubleList(List<Object> inList) {
+        List<Double> outList = new ArrayList<Double>();
+        for (Object inListObj : inList) {
+            outList.add(new Double(inListObj.toString()));
+        }
+        return outList;
     }
     
 }

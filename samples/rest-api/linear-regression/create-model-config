@@ -9,10 +9,10 @@
 },
 {
 "key":"responseVariable",
-"value":"medv"
+"value":"quality"
 },
 {
 "key":"trainDataFraction",
-"value":"0.7"
+"value":"0.8"
 }
 ]
