@@ -36,7 +36,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
+public class CreateModelTestCase extends MLIntegrationBaseTest {
     
     private static final String DatasetName = "SampleDataForLogisticRegressionTestCase";
     private static final String projectName = "TestProjectForLogisticRegressionTestcase";
@@ -73,6 +73,7 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         setModelConfiguration(analysisId, configurations);
         //Set default Hyper-parameters
         doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
+        versionSetId = getAVersionSetIdOfDataset(datasetId);
     }
 
     /**
@@ -86,37 +87,7 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
     @Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
     public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        versionSetId = getAVersionSetIdOfDataset(datasetId);
         CloseableHttpResponse response = createModel(modelName, analysisId, versionSetId);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
-    }
-    
-    /**
-     * Get model from name
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
-     */
-    public void testGetModel() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + modelName));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        bufferedReader.close();
-        response.close();
-        modelId = responseJson.getInt("id");
-        response.close();
-    }
-    
-    @Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
-    public void testCreateModelStorage() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        versionSetId = getAVersionSetIdOfDataset(datasetId);
-        CloseableHttpResponse response = createModel("TestModelForLogisticRegression", analysisId, versionSetId);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
