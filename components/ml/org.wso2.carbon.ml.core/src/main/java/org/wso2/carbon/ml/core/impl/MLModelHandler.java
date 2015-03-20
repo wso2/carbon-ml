@@ -288,7 +288,7 @@ public class MLModelHandler {
             return (MLModel) ois.readObject();
             
         } catch (Exception e) {
-            throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);
+            throw new MLModelBuilderException("Failed to retrieve the model [id] " + modelId, e);
         } finally {
             if (in != null) {
                 try {
