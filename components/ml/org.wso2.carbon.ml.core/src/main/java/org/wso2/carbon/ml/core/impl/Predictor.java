@@ -25,10 +25,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.NaiveBayesModel;
+import org.apache.spark.mllib.classification.SVMModel;
+import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LassoModel;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
 import org.apache.spark.mllib.regression.RidgeRegressionModel;
+import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.apache.spark.rdd.RDD;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
@@ -86,9 +91,23 @@ public class Predictor {
                 case DECISION_TREE:
                     break;
                 case SVM:
-                    break;
+                    SVMModel svmModel = (SVMModel) model.getModel();
+                    JavaRDD<Double> svmPredictedData = svmModel.predict(dataVector);
+
+                    List<Double> svmPredictedDataList = svmPredictedData.collect();
+                    for (Double svmDouble : svmPredictedDataList) {
+                        log.info("Prediction: " + svmDouble);
+                    }
+                    return svmPredictedDataList;
                 case NAIVE_BAYES:
-                    break;
+                    NaiveBayesModel naiveBayesModel = (NaiveBayesModel) model.getModel();
+                    JavaRDD<Double> naiveBayesPredictedData = naiveBayesModel.predict(dataVector);
+
+                    List<Double> naiveBayesPredictedDataList = naiveBayesPredictedData.collect();
+                    for (Double naiveBayesDouble : naiveBayesPredictedDataList) {
+                        log.info("Prediction: " + naiveBayesDouble);
+                    }
+                    return naiveBayesPredictedDataList;
                 case LINEAR_REGRESSION:
                     LinearRegressionModel lrModel = (LinearRegressionModel)model.getModel();
                     JavaRDD<Double> testingData = lrModel.predict(dataVector);
@@ -119,10 +138,23 @@ public class Predictor {
                 
             } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
                 UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(facts.getAlgorithmName());
+
+                JavaSparkContext context = ctxt.getSparkContext();
+                List<double[]> dataList = new ArrayList<double[]>();
+                dataList.add(MLUtils.toDoubleArray(ctxt.getDataToBePredicted()));
+                context.parallelize(dataList);
+                JavaRDD<double[]> dataRDD = context.parallelize(dataList);
+                JavaRDD<Vector> dataVector = dataRDD.map(new DoubleArrayToVector());
+
                 switch (unsupervised_algorithm) {
                 case K_MEANS:
-                    //TODO
-                    break;
+                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                    JavaRDD<Integer> kMeansPredictedData = kMeansModel.predict(dataVector);
+                    List<Integer> kMeansPredictedDataList = kMeansPredictedData.collect();
+                    for (Integer kMeansInteger : kMeansPredictedDataList) {
+                        log.info("Prediction: " + kMeansInteger);
+                    }
+                    return kMeansPredictedDataList;
                 default:
                     throw new AlgorithmNameException("Incorrect algorithm name: "+facts.getAlgorithmName()+" for model id: "+id);
                 }
