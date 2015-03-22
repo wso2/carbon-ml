@@ -48,7 +48,7 @@ public class CreateModelTestCase extends MLIntegrationBaseTest {
     private static int versionSetId;
     private static int modelId;
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    /*@BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
         // Upload a dataset
@@ -74,7 +74,7 @@ public class CreateModelTestCase extends MLIntegrationBaseTest {
         //Set default Hyper-parameters
         doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
         versionSetId = getAVersionSetIdOfDataset(datasetId);
-    }
+    }*/
 
     /**
      * Test creating a Logistic Regression model.
@@ -84,11 +84,11 @@ public class CreateModelTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
+    /*@Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
     public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createModel(modelName, analysisId, versionSetId);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
-    }
+    }*/
 }

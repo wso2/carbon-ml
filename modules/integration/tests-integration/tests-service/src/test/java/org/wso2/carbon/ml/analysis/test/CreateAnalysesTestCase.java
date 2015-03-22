@@ -19,31 +19,31 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="createAnalyses")
 public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
-    
-    private static final String DatasetName = "SampleDataForAnalysisTestCase";
-    private static final String projectName = "TestProjectForAnalysisTestcase";
-    private static int projectId;
 
     @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
+        // Check whether the project exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + 
+                MLIntegrationTestConstants.PROJECT_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue a project is not available");
+        }
     }
 
     /**
@@ -54,10 +54,11 @@ public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create an analysis")
+    @Test(groups = "createAnalysisSuccess", description = "Create an analysis")
     public void testCreateAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", projectId);
+        CloseableHttpResponse response = createAnalysis(MLIntegrationTestConstants.ANALYSIS_NAME, 
+                MLIntegrationTestConstants.PROJECT_ID);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -73,7 +74,7 @@ public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
     @Test(groups = "wso2.ml.integration", description = "Create an analysis without a name")
     public void testCreateAnalysisWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createAnalysis(null, projectId);
+        CloseableHttpResponse response = createAnalysis(null, MLIntegrationTestConstants.PROJECT_ID);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -86,7 +87,7 @@ public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    /*@Test(groups = "wso2.ml.integration", description = "Create an analysis without a ProjectId")
+    /*@Test(description = "Create an analysis without a ProjectId")
     public void testCreateAnalysisWithoutProjectID() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", -1);

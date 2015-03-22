@@ -18,47 +18,32 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.json.JSONObject;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="addModelConfigs", dependsOnGroups="createAnalysisSuccess")
 public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
-    
-    private static final String DatasetName = "SampleDataForAddFeaturesTestCase";
-    private static final String projectName = "TestProjectForAddFeaturesTestcase";
-    private static final String analysisName = "TestAnalysisForAddFeaturesTestcase";
-    private static int projectId;
-    private static int analysisId;
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
-        //Create an analysis
-        createAnalysis(analysisName, projectId);
-        analysisId = getAnalysisId(analysisName);
-        //Set Model Configurations
-        Map <String,String> configurations = new HashMap<String,String>();
-        configurations.put("algorithmName", "LOGISTIC_REGRESSION");
-        setModelConfiguration(analysisId, configurations);
+        // Check whether the analysis exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue an analysis is not available");
+        }
     }
 
     /**
@@ -69,11 +54,11 @@ public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
+    @Test(description = "Set default values to hyperparameters")
     public void testSetDefaultHyperparameters() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId +
-                "/hyperParams/defaults"), null);
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams/defaults"), null);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -86,13 +71,12 @@ public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Set customized hyperparameters", dependsOnMethods = 
-            "testSetDefaultHyperparameters")
+    @Test(description = "Set customized hyperparameters", dependsOnMethods = "testSetDefaultHyperparameters")
     public void testSetCustomizedHyperParameters() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         String payload ="[{\"key\" :\"Learning_Rate\",\"value\" : \"0.1\"},{\"key\":\"Iterations\",\"value\":\"100\"}]";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
-                "/hyperParams"), payload);
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

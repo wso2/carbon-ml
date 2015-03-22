@@ -32,9 +32,10 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="createDatasets")
 public class CreateDatasetTestCase extends MLIntegrationBaseTest {
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
     }
@@ -47,10 +48,11 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset from a CSV file")
+    @Test(groups="createDatasetsSuccess", description = "Create a dataset from a CSV file")
     public void testCreateDatasetFromFile() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase", "1.0", "data/fcSample.csv");
+        CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
+                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -63,11 +65,12 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a new version of an existing dataset",
+    @Test(description = "Create a new version of an existing dataset",
             dependsOnMethods="testCreateDatasetFromFile")
     public void testCreateNewDatasetVersion() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase", "2.0", "data/fcSample.csv");
+        CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
+                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -80,11 +83,12 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a duplicate version of an existing dataset",
+    @Test(description = "Create a duplicate version of an existing dataset",
             dependsOnMethods="testCreateNewDatasetVersion")
     public void testCreateDuplicateDatasetVersion() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase", "2.0", "data/fcSample.csv");
+        CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
+                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -97,10 +101,11 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset from a non-existing CSV file")
+    @Test(description = "Create a dataset from a non-existing CSV file")
     public void testCreateDatasetFromNonExistingFile() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_2", "1.0", "data/xxx.csv");
+        CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
+                "data/xxx.csv");
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine()
                 .getStatusCode());
         response.close();
@@ -114,7 +119,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset without name")
+    @Test(description = "Create a dataset without name")
     public void testCreateDatasetWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV(null, "1.0", "data/xxx.csv");
@@ -131,7 +136,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset without version")
+    @Test(description = "Create a dataset without version")
     public void testCreateDatasetWithoutVersion() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_3", null, "data/xxx.csv");
@@ -148,7 +153,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset without version")
+    @Test(description = "Create a dataset without version")
     public void testCreateDatasetWithoutDataSource() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_4", "1.0", null);
@@ -165,7 +170,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a dataset from a WSO2 BAM Table",
+    @Test(description = "Create a dataset from a WSO2 BAM Table",
             dependsOnMethods="testCreateDatasetFromNonExistingFile")
     public void testCreateDatasetFromBam() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {

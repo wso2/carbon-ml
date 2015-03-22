@@ -37,9 +37,20 @@ public class MLIntegrationTestConstants {
 	public static final String CONTENT_TYPE = "Content-Type";
 	public static final String APPLICATION_JSON = "application/json";
 
+	// Http response codes
 	public static final int HTTP_OK = 200;
 	public static final int HTTP_BAD_REQUEST = 400;
 	public static final int HTTP_UNAUTHORIZED = 401;
 	public static final int HTTP_NOT_FOUND = 404;
 	public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
+	
+	// Constants for Test cases - Happy scenario
+	public static final String FOREST_COVER_DATASET_SAMPLE = "data/fcSample.csv";
+	public static final String DATASET_NAME = "Forest_Cover";
+	public static final int DATASET_ID = 1;
+	public static final int VERSIONSET_ID = 1;
+	public static final String PROJECT_NAME = "Forest_Cover_Project";
+	public static final int PROJECT_ID = 1;
+	public static final String ANALYSIS_NAME = "Forest_Cover_Analysis";
+	public static final int ANALYSIS_ID = 1;
 }

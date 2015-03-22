@@ -25,29 +25,29 @@ import java.net.URISyntaxException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="getAnalyses", dependsOnGroups="createAnalysisSuccess")
 public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
-    
-    private static final String DatasetName = "SampleDataForDeleteAnalysisTestCase";
-    private static final String projectName = "TestProjectForDeleteAnalysisTestcase";
-    private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";
-    private static int projectId;
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";
+
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
-        //Create an analysis
-        createAnalysis(analysisName, projectId);
+        // Check whether a project exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + 
+                MLIntegrationTestConstants.PROJECT_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue a project is not available");
+        }
+        //Create an analysis in the project, for deletion
+        createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
     }
 
     /**
@@ -58,8 +58,8 @@ public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete an analysis by name")
-    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(description = "Delete an analysis by name")
+    public void testDeleteAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
@@ -74,10 +74,11 @@ public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete a non-existing analysis")
-    public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+    @Test(description = "Delete a non-existing analysis")
+    public void testDeleteNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + "nonExistinfAnalysisName"));
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                "nonExistinfAnalysisName"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

@@ -40,24 +40,24 @@
 			<class name="org.wso2.carbon.ml.dataset.test.CreateDatasetTestCase"/>
 		</classes>
 	</test> -->
-	 <test name="Dataset-Tests" preserve-order="true" verbose="2">
+	 <test name="Dataset-Tests" preserve-order="true" verbose="2" >
         <packages>
             <package name="org.wso2.carbon.ml.dataset.test"/>
         </packages>
     </test>
-    <test name="Project-Tests" preserve-order="true" verbose="2">
+    <test name="Project-Tests" preserve-order="true" verbose="2" parallel="false">
         <packages>
             <package name="org.wso2.carbon.ml.project.test"/>
         </packages>
     </test>
-    <test name="Analysis-Tests" preserve-order="true" verbose="2">
+    <test name="Analysis-Tests" preserve-order="true" verbose="2" parallel="false">
         <packages>
             <package name="org.wso2.carbon.ml.analysis.test"/>
         </packages>
     </test>
-    <!-- <test name="Model-Tests" preserve-order="true" verbose="2">
+    <test name="Model-Tests" preserve-order="true" verbose="2"  parallel="false">
         <packages>
             <package name="org.wso2.carbon.ml.model.test"/>
         </packages>
-    </test> -->
+    </test>
 </suite>

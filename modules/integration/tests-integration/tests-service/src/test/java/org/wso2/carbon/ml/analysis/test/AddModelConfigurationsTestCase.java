@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,31 +27,25 @@ import java.util.Map;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="addModelConfigs", dependsOnGroups="createAnalysisSuccess")
 public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
     
-    private static final String DatasetName = "SampleDataForAddModelConfigsTestCase";
-    private static final String projectName = "TestProjectForAddModelConfigsTestcase";
-    private static final String analysisName = "TestAnalysisForAddModelConfigsTestcase";
-    private static int projectId;
-    private static int analysisId;
-
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
-        //Create an analysis
-        createAnalysis(analysisName, projectId);
-        analysisId = getAnalysisId(analysisName);
+        // Check whether the analysis exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue an analysis is not available");
+        }
     }
 
     /**
@@ -61,7 +56,7 @@ public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Add model configurations to the analysis")
+    @Test(description = "Add model configurations to the analysis")
     public void testSetModelConfigurations() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         Map <String,String> configurations = new HashMap<String,String>();
@@ -69,8 +64,8 @@ public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
         configurations.put("algorithmType", "Classification");
         configurations.put("responseVariable", "Cover_Type");
         configurations.put("trainDataFraction", "0.7");
-        setModelConfiguration(analysisId, configurations);
-        CloseableHttpResponse response = setModelConfiguration(analysisId, configurations);
+        setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
+        CloseableHttpResponse response = setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
