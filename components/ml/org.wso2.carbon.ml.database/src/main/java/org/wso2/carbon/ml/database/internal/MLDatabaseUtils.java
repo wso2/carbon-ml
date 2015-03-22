@@ -109,6 +109,17 @@ public class MLDatabaseUtils {
     public static void closeDatabaseResources(PreparedStatement preparedStatement) throws DatabaseHandlerException {
         closeDatabaseResources(null, preparedStatement, null);
     }
+    
+    /**
+     * Close a given set of database resources.
+     * 
+     * @param preparedStatement
+     * @param resultSet
+     * @throws DatabaseHandlerException
+     */
+    public static void closeDatabaseResources(PreparedStatement preparedStatement,ResultSet resultSet) throws DatabaseHandlerException {
+        closeDatabaseResources(null, preparedStatement, resultSet);
+    }
 
     /**
      * Roll-backs a connection.
