@@ -5,13 +5,6 @@
 		directory. -->
 	<Database>jdbc/WSO2ML_DB</Database>
 
-	<!-- Configurations to control data set file uploading. -->
-	<DataUploadSettings>
-		<UploadLocation>USER_HOME</UploadLocation>
-		<InMemoryThreshold>1024</InMemoryThreshold>
-		<UploadLimit>20971520</UploadLimit>
-	</DataUploadSettings>
-
 	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
 		: Number of intervals in a histogram. categoricalThreshold : The maximum 
 		number of categories that can have in a non-string categorical feature. If 

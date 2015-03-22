@@ -61,7 +61,6 @@ public class MLCoreDS {
             valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
             valueHolder.setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
             valueHolder.setBamServerUrl(mlConfig.getBamServerURL());
-            valueHolder.setDataUploadSettings(mlConfig.getDataUploadSettings());
             valueHolder.setAlgorithms(mlConfig.getMlAlgorithms());
             
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
@@ -74,19 +73,6 @@ public class MLCoreDS {
     		outputAdapterConfig.setType(EmailEventAdapterConstants.ADAPTER_TYPE_EMAIL);
     		this.emailAdapterService.create(outputAdapterConfig);
             
-            //FIXME this is temporarily added for testing purposes.
-//            MLDatasetProcessor processor = new MLDatasetProcessor();
-//            MLDataset dataset = new MLDataset();
-//            dataset.setName("test-ml");
-//            dataset.setSourcePath(new URI("file:///Volumes/wso2/ml/datasets/fcSample.csv"));
-//            dataset.setComments("test-ml");
-//            dataset.setDataSourceType("file");
-//            dataset.setDataTargetType("file");
-//            dataset.setDataType("csv");
-//            dataset.setTenantId(-1234);
-//            dataset.setUserName("admin");
-//            dataset.setVersion("1.0");
-//            processor.process(dataset);
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }

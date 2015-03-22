@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.apache.spark.SparkConf;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
-import org.wso2.carbon.ml.commons.domain.config.DataUploadSettings;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -32,7 +31,6 @@ public class MLCoreServiceValueHolder {
     private static volatile MLCoreServiceValueHolder instance;
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
-    private DataUploadSettings dataUploadSettings;
     private Properties mlProperties;
     private String  bamServerUrl;
     private List<MLAlgorithm> algorithms;
@@ -89,14 +87,6 @@ public class MLCoreServiceValueHolder {
 
     public void setAlgorithms(List<MLAlgorithm> algorithms) {
         this.algorithms = algorithms;
-    }
-
-    public DataUploadSettings getDataUploadSettings() {
-        return dataUploadSettings;
-    }
-
-    public void setDataUploadSettings(DataUploadSettings dataUploadSettings) {
-        this.dataUploadSettings = dataUploadSettings;
     }
 
     public SparkConf getSparkConf() {

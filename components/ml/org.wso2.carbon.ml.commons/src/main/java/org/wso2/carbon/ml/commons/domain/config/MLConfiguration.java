@@ -47,9 +47,6 @@ public class MLConfiguration {
     @XmlElement(name = "Algorithm")
     private List<MLAlgorithm> mlAlgorithms;
     
-    @XmlElement(name = "DataUploadSettings")
-    private DataUploadSettings dataUploadSettings;
-    
     @XmlElement(name = "SummaryStatisticsSettings")
     private SummaryStatisticsSettings summaryStatisticsSettings;
     
@@ -64,12 +61,6 @@ public class MLConfiguration {
     }
     public void setMlAlgorithms(List<MLAlgorithm> mlAlgorithms) {
         this.mlAlgorithms = mlAlgorithms;
-    }
-    public DataUploadSettings getDataUploadSettings() {
-        return dataUploadSettings;
-    }
-    public void setDataUploadSettings(DataUploadSettings dataUploadSettings) {
-        this.dataUploadSettings = dataUploadSettings;
     }
     public SummaryStatisticsSettings getSummaryStatisticsSettings() {
         return summaryStatisticsSettings;
