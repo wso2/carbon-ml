@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="addModelConfigs", dependsOnGroups="createAnalysisSuccess")
+@Test(groups="setHyperparameters", dependsOnGroups="addModelConfigs")
 public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)

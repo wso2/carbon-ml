@@ -54,7 +54,7 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups="createProjectsSuccess", description = "Create a project")
+    @Test(description = "Create a project")
     public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject(MLIntegrationTestConstants.PROJECT_NAME, 

@@ -18,18 +18,24 @@
 
 package org.wso2.carbon.ml.model.test;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="buildModel", dependsOnGroups="createModelStorageSuccess")
+@Test(groups="buildModels", dependsOnGroups="createModelStorage")
 public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
     
     private static final String analysisName = "TestAnalysisForLogisticRegressionTestcase";
@@ -51,10 +57,10 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         analysisId = getAnalysisId(analysisName);
         //Set Model Configurations
         Map <String,String> configurations = new HashMap<String,String>();
-        configurations.put("algorithmName", "LOGISTIC_REGRESSION");
-        configurations.put("algorithmType", "Classification");
-        configurations.put("responseVariable", "Cover_Type");
-        configurations.put("trainDataFraction", "0.7");
+        configurations.put(MLConstants.ALGORITHM_NAME, "LOGISTIC_REGRESSION");
+        configurations.put(MLConstants.ALGORITHM_TYPE, "Classification");
+        configurations.put(MLConstants.RESPONSE, "Cover_Type");
+        configurations.put(MLConstants.TRAIN_DATA_FRACTION, "0.7");
         setModelConfiguration(analysisId, configurations);
         //Set default Hyper-parameters
         doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
@@ -63,5 +69,13 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         modelId = getModelId(modelName); 
         //Set storage location for model
         createFileModelStorage(modelId, MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
+    }
+    
+    @Test(description = "Build a Logistic Regression model")
+    public void testBuildLogisticRegressionModel() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/models/" + modelId), null);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        response.close();
     }
 }

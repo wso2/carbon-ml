@@ -19,13 +19,11 @@
 package org.wso2.carbon.ml.dataset.test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
@@ -48,7 +46,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups="createDatasetsSuccess", description = "Create a dataset from a CSV file")
+    @Test(description = "Create a dataset from a CSV file")
     public void testCreateDatasetFromFile() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
@@ -161,29 +159,4 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
                 .getStatusCode());
         response.close();
     }
-    
-    /**
-     * Test creating a dataset from a WSO2 BAM table.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    @Test(description = "Create a dataset from a WSO2 BAM Table",
-            dependsOnMethods="testCreateDatasetFromNonExistingFile")
-    public void testCreateDatasetFromBam() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        String bamTableUrl = System.getProperty("bam.table.url");
-        if (bamTableUrl == null || bamTableUrl.isEmpty()) {
-            throw new SkipException("Skipping tests because WSO2 BAM table is not available.");
-        }
-        String payload = "{\"name\" : \"SampleDataForCreateDatasetTestCase_5\",\"dataSourceType\" : \"bam\",\"dataTargetType\" : "
-                        + "\"file\"," + "\"sourcePath\" : \""+ bamTableUrl + "\",\"dataType\""
-                        + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"1.0\"}";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/datasets"), payload);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
-    }
-    
 }

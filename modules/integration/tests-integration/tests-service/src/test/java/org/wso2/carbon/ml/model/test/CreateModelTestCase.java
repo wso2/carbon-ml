@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="createModel")
+@Test(groups="createModels")
 public class CreateModelTestCase extends MLIntegrationBaseTest {
     
     private static final String modelName = "TestModelForModelCreateModelTestcase";
@@ -62,7 +62,7 @@ public class CreateModelTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups="createModelSuccess", description = "Create a Model")
+    @Test(description = "Create a Model")
     public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createModel(MLIntegrationTestConstants.MODEL_NAME, MLIntegrationTestConstants

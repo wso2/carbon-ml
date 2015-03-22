@@ -43,6 +43,7 @@ public class MLIntegrationTestConstants {
 	public static final int HTTP_UNAUTHORIZED = 401;
 	public static final int HTTP_NOT_FOUND = 404;
 	public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
+	public static final int HTTP_FOUND = 302;
 	
 	// Constants for Test cases - Happy scenario
 	public static final String FOREST_COVER_DATASET_SAMPLE = "data/fcSample.csv";
@@ -56,5 +57,5 @@ public class MLIntegrationTestConstants {
 	public static final String MODEL_NAME = "Forest_Cover_Model";
     public static final int MODEL_ID = 1;
     
-    public static final String FILE_STORAGE_LOCATION = "temp/file-storage";
+    public static final String FILE_STORAGE_LOCATION = "/home/supun/temp/file-storage";
 }
