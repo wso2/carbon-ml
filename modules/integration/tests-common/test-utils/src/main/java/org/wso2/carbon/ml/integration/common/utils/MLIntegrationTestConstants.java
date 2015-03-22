@@ -53,4 +53,8 @@ public class MLIntegrationTestConstants {
 	public static final int PROJECT_ID = 1;
 	public static final String ANALYSIS_NAME = "Forest_Cover_Analysis";
 	public static final int ANALYSIS_ID = 1;
+	public static final String MODEL_NAME = "Forest_Cover_Model";
+    public static final int MODEL_ID = 1;
+    
+    public static final String FILE_STORAGE_LOCATION = "temp/file-storage";
 }

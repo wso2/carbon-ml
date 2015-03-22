@@ -18,77 +18,87 @@
 
 package org.wso2.carbon.ml.model.test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.json.JSONObject;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="createModel")
 public class CreateModelTestCase extends MLIntegrationBaseTest {
     
-    private static final String DatasetName = "SampleDataForLogisticRegressionTestCase";
-    private static final String projectName = "TestProjectForLogisticRegressionTestcase";
-    private static final String analysisName = "TestAnalysisForLogisticRegressionTestcase";
-    private static final String modelName = "TestModelForLogisticRegression";
-    private static int datasetId;
-    private static int projectId;
-    private static int analysisId;
-    private static int versionSetId;
-    private static int modelId;
+    private static final String modelName = "TestModelForModelCreateModelTestcase";
 
-    /*@BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        CloseableHttpResponse response = uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        bufferedReader.close();
+        // Check whether the version-set exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/versions/" + 
+                MLIntegrationTestConstants.VERSIONSET_ID) );
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue a version-set is not available");
+        }
         response.close();
-        datasetId = responseJson.getInt("id");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
-        //Create an analysis
-        createAnalysis(analysisName, projectId);
-        analysisId = getAnalysisId(analysisName);
-        //Set Model Configurations
-        Map <String,String> configurations = new HashMap<String,String>();
-        configurations.put("algorithmName", "LOGISTIC_REGRESSION");
-        configurations.put("algorithmType", "Classification");
-        configurations.put("responseVariable", "Cover_Type");
-        configurations.put("trainDataFraction", "0.7");
-        setModelConfiguration(analysisId, configurations);
-        //Set default Hyper-parameters
-        doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
-        versionSetId = getAVersionSetIdOfDataset(datasetId);
-    }*/
+        //Check whether analysis exists.
+        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue an analysis is not available");
+        }
+    }
 
     /**
-     * Test creating a Logistic Regression model.
+     * Test creating a model.
      * 
      * @throws ClientProtocolException
      * @throws IOException
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    /*@Test(groups = "wso2.ml.integration", description = "Set default values to hyperparameters")
+    @Test(groups="createModelSuccess", description = "Create a Model")
     public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel(modelName, analysisId, versionSetId);
+        CloseableHttpResponse response = createModel(MLIntegrationTestConstants.MODEL_NAME, MLIntegrationTestConstants
+                .ANALYSIS_ID, MLIntegrationTestConstants.VERSIONSET_ID);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
-    }*/
+    }
+    
+    /**
+     * Test creating a Model with an invalid analysis.
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    @Test(description = "Create a Model with an invalid analysis")
+    public void testCreateModelWithInvalidAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = createModel(modelName, 999, MLIntegrationTestConstants.VERSIONSET_ID);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+        response.close();
+    }
+    
+    /**
+     * Test creating a Model with an invalid version-set.
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    @Test(description = "Create a Model with an invalid versionset")
+    public void testCreateModelWithInvalidVersionset() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = createModel(modelName, MLIntegrationTestConstants.ANALYSIS_ID, 999);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+        response.close();
+    }
 }
