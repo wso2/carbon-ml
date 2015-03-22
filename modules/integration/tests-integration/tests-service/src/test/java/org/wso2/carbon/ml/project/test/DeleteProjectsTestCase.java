@@ -31,16 +31,20 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="deleteProjects", dependsOnGroups="createProjectsSuccess")
 public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
     
     private static final String projectName = "TestProjectForDeleteProjectTestcase";
-    private static final String DatasetName = "SampleDataForDeleteProjectTestCase";
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        createProject(projectName, DatasetName);
+        //Check whether the dataset exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 
+                MLIntegrationTestConstants.DATASET_ID));
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        // Create a project to delete
+        createProject(projectName, MLIntegrationTestConstants.DATASET_NAME);
     }
     
     /**
@@ -51,7 +55,7 @@ public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete an exsisting project")
+    @Test(description = "Delete an exsisting project")
     public void testDeleteProject() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
@@ -67,7 +71,7 @@ public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Delete an exsisting project")
+    @Test(description = "Delete an exsisting project")
     public void testDeleteNonExistingProject() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + "NonExistingProjectName"));

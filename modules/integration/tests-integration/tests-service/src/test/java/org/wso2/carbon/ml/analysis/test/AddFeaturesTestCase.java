@@ -25,31 +25,25 @@ import java.net.URISyntaxException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="addFeatures", dependsOnGroups="createAnalysisSuccess")
 public class AddFeaturesTestCase extends MLIntegrationBaseTest {
-    
-    private static final String DatasetName = "SampleDataForAddFeaturesTestCase";
-    private static final String projectName = "TestProjectForAddFeaturesTestcase";
-    private static final String analysisName = "TestAnalysisForAddFeaturesTestcase";
-    private static int projectId;
-    private static int analysisId;
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Upload a dataset
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        //Create a project
-        createProject(projectName, DatasetName);
-        projectId = getProjectId(projectName);
-        //Create an analysis
-        createAnalysis(analysisName, projectId);
-        analysisId = getAnalysisId(analysisName);
+        // Check whether the analysis exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue an analysis is not available");
+        }
     }
 
     /**
@@ -60,10 +54,10 @@ public class AddFeaturesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Add default values to customized features")
+    @Test(description = "Add default values to customized features")
     public void testAddDefaultsToCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = setFeartureDefaults(analysisId);
+        CloseableHttpResponse response = setFeartureDefaults(MLIntegrationTestConstants.ANALYSIS_ID);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -76,12 +70,13 @@ public class AddFeaturesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Add customized features")
+    @Test(description = "Add customized features")
     public void testAddCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        String payload ="[{\"type\" :\"CATEGORICAL\",\"include\" : true,\"imputeOption\":\"DISCARD\",\"name\":\"Cover_Type\"}]";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + 
-                "/features"), payload);
+        String payload ="[{\"type\" :\"CATEGORICAL\",\"include\" : true,\"imputeOption\":\"DISCARD\",\"name\":\"" +
+                "Cover_Type\"}]";
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/features"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

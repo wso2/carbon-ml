@@ -36,21 +36,12 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="getDatasets", dependsOnGroups="createDatasetsSuccess")
 public class GetDatasetsTestCase extends MLIntegrationBaseTest {
 
-    private int datasetId;
-    private int versionId;
-
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        // Create a dataset
-        CloseableHttpResponse response = uploadDatasetFromCSV("SampleDataForGetdatasetTestCase", "1.0", "data/fcSample.csv");
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        datasetId = responseJson.getInt("id");
-        bufferedReader.close();
-        response.close();
     }
 
     /**
@@ -61,15 +52,16 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get a dataset with a known ID")
+    @Test(groups="getDatasetsSuccess", description = "Get a dataset with a known ID")
     public void testGetDataset() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + datasetId));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 
+                MLIntegrationTestConstants.DATASET_ID));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        // Check whether the correct dataset is returned
+        // Check whether the correct dataset is returned.
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        Assert.assertEquals(datasetId, responseJson.getInt("id"));
+        Assert.assertEquals(MLIntegrationTestConstants.DATASET_ID, responseJson.getInt("id"));
         bufferedReader.close();
         response.close();
     }
@@ -82,7 +74,7 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get a dataset with an invalid ID")
+    @Test(description = "Get a dataset with an invalid ID")
     public void testGetDatasetWithInvalidId() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 999));
@@ -98,7 +90,7 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get all available datasets")
+    @Test(description = "Get all available datasets")
     public void testGetAllDatasets() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets"));
@@ -114,16 +106,17 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get all available versions of a dataset")
+    @Test(description = "Get all available versions of a dataset")
     public void testGetVersionSetsOfdataset() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + datasetId + "/versions"));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 
+                MLIntegrationTestConstants.DATASET_ID + "/versions"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        // Get the Id of the first dataset
+        // Check whether the version set exists
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONArray responseJson = new JSONArray(bufferedReader.readLine());
         JSONObject datsetVersionJson = (JSONObject) responseJson.get(0);
-        versionId = datsetVersionJson.getInt("id");
+        Assert.assertEquals(MLIntegrationTestConstants.VERSIONSET_ID,datsetVersionJson.getInt("id"));
         response.close();
         bufferedReader.close();
     }
@@ -136,11 +129,12 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get dataset version from its ID", dependsOnMethods = 
+    @Test(description = "Get dataset version from its ID", dependsOnMethods = 
             "testGetVersionSetsOfdataset")
     public void testGetVersionSet() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/versions/" + versionId) );
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/versions/" + 
+                MLIntegrationTestConstants.VERSIONSET_ID) );
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -153,7 +147,7 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Get dataset version with a non-existing ID")
+    @Test(description = "Get dataset version with a non-existing ID")
     public void testGetVersionSetWithInvalidId() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/versions/" + 999));

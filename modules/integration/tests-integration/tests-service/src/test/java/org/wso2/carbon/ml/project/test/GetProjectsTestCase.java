@@ -31,16 +31,12 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="getProjects", dependsOnGroups="createProjectsSuccess")
 public class GetProjectsTestCase extends MLIntegrationBaseTest {
     
-    private static final String projectName = "TestProjectForGetProjectTestcase";
-    private static final String DatasetName = "SampleDataForGetProjectTestCase";
-
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
-        createProject(projectName, DatasetName);
     }
     
     /**
@@ -51,7 +47,7 @@ public class GetProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
+    @Test(description = "Retrieve a project")
     public void testGetAllProjects() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects"));
@@ -67,10 +63,11 @@ public class GetProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Retrieve a project")
+    @Test(description = "Retrieve a project")
     public void testGetProject() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + 
+                MLIntegrationTestConstants.PROJECT_NAME));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

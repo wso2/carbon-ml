@@ -19,25 +19,31 @@
 package org.wso2.carbon.ml.project.test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+@Test(groups="createProjects")
 public class CreateProjectsTestCase extends MLIntegrationBaseTest {
     
-    private static String DatasetName = "SampleDataForCreateProjectTestCase";
-
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        uploadDatasetFromCSV(DatasetName, "1.0", "data/fcSample.csv");
+        //Check whether the dataset exists.
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 
+                MLIntegrationTestConstants.DATASET_ID));
+        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue dataset is not available");
+        }
     }
 
     /**
@@ -48,10 +54,11 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project")
+    @Test(groups="createProjectsSuccess", description = "Create a project")
     public void testCreateProject() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
+        CloseableHttpResponse response = createProject(MLIntegrationTestConstants.PROJECT_NAME, 
+                MLIntegrationTestConstants.DATASET_NAME);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -65,11 +72,11 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws MLIntegrationBaseTestException 
      */
     //FIXME: This should fail!!
-    @Test(groups = "wso2.ml.integration", description = "Create a project with duplicate Name", dependsOnMethods = 
-            "testCreateProject")
+    @Test(description = "Create a project with duplicate Name", dependsOnMethods = "testCreateProject")
     public void testCreateProjectWithDuplicateName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", DatasetName);
+        CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase", 
+                MLIntegrationTestConstants.DATASET_NAME);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -82,11 +89,10 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project without name", dependsOnMethods = 
-            "testCreateProject")
+    @Test(description = "Create a project without name", dependsOnMethods = "testCreateProject")
     public void testCreateProjectWithoutName() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createProject(null, DatasetName);
+        CloseableHttpResponse response = createProject(null, MLIntegrationTestConstants.DATASET_NAME);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -99,12 +105,11 @@ public class CreateProjectsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException
      */
-    @Test(groups = "wso2.ml.integration", description = "Create a project without a dataset")
+    @Test(description = "Create a project without a dataset")
     public void testCreateProjectWithoutDataset() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createProject("TestProjectForCreatProjectTestCase-2", null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
-                .getStatusCode());
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
     }
 }
