@@ -208,7 +208,7 @@ public class SQLQueries {
     public static final String GET_MODEL_STORAGE = "SELECT STORAGE_TYPE, STORAGE_LOCATION FROM ML_MODEL WHERE MODEL_ID=?";
 
     // TODO
-    public static final String GET_MODEL_ID = " SELECT MODEL_ID FROM ML_MODEL WHERE WORKFLOW_ID = ?";
+    public static final String GET_MODEL_ID = " SELECT MODEL_ID FROM ML_MODEL WHERE ANALYSIS_ID = ?";
 
     // TODO
     public static final String GET_MODEL_SUMMARY = "SELECT MODEL_SUMMARY FROM ML_MODEL WHERE MODEL_ID=?";
@@ -224,6 +224,7 @@ public class SQLQueries {
     public static final String GET_MODEL_EXE_START_TIME = " SELECT MODEL_EXECUTION_START_TIME FROM ML_MODEL WHERE "
             + "MODEL_ID = ?";
 
+    public static final String GET_ANALYSIS_ID_OF_MODEL = "SELECT ANALYSIS_ID  FROM ML_MODEL WHERE MODEL_ID = ?";
     /*
      * private Constructor to prevent any other class from instantiating.
      */

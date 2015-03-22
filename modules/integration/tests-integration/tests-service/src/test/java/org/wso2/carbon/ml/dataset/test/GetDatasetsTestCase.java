@@ -36,7 +36,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="getDatasets", dependsOnGroups="createDatasetsSuccess")
+@Test(groups="getDatasets", dependsOnGroups="createDatasets")
 public class GetDatasetsTestCase extends MLIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)
@@ -52,7 +52,7 @@ public class GetDatasetsTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    @Test(groups="getDatasetsSuccess", description = "Get a dataset with a known ID")
+    @Test(description = "Get a dataset with a known ID")
     public void testGetDataset() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 

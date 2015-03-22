@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="createModelStorage", dependsOnGroups="createModelSuccess")
+@Test(groups="createModelStorage", dependsOnGroups="createModels")
 public class CreateModelStorageTestCase extends MLIntegrationBaseTest {
     
     @BeforeClass(alwaysRun = true)
@@ -54,7 +54,7 @@ public class CreateModelStorageTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException
      */
-    @Test(groups="createModelStorageSuccess", description = "Create model storage type: file")
+    @Test(description = "Create model storage type: file")
     public void testCreateModelStorage() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createFileModelStorage(MLIntegrationTestConstants.MODEL_ID, 

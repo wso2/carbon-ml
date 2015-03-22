@@ -31,7 +31,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="getAnalyses", dependsOnGroups="createAnalysisSuccess")
+@Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
 public class GetAnalysesTestCase extends MLIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)

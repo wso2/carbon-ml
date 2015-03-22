@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="getAnalyses", dependsOnGroups="createAnalysisSuccess")
+@Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
 public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
 
     private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";

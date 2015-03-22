@@ -30,11 +30,12 @@ import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="addModelConfigs", dependsOnGroups="createAnalysisSuccess")
+@Test(groups="addModelConfigs", dependsOnGroups="createAnalyses")
 public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
     
     @BeforeClass(alwaysRun = true)
@@ -60,11 +61,10 @@ public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
     public void testSetModelConfigurations() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         Map <String,String> configurations = new HashMap<String,String>();
-        configurations.put("algorithmName", "LOGISTIC_REGRESSION");
-        configurations.put("algorithmType", "Classification");
-        configurations.put("responseVariable", "Cover_Type");
-        configurations.put("trainDataFraction", "0.7");
-        setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
+        configurations.put(MLConstants.ALGORITHM_NAME, "LOGISTIC_REGRESSION");
+        configurations.put(MLConstants.ALGORITHM_TYPE, "Classification");
+        configurations.put(MLConstants.RESPONSE, "Cover_Type");
+        configurations.put(MLConstants.TRAIN_DATA_FRACTION, "0.7");
         CloseableHttpResponse response = setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();

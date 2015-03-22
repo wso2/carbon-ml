@@ -32,7 +32,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="addFeatures", dependsOnGroups="createAnalysisSuccess")
+@Test(groups="addFeatures", dependsOnGroups="createAnalyses")
 public class AddFeaturesTestCase extends MLIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)

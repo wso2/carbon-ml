@@ -31,7 +31,7 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="deleteProjects", dependsOnGroups="createProjectsSuccess")
+@Test(groups="deleteProjects", dependsOnGroups="createProjects")
 public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
     
     private static final String projectName = "TestProjectForDeleteProjectTestcase";

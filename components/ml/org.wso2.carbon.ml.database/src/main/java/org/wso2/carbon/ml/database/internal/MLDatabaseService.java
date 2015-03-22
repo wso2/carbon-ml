@@ -1641,7 +1641,6 @@ public class MLDatabaseService implements DatabaseService {
 
     @Override
     public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
-
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -2829,6 +2828,9 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
+        
+        ResultSet analysisIdResult = null;
+        PreparedStatement getAnalysisIdStatement = null;
         try {
             Workflow mlWorkflow = new Workflow();
             mlWorkflow.setWorkflowID(modelId);
@@ -2857,11 +2859,22 @@ public class MLDatabaseService implements DatabaseService {
                 }
             }
             mlWorkflow.setFeatures(mlFeatures);
+            
+            getAnalysisIdStatement = connection.prepareStatement(SQLQueries.GET_ANALYSIS_ID_OF_MODEL);
+            getAnalysisIdStatement.setLong(1, modelId);
+            analysisIdResult = getAnalysisIdStatement.executeQuery();
+            long analysisId;
+            if (analysisIdResult.first()) {
+                analysisId = analysisIdResult.getLong(1);
+            } else {
+                throw new DatabaseHandlerException("Couldn't find analysis ID of model: " + modelId);
+            }
+            
             // set model configs
-            mlWorkflow.setAlgorithmName(getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_NAME));
-            mlWorkflow.setAlgorithmClass(getAStringModelConfiguration(modelId, MLConstants.ALGORITHM_TYPE));
-            mlWorkflow.setResponseVariable(getAStringModelConfiguration(modelId, MLConstants.RESPONSE));
-            mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(modelId, MLConstants.TRAIN_DATA_FRACTION)));
+            mlWorkflow.setAlgorithmName(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME));
+            mlWorkflow.setAlgorithmClass(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_TYPE));
+            mlWorkflow.setResponseVariable(getAStringModelConfiguration(analysisId, MLConstants.RESPONSE));
+            mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION)));
 
             // set hyper parameters
             mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(modelId));
@@ -2882,6 +2895,7 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(getAnalysisIdStatement, analysisIdResult);
         }
     }
 
