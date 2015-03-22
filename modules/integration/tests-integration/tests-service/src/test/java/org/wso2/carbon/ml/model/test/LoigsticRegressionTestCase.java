@@ -18,26 +18,18 @@
 
 package org.wso2.carbon.ml.model.test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.json.JSONObject;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
-@Test(groups="modelBuilding")
+@Test(groups="buildModel", dependsOnGroups="createModelStorageSuccess")
 public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
     
     private static final String analysisName = "TestAnalysisForLogisticRegressionTestcase";
@@ -45,7 +37,7 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
     private static int analysisId;
     private static int modelId;
 
-    @BeforeClass(alwaysRun = true, groups = "wso2.ml.integration")
+    @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
         // Check whether the project exists.
@@ -66,50 +58,10 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         setModelConfiguration(analysisId, configurations);
         //Set default Hyper-parameters
         doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
-    }
-
-    /**
-     * Test creating a Logistic Regression model.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
-     */
-    @Test(description = "Set default values to hyperparameters")
-    public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel(modelName, analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
-    }
-    
-    /**
-     * Get model from name
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
-     */
-    @Test(description = "retireve a model")
-    public void testGetModel() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + modelName));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
-        bufferedReader.close();
-        response.close();
-        modelId = responseJson.getInt("id");
-        response.close();
-    }
-    
-    @Test(description = "Set default values to hyperparameters")
-    public void testCreateModelStorage() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel("TestModelForLogisticRegression", analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
-        response.close();
+        // Create a model
+        createModel(modelName, analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
+        modelId = getModelId(modelName); 
+        //Set storage location for model
+        createFileModelStorage(modelId, MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
     }
 }

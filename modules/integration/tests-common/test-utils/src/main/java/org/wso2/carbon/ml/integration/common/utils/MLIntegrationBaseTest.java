@@ -312,6 +312,26 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     }
     
     /**
+     * Get the model ID using the name of the model
+     * 
+     * @param modelName
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException
+     */
+    protected int getModelId(String modelName) throws ClientProtocolException, IOException, URISyntaxException,
+        MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + modelName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+        bufferedReader.close();
+        response.close();
+        return responseJson.getInt("id");
+    }
+    
+    /**
      * 
      * @param modelId
      * @param folderName
