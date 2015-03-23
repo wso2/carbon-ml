@@ -2826,19 +2826,19 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Workflow getWorkflow(long modelId, long analysisId) throws DatabaseHandlerException {
+    public Workflow getWorkflow(long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
         
         try {
             Workflow mlWorkflow = new Workflow();
-            mlWorkflow.setWorkflowID(modelId);
+            mlWorkflow.setWorkflowID(analysisId);
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             List<Feature> mlFeatures = new ArrayList<Feature>();
             getStatement = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
-            getStatement.setLong(1, modelId);
+            getStatement.setLong(1, analysisId);
             result = getStatement.executeQuery();
             while (result.next()) {
                 // check whether to include the feature or not

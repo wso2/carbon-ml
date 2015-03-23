@@ -173,7 +173,7 @@ public class MLModelHandler {
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            Workflow facts = databaseService.getWorkflow(modelId, model.getAnalysisId());
+            Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
@@ -228,7 +228,7 @@ public class MLModelHandler {
             String dataType = databaseService.getDataTypeOfModel(modelId);
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            Workflow facts = databaseService.getWorkflow(modelId, model.getAnalysisId());
+            Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
