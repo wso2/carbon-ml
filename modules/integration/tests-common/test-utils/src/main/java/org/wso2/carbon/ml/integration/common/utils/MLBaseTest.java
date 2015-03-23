@@ -25,7 +25,10 @@ import javax.xml.xpath.XPathExpressionException;
 import org.testng.Assert;
 import org.wso2.carbon.automation.engine.configurations.UrlGenerationUtil;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
+import org.wso2.carbon.automation.engine.context.ContextXpathConstants;
+import org.wso2.carbon.automation.engine.context.InstanceType;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.engine.context.beans.Instance;
 import org.wso2.carbon.automation.engine.context.beans.Tenant;
 import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
@@ -42,6 +45,7 @@ public abstract class MLBaseTest {
     protected Tenant tenantInfo;
     protected User userInfo;
     protected TestUserMode userMode;
+    protected Instance instance;
 
     protected void init() throws MLIntegrationBaseTestException {
         try {
@@ -51,6 +55,7 @@ public abstract class MLBaseTest {
             this.tenantInfo = this.mlAutomationContext.getContextTenant();
             //get the user information initialized with the system
             this.userInfo = this.tenantInfo.getContextUser();
+            this.instance = mlAutomationContext.getInstance();
         } catch (XPathExpressionException e) {
             throw new MLIntegrationBaseTestException("Failed to get the ML automation context: ", e);
         } 
@@ -63,8 +68,17 @@ public abstract class MLBaseTest {
      * @throws              MLIntegrationBaseTestException
      */
     protected String getServerUrlHttps() throws MLIntegrationBaseTestException {
-        // TODO : Read from configs
-        return "https://localhost:9443";
+        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS;
+        String host = getHost(instance);
+        //Get port
+        String port = null;
+        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
+        if(isNonBlockingEnabled) {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTPS);
+        } else {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS);
+        }
+        return (protocol + "://"+ host + ":" + port);
     }
     
     /**
@@ -74,8 +88,34 @@ public abstract class MLBaseTest {
      * @throws              MLIntegrationBaseTestException
      */
     protected String getServerUrlHttp() throws MLIntegrationBaseTestException {
-        // TODO : Read from configs
-        return "http://localhost:9763";
+        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP;
+        String host = getHost(instance);
+        //Get port
+        String port = null;
+        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
+        if(isNonBlockingEnabled) {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTP);
+        } else {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP);
+        }
+        return (protocol + "://"+ host + ":" + port);
+    }
+    
+    /**
+     * This method gives the host of the given productGroup instance
+     *
+     * @param instance
+     * @return
+     */
+    public static String getHost(Instance instance) {
+        String workerHost = "";
+        String instanceType = instance.getType();
+        if(instanceType.equals(InstanceType.standalone.name())) {
+            workerHost = instance.getHosts().get(ContextXpathConstants.DEFAULT);
+        } else if(instance.getType().equals(InstanceType.lb_worker_manager.name())) {
+            workerHost = instance.getHosts().get(ContextXpathConstants.WORKER);
+        }
+        return workerHost;
     }
 
     /**
