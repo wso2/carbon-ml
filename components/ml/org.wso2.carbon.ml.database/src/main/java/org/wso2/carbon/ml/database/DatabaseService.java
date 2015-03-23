@@ -108,7 +108,7 @@ public interface DatabaseService {
     public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, 
             SamplePoints samplePoints) throws DatabaseHandlerException;
     
-    public long getVersionsetId(String valueSetName, int tenantId) throws DatabaseHandlerException;
+    public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException;
 
     /**
      * Insert data-source to the database
@@ -152,11 +152,11 @@ public interface DatabaseService {
     /**
      * Update the value-set table with a data-set sample.
      *
-     * @param valueSetId        Unique Identifier of the value-set
+     * @param datasetVesionId   Unique Identifier of the value-set
      * @param valueSetSample    SamplePoints object of the value-set
      * @throws                  DatabaseHandlerException
      */
-    public void updateVersionsetSample(long valueSetId, SamplePoints valueSetSample)
+    public void updateVersionsetSample(long datasetVesionId, SamplePoints valueSetSample)
             throws DatabaseHandlerException;
 
     /**
