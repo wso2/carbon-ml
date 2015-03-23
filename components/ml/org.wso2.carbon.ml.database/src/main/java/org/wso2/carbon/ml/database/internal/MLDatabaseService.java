@@ -2022,7 +2022,7 @@ public class MLDatabaseService implements DatabaseService {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_MODEL);
+            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
             getFeatues.setLong(1, modelId);
             result = getFeatues.executeQuery();
             while (result.next()) {
@@ -2042,7 +2042,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException {
+    public Map<String, String> getHyperParametersOfModelAsMap(long analysisId) throws DatabaseHandlerException {
         Map<String, String> hyperParams = new HashMap<String, String>();
         Connection connection = null;
         PreparedStatement getFeatues = null;
@@ -2051,8 +2051,8 @@ public class MLDatabaseService implements DatabaseService {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_MODEL);
-            getFeatues.setLong(1, modelId);
+            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
+            getFeatues.setLong(1, analysisId);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 hyperParams.put(result.getString(1), result.getString(2));
@@ -2060,7 +2060,7 @@ public class MLDatabaseService implements DatabaseService {
             return hyperParams;
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving hyper parameters of "
-                    + "the model: " + modelId + ": " + e.getMessage(), e);
+                    + "the analysis: " + analysisId + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
@@ -2861,7 +2861,7 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION)));
 
             // set hyper parameters
-            mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(modelId));
+            mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
             // result = getStatement.executeQuery();
             // if (result.first()) {
             // mlWorkflow.setAlgorithmClass(result.getString(1));

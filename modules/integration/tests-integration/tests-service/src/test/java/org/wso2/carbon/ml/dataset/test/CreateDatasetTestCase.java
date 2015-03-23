@@ -50,7 +50,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
     public void testCreateDatasetFromFile() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
-                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
+                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -68,7 +68,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
     public void testCreateNewDatasetVersion() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
-                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
+                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -86,7 +86,7 @@ public class CreateDatasetTestCase extends MLIntegrationBaseTest {
     public void testCreateDuplicateDatasetVersion() throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
-                MLIntegrationTestConstants.FOREST_COVER_DATASET_SAMPLE);
+                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
         response.close();
     }
