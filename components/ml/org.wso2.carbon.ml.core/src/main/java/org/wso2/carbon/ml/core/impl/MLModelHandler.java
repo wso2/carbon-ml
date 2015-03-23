@@ -173,7 +173,7 @@ public class MLModelHandler {
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            Workflow facts = databaseService.getWorkflow(modelId);
+            Workflow facts = databaseService.getWorkflow(modelId, model.getAnalysisId());
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
@@ -224,12 +224,11 @@ public class MLModelHandler {
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            // long datasetVersionId = databaseService.getDatasetVersionId(datasetVersionId);
-            // long datasetId = databaseService.getDatasetId(datasetVersionId);
+            MLModelNew model = databaseService.getModel(tenantId, userName, modelId);
             String dataType = databaseService.getDataTypeOfModel(modelId);
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            Workflow facts = databaseService.getWorkflow(modelId);
+            Workflow facts = databaseService.getWorkflow(modelId, model.getAnalysisId());
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
@@ -243,10 +242,10 @@ public class MLModelHandler {
             sparkContext = new JavaSparkContext(sparkConf);
             context.setSparkContext(sparkContext);
             
-            MLModel model = retrieveModel(modelId);
+            MLModel builtModel = retrieveModel(modelId);
 
             // predict
-            Predictor predictor = new Predictor(modelId, model, context);
+            Predictor predictor = new Predictor(modelId, builtModel, context);
             List<?> predictions = predictor.predict();
 
             log.info(String.format("Prediction from model [id] %s was successful.", modelId));

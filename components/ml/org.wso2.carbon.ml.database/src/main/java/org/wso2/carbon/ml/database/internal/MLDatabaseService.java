@@ -2824,7 +2824,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Workflow getWorkflow(long modelId) throws DatabaseHandlerException {
+    public Workflow getWorkflow(long modelId, long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
@@ -2859,16 +2859,6 @@ public class MLDatabaseService implements DatabaseService {
                 }
             }
             mlWorkflow.setFeatures(mlFeatures);
-            
-            getAnalysisIdStatement = connection.prepareStatement(SQLQueries.GET_ANALYSIS_ID_OF_MODEL);
-            getAnalysisIdStatement.setLong(1, modelId);
-            analysisIdResult = getAnalysisIdStatement.executeQuery();
-            long analysisId;
-            if (analysisIdResult.first()) {
-                analysisId = analysisIdResult.getLong(1);
-            } else {
-                throw new DatabaseHandlerException("Couldn't find analysis ID of model: " + modelId);
-            }
             
             // set model configs
             mlWorkflow.setAlgorithmName(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME));

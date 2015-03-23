@@ -522,7 +522,7 @@ public interface DatabaseService {
 
     public Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
 
-    public Workflow getWorkflow(long modelId) throws DatabaseHandlerException;
+    public Workflow getWorkflow(long modelId, long analysisId) throws DatabaseHandlerException;
 
     public MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
 

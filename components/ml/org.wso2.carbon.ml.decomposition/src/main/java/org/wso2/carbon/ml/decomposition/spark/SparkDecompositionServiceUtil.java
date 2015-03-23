@@ -145,7 +145,7 @@ public class SparkDecompositionServiceUtil {
             sparkConf.setAppName(workflowID);
 
             DatabaseService dbService = DecompositionServiceValueHolder.getDatabaseService();
-            Workflow workflow = dbService.getWorkflow(Long.parseLong(workflowID));
+            Workflow workflow = null; //FIXME dbService.getWorkflow(Long.parseLong(workflowID));
             String dataSetURL = workflow.getDatasetURL();
 
             JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
@@ -171,10 +171,6 @@ public class SparkDecompositionServiceUtil {
                 return dataPoints.sample(false, sampleFraction, DecompositionConstants.RANDOM_SEED);
             }
             return dataPoints;
-
-        } catch (DatabaseHandlerException ex) {
-            throw new DecompositionException("An error occurred while reading data from database: " + ex.getMessage(),
-                    ex);
 
         } catch (DecompositionException ex) {
             throw new DecompositionException("An error occurred while reading data from database: " + ex.getMessage(),
