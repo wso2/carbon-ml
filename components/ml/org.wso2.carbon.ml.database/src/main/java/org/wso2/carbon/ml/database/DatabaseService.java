@@ -30,22 +30,47 @@ import java.util.SortedMap;
 
 public interface DatabaseService {
 
+    /**
+     * Insert a new dataset-schema into the database
+     * @param dataset  MLDataset to be inserted
+     * @throws DatabaseHandlerException
+     */
     public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
 
-    public void insertDatasetVersion(MLDatasetVersion mlValueset) throws DatabaseHandlerException;
+    /**
+     * Insert a new dataset-version into the database
+     * @param datasetVersion MLDatasetVersion to be inserted
+     * @throws DatabaseHandlerException
+     */
+    public void insertDatasetVersion(MLDatasetVersion datasetVersion) throws DatabaseHandlerException;
 
+    /**
+     * Insert a new project to the database
+     * @param project MLProject to be inserted
+     * @throws DatabaseHandlerException
+     */
     public void insertProject(MLProject project) throws DatabaseHandlerException;
 
+    /**
+     * Insert a new analysis into the database
+     * @param analysis MLAnalysis to be inserted
+     * @throws DatabaseHandlerException
+     */
     public void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException;
 
+    /**
+     * Insert a new model into the database
+     * @param model MLModelNew to be inserted
+     * @throws DatabaseHandlerException
+     */
     public void insertModel(MLModelNew model) throws DatabaseHandlerException;
 
     /**
      * Retrieves the path of the value-set having the given ID, from the
      * database.
      *
-     * @param datasetVersionId  Unique Identifier of the value-set
-     * @return                  Absolute path of a given value-set
+     * @param datasetVersionId  Unique Identifier of the dataset-version
+     * @return                  Absolute path of a given dataset-version
      * @throws                  DatabaseHandlerException
      */
     public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
@@ -265,15 +290,6 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
-     * Set the default values for feature properties of a given workflow.
-     *
-     * @param datasetVersionId  Unique identifier of the data-set-version
-     * @param modelId           Unique identifier of the current model
-     * @throws                  DatabaseHandlerException
-     */
-    public void setDefaultFeatureSettings(long datasetVersionId, long modelId) throws DatabaseHandlerException;
-
-    /**
      * Retrieves the type of a feature.
      *
      * @param modelId       Unique identifier of the model
@@ -353,14 +369,6 @@ public interface DatabaseService {
     public String[] getProject(String projectId) throws DatabaseHandlerException;
 
     /**
-     * Delete details of a given project from the database.
-     *
-     * @param projectId    Unique identifier for the project
-     * @throws             DatabaseHandlerException
-     */
-    public void deleteProject(String projectId) throws DatabaseHandlerException;
-
-    /**
      * Insert Analysis to the database
      * @param projectId
      * @param name
@@ -436,57 +444,6 @@ public interface DatabaseService {
      * @throws             DatabaseHandlerException
      */
     public String[][] getTenantProjects(int tenantID) throws DatabaseHandlerException;
-
-    //TODO workflow to be replaced with analysis
-
-    public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID
-            , String workflowName) throws DatabaseHandlerException;
-
-    // TODO
-    public void createWorkflow(String workflowID, String projectID, String datasetID
-            , String workflowName) throws DatabaseHandlerException;
-
-    // TODO
-    public void deleteWorkflow(String workflowID) throws DatabaseHandlerException;
-
-    // TODO
-    public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException;
-
-    // TODO
-    public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException;
-
-    // TODO
-    public String getdatasetID(String projectId) throws DatabaseHandlerException;
-
-    // TODO
-    public String getDatasetId(String projectId) throws DatabaseHandlerException;
-
-    // TODO
-    public String getModelId(String workflowId) throws DatabaseHandlerException;
-
-    // TODO
-    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException;
-
-    // TODO
-    public void insertModel(String modelID, String workflowID, Time executionStartTime) throws DatabaseHandlerException;
-
-    // TODO
-    public void updateModel(String modelID, MLModel model, ModelSummary modelSummary, Time executionEndTime)
-            throws DatabaseHandlerException;
-
-    // TODO
-    public MLModel getModel(String modelID) throws DatabaseHandlerException;
-
-    // TODO
-    public void insertModelSettings(String modelSettingsID, String workflowID, String algorithmName, 
-            String algorithmClass, String response, double trainDataFraction, List<HyperParameter> hyperparameters)
-            throws DatabaseHandlerException;
-
-    // TODO
-    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException;
-
-    // TODO
-    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException;
 
     public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures,int tenantId,
             String userName) throws DatabaseHandlerException;

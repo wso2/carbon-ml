@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
@@ -106,21 +105,21 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDatasetVersion(MLDatasetVersion mlVersionSet) throws DatabaseHandlerException {
+    public void insertDatasetVersion(MLDatasetVersion datasetVersion) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
         try {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);  // todo change query
-            insertStatement.setLong(1, mlVersionSet.getDatasetId());
-            insertStatement.setString(2, mlVersionSet.getName());
-            insertStatement.setString(3, mlVersionSet.getVersion());
-            insertStatement.setInt(4, mlVersionSet.getTenantId());
-            insertStatement.setString(5, mlVersionSet.getUserName());
-            insertStatement.setString(6, mlVersionSet.getTargetPath().getPath());
-            insertStatement.setObject(7, mlVersionSet.getSamplePoints());
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
+            insertStatement.setLong(1, datasetVersion.getDatasetId());
+            insertStatement.setString(2, datasetVersion.getName());
+            insertStatement.setString(3, datasetVersion.getVersion());
+            insertStatement.setInt(4, datasetVersion.getTenantId());
+            insertStatement.setString(5, datasetVersion.getUserName());
+            insertStatement.setString(6, datasetVersion.getTargetPath().getPath());
+            insertStatement.setObject(7, datasetVersion.getSamplePoints());
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -432,7 +431,7 @@ public class MLDatabaseService implements DatabaseService {
             // Insert the data-set-version details to the database.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION_DETAILS);
             insertStatement.setLong(1, datasetId);
             insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, username);
@@ -497,7 +496,7 @@ public class MLDatabaseService implements DatabaseService {
         try {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_VALUE_SET);
+            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_VERSION);
             insertStatement.setLong(1, datasetVersionId);
             insertStatement.setString(2, name);
             insertStatement.setInt(3, tenantId);
@@ -1446,38 +1445,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
-        }
-    }
-
-    /**
-     * Delete details of a given project from the database.
-     *
-     * @param projectId Unique identifier for the project
-     * @throws DatabaseHandlerException
-     */
-    public void deleteProject(String projectId) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement deleteProjectStatement = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            deleteProjectStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT_GIVEN_ID);
-            deleteProjectStatement.setString(1, projectId);
-            deleteProjectStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully deleted the project: " + projectId);
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectId + ": "
-                    + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, deleteProjectStatement);
         }
     }
 
@@ -2549,60 +2516,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     /**
-     * Set the default values for feature properties of a given model
-     *
-     * @param datasetVersionId Unique identifier of the data-set-version
-     * @param modelId Unique identifier of the current model
-     * @throws DatabaseHandlerException
-     */
-    public void setDefaultFeatureSettings(long datasetVersionId, long modelId) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        PreparedStatement getDefaultFeatureSettings = null;
-        ResultSet result = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(true);
-            // read default feature settings from feature_defaults table
-            getDefaultFeatureSettings = connection.prepareStatement(SQLQueries.GET_DEFAULT_FEATURE_SETTINGS);
-            getDefaultFeatureSettings.setLong(1, datasetVersionId);
-            result = getDefaultFeatureSettings.executeQuery();
-            // insert default feature settings into feature_customized table
-            connection.setAutoCommit(false);
-            while (result.next()) {
-                insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-                insertStatement.setLong(1, modelId);
-                insertStatement.setString(2, result.getString(1));
-                insertStatement.setString(3, result.getString(2));
-                insertStatement.setString(4, result.getString(4));
-                insertStatement.setString(5, ImputeOption.REPLACE_WTH_MEAN);
-                insertStatement.setBoolean(6, true); // TODO inclusion
-                insertStatement.setString(7, ""); // TODO last modified user
-                insertStatement.setDate(8, null); // TODO last modified time
-                insertStatement.execute();
-                connection.commit();
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted feature defaults of dataset version: " + datasetVersionId
-                        + " of the workflow: " + datasetVersionId);
-            }
-        } catch (SQLException e) {
-            // rollback the changes
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while setting details of dataset version "
-                    + datasetVersionId + " of the model " + modelId + " to the database:" + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement, result);
-            MLDatabaseUtils.closeDatabaseResources(getDefaultFeatureSettings);
-        }
-    }
-
-    /**
      * Retrieves the type of a feature.
      *
      * @param modelId Unique identifier of the model
@@ -2754,77 +2667,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    // TODO
-    @Override
-    public void createNewWorkflow(String workflowID, String parentWorkflowID, String projectID, String datasetID,
-            String workflowName) throws DatabaseHandlerException {
-        // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public void createWorkflow(String workflowID, String projectID, String datasetID, String workflowName)
-            throws DatabaseHandlerException {
-        // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public void deleteWorkflow(String workflowID) throws DatabaseHandlerException {
-        // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public String[][] getProjectWorkflows(String projectId) throws DatabaseHandlerException {
-        return new String[0][]; // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public void updateWorkdflowName(String workflowId, String name) throws DatabaseHandlerException {
-        // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public String getdatasetID(String projectId) throws DatabaseHandlerException {
-        return "1234"; // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // TODO
-    @Override
-    public String getDatasetId(String projectId) throws DatabaseHandlerException {
-        return "1234";
-    }
-
-    // TODO
-    public String getModelId(String workflowId) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement model = null;
-        ResultSet result = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            model = connection.prepareStatement(SQLQueries.GET_MODEL_ID);
-            model.setString(1, workflowId);
-            result = model.executeQuery();
-            if (!result.first()) {
-                // need to query ML_MODEL table, just before model building process is started
-                // to overcome building same model two (or more) times.
-                // hence, null will be checked in UI.
-                return null;
-            }
-            return result.getString(1);
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred white retrieving model associated with workflow id "
-                    + workflowId + ":" + e.getMessage(), e);
-        } finally {
-            // Close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, model, result);
-        }
-    }
-
     @Override
     public Workflow getWorkflow(long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
@@ -2936,123 +2778,5 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    // TODO
-    public ModelSummary getModelSummary(String modelID) throws DatabaseHandlerException {
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement getStatement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
-            getStatement.setString(1, modelID);
-            result = getStatement.executeQuery();
-            if (result.first()) {
-                return (ModelSummary) result.getObject(1);
-            } else {
-                throw new DatabaseHandlerException("Invalid model ID: " + modelID);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while reading model summary for " + modelID
-                    + " from the database: " + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
-        }
-    }
-
-    // TODO
-    public void insertModel(String modelID, String workflowID, Time executionStartTime) throws DatabaseHandlerException {
-
-    }
-
-    // TODO
-    public void updateModel(String modelID, MLModel model, ModelSummary modelSummary, Time executionEndTime)
-            throws DatabaseHandlerException {
-
-    }
-
-    // TODO
-    public MLModel getModel(String modelID) throws DatabaseHandlerException {
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement getStatement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            getStatement = connection.prepareStatement(SQLQueries.GET_MODEL);
-            getStatement.setString(1, modelID);
-            result = getStatement.executeQuery();
-            if (result.first()) {
-                return (MLModel) result.getObject(1);
-            } else {
-                throw new DatabaseHandlerException("Invalid model ID: " + modelID);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while reading model for " + modelID
-                    + " from the database: " + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
-        }
-    }
-
-    // TODO
-    public void insertModelSettings(String modelSettingsID, String workflowID, String algorithmName,
-            String algorithmClass, String response, double trainDataFraction, List<HyperParameter> hyperparameters)
-            throws DatabaseHandlerException {
-
-    }
-
-    // TODO
-    public long getModelExecutionEndTime(String modelId) throws DatabaseHandlerException {
-        return getModelExecutionTime(modelId, SQLQueries.GET_MODEL_EXE_END_TIME);
-    }
-
-    // TODO
-    public long getModelExecutionStartTime(String modelId) throws DatabaseHandlerException {
-        return getModelExecutionTime(modelId, SQLQueries.GET_MODEL_EXE_START_TIME);
-    }
-
-    // TODO
-    /**
-     * This helper class is used to extract model execution start/end time
-     *
-     * @param modelId
-     * @param query
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getModelExecutionTime(String modelId, String query) throws DatabaseHandlerException {
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(query);
-            statement.setString(1, modelId);
-            result = statement.executeQuery();
-            if (result.first()) {
-                Timestamp time = result.getTimestamp(1);
-                if (time != null) {
-                    return time.getTime();
-                }
-                return 0;
-            } else {
-                throw new DatabaseHandlerException("No timestamp data associated with model id: " + modelId);
-            }
-
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(
-                    " An error has occurred while reading execution time from the database: " + e.getMessage(), e);
-        } finally {
-            // closing database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
 
 }
