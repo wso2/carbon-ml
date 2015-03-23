@@ -59,7 +59,7 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         Map <String,String> configurations = new HashMap<String,String>();
         configurations.put(MLConstants.ALGORITHM_NAME, "LOGISTIC_REGRESSION");
         configurations.put(MLConstants.ALGORITHM_TYPE, "Classification");
-        configurations.put(MLConstants.RESPONSE, "Cover_Type");
+        configurations.put(MLConstants.RESPONSE, "Class");
         configurations.put(MLConstants.TRAIN_DATA_FRACTION, "0.7");
         setModelConfiguration(analysisId, configurations);
         //Set default Hyper-parameters

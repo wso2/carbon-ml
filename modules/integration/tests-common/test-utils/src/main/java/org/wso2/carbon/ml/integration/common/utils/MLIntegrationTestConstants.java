@@ -47,6 +47,7 @@ public class MLIntegrationTestConstants {
 	
 	// Constants for Test cases - Happy scenario
 	public static final String FOREST_COVER_DATASET_SAMPLE = "data/fcSample.csv";
+	public static final String DIABETES_DATASET_SAMPLE = "data/pIndiansDiabetes.csv";
 	public static final String DATASET_NAME = "Forest_Cover";
 	public static final int DATASET_ID = 1;
 	public static final int VERSIONSET_ID = 1;
