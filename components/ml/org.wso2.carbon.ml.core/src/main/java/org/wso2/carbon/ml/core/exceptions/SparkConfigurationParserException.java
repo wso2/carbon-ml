@@ -19,6 +19,8 @@
 package org.wso2.carbon.ml.core.exceptions;
 
 public class SparkConfigurationParserException extends Exception {
+    private static final long serialVersionUID = -1750191859183521821L;
+
     public SparkConfigurationParserException(String message, Throwable cause) {
         super(message, cause);
     }

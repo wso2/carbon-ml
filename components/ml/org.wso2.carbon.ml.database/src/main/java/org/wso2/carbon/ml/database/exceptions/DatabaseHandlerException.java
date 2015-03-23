@@ -20,6 +20,8 @@ package org.wso2.carbon.ml.database.exceptions;
 
 public class DatabaseHandlerException extends Exception {
 
+    private static final long serialVersionUID = 8861294012972059965L;
+
     public DatabaseHandlerException(String message) {
         super(message);
     }
