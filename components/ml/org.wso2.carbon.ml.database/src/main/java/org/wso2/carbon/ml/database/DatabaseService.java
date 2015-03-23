@@ -76,22 +76,6 @@ public interface DatabaseService {
     public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
-     * Insert the new data-set details to the the database
-     *
-     * @param name
-     * @param tenantID
-     * @param username
-     * @param comments
-     * @param sourceType
-     * @param targetType
-     * @param dataType
-     * @throws DatabaseHandlerException
-     */
-    public void insertDatasetDetails(String name, int tenantID, String username, String comments,
-                                     String sourceType, String targetType, String dataType)
-            throws DatabaseHandlerException;
-
-    /**
      * @param datasetName   Name of the data-set
      * @param tenantId      Tenant Id
      * @return              Unique Id of the data-set
@@ -100,52 +84,13 @@ public interface DatabaseService {
     public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
-     * Insert the data-set-version details to the database
-     *
-     * @param datasetId
-     * @param tenantId
-     * @param version
+     * Get the dataset-version id
+     * @param datasetVersionName name of the dataset-version
+     * @param tenantId           tenant id
+     * @return
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersionDetails(long datasetId, int tenantId, String username, String version)
-            throws DatabaseHandlerException;
-
-    /**
-     * Insert the feature defaults to the database
-     * @param datasetVersionId
-     * @param featureName
-     * @param type
-     * @param featureIndex
-     * @param summary
-     * @throws DatabaseHandlerException
-     */
-    public void insertFeatureDefaults(long datasetVersionId, String featureName, String type, int featureIndex, String
-        summary) throws DatabaseHandlerException;
-
-    /**
-     * Insert the value-set to the database
-     * @param datasetVersionId
-     * @param tenantId
-     * @param uri
-     * @param samplePoints
-     * @throws DatabaseHandlerException
-     */
-    public void insertValueSet(long datasetVersionId, String name, int tenantId, String username, String uri, 
-            SamplePoints samplePoints) throws DatabaseHandlerException;
-    
     public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException;
-
-    /**
-     * Insert data-source to the database
-     * @param valuesetId
-     * @param tenantId
-     * @param username
-     * @param key
-     * @param value
-     * @throws DatabaseHandlerException
-     */
-    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value)
-            throws DatabaseHandlerException;
 
     /**
      * Check whether the given database name exists in the given tenantId
@@ -388,7 +333,15 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
-    
+
+    /**
+     * Get the Id of the model
+     * @param tenantId  Tenant Id
+     * @param userName  Username
+     * @param modelName Model name
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public long getModelId(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
 
     /**
@@ -466,6 +419,9 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     public long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
+
+    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value)
+            throws DatabaseHandlerException;
 
     public long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
 
