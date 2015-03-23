@@ -37,7 +37,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 /**
