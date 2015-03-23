@@ -343,7 +343,7 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
      */
     protected CloseableHttpResponse createFileModelStorage(int modelId, String folderName) throws ClientProtocolException, 
             IOException, URISyntaxException, MLIntegrationBaseTestException {
-        String payload ="{\"type\":\"file\",\"location\":\"target/tmp/" + folderName + "\"}";
+        String payload ="{\"type\":\"file\",\"location\":\"" + folderName + "\"}";
         return doHttpPost(new URI(getServerUrlHttps() + "/api/models/"+ modelId + "/storages"), payload);
     }
 }

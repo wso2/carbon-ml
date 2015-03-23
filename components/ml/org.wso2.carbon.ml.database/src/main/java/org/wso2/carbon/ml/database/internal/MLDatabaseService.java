@@ -1767,6 +1767,7 @@ public class MLDatabaseService implements DatabaseService {
                 return storage;
             }
         } catch (SQLException e) {
+            logger.error(e);
             throw new DatabaseHandlerException(" An error has occurred while extracting model storage for model id: "
                     + modelId);
         } finally {
