@@ -2445,7 +2445,7 @@ public class MLDatabaseService implements DatabaseService {
         int count = getFeatureCount(datasetSchemaId);
         
         Connection connection = null;
-        PreparedStatement updateStatement = null;
+        PreparedStatement insertFeatureDefaults = null, getFeatureIdStmt = null, insertFeatureSummary = null;
         ResultSet result;
         try {
             JSONArray summaryStatJson;
@@ -2460,30 +2460,30 @@ public class MLDatabaseService implements DatabaseService {
                         summaryStats.getUnique()[columnIndex], summaryStats.getDescriptiveStats().get(columnIndex));
 
                 if (count == 0) {
-                    updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
-                    updateStatement.setLong(1, datasetSchemaId);
-                    updateStatement.setString(2, columnNameMapping.getKey());
-                    updateStatement.setString(3, summaryStats.getType()[columnIndex]);
-                    updateStatement.setInt(4, columnIndex);
-                    updateStatement.execute();
+                    insertFeatureDefaults = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
+                    insertFeatureDefaults.setLong(1, datasetSchemaId);
+                    insertFeatureDefaults.setString(2, columnNameMapping.getKey());
+                    insertFeatureDefaults.setString(3, summaryStats.getType()[columnIndex]);
+                    insertFeatureDefaults.setInt(4, columnIndex);
+                    insertFeatureDefaults.execute();
                 }
 
                 // Get feature id
-                updateStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_ID);
-                updateStatement.setLong(1, datasetSchemaId);
-                updateStatement.setString(2, columnNameMapping.getKey());
-                result = updateStatement.executeQuery();
+                getFeatureIdStmt = connection.prepareStatement(SQLQueries.GET_FEATURE_ID);
+                getFeatureIdStmt.setLong(1, datasetSchemaId);
+                getFeatureIdStmt.setString(2, columnNameMapping.getKey());
+                result = getFeatureIdStmt.executeQuery();
                 long featureId = -1;
                 if(result.first()) {
                    featureId  = result.getLong(1);
                 }
 
-                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SUMMARY);
-                updateStatement.setLong(1, featureId);
-                updateStatement.setString(2, columnNameMapping.getKey());
-                updateStatement.setLong(3, datasetVersionId);
-                updateStatement.setString(4, summaryStatJson.toString());
-                updateStatement.execute();
+                insertFeatureSummary = connection.prepareStatement(SQLQueries.INSERT_FEATURE_SUMMARY);
+                insertFeatureSummary.setLong(1, featureId);
+                insertFeatureSummary.setString(2, columnNameMapping.getKey());
+                insertFeatureSummary.setLong(3, datasetVersionId);
+                insertFeatureSummary.setString(4, summaryStatJson.toString());
+                insertFeatureSummary.execute();
             }
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -2498,7 +2498,9 @@ public class MLDatabaseService implements DatabaseService {
             // Enable auto commit.
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
+            MLDatabaseUtils.closeDatabaseResources(connection, insertFeatureDefaults);
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureIdStmt);
+            MLDatabaseUtils.closeDatabaseResources(connection, insertFeatureSummary);
         }
     }
 
@@ -2829,19 +2831,11 @@ public class MLDatabaseService implements DatabaseService {
         ResultSet result = null;
         PreparedStatement getStatement = null;
         
-        ResultSet analysisIdResult = null;
-        PreparedStatement getAnalysisIdStatement = null;
         try {
             Workflow mlWorkflow = new Workflow();
             mlWorkflow.setWorkflowID(modelId);
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
-            // getStatement = connection.prepareStatement(SQLQueries.GET_WORKFLOW_DATASET_LOCATION);
-            // getStatement.setString(1, workflowID);
-            // result = getStatement.executeQuery();
-            // if (result.first()) {
-            // mlWorkflow.setDatasetURL(result.getString(1));
-            // }
             List<Feature> mlFeatures = new ArrayList<Feature>();
             getStatement = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
             getStatement.setLong(1, modelId);
@@ -2885,7 +2879,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
-            MLDatabaseUtils.closeDatabaseResources(getAnalysisIdStatement, analysisIdResult);
         }
     }
 
