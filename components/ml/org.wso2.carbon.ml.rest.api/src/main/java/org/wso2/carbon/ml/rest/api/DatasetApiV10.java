@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -44,6 +46,13 @@ public class DatasetApiV10 extends MLRestAPI {
     
     public DatasetApiV10() {
         datasetProcessor = new MLDatasetProcessor();
+    }
+    
+    @OPTIONS
+    public Response options() {
+        return Response.ok()
+                .header(HttpHeaders.ALLOW, "GET POST DELETE")
+                .build();
     }
 
     /**

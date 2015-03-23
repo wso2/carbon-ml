@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
@@ -47,6 +49,13 @@ public class AnalysisApiV10 extends MLRestAPI {
     
     public AnalysisApiV10() {
         mlAnalysisHandler = new MLAnalysisHandler();
+    }
+    
+    @OPTIONS
+    public Response options() {
+        return Response.ok()
+                .header(HttpHeaders.ALLOW, "GET POST DELETE")
+                .build();
     }
 
     /**
