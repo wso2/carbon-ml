@@ -34,13 +34,7 @@
 			class-name="org.wso2.carbon.automation.engine.testlisteners.TestTransformerListener" />
 	</listeners>
 
-
- 	<!-- <test name="Dataset-Tests" preserve-order="true" verbose="2">
-		<classes>
-			<class name="org.wso2.carbon.ml.dataset.test.CreateDatasetTestCase"/>
-		</classes>
-	</test> -->
-	 <test name="Dataset-Tests" preserve-order="true" verbose="2" >
+	<test name="Dataset-Tests" preserve-order="true" verbose="2" >
         <packages>
             <package name="org.wso2.carbon.ml.dataset.test"/>
         </packages>

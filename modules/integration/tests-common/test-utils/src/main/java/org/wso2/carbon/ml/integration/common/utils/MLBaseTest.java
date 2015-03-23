@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.integration.common.utils;
 
+import java.io.File;
+
 import javax.xml.xpath.XPathExpressionException;
 
 import org.testng.Assert;
@@ -171,5 +173,17 @@ public abstract class MLBaseTest {
      */
     protected String getResourceAbsolutePath(String resourceRelativePath) {
     	return FrameworkPathUtil.getSystemResourceLocation() + resourceRelativePath;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    protected String getModelStorageDirectory() {
+        File modelFileStorage = new File(MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
+        if (!modelFileStorage.exists() || !modelFileStorage.isDirectory() ) {
+            modelFileStorage.mkdirs();
+        }
+        return modelFileStorage.getAbsolutePath();
     }
 }
