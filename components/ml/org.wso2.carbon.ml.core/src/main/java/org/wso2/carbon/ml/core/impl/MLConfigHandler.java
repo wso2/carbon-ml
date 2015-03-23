@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
@@ -36,7 +34,6 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
  * {@link MLConfigHandler} is responsible for handling/delegating all the ml config related requests.
  */
 public class MLConfigHandler {
-    private static final Log log = LogFactory.getLog(MLConfigHandler.class);
 
     /**
      * Retrieve hyper parameters of an algorithm

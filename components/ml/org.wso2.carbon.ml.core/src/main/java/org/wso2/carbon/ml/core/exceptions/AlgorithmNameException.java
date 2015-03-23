@@ -19,6 +19,8 @@
 package org.wso2.carbon.ml.core.exceptions;
 
 public class AlgorithmNameException extends IllegalStateException {
+    private static final long serialVersionUID = 7178085223069282980L;
+
     public AlgorithmNameException(String message) {
         super(message);
     }

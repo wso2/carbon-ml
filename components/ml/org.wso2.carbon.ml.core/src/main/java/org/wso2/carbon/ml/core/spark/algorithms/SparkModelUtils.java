@@ -45,7 +45,6 @@ import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
-import akka.event.slf4j.Logger;
 import scala.Tuple2;
 
 import java.text.DecimalFormat;
