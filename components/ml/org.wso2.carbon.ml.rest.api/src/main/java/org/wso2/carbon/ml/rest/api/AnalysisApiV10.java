@@ -64,8 +64,9 @@ public class AnalysisApiV10 extends MLRestAPI {
     @POST
     @Produces("application/json")
     public Response createAnalysis(MLAnalysis analysis) {
-        if (analysis.getName() == null || analysis.getName().isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        if (analysis.getName() == null || analysis.getName().isEmpty() || analysis.getProjectId() == 0) {
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {

@@ -69,7 +69,7 @@ public abstract class MLBaseTest {
      */
     protected String getServerUrlHttps() throws MLIntegrationBaseTestException {
         String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS;
-        String host = getHost(instance);
+        String host = UrlGenerationUtil.getWorkerHost(instance);
         //Get port
         String port = null;
         boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
@@ -89,7 +89,7 @@ public abstract class MLBaseTest {
      */
     protected String getServerUrlHttp() throws MLIntegrationBaseTestException {
         String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP;
-        String host = getHost(instance);
+        String host = UrlGenerationUtil.getWorkerHost(instance);
         //Get port
         String port = null;
         boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
@@ -101,23 +101,6 @@ public abstract class MLBaseTest {
         return (protocol + "://"+ host + ":" + port);
     }
     
-    /**
-     * This method gives the host of the given productGroup instance
-     *
-     * @param instance
-     * @return
-     */
-    public static String getHost(Instance instance) {
-        String workerHost = "";
-        String instanceType = instance.getType();
-        if(instanceType.equals(InstanceType.standalone.name())) {
-            workerHost = instance.getHosts().get(ContextXpathConstants.DEFAULT);
-        } else if(instance.getType().equals(InstanceType.lb_worker_manager.name())) {
-            workerHost = instance.getHosts().get(ContextXpathConstants.WORKER);
-        }
-        return workerHost;
-    }
-
     /**
      * Get the non-secured URL of a given service.
      * 
@@ -209,15 +192,16 @@ public abstract class MLBaseTest {
      * Retrieves the absolute path of a test resource.
      * 
      * @param resourceRelativePath	Relative path the the test resource.
-     * @return
+     * @return                      Absolute path of the test resource
      */
     protected String getResourceAbsolutePath(String resourceRelativePath) {
     	return FrameworkPathUtil.getSystemResourceLocation() + resourceRelativePath;
     }
     
     /**
+     * Retrieves the absolute path of the model storage directory
      * 
-     * @return
+     * @return  Absolute path of the model storage directory
      */
     protected String getModelStorageDirectory() {
         File modelFileStorage = new File(MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
