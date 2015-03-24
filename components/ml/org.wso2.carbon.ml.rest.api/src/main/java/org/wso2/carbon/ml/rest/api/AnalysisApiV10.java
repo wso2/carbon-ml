@@ -86,6 +86,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features")
     @Produces("application/json")
@@ -105,6 +108,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * load default features into customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features/defaults")
     @Produces("application/json")
@@ -127,6 +133,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/configurations")
     @Produces("application/json")
@@ -146,6 +155,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding hyper parameters for the selected algorithm of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams")
     @Produces("application/json")
@@ -165,6 +177,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
     @Produces("application/json")
@@ -184,6 +199,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieving an analysis by a name.
+     */
     @GET
     @Path("/{analysisName}")
     @Produces("application/json")
@@ -205,6 +223,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieve all analyses.
+     */
     @GET
     @Produces("application/json")
     public Response getAllAnalyses() {
@@ -222,6 +243,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * delete an analysis of a given name.
+     */
     @DELETE
     @Path("/{analysisName}")
     @Produces("application/json")
