@@ -63,6 +63,11 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response createModel(MLModelNew model) {
+        if (model.getName() == null || model.getName().isEmpty() || model.getAnalysisId() == 0 || 
+                model.getVersionSetId() == 0) {
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();

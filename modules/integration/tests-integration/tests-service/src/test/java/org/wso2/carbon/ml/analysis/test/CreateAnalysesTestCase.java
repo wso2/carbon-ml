@@ -87,11 +87,11 @@ public class CreateAnalysesTestCase extends MLIntegrationBaseTest {
      * @throws URISyntaxException
      * @throws MLIntegrationBaseTestException 
      */
-    /*@Test(description = "Create an analysis without a ProjectId")
+    @Test(description = "Create an analysis without a ProjectId")
     public void testCreateAnalysisWithoutProjectID() throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
         CloseableHttpResponse response = createAnalysis("TestAnalysisForAnalysis", -1);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
         response.close();
-    }*/
+    }
 }

@@ -64,7 +64,8 @@ public class ProjectApiV10 extends MLRestAPI {
     public Response createProject(MLProject project) {
         if (project.getName() == null || project.getName().isEmpty() || project.getDatasetName() == null || 
                 project.getDatasetName().isEmpty() ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
@@ -136,5 +137,5 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
     
-    //TODO: Add a method to get analyses anuder a project
+    //TODO: Add a method to get analyses under a project
 }
