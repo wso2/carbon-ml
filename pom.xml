@@ -229,9 +229,10 @@
 	        </dependency>
 	        <dependency>
 	            <groupId>org.wso2.ml</groupId>
-	            <artifactId>test-utils</artifactId>
+	            <artifactId>test-integration-utils</artifactId>
 	            <version>${ml.version}</version>
 	        </dependency>
+	        
             <!-- End of dependencies for test framework -->
 
             <!-- WSO2 Orbit dependencies for Spark orbit bundle -->
@@ -240,26 +241,129 @@
                 <artifactId>json</artifactId>
                 <version>${orbit.version.json}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.apache.spark.wso2</groupId>
                 <artifactId>spark</artifactId>
                 <version>${orbit.version.spark}</version>
+            </dependency> -->
+            
+            <dependency>
+                <groupId>org.wso2.apache.spark</groupId>
+                <artifactId>spark-core_2.10</artifactId>
+                <version>${spark.version}</version>
             </dependency>
- 	    <dependency>
-        	<groupId>org.wso2.apache.hadoop</groupId>
-        	<artifactId>hadoop-client</artifactId>
-        	<version>${hadoop.version}</version>
-	    </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.spark</groupId>
+                <artifactId>spark-sql_2.10</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.apache.spark</groupId>
+                <artifactId>spark-mllib_2.10</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.apache.spark</groupId>
+                <artifactId>spark-streaming_2.10</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.scalanlp</groupId>
+                <artifactId>breeze_2.10</artifactId>
+                <version>${breeze.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.jblas</groupId>
+                <artifactId>jblas</artifactId>
+                <version>${jblas.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.spire-math</groupId>
+                <artifactId>spire_2.10</artifactId>
+                <version>${spire.version}</version>
+            </dependency>
+	 	    <dependency>
+	        	<groupId>org.wso2.apache.hadoop</groupId>
+	        	<artifactId>hadoop-client</artifactId>
+	        	<version>${hadoop.client.version}</version>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.uncommons.maths</groupId>
+	        	<artifactId>uncommons-maths</artifactId>
+	        	<version>${uncommons.maths.version}</version>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.json4s</groupId>
+	        	<artifactId>json4s-jackson_2.10</artifactId>
+	        	<version>${json4s.jackson.version}</version>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.twitter</groupId>
+	        	<artifactId>chill_2.10</artifactId>
+	        	<version>${twitter.chill.version}</version>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.clearspring.analytics</groupId>
+	        	<artifactId>stream</artifactId>
+	        	<version>${clearspring.analytics.stream.version}</version>
+		    </dependency>
             <dependency>
                 <groupId>io.netty.wso2</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${orbit.version.netty-all}</version>
             </dependency>
             <dependency>
-                <groupId>asm.wso2</groupId>
-                <artifactId>asm</artifactId>
-                <version>${orbit.version.asm}</version>
+                <groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+                <version>${asm.version}</version>
             </dependency>
+            <dependency>
+				<groupId>org.spark-project.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.5.0-spark</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.esotericsoftware.kryo</groupId>
+				<artifactId>kryo</artifactId>
+				<version>2.24.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
+				<artifactId>minlog</artifactId>
+				<version>1.2.wso2v1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.objenesis</groupId>
+				<artifactId>objenesis</artifactId>
+				<version>2.1</version>
+			</dependency>
+			<dependency>
+	            <groupId>org.wso2.orbit.apache.mesos</groupId>
+	            <artifactId>mesos</artifactId>
+	            <version>${mesos.version}</version>
+	        </dependency>
+	        <dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.5.0</version>
+			</dependency>
+	        <dependency>
+				<groupId>org.spark-project.akka</groupId>
+				<artifactId>akka-remote_2.10</artifactId>
+				<version>2.2.3-shaded-protobuf</version>
+			</dependency>
+			<dependency>
+					<groupId>com.google.protobuf</groupId>
+					<artifactId>protobuf-java</artifactId>
+					<version>2.5.0</version>
+				</dependency>
+			
+			
             <!-- End of WSO2 Orbit dependencies for Spark orbit bundle -->
 
             <dependency>
@@ -725,8 +829,20 @@
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 	
-		<hadoop.version>2.2.0.wso2v1</hadoop.version>
-
+		<!-- Spark orbit bundles dependency versions -->
+		<spark.version>1.2.1.wso2v1</spark.version>
+		<hadoop.client.version>2.2.0.wso2v1</hadoop.client.version>
+		<breeze.version>0.10.wso2v1</breeze.version>
+		<spire.version>0.7.4.wso2v1</spire.version>
+		<jblas.version>1.2.3.wso2v1</jblas.version>
+		<uncommons.maths.version>1.2.2.wso2v1</uncommons.maths.version>
+		<json4s.jackson.version>3.2.10.wso2v1</json4s.jackson.version>
+		<twitter.chill.version>0.5.0.wso2v1</twitter.chill.version>
+		<clearspring.analytics.stream.version>2.2.0.wso2v1</clearspring.analytics.stream.version>
+		<mesos.version>0.18.1.wso2v1</mesos.version>
+		
+		
+		
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
         <caramel.feature.version>1.0.1</caramel.feature.version>
@@ -751,7 +867,10 @@
         <commons-net.version>2.2</commons-net.version>
         <jetty.version>8.1.14.v20131031</jetty.version>
         <org.jboss.netty.version>3.6.6.Final</org.jboss.netty.version>
-
+		<asm.version>5.0.3</asm.version>
+		
+		
+		
         <commons.io.version>2.4</commons.io.version>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>

@@ -36,10 +36,6 @@
             <artifactId>org.wso2.carbon.ml.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>asm.wso2</groupId>
-            <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
         </dependency>
@@ -75,20 +71,61 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
         </dependency>
-	<dependency>
-            <groupId>org.wso2.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-        </dependency>
-	<dependency>
-            <groupId>org.apache.spark.wso2</groupId>
-            <artifactId>spark</artifactId>
-            <exclusions>
-          <exclusion>
-             <groupId>org.apache.hadoop</groupId>
-             <artifactId>hadoop-client</artifactId>
-          </exclusion>
-        </exclusions>
-        </dependency>
+        
+	<!-- Spark Dependencies-->
+        <dependency>
+                <groupId>org.wso2.apache.spark</groupId>
+                <artifactId>spark-core_2.10</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.spark</groupId>
+                <artifactId>spark-sql_2.10</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.apache.spark</groupId>
+                <artifactId>spark-mllib_2.10</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.apache.spark</groupId>
+                <artifactId>spark-streaming_2.10</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.scalanlp</groupId>
+                <artifactId>breeze_2.10</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.jblas</groupId>
+                <artifactId>jblas</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.spire-math</groupId>
+                <artifactId>spire_2.10</artifactId>
+            </dependency>
+	 	    <dependency>
+	        	<groupId>org.wso2.apache.hadoop</groupId>
+	        	<artifactId>hadoop-client</artifactId>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.uncommons.maths</groupId>
+	        	<artifactId>uncommons-maths</artifactId>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.json4s</groupId>
+	        	<artifactId>json4s-jackson_2.10</artifactId>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.twitter</groupId>
+	        	<artifactId>chill_2.10</artifactId>
+		    </dependency>
+		    <dependency>
+	        	<groupId>org.wso2.clearspring.analytics</groupId>
+	        	<artifactId>stream</artifactId>
+		    </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+            </dependency>
+            
         <dependency>
             <groupId>org.json.wso2</groupId>
             <artifactId>json</artifactId>
@@ -237,6 +274,39 @@
 	       	<groupId>org.apache.axis2</groupId>
 	       	<artifactId>axis2</artifactId>
 	    </dependency>
+	    <dependency>
+				<groupId>org.spark-project.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.esotericsoftware.kryo</groupId>
+				<artifactId>kryo</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
+				<artifactId>minlog</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.objenesis</groupId>
+				<artifactId>objenesis</artifactId>
+			</dependency>
+			<dependency>
+	            <groupId>org.wso2.orbit.apache.mesos</groupId>
+	            <artifactId>mesos</artifactId>
+	        </dependency>
+	        <dependency>
+				<groupId>org.spark-project.akka</groupId>
+				<artifactId>akka-remote_2.10</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+			</dependency>
+			
     </dependencies>
     <build>
         <plugins>
@@ -261,10 +331,29 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
+                            	<bundleDef>org.wso2.apache.spark:spark-core_2.10</bundleDef>
+                            	<bundleDef>org.wso2.apache.spark:spark-sql_2.10</bundleDef>
+                            	<bundleDef>org.wso2.orbit.apache.spark:spark-mllib_2.10</bundleDef>
+                            	<bundleDef>org.wso2.orbit.apache.spark:spark-streaming_2.10</bundleDef>
+                            	<bundleDef>org.wso2.orbit.scalanlp:breeze_2.10</bundleDef>
+                            	<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
+                            	<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
+                            	<bundleDef>org.wso2.uncommons.maths:uncommons-maths</bundleDef>
+                            	<bundleDef>org.wso2.apache.hadoop:hadoop-client</bundleDef>
+                            	<bundleDef>org.wso2.json4s:json4s-jackson_2.10</bundleDef>
+                            	<bundleDef>org.wso2.twitter:chill_2.10</bundleDef>
+                            	<bundleDef>org.wso2.clearspring.analytics:stream</bundleDef>
+                            	<bundleDef>org.slf4j:slf4j-api</bundleDef>
+                            	<bundleDef>org.ow2.asm:asm</bundleDef>
+                            	<bundleDef>com.esotericsoftware.kryo:kryo</bundleDef>
+                            	<bundleDef>org.wso2.orbit.com.esotericsoftware.minlog:minlog</bundleDef>
+                            	<bundleDef>org.objenesis:objenesis</bundleDef>
+                            	<bundleDef>org.wso2.orbit.apache.mesos:mesos</bundleDef>
+                            	<bundleDef>org.spark-project.protobuf:protobuf-java</bundleDef>
+                            	<bundleDef>com.google.protobuf:protobuf-java</bundleDef>
+                            	
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.core</bundleDef>
                                 <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
-                                <bundleDef>asm.wso2:asm</bundleDef>
-                                <bundleDef>org.wso2.apache.hadoop:hadoop-client</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3</bundleDef>
                                 <bundleDef>org.apache.commons:commons-math3</bundleDef>
                                 <bundleDef>org.apache.derby:derby</bundleDef>
@@ -274,7 +363,6 @@
                                 <bundleDef>org.xerial.snappy:snappy-java</bundleDef>
                                 <bundleDef>commons-net:commons-net</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
-  				<bundleDef>org.apache.spark.wso2:spark</bundleDef>
                                 <bundleDef>org.json.wso2:json</bundleDef>
                                 <bundleDef>io.netty.wso2:netty-all</bundleDef>
                                 <bundleDef>org.scala-lang:scala-library</bundleDef>

@@ -39,6 +39,9 @@ public class MLConfiguration {
     @XmlElement(name = "BAMServerURL")
     private String bamServerURL;
     
+    @XmlElement(name = "SparkMaster")
+    private String sparkMaster;
+    
     @XmlElementWrapper(name="Properties")
     @XmlElement(name = "Property")
     private List<MLProperty> properties;
@@ -79,5 +82,12 @@ public class MLConfiguration {
     }
     public void setProperties(List<MLProperty> properties) {
         this.properties = properties;
+    }
+    
+    public String getSparkMaster() {
+        return sparkMaster;
+    }
+    public void setSparkMaster(String sparkMaster) {
+        this.sparkMaster = sparkMaster;
     }
 }
