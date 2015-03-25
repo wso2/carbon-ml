@@ -1411,6 +1411,40 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+    
+    @Override
+    public List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        List<MLAnalysis> analyses = new ArrayList<MLAnalysis>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ALL_ANALYSES_OF_PROJECT);
+            statement.setInt(1, tenantId);
+            statement.setString(2, userName);
+            statement.setLong(3, projectId);
+            result = statement.executeQuery();
+            while (result.next()) {
+                MLAnalysis analysis = new MLAnalysis();
+                analysis.setId(result.getLong(1));
+                analysis.setProjectId(result.getLong(2));
+                analysis.setComments(MLDatabaseUtils.toString(result.getClob(3)));
+                analysis.setName(result.getString(4));
+                analysis.setTenantId(tenantId);
+                analysis.setUserName(userName);
+                analyses.add(analysis);
+            }
+            return analyses;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting analyses for tenant id:"
+                    + tenantId + " , username:" + userName+ " and project id: "+projectId, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
 
     @Override
     public long getModelId(int tenantId, String userName, String modelName) throws DatabaseHandlerException {

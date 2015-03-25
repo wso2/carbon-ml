@@ -612,4 +612,15 @@ public interface DatabaseService {
      */
     void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Get all the analyses of a project.
+     * @param tenantId tenant id
+     * @param userName user name
+     * @param projectId project id
+     * @return list of {@link MLAnalysis}
+     * @throws DatabaseHandlerException
+     */
+    List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
+            throws DatabaseHandlerException;
+
 }
