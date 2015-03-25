@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MachineLearner>
+    <!-- JNDI name of the data source to be used by the Machine Learner. This
+        data source should be defined in the master-datasources.xml file in conf/datasources
+        directory. -->
+    <Database>jdbc/WSO2ML_DB</Database>
+
+    <!-- Configurations to calculate summary statistics from a dataset. histogramBins
+        : Number of intervals in a histogram. categoricalThreshold : The maximum
+        number of categories that can have in a non-string categorical feature. If
+        exeeds, the feature will be treated as a numerical feature. sampleSize :
+        Size of the dataset sample which will be used for summary statistics calculation
+        and visualization. -->
+    <SummaryStatisticsSettings>
+        <HistogramBins>20</HistogramBins>
+        <CategoricalThreshold>20</CategoricalThreshold>
+        <SampleSize>10000</SampleSize>
+    </SummaryStatisticsSettings>
+
+    <!-- -->
+    <Properties>
+        <Property name="ml.thread.pool.size" value="100" />
+        <Property name="target.home" value="/tmp" />
+        <Property name="file.in"
+                  value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
+        <Property name="file.out"
+                  value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+        <Property name="hdfs.in"
+                  value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
+        <Property name="hdfs.out"
+                  value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
+        <Property name="bam.in"
+                  value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+    </Properties>
+
+    <!-- Server URL of the remote BAM server used to get data. Must be specified
+        in protocol://hostname:port format. -->
+    <BAMServerURL>http://localhost:9763</BAMServerURL>
+
+    <Algorithms>
+        <Algorithm>
+            <Name>LINEAR_REGRESSION</Name>
+            <Type>Numerical_Prediction</Type>
+            <Interpretability>5</Interpretability>
+            <Scalability>5</Scalability>
+            <Multicollinearity>1</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Learning_Rate</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>SGD_Data_Fraction</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>RIDGE_REGRESSION</Name>
+            <Type>Numerical_Prediction</Type>
+            <Interpretability>5</Interpretability>
+            <Scalability>5</Scalability>
+            <Multicollinearity>1</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Learning_Rate</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Parameter</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>SGD_Data_Fraction</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>LASSO_REGRESSION</Name>
+            <Type>Numerical_Prediction</Type>
+            <Interpretability>5</Interpretability>
+            <Scalability>5</Scalability>
+            <Multicollinearity>1</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Learning_Rate</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Parameter</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>SGD_Data_Fraction</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>LOGISTIC_REGRESSION</Name>
+            <Type>Classification</Type>
+            <Interpretability>3</Interpretability>
+            <Scalability>5</Scalability>
+            <Multicollinearity>1</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Learning_Rate</Name>
+                <Value>0.1</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Type</Name>
+                <Value>L2</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Parameter</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>SGD_Data_Fraction</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>SVM</Name>
+            <Type>Classification</Type>
+            <Interpretability>1</Interpretability>
+            <Scalability>1</Scalability>
+            <Multicollinearity>5</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Learning_Rate</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Type</Name>
+                <Value>L1</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Reg_Parameter</Name>
+                <Value>0.001</Value>
+            </Parameters>
+            <Parameters>
+                <Name>SGD_Data_Fraction</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>DECISION_TREE</Name>
+            <Type>Classification</Type>
+            <Interpretability>5</Interpretability>
+            <Scalability>4</Scalability>
+            <Multicollinearity>5</Multicollinearity>
+            <Dimensionality>3</Dimensionality>
+            <Parameters>
+                <Name>Num_Classes</Name>
+                <Value>2</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Max_Depth</Name>
+                <Value>5</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Max_Bins</Name>
+                <Value>100</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Impurity</Name>
+                <Value>gini</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>NAIVE_BAYES</Name>
+            <Type>Classification</Type>
+            <Interpretability>3</Interpretability>
+            <Scalability>5</Scalability>
+            <Multicollinearity>1</Multicollinearity>
+            <Dimensionality>5</Dimensionality>
+            <Parameters>
+                <Name>Lambda</Name>
+                <Value>1</Value>
+            </Parameters>
+        </Algorithm>
+        <Algorithm>
+            <Name>K_MEANS</Name>
+            <Type>Clustering</Type>
+            <Interpretability>5</Interpretability>
+            <Scalability>2</Scalability>
+            <Multicollinearity>5</Multicollinearity>
+            <Dimensionality>2</Dimensionality>
+            <Parameters>
+                <Name>Iterations</Name>
+                <Value>20</Value>
+            </Parameters>
+            <Parameters>
+                <Name>Num_Clusters</Name>
+                <Value>3</Value>
+            </Parameters>
+        </Algorithm>
+    </Algorithms>
+</MachineLearner>
