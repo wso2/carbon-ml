@@ -417,49 +417,199 @@ public interface DatabaseService {
      */
     public String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Get a string value of model configuration
+     * @param analysisId  unique id of the analysis
+     * @param configKey   model configuration key
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public String getAStringModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
-    public double getADoubleModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException;
+    /**
+     * Get a double value of model configuration
+     * @param analysisId  unique id of the analysis
+     * @param configKey   model configuration key
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public double getADoubleModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
-    public List<MLHyperParameter> getHyperParametersOfModel(long modelId) throws DatabaseHandlerException;
+    /**
+     * Get the list of Hyper-parameters of the model
+     * @param analysisId unique id of the analysis
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId) throws DatabaseHandlerException;
 
+    /**
+     * Get the Hyper-parameters of the model as a Map
+     * @param modelId  unique id of the model
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Get the workflow of the analysis
+     * @param analysisId unique id of the analysis
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public Workflow getWorkflow(long analysisId) throws DatabaseHandlerException;
 
+    /**
+     * Get the Model storage of the model
+     * @param modelId unique id of the model
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Get the project having the given project name
+     * @param tenantId    tenant id
+     * @param userName    username
+     * @param projectName project name
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
 
+    /**
+     * Get all the projects of the given tenant and username
+     * @param tenantId   tenant id
+     * @param userName   username
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
 
+    /**
+     * Get the Analysis having the given analysis name
+     * @param tenantId      tenant id
+     * @param userName      username
+     * @param analysisName  analysis name
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
+    /**
+     * Get all the analyses of the given tenant and username
+     * @param tenantId   tenant id
+     * @param userName   username
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
 
+    /**
+     * Get the Model having the given model name
+     * @param tenantId  tenant id
+     * @param userName  username
+     * @param modelName model name
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
-    
+
+    /**
+     * Get the model name identified by the given model id
+     * @param tenantId tenant id
+     * @param userName username
+     * @param modelId  model id
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Get all models of the given tenant and username
+     * @param tenantId tenant id
+     * @param userName username
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
 
+    /**
+     * Get all the dataset-versions of the given dataset schema
+     * @param tenantId  tenant id
+     * @param userName  username
+     * @param datasetId dataset schema id
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public List<MLDatasetVersion> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException;
 
+    /**
+     * Get all the dataset schemas of the given tenant and username
+     * @param tenantId tenant id
+     * @param userName  username
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
 
+    /**
+     * Get the dataset schema identified by the given dataset schema id
+     * @param tenantId  tenant id
+     * @param userName  username
+     * @param datasetId dataset schema id
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
 
-    public MLDatasetVersion getVersionset(int tenantId, String userName, long valuesetId) throws DatabaseHandlerException;
+    /**
+     * Get the dataset-version identified by the given dataset-version id
+     * @param tenantId         tenant id
+     * @param userName         username
+     * @param datasetVersionId dataset-version id
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public MLDatasetVersion getVersionset(int tenantId, String userName, long datasetVersionId) throws DatabaseHandlerException;
 
+    /**
+     * Get the unique identifier of the dataset version given the dataset schema and the version
+     * @param datasetId dataset schema id
+     * @param version   version
+     * @param tenantId  tenant id
+     * @param userName  username
+     * @return
+     * @throws DatabaseHandlerException
+     */
     public long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
 
+    /**
+     * Insert the default feature attributes into the relevant customized feature attributes of a given analysis
+     * @param analysisId        unique id of the analysis
+     * @param customizedValues  customized feature
+     * @throws DatabaseHandlerException
+     */
     public void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
 
-    public long getDatasetSchemaIdFromAnalysisId(long modelId) throws DatabaseHandlerException;
+    /**
+     * Get the dataset schema id of a given analysis
+     * @param analysisId unique id of the analysis
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException;
 
+    /**
+     * Delete the model from the database
+     * @param tenantId  tenant id
+     * @param userName  username
+     * @param modelId   model id
+     * @throws DatabaseHandlerException
+     */
     void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
 }

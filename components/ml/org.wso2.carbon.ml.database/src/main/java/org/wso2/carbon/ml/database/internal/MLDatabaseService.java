@@ -574,7 +574,7 @@ public class MLDatabaseService implements DatabaseService {
      * Retrieve a Versionset from its ID
      */
     @Override
-    public MLDatasetVersion getVersionset(int tenantId, String userName, long versionsetId)
+    public MLDatasetVersion getVersionset(int tenantId, String userName, long datasetVersionId)
             throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
@@ -582,7 +582,7 @@ public class MLDatabaseService implements DatabaseService {
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_USING_ID);
-            statement.setLong(1, versionsetId);
+            statement.setLong(1, datasetVersionId);
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
             result = statement.executeQuery();
@@ -600,10 +600,10 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error has occurred while extracting dataset-version of id: "
-                    + versionsetId, e);
+                    + datasetVersionId, e);
         } catch (URISyntaxException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting dataset-version of id: "
-                    + versionsetId, e);
+                    + datasetVersionId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1748,7 +1748,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public List<MLHyperParameter> getHyperParametersOfModel(long modelId) throws DatabaseHandlerException {
+    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId) throws DatabaseHandlerException {
         List<MLHyperParameter> hyperParams = new ArrayList<MLHyperParameter>();
         Connection connection = null;
         PreparedStatement getFeatues = null;
@@ -1758,7 +1758,7 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
-            getFeatues.setLong(1, modelId);
+            getFeatues.setLong(1, analysisId);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 MLHyperParameter param = new MLHyperParameter();
@@ -1769,7 +1769,7 @@ public class MLDatabaseService implements DatabaseService {
             return hyperParams;
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving hyper parameters of "
-                    + "the model: " + modelId + ": " + e.getMessage(), e);
+                    + "the model: " + analysisId + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
@@ -1809,7 +1809,7 @@ public class MLDatabaseService implements DatabaseService {
         PreparedStatement statement = null;
         try {
             connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_DATASET_SCHEMA_ID_FROM_MODEL);
+            statement = connection.prepareStatement(SQLQueries.GET_DATASET_SCHEMA_ID_FROM_ANALYSIS);
             statement.setLong(1, analysisId);
             result = statement.executeQuery();
             if (result.first()) {
@@ -2341,14 +2341,14 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public double getADoubleModelConfiguration(long modelId, String configKey) throws DatabaseHandlerException {
+    public double getADoubleModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException {
         Connection connection = null;
         PreparedStatement model = null;
         ResultSet result = null;
         try {
             connection = dbh.getDataSource().getConnection();
             model = connection.prepareStatement(SQLQueries.GET_A_MODEL_CONFIGURATION);
-            model.setLong(1, modelId);
+            model.setLong(1, analysisId);
             model.setString(2, configKey);
             result = model.executeQuery();
             if (result.first()) {
@@ -2359,7 +2359,7 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             String msg = String.format(
                     "An error occurred white retrieving [model config] %s  associated with [model id] %s : %s",
-                    configKey, modelId, e.getMessage());
+                    configKey, analysisId, e.getMessage());
             throw new DatabaseHandlerException(msg, e);
         } finally {
             // Close the database resources
