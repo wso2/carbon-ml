@@ -39,8 +39,8 @@ public class MLConfiguration {
     @XmlElement(name = "BAMServerURL")
     private String bamServerURL;
     
-    @XmlElement(name = "SparkMaster")
-    private String sparkMaster;
+    @XmlElement(name = "HdfsURL")
+    private String hdfsUrl;
     
     @XmlElementWrapper(name="Properties")
     @XmlElement(name = "Property")
@@ -83,11 +83,10 @@ public class MLConfiguration {
     public void setProperties(List<MLProperty> properties) {
         this.properties = properties;
     }
-    
-    public String getSparkMaster() {
-        return sparkMaster;
+    public String getHdfsUrl() {
+        return hdfsUrl;
     }
-    public void setSparkMaster(String sparkMaster) {
-        this.sparkMaster = sparkMaster;
+    public void setHdfsUrl(String hdfsUrl) {
+        this.hdfsUrl = hdfsUrl;
     }
 }

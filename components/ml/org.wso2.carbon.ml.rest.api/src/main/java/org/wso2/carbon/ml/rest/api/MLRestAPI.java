@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 
-public class MLRestAPI {
+public abstract class MLRestAPI {
     private Log logger = LogFactory.getLog(MLRestAPI.class);
     private String tenantID = null;
     

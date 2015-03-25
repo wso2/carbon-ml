@@ -275,7 +275,7 @@ public class MLModelHandler {
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
             String outPath = storageLocation + File.separator + modelName + "." + MLUtils.getDate();
-            outputAdapter.writeDataset(outPath, is);
+            outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);

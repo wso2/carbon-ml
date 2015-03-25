@@ -29,6 +29,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 /**
  * HDFS based output adapter for ML. Responsible for writing a given input stream to a given HDFS path.
@@ -36,14 +37,18 @@ import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 public class HdfsOutputAdapter implements MLOutputAdapter {
 
     @Override
-    public void writeDataset(String outPath, InputStream in) throws MLOutputAdapterException {
+    public URI write(String outPath, InputStream in) throws MLOutputAdapterException {
 
         if (in == null || outPath == null) {
             throw new MLOutputAdapterException(String.format(
                     "Null argument values detected. Input stream: %s Out Path: %s", in, outPath));
         }
         if (!outPath.startsWith("hdfs://")) {
-            outPath = "hdfs://localhost:9000".concat(outPath);
+            if (MLCoreServiceValueHolder.getInstance().getHdfsUrl() != null) {
+                outPath = MLCoreServiceValueHolder.getInstance().getHdfsUrl().concat(outPath);
+            } else {
+                outPath = "hdfs://localhost:9000".concat(outPath);
+            }
         }
         FSDataOutputStream out = null;
         try {
@@ -53,6 +58,7 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
             FileSystem hdfs = FileSystem.get(uri, conf);
             out = hdfs.create(new Path(uri), true);
             IOUtils.copyBytes(in, out, conf);
+            return uri;
         } catch (FileNotFoundException e) {
             throw new MLOutputAdapterException(e);
         } catch (IOException e) {

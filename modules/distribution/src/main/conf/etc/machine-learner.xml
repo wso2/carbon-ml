@@ -36,6 +36,9 @@
 	<!-- Server URL of the remote BAM server used to get data. Must be specified 
 		in protocol://hostname:port format. -->
 	<BAMServerURL>http://localhost:9763</BAMServerURL>
+	
+	<!-- Optional element. This element should point to a HDFS location where ML is allowed to store files. -->
+	<HdfsURL>hdfs://localhost:9000</HdfsURL>
 
 	<Algorithms>
 		<Algorithm>

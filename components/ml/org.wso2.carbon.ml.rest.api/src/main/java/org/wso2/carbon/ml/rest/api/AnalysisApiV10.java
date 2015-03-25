@@ -39,7 +39,7 @@ import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
- * This class is to handle REST verbs GET , POST and DELETE.
+ * WSO2 ML Analyses API. All the operations related to Analyses is implemented here.
  */
 @Path("/analyses")
 public class AnalysisApiV10 extends MLRestAPI {
@@ -51,6 +51,10 @@ public class AnalysisApiV10 extends MLRestAPI {
         mlAnalysisHandler = new MLAnalysisHandler();
     }
     
+    /**
+     * HTTP Options method implementation for analysis API.
+     * @return
+     */
     @OPTIONS
     public Response options() {
         return Response.ok()
@@ -82,6 +86,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features")
     @Produces("application/json")
@@ -101,6 +108,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * load default features into customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features/defaults")
     @Produces("application/json")
@@ -123,6 +133,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/configurations")
     @Produces("application/json")
@@ -142,6 +155,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding hyper parameters for the selected algorithm of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams")
     @Produces("application/json")
@@ -161,6 +177,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
     @Produces("application/json")
@@ -180,6 +199,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieving an analysis by a name.
+     */
     @GET
     @Path("/{analysisName}")
     @Produces("application/json")
@@ -201,6 +223,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieve all analyses.
+     */
     @GET
     @Produces("application/json")
     public Response getAllAnalyses() {
@@ -218,6 +243,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * delete an analysis of a given name.
+     */
     @DELETE
     @Path("/{analysisName}")
     @Produces("application/json")
