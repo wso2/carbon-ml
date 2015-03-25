@@ -28,6 +28,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.SkipException;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -55,6 +56,7 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         //Create an analysis
         createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
         analysisId = getAnalysisId(analysisName);
+       
         //Set Model Configurations
         Map <String,String> configurations = new HashMap<String,String>();
         configurations.put(MLConstants.ALGORITHM_NAME, "LOGISTIC_REGRESSION");
@@ -62,13 +64,15 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         configurations.put(MLConstants.RESPONSE, "Class");
         configurations.put(MLConstants.TRAIN_DATA_FRACTION, "0.7");
         setModelConfiguration(analysisId, configurations);
+        
         //Set default Hyper-parameters
         doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + analysisId + "/hyperParams/defaults"), null);
+        
         // Create a model
         createModel(modelName, analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
         modelId = getModelId(modelName); 
         //Set storage location for model
-        createFileModelStorage(modelId, MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
+        createFileModelStorage(modelId, getModelStorageDirectory());
     }
     
     @Test(description = "Build a Logistic Regression model")
@@ -77,5 +81,11 @@ public class LoigsticRegressionTestCase extends MLIntegrationBaseTest {
         CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/models/" + modelId), null);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
+    }
+    
+    @AfterClass(alwaysRun = true)
+    public void tearDown() throws IOException, InterruptedException {
+        // FIXME:
+        Thread.sleep(5000);
     }
 }

@@ -58,5 +58,5 @@ public class MLIntegrationTestConstants {
 	public static final String MODEL_NAME = "Forest_Cover_Model";
     public static final int MODEL_ID = 1;
     
-    public static final String FILE_STORAGE_LOCATION = "/home/supun/temp/file-storage";
+    public static final String FILE_STORAGE_LOCATION = "Models/file-storage";
 }

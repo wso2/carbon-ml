@@ -20,22 +20,19 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
-import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
-import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 
@@ -51,6 +48,13 @@ public class ModelApiV10 extends MLRestAPI {
     public ModelApiV10() {
         mlModelHandler = new MLModelHandler();
     }
+    
+    @OPTIONS
+    public Response options() {
+        return Response.ok()
+                .header(HttpHeaders.ALLOW, "GET POST DELETE")
+                .build();
+    }
 
     /**
      * Create a new Model.
@@ -59,6 +63,11 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response createModel(MLModelNew model) {
+        if (model.getName() == null || model.getName().isEmpty() || model.getAnalysisId() == 0 || 
+                model.getVersionSetId() == 0) {
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+        }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
             int tenantId = carbonContext.getTenantId();

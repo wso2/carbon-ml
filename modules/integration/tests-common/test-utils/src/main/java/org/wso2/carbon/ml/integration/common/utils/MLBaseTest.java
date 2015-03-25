@@ -18,12 +18,17 @@
 
 package org.wso2.carbon.ml.integration.common.utils;
 
+import java.io.File;
+
 import javax.xml.xpath.XPathExpressionException;
 
 import org.testng.Assert;
 import org.wso2.carbon.automation.engine.configurations.UrlGenerationUtil;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
+import org.wso2.carbon.automation.engine.context.ContextXpathConstants;
+import org.wso2.carbon.automation.engine.context.InstanceType;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.engine.context.beans.Instance;
 import org.wso2.carbon.automation.engine.context.beans.Tenant;
 import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
@@ -40,6 +45,7 @@ public abstract class MLBaseTest {
     protected Tenant tenantInfo;
     protected User userInfo;
     protected TestUserMode userMode;
+    protected Instance instance;
 
     protected void init() throws MLIntegrationBaseTestException {
         try {
@@ -49,6 +55,7 @@ public abstract class MLBaseTest {
             this.tenantInfo = this.mlAutomationContext.getContextTenant();
             //get the user information initialized with the system
             this.userInfo = this.tenantInfo.getContextUser();
+            this.instance = mlAutomationContext.getInstance();
         } catch (XPathExpressionException e) {
             throw new MLIntegrationBaseTestException("Failed to get the ML automation context: ", e);
         } 
@@ -61,8 +68,17 @@ public abstract class MLBaseTest {
      * @throws              MLIntegrationBaseTestException
      */
     protected String getServerUrlHttps() throws MLIntegrationBaseTestException {
-        // TODO : Read from configs
-        return "https://localhost:9443";
+        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS;
+        String host = UrlGenerationUtil.getWorkerHost(instance);
+        //Get port
+        String port = null;
+        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
+        if(isNonBlockingEnabled) {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTPS);
+        } else {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS);
+        }
+        return (protocol + "://"+ host + ":" + port);
     }
     
     /**
@@ -72,10 +88,19 @@ public abstract class MLBaseTest {
      * @throws              MLIntegrationBaseTestException
      */
     protected String getServerUrlHttp() throws MLIntegrationBaseTestException {
-        // TODO : Read from configs
-        return "http://localhost:9763";
+        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP;
+        String host = UrlGenerationUtil.getWorkerHost(instance);
+        //Get port
+        String port = null;
+        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
+        if(isNonBlockingEnabled) {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTP);
+        } else {
+            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP);
+        }
+        return (protocol + "://"+ host + ":" + port);
     }
-
+    
     /**
      * Get the non-secured URL of a given service.
      * 
@@ -167,9 +192,22 @@ public abstract class MLBaseTest {
      * Retrieves the absolute path of a test resource.
      * 
      * @param resourceRelativePath	Relative path the the test resource.
-     * @return
+     * @return                      Absolute path of the test resource
      */
     protected String getResourceAbsolutePath(String resourceRelativePath) {
     	return FrameworkPathUtil.getSystemResourceLocation() + resourceRelativePath;
+    }
+    
+    /**
+     * Retrieves the absolute path of the model storage directory
+     * 
+     * @return  Absolute path of the model storage directory
+     */
+    protected String getModelStorageDirectory() {
+        File modelFileStorage = new File(MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
+        if (!modelFileStorage.exists() || !modelFileStorage.isDirectory() ) {
+            modelFileStorage.mkdirs();
+        }
+        return modelFileStorage.getAbsolutePath();
     }
 }

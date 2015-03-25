@@ -37,7 +37,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 /**
@@ -130,19 +129,20 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
         String payload;
         if (DatasetName == null) {
             payload = "{\"dataSourceType\" : \"file\",\"dataTargetType\" : \"file\",\"sourcePath\" : \"" +
-                    getResourceAbsolutePath(resourcePath) + "\",\"dataType\":\"csv\"," + "\"comments\":\"fcSample\"," +
-                    "\"version\" : \"" + version + "\"}";
+                    getResourceAbsolutePath(resourcePath) + "\",\"dataType\":\"csv\"," + "\"comments\":\"Sample " +
+                    "dataset for Testing\",\"version\" : \"" + version + "\"}";
         } else if (version == null) {
             payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
                     + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"fcSample\"}";
+                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\"}";
         } else if (resourcePath == null) {
             payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\",\"dataType\":\"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
+                    + "\"file\",\"dataType\":\"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \""
+                    + version + "\"}";
         } else {
             payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
                     + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"fcSample\",\"version\" : \"" + version + "\"}";
+                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \"" + version + "\"}";
         }
         return doHttpPost(new URI(getServerUrlHttps() + "/api/datasets"), payload);
     }
@@ -189,21 +189,21 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
         } else if (ProjectId == -1) {
             payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\"}";
         } else {
-            payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + 
-                    ProjectId + "}";
+            payload = "{\"name\":\"" + AnalysisName + "\",\"comments\":\"Test Analysis\",\"projectId\":" + ProjectId
+                    + "}";
         }
         return doHttpPost(new URI(getServerUrlHttps() + "/api/analyses"), payload);
     }
     
     /**
-     * Set feature defaults for an analysis
+     * Set feature defaults for an analysis.
      * 
-     * @param analysisId
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param analysisId    ID of the analysis
+     * @return              Response from the back-end
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException
      */
     protected CloseableHttpResponse setFeartureDefaults(int analysisId) throws ClientProtocolException, IOException, 
             URISyntaxException, MLIntegrationBaseTestException {
@@ -214,13 +214,13 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Set Model Configurations of an analysis
      * 
-     * @param analysisId
-     * @param configurations
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param analysisId        ID of the analysis
+     * @param configurations    Map of configurations
+     * @return                  Response from the back-end
+     * @throws                  ClientProtocolException
+     * @throws                  IOException
+     * @throws                  URISyntaxException
+     * @throws                  MLIntegrationBaseTestException
      */
     protected CloseableHttpResponse setModelConfiguration(int analysisId, Map<String,String> configurations) throws 
             ClientProtocolException, IOException, URISyntaxException, MLIntegrationBaseTestException {
@@ -235,12 +235,12 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Get the ID of the project from the name
      * 
-     * @param projectName
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param projectName   Name of the project
+     * @return              ID of the project
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException
      */
     protected int getProjectId(String projectName) throws ClientProtocolException, IOException, URISyntaxException, 
             MLIntegrationBaseTestException{
@@ -255,12 +255,12 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Get the ID of an analysis from the name
      * 
-     * @param analysisName
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param analysisName  Name of the analysis
+     * @return              ID of the analysis
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException
      */
     protected int getAnalysisId(String analysisName) throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
@@ -275,12 +275,12 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Get a ID of the first version-set of a dataset
      * 
-     * @param datasetId
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param datasetId ID of the dataset
+     * @return          ID of the first versionset of the dataset
+     * @throws          ClientProtocolException
+     * @throws          IOException
+     * @throws          URISyntaxException
+     * @throws          MLIntegrationBaseTestException
      */
     protected int getAVersionSetIdOfDataset(int datasetId) throws ClientProtocolException, IOException, URISyntaxException,
             MLIntegrationBaseTestException {
@@ -295,14 +295,14 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Create a Model
      * 
-     * @param name
-     * @param analysisId
-     * @param versionSetId
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param name          Name of the model
+     * @param analysisId    ID of the  analysis associated with the model
+     * @param versionSetId  ID of the version set to be used for the model
+     * @return              Response from the back-end
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException
      */
     protected CloseableHttpResponse createModel(String name, int analysisId, int versionSetId) throws ClientProtocolException, 
             IOException, URISyntaxException, MLIntegrationBaseTestException {
@@ -314,12 +314,12 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     /**
      * Get the model ID using the name of the model
      * 
-     * @param modelName
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param modelName Name of the model
+     * @return          ID of the model
+     * @throws          ClientProtocolException
+     * @throws          IOException
+     * @throws          URISyntaxException
+     * @throws          MLIntegrationBaseTestException
      */
     protected int getModelId(String modelName) throws ClientProtocolException, IOException, URISyntaxException,
         MLIntegrationBaseTestException {
@@ -332,18 +332,19 @@ public abstract class MLIntegrationBaseTest extends MLBaseTest{
     }
     
     /**
+     * Create the file storage for a model
      * 
-     * @param modelId
-     * @param folderName
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @param modelId       ID of the model
+     * @param folderName    Name of the directory/sub-directory
+     * @return              Response from the back-end
+     * @throws              ClientProtocolException
+     * @throws              IOException
+     * @throws              URISyntaxException
+     * @throws              MLIntegrationBaseTestException
      */
     protected CloseableHttpResponse createFileModelStorage(int modelId, String folderName) throws ClientProtocolException, 
             IOException, URISyntaxException, MLIntegrationBaseTestException {
-        String payload ="{\"type\":\"file\",\"location\":\"target/tmp/" + folderName + "\"}";
+        String payload ="{\"type\":\"file\",\"location\":\"" + folderName + "\"}";
         return doHttpPost(new URI(getServerUrlHttps() + "/api/models/"+ modelId + "/storages"), payload);
     }
 }

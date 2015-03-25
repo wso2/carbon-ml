@@ -264,16 +264,6 @@ public class MLDatasetProcessor {
         }
     }
 
-    private long retrieveDatasetSchemaId(MLDataset dataset) throws MLDataProcessingException {
-        long datasetId;
-        try {
-            datasetId = databaseService.getDatasetId(dataset.getName(), dataset.getTenantId(), dataset.getUserName());
-            return datasetId;
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
-        }
-    }
-
     private long retrieveDatasetVersionId(MLDatasetVersion versionset) {
         long datasetVersionId;
         try {

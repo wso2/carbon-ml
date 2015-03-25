@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
@@ -45,6 +47,13 @@ public class ProjectApiV10 extends MLRestAPI {
     public ProjectApiV10() {
         mlProjectHandler = new MLProjectHandler();
     }
+    
+    @OPTIONS
+    public Response options() {
+        return Response.ok()
+                .header(HttpHeaders.ALLOW, "GET POST DELETE")
+                .build();
+    }
 
     /**
      * Create a new Project. No validation happens here. Please call {@link #getProject(String)} before this.
@@ -55,7 +64,8 @@ public class ProjectApiV10 extends MLRestAPI {
     public Response createProject(MLProject project) {
         if (project.getName() == null || project.getName().isEmpty() || project.getDatasetName() == null || 
                 project.getDatasetName().isEmpty() ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
@@ -127,5 +137,5 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
     
-    //TODO: Add a method to get analyses anuder a project
+    //TODO: Add a method to get analyses under a project
 }

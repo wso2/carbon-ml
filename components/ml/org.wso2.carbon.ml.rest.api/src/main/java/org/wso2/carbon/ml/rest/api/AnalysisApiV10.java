@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
@@ -37,7 +39,7 @@ import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
- * This class is to handle REST verbs GET , POST and DELETE.
+ * WSO2 ML Analyses API. All the operations related to Analyses is implemented here.
  */
 @Path("/analyses")
 public class AnalysisApiV10 extends MLRestAPI {
@@ -48,6 +50,17 @@ public class AnalysisApiV10 extends MLRestAPI {
     public AnalysisApiV10() {
         mlAnalysisHandler = new MLAnalysisHandler();
     }
+    
+    /**
+     * HTTP Options method implementation for analysis API.
+     * @return
+     */
+    @OPTIONS
+    public Response options() {
+        return Response.ok()
+                .header(HttpHeaders.ALLOW, "GET POST DELETE")
+                .build();
+    }
 
     /**
      * Create a new Analysis of a project.
@@ -55,8 +68,9 @@ public class AnalysisApiV10 extends MLRestAPI {
     @POST
     @Produces("application/json")
     public Response createAnalysis(MLAnalysis analysis) {
-        if (analysis.getName() == null || analysis.getName().isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        if (analysis.getName() == null || analysis.getName().isEmpty() || analysis.getProjectId() == 0) {
+            logger.error("Required parameters missing");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         try {
@@ -72,6 +86,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features")
     @Produces("application/json")
@@ -91,6 +108,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * load default features into customized features of this analysis.
+     */
     @POST
     @Path("/{analysisId}/features/defaults")
     @Produces("application/json")
@@ -113,6 +133,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/configurations")
     @Produces("application/json")
@@ -132,6 +155,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding hyper parameters for the selected algorithm of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams")
     @Produces("application/json")
@@ -151,6 +177,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Adding configurations (algorithm etc.) of this analysis.
+     */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
     @Produces("application/json")
@@ -170,6 +199,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieving an analysis by a name.
+     */
     @GET
     @Path("/{analysisName}")
     @Produces("application/json")
@@ -191,6 +223,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * Retrieve all analyses.
+     */
     @GET
     @Produces("application/json")
     public Response getAllAnalyses() {
@@ -208,6 +243,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
     
+    /**
+     * delete an analysis of a given name.
+     */
     @DELETE
     @Path("/{analysisName}")
     @Produces("application/json")

@@ -22,7 +22,9 @@ import javax.ws.rs.core.Response;
 
 public class UnAuthorizedException extends WebApplicationException {
     
-	public UnAuthorizedException(String message) {
+	private static final long serialVersionUID = 7926392228513189682L;
+
+    public UnAuthorizedException(String message) {
 		super(Response.status(Response.Status.BAD_REQUEST).entity(message).type(MediaType.APPLICATION_XML_TYPE)
 		    .build());
 	}

@@ -166,6 +166,7 @@
 			    <groupId>org.wso2.carbon.automationutils</groupId>
 			    <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
 			    <version>${carbon.automation.utils.version}</version>
+			    <scope>test</scope>
 			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automationutils</groupId>
@@ -185,6 +186,14 @@
 						<groupId>org.apache.rampart</groupId>
 						<artifactId>rampart-trust</artifactId>
 					</exclusion>
+					<exclusion>
+                        <groupId>org.apache.jmeter</groupId>
+                        <artifactId>ApacheJMeter</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.jmeter</groupId>
+                        <artifactId>ApacheJMeter_core</artifactId>
+                    </exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
