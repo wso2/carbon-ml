@@ -55,7 +55,7 @@ public class FileOutputAdapterTest {
         
         MLOutputAdapter outputAdapter = new FileOutputAdapter();
         try {
-            outputAdapter.writeDataset(outPath, in);
+            outputAdapter.write(outPath, in);
         } catch (MLOutputAdapterException e) {
             // there shouldn't be any exception
             Assert.assertNull(e);
@@ -63,7 +63,7 @@ public class FileOutputAdapterTest {
         
         in = null;
         try {
-            outputAdapter.writeDataset(outPath, in);
+            outputAdapter.write(outPath, in);
         } catch (Exception e) {
             Assert.assertEquals(e instanceof MLOutputAdapterException, true);
         }

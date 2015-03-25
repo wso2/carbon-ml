@@ -192,15 +192,14 @@ public class MLDatasetProcessor {
                     dataset.getSourcePath(), dataset.getName()));
             String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
-            outputAdapter.writeDataset(targetPath, input);
+            targetUri = outputAdapter.write(targetPath, input);
 
             // read the file that was written
             inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
             try {
-                targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);
-            } catch (URISyntaxException e) {
-                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetPath, e);
+            } catch (MLInputAdapterException e) {
+                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetUri.toString(), e);
             }
 
             // extract sample points

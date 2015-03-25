@@ -39,6 +39,9 @@ public class MLConfiguration {
     @XmlElement(name = "BAMServerURL")
     private String bamServerURL;
     
+    @XmlElement(name = "HdfsURL")
+    private String hdfsUrl;
+    
     @XmlElementWrapper(name="Properties")
     @XmlElement(name = "Property")
     private List<MLProperty> properties;
@@ -79,5 +82,11 @@ public class MLConfiguration {
     }
     public void setProperties(List<MLProperty> properties) {
         this.properties = properties;
+    }
+    public String getHdfsUrl() {
+        return hdfsUrl;
+    }
+    public void setHdfsUrl(String hdfsUrl) {
+        this.hdfsUrl = hdfsUrl;
     }
 }

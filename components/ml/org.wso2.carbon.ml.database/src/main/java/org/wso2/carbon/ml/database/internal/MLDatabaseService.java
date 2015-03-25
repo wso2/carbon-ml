@@ -118,7 +118,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(3, datasetVersion.getVersion());
             insertStatement.setInt(4, datasetVersion.getTenantId());
             insertStatement.setString(5, datasetVersion.getUserName());
-            insertStatement.setString(6, datasetVersion.getTargetPath().getPath());
+            insertStatement.setString(6, datasetVersion.getTargetPath().toString());
             insertStatement.setObject(7, datasetVersion.getSamplePoints());
             insertStatement.execute();
             connection.commit();
