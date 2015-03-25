@@ -422,7 +422,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertDataSource(long valuesetId, int tenantId, String username, String key, String value)
+    public void insertDataSource(long datasetVersionId, int tenantId, String username, String key, String value)
             throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -431,7 +431,7 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATA_SOURCE);
-            insertStatement.setLong(1, valuesetId);
+            insertStatement.setLong(1, datasetVersionId);
             insertStatement.setInt(2, tenantId);
             insertStatement.setString(3, username);
             insertStatement.setString(4, key);
@@ -1157,38 +1157,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void createProject(String projectName, String description, int tenantId, String username)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement createProjectStatement = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
-            createProjectStatement.setString(1, projectName);
-            createProjectStatement.setString(2, description);
-            createProjectStatement.setInt(3, tenantId);
-            createProjectStatement.setString(4, username);
-            createProjectStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted details of project: " + projectName);
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while inserting details of project: " + projectName
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, createProjectStatement);
-        }
-    }
-
-    @Override
     public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -1345,40 +1313,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
-        }
-    }
-
-    @Override
-    public void insertAnalysis(long projectId, String name, int tenantId, String username, String comments)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the analysis to the database.
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_ANALYSIS);
-            insertStatement.setLong(1, projectId);
-            insertStatement.setString(2, name);
-            insertStatement.setInt(3, tenantId);
-            insertStatement.setString(4, username);
-            insertStatement.setString(5, comments);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the analysis");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting analysis " + " to the database: "
-                    + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }
 
@@ -1700,72 +1634,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModel(String name, long analysisId, long datasetVersionId, int tenantId, String username)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the model to the database
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL);
-            insertStatement.setString(1, name);
-            insertStatement.setLong(2, analysisId);
-            insertStatement.setLong(3, datasetVersionId);
-            insertStatement.setInt(4, tenantId);
-            insertStatement.setString(5, username);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the model");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting model " + " to the database: "
-                    + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    @Override
-    public void insertModelConfiguration(long modelId, String key, String value)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the model configuration to the database.
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL_CONFIGURATION);
-            insertStatement.setLong(1, modelId);
-            insertStatement.setString(2, key);
-            insertStatement.setString(3, value);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the model configuration");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting model configuration "
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    @Override
     public void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws DatabaseHandlerException {
 
@@ -1934,42 +1802,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    @Override
-    public void insertFeatureCustomized(long modelId, int tenantId, String featureName, String type,
-            String imputeOption, boolean inclusion, String lastModifiedUser) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the feature-customized to the database
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-            insertStatement.setLong(1, modelId);
-            insertStatement.setInt(2, tenantId);
-            insertStatement.setString(3, featureName);
-            insertStatement.setString(4, type);
-            insertStatement.setString(5, imputeOption);
-            insertStatement.setBoolean(6, inclusion);
-            insertStatement.setString(7, lastModifiedUser);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the feature-customized");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting feature-customized "
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-    
     @Override
     public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
@@ -2159,149 +1991,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, addTenantStatement);
-        }
-    }
-
-    /**
-     * Get the project names and created dates, that a tenant is assigned to.
-     *
-     * @param tenantID Unique identifier for the tenant.
-     * @return An array of project ID, Name and the created date of the projects associated with a given tenant.
-     * @throws DatabaseHandlerException
-     */
-    public String[][] getTenantProjects(int tenantID) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement getTenantProjectsStatement = null;
-        ResultSet result = null;
-        String[][] projects = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(true);
-            getTenantProjectsStatement = connection.prepareStatement(SQLQueries.GET_TENANT_PROJECTS,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            getTenantProjectsStatement.setInt(1, tenantID);
-            result = getTenantProjectsStatement.executeQuery();
-            // create a 2-d string array having the size of the result set
-            result.last();
-            int size = result.getRow();
-            if (size > 0) {
-                projects = new String[size][4];
-                result.beforeFirst();
-                // put the result set to the string array
-                for (int i = 0; i < size; i++) {
-                    result.next();
-                    projects[i][0] = result.getObject(1).toString();
-                    projects[i][1] = result.getString(2);
-                    projects[i][2] = result.getDate(3).toString();
-                    projects[i][3] = result.getString(4);
-                }
-            }
-            return projects;
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while retrieving the projects of user " + tenantID
-                    + ": " + e.getMessage(), e);
-        } finally {
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, getTenantProjectsStatement, result);
-        }
-    }
-
-    /**
-     * Retrieve Details of a Project (Name, Description, Tenant-id, Username, Created-time)
-     *
-     * @param projectId Unique identifier of the project
-     * @return DatabaseHandlerException
-     */
-    @Override
-    public String[] getProject(String projectId) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement deleteProjectStatement = null;
-        ResultSet result = null;
-        String ProjectDetails[] = new String[3];
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            deleteProjectStatement = connection.prepareStatement(SQLQueries.GET_PROJECT);
-            deleteProjectStatement.setString(1, projectId);
-            result = deleteProjectStatement.executeQuery();
-            if (result.first()) {
-                ProjectDetails[0] = result.getString(1);
-                ProjectDetails[1] = result.getString(2);
-                ProjectDetails[2] = result.getString(3);
-                ProjectDetails[3] = result.getString(4);
-                ProjectDetails[4] = result.getString(5);
-                return ProjectDetails;
-            } else {
-                throw new DatabaseHandlerException("Invalid project Id: " + projectId);
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while retrieving the project: " + projectId + ": "
-                    + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, deleteProjectStatement, result);
-        }
-    }
-
-    /**
-     * Update the database with all the summary statistics of the sample.
-     *
-     * @param datasetVersionId Unique Identifier of the data-set
-     * @param headerMap Array of names of features
-     * @param type Array of data-types of each feature
-     * @param graphFrequencies List of Maps containing frequencies for graphs, of each feature
-     * @param missing Array of Number of missing values in each feature
-     * @param unique Array of Number of unique values in each feature
-     * @param descriptiveStats Array of descriptiveStats object of each feature
-     * @param include Default value to set for the flag indicating the feature is an input or not
-     * @throws DatabaseHandlerException
-     */
-    public void updateSummaryStatistics(long datasetVersionId, Map<String, Integer> headerMap, String[] type,
-            List<SortedMap<?, Integer>> graphFrequencies, int[] missing, int[] unique,
-            List<DescriptiveStatistics> descriptiveStats, Boolean include) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement updateStatement = null;
-        try {
-            JSONArray summaryStat;
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            int columnIndex;
-            for (Map.Entry<String, Integer> columnNameMapping : headerMap.entrySet()) {
-                columnIndex = columnNameMapping.getValue();
-                // Get the JSON representation of the column summary.
-                summaryStat = createJson(type[columnIndex], graphFrequencies.get(columnIndex), missing[columnIndex],
-                        unique[columnIndex], descriptiveStats.get(columnIndex));
-                // Put the values to the database table. If the feature already exists, updates
-                // the row. If not, inserts as a new row.
-                // updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SUMMARY_STATS);
-                updateStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_DEFAULTS);
-                updateStatement.setLong(1, datasetVersionId);
-                updateStatement.setString(2, columnNameMapping.getKey());
-                updateStatement.setString(3, type[columnIndex].toString());
-                updateStatement.setInt(4, columnIndex);
-                updateStatement.setString(5, summaryStat.toString());
-                updateStatement.execute();
-            }
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the summary statistics for dataset version " + datasetVersionId);
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while updating the database "
-                    + "with summary statistics of the dataset " + datasetVersionId + ": " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 
