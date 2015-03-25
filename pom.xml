@@ -505,6 +505,11 @@
 	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
+	    <dependency>
+   <groupId>com.google.protobuf</groupId>
+   <artifactId>protobuf-java</artifactId>
+   <version>${google.protobuf.version}</version>
+</dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.core</artifactId>
@@ -726,6 +731,7 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 	
 		<hadoop.version>2.2.0.wso2v1</hadoop.version>
+	<google.protobuf.version>2.5.0</google.protobuf.version>
 
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
