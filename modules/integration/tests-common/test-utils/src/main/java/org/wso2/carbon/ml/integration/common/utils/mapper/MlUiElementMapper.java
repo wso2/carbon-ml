@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+//TODO : Class comments. Rename ML-UI --> JaggeryUi
 public class MlUiElementMapper {
     public static final Properties uiProperties = new Properties();
     private static final Log logger = LogFactory.getLog(MlUiElementMapper.class);
@@ -51,6 +52,7 @@ public class MlUiElementMapper {
                 .ML_UI_ELEMENT_MAPPER);
         if (inputStream.available() > 0) {
             uiProperties.load(inputStream);
+            //TODO: catch and close in finally block
             inputStream.close();
             return uiProperties;
         }
