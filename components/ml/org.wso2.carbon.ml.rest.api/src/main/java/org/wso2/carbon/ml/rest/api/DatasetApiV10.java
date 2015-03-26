@@ -83,6 +83,7 @@ public class DatasetApiV10 extends MLRestAPI {
     }
     
     @GET
+    @Path("/getalldatasets")
     @Produces("application/json")
     public Response getAllDatasets() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();

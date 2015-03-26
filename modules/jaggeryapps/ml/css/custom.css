@@ -319,6 +319,10 @@ a.cu-btn:hover, a.cu-btn-reverse:hover {
 	background:url('../images/icons/ico-delete.png') 0.8em 1em no-repeat;
 }
 
+.btn-edit {
+	background:url('../images/icons/ico-edit.png') 0.8em 1em no-repeat;
+}
+
 .btn-compare {
 	background:url('../images/icons/ico-compare.png') 0.8em 1em no-repeat;
 }
