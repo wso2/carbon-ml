@@ -551,8 +551,9 @@ public class MLDatabaseService implements DatabaseService {
                 MLDatasetVersion versionset = new MLDatasetVersion();
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
-                versionset.setTargetPath(new URI(result.getString(3)));
-                versionset.setSamplePoints((SamplePoints)result.getObject(4));
+                versionset.setVersion(result.getString(3));
+                versionset.setTargetPath(new URI(result.getString(4)));
+                versionset.setSamplePoints((SamplePoints)result.getObject(5));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 versionsets.add(versionset);

@@ -15,6 +15,7 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -34,6 +35,8 @@ import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
+import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
+import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
@@ -91,6 +94,40 @@ public class DatasetApiV10 extends MLRestAPI {
             String userName = carbonContext.getUsername();
             List<MLDataset> datasets = datasetProcessor.getAllDatasets(tenantId, userName);
             return Response.ok(datasets).build();
+        } catch (MLDataProcessingException e) {
+            logger.error("Error occured while retrieving all datasets.. : " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/versions")
+    @Produces("application/json")
+    public Response getAllDatasetVersions() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        try {
+            int tenantId = carbonContext.getTenantId();
+            String userName = carbonContext.getUsername();
+            List<MLDatasetBean> datasetBeans = new ArrayList<MLDatasetBean>();
+            List<MLDataset> datasets = datasetProcessor.getAllDatasets(tenantId, userName);
+            for (MLDataset mlDataset : datasets) {
+                MLDatasetBean datasetBean = new MLDatasetBean();
+                long datasetId = mlDataset.getId();
+                datasetBean.setId(datasetId);
+                datasetBean.setName(mlDataset.getName());
+                datasetBean.setComments(mlDataset.getComments());
+                List<MLVersionBean> versionBeans = new ArrayList<MLVersionBean>();
+                List<MLDatasetVersion> versions = datasetProcessor.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
+                for (MLDatasetVersion mlDatasetVersion : versions) {
+                    MLVersionBean versionBean = new MLVersionBean();
+                    versionBean.setId(mlDatasetVersion.getId());
+                    versionBean.setVersion(mlDatasetVersion.getVersion());
+                    versionBeans.add(versionBean);
+                }
+                datasetBean.setVersions(versionBeans);
+                datasetBeans.add(datasetBean);
+            }
+            return Response.ok(datasetBeans).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving all datasets.. : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
