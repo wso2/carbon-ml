@@ -130,7 +130,7 @@ public class DatasetApiV10 extends MLRestAPI {
             }
             return Response.ok(datasetBeans).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all datasets.. : " + e.getMessage());
+            logger.error("Error occured while retrieving all dataset versions : " + e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
@@ -165,7 +165,7 @@ public class DatasetApiV10 extends MLRestAPI {
             List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
             return Response.ok(versionsets).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occured while retrieving all versions of dataset : " + datasetId+ " : " + e.getMessage());
+            logger.error("Error occured while retrieving all versions of dataset : " + datasetId+ " : " + e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
