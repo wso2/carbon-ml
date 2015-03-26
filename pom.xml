@@ -348,21 +348,30 @@
 	            <version>${mesos.version}</version>
 	        </dependency>
 	        <dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>2.5.0</version>
-			</dependency>
-	        <dependency>
 				<groupId>org.spark-project.akka</groupId>
 				<artifactId>akka-remote_2.10</artifactId>
 				<version>2.2.3-shaded-protobuf</version>
 			</dependency>
 			<dependency>
-					<groupId>com.google.protobuf</groupId>
-					<artifactId>protobuf-java</artifactId>
-					<version>2.5.0</version>
-				</dependency>
-			
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.orbit.github.rwl</groupId>
+				<artifactId>jtransforms</artifactId>
+				<version>${jtransforms.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.orbit.github.fommil.netlib</groupId>
+				<artifactId>core</artifactId>
+				<version>${fommil.netlib.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
+				<artifactId>arpack_combined</artifactId>
+				<version>${arpack.combined.version}</version>
+			</dependency>
 			
             <!-- End of WSO2 Orbit dependencies for Spark orbit bundle -->
 
@@ -847,6 +856,10 @@
 		<mesos.version>0.18.1.wso2v1</mesos.version>
 		<hadoop.version>2.2.0.wso2v1</hadoop.version>
 		<google.protobuf.version>2.5.0</google.protobuf.version>
+		<jtransforms.version>2.4.0.wso2v1</jtransforms.version>
+		<fommil.netlib.version>1.1.2.wso2v1</fommil.netlib.version>
+		<arpack.combined.version>0.1.wso2v1</arpack.combined.version>
+		
 
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
