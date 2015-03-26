@@ -15,6 +15,7 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -35,6 +36,8 @@ import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLProjectHandler;
+import org.wso2.carbon.ml.rest.api.model.MLAnalysisBean;
+import org.wso2.carbon.ml.rest.api.model.MLProjectBean;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
@@ -115,6 +118,48 @@ public class ProjectApiV10 extends MLRestAPI {
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
                     "Error occured while retrieving all projects of tenant [id] %s and [user] %s . Cause: %s",
+                    tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/analyses")
+    @Produces("application/json")
+    public Response getAllAnalyses() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLProject> projects = mlProjectHandler.getAllProjects(tenantId, userName);
+            List<MLProjectBean> projectBeans = new ArrayList<MLProjectBean>();
+            for (MLProject mlProject : projects) {
+                MLProjectBean projectBean = new MLProjectBean();
+                long projectId = mlProject.getId();
+                projectBean.setId(projectId);
+                projectBean.setCreatedTime(mlProject.getCreatedTime());
+                projectBean.setDatasetId(mlProject.getDatasetId());
+                projectBean.setDatasetName(mlProject.getDatasetName());
+                projectBean.setDescription(mlProject.getDescription());
+                projectBean.setName(mlProject.getName());
+                
+                List<MLAnalysisBean> analysisBeans = new ArrayList<MLAnalysisBean>();
+                List<MLAnalysis> analyses = mlProjectHandler.getAllAnalysesOfProject(tenantId, userName, projectId);
+                for (MLAnalysis mlAnalysis : analyses) {
+                    MLAnalysisBean analysisBean = new MLAnalysisBean();
+                    analysisBean.setId(mlAnalysis.getId());
+                    analysisBean.setName(mlAnalysis.getName());
+                    analysisBean.setProjectId(mlAnalysis.getProjectId());
+                    analysisBean.setComments(mlAnalysis.getComments());
+                    analysisBeans.add(analysisBean);
+                }
+                projectBean.setAnalyses(analysisBeans);
+                projectBeans.add(projectBean);
+            }
+            return Response.ok(projectBeans).build();
+        } catch (MLProjectHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
