@@ -343,7 +343,7 @@
 				<version>2.1</version>
 			</dependency>
 			<dependency>
-	            <groupId>org.wso2.orbit.apache.mesos</groupId>
+	            <groupId>org.wso2.orbit.org.apache.mesos</groupId>
 	            <artifactId>mesos</artifactId>
 	            <version>${mesos.version}</version>
 	        </dependency>

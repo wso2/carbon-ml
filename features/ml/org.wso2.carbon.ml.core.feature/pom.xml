@@ -299,7 +299,7 @@
 				<artifactId>objenesis</artifactId>
 			</dependency>
 			<dependency>
-	            <groupId>org.wso2.orbit.apache.mesos</groupId>
+	            <groupId>org.wso2.orbit.org.apache.mesos</groupId>
 	            <artifactId>mesos</artifactId>
 	        </dependency>
 	        <dependency>
@@ -363,9 +363,12 @@
                             	<bundleDef>com.esotericsoftware.kryo:kryo</bundleDef>
                             	<bundleDef>org.wso2.orbit.com.esotericsoftware.minlog:minlog</bundleDef>
                             	<bundleDef>org.objenesis:objenesis</bundleDef>
-                            	<bundleDef>org.wso2.orbit.apache.mesos:mesos</bundleDef>
+                            	<bundleDef>org.wso2.orbit.org.apache.mesos:mesos</bundleDef>
                             	<bundleDef>org.spark-project.protobuf:protobuf-java</bundleDef>
                             	<bundleDef>com.google.protobuf:protobuf-java</bundleDef>
+                            	<bundleDef>org.wso2.orbit.github.rwl:jtransforms</bundleDef>
+                            	<bundleDef>org.wso2.orbit.github.fommil.netlib:core</bundleDef>
+                            	<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
                             	
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.core</bundleDef>
                                 <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
