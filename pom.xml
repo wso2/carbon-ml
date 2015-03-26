@@ -320,27 +320,27 @@
             <dependency>
 				<groupId>org.spark-project.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
-				<version>2.5.0-spark</version>
+				<version>${spark.protobuf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.esotericsoftware.kryo</groupId>
 				<artifactId>kryo</artifactId>
-				<version>2.24.0</version>
+				<version>${kyro.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
 				<artifactId>minlog</artifactId>
-				<version>1.2.wso2v1</version>
+				<version>${minlog.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.objenesis</groupId>
 				<artifactId>objenesis</artifactId>
-				<version>2.1</version>
+				<version>${objenesis.version}</version>
 			</dependency>
 			<dependency>
 	            <groupId>org.wso2.orbit.org.apache.mesos</groupId>
@@ -350,12 +350,12 @@
 	        <dependency>
 				<groupId>org.spark-project.akka</groupId>
 				<artifactId>akka-remote_2.10</artifactId>
-				<version>2.2.3-shaded-protobuf</version>
+				<version>${akka.remote.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
-				<version>2.5.0</version>
+				<version>${google.protobuf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.orbit.github.rwl</groupId>
@@ -618,11 +618,6 @@
 	    </dependency>
 
             <!-- Dependencies on WSO2 Carbon ML components -->
-	    <dependency>
-   <groupId>com.google.protobuf</groupId>
-   <artifactId>protobuf-java</artifactId>
-   <version>${google.protobuf.version}</version>
-</dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.ml.core</artifactId>
@@ -859,7 +854,12 @@
 		<jtransforms.version>2.4.0.wso2v1</jtransforms.version>
 		<fommil.netlib.version>1.1.2.wso2v1</fommil.netlib.version>
 		<arpack.combined.version>0.1.wso2v1</arpack.combined.version>
-		
+		<objenesis.version>2.1</objenesis.version>
+		<minlog.version>1.2.wso2v1</minlog.version>
+		<kyro.version>2.24.0</kyro.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
+		<akka.remote.version>2.2.3-shaded-protobuf</akka.remote.version>
 
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
@@ -886,9 +886,6 @@
         <jetty.version>8.1.14.v20131031</jetty.version>
         <org.jboss.netty.version>3.6.6.Final</org.jboss.netty.version>
 		<asm.version>5.0.3</asm.version>
-		
-		
-		
         <commons.io.version>2.4</commons.io.version>
         <opencsv.version>1.8</opencsv.version>
         <orbit.version.h2.database.engine>1.2.140.wso2v3</orbit.version.h2.database.engine>

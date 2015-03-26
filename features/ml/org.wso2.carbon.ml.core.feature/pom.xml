@@ -31,10 +31,6 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner Core Feature</name>
     <dependencies>
-	<dependency>
-   <groupId>com.google.protobuf</groupId>
-   <artifactId>protobuf-java</artifactId>
-</dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.core</artifactId>
@@ -417,7 +413,6 @@
                                 <bundleDef>org.wso2.carbon.event-processing:org.wso2.carbon.event.output.adapter.email</bundleDef>
                                 <bundleDef>org.apache.axis2:axis2-transport-mail</bundleDef>
                                 <bundleDef>org.apache.axis2:axis2-transport-base</bundleDef>
-                                <bundleDef>com.google.protobuf:protobuf-java</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
