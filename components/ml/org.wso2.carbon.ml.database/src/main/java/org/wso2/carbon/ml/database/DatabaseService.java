@@ -182,12 +182,12 @@ public interface DatabaseService {
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *
-     * @param datasetVersionId     Unique identifier of the data-set
+     * @param analysisId     Unique identifier of the data-set
      * @param featureName          Name of the feature of which summary statistics are needed
      * @return                     JSON string containing the summary statistics
      * @throws                     DatabaseHandlerException
      */
-    public String getSummaryStats(long datasetVersionId, String featureName) throws DatabaseHandlerException;
+    public String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version

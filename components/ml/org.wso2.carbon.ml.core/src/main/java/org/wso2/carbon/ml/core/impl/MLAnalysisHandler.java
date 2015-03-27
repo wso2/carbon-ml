@@ -90,6 +90,14 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e);
         }
     }
+    
+    public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getSummaryStats(tenantId, userName, analysisId, featureName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
 
     public void addModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws MLAnalysisHandlerException {

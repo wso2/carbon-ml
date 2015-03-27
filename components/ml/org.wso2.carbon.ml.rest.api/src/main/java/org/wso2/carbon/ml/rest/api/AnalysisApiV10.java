@@ -159,6 +159,29 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
     
     /**
+     * get summarized features of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/stats")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getSummaryStatistics(@PathParam("analysisId") long analysisId, @QueryParam("feature") String featureName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            
+            String summary = mlAnalysisHandler.getSummaryStats(tenantId, userName, analysisId, featureName);
+            return Response.ok(summary).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving summarized stats of feature [name] %s for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    featureName, analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    /**
      * Adding configurations (algorithm etc.) of this analysis.
      */
     @POST

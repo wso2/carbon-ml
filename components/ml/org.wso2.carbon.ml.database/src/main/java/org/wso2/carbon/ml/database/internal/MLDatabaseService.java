@@ -1103,7 +1103,8 @@ public class MLDatabaseService implements DatabaseService {
      * @return JSON string containing the summary statistics
      * @throws DatabaseHandlerException
      */
-    public String getSummaryStats(long datasetVersionId, String featureName) throws DatabaseHandlerException {
+    @Override
+    public String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement getSummaryStatement = null;
@@ -1112,14 +1113,16 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS);
-            getSummaryStatement.setString(1, featureName);
-            getSummaryStatement.setLong(2, datasetVersionId);
+            getSummaryStatement.setLong(1, analysisId);
+            getSummaryStatement.setString(2, featureName);
+            getSummaryStatement.setInt(3, tenantId);
+            getSummaryStatement.setString(4, user);
             result = getSummaryStatement.executeQuery();
             result.first();
             return result.getString(1);
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving summary "
-                    + "statistics for the feature \"" + featureName + "\" of the data set version " + datasetVersionId
+                    + "statistics for the feature \"" + featureName + "\" of the analysis " + analysisId
                     + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
