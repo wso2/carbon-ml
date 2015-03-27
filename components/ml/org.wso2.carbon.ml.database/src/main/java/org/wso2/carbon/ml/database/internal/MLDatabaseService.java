@@ -841,26 +841,22 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Returns data points of the selected sample as coordinates of three features, needed for the scatter plot.
      *
-     * @param valueSetId Unique Identifier of the value-set
-     * @param xAxisFeature Name of the feature to use as the x-axis
-     * @param yAxisFeature Name of the feature to use as the y-axis
-     * @param groupByFeature Name of the feature to be grouped by (color code)
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public JSONArray getScatterPlotPoints(long valueSetId, String xAxisFeature, String yAxisFeature,
-            String groupByFeature) throws DatabaseHandlerException {
+    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException {
 
         // Get the sample from the database.
-        SamplePoints sample = getValueSetSample(valueSetId);
+        SamplePoints sample = getVersionsetSample(scatterPlotPoints.getTenantId(),scatterPlotPoints.getUser(), scatterPlotPoints.getVersionsetId());
+        List<String> points = new ArrayList<String>();
 
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
-        JSONArray samplePointsArray = new JSONArray();
-        int firstFeatureColumn = dataHeaders.get(xAxisFeature);
-        int secondFeatureColumn = dataHeaders.get(yAxisFeature);
-        int thirdFeatureColumn = dataHeaders.get(groupByFeature);
+        
+        int firstFeatureColumn = dataHeaders.get(scatterPlotPoints.getxAxisFeature());
+        int secondFeatureColumn = dataHeaders.get(scatterPlotPoints.getyAxisFeature());
+        int thirdFeatureColumn = dataHeaders.get(scatterPlotPoints.getGroupByFeature());
         for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
             if (!columnData.get(firstFeatureColumn).get(row).isEmpty()
                     && !columnData.get(secondFeatureColumn).get(row).isEmpty()
@@ -869,30 +865,35 @@ public class MLDatabaseService implements DatabaseService {
                 point.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
                 point.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
                 point.put(columnData.get(thirdFeatureColumn).get(row));
-                samplePointsArray.put(point);
+                points.add(point.toString());
             }
         }
 
-        return samplePointsArray;
+        return points;
     }
 
     /**
      * Returns sample data for selected features
      *
-     * @param valueSetId Unique Identifier of the value-set
+     * @param versionsetId Unique Identifier of the value-set
      * @param featureListString String containing feature name list
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public JSONArray getChartSamplePoints(long valueSetId, String featureListString) throws DatabaseHandlerException {
+    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws DatabaseHandlerException {
 
+        List<String> points = new ArrayList<String>();
+        
         // Get the sample from the database.
-        SamplePoints sample = getValueSetSample(valueSetId);
+        SamplePoints sample = getVersionsetSample(tenantId, user, versionsetId);
 
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
-        JSONArray samplePointsArray = new JSONArray();
+        
+        if (featureListString == null || featureListString.isEmpty()) {
+            return points;
+        }
 
         // split categoricalFeatureListString String into a String array
         String[] featureList = featureListString.split(",");
@@ -907,9 +908,10 @@ public class MLDatabaseService implements DatabaseService {
                 point.put(featureList[featureCount], columnData.get(dataHeaders.get(featureList[featureCount]))
                         .get(row));
             }
-            samplePointsArray.put(point);
+            
+            points.add(point.toString());
         }
-        return samplePointsArray;
+        return points;
     }
 
     /**
@@ -919,7 +921,7 @@ public class MLDatabaseService implements DatabaseService {
      * @return SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
-    private SamplePoints getValueSetSample(long valueSetId) throws DatabaseHandlerException {
+    private SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement updateStatement = null;
@@ -929,7 +931,9 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             updateStatement = connection.prepareStatement(SQLQueries.GET_SAMPLE_POINTS);
-            updateStatement.setLong(1, valueSetId);
+            updateStatement.setLong(1, versionsetId);
+            updateStatement.setInt(2, tenantId);
+            updateStatement.setString(3, user);
             result = updateStatement.executeQuery();
             if (result.first()) {
                 samplePoints = (SamplePoints) result.getObject(1);
@@ -938,8 +942,8 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while retrieving the sample of " + "value set "
-                    + valueSetId + ": " + e.getMessage(), e);
+            throw new DatabaseHandlerException("An error occurred while retrieving the sample of " + " dataset version "
+                    + versionsetId + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement, result);
@@ -2401,6 +2405,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, model, result);
         }
     }
-
+    
 
 }

@@ -25,6 +25,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +34,7 @@ import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
+import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
@@ -184,6 +186,43 @@ public class DatasetApiV10 extends MLRestAPI {
             return Response.ok(versionset).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occured while retrieving dataset versions: " + versionsetId + " : " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/versions/{versionsetId}/scatter")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getScatterPlotPoints(@PathParam("versionsetId") long versionsetId, ScatterPlotPoints scatterPlotPoints) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        try {
+            int tenantId = carbonContext.getTenantId();
+            String userName = carbonContext.getUsername();
+            scatterPlotPoints.setTenantId(tenantId);
+            scatterPlotPoints.setUser(userName);
+            scatterPlotPoints.setVersionsetId(versionsetId);
+            List<String> points = datasetProcessor.getScatterPlotPoints(scatterPlotPoints);
+            return Response.ok(points).build();
+        } catch (MLDataProcessingException e) {
+            logger.error("Error occured while retrieving scatter plot points of dataset version: " + versionsetId + " : " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/versions/{versionsetId}/charts")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getChartSamplePoints(@PathParam("versionsetId") long versionsetId, @QueryParam("features") String featureListString) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        try {
+            int tenantId = carbonContext.getTenantId();
+            String userName = carbonContext.getUsername();
+            List<String> points = datasetProcessor.getChartSamplePoints(tenantId, userName, versionsetId, featureListString);
+            return Response.ok(points).build();
+        } catch (MLDataProcessingException e) {
+            logger.error("Error occured while retrieving chart sample points of dataset version: " + versionsetId + " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

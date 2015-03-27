@@ -17,16 +17,11 @@
  */
 package org.wso2.carbon.ml.database;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 public interface DatabaseService {
 
@@ -132,26 +127,22 @@ public interface DatabaseService {
     /**
      * Returns data points of the selected sample as coordinates of three
      * features, needed for the scatter plot.
+     * @param scatterPlotPoints TODO
      *
-     * @param valueSetId        Unique Identifier of the value-set
-     * @param xAxisFeature      Name of the feature to use as the x-axis
-     * @param yAxisFeature      Name of the feature to use as the y-axis
-     * @param groupByFeature    Name of the feature to be grouped by (color code)
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getScatterPlotPoints(long valueSetId, String xAxisFeature, String yAxisFeature,
-                                          String groupByFeature) throws DatabaseHandlerException;
+    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
 
     /**
      * Returns sample data for selected features
      *
-     * @param valueSetId        Unique Identifier of the value-set
+     * @param versionsetId        Unique Identifier of the value-set
      * @param featureListString String containing feature name list
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getChartSamplePoints(long valueSetId, String featureListString)
+    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
             throws DatabaseHandlerException;
 
     /**
