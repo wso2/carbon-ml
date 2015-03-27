@@ -41,7 +41,7 @@ import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
 import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 
 /**
- * This class defines the ML dataset API. 
+ * This class defines the ML dataset API.
  */
 @Path("/datasets")
 public class DatasetApiV10 extends MLRestAPI {
@@ -51,16 +51,14 @@ public class DatasetApiV10 extends MLRestAPI {
      * Delegates all the dataset related operations.
      */
     private MLDatasetProcessor datasetProcessor;
-    
+
     public DatasetApiV10() {
         datasetProcessor = new MLDatasetProcessor();
     }
-    
+
     @OPTIONS
     public Response options() {
-        return Response.ok()
-                .header(HttpHeaders.ALLOW, "GET POST DELETE")
-                .build();
+        return Response.ok().header(HttpHeaders.ALLOW, "GET POST DELETE").build();
     }
 
     /**
@@ -70,10 +68,11 @@ public class DatasetApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response uploadDataset(MLDataset dataset) {
-        if (dataset.getName() == null || dataset.getName().isEmpty() || dataset.getSourcePath() == null || 
-                dataset.getVersion() == null || dataset.getDataSourceType() == null || dataset.getDataSourceType()
-                .isEmpty() || dataset.getDataType() == null || dataset.getDataType().isEmpty()) {
-            logger.error("Required parameters are missing: "+dataset);
+        if (dataset.getName() == null || dataset.getName().isEmpty() || dataset.getSourcePath() == null
+                || dataset.getVersion() == null || dataset.getDataSourceType() == null
+                || dataset.getDataSourceType().isEmpty() || dataset.getDataType() == null
+                || dataset.getDataType().isEmpty()) {
+            logger.error("Required parameters are missing: " + dataset);
             return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -85,11 +84,11 @@ public class DatasetApiV10 extends MLRestAPI {
             datasetProcessor.process(dataset);
             return Response.ok(dataset).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occurred while uploading a dataset : "+dataset, e);
+            logger.error("Error occurred while uploading a dataset : " + dataset, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get all datasets of this tenant and user. This doesn't return version sets.
      */
@@ -103,11 +102,12 @@ public class DatasetApiV10 extends MLRestAPI {
             List<MLDataset> datasets = datasetProcessor.getAllDatasets(tenantId, userName);
             return Response.ok(datasets).build();
         } catch (MLDataProcessingException e) {
-            logger.error(String.format("Error occurred while retrieving all datasets of tenant [id] %s [user] %s ", tenantId, userName), e);
+            logger.error(String.format("Error occurred while retrieving all datasets of tenant [id] %s [user] %s ",
+                    tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get all datasets and their versions of a given user.
      */
@@ -128,7 +128,8 @@ public class DatasetApiV10 extends MLRestAPI {
                 datasetBean.setName(mlDataset.getName());
                 datasetBean.setComments(mlDataset.getComments());
                 List<MLVersionBean> versionBeans = new ArrayList<MLVersionBean>();
-                List<MLDatasetVersion> versions = datasetProcessor.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
+                List<MLDatasetVersion> versions = datasetProcessor.getAllVersionsetsOfDataset(tenantId, userName,
+                        datasetId);
                 for (MLDatasetVersion mlDatasetVersion : versions) {
                     MLVersionBean versionBean = new MLVersionBean();
                     versionBean.setId(mlDatasetVersion.getId());
@@ -140,11 +141,13 @@ public class DatasetApiV10 extends MLRestAPI {
             }
             return Response.ok(datasetBeans).build();
         } catch (MLDataProcessingException e) {
-            logger.error(String.format("Error occurred while retrieving all dataset versions of tenant [id] %s [user] %s ", tenantId, userName), e);
+            logger.error(String.format(
+                    "Error occurred while retrieving all dataset versions of tenant [id] %s [user] %s ", tenantId,
+                    userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get the dataset corresponds to a given dataset id.
      */
@@ -162,11 +165,13 @@ public class DatasetApiV10 extends MLRestAPI {
             }
             return Response.ok(dataset).build();
         } catch (MLDataProcessingException e) {
-            logger.error(String.format("Error occurred while retrieving the dataset with the [id] %s of tenant [id] %s [user] %s ", datasetId, tenantId, userName), e);
+            logger.error(String.format(
+                    "Error occurred while retrieving the dataset with the [id] %s of tenant [id] %s [user] %s ",
+                    datasetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get all versions of a dataset with a given id.
      */
@@ -181,11 +186,14 @@ public class DatasetApiV10 extends MLRestAPI {
             List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
             return Response.ok(versionsets).build();
         } catch (MLDataProcessingException e) {
-            logger.error(String.format("Error occurred while retrieving all versions of a dataset with the [id] %s of tenant [id] %s [user] %s ", datasetId, tenantId, userName), e);
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving all versions of a dataset with the [id] %s of tenant [id] %s [user] %s ",
+                            datasetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get a dataset version with a given id.
      */
@@ -203,19 +211,23 @@ public class DatasetApiV10 extends MLRestAPI {
             }
             return Response.ok(versionset).build();
         } catch (MLDataProcessingException e) {
-            logger.error(String.format("Error occurred while retrieving the dataset version with the [id] %s of tenant [id] %s [user] %s ", versionsetId, tenantId, userName), e);
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving the dataset version with the [id] %s of tenant [id] %s [user] %s ",
+                            versionsetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
-     * Get scatter plot points
+     * Get scatter plot points of a dataset version.
      */
     @POST
     @Path("/versions/{versionsetId}/scatter")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response getScatterPlotPoints(@PathParam("versionsetId") long versionsetId, ScatterPlotPoints scatterPlotPoints) {
+    public Response getScatterPlotPoints(@PathParam("versionsetId") long versionsetId,
+            ScatterPlotPoints scatterPlotPoints) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -226,24 +238,35 @@ public class DatasetApiV10 extends MLRestAPI {
             List<String> points = datasetProcessor.getScatterPlotPoints(scatterPlotPoints);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occurred while retrieving scatter plot points of dataset version: " + versionsetId + " : " + e.getMessage());
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving scatter plot points of dataset version [id] %s of tenant [id] %s [user] %s ",
+                            versionsetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
+    /**
+     * Get chart sample points of a dataset version for a feature list.
+     */
     @GET
     @Path("/versions/{versionsetId}/charts")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response getChartSamplePoints(@PathParam("versionsetId") long versionsetId, @QueryParam("features") String featureListString) {
+    public Response getChartSamplePoints(@PathParam("versionsetId") long versionsetId,
+            @QueryParam("features") String featureListString) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
         try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
-            List<String> points = datasetProcessor.getChartSamplePoints(tenantId, userName, versionsetId, featureListString);
+            List<String> points = datasetProcessor.getChartSamplePoints(tenantId, userName, versionsetId,
+                    featureListString);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {
-            logger.error("Error occurred while retrieving chart sample points of dataset version: " + versionsetId + " : " + e.getMessage());
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving chart sample points of dataset version [id] %s of tenant [id] %s [user] %s ",
+                            versionsetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
