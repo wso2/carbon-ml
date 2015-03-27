@@ -19,46 +19,49 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
-public class DeleteAnalysesTestCase extends MLBaseTest {
+public class DeleteAnalysesTestCase extends MLIntegrationBaseTest {
 
-    private MLHttpClient mlHttpclient;
     private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";
 
     @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether a project exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants
-                .PROJECT_NAME);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + 
+                MLIntegrationTestConstants.PROJECT_NAME));
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a project is not available");
         }
         //Create an analysis in the project, for deletion
-        mlHttpclient.createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
+        createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
     }
 
     /**
      * Test deleting an analysis by name.
      * 
-     * @throws MLHttpClientException 
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Delete an analysis by name")
-    public void testDeleteAnalysis() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + analysisName);
+    public void testDeleteAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + analysisName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -66,12 +69,16 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
     /**
      * Test deleting a non-existing analysis.
      * 
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Delete a non-existing analysis")
-    public void testDeleteNonExistingAnalysis() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + "nonExistinfAnalysisName");
+    public void testDeleteNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                "nonExistinfAnalysisName"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

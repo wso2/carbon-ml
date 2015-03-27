@@ -18,9 +18,7 @@
 
 package org.wso2.carbon.ml.integration.common.utils;
 
-//TODO class comments
 public class MLIntegrationTestConstants {
-    // TODO:rename to ML_Product-group
 	public static final String ML_SERVER_NAME = "ML";
 	public static final String ML_UI = "/ml/";
 	public static final String ML_UI_ELEMENT_MAPPER = "/mlUiMapper.properties";
@@ -37,10 +35,8 @@ public class MLIntegrationTestConstants {
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	public static final String BASIC = "Basic ";
 	public static final String CONTENT_TYPE = "Content-Type";
-	public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+	public static final String APPLICATION_JSON = "application/json";
 
-	
-	//TODO use codes from http Response class
 	// Http response codes
 	public static final int HTTP_OK = 200;
 	public static final int HTTP_BAD_REQUEST = 400;

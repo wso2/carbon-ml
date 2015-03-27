@@ -31,14 +31,10 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner Commons Feature</name>
     <dependencies>
-		<dependency>
+	<dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
-        <dependency>
-			<groupId>org.spark-project.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
     </dependencies>
 
     <build>
@@ -65,8 +61,6 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.commons</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.ml.commons</bundleDef>
-                                <bundleDef>org.spark-project.protobuf:protobuf-java</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

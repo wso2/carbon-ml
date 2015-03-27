@@ -19,48 +19,54 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
-public class GetAnalysesTestCase extends MLBaseTest {
+public class GetAnalysesTestCase extends MLIntegrationBaseTest {
 
-    private MLHttpClient mlHttpclient;
-    
     @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
     }
 
     /**
      * Test retrieving all analyzes.
      * 
-     * @throws MLHttpClientException 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Get all analyses")
-    public void testGetAllAnalyzes() throws MLHttpClientException {
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/");
+    public void testGetAllAnalyzes() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
     }
     
     /**
      * Test retrieving an analysis by name.
      * 
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Retrieve an analysis by name")
-    public void testGetAnalysis() throws MLHttpClientException, IOException  {
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants
-                .ANALYSIS_NAME);
+    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -68,12 +74,16 @@ public class GetAnalysesTestCase extends MLBaseTest {
     /**
      * Test retrieving a non-existing analysis.
      * 
-     * @throws MLHttpClientException 
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Retrieve a non-existing analysis")
-    public void testGetNonExistingAnalysis() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + "nonExistinfAnalysisName");
+    public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                "nonExistinfAnalysisName"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_NOT_FOUND, response.getStatusLine().getStatusCode());
         response.close();
     }

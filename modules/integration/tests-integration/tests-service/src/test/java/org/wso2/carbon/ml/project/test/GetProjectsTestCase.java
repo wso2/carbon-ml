@@ -19,50 +19,58 @@
 package org.wso2.carbon.ml.project.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="getProjects", dependsOnGroups="createProjects")
-public class GetProjectsTestCase extends MLBaseTest {
-    
-    private MLHttpClient mlHttpclient;
+public class GetProjectsTestCase extends MLIntegrationBaseTest {
     
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws MLIntegrationBaseTestException {
+    public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
     }
     
     /**
      * Test retrieving all projects.
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Retrieve a project")
-    public void testGetAllProjects() throws MLHttpClientException, IOException   {
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects");
+    public void testGetAllProjects() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
      * Test retrieving a project.
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Retrieve a project")
-    public void testGetProject() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants.PROJECT_NAME);
+    public void testGetProject() throws ClientProtocolException, IOException, URISyntaxException, 
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/projects/" + 
+                MLIntegrationTestConstants.PROJECT_NAME));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
+    
     //TODO: Add retrieving a non existing project
 }

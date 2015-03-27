@@ -52,6 +52,10 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.spark.wso2</groupId>
+            <artifactId>spark</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.dataset</artifactId>
         </dependency>
@@ -59,68 +63,6 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
         </dependency>
-        
-        <!-- Spark Dependencies-->
-        <dependency>
-                <groupId>org.wso2.apache.spark</groupId>
-                <artifactId>spark-core_2.10</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.apache.spark</groupId>
-                <artifactId>spark-sql_2.10</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.apache.spark</groupId>
-                <artifactId>spark-mllib_2.10</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.apache.spark</groupId>
-                <artifactId>spark-streaming_2.10</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.scalanlp</groupId>
-                <artifactId>breeze_2.10</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.jblas</groupId>
-                <artifactId>jblas</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.spire-math</groupId>
-                <artifactId>spire_2.10</artifactId>
-            </dependency>
-	 	    <dependency>
-	        	<groupId>org.wso2.apache.hadoop</groupId>
-	        	<artifactId>hadoop-client</artifactId>
-		    </dependency>
-		    <dependency>
-	        	<groupId>org.wso2.uncommons.maths</groupId>
-	        	<artifactId>uncommons-maths</artifactId>
-		    </dependency>
-		    <dependency>
-	        	<groupId>org.wso2.json4s</groupId>
-	        	<artifactId>json4s-jackson_2.10</artifactId>
-		    </dependency>
-		    <dependency>
-	        	<groupId>org.wso2.twitter</groupId>
-	        	<artifactId>chill_2.10</artifactId>
-		    </dependency>
-		    <dependency>
-	        	<groupId>org.wso2.clearspring.analytics</groupId>
-	        	<artifactId>stream</artifactId>
-		    </dependency>
-            <dependency>
-                <groupId>io.netty.wso2</groupId>
-                <artifactId>netty-all</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scala-library</artifactId>
-            </dependency>
     </dependencies>
     <build>
         <plugins>

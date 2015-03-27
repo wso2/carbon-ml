@@ -19,54 +19,62 @@
 package org.wso2.carbon.ml.project.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="deleteProjects", dependsOnGroups="createProjects")
-public class DeleteProjectsTestCase extends MLBaseTest {
+public class DeleteProjectsTestCase extends MLIntegrationBaseTest {
     
-    private MLHttpClient mlHttpclient;
     private static final String projectName = "TestProjectForDeleteProjectTestcase";
 
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
+    public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
         //Check whether the dataset exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/" + MLIntegrationTestConstants.DATASET_ID);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/" + 
+                MLIntegrationTestConstants.DATASET_ID));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         // Create a project to delete
-        mlHttpclient.createProject(projectName, MLIntegrationTestConstants.DATASET_NAME);
+        createProject(projectName, MLIntegrationTestConstants.DATASET_NAME);
     }
     
     /**
      * Test deleting a project.
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Delete an exsisting project")
-    public void testDeleteProject() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/projects/" + projectName);
+    public void testDeleteProject() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + projectName));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
      * Test deleting a non-existing project.
-     * @throws MLHttpClientException 
-     * @throws IOException 
+     * 
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Delete an exsisting project")
-    public void testDeleteNonExistingProject() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/projects/" + "NonExistingProjectName");
+    public void testDeleteNonExistingProject() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpDelete(new URI(getServerUrlHttps() + "/api/projects/" + "NonExistingProjectName"));
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

@@ -19,29 +19,28 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="setHyperparameters", dependsOnGroups="addModelConfigs")
-public class SetHyperparametersTestCase extends MLBaseTest {
+public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
 
-    private MLHttpClient mlHttpclient;
-    
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
+    public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the analysis exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
@@ -50,13 +49,16 @@ public class SetHyperparametersTestCase extends MLBaseTest {
     /**
      * Test setting default values to hyper-parameters of an analysis.
      * 
-     * @throws MLHttpClientException 
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Set default values to hyperparameters")
-    public void testSetDefaultHyperparameters() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
-                .ANALYSIS_ID + "/hyperParams/defaults", null);
+    public void testSetDefaultHyperparameters() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams/defaults"), null);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
@@ -64,14 +66,17 @@ public class SetHyperparametersTestCase extends MLBaseTest {
     /**
      * Test setting customized hyper-parameters of an analysis.
      * 
+     * @throws ClientProtocolException
      * @throws IOException
-     * @throws MLHttpClientException 
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Set customized hyperparameters", dependsOnMethods = "testSetDefaultHyperparameters")
-    public void testSetCustomizedHyperParameters() throws IOException, MLHttpClientException {
+    public void testSetCustomizedHyperParameters() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         String payload ="[{\"key\" :\"Learning_Rate\",\"value\" : \"0.1\"},{\"key\":\"Iterations\",\"value\":\"100\"}]";
-        CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
-                .ANALYSIS_ID + "/hyperParams", payload);
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams"), payload);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
