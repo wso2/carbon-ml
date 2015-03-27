@@ -41,12 +41,15 @@ import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
 import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 
 /**
- * This class is to handle REST verbs GET , POST and DELETE.
+ * This class defines the ML dataset API. 
  */
 @Path("/datasets")
 public class DatasetApiV10 extends MLRestAPI {
 
     private static final Log logger = LogFactory.getLog(DatasetApiV10.class);
+    /*
+     * Delegates all the dataset related operations.
+     */
     private MLDatasetProcessor datasetProcessor;
     
     public DatasetApiV10() {
@@ -74,9 +77,9 @@ public class DatasetApiV10 extends MLRestAPI {
             return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
         try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
             datasetProcessor.process(dataset);
