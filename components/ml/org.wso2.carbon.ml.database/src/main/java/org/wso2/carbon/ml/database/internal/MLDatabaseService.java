@@ -955,7 +955,7 @@ public class MLDatabaseService implements DatabaseService {
      * @return A list of Feature objects
      * @throws DatabaseHandlerException
      */
-    public List<FeatureSummary> getFeatures(String datasetID, String modelId, int startIndex, int numberOfFeatures)
+    public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex, int numberOfFeatures)
             throws DatabaseHandlerException {
         List<FeatureSummary> features = new ArrayList<FeatureSummary>();
         Connection connection = null;
@@ -966,15 +966,15 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
             getFeatues = connection.prepareStatement(SQLQueries.GET_FEATURES);
-            getFeatues.setString(1, datasetID);
-            getFeatues.setString(2, datasetID);
-            getFeatues.setString(3, modelId);
+            getFeatues.setLong(1, analysisId);
+            getFeatues.setInt(2, tenantId);
+            getFeatues.setString(3, userName);
             getFeatues.setInt(4, numberOfFeatures);
             getFeatues.setInt(5, startIndex);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
-                if (FeatureType.CATEGORICAL.toString().equalsIgnoreCase(result.getString(3))) {
+                if (FeatureType.CATEGORICAL.toString().equalsIgnoreCase(result.getString(4))) {
                     featureType = FeatureType.CATEGORICAL;
                 }
                 // Set the impute option
@@ -984,10 +984,10 @@ public class MLDatabaseService implements DatabaseService {
                 } else if (ImputeOption.REGRESSION_IMPUTATION.equalsIgnoreCase(result.getString(5))) {
                     imputeOperation = ImputeOption.REGRESSION_IMPUTATION;
                 }
-                String featureName = result.getString(1);
-                boolean isImportantFeature = result.getBoolean(4);
-                String summaryStat = result.getString(2);
-                int index = result.getInt(6);
+                String featureName = result.getString(2);
+                boolean isImportantFeature = result.getBoolean(3);
+                String summaryStat = result.getString(6);
+                int index = result.getInt(1);
 
                 features.add(new FeatureSummary(featureName, isImportantFeature, featureType, imputeOperation,
                         summaryStat, index));
@@ -995,7 +995,7 @@ public class MLDatabaseService implements DatabaseService {
             return features;
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving features of " + "the data set: "
-                    + datasetID + ": " + e.getMessage(), e);
+                     + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);

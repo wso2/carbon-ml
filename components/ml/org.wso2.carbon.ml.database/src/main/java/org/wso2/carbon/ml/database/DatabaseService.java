@@ -164,7 +164,7 @@ public interface DatabaseService {
      * @return                  A list of Feature objects
      * @throws                  DatabaseHandlerException
      */
-    public List<FeatureSummary> getFeatures(String datasetID, String modelId, int startIndex,
+    public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
                                             int numberOfFeatures) throws DatabaseHandlerException;
 
 

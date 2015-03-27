@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
@@ -77,6 +78,14 @@ public class MLAnalysisHandler {
             throws MLAnalysisHandlerException {
         try {
             databaseService.insertFeatureCustomized(analysisId, customizedFeature);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public List<FeatureSummary> getSummarizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getFeatures(tenantId, userName, analysisId, limit, offset);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }
