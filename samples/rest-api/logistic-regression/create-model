@@ -1,5 +1,7 @@
 {
 "name" : "wso2-ml-model",
 "analysisId" : 1,
-"versionSetId" : 1
+"versionSetId" : 1,
+"storageType" : "file",
+"storageDirectory" : "/tmp"
 }

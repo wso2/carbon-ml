@@ -104,7 +104,7 @@ public class EmailNotificationSender {
     		emailAdapterService.publish(MLConstants.ML_EMAIL_ADAPTER, dynamicProperties, message);
             logger.info("Notification email sent to " + emailAddress);
         } catch (MLEmailNotificationSenderException e) {
-            throw new MLEmailNotificationSenderException("An error occured while retrieving email template: "
+            throw new MLEmailNotificationSenderException("An error occurred while retrieving email template: "
                     + e.getMessage(), e);
         }
     }
@@ -126,7 +126,7 @@ public class EmailNotificationSender {
             EmailTemplates emailConfigurations = (EmailTemplates)jaxbUnmarshaller.unmarshal(new File(confXml));
             return emailConfigurations.getEmailTemplate(emailTemplateType);
         } catch (JAXBException e) {
-            throw new MLEmailNotificationSenderException("An error occured while parsing email configurations from "
+            throw new MLEmailNotificationSenderException("An error occurred while parsing email configurations from "
                     + confXml + " : " + e.getMessage(), e);
         }
     }
