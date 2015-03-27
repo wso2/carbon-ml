@@ -8,11 +8,6 @@
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script> 
-
-    <%
-        include("../../includes/tenantAware.jag");
-    %>
-
 </head>
 
 <body>
@@ -43,7 +38,7 @@
 <!--div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
 		<div class="wr-project">
-			<span class="title">DATASET \ </span><span>MyDataSet#1</span>
+			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
 		</div>
 
 		<div class="wr-action-btn-bar">
@@ -63,8 +58,7 @@
 
 <!-- content/body -->
 <div class="row">
-	<!--div class="col-lg-12 wr-secondary-bar" -->
-		
+	<!--div class="col-lg-12 wr-secondary-bar"-->		
 		<!-- Wizard -->
 	    <!--ul class="nav nav-pills nav-wizard">
 	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li>
@@ -73,9 +67,7 @@
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>XXXX</a><div class="nav-arrow"></div></li>
 	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Build</a><div class="nav-arrow"></div></li>
-	    </ul-->
-
-		
+	    </ul-->		
 	<!--/div-->
 </div>
 
@@ -91,32 +83,78 @@
 
 				<h1 class="title">Create Version</h1>
 
+
+				<!--label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <input type="text" value="" placeholder="Ex: MyDataProject" class="form-fld-error" id="dataset-name"/>
+				    <span class="form-val-error">* Name for this Dataset is required.</span>
+				</div-->
+
 				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: 1.0.0" />
+				    <input type="text" value="" placeholder="Ex: 1.0.0" id="dataset-version"/>
 				</div>				
 
-				<label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<!--label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <textarea rows="3" id="dataset-desc"></textarea>
+				</div-->
+
+				<label class="input-label">Source <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+					<select class="form-control" id="src-type">
+					  <option>file</option>
+					  <option>hdfc</option>
+					  <option>bam</option>
+					</select>				
+				</div>	
+
+				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+					<select class="form-control" id="dest-type">
+                      <option>file</option>
+					  <option>hdfc</option>					  
+					</select>				
+				</div>
+                
+                <label class="input-label">Source Path<span class="File Location"></span></label>
+				<div class="input-control text">
+				    <input type="text" value="" placeholder="file:///home/test/hello.tsv" id="src-path"/>
+				</div>
+
+				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+					<select class="form-control" id="data-format">
+                      <option>csv</option>
+					  <option>tsv</option>					  
+					</select>				
+				</div>
+
+				<!--label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control file info-state" data-role="input-control">
 	                <input type="file">
-	            </div>
+	            </div-->
 
-				<div class="progress">
+				<!--div class="progress">
 				  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
 				    60%
 				  </div>
-				</div>
+				</div-->
+				<div class="progress progress-striped active">
+                    <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                    </div>
+                </div>
 
-				<div class="input-control file info-state" data-role="input-control">
+				<div class="input-control file info-state info-file-name-and-delete-option" data-role="input-control">
 	                <span class="t-data-file">Data-file-2014-01-12.csv</span><a href="#" class="cu-level2-btn btn-delete-dark">Delete File</a>
 	            </div>
 
-	            <div>
+	            <!--div>
 	            	<button class="btn btn-aux" type="submit">Upload Datafile</button>
-	            </div>
+	            </div-->
 
 	            <div class="btn-group-actions">
-	            	<button class="btn btn-main" type="submit">Create Version</button>
+	            	<button class="btn btn-main" type="submit" id="submit-dataset">Create Version</button>
 	            </div>	            
 
 			</div>
@@ -141,9 +179,9 @@
 
 
 
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
 
 
 <script type="text/javascript">
@@ -154,7 +192,49 @@ $( document ).ready(function() {
 	      offset: {
 	        top: $('header').height()
 	      }
-	});	 
+	});
+
+    // initially, progress bar is hidden
+	$('.progress').hide();
+
+	// initially, file info and delete button is hidden
+	$('.info-file-name-and-delete-option').hide();	
+
+	$('#submit-dataset').on('click', function(e){
+		e.preventDefault();
+
+	var name = getParameterByName('dsnam')
+	var dataSourceType = $('#src-type option:selected').text();
+	var dataTargetType =  $('#dest-type option:selected').text();
+	var sourcePath =  $('#src-path').val();
+	var dataType =  $('#data-format option:selected').text();
+	var comments =  getParameterByName('dscomt');
+	var version = $('#dataset-version').val();
+       
+       var baseUrl = getBaseUrl(window.location.href);
+       var jsonData = '{"name":"'+name+
+                        '","dataSourceType":"'+dataSourceType+
+                        '","dataTargetType":"'+dataTargetType+
+                        '","sourcePath":"'+sourcePath+
+                        '","dataType":"'+dataType+
+                        '","comments":"'+comments+
+                        '","version":"'+version+'"}';      
+       $.ajax({
+       	    type: 'POST',
+       	    url: baseUrl + '/api/datasets', 
+       	    contentType: "application/json",
+       	    data: jsonData,
+       	    beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+            },
+            success : function(res){
+        	   window.location = baseUrl + '/ml/site/data/datasets.jag'; 
+            },
+            error :  function(res){
+              //TODO: handle error        	    
+            }   
+        });
+	})
 }); 
 
 </script>

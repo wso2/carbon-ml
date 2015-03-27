@@ -124,18 +124,16 @@
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
 
-
-
 <script type="text/javascript">
-function buildAccordingHeader(collapseSection){
+function buildAccordingHeader(collapseSection, datasetName, numVersions){
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
 				      		'<td>' +
 						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
-						          	'<span class="cu-acc-head-title">MyDataSet#1</span>'+
-						          	'<span class="cu-acc-head-created">[ created: 14-05-2014 ]</span>'+
-						          	'<span class="cu-acc-head-workflow"><strong>2</strong> Version(s) Available</span>'+
+						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
+						          	'<span class="cu-acc-head-created">[ created:  ]</span>'+
+						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) Available</span>'+
 						        '</a>' +	
 						    '</td>'+
 						    '<td class="c-right">' +			        
@@ -150,59 +148,64 @@ function buildAccordingHeader(collapseSection){
 	return accordingHeader;
 }
 
-function accordingBody(){
-	var accordingBody = '<table>' +
-					    '<tr>' +
-					  	'<td class="c-padd project-description" valign="top">Dataset Description goes here. This can be a lengthier description and is a test.</td> ' +
-					  	'<td>' +
-					  		'<div class="wr-analysis">' +
-								'<label class="input-label">Versions<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-								'<a href="createversion.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
-							'</div>' +
-					  		'<table class="tbl-project-desc">'+
-					 			'<tr>' +
-					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;1.0.0</a></td>' +
+	function version(versionNumbers){
+        var versionHtml = "";
+        for(var i = 0; i < versionNumbers.length; i++){
+        	versionHtml += '<tr>' +
+					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>' + versionNumbers[i].version+'</a></td>' +
 					 				'<td>' +
 					 					'<a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a>' +
 					 				'</td>' +
-					 			'</tr>' +
-					 			'<tr>' +
-					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;1.8.0</a></td>' +
-					 				'<td>' +					 					
-										'<a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Version"><span>Delete</span></a>' +
-					 				'</td>' +
-					 			'</tr>' +					 			
+					 			'</tr>';
+        }
+        return versionHtml;
+	}
+
+function accordingBody(datasetDescription, versions, datasetName){
+
+	var accordingBodyHtml = '<table>' +
+					    '<tr>' +
+					  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
+					  	'<td>' +
+					  		'<div class="wr-analysis">' +
+								'<label class="input-label">Versions<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+								'<a data-dsname="'+ datasetName +'" data-dsdes="'+ datasetDescription+'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
+							'</div>' +
+					  		'<table class="tbl-project-desc">'+
+					 			version(versions) +					 			
 					 		'</table>' +
 					  	'</td>' +
 					  '</tr>' +
 					'</table>';
-	return accordingBody;
+	return accordingBodyHtml;
 }
 
-function accordiang(){
-    var allDatasets = '';
-	for(var i=0; i<3; i++){
-	var dataset = '<div class="panel panel-default">' +
+function accordiang(datasets){
+    var allDatasetsHtml = '';
+	for(var i=0; i<datasets.length; i++){
+        var dataset = datasets[i];
+        var datasetVersions = dataset.versions;
+
+        var datasetHtml = '<div class="panel panel-default">' +
 			    '<div class="panel-heading" role="tab" id="heading_'+i+'">' +
 			      
-			      buildAccordingHeader('collapse_'+i) +
+			      buildAccordingHeader('collapse_'+i, dataset.name, datasetVersions.length) +
 			     
 			    '</div>' +
 			    '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
 			      '<div class="panel-body">' +
-			      accordingBody() +
+			      accordingBody(dataset.comments, datasetVersions, dataset.name) +
 			      '</div>' +
 			    '</div>' +
 			    '</div>';
-			    allDatasets += dataset;
-			}
-	return allDatasets;
+	    allDatasetsHtml += datasetHtml;
+	}
+	return allDatasetsHtml;
 }
 
-$( document ).ready(function() {	
+$( document ).ready(function() {
 
-	$('.panel-group').html(accordiang);
-	 $('[data-toggle="tooltip"]').tooltip();
+	$('[data-toggle="tooltip"]').tooltip();
 
 	$('#nav').affix({
 	      offset: {
@@ -213,18 +216,28 @@ $( document ).ready(function() {
 	var baseUrl = getBaseUrl(window.location.href);
 	$.ajax({
         type : 'GET',
-        url: baseUrl + '/api/datasets/getalldatasets',
+        url: baseUrl + '/api/datasets/versions',
+        async: false,
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
         },
         success : function(res){
-        	console.log(res);
+        	$('.panel-group').html(accordiang(res));        	
         },
         error :  function(res){
-        	console.log(res);
+        	//TODO: display a suitable error message
         }        
 
-	});	 
+	});
+
+	$('.create-version').on('click', function(e){
+		e.preventDefault();
+
+        var description = $(this).data('dsdes');
+        var name = $(this).data('dsname');
+        window.location = baseUrl + '/ml/site/data/createversion.jag?dscomt=' + description + '&dsnam=' + name;
+	});   
+
 }); 
 
 </script>

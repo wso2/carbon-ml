@@ -86,8 +86,8 @@
 
 				<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: MyDataProject" class="form-fld-error" id="dataset-name"/>
-				    <span class="form-val-error">* Name for this Dataset is required.</span>
+				    <input type="text" value="" placeholder="Ex: iris" id="dataset-name"/>
+				    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
 				</div>
 
 				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -119,7 +119,7 @@
                 
                 <label class="input-label">Source Path<span class="File Location"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="file:///home/test/hello.tsv" id="src-path"/>
+				    <input type="text" value="" placeholder="file:///home/datasets/iris.csv" id="src-path"/>
 				</div>
 
 				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -218,30 +218,20 @@ $( document ).ready(function() {
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
                         '","comments":"'+comments+
-                        '","version":"'+version+'"}';
-       //var jsonData = '{"name":"'+projectName+
-                        //'","description":"'+projectDes+'","datasetName":"'+datasetName+'"}';
+                        '","version":"'+version+'"}';      
        $.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 
        	    contentType: "application/json",
-       	    data: jsonData/*{
-				name : "qw",
-				dataSourceType : "file",
-				dataTargetType : "file",
-				sourcePath : "file:///home/upul/kaggle/otto/bench_mark/train.csv",
-				dataType : "csv",
-				comments : "diabetes",
-				version : "1.0"
-       	    }*/,
+       	    data: jsonData,
        	    beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
             },
             success : function(res){
-        	    
+        	    window.location = baseUrl + '/ml/site/data/datasets.jag';   
             },
             error :  function(res){
-        	    console.log(res);
+        	    //TODO: handle errors
             }   
         });
 	})
