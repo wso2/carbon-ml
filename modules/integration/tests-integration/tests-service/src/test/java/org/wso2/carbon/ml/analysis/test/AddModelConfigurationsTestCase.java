@@ -19,32 +19,31 @@
 package org.wso2.carbon.ml.analysis.test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="addModelConfigs", dependsOnGroups="createAnalyses")
-public class AddModelConfigurationsTestCase extends MLBaseTest {
-    
-    private MLHttpClient mlHttpclient;
+public class AddModelConfigurationsTestCase extends MLIntegrationBaseTest {
     
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws MLIntegrationBaseTestException, MLHttpClientException {
+    public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the analysis exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
@@ -53,17 +52,20 @@ public class AddModelConfigurationsTestCase extends MLBaseTest {
     /**
      * Test adding default values to customized features an analysis.
      * 
-     * @throws MLHttpClientException 
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Add model configurations to the analysis")
-    public void testSetModelConfigurations() throws MLHttpClientException, IOException {
+    public void testSetModelConfigurations() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         Map <String,String> configurations = new HashMap<String,String>();
         configurations.put(MLConstants.ALGORITHM_NAME, "LOGISTIC_REGRESSION");
         configurations.put(MLConstants.ALGORITHM_TYPE, "Classification");
         configurations.put(MLConstants.RESPONSE, "Class");
         configurations.put(MLConstants.TRAIN_DATA_FRACTION, "0.7");
-        CloseableHttpResponse response = mlHttpclient.setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
+        CloseableHttpResponse response = setModelConfiguration(MLIntegrationTestConstants.ANALYSIS_ID, configurations);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }

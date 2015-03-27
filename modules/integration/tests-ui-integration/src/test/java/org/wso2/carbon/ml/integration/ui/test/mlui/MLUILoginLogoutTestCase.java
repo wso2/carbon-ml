@@ -48,7 +48,6 @@ public class MLUILoginLogoutTestCase extends MLIntegrationUiBaseTest {
         driver.get(getMLUiUrl());
     }
 
-    //TODO: No need to catch exceptions. just throw
     /**
      * Test login to the ml UI using user credentials
      * 
@@ -65,7 +64,6 @@ public class MLUILoginLogoutTestCase extends MLIntegrationUiBaseTest {
             //Checks whether it redirects to the home page.
             Assert.assertTrue(mlUIHomePage.isElementPresent(By.xpath(mlUIElementMapper.getElement("create.new.project"))),
                     "Did not redirect to home page.");
-            //TODO: checks whether the correct user is logged
         } catch (InvalidPageException e) {
             throw new MLUILoginLogoutTestException("Login to ML UI failed: " + e.getMessage(), e);
         } catch (MLUIPageCreationException e) {

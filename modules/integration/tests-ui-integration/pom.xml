@@ -285,9 +285,9 @@
             <artifactId>ui-pages</artifactId>
         </dependency>
         <dependency>
-	         <groupId>org.wso2.ml</groupId>
-	         <artifactId>test-integration-utils</artifactId>
-	    </dependency>
+            <groupId>org.wso2.ml</groupId>
+            <artifactId>test-utils</artifactId>
+        </dependency>
         <dependency>
 		   <groupId>org.apache.httpcomponents</groupId>
 		   <artifactId>httpclient</artifactId>

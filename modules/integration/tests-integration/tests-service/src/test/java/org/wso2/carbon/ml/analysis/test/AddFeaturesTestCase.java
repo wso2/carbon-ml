@@ -18,31 +18,29 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
-import static org.testng.AssertJUnit.assertEquals;
-
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
-import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
+import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="addFeatures", dependsOnGroups="createAnalyses")
-public class AddFeaturesTestCase extends MLBaseTest {
-    
-    private MLHttpClient mlHttpclient;
-    
+public class AddFeaturesTestCase extends MLIntegrationBaseTest {
+
     @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
-        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the analysis exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants
-                .ANALYSIS_NAME);
+        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_NAME));
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
@@ -50,29 +48,36 @@ public class AddFeaturesTestCase extends MLBaseTest {
 
     /**
      * Test adding default values to customized features an analysis.
-     * @throws MLHttpClientException 
+     * 
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Add default values to customized features")
-    public void testAddDefaultsToCustomizedFeatures() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.setFeartureDefaults(MLIntegrationTestConstants.ANALYSIS_ID);
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+    public void testAddDefaultsToCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
+        CloseableHttpResponse response = setFeartureDefaults(MLIntegrationTestConstants.ANALYSIS_ID);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
      * Test adding customized features an analysis.
      * 
+     * @throws ClientProtocolException
      * @throws IOException
-     * @throws MLHttpClientException 
+     * @throws URISyntaxException
+     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Add customized features")
-    public void testAddCustomizedFeatures() throws  MLHttpClientException, IOException {
+    public void testAddCustomizedFeatures() throws ClientProtocolException, IOException, URISyntaxException,
+            MLIntegrationBaseTestException {
         String payload ="[{\"type\" :\"CATEGORICAL\",\"include\" : true,\"imputeOption\":\"DISCARD\",\"name\":\"" +
                 "Cover_Type\"}]";
-        CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
-                .ANALYSIS_ID + "/features", payload);
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
+                MLIntegrationTestConstants.ANALYSIS_ID + "/features"), payload);
+        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
