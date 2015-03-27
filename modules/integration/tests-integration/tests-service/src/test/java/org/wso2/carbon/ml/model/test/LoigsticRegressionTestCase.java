@@ -79,12 +79,12 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
         mlHttpclient.createFileModelStorage(modelId, getModelStorageDirectory());
     }
     
-    /*@Test(description = "Build a Logistic Regression model")
+    @Test(description = "Build a Logistic Regression model")
     public void testBuildLogisticRegressionModel() throws MLHttpClientException, IOException{
         CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/models/" + modelId, null);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
-    }*/
+    }
     
     @AfterClass(alwaysRun = true)
     public void tearDown() throws IOException, InterruptedException {

@@ -235,7 +235,7 @@
 	        
             <!-- End of dependencies for test framework -->
 
-            <!-- WSO2 Orbit dependencies for Spark orbit bundle -->
+            <!-- Dependencies for Spark -->
             <dependency>
                 <groupId>org.json.wso2</groupId>
                 <artifactId>json</artifactId>
@@ -317,11 +317,6 @@
 				<artifactId>asm</artifactId>
                 <version>${asm.version}</version>
             </dependency>
-            <dependency>
-				<groupId>org.spark-project.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${spark.protobuf.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -347,16 +342,6 @@
 	            <artifactId>mesos</artifactId>
 	            <version>${mesos.version}</version>
 	        </dependency>
-	        <dependency>
-				<groupId>org.spark-project.akka</groupId>
-				<artifactId>akka-remote_2.10</artifactId>
-				<version>${akka.remote.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${google.protobuf.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.wso2.orbit.github.rwl</groupId>
 				<artifactId>jtransforms</artifactId>
@@ -373,7 +358,36 @@
 				<version>${arpack.combined.version}</version>
 			</dependency>
 			
-            <!-- End of WSO2 Orbit dependencies for Spark orbit bundle -->
+			
+			
+			<dependency>
+                <groupId>org.spark-project.akka</groupId>
+                <artifactId>akka-remote_2.10</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.spark-project.akka</groupId>
+                <artifactId>akka-actor_2.10</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+			<dependency>
+                <groupId>com.typesafe</groupId>
+                <artifactId>config</artifactId>
+                <version>${typesafe.version}</version>
+            </dependency>
+			
+			
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${google.protobuf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.spark-project.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${spark.protobuf.version}</version>
+			</dependency>
+			
 
             <dependency>
                 <groupId>org.scala-lang</groupId>
@@ -596,6 +610,9 @@
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
+            
+			<!-- End of dependencies for Spark -->
+            
 	    	<dependency>
 		       	<groupId>org.wso2.carbon.identity</groupId>
 				<artifactId>org.wso2.carbon.identity.entitlement</artifactId>
@@ -838,7 +855,7 @@
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 	
-		<!-- Spark orbit bundles dependency versions -->
+		<!-- Spark dependency versions -->
 		<spark.version>1.2.1.wso2v1</spark.version>
 		<hadoop.client.version>2.2.0.wso2v1</hadoop.client.version>
 		<breeze.version>0.10.wso2v1</breeze.version>
@@ -849,7 +866,6 @@
 		<twitter.chill.version>0.5.0.wso2v1</twitter.chill.version>
 		<clearspring.analytics.stream.version>2.2.0.wso2v1</clearspring.analytics.stream.version>
 		<mesos.version>0.18.1.wso2v1</mesos.version>
-		<hadoop.version>2.2.0.wso2v1</hadoop.version>
 		<google.protobuf.version>2.5.0</google.protobuf.version>
 		<jtransforms.version>2.4.0.wso2v1</jtransforms.version>
 		<fommil.netlib.version>1.1.2.wso2v1</fommil.netlib.version>
@@ -859,7 +875,10 @@
 		<kyro.version>2.24.0</kyro.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
-		<akka.remote.version>2.2.3-shaded-protobuf</akka.remote.version>
+		<akka.version>2.3.4-spark</akka.version>
+		<typesafe.version>1.2.0</typesafe.version>
+		
+		
 
         <!-- Jaggery dependency versions -->
         <jaggery.version>0.9.0</jaggery.version>
@@ -884,7 +903,7 @@
         <snappy.version>1.0.5.3</snappy.version>
         <commons-net.version>2.2</commons-net.version>
         <jetty.version>8.1.14.v20131031</jetty.version>
-        <org.jboss.netty.version>3.6.6.Final</org.jboss.netty.version>
+        <org.jboss.netty.version>3.8.0.Final</org.jboss.netty.version>
 		<asm.version>5.0.3</asm.version>
         <commons.io.version>2.4</commons.io.version>
         <opencsv.version>1.8</opencsv.version>
