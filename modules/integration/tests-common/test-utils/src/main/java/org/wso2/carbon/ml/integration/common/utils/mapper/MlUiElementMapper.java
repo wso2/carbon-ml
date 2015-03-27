@@ -51,6 +51,7 @@ public class MlUiElementMapper {
                 .ML_UI_ELEMENT_MAPPER);
         if (inputStream.available() > 0) {
             uiProperties.load(inputStream);
+            //TODO: catch and close in finally block
             inputStream.close();
             return uiProperties;
         }

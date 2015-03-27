@@ -39,7 +39,7 @@ public class LoginTestCase extends MLIntegrationUiBaseTest {
         driver.get(getCarbonLoginURL());
     }
 
-    @Test(groups = "wso2.ml", description = "verify login to ml server")
+    @Test(groups = "wso2.ml.ui", description = "verify login to ml server")
     public void testLogin() throws Exception {
         CarbonLoginPage carbonLogin = new CarbonLoginPage(driver);
         CarbonHomePage carbonHome = carbonLogin.loginAs(userInfo.getUserName(),userInfo.getPassword());
