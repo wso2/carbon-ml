@@ -27,6 +27,7 @@ import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -169,6 +170,14 @@ public class MLAnalysisHandler {
     public List<MLAnalysis> getAnalyses(int tenantId, String userName) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAllAnalyses(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public List<MLModelNew> getAllModelsOfAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAllModels(tenantId, userName, analysisId);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }

@@ -614,4 +614,14 @@ public interface DatabaseService {
     List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
             throws DatabaseHandlerException;
 
+    /**
+     * Get all models of a given analysis
+     * @param tenantId
+     * @param userName
+     * @param analysisId
+     * @return list of models
+     * @throws DatabaseHandlerException
+     */
+    List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+
 }

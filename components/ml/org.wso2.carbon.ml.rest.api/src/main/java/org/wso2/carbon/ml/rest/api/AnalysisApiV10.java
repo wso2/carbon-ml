@@ -37,7 +37,9 @@ import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
@@ -295,6 +297,27 @@ public class AnalysisApiV10 extends MLRestAPI {
             logger.error(String.format(
                     "Error occurred while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    /**
+     * Get all models of a given analysis.
+     */
+    @GET
+    @Path("/{analysisId}/models")
+    @Produces("application/json")
+    public Response getAllModelsOfAnalysis(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLModelNew> models = mlAnalysisHandler.getAllModelsOfAnalysis(tenantId, userName, analysisId);
+            return Response.ok(models).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving all models of analysis [id] %s tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

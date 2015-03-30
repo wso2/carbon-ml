@@ -1555,6 +1555,43 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
+    
+    @Override
+    public List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS_OF_ANALYSIS);
+            statement.setLong(1, analysisId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            while (result.next()) {
+                MLModelNew model = new MLModelNew();
+                model.setId(result.getLong(1));
+                model.setAnalysisId(result.getLong(2));
+                model.setVersionSetId(result.getLong(3));
+                model.setCreatedTime(result.getString(4));
+                model.setStorageType(result.getString(5));
+                model.setStorageDirectory(result.getString(6));
+                model.setName(result.getString(7));
+                model.setTenantId(tenantId);
+                model.setUserName(userName);
+                models.add(model);
+            }
+            return models;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting all the models of analysis id: "+analysisId+", tenant id:"
+                    + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
 
     @Override
     public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
