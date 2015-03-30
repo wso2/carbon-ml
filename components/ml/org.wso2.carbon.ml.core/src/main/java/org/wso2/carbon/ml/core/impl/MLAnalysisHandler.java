@@ -92,6 +92,14 @@ public class MLAnalysisHandler {
         }
     }
     
+    public String getResponseVariable(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
     public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
         try {
             return databaseService.getSummaryStats(tenantId, userName, analysisId, featureName);
