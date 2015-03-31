@@ -27,6 +27,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 /**
  * Implementation of {@link MLInputAdapter} for Hadoop file system.
@@ -42,7 +43,11 @@ public class HdfsInputAdapter implements MLInputAdapter {
             if (!uri.isAbsolute()) {
                 String uriString = uri.toString();
                 if (!uriString.startsWith("hdfs://")) {
-                    uriString = "hdfs://localhost:9000" + uriString;
+                    if (MLCoreServiceValueHolder.getInstance().getHdfsUrl() != null) {
+                        uriString = MLCoreServiceValueHolder.getInstance().getHdfsUrl().concat(uriString);
+                    } else {
+                        uriString = "hdfs://localhost:9000".concat(uriString);
+                    }
                     try {
                         uri = new URI(uriString);
                     } catch (URISyntaxException ignore) {
