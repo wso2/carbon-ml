@@ -44,11 +44,19 @@
 
         <!-- secondary header - app bar -->
         <div id="nav" class="row wr-app-bar">
-            <!-- <div class="col-md-9 wr-action-container">
-                <div class="wr-action-btn-bar">
-                    <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
+            <div class="col-md-9 wr-action-container">
+
+                <div class="wr-asset-type-switcher">
+                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                    <span class="btn-asset"></span>
+                    </a>
                 </div>
-            </div> -->
+
+                <!-- <div class="wr-project">
+                    <span class="title">PROJECT \ </span><span>My Test Project#1</span>
+                </div> -->
+            </div>
 
             <div class="col-md-3">
                 <div class="wr-secondary-links pull-right">
@@ -98,11 +106,16 @@
 
 
 
-    <!--footer class="footer">
+<!--footer class="footer">
     <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div>  
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
@@ -116,6 +129,15 @@
         $('#nav').affix({
             offset: {
                 top: $('header').height()
+            }
+        });
+
+        $("[data-toggle=popover]").popover();
+
+        $(".ctrl-asset-type-switcher").popover({
+            html : true, 
+            content: function() {
+                return $('#content-asset-types').html();
             }
         });
 
@@ -192,6 +214,7 @@
                         '<h2>You dont have any Projects created at the moment.</h2>'+
                         '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                     '</div>';
+                    $('#accordion').empty();
                     $("#accordion").append(accordionPanelNoProjects);    
                 }
                 else {
@@ -201,6 +224,7 @@
                         '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                     '</div>';
 
+                    $('#accordion').empty();
                     $("#accordion").append(createProject);                        
 
                     for (var i = 0; i < tenantProjects.length; i++) {                  
@@ -239,7 +263,6 @@
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
-                                                        '<a href="'+compareModels+'" class="cu-reg-btn btn-compare" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
                                                         '<a href="#" data-projna="'+projna+'" id="delete-project" class="cu-reg-btn btn-delete">Delete Project</a>' +
                                                     '</div>' +
                                                 '</td>' +
@@ -277,8 +300,6 @@
                                                                 '</td>' +
                                                                 '<td>' +
                                                                     '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectName="'+projna+'"><span>View</span></a>' +
-                                                                    '<a href="#" class="cu-level2-btn btn-configure-dark" data-workflowId="'+workflowId+'" '+'data-projId="'+projid+'"'+
-                                                                    'data-projectName="' + projna + '">Configure</a>' +
                                                                     '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+tenantProjects[i]['analyses'][j]['name']+'">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       

@@ -49,15 +49,15 @@
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
 			<a href="#" class="cu-btn btn-save">Save and Create</a-->
-			<a href="../project/projects.jag" class="cu-btn btn-cancel">Cancel</a>
+			<!-- <a href="../project/projects.jag" class="cu-btn btn-cancel">Cancel</a> -->
 		</div>
 	</div>
 
 	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
-			<a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
-			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+			<!-- <a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
+			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a> -->
 		</div>
 	</div>
 </div>
@@ -175,6 +175,7 @@ $( document ).ready(function() {
             },
             success: function(res){
                 console.log("Build success.");
+                window.location.href = '../project/projects.jag';
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
