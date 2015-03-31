@@ -20,6 +20,8 @@ package org.wso2.carbon.ml.integration.ui.test.exceptions;
 
 public class ImportDataTestException extends Exception {
 	
+    private static final long serialVersionUID = 1L;
+
     public ImportDataTestException(String message) {
         super(message);
     }

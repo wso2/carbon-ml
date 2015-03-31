@@ -18,10 +18,12 @@
 
 package org.wso2.carbon.ml.project.test;
 
+import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
@@ -30,6 +32,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to retrieving projects
+ */
 @Test(groups="getProjects", dependsOnGroups="createProjects")
 public class GetProjectsTestCase extends MLBaseTest {
     
@@ -49,7 +54,8 @@ public class GetProjectsTestCase extends MLBaseTest {
     @Test(description = "Retrieve a project")
     public void testGetAllProjects() throws MLHttpClientException, IOException   {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -61,7 +67,8 @@ public class GetProjectsTestCase extends MLBaseTest {
     @Test(description = "Retrieve a project")
     public void testGetProject() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants.PROJECT_NAME);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     //TODO: Add retrieving a non existing project

@@ -22,6 +22,8 @@ import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -32,6 +34,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to creating datasets
+ */
 @Test(groups="createDatasets")
 public class CreateDatasetTestCase extends MLBaseTest {
 
@@ -43,8 +48,6 @@ public class CreateDatasetTestCase extends MLBaseTest {
         mlHttpclient = new MLHttpClient(instance, userInfo);
     }
     
-    //TODO : add dependency for all methods
-
     /**
      * Test creating a dataset from a valid csv file.
      * @throws MLHttpClientException 
@@ -52,10 +55,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
      */
     @Test(description = "Create a dataset from a CSV file")
     public void testCreateDatasetFromFile() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
-                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
-        //TODO: Add a message to Assert
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME,
+                "1.0", MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -67,9 +70,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
     @Test(description = "Create a new version of an existing dataset",
             dependsOnMethods="testCreateDatasetFromFile")
     public void testCreateNewDatasetVersion() throws MLHttpClientException, IOException  {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
-                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME,
+                "2.0", MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -81,9 +85,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
     @Test(description = "Create a duplicate version of an existing dataset",
             dependsOnMethods="testCreateNewDatasetVersion")
     public void testCreateDuplicateDatasetVersion() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "2.0", 
-                MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME,
+                "2.0", MLIntegrationTestConstants.DIABETES_DATASET_SAMPLE);
+        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -94,10 +99,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
      */
     @Test(description = "Create a dataset from a non-existing CSV file")
     public void testCreateDatasetFromNonExistingFile() throws MLHttpClientException, IOException  {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME, "1.0", 
-                "data/xxx.csv");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine()
-                .getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(MLIntegrationTestConstants.DATASET_NAME,
+                "1.0", "data/xxx.csv");
+        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -109,8 +114,8 @@ public class CreateDatasetTestCase extends MLBaseTest {
     @Test(description = "Create a dataset without name")
     public void testCreateDatasetWithoutName() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV(null, "1.0", "data/xxx.csv");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
-                .getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -121,9 +126,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
      */
     @Test(description = "Create a dataset without version")
     public void testCreateDatasetWithoutVersion() throws  MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_3", null, "data/xxx.csv");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
-                .getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_3",
+                null, "data/xxx.csv");
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -134,9 +140,10 @@ public class CreateDatasetTestCase extends MLBaseTest {
      */
     @Test(description = "Create a dataset without version")
     public void testCreateDatasetWithoutDataSource() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_4", "1.0", null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine()
-                .getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.uploadDatasetFromCSV("SampleDataForCreateDatasetTestCase_4",
+                "1.0", null);
+        assertEquals("Unexpected response recieved",Response.Status.BAD_REQUEST.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
 }

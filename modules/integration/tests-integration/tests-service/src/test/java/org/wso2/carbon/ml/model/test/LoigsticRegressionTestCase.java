@@ -18,14 +18,15 @@
 
 package org.wso2.carbon.ml.model.test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -37,6 +38,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to building a Logistic Regression model
+ */
 @Test(groups="buildModels", dependsOnGroups="createModelStorage")
 public class LoigsticRegressionTestCase extends MLBaseTest {
     
@@ -53,7 +57,7 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
         // Check whether the project exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants
                 .PROJECT_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a project is not available");
         }
         //Create an analysis
@@ -82,7 +86,8 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
     @Test(description = "Build a Logistic Regression model")
     public void testBuildLogisticRegressionModel() throws MLHttpClientException, IOException{
         CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/models/" + modelId, null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     

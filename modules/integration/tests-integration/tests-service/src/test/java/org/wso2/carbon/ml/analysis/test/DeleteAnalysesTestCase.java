@@ -18,10 +18,12 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
+import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,6 +32,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 
+/**
+ * Class contains test cases related to deleting analyses 
+ */
 @Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
 public class DeleteAnalysesTestCase extends MLBaseTest {
 
@@ -43,7 +48,7 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
         // Check whether a project exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants
                 .PROJECT_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a project is not available");
         }
         //Create an analysis in the project, for deletion
@@ -59,7 +64,8 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
     @Test(description = "Delete an analysis by name")
     public void testDeleteAnalysis() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + analysisName);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -72,7 +78,8 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
     @Test(description = "Delete a non-existing analysis")
     public void testDeleteNonExistingAnalysis() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + "nonExistinfAnalysisName");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

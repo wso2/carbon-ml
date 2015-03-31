@@ -22,6 +22,8 @@ import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -31,6 +33,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 
+/**
+ * This class contains test cases related to adding features to a ML analysis
+ */
 @Test(groups="addFeatures", dependsOnGroups="createAnalyses")
 public class AddFeaturesTestCase extends MLBaseTest {
     
@@ -43,7 +48,7 @@ public class AddFeaturesTestCase extends MLBaseTest {
         // Check whether the analysis exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants
                 .ANALYSIS_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
     }
@@ -56,7 +61,8 @@ public class AddFeaturesTestCase extends MLBaseTest {
     @Test(description = "Add default values to customized features")
     public void testAddDefaultsToCustomizedFeatures() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.setFeartureDefaults(MLIntegrationTestConstants.ANALYSIS_ID);
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -72,7 +78,8 @@ public class AddFeaturesTestCase extends MLBaseTest {
                 "Cover_Type\"}]";
         CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
                 .ANALYSIS_ID + "/features", payload);
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     

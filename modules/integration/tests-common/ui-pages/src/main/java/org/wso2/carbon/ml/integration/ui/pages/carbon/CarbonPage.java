@@ -28,6 +28,9 @@ import org.wso2.carbon.ml.integration.ui.pages.exceptions.CarbonUIPageCreationEx
 
 import java.io.IOException;
 
+/**
+ * Base class for various Pages of Carbon management console
+ */
 public abstract class CarbonPage {
     private static final Log logger = LogFactory.getLog(CarbonPage.class);
     protected WebDriver driver;

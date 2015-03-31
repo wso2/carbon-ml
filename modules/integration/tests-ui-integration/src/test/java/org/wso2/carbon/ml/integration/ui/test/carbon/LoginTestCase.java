@@ -28,6 +28,9 @@ import org.wso2.carbon.ml.integration.ui.pages.carbon.CarbonHomePage;
 import org.wso2.carbon.ml.integration.ui.pages.carbon.CarbonLoginPage;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationUiBaseTest;
 
+/**
+ * Contains test case for Login in to Carbon Management console
+ */
 public class LoginTestCase extends MLIntegrationUiBaseTest {
 
     private static final Log logger = LogFactory.getLog(LoginTestCase.class);

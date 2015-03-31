@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,6 +33,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 
+/**
+ * Class contains test cases related to creating analyses
+ */
 @Test(groups="createAnalyses")
 public class CreateAnalysesTestCase extends MLBaseTest {
 
@@ -40,8 +46,9 @@ public class CreateAnalysesTestCase extends MLBaseTest {
         super.init();
         mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the project exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants.PROJECT_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants
+                .PROJECT_NAME);
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a project is not available");
         }
     }
@@ -56,7 +63,8 @@ public class CreateAnalysesTestCase extends MLBaseTest {
     public void testCreateAnalysis() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createAnalysis(MLIntegrationTestConstants.ANALYSIS_NAME, 
                 MLIntegrationTestConstants.PROJECT_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -69,7 +77,8 @@ public class CreateAnalysesTestCase extends MLBaseTest {
     @Test(groups = "wso2.ml.integration", description = "Create an analysis without a name")
     public void testCreateAnalysisWithoutName() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createAnalysis(null, MLIntegrationTestConstants.PROJECT_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -82,7 +91,8 @@ public class CreateAnalysesTestCase extends MLBaseTest {
     @Test(description = "Create an analysis without a ProjectId")
     public void testCreateAnalysisWithoutProjectID() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createAnalysis("TestAnalysisForAnalysis", -1);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
 }

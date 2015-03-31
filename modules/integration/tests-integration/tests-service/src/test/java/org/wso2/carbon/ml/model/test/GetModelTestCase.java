@@ -18,13 +18,16 @@
 
 package org.wso2.carbon.ml.model.test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,6 +37,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to retrieving models
+ */
 @Test(groups="getModels", dependsOnGroups="createModels")
 public class GetModelTestCase extends MLBaseTest {
 
@@ -45,8 +51,9 @@ public class GetModelTestCase extends MLBaseTest {
         mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the model exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
-            throw new SkipException("Skipping tests becasue the model is not available");
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue the model: " + MLIntegrationTestConstants.MODEL_NAME + 
+                    " is not available");
         }
     }
 
@@ -58,12 +65,13 @@ public class GetModelTestCase extends MLBaseTest {
     @Test(description = "retrieve a model")
     public void testGetModel() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONObject responseJson = new JSONObject(bufferedReader.readLine());
         bufferedReader.close();
         response.close();
         //Check whether the correct model is retrieved
-        Assert.assertEquals(MLIntegrationTestConstants.MODEL_ID,responseJson.getInt("id"));
+        assertEquals("Incorrect model retrieved.", MLIntegrationTestConstants.MODEL_ID,responseJson.getInt("id"));
     }
 }

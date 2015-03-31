@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.ml.integration.ui.test.dto;
 
+/**
+ * Java bean class to hold details of ML Projects
+ */
 public class MLProject {
     private static final String DATASET_URL="/data/fcSample.csv";
     private static final String PROJECT_NAME="testProjectName";
