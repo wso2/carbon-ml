@@ -70,7 +70,7 @@
 		</dependency>
 		<dependency>
             <groupId>org.wso2.ml</groupId>
-            <artifactId>test-utils</artifactId>
+            <artifactId>test-integration-utils</artifactId>
         </dependency>
     </dependencies>
 </project>
