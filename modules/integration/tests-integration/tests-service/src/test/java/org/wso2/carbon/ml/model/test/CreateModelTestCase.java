@@ -18,37 +18,40 @@
 
 package org.wso2.carbon.ml.model.test;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import static org.testng.AssertJUnit.assertEquals;
 
-import org.apache.http.client.ClientProtocolException;
+import java.io.IOException;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="createModels")
-public class CreateModelTestCase extends MLIntegrationBaseTest {
+public class CreateModelTestCase extends MLBaseTest {
     
+    private MLHttpClient mlHttpclient;
     private static final String modelName = "TestModelForModelCreateModelTestcase";
 
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws Exception {
+    public void initTest() throws MLIntegrationBaseTestException, MLHttpClientException, IOException {
         super.init();
+        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the version-set exists.
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/datasets/versions/" + 
-                MLIntegrationTestConstants.VERSIONSET_ID) );
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/versions/" + MLIntegrationTestConstants
+                .VERSIONSET_ID);
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a version-set is not available");
         }
         response.close();
         //Check whether analysis exists.
-        response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME));
+        response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME);
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
@@ -56,48 +59,37 @@ public class CreateModelTestCase extends MLIntegrationBaseTest {
 
     /**
      * Test creating a model.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "Create a Model")
-    public void testCreateModel() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel(MLIntegrationTestConstants.MODEL_NAME, MLIntegrationTestConstants
+    public void testCreateModel() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.MODEL_NAME, MLIntegrationTestConstants
                 .ANALYSIS_ID, MLIntegrationTestConstants.VERSIONSET_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
      * Test creating a Model with an invalid analysis.
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "Create a Model with an invalid analysis")
-    public void testCreateModelWithInvalidAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel(modelName, 999, MLIntegrationTestConstants.VERSIONSET_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+    public void testCreateModelWithInvalidAnalysis() throws MLHttpClientException, IOException  {
+        CloseableHttpResponse response = mlHttpclient.createModel(modelName, 999, MLIntegrationTestConstants.VERSIONSET_ID);
+        assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
         response.close();
     }
     
     /**
      * Test creating a Model with an invalid version-set.
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "Create a Model with an invalid versionset")
-    public void testCreateModelWithInvalidVersionset() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createModel(modelName, MLIntegrationTestConstants.ANALYSIS_ID, 999);
+    public void testCreateModelWithInvalidVersionset() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.createModel(modelName, MLIntegrationTestConstants.ANALYSIS_ID, 999);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
         response.close();
     }

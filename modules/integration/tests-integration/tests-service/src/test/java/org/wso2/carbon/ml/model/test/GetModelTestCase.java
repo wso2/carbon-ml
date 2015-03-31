@@ -21,29 +21,30 @@ package org.wso2.carbon.ml.model.test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
 @Test(groups="getModels", dependsOnGroups="createModels")
-public class GetModelTestCase extends MLIntegrationBaseTest {
+public class GetModelTestCase extends MLBaseTest {
 
+    private MLHttpClient mlHttpclient;
+    
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws Exception {
+    public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
         super.init();
+        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the model exists.
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + 
-                MLIntegrationTestConstants.MODEL_NAME));
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
         if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue the model is not available");
         }
@@ -51,17 +52,12 @@ public class GetModelTestCase extends MLIntegrationBaseTest {
 
     /**
      * Get model from name
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "retrieve a model")
-    public void testGetModel() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + 
-                MLIntegrationTestConstants.MODEL_NAME));
+    public void testGetModel() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
         Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         JSONObject responseJson = new JSONObject(bufferedReader.readLine());
