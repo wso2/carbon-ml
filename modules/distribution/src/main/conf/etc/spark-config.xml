@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparkSettings>
-    <property name="spark.master">local</property>
+    <property name="spark.master">spark://localhost:7077</property>
     <property name="spark.executor.memory">2g</property>
     <property name="spark.io.compression.codec">lzf</property>
 </sparkSettings>

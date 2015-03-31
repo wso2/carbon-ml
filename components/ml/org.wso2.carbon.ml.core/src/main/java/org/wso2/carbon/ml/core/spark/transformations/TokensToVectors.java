@@ -29,6 +29,8 @@ import java.util.List;
  * This class transforms string array of tokens to vectors
  */
 public class TokensToVectors implements Function<String[], Vector> {
+
+    private static final long serialVersionUID = 5185155928988547761L;
     private List<Integer> indices;
 
     public TokensToVectors(List<Integer> indices) {

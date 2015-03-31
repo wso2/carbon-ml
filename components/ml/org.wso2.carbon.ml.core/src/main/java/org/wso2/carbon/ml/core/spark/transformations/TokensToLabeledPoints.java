@@ -29,6 +29,8 @@ import java.util.Map;
  * This class transforms double array of tokens to labeled point
  */
 public class TokensToLabeledPoints implements Function<double[], LabeledPoint> {
+
+    private static final long serialVersionUID = -1301116038797875154L;
     private final int responseIndex;
     private Map<Integer, Double> meanImputation;
 

@@ -29,6 +29,8 @@ import java.util.Map;
  * This class transforms double array of tokens to labeled point
  */
 public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoint> {
+
+    private static final long serialVersionUID = -3847503088002249546L;
     private final int responseIndex;
 
     /**
