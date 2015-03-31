@@ -11,6 +11,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
     %> 
 </head>
 
@@ -56,7 +57,7 @@
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
 			<a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
-			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Build</a>
+			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
 		</div>
 	</div>
 </div>
@@ -69,10 +70,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-            <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Questions</a><div class="nav-arrow"></div></li>
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <!-- <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li> -->
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
         </ul>
 	</div>
@@ -88,26 +90,46 @@
 
 			<div class="wr-form col-lg-5 col-centered">
 
-				<h1 class="title">Algorithm</h1>
-				
-				<div class="spcr-2"></div>       
+                <h1 class="title">Algorithm</h1>
 
-                <div id="classification-algo">
-                	<p>Select an algorithm from below list</p>		              
+                <label class="input-label">Algorithm name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <div class="input-control text">
+                    <select id="algorithm-name" class="form-control">
+                        <option>Select..</option>
+                        <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
+                        <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
+                        <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
+                        <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION</option>
+                        <option value="SVM">SVM</option>
+                        <option value="DECISION_TREE">DECISION TREE</option>
+                        <option value="NAIVE_BAYES">NAIVE BAYES</option>
+                        <option value="K_MEANS">K-MEANS</option>
+                    </select>
                 </div>
 
-                <div class="hyper-parameters">
+                <div class="spcr-2"></div>
+
+                <label class="input-label">Response variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <div class="input-control text">
+                    <select id="response-variable" class="form-control">
+                        <option>Select..</option>
+                    </select>
                 </div>
+
+                <div class="spcr-2"></div>                
+
+                <label class="input-label">Train data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <div class="input-control text">
+                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+                </div>                              
+
 			</div>
 			
 				
-			</div>
-
 		</div>
+
+	</div>
 			<!-- /content -->
-
-
-
 </div>
 <!-- /content/body -->
 
@@ -131,13 +153,17 @@
 
 <script type="text/javascript">
 
+var serverUrl = window.location.origin;
+
 $( document ).ready(function() {
 
-	$('#nav').affix({
+    $('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
 	});
+
+    loadDatasetFeatures();
 
 	/*$('#algo-help').hide();
     $('#prediction-algo').hide();
@@ -175,54 +201,72 @@ $( document ).ready(function() {
 
     $('#btn-prev').on('click', function(e){
         e.preventDefault();
-        window.location.href = '../questions/questions.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
+        window.location.href = '../project/projects.jag';
     });
 
     $('#btn-next').on('click', function(e){
-    	e.preventDefault();    	
-        window.location.href = '../build/build.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname+'&algocat='+algocat;
-    }); 
-
-
-
-   /* $('#algo-help-radio').on('click', function(){
-        $('#algo-help').show();
-        $('#prediction-algo').hide();
-        $('#classification-algo').hide();
-    });
-
-    $('#algo-select-radio').on('click', function(){
-        $('#algo-help').hide();
-
-        var algoCategory = $('#algo-category').val();        
-        showAlgoriths(algoCategory);
-    });
-
-    $('#algo-category').on('change', function(e){
-        var algoCategory = $('#algo-category').val();
-        $.ajax({
-            url: './ajax/GetAlgorithms.jag',
-            method: 'post',
-            data: {algocat: algoCategory},
-            success: function(res){
-            	console.log(res);
-            },
-            error: function(res){
-            	console.log(res);
-            }
-        });
+    	e.preventDefault();
         
-        if($('#algo-help-radio').is(":checked")){
-        	$('#algo-help').show();
-            $('#prediction-algo').hide();
-            $('#classification-algo').hide();
+        var algorithmName = $('#algorithm-name').val();
+        var responseVariable = $('#response-variable').val();
+        var trainDataFraction = $('#data-fraction').val();
+        var algorithmType;
+
+        if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
+            algorithmType = 'Numerical_Prediction';
+        }
+        else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'NAIVE_BAYES') {
+            algorithmType = 'Classification';
+        }
+        else if (algorithmName == 'K_MEANS') {
+            algorithmType = 'Clustering';            
         }
 
-        if($('#algo-select-radio').is(":checked")){
-            showAlgoriths(algoCategory);	
-        }*/    
-        
-    //});
+        var analysisName = getParameterByName('analysisName');
+        var datasetId = getParameterByName('datasetId');
+        var analysisId;
+
+        // get analysis ID from analysis name
+        $.ajax({
+            type: 'GET',
+            url: "https://10.100.7.51:9443/api//analyses/"+analysisName,
+            async : false,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(res){
+                analysisId = res['id'];
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+
+        // set model configurations for this analysis        
+        var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"}]';
+
+        $.ajax({
+            type: 'POST',
+            url: serverUrl+"/api//analyses/"+analysisId+"/configurations",
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            contentType: "application/json",
+            data: jsonData,
+            success: function(res){
+                window.location.href = '../parameters/parameters.jag?analysisId='+analysisId+'&algorithmName='+algorithmName+'&algorithmType='+algorithmType+'&datasetId='+datasetId;
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    });
 }); 
 
 /*	function showAlgoriths(type){
@@ -289,7 +333,12 @@ function bindEvents() {
     	    }
 
         });
-	});    
+	});
+
+    $('.analysis-name').keypress(function(e) {
+        $(this).closest(".wr-analysis").prev("div").remove();
+    });
+
 }
 
 function buildHyperparametersUI(parameters){
@@ -338,6 +387,28 @@ function buildLabel(label){
 	return '<label class="input-label">' + label + '<span class="help-tip glyphicon glyphicon-question-sign">'+
            '</span></label>';}
 
+function loadDatasetFeatures() {
+    var datasetId = getParameterByName('datasetId');
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/datasets/"+datasetId+"/versions",
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res) {
+            var datasetFeatures = res[0]['samplePoints']['header'];
+            $.each(datasetFeatures, function (key, value) {
+                $('#response-variable').append($('<option>', { 
+                    value: key,
+                    text : key
+                }));
+            });
+        },
+        error: function(res) { //TODO: display error
+            var message = "An error occurred while retrieving tenant projects.";
+        }
+    });
+}
 	
 </script>
 

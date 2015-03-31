@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>
+    
+</head>
+
+<body>
+
+    <div class="container col-lg-12 col-md-12 col-sm-12">
+
+        <!-- header -->
+        <header>
+            <div class="row wr-global-header">
+                <div class="col-sm-8 app-logo"><img src="../../images/logo.png" />
+                    <h2 class="app-title">Machine Learner</h2>
+                </div>
+                <div class="col-sm-4">
+                    <div class="wr-auth pull-right">
+                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+                        <div class="dropdown-menu">
+                            <div class="cu-arrow"></div>
+                            <div class="dropdown-menu-content">
+                                <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- /header -->
+
+        <!-- secondary header - app bar -->
+        <div id="nav" class="row wr-app-bar">
+            <!-- <div class="col-md-9 wr-action-container">
+                <div class="wr-action-btn-bar">
+                    <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
+                </div>
+            </div> -->
+
+            <div class="col-md-3">
+                <div class="wr-secondary-links pull-right">
+                    <!-- empty -->
+                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                </div>
+            </div>
+        </div>
+        <!-- secondary header - app bar -->
+
+
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-lg-12 wr-secondary-bar">
+
+                <!-- Wizard -->
+                <!--ul class="nav nav-pills nav-wizard">
+        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+    </ul-->
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                <!-- content -->
+                <div class="container col-md-12 col-centered wr-content">
+
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
+
+                </div>
+                <!-- /content -->
+
+
+            </div>
+        </div>
+        <!-- /content/body -->
+
+    </div>
+
+
+
+
+
+    <!--footer class="footer">
+    <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+    var serverUrl = window.location.origin;
+
+    $(document).ready(function() {
+
+        $('#nav').affix({
+            offset: {
+                top: $('header').height()
+            }
+        });
+
+        loadModels();
+    });
+    
+    function buildNortifications(message){
+        var builtErrors = 
+        '<div class="ctrl-validation-panel col-md-12 col-centered">' +
+        '<p>' + message + '</p>'
+        '</div>';
+        return builtErrors;
+    }     
+
+    function loadModels() {
+        var analysisId = getParameterByName('analysisId');
+
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/analyses/"+analysisId+"/models",
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(data) {
+                var analysisModels = data;
+
+                if (analysisModels.length == 0) {
+                    var accordionPanelNoModels = 
+                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                        '<h2>You dont have any Projects created at the moment.</h2>'+
+                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Model</span></a></p>'+
+                    '</div>';
+                    $("#accordion").append(accordionPanelNoModels);    
+                }
+                else {
+
+                    var createProject = '' + 
+                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Model</span></a></p>'+
+                    '</div>';
+
+                    $("#accordion").append(createProject);                        
+
+                    for (var i = 0; i < analysisModels.length; i++) {
+                        
+                        accordionPanel = '' + 
+                            '<div class="panel panel-default">' +
+                                '<div class="panel-heading" role="tab" id="heading'+i+'">' +
+                                    '<h4 class="panel-title">' +
+                                        '<table class="tbl-projects" projectID="' + analysisModels[i]['id'] + '">' +
+                                            '<tr>' +
+                                                '<td>' +
+                                                    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
+                                                        '<span class="cu-acc-head-title">' + analysisModels[i]['name'] + '</span>' +
+                                                        '<span class="cu-acc-head-created">[ created: ' + analysisModels[i]['createdTime'] + ' ]</span>' +
+                                                        '<span class="cu-acc-head-workflow"></span>' +
+                                                    '</a>' +
+                                                '</td>' +
+                                                '<td class="c-right">' +
+                                                    '<div>' +
+                                                        '<a href="#" id="predict" class="cu-reg-btn btn-compare" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Predict</span></a>' +
+                                                        '<a href="#" id="delete-model" class="cu-reg-btn btn-delete">Delete Model</a>' +
+                                                    '</div>' +
+                                                '</td>' +
+                                            '</tr>' +
+                                        '</table>' +
+                                    '</h4>' +
+                                '</div>' +
+                                '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
+                                    '<div class="panel-body">' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+
+                            $("#accordion").append(accordionPanel);
+                    };
+                }                
+            },
+            error: function() {
+                var message = "An error occurred while retrieving tenant projects.";
+            }
+        });
+
+        bindEvents();            
+    }
+
+    function bindEvents() {
+
+        $(document).on('click', '#predict', function(e){ 
+            e.preventDefault();
+            
+            var analysisId = getParameterByName('analysisId');
+            var modelId = $(this).data('modelid');
+            window.location.href = '../predict/predict.jag?analysisId='+analysisId+'&modelId='+modelId;
+        });
+    }        
+
+</script>
+
+</body>
+
+</html>

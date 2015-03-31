@@ -136,9 +136,12 @@ function authenticate(){
     $('.wr-validation-summary').html('<p>Login did not work, check your user name and password and try again</p>');
 
     if(validate(user) && validate(passwd)){
+    	var auth = user+":"+passwd;
+    	var authEncoded = btoa(auth)
+
 		$.ajax({
 			url : './ajax/authenticate.jag',
-			data : {userName: user, password: passwd},
+			data : {userName: user, password: passwd, authEncoded: authEncoded},
 			success : function(res){
 				window.location.href = "../project/projects.jag"
 			},

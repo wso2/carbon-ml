@@ -11,6 +11,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>')
     %>
     
 </head>
@@ -48,7 +49,7 @@
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
-			<a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a>
+			<!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
 			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
 		</div>
 	</div>
@@ -83,7 +84,6 @@
 <div class="row">
 	<div class="col-md-12">
 
-		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
 
 			<div class="wr-form col-lg-5 col-centered">
@@ -102,30 +102,18 @@
 				<div class="input-control text">
 				    <textarea rows="3" id="project-description" name="project-description"></textarea>
 				    <span class="form-val-error" id="project-description-error"></span>
-				</div>	
+				</div>
 
-				<label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control file info-state" data-role="input-control">
-	                <input type="file" id="datasetUpload" name="datasetUpload">
-	                <span class="form-val-error" id="file-upload-error"></span>
+				<label class="input-label">Dataset<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text" data-role="input-control">
+					<select class="form-control" id="datasets">
+					  <option>Select.. </option>
+					</select>
 	            </div>
 
-				<!-- <div class="progress">
-				  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-				</div> -->
-
-				<div class="progress progress-striped active">
-                    <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                    </div>
-                </div>
-
-				<div id="dataset-status">
-				<label class="input-label">Data File<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control file info-state" data-role="input-control">
-	                <span class="t-data-file" id="data-file-name"></span>
-	                <a href="#" class="cu-level2-btn btn-delete-dark" id="delete-file">Delete File</a>
-	            </div>
-	            </div>
+	            <div class="btn-group-actions">
+	            	<button class="btn btn-main" id="save-project">Create Project</button>
+	            </div>	
 	            </from>
 			</div>
 
@@ -158,6 +146,8 @@
 var isFileAlreadyPresent = false;
 
 $( document ).ready(function() {
+
+	loadDatasets();
 
 	$('#nav').affix({
 	      offset: {
@@ -324,35 +314,55 @@ $( document ).ready(function() {
 
 		var projectName = $('#project-name').val();
         var projectDes = $('#project-description').val();
-        var datasetName = $('input[type=file]').val().split('\\').pop();
+        var datasetName = $( "#datasets option:selected" ).text();
         
         var projectNameValidation = isValidProjectName(projectName);
         var descriptionValidation = isValidDescription(projectDes);
-        var validFile = isValidDatasetFile(datasetName);
+        var validDataset = isValidDatasetFile(datasetName);
 
-        if(projectNameValidation && descriptionValidation && validFile){
-        	var projid = $('#projid').data('projid');
-            var datid = $('#datid').data('datid');
+        if(projectNameValidation && descriptionValidation && validDataset){
+        	
+        	var jsonData = '{"name":"'+projectName+'","description":"'+projectDes+'","datasetName":"'+datasetName+'"}';
 
 			$.ajax({
-	            url : './ajax/CreatePorject.jag',
-	            type : 'post',
-	            data : {projectName       : $('#project-name').val(), 
-	        	        projectDescription: $('#project-description').val(),
-	        	        projectId         : projid,
-	        	        datasetId         : datid,
-	        	        datasetName       : datasetName},
+	            type: 'POST',
+	            url: "https://10.100.7.51:9443/api/projects",
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                contentType: "application/json",
+	            data : jsonData,
 	            success : function(res){	            	
-                    window.location.href = 
-	                    './project_success.jag?projid='+projid+'&projna='+projectName+'&datid='+datid;    
+                    window.location.href = './projects.jag';    
 	            },
 	            error : function(res){
 	                //TODO: chat with Dhanuka and select a place 
 	                // to display error messages	                
 	            }
 			});
-		}        
+		}
 	});
+
+	function loadDatasets() {
+		$.ajax({
+			type: "GET",
+			url: "https://10.100.7.51:9443/api/datasets",
+		    beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+			success: function(res) {
+				$.each(res, function (i, item) {
+				    $('#datasets').append($('<option>', { 
+				        value: item.id,
+				        text : item.name 
+				    }));
+				});
+			},
+			error: function(res) { //TODO: display error
+			    var message = "An error occurred while retrieving tenant projects.";
+			}
+		});
+	}
 
 	function isValidProjectName(text){
 		if(!text || text.length == 0){
