@@ -143,7 +143,7 @@
                     var accordionPanelNoModels = 
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
                         '<h2>You dont have any Projects created at the moment.</h2>'+
-                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Model</span></a></p>'+
+                        '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
                     '</div>';
                     $("#accordion").append(accordionPanelNoModels);    
                 }
@@ -151,7 +151,7 @@
 
                     var createProject = '' + 
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Model</span></a></p>'+
+                        '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
                     '</div>';
 
                     $("#accordion").append(createProject);                        
@@ -208,6 +208,15 @@
             var modelId = $(this).data('modelid');
             window.location.href = '../predict/predict.jag?analysisId='+analysisId+'&modelId='+modelId;
         });
+
+        $(document).on('click', '#create-model', function(e){ 
+            e.preventDefault();
+
+            var analysisId = getParameterByName('analysisId');
+            var datasetId = getParameterByName('datasetId');
+            window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId;
+        });
+
     }        
 
 </script>

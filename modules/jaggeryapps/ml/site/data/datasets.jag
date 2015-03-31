@@ -30,7 +30,7 @@
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
-					<a class="filter-item">Logout</a>
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
 				</div>
 			</div>			
 		</div>
@@ -92,8 +92,7 @@
 
 
 			<div class="ctrl-info-panel col-md-12 col-centered">
-				<h2>You dont have any Datasets created at the moment.</h2>
-				<p><a href="createdataset.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Dataset"><span>Create Dataset</span></a></p>
+				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Dataset"><span>Create Dataset</span></a></p>
 			</div>
 
 
@@ -140,7 +139,7 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 						    '<td class="c-right">' +			        
 						        '<div>' +
 						        	'<a href="#" class="cu-reg-btn btn-edit" data-toggle="tooltip" data-original-title="Edit this Dataset"><span>Edit</span></a>' +
-									'<a href="#" class="cu-reg-btn btn-delete" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
+									'<!-- <a href="#" class="cu-reg-btn btn-delete" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a> -->' +
 								'</div>' +
 							'</td>'+
 						'</tr>'+
@@ -155,7 +154,7 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
         	versionHtml += '<tr>' +
 					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>' + versionNumbers[i].version+'</a></td>' +
 					 				'<td>' +
-					 					'<a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a>' +
+					 					'<!-- <a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a> -->' +
 					 				'</td>' +
 					 			'</tr>';
         }
@@ -232,7 +231,13 @@ $( document ).ready(function() {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
         success : function(res){
-        	$('.panel-group').html(accordiang(res));        	
+        	if (res.length == 0) {
+        		var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
+        		$('#create-dataset').before(accordionPanelNoDatasets);
+        	}
+        	else {
+        		$('.panel-group').html(accordiang(res));
+        	}
         },
         error :  function(res){
         	//TODO: display a suitable error message
