@@ -11,6 +11,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>')
     %>
     
 </head>
@@ -57,7 +58,7 @@
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
 			<a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
-			<a href="#" id="btn-build" class="cu-btn-reverse btn-build">Build Model</a>
+			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
 		</div>
 	</div>
 </div>
@@ -70,10 +71,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-	        <li><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-	        <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
 	    </ul>
 
 		
@@ -92,26 +94,20 @@
 
 				<h1 class="title">Parameters</h1>
 
-
-
-	            <!-- -->
-	            <div class="spcr-2"></div>
-
-
-
 	            <label class="input-label">Set Hyper-Parameters for <span id="algo-cat"></span>\ <strong id="display-name"></strong> <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 	            <div class="spcr-2"></div>
 
-				<!--label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" value="" placeholder="input text"/>
-				</div>
+	            <div id="parameter-inputs">
+					<!-- <label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <input type="text" value="" placeholder="input text"/>
+					</div>
 
-				<label class="input-label">Responsive variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" value="" placeholder="input text"/>
-				</div-->	
-				<div id="hyper-parameters"></div>			
+					<label class="input-label">Responsive variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <input type="text" value="" placeholder="input text"/> -->
+					</div>
+				</div>
 
 			</div>
 
@@ -142,6 +138,8 @@
 
 <script type="text/javascript">
 
+var serverUrl = window.location.origin;
+
 var doubleRegEx = /^[+-]?\d+(\.\d+)?$/g;
 var integerRegEx = /^\d+$/g;
 
@@ -152,19 +150,213 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
-	var projid = getParameterByName('projid');
-    var projna = getParameterByName('projna');    
-    var wfid = getParameterByName('wfid');
-    var wfname = getParameterByName('wfname');
-    var algo = getParameterByName('algo');    
-    var algoCat = getParameterByName('algocat');
+	var algorithmName = getParameterByName('algorithmName');
+    var analysisId = getParameterByName('analysisId');    
+    var algorithmType = getParameterByName('algorithmType');
+
+    $('#algo-cat').text(algorithmType);
+    $('#display-name').text(algorithmName);
+
+    var inputString;
+
+    if (algorithmName == 'LINEAR_REGRESSION') {
+	    inputString = '' +
+	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
+					'</div>';
+    }
+    else if (algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
+	    inputString = '' +
+	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
+					'</div>';
+    }
+    else if (algorithmName == 'LOGISTIC_REGRESSION') {
+	    inputString = '' +
+	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Regularization type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="reg-type" value="L2" placeholder="input text"/>' +
+					'</div>' +					
+					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
+					'</div>';
+    }
+    else if (algorithmName == 'SVM') {
+	    inputString = '' +
+	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Regularization type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="reg-type" value="L1" placeholder="input text"/>' +
+					'</div>' +					
+					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
+					'</div>';
+    }
+    else if (algorithmName == 'DECISION_TREE') {
+	    inputString = '' +
+	    			'<label class="input-label">Number of classes<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="num-classes" value="2" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Max depth<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="max-depth" value="5" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Max bins<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="max-bins" value="100" placeholder="input text"/>' +
+					'</div>' +					
+					'<label class="input-label">Impurity<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="impurity" value="gini" placeholder="input text"/>' +
+					'</div>';
+    }    
+    else if (algorithmName == 'NAIVE_BAYES') {
+	    inputString = '' +
+	    			'<label class="input-label">Lambda<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="lambda" value="1" placeholder="input text"/>' +
+					'</div>';
+    }
+    else if (algorithmName == 'K_MEANS') {
+	    inputString = '' +
+	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="iterations" value="20" placeholder="input text"/>' +
+					'</div>' +
+					'<label class="input-label">Number of clusters<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="num-clusters" value="3" placeholder="input text"/>' +
+					'</div>';
+    }
+
+	$("#parameter-inputs").append(inputString);
+
+    $('#btn-next').on('click', function(e){
+    	e.preventDefault();
+    	var algorithmName = getParameterByName('algorithmName');
+    	var datasetId = getParameterByName('datasetId');
+
+    	var jsonData;
+
+	    if (algorithmName == 'LINEAR_REGRESSION') {
+	    	var iterations = $('#iterations').val();
+	    	var learningRate = $('#learning-rate').val();
+	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+
+	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    }
+	    else if (algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
+	    	var iterations = $('#iterations').val();
+	    	var learningRate = $('#learning-rate').val();
+	    	var regParameter = $('#reg-parameter').val();
+	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+
+	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"Reg_Parameter","value":"'+regParameter+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    }
+	    else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'SVM') {
+	    	var iterations = $('#iterations').val();
+	    	var learningRate = $('#learning-rate').val();
+	    	var regType = $('#reg-type').val();
+	    	var regParameter = $('#reg-parameter').val();
+	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+
+	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"Reg_Type","value":"'+regType+'"},{"key":"Reg_Parameter","value":"'+regParameter+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    }
+	    else if (algorithmName == 'DECISION_TREE') {
+	    	var numClasses = $('#num-classes').val();
+	    	var maxDepth = $('#max-depth').val();
+	    	var maxBins = $('#rmax-bins').val();
+	    	var impurity = $('#impurity').val();
+
+	    	jsonData = '[{ "key":"Num_Classes","value":"'+numClasses+'"},{"key":"Max_Depth","value":"'+maxDepth+'"},{"key":"Max_Bins","value":"'+maxBins+'"},{"key":"Impurity","value":"'+impurity+'"}]';
+	    }    
+	    else if (algorithmName == 'NAIVE_BAYES') {
+	    	var lambda = $('#lambda').val();
+
+	    	jsonData = '[{ "key":"Lambda","value":"'+lambda+'"}]';
+	    }
+	    else if (algorithmName == 'K_MEANS') {
+	    	var iterations = $('#iterations').val();
+	    	var numClusters = $('#num-clusters').val();
+
+	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Num_Clusters","value":"'+numClusters+'"}]';
+	    }
+
+	    $.ajax({
+            type: 'POST',
+            url: serverUrl+"/api//analyses/"+analysisId+"/hyperParams",
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            contentType: "application/json",
+            data: jsonData,
+            success: function(res){
+                window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId;
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });        
+
+    });	
     
-    if ( algoCat === 'CATEGORICAL') { //TODO: move constants to a separate file
+/*    if ( algoCat === 'CATEGORICAL') { //TODO: move constants to a separate file
     	$('#algo-cat').text('Classification');    	
     } else {
     	$('#algo-cat').text('Numerical Prediction');
     }
-    $('#title').text(projna);
+    $('#title').text(projna);*/
     
 
 	$.ajax({

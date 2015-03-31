@@ -12,6 +12,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
     %>
     
 </head>
@@ -43,12 +44,11 @@
 
         <!-- secondary header - app bar -->
         <div id="nav" class="row wr-app-bar">
-            <div class="col-md-9 wr-action-container">
+            <!-- <div class="col-md-9 wr-action-container">
                 <div class="wr-action-btn-bar">
                     <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
-                    <!--a href="#" class="cu-btn btn-save">Save and Create</a-->
                 </div>
-            </div>
+            </div> -->
 
             <div class="col-md-3">
                 <div class="wr-secondary-links pull-right">
@@ -82,10 +82,7 @@
                 <!-- content -->
                 <div class="container col-md-12 col-centered wr-content">
 
-
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                        
-                    </div>
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
 
                 </div>
                 <!-- /content -->
@@ -107,287 +104,304 @@
 
 
 
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="../../js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
 
-            $('#nav').affix({
-                offset: {
-                    top: $('header').height()
-                }
-            });
+    var serverUrl = window.location.origin;
 
-            loadProjects();
-            
+    $(document).ready(function() {
 
+        $('#nav').affix({
+            offset: {
+                top: $('header').height()
+            }
         });
 
-        function isValidAnalysisName(text) {
-            if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
-                return false;    
-            }
-            return true;
-        }
-
-        function deleteProject(projectID) {
-            $.ajax({
-                type: "POST",
-                url: "./ajax/DeleteProject.jag",
-                data: {
-                    'projectID': projectID
-                },
-                success: function(res) {                    
-                },
-                error: function(res) { //TODO: display error
-                    var message = "An error occurred while retrieving tenant projects.";
-                }
-            });
-            
-            $('#accordion').empty();
-            loadProjects();
-            return false; // preventing default action
-        }
-
-        function deleteWorkflow(workflowId){
-           
-        }
+        loadProjects();
         
-        function buildEmptyProjectDisplay(description, projectId, projectName){
-            var display = 
-            '<table>' +
-                '<tr>' +
-                    '<td class="c-padd project-description" valign="top">' + description + '</td>' +
-                    '<td>' +
-                    //buildNortifications() +
-                    buildNewAnalysisUx(projectId, projectName) +
-                    '</td>' +
-                '</tr>' +
-            '</table>';
-            return display;
+    });
+
+    function isValidAnalysisName(text) {
+        if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
+            return false;    
         }
-        
-        function buildNortifications(message){
-            var builtErrors = 
-            '<div class="ctrl-validation-panel col-md-12 col-centered">' +
-            '<p>' + message + '</p>'
+        return true;
+    }
+
+    function deleteWorkflow(workflowId){
+       
+    }
+    
+    function buildEmptyProjectDisplay(description, projectId, projectName, datasetId){
+        var display = 
+        '<table>' +
+            '<tr>' +
+                '<td class="c-padd project-description" valign="top">' + description + '</td>' +
+                '<td>' +
+                //buildNortifications() +
+                buildNewAnalysisUx(projectId, projectName, datasetId) +
+                '</td>' +
+            '</tr>' +
+        '</table>';
+        return display;
+    }
+    
+    function buildNortifications(message){
+        var builtErrors = 
+        '<div class="ctrl-validation-panel col-md-12 col-centered">' +
+        '<p>' + message + '</p>'
+        '</div>';
+        return builtErrors;
+    }     
+
+    function buildNewAnalysisUx(projectId, projectName, datasetId) {
+        var analysis = 
+            '<div class="wr-analysis">' +
+                '<label class="input-label">Create new Analysis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+                '<div class="input-control text">' +
+                    '<table>' +
+                        '<tr>' +
+                            '<td class="f-input-w-md">' +
+                                '<input type="text" value="" class="analysis-name f-input-w-md" placeholder="eg: myanalysis"/>' +
+                            '</td>' +
+                            '<td>' +
+                                '<a data-datasetId="' + datasetId +'" data-projectName="' + projectName +'" data-projId="'+ projectId + '"href="#" class="create-analysis cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Analysis"><span>Create Analysis</span></a> '+
+                            '</td>' +
+                        '</tr>' +
+                    '</table>' +
+                '</div>' +
             '</div>';
-            return builtErrors;
-        }     
+        return analysis;                           
+    }
 
-        function buildNewAnalysisUx(projectId, projectName) {
-            var analysis = 
-                '<div class="wr-analysis">' +
-                    '<label class="input-label">Create new Analysis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-                    '<div class="input-control text">' +
-                        '<table>' +
-                            '<tr>' +
-                                '<td class="f-input-w-md">' +
-                                    '<input type="text" value="" class="analysis-name f-input-w-md" placeholder="eg: myanalysis"/>' +
-                                '</td>' +
-                                '<td>' +
-                                    '<a data-projectName="' + projectName +'"data-projId="'+ projectId + '"href="#" class="create-analysis cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Analysis"><span>Create Analysis</span></a> '+
-                                '</td>' +
-                            '</tr>' +
-                        '</table>' +
-                    '</div>' +
-                '</div>';
-            return analysis;                           
-        }
+    function loadProjects() {
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/projects/analyses",
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(data) {
+            	var tenantProjects = data;
 
-        function loadProjects() {
+                if (tenantProjects.length == 0) {
+                    var accordionPanelNoProjects = 
+                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                        '<h2>You dont have any Projects created at the moment.</h2>'+
+                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                    '</div>';
+                    $("#accordion").append(accordionPanelNoProjects);    
+                }
+                else {
+
+                    var createProject = '' + 
+                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                    '</div>';
+
+                    $("#accordion").append(createProject);                        
+
+                    for (var i = 0; i < tenantProjects.length; i++) {                  
+                        
+                        var workflowString = '';
+                        if (tenantProjects[i]['analyses'].length == 0) {
+                            workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No Analysis Available';
+                        }
+                        else if (tenantProjects[i]['analyses'].length == 1) {
+                            workflowString = '<strong>1</strong> Analysis available';
+                        }
+                        else {
+                            workflowString = '<strong>'+tenantProjects[i]['analyses'].length+'</strong> Analyses available';
+                        }
+                        
+                        var projectIDString = "'"+tenantProjects[i]['id']+"'";
+                        var projid = tenantProjects[i]['id'];
+                        var projna = tenantProjects[i]['name'];
+                        var description = tenantProjects[i]['description'];
+                        var datasetId = tenantProjects[i]['datasetId'];
+
+                        var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna;
+
+                        accordionPanel = '' + 
+                            '<div class="panel panel-default">' +
+                                '<div class="panel-heading" role="tab" id="heading'+i+'">' +
+                                    '<h4 class="panel-title">' +
+                                        '<table class="tbl-projects" projectID="' + tenantProjects[i]['id'] + '">' +
+                                            '<tr>' +
+                                                '<td>' +
+                                                    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
+                                                        '<span class="cu-acc-head-title">' + tenantProjects[i]['name'] + '</span>' +
+                                                        '<span class="cu-acc-head-created">[ created: ' + tenantProjects[i]['createdTime'] + ' ]</span>' +
+                                                        '<span class="cu-acc-head-workflow">' + workflowString + '</span>' +
+                                                    '</a>' +
+                                                '</td>' +
+                                                '<td class="c-right">' +
+                                                    '<div>' +
+                                                        '<a href="'+compareModels+'" class="cu-reg-btn btn-compare" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
+                                                        '<a href="#" data-projna="'+projna+'" id="delete-project" class="cu-reg-btn btn-delete">Delete Project</a>' +
+                                                    '</div>' +
+                                                '</td>' +
+                                            '</tr>' +
+                                        '</table>' +
+                                    '</h4>' +
+                                '</div>' +
+                                '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
+                                    '<div class="panel-body">';
+                                        
+
+                                if (tenantProjects[i]['analyses'].length == 0) {
+                                    accordionPanel += buildEmptyProjectDisplay(description, projid, projna, datasetId);
+                                }
+                                else {
+                                    accordionPanel += '' +
+                                        '<table>' +
+                                            '<tr>' +
+                                                '<td class="c-padd project-description" valign="top">' + description + '</td>' +
+                                                '<td>' + buildNewAnalysisUx(projid, projna, datasetId) +
+                                                    '<table class="tbl-project-desc" id="table'+i+'">';
+
+                                    for (var j = 0; j < tenantProjects[i]['analyses'].length; j++) {                                            
+                                        var workflowId = tenantProjects[i]['analyses'][j]['id'];
+                                        //workflowId = "'"+workflowId+"'";
+
+                                        var wfname = tenantProjects[i]['analyses'][j]['name'];
+                                        var wfid = tenantProjects[i]['analyses'][j]['id'];
+                                        var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&wfname='+wfname+'&wfid='+wfid;
+
+
+
+                                        accordionPanel +=   '<tr>' +
+                                                                '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+tenantProjects[i]['analyses'][j]['name']+'</a>' +
+                                                                '</td>' +
+                                                                '<td>' +
+                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectName="'+projna+'"><span>View</span></a>' +
+                                                                    '<a href="#" class="cu-level2-btn btn-configure-dark" data-workflowId="'+workflowId+'" '+'data-projId="'+projid+'"'+
+                                                                    'data-projectName="' + projna + '">Configure</a>' +
+                                                                    '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+tenantProjects[i]['analyses'][j]['name']+'">Delete</a>' +
+                                                                '</td>' +
+                                                            '</tr>';                                                                                                       
+                                    };
+                                        accordionPanel += '' +
+                                                    '</table>' +
+                                                '</td>' +
+                                            '</tr>' +
+                                        '</table>';
+                                }
+
+                        accordionPanel += '' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+
+                            $("#accordion").append(accordionPanel);
+                    };
+                }                
+            },
+            error: function() {
+                var message = "An error occurred while retrieving tenant projects.";
+            }
+        });
+
+        bindEvents();            
+    }
+
+    function bindEvents() {
+
+        $('.btn-configure-dark').on('click', function(e) {
+            e.preventDefault();
+            
+            var projectId = $(this).data('projid');
+            var workflowid = $(this).data('workflowid');
+            var projectName = $(this).data('projectname');
+
+            window.location.href = '../explore/explore.jag?projid='+projectId+'&projna='+projectName+'&wfid='+workflowid;
+        });
+
+        // function that deletes a project
+        $(document).on('click', '#delete-project', function(e){ 
+            e.preventDefault();
+            var projectName = $(this).data('projna');
+            
+            $.ajax({
+                type: "DELETE",
+                url: serverUrl+"/api/projects/"+projectName,
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                success : function(res){
+                    $('#accordion').empty();
+                    loadProjects()
+                },
+                error : function(res){
+                    //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                    if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                        crtValArea.before(buildNortifications(res.responseJSON.status));
+                    }
+                }
+            });
+        });
+
+		// function that creates an analysis
+        $(document).on('click', '.create-analysis', function(e){ 
+            e.preventDefault();
+                            
+            var analysisName = $(this).closest("tr").find('.analysis-name').val();
+            var crtValArea = $(this).closest(".wr-analysis");
+            var nortificationArea = crtValArea.prev(".ctrl-validation-panel");
+            if (!isValidAnalysisName(analysisName)) {
+                
+                if (nortificationArea.length == 0) {
+                    var para = crtValArea.before(
+                        buildNortifications('Empty names, special and space characters are not allowed'));//.append("p");
+                }
+                //para.text();
+                return; 
+            }
+
+            var projectId = $(this).data('projid');
+            var datasetId = $(this).data('datasetid');
+            var comments = 'test comment'; //TODO: get actual comment from UI
+            var jsonData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
+
             $.ajax({
                 type: "POST",
-                url: "./ajax/GetAllProjects.jag",
-                async: false,
-                success: function(data) {
-                    
-                    //TODO: add project description load                    
-                    var tenantProjects = JSON.parse(data);
-                    
-                    if (tenantProjects.length == 0) {
-                        var accordionPanelNoProjects = 
-                        '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<h2>You dont have any projects created at the moment.</h2>'+
-                        '<p>Click on <strong>CREATE PROJECT</strong> button at the top to create one</p>'+
-                        '</div>';
-                        
-                        $("#accordion").append(accordionPanelNoProjects);    
-                    }
-                    else {
-
-                        for (var i = 0; i < tenantProjects.length; i++) {                  
-                            
-                            var workflowString = "";
-                            if (tenantProjects[i]['noOfWorkflows'] == 0) {
-                                workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No Analysis Available';
-                            }
-                            else if (tenantProjects[i]['noOfWorkflows'] == 1) {
-                                workflowString = '<strong>1</strong> Analysis available';
-                            }
-                            else {
-                                workflowString = '<strong>'+tenantProjects[i]['noOfWorkflows']+'</strong> Analyses available';
-                            }
-                            
-                            var projectIDString = "'"+tenantProjects[i]['projectID']+"'";
-                            var projid = tenantProjects[i]['projectID'];
-                            var projna = tenantProjects[i]['projectName'];
-                            var description = tenantProjects[i]['projectDescription'];
-
-                            var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna;                            
-
-                            var accordionPanel = '' + 
-                                '<div class="panel panel-default">' +
-                                    '<div class="panel-heading" role="tab" id="heading'+i+'">' +
-                                        '<h4 class="panel-title">' +
-                                            '<table class="tbl-projects" projectID="' + tenantProjects[i]['projectID'] + '">' +
-                                                '<tr>' +
-                                                    '<td>' +
-                                                        '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
-                                                            '<span class="cu-acc-head-title">' + tenantProjects[i]['projectName'] + '</span>' +
-                                                            '<span class="cu-acc-head-created">[ created: ' + tenantProjects[i]['projectCreatedDate'].replace("00:00:00 IST ", "") + ' ]</span>' +
-                                                            '<span class="cu-acc-head-workflow">' + workflowString + '</span>' +
-                                                        '</a>' +
-                                                    '</td>' +
-                                                    '<td class="c-right">' +
-                                                        '<div>' +
-                                                            '<a href="'+compareModels+'" class="cu-reg-btn btn-compare" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
-                                                            '<a href="#" onclick=" return deleteProject(' + projectIDString + ')" class="cu-reg-btn btn-delete">Delete Project</a>' +
-                                                        '</div>' +
-                                                    '</td>' +
-                                                '</tr>' +
-                                            '</table>' +
-                                        '</h4>' +
-                                    '</div>' +
-                                    '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
-                                        '<div class="panel-body">';
-                                    
-                                    if (tenantProjects[i]['noOfWorkflows'] == 0) {
-                                            accordionPanel += buildEmptyProjectDisplay(description, projid, projna);
-                                    }
-                                    else {
-                                            var newAnaNorti = 'new-analysis-error';
-                                            var delAnaNorti = 'del-analysis-error'; 
-                                            accordionPanel += '' +
-                                            '<table>' +
-                                                '<tr>' +
-                                                    '<td class="c-padd project-description" valign="top">' + description + '</td>' +
-                                                    '<td>' + buildNewAnalysisUx(projid, projna) +
-                                                        '<table class="tbl-project-desc" id="table'+i+'">';
-
-                                        for (var j = 0; j < tenantProjects[i]['noOfWorkflows']; j++) {                                            
-                                            var workflowId = tenantProjects[i]['projectWorkflows'][j]['workflowId'];
-                                            workflowId = "'"+workflowId+"'";
-
-                                            var wfname = tenantProjects[i]['projectWorkflows'][j]['workflowName'];
-                                            var wfid = tenantProjects[i]['projectWorkflows'][j]['workflowId'];
-                                            var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&wfname='+wfname+'&wfid='+wfid;
-
-
-
-                                            accordionPanel +=   '<tr>' +
-                                                                    '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+tenantProjects[i]['projectWorkflows'][j]['workflowName']+'</a>' +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                        '<a href="#" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model"><span>View</span></a>' +
-                                                                        '<a href="#" class="cu-level2-btn btn-configure-dark" data-workflowId="'+wfid+'" ' + 
-                                                                        'data-projId="' + projid + '"' +
-                                                                        'data-projectName="' + projna + '">Configure</a>' +
-                                                                        '<a class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+wfid+'">Delete</a>' +
-                                                                    '</td>' +
-                                                                '</tr>';
-                                                                                                       
-                                        };
-
-                                            accordionPanel += '' +
-                                                        '</table>' +
-                                                    '</td>' +
-                                                '</tr>' +
-                                            '</table>';
-                                    }                                
-            
-                            accordionPanel += '' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>';
-
-                                $("#accordion").append(accordionPanel);                    
-                        };
-                    }                
+                url: serverUrl+"/api/analyses",
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
                 },
-                error: function() {
-                    var message = "An error occurred while retrieving tenant projects.";
+                contentType: "application/json",
+                data: jsonData,
+                success : function(res){
+                    window.location.href = '../algorithm/algorithm.jag?analysisName='+analysisName+'&datasetId='+datasetId;
+                },
+                error : function(res){
+                    //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                    if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                        crtValArea.before(buildNortifications(res.responseJSON.status));
+                    }
                 }
             });
+        });
 
-            bindEvents();            
-        }
-
-        function bindEvents() {
+		// function that deletes an analysis
+        $(document).on('click', '.del-wf', function(e){ 
+            e.preventDefault();
+            var btnArea = $(this).closest(".tbl-project-desc"); 
+            var workflowId = $(this).data('workflowid');
             
-            $('.btn-configure-dark').on('click', function(e) {
-                e.preventDefault();
-                
-                var projectId = $(this).data('projid');
-                var workflowid = $(this).data('workflowid');
-                var projectName = $(this).data('projectname');
-
-                window.location.href = '../explore/explore.jag?projid='+projectId+'&projna='+projectName+'&wfid='+workflowid;
-            });
-            
-            $('.create-analysis').on('click', function(e){
-                e.preventDefault();
-                                
-                var analysisName = $(this).closest("tr").find('.analysis-name').val();
-                var crtValArea = $(this).closest(".wr-analysis");
-                var nortificationArea = crtValArea.prev(".ctrl-validation-panel");
-                if (!isValidAnalysisName(analysisName)) {
-                    
-                    if (nortificationArea.length == 0) {
-                        var para = crtValArea.before(
-                            buildNortifications('Empty names, special and space characters are not allowed'));//.append("p");
-                    }
-                    //para.text();
-                    return; 
-                }
-
-                var projectId = $(this).data('projid');
-                var projectName = $(this).data('projectname');
-
-                $.ajax({
-                    url : '../workflow/ajax/CreateWorkflow.jag',
-                    type : 'post',
-                    data : {wfname: analysisName,
-                            projid: projectId},
-                    success : function(res){
-                        var wfid = res.wfid;
-                        window.location.href = '../explore/explore.jag?projid='+projectId+'&projna='+projectName+'&wfid='+wfid+'&wfname='+analysisName;
-                        //console.log('suc: ' + res);
-                    },
-                    error : function(res){
-                        //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-                        if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                            crtValArea.before(buildNortifications(res.responseJSON.status));
-                        }
-                    }
-                });
-            });
-
-            $('.del-wf').on('click', function(e) {
-                e.preventDefault();
-                var btnArea = $(this).closest(".tbl-project-desc"); 
-                var workflowId = $(this).data('workflowid');
-                 $.ajax({
-                type: 'POST',
-                url: '../workflow/ajax/DeleteWorkflow.jag',
-                data : {
-                    wfid : workflowId
+            $.ajax({
+                type: 'DELETE',
+                url: serverUrl+"/api/analyses/"+workflowId,
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
                 },
                 success: function(res){
-                    $('#accordion').empty();
-                    loadProjects();                    
+                	$('#accordion').empty();
+                    loadProjects();
                 },
                 error: function(res){
                     var crtValArea = btnArea.prev(".ctrl-validation-panel");
@@ -395,15 +409,22 @@
                         btnArea.before(buildNortifications(res.responseJSON.status));
                     }
                 }
-            });
-            });
+        	});
+        });
 
-            $('.analysis-name').keypress(function(e) {
-                $(this).closest(".wr-analysis").prev("div").remove();
-            });
-        }        
+        $(document).on('click', '#view-analysis', function(e){ 
+            e.preventDefault();
 
-    </script>
+            var analysisId = $(this).data('workflowid');
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId;
+        });
+
+        $('.analysis-name').keypress(function(e) {
+            $(this).closest(".wr-analysis").prev("div").remove();
+        });
+    }        
+
+</script>
 
 </body>
 

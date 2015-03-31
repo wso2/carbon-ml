@@ -11,7 +11,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
-        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>')
     %> 
 </head>
 
@@ -73,8 +73,8 @@
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
         </ul>
 	</div>
 </div>
@@ -89,11 +89,41 @@
 
 			<div class="wr-form col-lg-5 col-centered">
 
-				<h1 class="title">Build</h1>
+				<h1 class="title">Model</h1>
 
-				<div class="btn-group-actions">
+				<label class="input-label">Model name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <input type="text" id="model-name" value="" placeholder=""/>
+				</div>
+
+				<label class="input-label">Dataset version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <div class="input-control text">
+                    <select id="dataset-version" class="form-control">
+                        <option>Select..</option>
+                    </select>
+                </div>
+
+                <div class="spcr-2"></div>
+
+				<label class="input-label">Storage type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <div class="input-control text">
+                    <select id="storage-type" class="form-control">
+                        <option>Select..</option>
+                        <option value="file">File</option>
+                        <option value="hdfs">HDFS</option>
+                    </select>
+                </div>
+
+                <div class="spcr-2"></div>
+
+				<label class="input-label">Model storage<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+				    <input type="text" id="model-storage" value="/tmp" placeholder="input text"/>
+				</div>
+
+<!-- 				<div class="btn-group-actions">
 	            	<button id="run-analysis" class="btn btn-main" type="submit">Run analysis</button>
-	            </div>	
+	            </div>	 -->
 
 			</div>
 			
@@ -135,46 +165,43 @@ $( document ).ready(function() {
 	      }
 	});
 
-    //$('#title').text(projna);
+    var workflowName = getParameterByName('wfname');
+    var projid = getParameterByName('projid');
+    var projna = getParameterByName('projna');
+    var wfname = getParameterByName('wfname');
+    var wfid = getParameterByName('wfid');
+
+    $('#title').text(projna);
 
     $('.btn-prev').on('click', function(e){
         e.preventDefault();
-        //window.location.href = '../create/create.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid;
-        window.location.href = '../create/create.jag';
+        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+
+            '&wfid='+wfid;        
     });
 
-    $('#run-analysis').on('click', function(e){
+    loadDatasetVersions();
+
+    $('#btn-next').on('click', function(e){
     	e.preventDefault();
-
-        var modelName = getParameterByName('modelName');
-        var modelId;
     	
+    	var modelName = $('#model-name').val();
+    	var analysisId = getParameterByName('analysisId');
+    	var datasetVersion = $('#dataset-version').val();
+    	var storageType = $('#storage-type').val();
+    	var modelStorage = $('#model-storage').val();
+
+    	jsonData = '{"name":"'+modelName+'","analysisId":"'+analysisId+'","versionSetId":"'+datasetVersion+'","storageType":"'+storageType+'","storageDirectory":"'+modelStorage+'"}';
+
 	    $.ajax({
-            type: 'GET',
-            url: serverUrl+"/api/models/"+modelName,
-            beforeSend : function(xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-            },
-            async: false,
-            success: function(res){
-                modelId = res['id'];
-            },
-            error: function(res){
-                var crtValArea = btnArea.prev(".ctrl-validation-panel");
-                if (crtValArea.length == 0) {
-                    btnArea.before(buildNortifications(res.responseJSON.status));
-                }
-            }
-        });
-
-        $.ajax({
             type: 'POST',
-            url: serverUrl+"/api/models/"+modelId,
+            url: serverUrl+"/api/models",
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
+            contentType: "application/json",
+            data: jsonData,
             success: function(res){
-                console.log("Build success.");
+                window.location.href = '../build/build.jag?modelName='+modelName;
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
@@ -183,14 +210,32 @@ $( document ).ready(function() {
                 }
             }
         });
-
-    });	
-
-
-
-
+    });
 });
 
+function loadDatasetVersions() {
+    var datasetId = getParameterByName('datasetId');
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/datasets/"+datasetId+"/versions",
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res) {
+            var datasetVersions = res;
+            $.each(datasetVersions, function (i, item) {
+                $('#dataset-version').append($('<option>', { 
+                    value: item.id,
+                    text : item.name
+                }));
+            });
+        },
+        error: function(res) { //TODO: display error
+            var message = "An error occurred while retrieving tenant projects.";
+        }
+    });
+}
+	
 </script>
 
 </body>
