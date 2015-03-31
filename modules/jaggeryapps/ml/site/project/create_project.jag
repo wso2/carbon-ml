@@ -143,6 +143,7 @@
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script type="text/javascript">
+var serverUrl = window.location.origin;
 var isFileAlreadyPresent = false;
 
 $( document ).ready(function() {
@@ -326,7 +327,7 @@ $( document ).ready(function() {
 
 			$.ajax({
 	            type: 'POST',
-	            url: "https://10.100.7.51:9443/api/projects",
+	            url: serverUrl+"/api/projects",
                 beforeSend : function(xhr) {
                     xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
                 },
@@ -346,7 +347,7 @@ $( document ).ready(function() {
 	function loadDatasets() {
 		$.ajax({
 			type: "GET",
-			url: "https://10.100.7.51:9443/api/datasets",
+			url: serverUrl+"/api/datasets",
 		    beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },

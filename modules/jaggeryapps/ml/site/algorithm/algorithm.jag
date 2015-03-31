@@ -229,7 +229,7 @@ $( document ).ready(function() {
         // get analysis ID from analysis name
         $.ajax({
             type: 'GET',
-            url: "https://10.100.7.51:9443/api//analyses/"+analysisName,
+            url: serverUrl+"/api//analyses/"+analysisName,
             async : false,
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
