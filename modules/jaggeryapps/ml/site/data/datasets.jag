@@ -11,6 +11,7 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
     %>
 </head>
 
@@ -38,32 +39,31 @@
 </header>
 <!-- /header -->
 
-<!-- secondary header - app bar -->
-<!--div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-		<div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
-		</div>
+        <!-- secondary header - app bar -->
+        <div id="nav" class="row wr-app-bar">
+            <div class="col-md-9 wr-action-container">
 
-		<div class="wr-action-btn-bar">
-			<!--
-			<a href="#" class="cu-btn btn-add-new" role="button">Create Project</a>
-			<a href="#" class="cu-btn btn-save" role="button">Save and Create</a>
-			-->
-		<!--/div>
-	</div>
+                <div class="wr-asset-type-switcher">
+                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                    <span class="btn-asset"></span>
+                    </a>
+                </div>
 
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-			<!-- empty -->
-			<!--div class="ctrl-wiz-nav">
-			<a href="#" class="cu-btn btn-prev">Previous</a>
-			<a href="#" class="cu-btn-reverse btn-next">Next</a>
-			</div>
-		</div>
-	</div>
-</div-->
-<!-- secondary header - app bar -->
+                <!-- <div class="wr-project">
+                    <span class="title">PROJECT \ </span><span>My Test Project#1</span>
+                </div> -->
+            </div>
+
+            <div class="col-md-3">
+                <div class="wr-secondary-links pull-right">
+                    <!-- empty -->
+                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                </div>
+            </div>
+        </div>
+        <!-- secondary header - app bar -->
 
 
 <!-- content/body -->
@@ -110,15 +110,16 @@
 
 </div>
     
-
-
-
-
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
@@ -211,7 +212,16 @@ $( document ).ready(function() {
 	      offset: {
 	        top: $('header').height()
 	      }
-	});   
+	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+          return $('#content-asset-types').html();
+        }
+    });	
 
 	var baseUrl = getBaseUrl(window.location.href);
 	$.ajax({
@@ -219,7 +229,7 @@ $( document ).ready(function() {
         url: baseUrl + '/api/datasets/versions',
         async: false,
         beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
         success : function(res){
         	$('.panel-group').html(accordiang(res));        	
