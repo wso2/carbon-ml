@@ -277,6 +277,10 @@ $( document ).ready(function() {
 	});
 
 	$('#cancel-project').on('click', function(e){
+		window.location.href = './projects.jag';
+	});
+
+/*	$('#cancel-project').on('click', function(e){
 		e.preventDefault();		
         var projid = $('#projid').data('projid');
         var dsName = $('input[type=file]').val().split('\\').pop();
@@ -308,7 +312,7 @@ $( document ).ready(function() {
         $('#file-upload-error').text('');
         $("#datasetUpload").prop('disabled', false);
 
-	});
+	});*/
 
 	$('#save-project').on('click', function(e){
 		e.preventDefault();

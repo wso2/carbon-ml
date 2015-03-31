@@ -211,7 +211,7 @@
                 if (tenantProjects.length == 0) {
                     var accordionPanelNoProjects = 
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<h2>You dont have any Projects created at the moment.</h2>'+
+                        '<h2>You do not have any projects created at the moment.</h2>'+
                         '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                     '</div>';
                     $('#accordion').empty();
@@ -299,7 +299,7 @@
                                                                 '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+tenantProjects[i]['analyses'][j]['name']+'</a>' +
                                                                 '</td>' +
                                                                 '<td>' +
-                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectName="'+projna+'"><span>View</span></a>' +
+                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectName="'+projna+'" data-datasetid="'+tenantProjects[i]['datasetId']+'"><span>View</span></a>' +
                                                                     '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+tenantProjects[i]['analyses'][j]['name']+'">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       
@@ -437,7 +437,8 @@
             e.preventDefault();
 
             var analysisId = $(this).data('workflowid');
-            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId;
+            var datasetId = $(this).data('datasetid');
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId;
         });
 
         $('.analysis-name').keypress(function(e) {

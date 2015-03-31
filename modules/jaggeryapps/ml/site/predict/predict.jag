@@ -44,17 +44,13 @@
 
         <!-- secondary header - app bar -->
         <div id="nav" class="row wr-app-bar">
-            <!-- <div class="col-md-9 wr-action-container">
-                <div class="wr-action-btn-bar">
-                    <a href="create_project.jag" class="cu-btn btn-add-new">Create Project</a>
-                </div>
-            </div> -->
+            <div class="col-md-9 wr-action-container"></div>
 
             <div class="col-md-3">
                 <div class="wr-secondary-links pull-right">
                     <!-- empty -->
-                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
-                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                    <a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a>
+                    <!-- <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a> -->
                 </div>
             </div>
         </div>
@@ -230,6 +226,11 @@ var serverUrl = window.location.origin;
                     }
                 }
             });
+        });
+
+        $('#btn-prev').on('click', function(e){
+            var analysisId = getParameterByName('analysisId');
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId;
         });
     }        
 
