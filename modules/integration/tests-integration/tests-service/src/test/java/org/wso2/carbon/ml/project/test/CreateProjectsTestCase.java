@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.ml.project.test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,6 +34,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to creating projects
+ */
 @Test(groups="createProjects")
 public class CreateProjectsTestCase extends MLBaseTest {
     
@@ -43,9 +49,9 @@ public class CreateProjectsTestCase extends MLBaseTest {
         //Check whether the dataset exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/" + MLIntegrationTestConstants
                 .DATASET_ID);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
-            //TODO: pass the datsset ID
-            throw new SkipException("Skipping tests becasue dataset is not available");
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
+            throw new SkipException("Skipping tests becasue dataset with ID: " + MLIntegrationTestConstants.DATASET_ID
+                    + " is not available");
         }
     }
 
@@ -58,7 +64,8 @@ public class CreateProjectsTestCase extends MLBaseTest {
     public void testCreateProject() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createProject(MLIntegrationTestConstants.PROJECT_NAME, 
                 MLIntegrationTestConstants.DATASET_NAME);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -72,7 +79,8 @@ public class CreateProjectsTestCase extends MLBaseTest {
     public void testCreateProjectWithDuplicateName() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createProject("TestProjectForCreatProjectTestCase", 
                 MLIntegrationTestConstants.DATASET_NAME);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -84,7 +92,8 @@ public class CreateProjectsTestCase extends MLBaseTest {
     @Test(description = "Create a project without name", dependsOnMethods = "testCreateProject")
     public void testCreateProjectWithoutName() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createProject(null, MLIntegrationTestConstants.DATASET_NAME);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode() , response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -96,7 +105,8 @@ public class CreateProjectsTestCase extends MLBaseTest {
     @Test(description = "Create a project without a dataset")
     public void testCreateProjectWithoutDataset() throws MLHttpClientException, IOException  {
         CloseableHttpResponse response = mlHttpclient.createProject("TestProjectForCreatProjectTestCase-2", null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.BAD_REQUEST.getStatusCode() , response
+                .getStatusLine().getStatusCode());
         response.close();
     }
 }

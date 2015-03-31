@@ -22,8 +22,9 @@ import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -33,6 +34,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to creating models
+ */
 @Test(groups="createModels")
 public class CreateModelTestCase extends MLBaseTest {
     
@@ -46,13 +50,13 @@ public class CreateModelTestCase extends MLBaseTest {
         // Check whether the version-set exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/versions/" + MLIntegrationTestConstants
                 .VERSIONSET_ID);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue a version-set is not available");
         }
         response.close();
         //Check whether analysis exists.
         response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
     }
@@ -64,9 +68,10 @@ public class CreateModelTestCase extends MLBaseTest {
      */
     @Test(description = "Create a Model")
     public void testCreateModel() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.MODEL_NAME, MLIntegrationTestConstants
-                .ANALYSIS_ID, MLIntegrationTestConstants.VERSIONSET_ID);
-        assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.MODEL_NAME, 
+                MLIntegrationTestConstants.ANALYSIS_ID, MLIntegrationTestConstants.VERSIONSET_ID);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -77,8 +82,10 @@ public class CreateModelTestCase extends MLBaseTest {
      */
     @Test(description = "Create a Model with an invalid analysis")
     public void testCreateModelWithInvalidAnalysis() throws MLHttpClientException, IOException  {
-        CloseableHttpResponse response = mlHttpclient.createModel(modelName, 999, MLIntegrationTestConstants.VERSIONSET_ID);
-        assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.createModel(modelName, 999, MLIntegrationTestConstants
+                .VERSIONSET_ID);
+        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
     
@@ -90,7 +97,8 @@ public class CreateModelTestCase extends MLBaseTest {
     @Test(description = "Create a Model with an invalid versionset")
     public void testCreateModelWithInvalidVersionset() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createModel(modelName, MLIntegrationTestConstants.ANALYSIS_ID, 999);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+                .getStatusLine().getStatusCode());
         response.close();
     }
 }

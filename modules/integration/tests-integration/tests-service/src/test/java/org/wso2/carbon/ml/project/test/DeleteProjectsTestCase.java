@@ -18,10 +18,13 @@
 
 package org.wso2.carbon.ml.project.test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
@@ -30,6 +33,9 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to deleting projects
+ */
 @Test(groups="deleteProjects", dependsOnGroups="createProjects")
 public class DeleteProjectsTestCase extends MLBaseTest {
     
@@ -42,7 +48,7 @@ public class DeleteProjectsTestCase extends MLBaseTest {
         mlHttpclient = new MLHttpClient(instance, userInfo);
         //Check whether the dataset exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/" + MLIntegrationTestConstants.DATASET_ID);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatusLine().getStatusCode());
         // Create a project to delete
         mlHttpclient.createProject(projectName, MLIntegrationTestConstants.DATASET_NAME);
     }
@@ -55,7 +61,8 @@ public class DeleteProjectsTestCase extends MLBaseTest {
     @Test(description = "Delete an exsisting project")
     public void testDeleteProject() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/projects/" + projectName);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
@@ -67,7 +74,8 @@ public class DeleteProjectsTestCase extends MLBaseTest {
     @Test(description = "Delete an exsisting project")
     public void testDeleteNonExistingProject() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/projects/" + "NonExistingProjectName");
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

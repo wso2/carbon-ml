@@ -26,6 +26,9 @@ import org.openqa.selenium.WebElement;
 import org.wso2.carbon.ml.integration.ui.pages.exceptions.CarbonUIPageCreationException;
 import org.wso2.carbon.ml.integration.ui.pages.exceptions.InvalidPageException;
 
+/**
+ * Class represent Login page of Carbon Management console
+ */
 public class CarbonLoginPage extends CarbonPage {
     private static final Log logger = LogFactory.getLog(CarbonLoginPage.class);
 

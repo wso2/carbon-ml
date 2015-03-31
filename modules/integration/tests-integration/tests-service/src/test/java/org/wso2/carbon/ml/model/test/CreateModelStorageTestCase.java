@@ -18,10 +18,12 @@
 
 package org.wso2.carbon.ml.model.test;
 
+import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,6 +33,11 @@ import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to creating model-storages
+ * @author supun
+ *
+ */
 @Test(groups="createModelStorage", dependsOnGroups="createModels")
 public class CreateModelStorageTestCase extends MLBaseTest {
     
@@ -42,7 +49,7 @@ public class CreateModelStorageTestCase extends MLBaseTest {
         mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the model exists.
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue the model is not available");
         }
     }
@@ -56,7 +63,8 @@ public class CreateModelStorageTestCase extends MLBaseTest {
     public void testCreateModelStorage() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createFileModelStorage(MLIntegrationTestConstants.MODEL_ID, 
                 MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

@@ -46,7 +46,7 @@ public abstract class MLBaseTest {
 
     protected void init() throws MLIntegrationBaseTestException {
         try {
-            this.mlAutomationContext = new AutomationContext(MLIntegrationTestConstants.ML_SERVER_NAME, 
+            this.mlAutomationContext = new AutomationContext(MLIntegrationTestConstants.ML_PRODUCT_GROUP, 
                     TestUserMode.SUPER_TENANT_ADMIN);
             //get the current tenant as the userType(TestUserMode)
             this.tenantInfo = this.mlAutomationContext.getContextTenant();
