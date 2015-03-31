@@ -245,9 +245,9 @@
 				<version>${orbit.version.spark}</version> </dependency> -->
 
 			<dependency>
-				<groupId>org.wso2.apache.spark</groupId>
+				<groupId>org.wso2.orbit.org.apache.spark</groupId>
 				<artifactId>spark-core_2.10</artifactId>
-				<version>${spark.version}</version>
+				<version>${spark.core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.apache.spark</groupId>
@@ -854,7 +854,8 @@
 
 		<!-- Spark dependency versions -->
 		<spark.version>1.2.1.wso2v1</spark.version>
-		<hadoop.client.version>2.2.0.wso2v1</hadoop.client.version>
+		<spark.core.version>1.2.1.wso2v2</spark.core.version>
+		<hadoop.client.version>2.6.0.wso2v1</hadoop.client.version>
 		<breeze.version>0.10.wso2v1</breeze.version>
 		<spire.version>0.7.4.wso2v1</spire.version>
 		<jblas.version>1.2.3.wso2v1</jblas.version>

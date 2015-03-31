@@ -62,7 +62,7 @@
 
 		<!-- Spark Dependencies -->
 		<dependency>
-			<groupId>org.wso2.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-core_2.10</artifactId>
 		</dependency>
 		<dependency>
