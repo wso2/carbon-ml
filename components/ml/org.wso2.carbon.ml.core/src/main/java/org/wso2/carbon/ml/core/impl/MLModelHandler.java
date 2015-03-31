@@ -282,7 +282,7 @@ public class MLModelHandler {
         }
     }
     
-    private MLModel retrieveModel(long modelId) throws MLModelBuilderException {
+    public MLModel retrieveModel(long modelId) throws MLModelBuilderException {
         InputStream in = null;
         ObjectInputStream ois = null;
         try {
