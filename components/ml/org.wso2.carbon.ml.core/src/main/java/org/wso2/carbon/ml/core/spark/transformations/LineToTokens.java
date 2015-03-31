@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
  * This class transforms each line (line-by-line) into an array of String tokens
  */
 public class LineToTokens implements Function<String, String[]> {
+
+    private static final long serialVersionUID = -5025419727399292773L;
     private Pattern tokenSeparator;
 
     public LineToTokens(Pattern pattern) {

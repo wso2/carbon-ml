@@ -29,6 +29,7 @@ import java.util.List;
  */
 public class DiscardedRowsFilter implements Function<String[], Boolean> {
 
+    private static final long serialVersionUID = -2903794636287515590L;
     private List<Integer> indices;
 
     public DiscardedRowsFilter(List<Integer> discardIndices) {

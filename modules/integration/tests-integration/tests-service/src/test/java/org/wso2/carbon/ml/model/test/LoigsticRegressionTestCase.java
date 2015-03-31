@@ -89,6 +89,6 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
     @AfterClass(alwaysRun = true)
     public void tearDown() throws IOException, InterruptedException {
         // FIXME:
-        Thread.sleep(5000);
+        Thread.sleep(20000);
     }
 }
