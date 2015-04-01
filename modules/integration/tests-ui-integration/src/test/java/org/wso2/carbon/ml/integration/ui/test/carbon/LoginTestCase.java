@@ -28,6 +28,9 @@ import org.wso2.carbon.ml.integration.ui.pages.carbon.CarbonHomePage;
 import org.wso2.carbon.ml.integration.ui.pages.carbon.CarbonLoginPage;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationUiBaseTest;
 
+/**
+ * Contains test case for Login in to Carbon Management console
+ */
 public class LoginTestCase extends MLIntegrationUiBaseTest {
 
     private static final Log logger = LogFactory.getLog(LoginTestCase.class);
@@ -39,7 +42,7 @@ public class LoginTestCase extends MLIntegrationUiBaseTest {
         driver.get(getCarbonLoginURL());
     }
 
-    @Test(groups = "wso2.ml", description = "verify login to ml server")
+    @Test(groups = "wso2.ml.ui", description = "verify login to ml server")
     public void testLogin() throws Exception {
         CarbonLoginPage carbonLogin = new CarbonLoginPage(driver);
         CarbonHomePage carbonHome = carbonLogin.loginAs(userInfo.getUserName(),userInfo.getPassword());

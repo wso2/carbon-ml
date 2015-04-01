@@ -77,7 +77,7 @@ public class ModelApiV10 extends MLRestAPI {
             mlModelHandler.createModel(model);
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
-            logger.error("Error occured while creating a model : " + model + " : " + e.getMessage());
+            logger.error("Error occurred while creating a model : " + model, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

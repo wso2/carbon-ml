@@ -22,10 +22,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -77,6 +79,30 @@ public class MLAnalysisHandler {
             throws MLAnalysisHandlerException {
         try {
             databaseService.insertFeatureCustomized(analysisId, customizedFeature);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public List<FeatureSummary> getSummarizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getFeatures(tenantId, userName, analysisId, limit, offset);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public String getResponseVariable(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getSummaryStats(tenantId, userName, analysisId, featureName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }
@@ -152,6 +178,14 @@ public class MLAnalysisHandler {
     public List<MLAnalysis> getAnalyses(int tenantId, String userName) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAllAnalyses(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+    
+    public List<MLModelNew> getAllModelsOfAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAllModels(tenantId, userName, analysisId);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }

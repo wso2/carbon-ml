@@ -19,6 +19,8 @@ package org.wso2.carbon.ml.integration.ui.test.exceptions;
 
 public class MLUILoginLogoutTestException extends Exception {
 	
+    private static final long serialVersionUID = 1L;
+
     public MLUILoginLogoutTestException(String message) {
         super(message);
     }

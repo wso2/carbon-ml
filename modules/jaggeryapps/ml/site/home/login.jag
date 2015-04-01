@@ -101,7 +101,7 @@
 
 
 
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 
 
@@ -136,11 +136,14 @@ function authenticate(){
     $('.wr-validation-summary').html('<p>Login did not work, check your user name and password and try again</p>');
 
     if(validate(user) && validate(passwd)){
+    	var auth = user+":"+passwd;
+    	var authEncoded = btoa(auth)
+
 		$.ajax({
 			url : './ajax/authenticate.jag',
-			data : {userName: user, password: passwd},
+			data : {userName: user, password: passwd, authEncoded: authEncoded},
 			success : function(res){
-				window.location.href = "../project/projects.jag"
+				window.location.href = "../data/datasets.jag"
 			},
 			error : function(res){
 				$('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');

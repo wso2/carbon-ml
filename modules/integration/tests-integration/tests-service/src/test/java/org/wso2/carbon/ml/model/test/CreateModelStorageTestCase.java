@@ -18,48 +18,53 @@
 
 package org.wso2.carbon.ml.model.test;
 
+import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Contains test cases related to creating model-storages
+ * @author supun
+ *
+ */
 @Test(groups="createModelStorage", dependsOnGroups="createModels")
-public class CreateModelStorageTestCase extends MLIntegrationBaseTest {
+public class CreateModelStorageTestCase extends MLBaseTest {
+    
+    private MLHttpClient mlHttpclient;
     
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws Exception {
+    public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
         super.init();
+        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the model exists.
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/models/" + 
-                MLIntegrationTestConstants.MODEL_NAME));
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue the model is not available");
         }
     }
 
     /**
      * Test creating model storage type: file
-     * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "Create model storage type: file")
-    public void testCreateModelStorage() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = createFileModelStorage(MLIntegrationTestConstants.MODEL_ID, 
+    public void testCreateModelStorage() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.createFileModelStorage(MLIntegrationTestConstants.MODEL_ID, 
                 MLIntegrationTestConstants.FILE_STORAGE_LOCATION);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

@@ -24,6 +24,7 @@ import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
@@ -41,7 +42,6 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
@@ -155,6 +155,22 @@ public class MLDatasetProcessor {
         }
     }
     
+    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
+        try {
+            return databaseService.getScatterPlotPoints(scatterPlotPoints);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws MLDataProcessingException {
+        try {
+            return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
     public void deleteDataset(String datasetName) {
         //TODO
         
@@ -192,15 +208,14 @@ public class MLDatasetProcessor {
                     dataset.getSourcePath(), dataset.getName()));
             String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
-            outputAdapter.writeDataset(targetPath, input);
+            targetUri = outputAdapter.write(targetPath, input);
 
             // read the file that was written
             inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
             try {
-                targetUri = new URI(targetPath);
                 input = inputAdapter.readDataset(targetUri);
-            } catch (URISyntaxException e) {
-                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetPath, e);
+            } catch (MLInputAdapterException e) {
+                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetUri.toString(), e);
             }
 
             // extract sample points

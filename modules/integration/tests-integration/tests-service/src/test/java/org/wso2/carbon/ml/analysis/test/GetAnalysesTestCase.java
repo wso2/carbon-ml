@@ -18,73 +18,71 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
+import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
-import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 
+/**
+ * Class contains test cases related to retrieving analyses
+ */
 @Test(groups="getAnalyses", dependsOnGroups="createAnalyses")
-public class GetAnalysesTestCase extends MLIntegrationBaseTest {
+public class GetAnalysesTestCase extends MLBaseTest {
 
+    private MLHttpClient mlHttpclient;
+    
     @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
         super.init();
+        mlHttpclient = new MLHttpClient(instance, userInfo);
     }
 
     /**
      * Test retrieving all analyzes.
      * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
+     * @throws MLHttpClientException 
      */
     @Test(description = "Get all analyses")
-    public void testGetAllAnalyzes() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+    public void testGetAllAnalyzes() throws MLHttpClientException {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/");
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
     }
     
     /**
      * Test retrieving an analysis by name.
      * 
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
+     * @throws MLHttpClientException 
+     * @throws IOException 
      */
     @Test(description = "Retrieve an analysis by name")
-    public void testGetAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
-                MLIntegrationTestConstants.ANALYSIS_NAME));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+    public void testGetAnalysis() throws MLHttpClientException, IOException  {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants
+                .ANALYSIS_NAME);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
     /**
      * Test retrieving a non-existing analysis.
      * 
-     * @throws ClientProtocolException
+     * @throws MLHttpClientException 
      * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Retrieve a non-existing analysis")
-    public void testGetNonExistingAnalysis() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
-                "nonExistinfAnalysisName"));
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_NOT_FOUND, response.getStatusLine().getStatusCode());
+    public void testGetNonExistingAnalysis() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + "nonExistinfAnalysisName");
+        assertEquals("Unexpected response recieved", Response.Status.NOT_FOUND.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

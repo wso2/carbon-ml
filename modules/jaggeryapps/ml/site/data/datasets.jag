@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+        <!-- secondary header - app bar -->
+        <div id="nav" class="row wr-app-bar">
+            <div class="col-md-9 wr-action-container">
+
+                <div class="wr-asset-type-switcher">
+                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                    <span class="btn-asset"></span>
+                    </a>
+                </div>
+
+                <!-- <div class="wr-project">
+                    <span class="title">PROJECT \ </span><span>My Test Project#1</span>
+                </div> -->
+            </div>
+
+            <div class="col-md-3">
+                <div class="wr-secondary-links pull-right">
+                    <!-- empty -->
+                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                </div>
+            </div>
+        </div>
+        <!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<!--div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>XXXX</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Build</a><div class="nav-arrow"></div></li>
+	    </ul-->
+
+		
+	<!--/div-->
+<!--/div-->
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+			<div class="ctrl-info-panel col-md-12 col-centered">
+				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Dataset"><span>Create Dataset</span></a></p>
+			</div>
+
+
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">	
+
+			</div>
+			</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+
+<script type="text/javascript">
+function buildAccordingHeader(collapseSection, datasetName, numVersions){
+    var accordingHeader = '<h4 class="panel-title">' +
+                          '<table class="tbl-projects">' + 
+				      	  '<tr>' +
+				      		'<td>' +
+						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
+						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
+						          	'<span class="cu-acc-head-created">[ created:  ]</span>'+
+						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) Available</span>'+
+						        '</a>' +	
+						    '</td>'+
+						    '<td class="c-right">' +			        
+						        '<div>' +
+						        	'<a href="#" class="cu-reg-btn btn-edit" data-toggle="tooltip" data-original-title="Edit this Dataset"><span>Edit</span></a>' +
+									'<!-- <a href="#" class="cu-reg-btn btn-delete" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a> -->' +
+								'</div>' +
+							'</td>'+
+						'</tr>'+
+					'</table>' +
+					'</h4>';
+	return accordingHeader;
+}
+
+	function version(versionNumbers){
+        var versionHtml = "";
+        for(var i = 0; i < versionNumbers.length; i++){
+        	versionHtml += '<tr>' +
+					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>' + versionNumbers[i].version+'</a></td>' +
+					 				'<td>' +
+					 					'<!-- <a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a> -->' +
+					 				'</td>' +
+					 			'</tr>';
+        }
+        return versionHtml;
+	}
+
+function accordingBody(datasetDescription, versions, datasetName){
+
+	var accordingBodyHtml = '<table>' +
+					    '<tr>' +
+					  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
+					  	'<td>' +
+					  		'<div class="wr-analysis">' +
+								'<label class="input-label">Versions<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+								'<a data-dsname="'+ datasetName +'" data-dsdes="'+ datasetDescription+'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
+							'</div>' +
+					  		'<table class="tbl-project-desc">'+
+					 			version(versions) +					 			
+					 		'</table>' +
+					  	'</td>' +
+					  '</tr>' +
+					'</table>';
+	return accordingBodyHtml;
+}
+
+function accordiang(datasets){
+    var allDatasetsHtml = '';
+	for(var i=0; i<datasets.length; i++){
+        var dataset = datasets[i];
+        var datasetVersions = dataset.versions;
+
+        var datasetHtml = '<div class="panel panel-default">' +
+			    '<div class="panel-heading" role="tab" id="heading_'+i+'">' +
+			      
+			      buildAccordingHeader('collapse_'+i, dataset.name, datasetVersions.length) +
+			     
+			    '</div>' +
+			    '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
+			      '<div class="panel-body">' +
+			      accordingBody(dataset.comments, datasetVersions, dataset.name) +
+			      '</div>' +
+			    '</div>' +
+			    '</div>';
+	    allDatasetsHtml += datasetHtml;
+	}
+	return allDatasetsHtml;
+}
+
+$( document ).ready(function() {
+
+	$('[data-toggle="tooltip"]').tooltip();
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+          return $('#content-asset-types').html();
+        }
+    });	
+
+	var baseUrl = getBaseUrl(window.location.href);
+	$.ajax({
+        type : 'GET',
+        url: baseUrl + '/api/datasets/versions',
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+        	if (res.length == 0) {
+        		var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
+        		$('#create-dataset').before(accordionPanelNoDatasets);
+        	}
+        	else {
+        		$('.panel-group').html(accordiang(res));
+        	}
+        },
+        error :  function(res){
+        	//TODO: display a suitable error message
+        }        
+
+	});
+
+	$('.create-version').on('click', function(e){
+		e.preventDefault();
+
+        var description = $(this).data('dsdes');
+        var name = $(this).data('dsname');
+        window.location = baseUrl + '/ml/site/data/createversion.jag?dscomt=' + description + '&dsnam=' + name;
+	});   
+
+}); 
+
+</script>
+
+</body>
+</html>

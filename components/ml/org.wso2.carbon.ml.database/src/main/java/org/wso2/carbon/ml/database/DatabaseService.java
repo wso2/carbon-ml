@@ -17,16 +17,11 @@
  */
 package org.wso2.carbon.ml.database;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.json.JSONArray;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 public interface DatabaseService {
 
@@ -132,26 +127,22 @@ public interface DatabaseService {
     /**
      * Returns data points of the selected sample as coordinates of three
      * features, needed for the scatter plot.
+     * @param scatterPlotPoints TODO
      *
-     * @param valueSetId        Unique Identifier of the value-set
-     * @param xAxisFeature      Name of the feature to use as the x-axis
-     * @param yAxisFeature      Name of the feature to use as the y-axis
-     * @param groupByFeature    Name of the feature to be grouped by (color code)
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getScatterPlotPoints(long valueSetId, String xAxisFeature, String yAxisFeature,
-                                          String groupByFeature) throws DatabaseHandlerException;
+    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
 
     /**
      * Returns sample data for selected features
      *
-     * @param valueSetId        Unique Identifier of the value-set
+     * @param versionsetId        Unique Identifier of the value-set
      * @param featureListString String containing feature name list
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public JSONArray getChartSamplePoints(long valueSetId, String featureListString)
+    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
             throws DatabaseHandlerException;
 
     /**
@@ -164,7 +155,7 @@ public interface DatabaseService {
      * @return                  A list of Feature objects
      * @throws                  DatabaseHandlerException
      */
-    public List<FeatureSummary> getFeatures(String datasetID, String modelId, int startIndex,
+    public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
                                             int numberOfFeatures) throws DatabaseHandlerException;
 
 
@@ -191,12 +182,12 @@ public interface DatabaseService {
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *
-     * @param datasetVersionId     Unique identifier of the data-set
+     * @param analysisId     Unique identifier of the data-set
      * @param featureName          Name of the feature of which summary statistics are needed
      * @return                     JSON string containing the summary statistics
      * @throws                     DatabaseHandlerException
      */
-    public String getSummaryStats(long datasetVersionId, String featureName) throws DatabaseHandlerException;
+    public String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version
@@ -611,5 +602,26 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+
+    /**
+     * Get all the analyses of a project.
+     * @param tenantId tenant id
+     * @param userName user name
+     * @param projectId project id
+     * @return list of {@link MLAnalysis}
+     * @throws DatabaseHandlerException
+     */
+    List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
+            throws DatabaseHandlerException;
+
+    /**
+     * Get all models of a given analysis
+     * @param tenantId
+     * @param userName
+     * @param analysisId
+     * @return list of models
+     * @throws DatabaseHandlerException
+     */
+    List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
 }

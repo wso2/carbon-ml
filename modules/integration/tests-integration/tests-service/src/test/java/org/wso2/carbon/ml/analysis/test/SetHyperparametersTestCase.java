@@ -18,30 +18,37 @@
 
 package org.wso2.carbon.ml.analysis.test;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import static org.testng.AssertJUnit.assertEquals;
 
-import org.apache.http.client.ClientProtocolException;
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.ml.integration.common.utils.MLIntegrationBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLBaseTest;
+import org.wso2.carbon.ml.integration.common.utils.MLHttpClient;
 import org.wso2.carbon.ml.integration.common.utils.MLIntegrationTestConstants;
+import org.wso2.carbon.ml.integration.common.utils.exception.MLHttpClientException;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
+/**
+ * Class contains test cases related to setting hyperparameters in a analysis
+ */
 @Test(groups="setHyperparameters", dependsOnGroups="addModelConfigs")
-public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
+public class SetHyperparametersTestCase extends MLBaseTest {
 
+    private MLHttpClient mlHttpclient;
+    
     @BeforeClass(alwaysRun = true)
-    public void initTest() throws Exception {
+    public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
         super.init();
+        mlHttpclient = new MLHttpClient(instance, userInfo);
         // Check whether the analysis exists.
-        CloseableHttpResponse response = doHttpGet(new URI(getServerUrlHttps() + "/api/analyses/" + 
-                MLIntegrationTestConstants.ANALYSIS_NAME));
-        if (MLIntegrationTestConstants.HTTP_OK != response.getStatusLine().getStatusCode()) {
+        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/analyses/" + MLIntegrationTestConstants.ANALYSIS_NAME);
+        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
             throw new SkipException("Skipping tests becasue an analysis is not available");
         }
     }
@@ -49,35 +56,31 @@ public class SetHyperparametersTestCase extends MLIntegrationBaseTest {
     /**
      * Test setting default values to hyper-parameters of an analysis.
      * 
-     * @throws ClientProtocolException
+     * @throws MLHttpClientException 
      * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
      */
     @Test(description = "Set default values to hyperparameters")
-    public void testSetDefaultHyperparameters() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
-                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams/defaults"), null);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+    public void testSetDefaultHyperparameters() throws MLHttpClientException, IOException {
+        CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
+                .ANALYSIS_ID + "/hyperParams/defaults", null);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
     
     /**
      * Test setting customized hyper-parameters of an analysis.
      * 
-     * @throws ClientProtocolException
      * @throws IOException
-     * @throws URISyntaxException
-     * @throws MLIntegrationBaseTestException 
+     * @throws MLHttpClientException 
      */
     @Test(description = "Set customized hyperparameters", dependsOnMethods = "testSetDefaultHyperparameters")
-    public void testSetCustomizedHyperParameters() throws ClientProtocolException, IOException, URISyntaxException,
-            MLIntegrationBaseTestException {
+    public void testSetCustomizedHyperParameters() throws IOException, MLHttpClientException {
         String payload ="[{\"key\" :\"Learning_Rate\",\"value\" : \"0.1\"},{\"key\":\"Iterations\",\"value\":\"100\"}]";
-        CloseableHttpResponse response = doHttpPost(new URI(getServerUrlHttps() + "/api/analyses/" + 
-                MLIntegrationTestConstants.ANALYSIS_ID + "/hyperParams"), payload);
-        Assert.assertEquals(MLIntegrationTestConstants.HTTP_OK, response.getStatusLine().getStatusCode());
+        CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/analyses/" + MLIntegrationTestConstants
+                .ANALYSIS_ID + "/hyperParams", payload);
+        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+                .getStatusCode());
         response.close();
     }
 }

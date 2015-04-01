@@ -29,7 +29,7 @@
 	<artifactId>tests-common</artifactId>
 	<name>WSO2 ML Integration Test Common</name>
 	<packaging>pom</packaging>
-	
+
 	<modules>
 		<module>ui-pages</module>
 		<module>test-utils</module>

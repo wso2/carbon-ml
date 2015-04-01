@@ -25,6 +25,8 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import java.util.Map;
 
 public class MeanImputation implements Function<String[], double[]> {
+
+    private static final long serialVersionUID = 6936249532612016896L;
     private Map<Integer, Double> meanImputation;
 
     public MeanImputation(Map<Integer, Double> meanImputation) {

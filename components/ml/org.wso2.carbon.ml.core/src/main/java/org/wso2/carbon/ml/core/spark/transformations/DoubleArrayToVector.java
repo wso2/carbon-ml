@@ -30,6 +30,8 @@ import java.util.Map;
  */
 public class DoubleArrayToVector implements Function<double[], Vector> {
 
+    private static final long serialVersionUID = 8329428281317101710L;
+
     /**
      * Function to transform double array into labeled point.
      *

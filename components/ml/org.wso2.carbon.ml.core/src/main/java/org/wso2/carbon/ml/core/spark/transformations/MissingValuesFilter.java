@@ -27,6 +27,8 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
  */
 public class MissingValuesFilter implements Function<String[], Boolean> {
 
+    private static final long serialVersionUID = -4767804423665643237L;
+
     @Override
     public Boolean call(String[] tokens) throws Exception {
         try {

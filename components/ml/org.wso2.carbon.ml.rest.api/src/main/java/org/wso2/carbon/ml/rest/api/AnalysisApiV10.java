@@ -25,41 +25,47 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 
 /**
- * WSO2 ML Analyses API. All the operations related to Analyses is implemented here.
+ * WSO2 ML Analyses API. All the operations related to Analyses are delegated from this class.
  */
 @Path("/analyses")
 public class AnalysisApiV10 extends MLRestAPI {
 
     private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
+    /*
+     * Analysis handler which is doing the real work.
+     */
     private MLAnalysisHandler mlAnalysisHandler;
-    
+
     public AnalysisApiV10() {
         mlAnalysisHandler = new MLAnalysisHandler();
     }
-    
+
     /**
      * HTTP Options method implementation for analysis API.
+     * 
      * @return
      */
     @OPTIONS
     public Response options() {
-        return Response.ok()
-                .header(HttpHeaders.ALLOW, "GET POST DELETE")
-                .build();
+        return Response.ok().header(HttpHeaders.ALLOW, "GET POST DELETE").build();
     }
 
     /**
@@ -69,23 +75,23 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     public Response createAnalysis(MLAnalysis analysis) {
         if (analysis.getName() == null || analysis.getName().isEmpty() || analysis.getProjectId() == 0) {
-            logger.error("Required parameters missing");
+            logger.error("Required parameters are missing: " + analysis);
             return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
         try {
-            int tenantId = carbonContext.getTenantId();
-            String userName = carbonContext.getUsername();
             analysis.setTenantId(tenantId);
             analysis.setUserName(userName);
             mlAnalysisHandler.createAnalysis(analysis);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error("Error occured while creating an analysis : " + analysis+ " : " + e.getMessage());
+            logger.error("Error occurred while creating an analysis : " + analysis, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Adding customized features of this analysis.
      */
@@ -93,7 +99,8 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/features")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId, List<MLCustomizedFeature> customizedFeatures) {
+    public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId,
+            List<MLCustomizedFeature> customizedFeatures) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -101,21 +108,22 @@ public class AnalysisApiV10 extends MLRestAPI {
             mlAnalysisHandler.addCustomizedFeatures(analysisId, customizedFeatures, tenantId, userName);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisId, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
-     * load default features into customized features of this analysis.
+     * load default features as customized features of this analysis.
      */
     @POST
     @Path("/{analysisId}/features/defaults")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId, MLCustomizedFeature customizedValues) {
+    public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId,
+            MLCustomizedFeature customizedValues) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -126,13 +134,85 @@ public class AnalysisApiV10 extends MLRestAPI {
             mlAnalysisHandler.addDefaultsIntoCustomizedFeatures(analysisId, customizedValues);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisId, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while adding default features into customized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * get summarized features of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/features")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getSummarizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+
+            List<FeatureSummary> features = mlAnalysisHandler.getSummarizedFeatures(tenantId, userName, analysisId,
+                    limit, offset);
+            return Response.ok(features).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving summarized features for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
     
+    /**
+     * get the response variable of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/responseVariables")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getResponseVariable(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String responseVariable = mlAnalysisHandler.getResponseVariable(analysisId);
+            return Response.ok(responseVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+
+    /**
+     * get summarized statistics of a feature of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/stats")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getSummaryStatistics(@PathParam("analysisId") long analysisId,
+            @QueryParam("feature") String featureName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+
+            String summary = mlAnalysisHandler.getSummaryStats(tenantId, userName, analysisId, featureName);
+            return Response.ok(summary).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving summarized stats of feature [name] %s for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            featureName, analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
     /**
      * Adding configurations (algorithm etc.) of this analysis.
      */
@@ -140,7 +220,8 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/configurations")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response addModelConfiguration(@PathParam("analysisId") long analysisId, List<MLModelConfiguration> modelConfigs) {
+    public Response addModelConfiguration(@PathParam("analysisId") long analysisId,
+            List<MLModelConfiguration> modelConfigs) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -148,13 +229,13 @@ public class AnalysisApiV10 extends MLRestAPI {
             mlAnalysisHandler.addModelConfigurations(analysisId, modelConfigs);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while adding model configurations for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisId, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while adding model configurations for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Adding hyper parameters for the selected algorithm of this analysis.
      */
@@ -170,15 +251,15 @@ public class AnalysisApiV10 extends MLRestAPI {
             mlAnalysisHandler.addHyperParameters(analysisId, hyperParameters);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisId, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
-     * Adding configurations (algorithm etc.) of this analysis.
+     * loading default configurations as configurations (algorithm etc.) of this analysis.
      */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
@@ -192,13 +273,13 @@ public class AnalysisApiV10 extends MLRestAPI {
             mlAnalysisHandler.addDefaultsIntoHyperParameters(analysisId);
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisId, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Retrieving an analysis by a name.
      */
@@ -216,13 +297,13 @@ public class AnalysisApiV10 extends MLRestAPI {
             }
             return Response.ok(analysis).build();
         } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occured while retrieving an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisName, tenantId, userName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while retrieving an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
+
     /**
      * Retrieve all analyses.
      */
@@ -237,12 +318,33 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.ok(analyses).build();
         } catch (MLAnalysisHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
     
+    /**
+     * Get all models of a given analysis.
+     */
+    @GET
+    @Path("/{analysisId}/models")
+    @Produces("application/json")
+    public Response getAllModelsOfAnalysis(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLModelNew> models = mlAnalysisHandler.getAllModelsOfAnalysis(tenantId, userName, analysisId);
+            return Response.ok(models).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving all models of analysis [id] %s tenant [id] %s and [user] %s . Cause: %s",
+                    analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
     /**
      * delete an analysis of a given name.
      */
@@ -261,7 +363,7 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             logger.error(String.format(
-                    "Error occured while deleting an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while deleting an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
                     analysisName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

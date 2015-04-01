@@ -70,7 +70,7 @@ public class HdfsInputAndOutputAdapterTest {
         MLOutputAdapter hdfsOutAdapter = new HdfsOutputAdapter();
         String outPath = hdfsUrl + "/ml-out5/fcSample.csv";
         try {
-            hdfsOutAdapter.writeDataset(outPath, in);
+            hdfsOutAdapter.write(outPath, in);
         } catch (MLOutputAdapterException e1) {
             Assert.assertNull(e1);
         }

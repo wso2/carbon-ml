@@ -347,6 +347,10 @@ a.ctrl-filter-category:hover {
 }
 
 /* buttons */
+.btn-group-actions {
+	margin-top:20px;
+}
+
 .btn-primary {
 	color: #fff;
 	background-color: #533565;
@@ -379,6 +383,24 @@ a.ctrl-filter-category:hover {
 	background-image: none;
 	border: 1px solid transparent;
 	border-radius: 0px;
+}
+
+.btn-main {
+	background:#6c5c76;
+	padding:12px 20px;
+	color:#fff;
+	font-size:16px;
+	font-weight: 100 !important;
+}
+
+.btn-main:hover {
+	color:#f0f0f0;
+	background:#533565;
+}
+
+.btn-main:focus {
+	color:#f0f0f0;
+	background:#6c5c76;
 }
 
 

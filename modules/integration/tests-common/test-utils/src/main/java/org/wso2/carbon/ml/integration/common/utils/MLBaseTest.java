@@ -25,13 +25,10 @@ import javax.xml.xpath.XPathExpressionException;
 import org.testng.Assert;
 import org.wso2.carbon.automation.engine.configurations.UrlGenerationUtil;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
-import org.wso2.carbon.automation.engine.context.ContextXpathConstants;
-import org.wso2.carbon.automation.engine.context.InstanceType;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.Instance;
 import org.wso2.carbon.automation.engine.context.beans.Tenant;
 import org.wso2.carbon.automation.engine.context.beans.User;
-import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.automation.test.utils.common.HomePageGenerator;
 import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTestException;
 
@@ -49,7 +46,7 @@ public abstract class MLBaseTest {
 
     protected void init() throws MLIntegrationBaseTestException {
         try {
-            this.mlAutomationContext = new AutomationContext(MLIntegrationTestConstants.ML_SERVER_NAME, 
+            this.mlAutomationContext = new AutomationContext(MLIntegrationTestConstants.ML_PRODUCT_GROUP, 
                     TestUserMode.SUPER_TENANT_ADMIN);
             //get the current tenant as the userType(TestUserMode)
             this.tenantInfo = this.mlAutomationContext.getContextTenant();
@@ -61,45 +58,6 @@ public abstract class MLBaseTest {
         } 
     }
     
-    /**
-     * Get the secured URL of the ml Server.
-     * 
-     * @return              Secured URL of the service.
-     * @throws              MLIntegrationBaseTestException
-     */
-    protected String getServerUrlHttps() throws MLIntegrationBaseTestException {
-        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS;
-        String host = UrlGenerationUtil.getWorkerHost(instance);
-        //Get port
-        String port = null;
-        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
-        if(isNonBlockingEnabled) {
-            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTPS);
-        } else {
-            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTPS);
-        }
-        return (protocol + "://"+ host + ":" + port);
-    }
-    
-    /**
-     * Get the Server URL.
-     * 
-     * @return              Non-secured URL of the service.
-     * @throws              MLIntegrationBaseTestException
-     */
-    protected String getServerUrlHttp() throws MLIntegrationBaseTestException {
-        String protocol = ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP;
-        String host = UrlGenerationUtil.getWorkerHost(instance);
-        //Get port
-        String port = null;
-        boolean isNonBlockingEnabled = instance.isNonBlockingTransportEnabled();
-        if(isNonBlockingEnabled) {
-            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_NHTTP);
-        } else {
-            port = instance.getPorts().get(ContextXpathConstants.PRODUCT_GROUP_PORT_HTTP);
-        }
-        return (protocol + "://"+ host + ":" + port);
-    }
     
     /**
      * Get the non-secured URL of a given service.
@@ -186,16 +144,6 @@ public abstract class MLBaseTest {
                 Assert.assertFalse(serviceUrl.contains("/t/"), "Invalid service url:" + serviceUrl + " for tenant: " + tenant);
             }
         }
-    }
-    
-    /**
-     * Retrieves the absolute path of a test resource.
-     * 
-     * @param resourceRelativePath	Relative path the the test resource.
-     * @return                      Absolute path of the test resource
-     */
-    protected String getResourceAbsolutePath(String resourceRelativePath) {
-    	return FrameworkPathUtil.getSystemResourceLocation() + resourceRelativePath;
     }
     
     /**

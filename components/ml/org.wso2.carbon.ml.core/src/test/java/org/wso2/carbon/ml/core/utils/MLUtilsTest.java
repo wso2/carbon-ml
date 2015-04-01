@@ -111,6 +111,6 @@ public class MLUtilsTest {
         String date = MLUtils.getDate();
         Assert.assertEquals(date.contains("-"), true);
         Assert.assertEquals(date.contains("_"), true);
-        Assert.assertEquals(date.contains(":"), true);
+        Assert.assertEquals(!date.contains(":"), true);
     }
 }

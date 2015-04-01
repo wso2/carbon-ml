@@ -23,4 +23,9 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+function getBaseUrl(fullUrl){
+	var parts = fullUrl.split('/');
+	return parts[0] + '//' + parts[2];
+}
+
     

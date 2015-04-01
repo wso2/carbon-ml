@@ -33,6 +33,7 @@ public class MLCoreServiceValueHolder {
     private SummaryStatisticsSettings summaryStatSettings;
     private Properties mlProperties;
     private String  bamServerUrl;
+    private String  hdfsUrl;
     private List<MLAlgorithm> algorithms;
     private SparkConf sparkConf;
     private ConfigurationContextService configurationContextService;
@@ -112,4 +113,12 @@ public class MLCoreServiceValueHolder {
     public OutputEventAdapterService getOutputEventAdapterService() {
 		return this.outputEventAdapterService;
 	}
+
+    public String getHdfsUrl() {
+        return hdfsUrl;
+    }
+
+    public void setHdfsUrl(String hdfsUrl) {
+        this.hdfsUrl = hdfsUrl;
+    }
 }

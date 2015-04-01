@@ -23,6 +23,8 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 public class StringArrayToDoubleArray implements Function<String[], double[]> {
 
+    private static final long serialVersionUID = 6885775018049237606L;
+
     @Override
     public double[] call(String[] tokens) throws MLModelBuilderException {
         try {

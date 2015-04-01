@@ -25,6 +25,8 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
  * A filter to remove header row
  */
 public class HeaderFilter implements Function<String, Boolean> {
+
+    private static final long serialVersionUID = -6996897057400853414L;
     private String header;
 
     public HeaderFilter(String header) {
