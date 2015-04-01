@@ -280,7 +280,7 @@
 				<version>${spire.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.apache.hadoop</groupId>
+				<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
 				<artifactId>hadoop-client</artifactId>
 				<version>${hadoop.client.version}</version>
 			</dependency>

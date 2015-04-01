@@ -102,7 +102,7 @@
 			<artifactId>spire_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.apache.hadoop</groupId>
+			<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
 			<artifactId>hadoop-client</artifactId>
 		</dependency>
 		<dependency>
@@ -363,7 +363,7 @@
 								<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
 								<bundleDef>org.wso2.uncommons.maths:uncommons-maths</bundleDef>
-								<bundleDef>org.wso2.apache.hadoop:hadoop-client</bundleDef>
+								<bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
 								<bundleDef>org.wso2.json4s:json4s-jackson_2.10</bundleDef>
 								<bundleDef>org.wso2.twitter:chill_2.10</bundleDef>
 								<bundleDef>org.wso2.clearspring.analytics:stream</bundleDef>
