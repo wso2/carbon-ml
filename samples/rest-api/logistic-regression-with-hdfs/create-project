@@ -1,0 +1,5 @@
+{
+"name" : "wso2-ml-project",
+"description" : "test project",
+"datasetName" : "diabetes"
+}
