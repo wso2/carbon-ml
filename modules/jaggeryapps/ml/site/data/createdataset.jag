@@ -107,7 +107,7 @@
 				<div class="input-control text">
 					<select class="form-control" id="src-type">
 					  <option>file</option>
-					  <option>hdfc</option>
+					  <option>hdfs</option>
 					  <option>bam</option>
 					</select>				
 				</div>	
@@ -116,7 +116,7 @@
 				<div class="input-control text">
 					<select class="form-control" id="dest-type">
                       <option>file</option>
-					  <option>hdfc</option>					  
+					  <option>hdfs</option>					  
 					</select>				
 				</div>
                 
