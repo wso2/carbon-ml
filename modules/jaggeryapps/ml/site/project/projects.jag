@@ -181,12 +181,12 @@
     function buildNewAnalysisUx(projectId, projectName, datasetId) {
         var analysis = 
             '<div class="wr-analysis">' +
-                '<label class="input-label">Create new Analysis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+                '<label class="input-label">Analysis name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
                 '<div class="input-control text">' +
                     '<table>' +
                         '<tr>' +
                             '<td class="f-input-w-md">' +
-                                '<input type="text" value="" class="analysis-name f-input-w-md" placeholder="eg: myanalysis"/>' +
+                                '<input type="text" value="" class="analysis-name f-input-w-md" placeholder="e.g. myanalysis"/>' +
                             '</td>' +
                             '<td>' +
                                 '<a data-datasetId="' + datasetId +'" data-projectName="' + projectName +'" data-projId="'+ projectId + '"href="#" class="create-analysis cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Analysis"><span>Create Analysis</span></a> '+

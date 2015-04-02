@@ -7,7 +7,12 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>    
 </head>
 
 <body>
@@ -37,6 +42,11 @@
 <!-- secondary header - app bar -->
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
+        <div class="wr-asset-type-switcher">
+            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+            <span class="btn-asset"></span>
+            </a>
+        </div>
 		<!--div class="wr-project">
 			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
 		</div-->
@@ -93,43 +103,38 @@
 				    <span class="form-val-error">* Name for this Dataset is required.</span>
 				</div-->
 
-				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: 1.0.0" id="dataset-version"/>
-				</div>				
-
 				<!--label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 				    <textarea rows="3" id="dataset-desc"></textarea>
 				</div-->
 
-				<label class="input-label">Source <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<label class="input-label">Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="src-type">
-					  <option>file</option>
-					  <option>hdfs</option>
-					  <option>bam</option>
+					  <option>File</option>
+					  <option>HDFS</option>
+					  <option>BAM</option>
 					</select>				
 				</div>	
 
 				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="dest-type">
-                      <option>file</option>
-					  <option>hdfs</option>					  
+                      <option>File</option>
+					  <option>HDFS</option>					  
 					</select>				
 				</div>
                 
                 <label class="input-label">Source Path<span class="File Location"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="file:///home/test/hello.tsv" id="src-path"/>
+				    <input type="text" value="" placeholder="e.g. file:///home/datasets/iris.csv" id="src-path"/>
 				</div>
 
 				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="data-format">
-                      <option>csv</option>
-					  <option>tsv</option>					  
+                      <option>CSV</option>
+					  <option>TSV</option>					  
 					</select>				
 				</div>
 
@@ -180,7 +185,12 @@
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
@@ -197,6 +207,15 @@ $( document ).ready(function() {
 	      }
 	});
 
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+            return $('#content-asset-types').html();
+        }
+    });
+
     // initially, progress bar is hidden
 	$('.progress').hide();
 
@@ -206,29 +225,31 @@ $( document ).ready(function() {
 	$('#submit-dataset').on('click', function(e){
 		e.preventDefault();
 
-	var name = getParameterByName('dsnam')
-	var dataSourceType = $('#src-type option:selected').text();
-	var dataTargetType =  $('#dest-type option:selected').text();
-	var sourcePath =  $('#src-path').val();
-	var dataType =  $('#data-format option:selected').text();
-	var comments =  getParameterByName('dscomt');
-	var version = $('#dataset-version').val();
+		var name = getParameterByName('dsnam');
+		var datasetVersion = getParameterByName('datasetVersion');
+		var dataSourceType = $('#src-type option:selected').text();
+		var dataTargetType =  $('#dest-type option:selected').text();
+		var sourcePath =  $('#src-path').val();
+		var dataType =  $('#data-format option:selected').text();
+		var comments =  getParameterByName('dscomt');
+
+		console.log(datasetVersion);
        
-       var baseUrl = getBaseUrl(window.location.href);
-       var jsonData = '{"name":"'+name+
+       	var baseUrl = getBaseUrl(window.location.href);
+       	var jsonData = '{"name":"'+name+
                         '","dataSourceType":"'+dataSourceType+
                         '","dataTargetType":"'+dataTargetType+
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
                         '","comments":"'+comments+
-                        '","version":"'+version+'"}';      
+                        '","version":"'+datasetVersion+'"}';
        $.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 
        	    contentType: "application/json",
        	    data: jsonData,
        	    beforeSend : function(xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
             success : function(res){
         	   window.location = baseUrl + '/ml/site/data/datasets.jag'; 

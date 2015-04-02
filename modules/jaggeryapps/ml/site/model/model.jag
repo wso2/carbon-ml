@@ -57,7 +57,7 @@
 		<div class="wr-secondary-links pull-right">
 			<!-- empty -->
 			<!-- <a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a> -->
-			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Run</a>
 		</div>
 	</div>
 </div>
@@ -74,7 +74,6 @@
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
             <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
         </ul>
 	</div>
 </div>
@@ -192,16 +191,18 @@ $( document ).ready(function() {
 
     	jsonData = '{"name":"'+modelName+'","analysisId":"'+analysisId+'","versionSetId":"'+datasetVersion+'","storageType":"'+storageType+'","storageDirectory":"'+modelStorage+'"}';
 
+        //Create model
 	    $.ajax({
             type: 'POST',
             url: serverUrl+"/api/models",
+            async: false,
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
             contentType: "application/json",
             data: jsonData,
             success: function(res){
-                window.location.href = '../build/build.jag?modelName='+modelName;
+                console.log('Model created.');
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
@@ -210,6 +211,47 @@ $( document ).ready(function() {
                 }
             }
         });
+
+        var modelId;
+
+        //Get model ID        
+        $.ajax({
+            type: 'GET',
+            url: serverUrl+"/api/models/"+modelName,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            async: false,
+            success: function(res){
+                modelId = res['id'];
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+
+        //Build model
+        $.ajax({
+            type: 'POST',
+            url: serverUrl+"/api/models/"+modelId,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(res){
+                console.log("Build success.");
+                //window.location.href = '../project/projects.jag';
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+
     });
 });
 
