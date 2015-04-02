@@ -242,7 +242,7 @@ $( document ).ready(function() {
             },
             success: function(res){
                 console.log("Build success.");
-                //window.location.href = '../project/projects.jag';
+                window.location.href = '../project/projects.jag';
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
