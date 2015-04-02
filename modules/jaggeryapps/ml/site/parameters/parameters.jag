@@ -75,7 +75,6 @@
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
             <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
             <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Build</a><div class="nav-arrow"></div></li>
 	    </ul>
 
 		

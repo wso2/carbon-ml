@@ -163,7 +163,7 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 
 function accordingBody(datasetDescription, versions, datasetName){
 
-	var accordingBodyHtml = '<table>' +
+	/*var accordingBodyHtml = '<table>' +
 					    '<tr>' +
 					  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
 					  	'<td>' +
@@ -176,7 +176,34 @@ function accordingBody(datasetDescription, versions, datasetName){
 					 		'</table>' +
 					  	'</td>' +
 					  '</tr>' +
-					'</table>';
+					'</table>';*/
+
+	var accordingBodyHtml = '<table>' +
+							    '<tr>' +
+								  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
+								  	'<td>' +
+								  		'<div class="wr-analysis">' +
+								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+											'<div class="input-control text">' +
+												'<table>' +
+													'<tr>' +
+														'<td class="f-input-w-md">' +
+											    			'<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
+											    		'</td>' +
+											    		'<td>' +
+											    			'<a data-dsname="'+ datasetName +'" data-dsdes="'+ datasetDescription+'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
+											    		'</td>' +
+											    	'</tr>' +
+											    '</table>' +
+											'</div>' +
+										'</div>' +
+								  		'<table class="tbl-project-desc">'+
+								 			version(versions) +					 			
+								 		'</table>' +
+								  	'</td>' +
+							  	'</tr>' +
+							'</table>';
+
 	return accordingBodyHtml;
 }
 
@@ -248,9 +275,10 @@ $( document ).ready(function() {
 	$('.create-version').on('click', function(e){
 		e.preventDefault();
 
+		var datasetVersion = $(this).closest("tr").find('.dataset-version').val();
         var description = $(this).data('dsdes');
         var name = $(this).data('dsname');
-        window.location = baseUrl + '/ml/site/data/createversion.jag?dscomt=' + description + '&dsnam=' + name;
+        window.location = baseUrl + '/ml/site/data/createversion.jag?dscomt=' + description + '&dsnam=' + name + '&datasetVersion=' + datasetVersion;
 	});   
 
 }); 

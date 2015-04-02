@@ -44,12 +44,25 @@
 
     <!-- secondary header - app bar -->
     <div id="nav" class="row wr-app-bar">
-        <div class="col-md-9 wr-action-container"></div>
+        <div class="col-md-9 wr-action-container">
+            <div class="wr-asset-type-switcher">
+                <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                <span class="btn-asset"></span>
+                </a>
+            </div>
+
+            <div class="wr-action-btn-bar">
+                <!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+                <!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
+                <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
+            </div>            
+        </div>
 
         <div class="col-md-3">
             <div class="wr-secondary-links pull-right">
                 <!-- empty -->
-                <a href="../project/projects.jag" id="btn-prev" class="cu-btn btn-prev">Previous</a>
+                <!-- <a href="../project/projects.jag" id="btn-prev" class="cu-btn btn-prev">Previous</a> -->
                 <!-- <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a> -->
             </div>
         </div>
@@ -98,7 +111,12 @@
     <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
@@ -115,6 +133,15 @@
                 top: $('header').height()
             }
         });
+
+        $("[data-toggle=popover]").popover();
+
+        $(".ctrl-asset-type-switcher").popover({
+            html : true, 
+            content: function() {
+                return $('#content-asset-types').html();
+            }
+        });         
 
         loadModels();
     });
@@ -165,11 +192,9 @@
                                         '<table class="tbl-projects" projectID="' + analysisModels[i]['id'] + '">' +
                                             '<tr>' +
                                                 '<td>' +
-                                                    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
-                                                        '<span class="cu-acc-head-title">' + analysisModels[i]['name'] + '</span>' +
-                                                        '<span class="cu-acc-head-created">[ created: ' + analysisModels[i]['createdTime'] + ' ]</span>' +
-                                                        '<span class="cu-acc-head-workflow"></span>' +
-                                                    '</a>' +
+                                                    '<span class="cu-acc-head-title">' + analysisModels[i]['name'] + '</span>' +
+                                                    '<span class="cu-acc-head-created">[ Created: ' + analysisModels[i]['createdTime'] + ' ]</span>' +
+                                                    '<span class="cu-acc-head-workflow"></span>' +
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +

@@ -43,9 +43,13 @@
 <!-- secondary header - app bar -->
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
-		<!--div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
-		</div-->
+
+        <div class="wr-asset-type-switcher">
+            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+            <span class="btn-asset"></span>
+            </a>
+        </div>
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
@@ -94,7 +98,7 @@
 
 				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: MyDataProject" id="project-name" name="project-name" />
+				    <input type="text" value="" placeholder="e.g. MyDataProject" id="project-name" name="project-name" />
 				    <span class="form-val-error" id="project-name-error"></span>
 				</div>
 
@@ -138,7 +142,12 @@
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
@@ -155,6 +164,15 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+            return $('#content-asset-types').html();
+        }
+    });	
 
 	$('.progress').hide();
 	$('#dataset-status').hide();
