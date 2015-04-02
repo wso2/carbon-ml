@@ -91,6 +91,14 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e);
         }
     }
+
+    public List<String> getFeatureNames(String analysisId, String featureType) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getFeatureNames(analysisId, featureType);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
     
     public String getResponseVariable(long analysisId) throws MLAnalysisHandlerException {
         try {

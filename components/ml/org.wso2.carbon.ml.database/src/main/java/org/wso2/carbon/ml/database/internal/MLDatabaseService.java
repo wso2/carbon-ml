@@ -1098,6 +1098,44 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     /**
+     * Returns the names of the features, belongs to a particular type
+     * (Categorical/Numerical), of the analysis.
+     *
+     * @param analysisId    Unique identifier of the current analysis
+     * @param featureType   Type of the feature
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(String analysisId, String featureType)
+            throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        List<String> featureNames = new ArrayList<String>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            // Create a prepared statement and retrieve data-set configurations.
+            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FILTERED_FEATURE_NAMES);
+            getFeatureNamesStatement.setString(1, analysisId);
+            getFeatureNamesStatement.setString(2, featureType);
+
+            result = getFeatureNamesStatement.executeQuery();
+            // Convert the result in to a string array to e returned.
+            while (result.next()) {
+                featureNames.add(result.getString(1));
+            }
+            return featureNames;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException( "An error occurred while retrieving feature " +
+                    "names of the dataset for analysis: " + analysisId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
+
+    /**
      * Retrieve and returns the Summary statistics for a given feature of a given data-set version, from the database.
      *
      * @param datasetVersionId Unique identifier of the data-set version

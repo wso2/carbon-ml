@@ -106,6 +106,10 @@
 			<artifactId>hadoop-client</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.wso2.orbit.org.htrace</groupId>
+                        <artifactId>htrace-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.wso2.uncommons.maths</groupId>
 			<artifactId>uncommons-maths</artifactId>
 		</dependency>
@@ -364,6 +368,7 @@
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
 								<bundleDef>org.wso2.uncommons.maths:uncommons-maths</bundleDef>
 								<bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
+								<bundleDef>org.wso2.orbit.org.htrace:htrace-core</bundleDef>
 								<bundleDef>org.wso2.json4s:json4s-jackson_2.10</bundleDef>
 								<bundleDef>org.wso2.twitter:chill_2.10</bundleDef>
 								<bundleDef>org.wso2.clearspring.analytics:stream</bundleDef>

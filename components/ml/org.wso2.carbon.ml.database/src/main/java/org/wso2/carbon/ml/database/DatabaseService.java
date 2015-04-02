@@ -179,6 +179,17 @@ public interface DatabaseService {
     public List<String> getFeatureNames(long modelId) throws DatabaseHandlerException;
 
     /**
+     * Returns the names of the features, belongs to a particular type
+     * (Categorical/Numerical), of the analysis.
+     *
+     * @param analysisId    Unique identifier of the current analysis
+     * @param featureType   Type of the feature
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(String analysisId, String featureType) throws DatabaseHandlerException;
+
+    /**
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *
