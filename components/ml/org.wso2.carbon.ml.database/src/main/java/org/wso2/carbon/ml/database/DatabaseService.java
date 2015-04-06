@@ -132,7 +132,7 @@ public interface DatabaseService {
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
+    public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
 
     /**
      * Returns sample data for selected features
@@ -142,7 +142,7 @@ public interface DatabaseService {
      * @return                  A JSON array of data points
      * @throws                  DatabaseHandlerException
      */
-    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
+    public List<Object> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
             throws DatabaseHandlerException;
 
     /**

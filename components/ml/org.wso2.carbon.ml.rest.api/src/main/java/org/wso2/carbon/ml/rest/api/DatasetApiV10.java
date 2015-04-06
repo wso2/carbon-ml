@@ -223,6 +223,32 @@ public class DatasetApiV10 extends MLRestAPI {
      * Get scatter plot points of a dataset version.
      */
     @POST
+    @Path("/{datasetId}/scatter")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getScatterPlotPointsOfLatestVersion(@PathParam("datasetId") long datasetId,
+            ScatterPlotPoints scatterPlotPoints) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            scatterPlotPoints.setTenantId(tenantId);
+            scatterPlotPoints.setUser(userName);
+            List<Object> points = datasetProcessor.getScatterPlotPointsOfLatestVersion(datasetId, scatterPlotPoints);
+            return Response.ok(points).build();
+        } catch (MLDataProcessingException e) {
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving scatter plot points of dataset [id] %s of tenant [id] %s [user] %s ",
+                            datasetId, tenantId, userName), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    /**
+     * Get scatter plot points of a dataset version.
+     */
+    @POST
     @Path("/versions/{versionsetId}/scatter")
     @Produces("application/json")
     @Consumes("application/json")
@@ -235,7 +261,7 @@ public class DatasetApiV10 extends MLRestAPI {
             scatterPlotPoints.setTenantId(tenantId);
             scatterPlotPoints.setUser(userName);
             scatterPlotPoints.setVersionsetId(versionsetId);
-            List<String> points = datasetProcessor.getScatterPlotPoints(scatterPlotPoints);
+            List<Object> points = datasetProcessor.getScatterPlotPoints(scatterPlotPoints);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {
             logger.error(
@@ -245,6 +271,32 @@ public class DatasetApiV10 extends MLRestAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+    
+    /**
+     * Get chart sample points of a dataset version for a feature list.
+     */
+    @GET
+    @Path("/{datasetId}/charts")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getChartSamplePointsOfLatestVersion(@PathParam("datasetId") long datasetId,
+            @QueryParam("features") String featureListString) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<Object> points = datasetProcessor.getChartSamplePoints(tenantId, userName, datasetId,
+                    featureListString);
+            return Response.ok(points).build();
+        } catch (MLDataProcessingException e) {
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving chart sample points of dataset version [id] %s of tenant [id] %s [user] %s ",
+                            datasetId, tenantId, userName), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
 
     /**
      * Get chart sample points of a dataset version for a feature list.
@@ -259,7 +311,7 @@ public class DatasetApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<String> points = datasetProcessor.getChartSamplePoints(tenantId, userName, versionsetId,
+            List<Object> points = datasetProcessor.getChartSamplePoints(tenantId, userName, versionsetId,
                     featureListString);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {

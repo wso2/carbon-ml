@@ -155,7 +155,7 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
+    public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
         try {
             return databaseService.getScatterPlotPoints(scatterPlotPoints);
         } catch (DatabaseHandlerException e) {
@@ -163,8 +163,29 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws MLDataProcessingException {
+    public List<Object> getScatterPlotPointsOfLatestVersion(long datasetId, ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
         try {
+            List<MLDatasetVersion> versions = databaseService.getAllVersionsetsOfDataset(scatterPlotPoints.getTenantId(), scatterPlotPoints.getUser(), datasetId);
+            long versionsetId = versions.get(versions.size()-1).getId();
+            scatterPlotPoints.setVersionsetId(versionsetId);
+            return databaseService.getScatterPlotPoints(scatterPlotPoints);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<Object> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws MLDataProcessingException {
+        try {
+            return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+    
+    public List<Object> getChartSamplePointsOfLatestVersion(int tenantId, String user, long datasetId, String featureListString) throws MLDataProcessingException {
+        try {
+            List<MLDatasetVersion> versions = databaseService.getAllVersionsetsOfDataset(tenantId, user, datasetId);
+            long versionsetId = versions.get(versions.size()-1).getId();
             return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e);
