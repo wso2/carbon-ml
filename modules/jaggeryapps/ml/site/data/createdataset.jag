@@ -37,6 +37,11 @@
 <!-- secondary header - app bar -->
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
+        <div class="wr-asset-type-switcher">
+            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+            <span class="btn-asset"></span>
+            </a>
+        </div>	
 		<!--div class="wr-project">
 			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
 		</div-->
@@ -89,13 +94,13 @@
 
 				<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: iris" id="dataset-name"/>
+				    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name"/>
 				    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
 				</div>
 
 				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="Ex: 1.0.0" id="dataset-version"/>
+				    <input type="text" value="" placeholder="e.g. 1.0.0" id="dataset-version"/>
 				</div>				
 
 				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -106,30 +111,30 @@
 				<label class="input-label">Source <span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="src-type">
-					  <option>file</option>
-					  <option>hdfs</option>
-					  <option>bam</option>
+					  <option>File</option>
+					  <option>HDFS</option>
+					  <option>BAM</option>
 					</select>				
 				</div>	
 
 				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="dest-type">
-                      <option>file</option>
-					  <option>hdfs</option>					  
+                      <option>File</option>
+					  <option>HDFS</option>					  
 					</select>				
 				</div>
                 
                 <label class="input-label">Source Path<span class="File Location"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="file:///home/datasets/iris.csv" id="src-path"/>
+				    <input type="text" value="" placeholder="e.g. file:///home/datasets/iris.csv" id="src-path"/>
 				</div>
 
 				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="data-format">
-                      <option>csv</option>
-					  <option>tsv</option>					  
+                      <option>CSV</option>
+					  <option>TSV</option>					  
 					</select>				
 				</div>
 
@@ -180,7 +185,12 @@
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
-
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
@@ -196,6 +206,15 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+            return $('#content-asset-types').html();
+        }
+    });	
 
     // initially, progress bar is hidden
 	$('.progress').hide();
