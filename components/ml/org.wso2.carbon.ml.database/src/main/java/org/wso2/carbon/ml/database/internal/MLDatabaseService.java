@@ -846,11 +846,11 @@ public class MLDatabaseService implements DatabaseService {
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public List<String> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException {
+    public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException {
 
         // Get the sample from the database.
         SamplePoints sample = getVersionsetSample(scatterPlotPoints.getTenantId(),scatterPlotPoints.getUser(), scatterPlotPoints.getVersionsetId());
-        List<String> points = new ArrayList<String>();
+        List<Object> points = new ArrayList<Object>();
 
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
@@ -863,11 +863,11 @@ public class MLDatabaseService implements DatabaseService {
             if (!columnData.get(firstFeatureColumn).get(row).isEmpty()
                     && !columnData.get(secondFeatureColumn).get(row).isEmpty()
                     && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
-                JSONArray point = new JSONArray();
-                point.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)));
-                point.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)));
-                point.put(columnData.get(thirdFeatureColumn).get(row));
-                points.add(point.toString());
+                Map<Double, Object> map1 = new HashMap<Double, Object>();
+                Map<Double, Object> map2 = new HashMap<Double, Object>();
+                map2.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)), columnData.get(thirdFeatureColumn).get(row));
+                map1.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)), map2);
+                points.add(map1);
             }
         }
 
@@ -882,9 +882,9 @@ public class MLDatabaseService implements DatabaseService {
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public List<String> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws DatabaseHandlerException {
+    public List<Object> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString) throws DatabaseHandlerException {
 
-        List<String> points = new ArrayList<String>();
+        List<Object> points = new ArrayList<Object>();
         
         // Get the sample from the database.
         SamplePoints sample = getVersionsetSample(tenantId, user, versionsetId);
@@ -903,15 +903,16 @@ public class MLDatabaseService implements DatabaseService {
         // for each row in a selected categorical feature, iterate through all features
         for (int row = 0; row < columnData.get(dataHeaders.get(featureList[0])).size(); row++) {
 
-            JSONObject point = new JSONObject();
+            Map<String, Object> data = new HashMap<String, Object>();
+            
             // for each categorical feature in same row put value into a point(JSONObject)
             // {"Soil_Type1":"0","Soil_Type11":"0","Soil_Type10":"0","Cover_Type":"4"}
             for (int featureCount = 0; featureCount < featureList.length; featureCount++) {
-                point.put(featureList[featureCount], columnData.get(dataHeaders.get(featureList[featureCount]))
+                data.put(featureList[featureCount], columnData.get(dataHeaders.get(featureList[featureCount]))
                         .get(row));
             }
             
-            points.add(point.toString());
+            points.add(data);
         }
         return points;
     }
