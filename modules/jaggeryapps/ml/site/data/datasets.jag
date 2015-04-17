@@ -50,9 +50,9 @@
                     </a>
                 </div>
 
-                <!-- <div class="wr-project">
-                    <span class="title">PROJECT \ </span><span>My Test Project#1</span>
-                </div> -->
+		        <div class="wr-project">
+					<span class="title">DATASETS \ </span>
+				</div>
             </div>
 
             <div class="col-md-3">
@@ -125,6 +125,9 @@
 <script src="../../js/wso2.ml.util.js"></script>
 
 <script type="text/javascript">
+
+var baseUrl = getBaseUrl(window.location.href);
+
 function buildAccordingHeader(collapseSection, datasetName, numVersions){
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
@@ -132,13 +135,13 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 				      		'<td>' +
 						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
 						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
-						          	'<span class="cu-acc-head-created">[ created:  ]</span>'+
-						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) Available</span>'+
+						          	/*'<span class="cu-acc-head-created">[ created:  ]</span>'+*/
+						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) available</span>'+
 						        '</a>' +	
 						    '</td>'+
 						    '<td class="c-right">' +			        
 						        '<div>' +
-						        	'<a href="#" class="cu-reg-btn btn-edit" data-toggle="tooltip" data-original-title="Edit this Dataset"><span>Edit</span></a>' +
+						        	'<a href="#" id="create-project" class="cu-reg-btn btn-edit" data-dsname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
 									'<!-- <a href="#" class="cu-reg-btn btn-delete" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a> -->' +
 								'</div>' +
 							'</td>'+
@@ -148,35 +151,20 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 	return accordingHeader;
 }
 
-	function version(versionNumbers){
-        var versionHtml = "";
-        for(var i = 0; i < versionNumbers.length; i++){
-        	versionHtml += '<tr>' +
-					 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>' + versionNumbers[i].version+'</a></td>' +
-					 				'<td>' +
-					 					'<!-- <a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a> -->' +
-					 				'</td>' +
-					 			'</tr>';
-        }
-        return versionHtml;
-	}
+function version(versionNumbers){
+    var versionHtml = "";
+    for(var i = 0; i < versionNumbers.length; i++){
+    	versionHtml += '<tr>' +
+				 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + versionNumbers[i].version+'</a></td>' +
+				 				'<td>' +
+				 					'<!-- <a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a> -->' +
+				 				'</td>' +
+				 			'</tr>';
+    }
+    return versionHtml;
+}
 
 function accordingBody(datasetDescription, versions, datasetName){
-
-	/*var accordingBodyHtml = '<table>' +
-					    '<tr>' +
-					  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
-					  	'<td>' +
-					  		'<div class="wr-analysis">' +
-								'<label class="input-label">Versions<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-								'<a data-dsname="'+ datasetName +'" data-dsdes="'+ datasetDescription+'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
-							'</div>' +
-					  		'<table class="tbl-project-desc">'+
-					 			version(versions) +					 			
-					 		'</table>' +
-					  	'</td>' +
-					  '</tr>' +
-					'</table>';*/
 
 	var accordingBodyHtml = '<table>' +
 							    '<tr>' +
@@ -247,9 +235,8 @@ $( document ).ready(function() {
         content: function() {
           return $('#content-asset-types').html();
         }
-    });	
-
-	var baseUrl = getBaseUrl(window.location.href);
+    });
+	
 	$.ajax({
         type : 'GET',
         url: baseUrl + '/api/datasets/versions',
@@ -279,9 +266,20 @@ $( document ).ready(function() {
         var description = $(this).data('dsdes');
         var name = $(this).data('dsname');
         window.location = baseUrl + '/ml/site/data/createversion.jag?dscomt=' + description + '&dsnam=' + name + '&datasetVersion=' + datasetVersion;
-	});   
+	});
 
-}); 
+	bindEvents();
+});
+
+function bindEvents() {
+	
+	$(document).on('click', '#create-project', function(e){			
+		e.preventDefault();
+
+		var datasetName = $(this).data('dsname');
+		window.location = baseUrl + '/ml/site/project/create_project.jag?datasetName='+datasetName;
+	});
+}
 
 </script>
 

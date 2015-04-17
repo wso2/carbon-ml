@@ -47,9 +47,10 @@
             <span class="btn-asset"></span>
             </a>
         </div>
-		<!--div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
-		</div-->
+
+        <div class="wr-project">
+			<span class="title">DATASETS \ </span><span id="nav-dataset"></span>
+		</div>
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
@@ -220,12 +221,16 @@ $( document ).ready(function() {
 	$('.progress').hide();
 
 	// initially, file info and delete button is hidden
-	$('.info-file-name-and-delete-option').hide();	
+	$('.info-file-name-and-delete-option').hide();
+
+	// put dataset name to application navigator
+	var name = getParameterByName('dsnam');
+	$('#nav-dataset').text(name);
 
 	$('#submit-dataset').on('click', function(e){
 		e.preventDefault();
 
-		var name = getParameterByName('dsnam');
+		//var name = getParameterByName('dsnam');
 		var datasetVersion = getParameterByName('datasetVersion');
 		var dataSourceType = $('#src-type option:selected').text();
 		var dataTargetType =  $('#dest-type option:selected').text();
@@ -233,9 +238,7 @@ $( document ).ready(function() {
 		var dataType =  $('#data-format option:selected').text();
 		var comments =  getParameterByName('dscomt');
 
-		console.log(datasetVersion);
-       
-       	var baseUrl = getBaseUrl(window.location.href);
+		var baseUrl = getBaseUrl(window.location.href);
        	var jsonData = '{"name":"'+name+
                         '","dataSourceType":"'+dataSourceType+
                         '","dataTargetType":"'+dataTargetType+
