@@ -51,6 +51,10 @@
             </a>
         </div>
 
+        <div class="wr-project">
+            <span class="title">PROJECTS \ </span>
+        </div>        
+
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
 			<!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
@@ -93,7 +97,7 @@
 			<div class="wr-form col-lg-5 col-centered">
 
 				<h1 class="title">Create Project</h1>
-                <from id="dataImportForm" action="./ajax/UploadDataset.jag" method="post"
+                <from id="dataImportForm" action="" method="post"
                     enctype="multipart/form-data">
 
 				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -151,6 +155,8 @@
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+
 <script type="text/javascript">
 var serverUrl = window.location.origin;
 var isFileAlreadyPresent = false;
@@ -172,76 +178,14 @@ $( document ).ready(function() {
         content: function() {
             return $('#content-asset-types').html();
         }
-    });	
+    });
 
-	$('.progress').hide();
-	$('#dataset-status').hide();
-
-	$('#datasetUpload').on('click', function(){
-        var datasetName = $('input[type=file]').val().split('\\').pop();         
-        if(datasetName.length > 0){
-        	isFileAlreadyPresent = true;
-        }   
-	});
-
-	$('#datasetUpload').on('change', function(e){
-		e.preventDefault();
-        var projectName = $('#project-name').val();
-        var projectDes = $('#project-description').val();
-        var datasetName = $('input[type=file]').val().split('\\').pop();        
-
-        var projectNameValidation = isValidProjectName(projectName);
-        var descriptionValidation = isValidDescription(projectDes);
-        var validFile = isValidDatasetFile(datasetName);
-
-        if(projectNameValidation && 
-            descriptionValidation && validFile){
-        	$('#dataImportForm').submit();  
-        	$("#datasetUpload").prop('disabled', true);  
-        	$('#data-file-name').text(datasetName); 
-        	$('#file-upload-error').text('');       
-        }else{
-        	var control = $('#datasetUpload');
-            control.replaceWith( control = control.clone( true )); 
-        }               
-	});
-
-	$("#dataImportForm").submit(function(e) {
-		e.preventDefault();
-
-        var formObj = $(this);
-        var formURL = formObj.attr("action");
-        var formData = new FormData();
-        formData.append('datasetFile', $('input[type=file]')[0].files[0]);
-        
-        $.ajax({
-            url : formURL,
-            type : 'POST',
-            data : formData,
-            mimeType : "multipart/form-data",
-            contentType : false,
-            cache : false,
-            processData : false,
-            beforeSend : function(){
-                $('.progress').show();
-            },
-            success : function(data, textStatus, jqXHR){                  
-                $('.progress').hide();
-                var response = jQuery.parseJSON(data);
-                var projid = response.projid;
-                var datid = response.datid;
-                var datname = response.datname;
-
-                $('#projid').data('projid', projid);
-                $('#datid').data('datid', datid);
-                $('#datname').data('datname', datname);
-                $('#dataset-status').show();
-            },
-            error : function(jqXHR, textStatus, errorThrown) {
-            	//TODO: handle error
-            }
-        });
-    });   
+    // set dataset name and disable input when navigating from datasets page
+    var datasetName = getParameterByName('datasetName');
+    if (datasetName !== "") {
+    	$("#datasets").replaceWith('<select class="form-control" id="datasets"><option  selected>'+datasetName+'</option></select>');
+    	$('#datasets').attr("disabled","disabled");
+    }
 
 	$('#project-name').on('click', function(){
         $('#project-name-error').empty();
@@ -261,76 +205,12 @@ $( document ).ready(function() {
         if(e.which == 9){ // tab key
             $('#project-description-error').empty();     
         }
-	});
-
-	$('#delete-file').on('click', function(e){
-		e.preventDefault();		
-		var dsName = $('input[type=file]').val().split('\\').pop();
-		var projid = $('#projid').data('projid');
-
-		if(isValidDatasetFile(dsName)){
-	        $.ajax({
-	        	url: './ajax/DeleteDataset.jag',
-	        	type: 'post',
-                data: {datasetName: dsName, projectId: projid},
-	        	success: function(data){
-	                if(data.status){
-	                    var control = $('#datasetUpload');
-	                    control.replaceWith(control.val('').clone(true));
-	                    $('#data-file-name').empty();
-	                    $('#dataset-status').hide();
-
-	                }else{
-	                	$('#file-upload-error').text(
-	                		'* An error has occurred while deleting file.');
-	                }
-	        	},
-	        	error: function(e){
-	        		$('#file-upload-error').text(
-	        			'* An error has occurred while calling delete request');
-	        	}
-	        });
-	        $("#datasetUpload").prop('disabled', false);
-	    }		
-	});
+	});	
 
 	$('#cancel-project').on('click', function(e){
+		e.preventDefault();
 		window.location.href = './projects.jag';
 	});
-
-/*	$('#cancel-project').on('click', function(e){
-		e.preventDefault();		
-        var projid = $('#projid').data('projid');
-        var dsName = $('input[type=file]').val().split('\\').pop();
-		if(isValidDatasetFile(dsName)){
-	        $.ajax({
-	        	url: './ajax/DeleteDataset.jag',
-	        	type: 'post',
-	        	data: {datasetName: dsName, projectId: projid},
-	        	success: function(data){
-	                if(data.status){
-	                    var control = $('#datasetUpload');
-	                    control.replaceWith( control = control.clone( true ));
-	                    $('#data-file-name').empty();
-	                    $('#dataset-status').hide();	
-
-	                }else{
-	                	$('#file-upload-error').text(
-	                		'* An error has occurred while deleting file.');
-	                }
-	        	},
-	        	error: function(e){
-	        		$('#file-upload-error').text(
-	        			'* An error has occurred while calling delete request');
-	        	}
-	        });
-        }
-        $('#project-name').val('');
-        $('#project-description').val('');
-        $('#file-upload-error').text('');
-        $("#datasetUpload").prop('disabled', false);
-
-	});*/
 
 	$('#save-project').on('click', function(e){
 		e.preventDefault();
@@ -341,9 +221,8 @@ $( document ).ready(function() {
         
         var projectNameValidation = isValidProjectName(projectName);
         var descriptionValidation = isValidDescription(projectDes);
-        var validDataset = isValidDatasetFile(datasetName);
 
-        if(projectNameValidation && descriptionValidation && validDataset){
+        if(projectNameValidation && descriptionValidation){
         	
         	var jsonData = '{"name":"'+projectName+'","description":"'+projectDes+'","datasetName":"'+datasetName+'"}';
 
@@ -408,13 +287,6 @@ $( document ).ready(function() {
         return false;       
 	}
 
-	function isValidDatasetFile(fileName){
-		if(fileName && fileName.length > 0){
-			return true;
-		}	    
-	    $('#file-upload-error').text('* No dataset is selected');
-		return false;		
-	}
 });
 </script>
 
