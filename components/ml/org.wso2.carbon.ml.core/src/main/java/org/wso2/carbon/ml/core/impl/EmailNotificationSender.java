@@ -51,13 +51,12 @@ public class EmailNotificationSender {
      * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
      * @throws 							MLProjectManagementServiceException
      */
-    public void sendModelBuildingCompleteNotification(String emailAddress, String[] emailTemplateParameters)
-            throws MLEmailNotificationSenderException {
+    public static void sendModelBuildingCompleteNotification(String emailAddress, String[] emailTemplateParameters) {
         try {
             send(MLConstants.MODEL_BUILDING_COMPLETE_NOTIFICATION, emailAddress,emailTemplateParameters);
-        } catch (MLEmailNotificationSenderException e) {
-            throw new MLEmailNotificationSenderException("Failed to send the model building complete notification to: "
-            		+ emailAddress + " : " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Failed to send the model building complete notification to: " + emailAddress + " : " + 
+                    e.getMessage(), e);
         }
     }
 
@@ -68,13 +67,12 @@ public class EmailNotificationSender {
      * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
      * @throws 							MLProjectManagementServiceException
      */
-    public void sendModelBuildingFailedNotification(String emailAddress, String[] emailTemplateParameters)
-            throws MLEmailNotificationSenderException {
+    public static void sendModelBuildingFailedNotification(String emailAddress, String[] emailTemplateParameters) {
         try {
             send(MLConstants.MODEL_BUILDING_FAILED_NOTIFICATION, emailAddress, emailTemplateParameters);
-        } catch (MLEmailNotificationSenderException e) {
-            throw new MLEmailNotificationSenderException("Failed to send the model building failure notification to: "
-            		+ emailAddress + " : " + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Failed to send the model building failure notification to: " + emailAddress + " : " + 
+                    e.getMessage(), e);
         }
     }
     
@@ -91,18 +89,20 @@ public class EmailNotificationSender {
     private static void send(String emailTemplateType, String emailAddress, String [] emailTemplateParameters) 
             throws MLEmailNotificationSenderException {
         try {
-            // Get the message template
-            EmailTemplate emailTemplate = EmailNotificationSender.getEmailTemplate(emailTemplateType);
-            // Set the message body.
-            String message = EmailNotificationSender.setMessageBody(emailTemplate.getBody(), 
-                    emailTemplate.getFooter(), emailTemplateParameters);
-        
-            OutputEventAdapterService emailAdapterService = MLCoreServiceValueHolder.getInstance().getOutputEventAdapterService();
-            Map<String,String> dynamicProperties = new HashMap<String,String>();
-    		dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_ADDRESS, emailAddress);
-    		dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_SUBJECT, emailTemplate.getSubject());
-    		emailAdapterService.publish(MLConstants.ML_EMAIL_ADAPTER, dynamicProperties, message);
-            logger.info("Notification email sent to " + emailAddress);
+            if (emailAddress!=null && !emailAddress.isEmpty()) {
+                // Get the message template
+                EmailTemplate emailTemplate = EmailNotificationSender.getEmailTemplate(emailTemplateType);
+                // Set the message body.
+                String message = EmailNotificationSender.setMessageBody(emailTemplate.getBody(), 
+                        emailTemplate.getFooter(), emailTemplateParameters);
+            
+                OutputEventAdapterService emailAdapterService = MLCoreServiceValueHolder.getInstance().getOutputEventAdapterService();
+                Map<String,String> dynamicProperties = new HashMap<String,String>();
+                dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_ADDRESS, emailAddress);
+                dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_SUBJECT, emailTemplate.getSubject());
+                emailAdapterService.publish(MLConstants.ML_EMAIL_ADAPTER, dynamicProperties, message);
+                logger.info("Model building status email sent to: " + emailAddress);
+            }
         } catch (MLEmailNotificationSenderException e) {
             throw new MLEmailNotificationSenderException("An error occurred while retrieving email template: "
                     + e.getMessage(), e);
