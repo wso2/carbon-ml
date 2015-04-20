@@ -375,7 +375,7 @@ public class MLModelHandler {
                 clusterPoint.setFeatures(kMeansPrediction._2().toArray());
                 clusterPoints.add(clusterPoint);
             }
-            sc.stop();
+            sparkContext.stop();
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
             throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
