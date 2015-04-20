@@ -273,6 +273,39 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     /**
+     * Retrieves the path of the value-set having the given ID, from the database.
+     *
+     * @param datasetId Unique Identifier of the value-set
+     * @return Absolute path of a given value-set
+     * @throws DatabaseHandlerException
+     */
+    public String getDatasetUri(long datasetId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            getStatement = connection.prepareStatement(SQLQueries.GET_DATASET_LOCATION);
+            getStatement.setLong(1, datasetId);
+            result = getStatement.executeQuery();
+            if (result.first()) {
+                return result.getNString(1);
+            } else {
+                logger.error("Invalid value set ID: " + datasetId);
+                throw new DatabaseHandlerException("Invalid value set ID: " + datasetId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while reading the Value set " + datasetId
+                    + " from the database: " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getStatement, result);
+        }
+    }
+
+    /**
      * @param name
      * @param tenantID
      * @param username

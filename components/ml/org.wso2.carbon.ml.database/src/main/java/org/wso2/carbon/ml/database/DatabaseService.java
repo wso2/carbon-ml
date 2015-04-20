@@ -71,6 +71,16 @@ public interface DatabaseService {
     public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
+     * Retrieves the path of the value-set having the given ID, from the
+     * database.
+     *
+     * @param datasetId         Unique Identifier of the dataset
+     * @return                  Absolute path of a given dataset
+     * @throws                  DatabaseHandlerException
+     */
+    public String getDatasetUri(long datasetId) throws DatabaseHandlerException;
+
+    /**
      * @param datasetName   Name of the data-set
      * @param tenantId      Tenant Id
      * @return              Unique Id of the data-set
