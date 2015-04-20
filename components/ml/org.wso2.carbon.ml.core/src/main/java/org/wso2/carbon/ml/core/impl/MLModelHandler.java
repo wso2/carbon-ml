@@ -33,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
@@ -317,17 +319,32 @@ public class MLModelHandler {
 
         private long id;
         private MLModelConfigurationContext ctxt;
+        private int tenantId;
+        private String tenantDomain;
+        private String username;
+        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance().getEmailNotificationEndpoint();
 
         public ModelBuilder(long modelId, MLModelConfigurationContext context) {
             id = modelId;
             ctxt = context;
+            CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            tenantId = carbonContext.getTenantId();
+            tenantDomain = carbonContext.getTenantDomain();
+            username  = carbonContext.getUsername();
         }
 
         @Override
         public void run() {
+            String[] emailTemplateParameters = {username};
             try {
+                //Set tenant info in the carbon context
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+                
                 // class loader is switched to JavaSparkContext.class's class loader
                 Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
                 MLModel model;
                 if (MLConstants.CLASSIFICATION.equals(algorithmType)
@@ -341,13 +358,14 @@ public class MLModelHandler {
                     throw new MLModelBuilderException(String.format(
                             "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
                 }
-
                 persistModel(id, ctxt.getModel().getName(), model);
+                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint, emailTemplateParameters);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
+                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint, emailTemplateParameters);
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
             }
         }
-
     }
-
 }

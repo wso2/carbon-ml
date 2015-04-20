@@ -34,6 +34,7 @@ public class MLCoreServiceValueHolder {
     private Properties mlProperties;
     private String  bamServerUrl;
     private String  hdfsUrl;
+    private String emailNotificationEndpoint;
     private List<MLAlgorithm> algorithms;
     private SparkConf sparkConf;
     private ConfigurationContextService configurationContextService;
@@ -120,5 +121,13 @@ public class MLCoreServiceValueHolder {
 
     public void setHdfsUrl(String hdfsUrl) {
         this.hdfsUrl = hdfsUrl;
+    }
+    
+    public String getEmailNotificationEndpoint() {
+        return emailNotificationEndpoint;
+    }
+
+    public void setEmailNotificationEndpoint(String emailNotificationEndpoint) {
+        this.emailNotificationEndpoint = emailNotificationEndpoint;
     }
 }
