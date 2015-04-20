@@ -50,6 +50,11 @@
                     <span class="btn-asset"></span>
                     </a>
                 </div>
+
+                <div class="wr-project">
+                    <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span><span id="nav-model"></span>
+                </div>
+
                 <div class="wr-action-btn-bar">
                     <a href="#" class="cu-btn btn-cancel" id="cancel-predict">Cancel</a>
                 </div>
@@ -134,7 +139,14 @@
 
 <script type="text/javascript">
 
-var serverUrl = window.location.origin;
+    var serverUrl = window.location.origin;
+
+    var analysisId = getParameterByName('analysisId');
+    var modelId = getParameterByName('modelId');
+    var datasetId = getParameterByName('datasetId');
+    var projectName = getParameterByName('projectName');
+    var analysisName = getParameterByName('analysisName');
+    var modelName = getParameterByName('modelName');    
 
     $(document).ready(function() {
 
@@ -153,6 +165,11 @@ var serverUrl = window.location.origin;
             }
         });
 
+        // put path in application navigator
+        $('#nav-project').text(projectName);
+        $('#nav-analysis').text(" \\ "+analysisName);
+        $('#nav-model').text(" \\ "+modelName);
+
         loadFeatures();
     });
    
@@ -165,7 +182,6 @@ var serverUrl = window.location.origin;
     }     
 
     function loadFeatures() {
-        var analysisId = getParameterByName('analysisId');
         var responseVariable;
 
         $.ajax({
@@ -226,7 +242,6 @@ var serverUrl = window.location.origin;
                 inputArray[index] = parseFloat(val);
             });
             
-            var modelId = getParameterByName('modelId');
             jsonData = JSON.stringify(inputArray);
             
             $.ajax({
@@ -250,15 +265,10 @@ var serverUrl = window.location.origin;
             });
         });
 
-        $('#btn-prev').on('click', function(e){
-            var analysisId = getParameterByName('analysisId');
-            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId;
-        });
-
         $('#cancel-predict').on('click', function(e){
-        //$(document).on('click', '#cancel-predict', function(e){
-            var analysisId = getParameterByName('analysisId');
-            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId;
+            e.preventDefault();
+
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
         });
     }        
 

@@ -52,6 +52,10 @@
                 </a>
             </div>
 
+            <div class="wr-project">
+                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+            </div>
+
             <div class="wr-action-btn-bar">
                 <!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
                 <!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
@@ -126,6 +130,11 @@
 
     var serverUrl = window.location.origin;
 
+    var projectName = getParameterByName('projectName');
+    var analysisName = getParameterByName('analysisName');
+    var analysisId = getParameterByName('analysisId');
+    var datasetId = getParameterByName('datasetId');
+
     $(document).ready(function() {
 
         $('#nav').affix({
@@ -141,7 +150,11 @@
             content: function() {
                 return $('#content-asset-types').html();
             }
-        });         
+        });
+
+        // put path in application navigator
+        $('#nav-project').text(projectName);
+        $('#nav-analysis').text(" \\ "+analysisName);
 
         loadModels();
     });
@@ -155,8 +168,7 @@
     }     
 
     function loadModels() {
-        var analysisId = getParameterByName('analysisId');
-
+        
         $.ajax({
             type: "GET",
             url: serverUrl+"/api/analyses/"+analysisId+"/models",
@@ -169,7 +181,7 @@
                 if (analysisModels.length == 0) {
                     var accordionPanelNoModels = 
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<h2>You dont have any Projects created at the moment.</h2>'+
+                        '<h2>You do not have any models created at the moment.</h2>'+
                         '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
                     '</div>';
                     $("#accordion").append(accordionPanelNoModels);    
@@ -198,7 +210,7 @@
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
-                                                        '<a href="#" id="predict" class="cu-reg-btn btn-compare" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Predict</span></a>' +
+                                                        '<a href="#" id="predict" class="cu-reg-btn btn-compare" data-modelname="'+analysisModels[i]['name']+'" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Predict</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete">Delete Model</a>' +
                                                     '</div>' +
                                                 '</td>' +
@@ -229,17 +241,15 @@
         $(document).on('click', '#predict', function(e){ 
             e.preventDefault();
             
-            var analysisId = getParameterByName('analysisId');
             var modelId = $(this).data('modelid');
-            window.location.href = '../predict/predict.jag?analysisId='+analysisId+'&modelId='+modelId;
+            var modelName = $(this).data('modelname');
+            window.location.href = '../predict/predict.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName;
         });
 
         $(document).on('click', '#create-model', function(e){ 
             e.preventDefault();
 
-            var analysisId = getParameterByName('analysisId');
-            var datasetId = getParameterByName('datasetId');
-            window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId;
+            window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
         });
 
     }        

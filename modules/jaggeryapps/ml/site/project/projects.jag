@@ -21,7 +21,6 @@
 
     <div class="container col-lg-12 col-md-12 col-sm-12">
 
-        <!-- header -->
         <header>
             <div class="row wr-global-header">
                 <div class="col-sm-8 app-logo"><img src="../../images/logo.png" />
@@ -40,7 +39,6 @@
                 </div>
             </div>
         </header>
-        <!-- /header -->
 
         <!-- secondary header - app bar -->
         <div id="nav" class="row wr-app-bar">
@@ -53,9 +51,9 @@
                     </a>
                 </div>
 
-                <!-- <div class="wr-project">
-                    <span class="title">PROJECT \ </span><span>My Test Project#1</span>
-                </div> -->
+                <div class="wr-project">
+                    <span class="title">PROJECTS \ </span>
+                </div>
             </div>
 
             <div class="col-md-3">
@@ -67,7 +65,6 @@
             </div>
         </div>
         <!-- secondary header - app bar -->
-
 
         <!-- content/body -->
         <div class="row">
@@ -240,7 +237,7 @@
                             workflowString = '<strong>'+tenantProjects[i]['analyses'].length+'</strong> Analyses available';
                         }
                         
-                        var projectIDString = "'"+tenantProjects[i]['id']+"'";
+                        //var projectIDString = "'"+tenantProjects[i]['id']+"'";
                         var projid = tenantProjects[i]['id'];
                         var projna = tenantProjects[i]['name'];
                         var description = tenantProjects[i]['description'];
@@ -287,20 +284,16 @@
 
                                     for (var j = 0; j < tenantProjects[i]['analyses'].length; j++) {                                            
                                         var workflowId = tenantProjects[i]['analyses'][j]['id'];
-                                        //workflowId = "'"+workflowId+"'";
-
-                                        var wfname = tenantProjects[i]['analyses'][j]['name'];
+                                        var analysisName = tenantProjects[i]['analyses'][j]['name'];
                                         var wfid = tenantProjects[i]['analyses'][j]['id'];
-                                        var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&wfname='+wfname+'&wfid='+wfid;
-
-
+                                        var compareModels = '../workflow/create_workflow.jag?projid='+projid+'&projna='+projna+'&analysisName='+analysisName+'&wfid='+wfid;
 
                                         accordionPanel +=   '<tr>' +
-                                                                '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+tenantProjects[i]['analyses'][j]['name']+'</a>' +
+                                                                '<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+analysisName+'</a>' +
                                                                 '</td>' +
                                                                 '<td>' +
-                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectName="'+projna+'" data-datasetid="'+tenantProjects[i]['datasetId']+'"><span>View</span></a>' +
-                                                                    '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+tenantProjects[i]['analyses'][j]['name']+'">Delete</a>' +
+                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectname="'+projna+'" data-analysisname="'+analysisName+'" data-datasetid="'+datasetId+'"><span>View</span></a>' +
+                                                                    '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+analysisName+'">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       
                                     };
@@ -368,7 +361,7 @@
 		// function that creates an analysis
         $(document).on('click', '.create-analysis', function(e){ 
             e.preventDefault();
-                            
+
             var analysisName = $(this).closest("tr").find('.analysis-name').val();
             var crtValArea = $(this).closest(".wr-analysis");
             var nortificationArea = crtValArea.prev(".ctrl-validation-panel");
@@ -378,11 +371,12 @@
                     var para = crtValArea.before(
                         buildNortifications('Empty names, special and space characters are not allowed'));//.append("p");
                 }
-                //para.text();
                 return; 
-            }
+            }            
 
             var projectId = $(this).data('projid');
+            var projectName = $(this).data('projectname');
+
             var datasetId = $(this).data('datasetid');
             var comments = 'test comment'; //TODO: get actual comment from UI
             var jsonData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
@@ -396,7 +390,7 @@
                 contentType: "application/json",
                 data: jsonData,
                 success : function(res){
-                    window.location.href = '../algorithm/algorithm.jag?analysisName='+analysisName+'&datasetId='+datasetId;
+                    window.location.href = '../explore/explore.jag?projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
                 },
                 error : function(res){
                     //$('#workflow-name-error').text("* "+res.responseJSON.message);
@@ -433,12 +427,16 @@
         	});
         });
 
+        // function that redirects to analysis page with built models under that analysis
         $(document).on('click', '#view-analysis', function(e){ 
             e.preventDefault();
 
             var analysisId = $(this).data('workflowid');
+            var analysisName = $(this).data('analysisname');
+            var projectName = $(this).data('projectname');
             var datasetId = $(this).data('datasetid');
-            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId;
+            
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&analysisName='+analysisName+'&projectName='+projectName+'&datasetId='+datasetId;
         });
 
         $('.analysis-name').keypress(function(e) {

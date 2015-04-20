@@ -42,9 +42,10 @@
             <span class="btn-asset"></span>
             </a>
         </div>	
-		<!--div class="wr-project">
-			<span class="title">PROJECT \ </span><span>My Test Project#1</span>
-		</div-->
+
+        <div class="wr-project">
+			<span class="title">DATASETS \ </span>
+		</div>
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
@@ -100,7 +101,7 @@
 
 				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
-				    <input type="text" value="" placeholder="e.g. 1.0.0" id="dataset-version"/>
+				    <input type="text" value="1.0.0" placeholder="" id="dataset-version"/>
 				</div>				
 
 				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>

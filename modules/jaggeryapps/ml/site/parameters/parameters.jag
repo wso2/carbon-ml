@@ -44,8 +44,8 @@
 <div id="nav" class="row wr-app-bar">
 	<div class="col-md-9 wr-action-container">
 		<div class="wr-project">
-			<span class="title">PROJECT \ </span><span id="title"></span>
-		</div>
+            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+        </div>
 
 		<div class="wr-action-btn-bar">
 			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
@@ -152,6 +152,12 @@ $( document ).ready(function() {
 	var algorithmName = getParameterByName('algorithmName');
     var analysisId = getParameterByName('analysisId');    
     var algorithmType = getParameterByName('algorithmType');
+
+    // put path in application navigator
+    var projectName = getParameterByName('projectName');
+    var analysisName = getParameterByName('analysisName');
+    $('#nav-project').text(projectName);
+    $('#nav-analysis').text(" \\ "+analysisName);    
 
     $('#algo-cat').text(algorithmType);
     $('#display-name').text(algorithmName);
@@ -338,7 +344,7 @@ $( document ).ready(function() {
             contentType: "application/json",
             data: jsonData,
             success: function(res){
-                window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId;
+                window.location.href = '../model/model.jag?analysisId='+analysisId+'&projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
