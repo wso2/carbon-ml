@@ -46,7 +46,7 @@
         <!-- Storage Details for muilt ML Models. StorageType can be either "file" or "hdfs" -->
 	<ModelStorage>
 		<StorageType>file</StorageType>
-	    	<StorageDirectory>ml/</StorageDirectory>
+	    	<StorageDirectory>/tmp</StorageDirectory>
         </ModelStorage>
 
 	<Algorithms>
