@@ -210,6 +210,7 @@
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
+                                                        '<a href="#" id="view-model" class="cu-reg-btn btn-compare" data-modelname="'+analysisModels[i]['name']+'" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>View</span></a>' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-compare" data-modelname="'+analysisModels[i]['name']+'" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Predict</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete">Delete Model</a>' +
                                                     '</div>' +
@@ -245,6 +246,14 @@
             var modelName = $(this).data('modelname');
             window.location.href = '../predict/predict.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName;
         });
+
+        $(document).on('click', '#view-model', function(e){ 
+            e.preventDefault();
+            
+            var modelId = $(this).data('modelid');
+            var modelName = $(this).data('modelname');
+            window.location.href = 'view-model.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName;
+        });        
 
         $(document).on('click', '#create-model', function(e){ 
             e.preventDefault();
