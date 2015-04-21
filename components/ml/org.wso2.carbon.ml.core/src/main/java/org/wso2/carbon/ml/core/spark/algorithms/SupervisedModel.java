@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,6 +17,9 @@
  */
 
 package org.wso2.carbon.ml.core.spark.algorithms;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,9 +40,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
-import org.wso2.carbon.ml.core.exceptions.MLEmailNotificationSenderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.impl.EmailNotificationSender;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
@@ -49,9 +50,6 @@ import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 import scala.Tuple2;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SupervisedModel {
     
@@ -160,7 +158,7 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
-            
+            probabilisticClassificationModelSummary.setWeights(logisticRegressionModel.weights().toArray());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
@@ -226,6 +224,7 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(svmModel);
+            probabilisticClassificationModelSummary.setWeights(svmModel.weights().toArray());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building SVM model: " + e.getMessage(), e);
@@ -256,6 +255,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
+            regressionModelSummary.setWeights(linearRegressionModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building linear regression model: "
@@ -288,6 +288,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
+            regressionModelSummary.setWeights(ridgeRegressionModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building ridge regression model: "
@@ -319,6 +320,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(lassoModel);
+            regressionModelSummary.setWeights(lassoModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building lasso regression model: "

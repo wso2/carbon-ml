@@ -43,6 +43,12 @@
 	<!-- Optional element. This element should point to a HDFS location where ML is allowed to store files. -->
 	<HdfsURL>hdfs://localhost:9000</HdfsURL>
 
+        <!-- Storage Details for muilt ML Models. StorageType can be either "file" or "hdfs" -->
+	<ModelStorage>
+		<StorageType>file</StorageType>
+	    	<StorageDirectory>ml/</StorageDirectory>
+        </ModelStorage>
+
 	<Algorithms>
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>

@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -79,6 +80,11 @@ public class MLModelHandler {
      */
     public void createModel(MLModelNew model) throws MLModelHandlerException {
         try {
+            // set the model storage configurations
+            ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
+            model.setStorageType(modelStorage.getStorageType());
+            model.setStorageDirectory(modelStorage.getStorageDirectory());
+            
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
         } catch (DatabaseHandlerException e) {

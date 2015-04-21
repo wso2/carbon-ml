@@ -56,6 +56,15 @@ public class MLConfiguration {
     @XmlElement(name = "SummaryStatisticsSettings")
     private SummaryStatisticsSettings summaryStatisticsSettings;
     
+    @XmlElement(name = "ModelStorage")
+    private ModelStorage modelStorage;
+    
+    public ModelStorage getModelStorage() {
+        return modelStorage;
+    }
+    public void setModelStorage(ModelStorage modelStorage) {
+        this.modelStorage = modelStorage;
+    }
     public String getDatabaseName() {
         return databaseName;
     }

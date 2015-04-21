@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -29,8 +29,12 @@ import java.util.List;
  * A utility class to store probabilistic classification model summary
  */
 public class ProbabilisticClassificationModelSummary implements ModelSummary,Serializable {
+
+    private static final long serialVersionUID = -3725591755536859086L;
     private String roc;
     private double auc;
+    private double [] weights;
+
     private List<PredictedVsActual> predictedVsActuals;
 
     /**
@@ -78,5 +82,19 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     @Override
     public String getModelSummaryType() {
         return MLConstants.PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY;
+    }
+    
+    /**
+     * @return Weights of each of the feature
+     */
+    public double[] getWeights() {
+        return weights;
+    }
+
+    /**
+     * @param weights Weights of each of the feature
+     */
+    public void setWeights(double[] weights) {
+        this.weights = weights;
     }
 }
