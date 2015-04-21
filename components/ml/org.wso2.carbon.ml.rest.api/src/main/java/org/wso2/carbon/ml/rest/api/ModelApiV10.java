@@ -15,6 +15,9 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -25,12 +28,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
@@ -213,6 +219,36 @@ public class ModelApiV10 extends MLRestAPI {
         } catch (MLModelHandlerException e) {
             logger.error(String.format("Error occured while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/{modelName}/import")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response exportModel(@PathParam("modelName") String modelName) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLModelNew model = mlModelHandler.getModel(tenantId, userName, modelName);
+            if(model != null) {
+                final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
+                StreamingOutput stream = new StreamingOutput() {
+                    public void write(OutputStream outputStream) throws IOException {
+                        ObjectOutputStream out = new ObjectOutputStream(outputStream);
+                        out.writeObject(generatedModel);
+                    }
+                };
+                return Response.ok(stream).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

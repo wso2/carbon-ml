@@ -65,12 +65,11 @@ public class Predictor {
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            Workflow facts = ctxt.getFacts();
-            String algorithmType = facts.getAlgorithmClass();
+            String algorithmType = model.getAlgorithmClass();
             if (MLConstants.CLASSIFICATION.equals(algorithmType)
                     || MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
                 
-                SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(facts.getAlgorithmName());
+                SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
                 
                 JavaSparkContext context = ctxt.getSparkContext();
                 List<double[]> dataList = new ArrayList<double[]>();
@@ -145,7 +144,7 @@ public class Predictor {
                 }
                 
             } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
-                UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(facts.getAlgorithmName());
+                UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
 
                 JavaSparkContext context = ctxt.getSparkContext();
                 List<double[]> dataList = new ArrayList<double[]>();
@@ -164,7 +163,7 @@ public class Predictor {
                     }
                     return kMeansPredictedDataList;
                 default:
-                    throw new AlgorithmNameException("Incorrect algorithm name: "+facts.getAlgorithmName()+" for model id: "+id);
+                    throw new AlgorithmNameException("Incorrect algorithm name: "+model.getAlgorithmName()+" for model id: "+id);
                 }
             } else {
                 throw new MLModelBuilderException(String.format(
