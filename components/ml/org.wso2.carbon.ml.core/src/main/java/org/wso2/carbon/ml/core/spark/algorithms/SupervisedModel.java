@@ -18,7 +18,10 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +46,7 @@ import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
+import org.wso2.carbon.ml.core.spark.summary.FeatureWeight;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -93,25 +97,30 @@ public class SupervisedModel {
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
             case LOGISTIC_REGRESSION:
-                summaryModel = buildLogisticRegressionModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildLogisticRegressionModel(modelId, trainingData, testingData, workflow, mlModel, 
+                        headerRow, responseIndex, columnSeparator);
                 break;
             case DECISION_TREE:
                 summaryModel = buildDecisionTreeModel(modelId, trainingData, testingData, workflow, mlModel);
                 break;
             case SVM:
-                summaryModel = buildSVMModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildSVMModel(modelId, trainingData, testingData, workflow, mlModel, headerRow, 
+                        responseIndex, columnSeparator);
                 break;
             case NAIVE_BAYES:
                 summaryModel = buildNaiveBayesModel(modelId, trainingData, testingData, workflow, mlModel);
                 break;
             case LINEAR_REGRESSION:
-                summaryModel = buildLinearRegressionModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildLinearRegressionModel(modelId, trainingData, testingData, workflow, mlModel,
+                        headerRow, responseIndex, columnSeparator);
                 break;
             case RIDGE_REGRESSION:
-                summaryModel = buildRidgeRegressionModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildRidgeRegressionModel(modelId, trainingData, testingData, workflow, mlModel,
+                        headerRow, responseIndex, columnSeparator);
                 break;
             case LASSO_REGRESSION:
-                summaryModel = buildLassoRegressionModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildLassoRegressionModel(modelId, trainingData, testingData, workflow, mlModel,
+                        headerRow, responseIndex, columnSeparator);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
@@ -142,7 +151,8 @@ public class SupervisedModel {
      * @throws MLModelBuilderException
      */
     private ModelSummary buildLogisticRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             LogisticRegression logisticRegression = new LogisticRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -159,7 +169,10 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
-            probabilisticClassificationModelSummary.setWeights(logisticRegressionModel.weights().toArray());
+            
+            List<FeatureWeight> featureWeights = getFeatureWeights(logisticRegressionModel.weights().toArray(), 
+                    headerRow.split(columnSeparator), responseIndex);
+            probabilisticClassificationModelSummary.setWeights(featureWeights);
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
@@ -211,7 +224,8 @@ public class SupervisedModel {
      * @throws              MLModelBuilderException
      */
     private ModelSummary buildSVMModel(long modelID, JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData,
-            Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,String columnSeparator)
+            throws MLModelBuilderException {
         try {
             SVM svm = new SVM();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -225,7 +239,10 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(svmModel);
-            probabilisticClassificationModelSummary.setWeights(svmModel.weights().toArray());
+            
+            List<FeatureWeight> featureWeights = getFeatureWeights(svmModel.weights().toArray(), 
+                headerRow.split(columnSeparator), responseIndex);
+            probabilisticClassificationModelSummary.setWeights(featureWeights);
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building SVM model: " + e.getMessage(), e);
@@ -243,7 +260,8 @@ public class SupervisedModel {
      * @throws              MLModelBuilderException
      */
     private ModelSummary buildLinearRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             LinearRegression linearRegression = new LinearRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -256,7 +274,10 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
-            regressionModelSummary.setWeights(linearRegressionModel.weights().toArray());
+            
+            List<FeatureWeight> featureWeights = getFeatureWeights(linearRegressionModel.weights().toArray(), 
+                headerRow.split(columnSeparator), responseIndex);
+            regressionModelSummary.setWeights(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building linear regression model: "
@@ -275,7 +296,8 @@ public class SupervisedModel {
      * @throws              MLModelBuilderException
      */
     private ModelSummary buildRidgeRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             RidgeRegression ridgeRegression = new RidgeRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -289,7 +311,10 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
-            regressionModelSummary.setWeights(ridgeRegressionModel.weights().toArray());
+            
+            List<FeatureWeight> featureWeights = getFeatureWeights(ridgeRegressionModel.weights().toArray(), 
+                headerRow.split(columnSeparator), responseIndex);
+            regressionModelSummary.setWeights(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building ridge regression model: "
@@ -308,7 +333,8 @@ public class SupervisedModel {
      * @throws              MLModelBuilderException
      */
     private ModelSummary buildLassoRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             LassoRegression lassoRegression = new LassoRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -321,7 +347,10 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(lassoModel);
-            regressionModelSummary.setWeights(lassoModel.weights().toArray());
+            
+            List<FeatureWeight> featureWeights = getFeatureWeights(lassoModel.weights().toArray(), 
+                headerRow.split(columnSeparator), responseIndex);
+            regressionModelSummary.setWeights(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building lasso regression model: "
@@ -354,5 +383,28 @@ public class SupervisedModel {
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building naive bayes model: " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * 
+     * @param weights   Array of feature weights
+     * @param features  Array of Feature names
+     * @param Response  Index of response feature
+     * @return
+     */
+    private List<FeatureWeight> getFeatureWeights(double[] weights, String[] features, int Response) {
+        List<FeatureWeight> featureWeights = new ArrayList<FeatureWeight>();
+        
+        // Remove the response variable from the features
+        List<String> featureNames = new ArrayList<String>(Arrays.asList(features));
+        featureNames.remove(Response);
+        
+        for(int i = 0 ; i < weights.length ; i++) {
+            FeatureWeight featureWeight = new FeatureWeight();
+            featureWeight.setFeatureName(featureNames.get(i));
+            featureWeight.setWeight(weights[i]);
+            featureWeights.add(featureWeight);
+        }
+        return featureWeights;
     }
 }

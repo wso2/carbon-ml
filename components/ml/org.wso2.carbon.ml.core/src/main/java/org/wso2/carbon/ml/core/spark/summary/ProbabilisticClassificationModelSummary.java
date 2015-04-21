@@ -33,7 +33,7 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private static final long serialVersionUID = -3725591755536859086L;
     private String roc;
     private double auc;
-    private double [] weights;
+    private  List<FeatureWeight> featureWeights;
 
     private List<PredictedVsActual> predictedVsActuals;
 
@@ -87,14 +87,14 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     /**
      * @return Weights of each of the feature
      */
-    public double[] getWeights() {
-        return weights;
+    public  List<FeatureWeight> getWeights() {
+        return featureWeights;
     }
 
     /**
-     * @param weights Weights of each of the feature
+     * @param featureWeights Weights of each of the feature
      */
-    public void setWeights(double[] weights) {
-        this.weights = weights;
+    public void setWeights( List<FeatureWeight> weights) {
+        this.featureWeights = weights;
     }
 }
