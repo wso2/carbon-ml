@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,6 +18,11 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -43,12 +48,12 @@ import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+
 import scala.Tuple2;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SupervisedModel {
+    
+    private static final Log logger = LogFactory.getLog(SupervisedModel.class);
     
     /**
      * @param modelID   Model ID
@@ -60,6 +65,7 @@ public class SupervisedModel {
             throws MLModelBuilderException {
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+        MLModel mlModel = new MLModel();
         try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
@@ -77,7 +83,6 @@ public class SupervisedModel {
                     MLConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
             // create a deployable MLModel object
-            MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
@@ -115,9 +120,9 @@ public class SupervisedModel {
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        } catch (Exception e) {
+        }catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: " +
-                    e.getMessage(), e);
+                        e.getMessage(), e);
         }
         finally {
             if (sparkContext != null) {
@@ -154,7 +159,7 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
-            
+            probabilisticClassificationModelSummary.setWeights(logisticRegressionModel.weights().toArray());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
@@ -220,6 +225,7 @@ public class SupervisedModel {
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(svmModel);
+            probabilisticClassificationModelSummary.setWeights(svmModel.weights().toArray());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building SVM model: " + e.getMessage(), e);
@@ -250,6 +256,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
+            regressionModelSummary.setWeights(linearRegressionModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building linear regression model: "
@@ -282,6 +289,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
+            regressionModelSummary.setWeights(ridgeRegressionModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building ridge regression model: "
@@ -313,6 +321,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(lassoModel);
+            regressionModelSummary.setWeights(lassoModel.weights().toArray());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building lasso regression model: "

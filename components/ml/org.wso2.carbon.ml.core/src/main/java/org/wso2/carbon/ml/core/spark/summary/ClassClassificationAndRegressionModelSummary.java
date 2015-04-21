@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -28,8 +28,11 @@ import java.util.List;
  * A utility class to store class classification model summary
  */
 public class ClassClassificationAndRegressionModelSummary implements ModelSummary, Serializable {
+
+    private static final long serialVersionUID = 5035275752959356840L;
     private double error;
     private List<PredictedVsActual> predictedVsActuals;
+    private double [] weights;
 
     /**
      * @return Returns classification error
@@ -62,5 +65,20 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     @Override
     public String getModelSummaryType() {
         return MLConstants.CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY;
+    }
+
+    
+    /**
+     * @return Weights of each of the feature
+     */
+    public double[] getWeights() {
+        return weights;
+    }
+
+    /**
+     * @param weights Weights of each of the feature
+     */
+    public void setWeights(double[] weights) {
+        this.weights = weights;
     }
 }

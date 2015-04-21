@@ -23,6 +23,7 @@ import java.util.Properties;
 import org.apache.spark.SparkConf;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -34,10 +35,12 @@ public class MLCoreServiceValueHolder {
     private Properties mlProperties;
     private String  bamServerUrl;
     private String  hdfsUrl;
+    private String emailNotificationEndpoint;
     private List<MLAlgorithm> algorithms;
     private SparkConf sparkConf;
     private ConfigurationContextService configurationContextService;
     private OutputEventAdapterService outputEventAdapterService;
+    private ModelStorage modelStorage;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -120,5 +123,21 @@ public class MLCoreServiceValueHolder {
 
     public void setHdfsUrl(String hdfsUrl) {
         this.hdfsUrl = hdfsUrl;
+    }
+    
+    public String getEmailNotificationEndpoint() {
+        return emailNotificationEndpoint;
+    }
+
+    public void setEmailNotificationEndpoint(String emailNotificationEndpoint) {
+        this.emailNotificationEndpoint = emailNotificationEndpoint;
+    }
+    
+    public ModelStorage getModelStorage() {
+        return modelStorage;
+    }
+
+    public void setModelStorage(ModelStorage modelStorage) {
+        this.modelStorage = modelStorage;
     }
 }

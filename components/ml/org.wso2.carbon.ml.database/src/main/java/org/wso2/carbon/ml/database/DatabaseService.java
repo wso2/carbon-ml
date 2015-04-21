@@ -71,6 +71,16 @@ public interface DatabaseService {
     public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
+     * Retrieves the path of the value-set having the given ID, from the
+     * database.
+     *
+     * @param datasetId         Unique Identifier of the dataset
+     * @return                  Absolute path of a given dataset
+     * @throws                  DatabaseHandlerException
+     */
+    public String getDatasetUri(long datasetId) throws DatabaseHandlerException;
+
+    /**
      * @param datasetName   Name of the data-set
      * @param tenantId      Tenant Id
      * @return              Unique Id of the data-set
@@ -599,9 +609,9 @@ public interface DatabaseService {
 
     /**
      * Get the dataset schema id of a given analysis
-     * @param analysisId unique id of the analysis
-     * @return
-     * @throws DatabaseHandlerException
+     * @param analysisId    Unique id of the analysis
+     * @return              ID of the dataset schema
+     * @throws              DatabaseHandlerException
      */
     public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException;
 
@@ -610,19 +620,19 @@ public interface DatabaseService {
      * @param tenantId  tenant id
      * @param userName  username
      * @param modelId   model id
-     * @throws DatabaseHandlerException
+     * @throws          DatabaseHandlerException
      */
-    void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+    public void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
      * Get all the analyses of a project.
-     * @param tenantId tenant id
-     * @param userName user name
-     * @param projectId project id
-     * @return list of {@link MLAnalysis}
-     * @throws DatabaseHandlerException
+     * @param tenantId      tenant id
+     * @param userName      user name
+     * @param projectId     project id
+     * @return              list of {@link MLAnalysis}
+     * @throws              DatabaseHandlerException
      */
-    List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
+    public List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
             throws DatabaseHandlerException;
 
     /**
@@ -630,9 +640,17 @@ public interface DatabaseService {
      * @param tenantId
      * @param userName
      * @param analysisId
-     * @return list of models
-     * @throws DatabaseHandlerException
+     * @return              list of models
+     * @throws              DatabaseHandlerException
      */
-    List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+    public List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
+    /**
+     * Retrieve summary of the model
+     * 
+     * @param modelId   ID of the model
+     * @return          Model Summary
+     * @throws          DatabaseHandlerException
+     */
+    public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
 }

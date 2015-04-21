@@ -83,7 +83,6 @@ public class UnsupervisedModel {
             }
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
-            
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building unsupervised machine learning model: " +

@@ -27,6 +27,7 @@ import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
+import org.wso2.carbon.ml.core.impl.EmailNotificationSender;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -68,6 +69,8 @@ public class MLCoreDS {
             valueHolder.setBamServerUrl(mlConfig.getBamServerURL());
             valueHolder.setHdfsUrl(mlConfig.getHdfsUrl());
             valueHolder.setAlgorithms(mlConfig.getMlAlgorithms());
+            valueHolder.setEmailNotificationEndpoint(mlConfig.getEmailNotificationEndpoint());
+            valueHolder.setModelStorage(mlConfig.getModelStorage());
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
             valueHolder.setSparkConf(sparkConf);
@@ -94,7 +97,6 @@ public class MLCoreDS {
                     mgtConsoleTransport);
             log.info("WSO2 Machine Learner UI : https://" + hostName + ":"
                     + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
-
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }

@@ -32,11 +32,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
+import org.wso2.carbon.ml.core.impl.MLModelHandler;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
 import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 
@@ -51,9 +54,11 @@ public class DatasetApiV10 extends MLRestAPI {
      * Delegates all the dataset related operations.
      */
     private MLDatasetProcessor datasetProcessor;
+    private MLModelHandler mlModelHandler;
 
     public DatasetApiV10() {
         datasetProcessor = new MLDatasetProcessor();
+        mlModelHandler = new MLModelHandler();
     }
 
     @OPTIONS
@@ -319,6 +324,30 @@ public class DatasetApiV10 extends MLRestAPI {
                     String.format(
                             "Error occurred while retrieving chart sample points of dataset version [id] %s of tenant [id] %s [user] %s ",
                             versionsetId, tenantId, userName), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * Get cluster points of a dataset for a feature list.
+     */
+    @GET
+    @Path("/{datasetId}/cluster")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getClusterPoints(@PathParam("datasetId") long datasetId,
+                                     @QueryParam("features") String featureListString, @QueryParam("noOfClusters") int noOfClusters) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<ClusterPoint> points = mlModelHandler.getClusterPoints(tenantId, userName, datasetId, featureListString, noOfClusters);
+            return Response.ok(points).build();
+        } catch (DatabaseHandlerException e) {
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving cluster points of dataset version [id] %s of tenant [id] %s [user] %s ",
+                            datasetId, tenantId, userName), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

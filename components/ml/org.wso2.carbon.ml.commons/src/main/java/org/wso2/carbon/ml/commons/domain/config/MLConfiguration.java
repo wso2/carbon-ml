@@ -42,6 +42,9 @@ public class MLConfiguration {
     @XmlElement(name = "HdfsURL")
     private String hdfsUrl;
     
+    @XmlElement(name = "EmailNotificationEndpoint")
+    private String emailNotificationEndpoint;
+    
     @XmlElementWrapper(name="Properties")
     @XmlElement(name = "Property")
     private List<MLProperty> properties;
@@ -53,6 +56,15 @@ public class MLConfiguration {
     @XmlElement(name = "SummaryStatisticsSettings")
     private SummaryStatisticsSettings summaryStatisticsSettings;
     
+    @XmlElement(name = "ModelStorage")
+    private ModelStorage modelStorage;
+    
+    public ModelStorage getModelStorage() {
+        return modelStorage;
+    }
+    public void setModelStorage(ModelStorage modelStorage) {
+        this.modelStorage = modelStorage;
+    }
     public String getDatabaseName() {
         return databaseName;
     }
@@ -88,5 +100,11 @@ public class MLConfiguration {
     }
     public void setHdfsUrl(String hdfsUrl) {
         this.hdfsUrl = hdfsUrl;
+    }
+    public String getEmailNotificationEndpoint() {
+        return emailNotificationEndpoint;
+    }
+    public void setEmailNotificationEndpoint(String emailNotificationEndpoint) {
+        this.emailNotificationEndpoint = emailNotificationEndpoint;
     }
 }
