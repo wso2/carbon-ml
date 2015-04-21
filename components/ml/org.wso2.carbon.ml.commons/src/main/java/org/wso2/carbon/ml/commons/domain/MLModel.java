@@ -27,6 +27,7 @@ import java.util.List;
 public class MLModel implements Serializable {
     private static final long serialVersionUID = -1310680827450949233L;
     private String algorithmName;
+    private String algorithmClass;
     private List<Feature> features;
     private Serializable model;
 
@@ -36,6 +37,15 @@ public class MLModel implements Serializable {
 
     public void setAlgorithmName(String algorithmName) {
         this.algorithmName = algorithmName;
+    }
+
+
+    public String getAlgorithmClass() {
+        return algorithmClass;
+    }
+
+    public void setAlgorithmClass(String algorithmClass) {
+        this.algorithmClass = algorithmClass;
     }
 
     public List<Feature> getFeatures() {

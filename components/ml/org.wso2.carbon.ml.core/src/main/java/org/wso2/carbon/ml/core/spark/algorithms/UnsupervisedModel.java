@@ -70,6 +70,7 @@ public class UnsupervisedModel {
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
+            mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());

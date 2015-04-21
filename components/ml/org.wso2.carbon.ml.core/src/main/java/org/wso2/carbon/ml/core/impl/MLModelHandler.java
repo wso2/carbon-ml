@@ -224,16 +224,10 @@ public class MLModelHandler {
         try {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            MLModelNew model = databaseService.getModel(tenantId, userName, modelId);
-            String dataType = databaseService.getDataTypeOfModel(modelId);
-            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
-            context.setColumnSeparator(columnSeparator);
-            context.setFacts(facts);
             context.setDataToBePredicted(data);
 
             JavaSparkContext sparkContext = null;
@@ -251,8 +245,8 @@ public class MLModelHandler {
             log.info(String.format("Prediction from model [id] %s was successful.", modelId));
             return predictions;
 
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while predicting: " + e.getMessage(), e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);

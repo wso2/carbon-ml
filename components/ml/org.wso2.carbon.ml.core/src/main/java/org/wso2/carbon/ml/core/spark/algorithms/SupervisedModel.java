@@ -79,6 +79,7 @@ public class SupervisedModel {
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
+            mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
             
             ModelSummary summaryModel = null;
