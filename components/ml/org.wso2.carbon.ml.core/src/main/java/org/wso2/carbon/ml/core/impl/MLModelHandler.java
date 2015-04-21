@@ -25,14 +25,17 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.mllib.clustering.KMeansModel;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -47,14 +50,20 @@ import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedModel;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedModel;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
+import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import scala.Tuple2;
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.
@@ -338,7 +347,75 @@ public class MLModelHandler {
         }
     }
 
-    
+    public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString, int noOfClusters)
+            throws DatabaseHandlerException {
+        // assign current thread context class loader to a variable
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+
+        List<String> features = Arrays.asList(featureListString.split("\\s*,\\s*"));
+
+        try {
+            List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+
+            String datasetURL = databaseService.getDatasetUri(datasetId);
+            // class loader is switched to JavaSparkContext.class's class loader
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            // create a new spark configuration
+            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+			// set app name
+            sparkConf.setAppName(String.valueOf(datasetId));
+            // create a new java spark context
+            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+            // parse lines in the dataset
+            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
+            // get header line
+            String headerRow = lines.take(1).get(0);
+            // get column separator
+            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
+            Pattern pattern = Pattern.compile(columnSeparator);
+            // get selected feature indices
+            List<Integer> featureIndices = new ArrayList<Integer>();
+            for (String feature : features) {
+                featureIndices.add(MLUtils.getFeatureIndex(feature, headerRow, columnSeparator));
+            }
+            JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors = null;
+
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
+            double sampleFraction = sampleSize / (lines.count() - 1);
+            // Use entire dataset if number of records is less than or equal to sample fraction
+            if (sampleFraction >= 1.0) {
+                featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
+            }
+            // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
+            else {
+                featureVectors = lines.filter(new HeaderFilter(headerRow))
+                        .sample(false, sampleFraction).map(new LineToTokens(pattern))
+                        .filter(new MissingValuesFilter())
+                        .map(new TokensToVectors(featureIndices));
+            }
+            KMeans kMeans = new KMeans();
+            KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
+            // Populate cluster points list with predicted clusters and features
+            List<Tuple2<Integer, org.apache.spark.mllib.linalg.Vector>> kMeansPredictions = kMeansModel.predict(featureVectors).zip(featureVectors)
+                    .collect();
+            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
+                ClusterPoint clusterPoint = new ClusterPoint();
+                clusterPoint.setCluster(kMeansPrediction._1());
+                clusterPoint.setFeatures(kMeansPrediction._2().toArray());
+                clusterPoints.add(clusterPoint);
+            }
+            sparkContext.stop();
+            return clusterPoints;
+        } catch (DatabaseHandlerException e) {
+            throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
+        } finally {
+            // switch class loader back to thread context class loader
+            Thread.currentThread().setContextClassLoader(tccl);
+        }
+    }
+
     class ModelBuilder implements Runnable {
 
         private long id;
