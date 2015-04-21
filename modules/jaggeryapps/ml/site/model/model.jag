@@ -98,7 +98,7 @@
 				<label class="input-label">Dataset version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
                 <div class="input-control text">
                     <select id="dataset-version" class="form-control">
-                        <option>Select..</option>
+                        <!-- <option>Select..</option> -->
                     </select>
                 </div>
 
