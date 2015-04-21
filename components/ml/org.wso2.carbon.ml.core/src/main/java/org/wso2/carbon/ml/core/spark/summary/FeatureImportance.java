@@ -21,39 +21,39 @@ package org.wso2.carbon.ml.core.spark.summary;
 import java.io.Serializable;
 
 /**
- * DTO class to store feature vs. weight value
+ * DTO class to store feature vs. value value
  */
-public class FeatureWeight implements Serializable {
+public class FeatureImportance implements Serializable {
 
     private static final long serialVersionUID = 4836787591464024343L;
-    private String featureName;
-    private double weight;
+    private String label; //feature name. This is refer to as "label" according to the requirement of the graph.
+    private double value; //weight. This is refer to as "value" according to the requirement of the graph.
 
     /**
      * @return Returns feature name
      */
-    public String getFeatureName() {
-        return featureName;
+    public String getLabel() {
+        return label;
     }
 
     /**
      * @param feature Sets feature name
      */
-    public void setFeatureName(String featureName) {
-        this.featureName = featureName;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
-     * @return Returns weight
+     * @return Returns value
      */
-    public double getWeight() {
-        return weight;
+    public double getValue() {
+        return value;
     }
 
     /**
-     * @param weight Sets weight
+     * @param value Sets value
      */
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public void setValue(double value) {
+        this.value = value;
     }
 }

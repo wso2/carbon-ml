@@ -32,7 +32,7 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     private static final long serialVersionUID = 5035275752959356840L;
     private double error;
     private List<PredictedVsActual> predictedVsActuals;
-    private List<FeatureWeight> featureWeights;
+    private List<FeatureImportance> featureImportance;
 
     /**
      * @return Returns classification error
@@ -71,14 +71,14 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     /**
      * @return Weights of each of the feature
      */
-    public List<FeatureWeight> getWeights() {
-        return featureWeights;
+    public List<FeatureImportance> getFeatureImportance() {
+        return featureImportance;
     }
 
     /**
-     * @param featureWeights Weights of each of the feature
+     * @param featureImportance Weights of each of the feature
      */
-    public void setWeights(List<FeatureWeight> weights) {
-        this.featureWeights = weights;
+    public void setFeatureImportance(List<FeatureImportance> featureImportance) {
+        this.featureImportance = featureImportance;
     }
 }
