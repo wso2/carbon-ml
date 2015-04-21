@@ -330,10 +330,9 @@ public class MLModelHandler {
             String datasetURL = databaseService.getDatasetUri(datasetId);
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            // class loader is switched to JavaSparkContext.class's class loader
-            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             // create a new spark configuration
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+			// set app name
             sparkConf.setAppName(String.valueOf(datasetId));
             // create a new java spark context
             JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
@@ -350,14 +349,16 @@ public class MLModelHandler {
                 featureIndices.add(MLUtils.getFeatureIndex(feature, headerRow, columnSeparator));
             }
             JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors = null;
-            double sampleFraction = 10000.0 / (lines.count() - 1);
-            // Use entire dataset if number of records is less than or equal to 10000
+
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
+            double sampleFraction = sampleSize / (lines.count() - 1);
+            // Use entire dataset if number of records is less than or equal to sample fraction
             if (sampleFraction >= 1.0) {
                 featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
                         .filter(new MissingValuesFilter())
                         .map(new TokensToVectors(featureIndices));
             }
-            // Use ramdomly selected 10000 rows if number of records is > 10000
+            // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
             else {
                 featureVectors = lines.filter(new HeaderFilter(headerRow))
                         .sample(false, sampleFraction).map(new LineToTokens(pattern))
