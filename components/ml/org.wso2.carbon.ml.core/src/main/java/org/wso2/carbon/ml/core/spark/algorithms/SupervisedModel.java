@@ -46,7 +46,7 @@ import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
-import org.wso2.carbon.ml.core.spark.summary.FeatureWeight;
+import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -170,9 +170,9 @@ public class SupervisedModel {
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
             
-            List<FeatureWeight> featureWeights = getFeatureWeights(logisticRegressionModel.weights().toArray(), 
+            List<FeatureImportance> featureWeights = getFeatureWeights(logisticRegressionModel.weights().toArray(), 
                     headerRow.split(columnSeparator), responseIndex);
-            probabilisticClassificationModelSummary.setWeights(featureWeights);
+            probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
@@ -240,9 +240,9 @@ public class SupervisedModel {
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(svmModel);
             
-            List<FeatureWeight> featureWeights = getFeatureWeights(svmModel.weights().toArray(), 
+            List<FeatureImportance> featureWeights = getFeatureWeights(svmModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
-            probabilisticClassificationModelSummary.setWeights(featureWeights);
+            probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building SVM model: " + e.getMessage(), e);
@@ -275,9 +275,9 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
             
-            List<FeatureWeight> featureWeights = getFeatureWeights(linearRegressionModel.weights().toArray(), 
+            List<FeatureImportance> featureWeights = getFeatureWeights(linearRegressionModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
-            regressionModelSummary.setWeights(featureWeights);
+            regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building linear regression model: "
@@ -312,9 +312,9 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
             
-            List<FeatureWeight> featureWeights = getFeatureWeights(ridgeRegressionModel.weights().toArray(), 
+            List<FeatureImportance> featureWeights = getFeatureWeights(ridgeRegressionModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
-            regressionModelSummary.setWeights(featureWeights);
+            regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building ridge regression model: "
@@ -348,9 +348,9 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(lassoModel);
             
-            List<FeatureWeight> featureWeights = getFeatureWeights(lassoModel.weights().toArray(), 
+            List<FeatureImportance> featureWeights = getFeatureWeights(lassoModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
-            regressionModelSummary.setWeights(featureWeights);
+            regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building lasso regression model: "
@@ -392,18 +392,18 @@ public class SupervisedModel {
      * @param Response  Index of response feature
      * @return
      */
-    private List<FeatureWeight> getFeatureWeights(double[] weights, String[] features, int Response) {
-        List<FeatureWeight> featureWeights = new ArrayList<FeatureWeight>();
+    private List<FeatureImportance> getFeatureWeights(double[] weights, String[] features, int Response) {
+        List<FeatureImportance> featureWeights = new ArrayList<FeatureImportance>();
         
         // Remove the response variable from the features
         List<String> featureNames = new ArrayList<String>(Arrays.asList(features));
         featureNames.remove(Response);
         
         for(int i = 0 ; i < weights.length ; i++) {
-            FeatureWeight featureWeight = new FeatureWeight();
-            featureWeight.setFeatureName(featureNames.get(i));
-            featureWeight.setWeight(weights[i]);
-            featureWeights.add(featureWeight);
+            FeatureImportance featureImportance = new FeatureImportance();
+            featureImportance.setLabel(featureNames.get(i));
+            featureImportance.setValue(weights[i]);
+            featureWeights.add(featureImportance);
         }
         return featureWeights;
     }
