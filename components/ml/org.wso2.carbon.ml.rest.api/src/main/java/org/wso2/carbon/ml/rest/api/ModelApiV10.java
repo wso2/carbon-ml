@@ -33,6 +33,7 @@ import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 
@@ -192,6 +193,25 @@ public class ModelApiV10 extends MLRestAPI {
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
                     "Error occured while deleting a model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    
+    @GET
+    @Path("/{modelId}/summary")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getModelSummary(@PathParam("modelId") long modelId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            ModelSummary modelSummary =  mlModelHandler.getModelSummary(modelId);
+            return Response.ok(modelSummary).build();
+        } catch (MLModelHandlerException e) {
+            logger.error(String.format("Error occured while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

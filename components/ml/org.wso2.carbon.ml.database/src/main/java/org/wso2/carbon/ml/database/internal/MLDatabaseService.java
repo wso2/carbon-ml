@@ -840,6 +840,33 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
+    
+    /**
+     * Retrieve the model summary
+     */
+    @Override
+    public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement getStatement = null;
+        ResultSet result = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
+            getStatement.setLong(1, modelId);
+            result = getStatement.executeQuery();
+            if (result.first()) {
+                return (ModelSummary) result.getObject(1);
+            } else {
+                throw new DatabaseHandlerException("Summary not available for model: " + modelId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving the summary " + "of model " + 
+                    modelId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getStatement);
+        }
+    }
 
     /**
      * Update the model storage

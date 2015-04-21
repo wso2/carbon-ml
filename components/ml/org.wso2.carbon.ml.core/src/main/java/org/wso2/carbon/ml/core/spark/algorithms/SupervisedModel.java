@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -35,7 +37,9 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.MLEmailNotificationSenderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.impl.EmailNotificationSender;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
@@ -43,12 +47,15 @@ import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+
 import scala.Tuple2;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SupervisedModel {
+    
+    private static final Log logger = LogFactory.getLog(SupervisedModel.class);
     
     /**
      * @param modelID   Model ID
@@ -60,6 +67,7 @@ public class SupervisedModel {
             throws MLModelBuilderException {
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+        MLModel mlModel = new MLModel();
         try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
@@ -77,7 +85,6 @@ public class SupervisedModel {
                     MLConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
             // create a deployable MLModel object
-            MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setFeatures(workflow.getFeatures());
             
@@ -114,9 +121,9 @@ public class SupervisedModel {
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        } catch (Exception e) {
+        }catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: " +
-                    e.getMessage(), e);
+                        e.getMessage(), e);
         }
         finally {
             if (sparkContext != null) {

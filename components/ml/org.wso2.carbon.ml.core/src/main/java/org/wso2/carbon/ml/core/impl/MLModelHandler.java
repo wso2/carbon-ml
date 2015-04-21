@@ -36,6 +36,14 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLStorage;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -129,13 +137,29 @@ public class MLModelHandler {
     }
 
     /**
-     * @param type type of the storage file, hdfs etc.
-     * @param location root directory of the file location.
-     * @throws MLModelHandlerException
+     * @param type      type of the storage file, hdfs etc.
+     * @param location  root directory of the file location.
+     * @throws          MLModelHandlerException
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
         try {
             databaseService.updateModelStorage(modelId, storage.getType(), storage.getLocation());
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e);
+        }
+    }
+    
+
+    /**
+     * Get the summary of a model
+     * 
+     * @param modelId   ID of the model
+     * @return          Model Summary
+     * @throws          MLModelHandlerException
+     */
+    public ModelSummary getModelSummary(long modelId) throws MLModelHandlerException {
+        try {
+            return databaseService.getModelSummary(modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
         }
@@ -390,17 +414,32 @@ public class MLModelHandler {
 
         private long id;
         private MLModelConfigurationContext ctxt;
+        private int tenantId;
+        private String tenantDomain;
+        private String username;
+        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance().getEmailNotificationEndpoint();
 
         public ModelBuilder(long modelId, MLModelConfigurationContext context) {
             id = modelId;
             ctxt = context;
+            CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            tenantId = carbonContext.getTenantId();
+            tenantDomain = carbonContext.getTenantDomain();
+            username  = carbonContext.getUsername();
         }
 
         @Override
         public void run() {
+            String[] emailTemplateParameters = {username};
             try {
+                //Set tenant info in the carbon context
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+                
                 // class loader is switched to JavaSparkContext.class's class loader
                 Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
                 MLModel model;
                 if (MLConstants.CLASSIFICATION.equals(algorithmType)
@@ -414,13 +453,14 @@ public class MLModelHandler {
                     throw new MLModelBuilderException(String.format(
                             "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
                 }
-
                 persistModel(id, ctxt.getModel().getName(), model);
+                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint, emailTemplateParameters);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
+                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint, emailTemplateParameters);
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
             }
         }
-
     }
-
 }

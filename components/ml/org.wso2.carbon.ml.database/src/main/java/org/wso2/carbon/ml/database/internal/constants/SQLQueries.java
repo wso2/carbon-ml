@@ -113,6 +113,8 @@ public class SQLQueries {
             + "VALUES(?,?,?,?,?, CURRENT_TIMESTAMP(),?,?)";
 
     public static final String UPDATE_MODEL_SUMMARY = "UPDATE ML_MODEL SET SUMMARY=? where MODEL_ID=?";
+    
+    public static final String GET_MODEL_SUMMARY = "SELECT SUMMARY FROM ML_MODEL WHERE MODEL_ID=?";
 
     public static final String UPDATE_MODEL_STORAGE = "UPDATE ML_MODEL SET STORAGE_TYPE=?, STORAGE_LOCATION=? where MODEL_ID=?";
 
