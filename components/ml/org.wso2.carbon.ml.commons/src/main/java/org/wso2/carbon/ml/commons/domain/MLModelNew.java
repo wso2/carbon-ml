@@ -31,6 +31,7 @@ public class MLModelNew {
     private long versionSetId;
     private String storageType;
     private String storageDirectory;
+    private String status;
 
     public int getTenantId() {
         return tenantId;
@@ -103,12 +104,20 @@ public class MLModelNew {
     public void setVersionSetId(long versionSetId) {
         this.versionSetId = versionSetId;
     }
+    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
         return "MLModelNew [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
                 + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", valueSetId=" + versionSetId
-                + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + "]";
+                + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + ", status=" + status + "]";
     }
 
 }

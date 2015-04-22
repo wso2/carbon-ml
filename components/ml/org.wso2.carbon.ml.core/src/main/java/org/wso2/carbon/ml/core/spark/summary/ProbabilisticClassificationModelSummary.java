@@ -34,8 +34,17 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private String roc;
     private double auc;
     private  List<FeatureImportance> featureImportance;
-
     private List<PredictedVsActual> predictedVsActuals;
+    private String algorithm;
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+    
 
     /**
      * @return Returns area under curve (AUC)

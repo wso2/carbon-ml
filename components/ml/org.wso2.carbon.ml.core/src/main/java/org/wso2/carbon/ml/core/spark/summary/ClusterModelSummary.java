@@ -27,6 +27,15 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
 
     private double trainDataComputeCost;
     private double testDataComputeCost;
+    private String algorithm;
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
 
     @Override public String getModelSummaryType() {
         return MLConstants.CLUSTER_MODEL_SUMMARY;

@@ -221,6 +221,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(5, model.getUserName());
             insertStatement.setString(6, model.getStorageType());
             insertStatement.setString(7, model.getStorageDirectory());
+            insertStatement.setString(7, MLConstants.MODEL_STATUS_NOT_STARTED);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -881,7 +882,8 @@ public class MLDatabaseService implements DatabaseService {
             updateStatement = connection.prepareStatement(SQLQueries.UPDATE_MODEL_STORAGE);
             updateStatement.setObject(1, storageType);
             updateStatement.setObject(2, location);
-            updateStatement.setLong(3, modelId);
+            updateStatement.setString(3, MLConstants.MODEL_STATUS_COMPLETE);
+            updateStatement.setLong(4, modelId);
             updateStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -891,6 +893,37 @@ public class MLDatabaseService implements DatabaseService {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occurred while updating the model storage " + "of model "
+                    + modelId + ": " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
+        }
+    }
+    
+    /**
+     * Update the model storage
+     */
+    @Override
+    public void updateModelStatus(long modelId, String status) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_MODEL_STATUS);
+            updateStatement.setString(1, status);
+            updateStatement.setLong(2, modelId);
+            updateStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the status of model: " + modelId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while updating the status" + "of model "
                     + modelId + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -1606,6 +1639,7 @@ public class MLDatabaseService implements DatabaseService {
                 model.setName(modelName);
                 model.setTenantId(tenantId);
                 model.setUserName(userName);
+                model.setStatus(result.getString(7));
                 return model;
             } else {
                 return null;
