@@ -221,7 +221,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(5, model.getUserName());
             insertStatement.setString(6, model.getStorageType());
             insertStatement.setString(7, model.getStorageDirectory());
-            insertStatement.setString(7, MLConstants.MODEL_STATUS_NOT_STARTED);
+            insertStatement.setString(8, MLConstants.MODEL_STATUS_NOT_STARTED);
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
