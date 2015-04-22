@@ -146,7 +146,7 @@
     var datasetId = getParameterByName('datasetId');
     var projectName = getParameterByName('projectName');
     var analysisName = getParameterByName('analysisName');
-    var modelName = getParameterByName('modelName');    
+    var modelName = getParameterByName('modelName');
 
     $(document).ready(function() {
 
