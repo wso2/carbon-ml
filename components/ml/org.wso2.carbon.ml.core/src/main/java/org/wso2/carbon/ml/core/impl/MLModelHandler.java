@@ -87,15 +87,22 @@ public class MLModelHandler {
      * @param model model to be created.
      * @throws MLModelHandlerException
      */
-    public void createModel(MLModelNew model) throws MLModelHandlerException {
+    public MLModelNew createModel(MLModelNew model) throws MLModelHandlerException {
         try {
             // set the model storage configurations
             ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
             model.setStorageType(modelStorage.getStorageType());
             model.setStorageDirectory(modelStorage.getStorageDirectory());
             
+            // set model name
+            String modelName = databaseService.getAnalysis(model.getTenantId(), model.getUserName(), model.getAnalysisId()).getName();
+            modelName = modelName + "." + MLConstants.MODEL_NAME +  "." + MLUtils.getDate();
+            model.setName(modelName);
+            model.setStatus(MLConstants.MODEL_STATUS_NOT_STARTED);
+            
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
+            return model;
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e);
         }
@@ -303,7 +310,7 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelName + "." + MLUtils.getDate();
+            String outPath = storageLocation + File.separator + modelName;
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {

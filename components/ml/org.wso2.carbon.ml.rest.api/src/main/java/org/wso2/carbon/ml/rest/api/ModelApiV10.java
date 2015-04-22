@@ -70,8 +70,7 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response createModel(MLModelNew model) {
-        if (model.getName() == null || model.getName().isEmpty() || model.getAnalysisId() == 0 || 
-                model.getVersionSetId() == 0) {
+        if (model.getAnalysisId() == 0 || model.getVersionSetId() == 0) {
             logger.error("Required parameters missing");
             return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
         }
@@ -81,8 +80,8 @@ public class ModelApiV10 extends MLRestAPI {
             String userName = carbonContext.getUsername();
             model.setTenantId(tenantId);
             model.setUserName(userName);
-            mlModelHandler.createModel(model);
-            return Response.ok().build();
+            MLModelNew insertedModel = mlModelHandler.createModel(model);
+            return Response.ok(insertedModel).build();
         } catch (MLModelHandlerException e) {
             logger.error("Error occurred while creating a model : " + model, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
