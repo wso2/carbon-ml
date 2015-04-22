@@ -221,7 +221,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(5, model.getUserName());
             insertStatement.setString(6, model.getStorageType());
             insertStatement.setString(7, model.getStorageDirectory());
-            insertStatement.setString(8, MLConstants.MODEL_STATUS_NOT_STARTED);
+            insertStatement.setString(8, model.getStatus());
             insertStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
@@ -1515,6 +1515,39 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting analysis for analysis name: "
                     + analysisName + ", tenant id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+    
+    @Override
+    public MLAnalysis getAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_ANALYSIS_BY_ID);
+            statement.setLong(1, analysisId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLAnalysis analysis = new MLAnalysis();
+                analysis.setId(analysisId);
+                analysis.setName(result.getString(1));
+                analysis.setProjectId(result.getLong(2));
+                analysis.setComments(MLDatabaseUtils.toString(result.getClob(3)));
+                analysis.setTenantId(tenantId);
+                analysis.setUserName(userName);
+                return analysis;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while retrieving analysis with Id: "
+                    + analysisId + ", tenant id:" + tenantId + " and username:" + userName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);

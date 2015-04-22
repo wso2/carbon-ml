@@ -81,7 +81,9 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     public static final String ALGORITHM_TYPE = "algorithmType";
     public static final String HYPER_PARAMETERS = "hyperParameters";
     
-    // model settings json
+    public static final String MODEL_NAME = "Model";
+    
+    // model statuses
     public static final String MODEL_STATUS_NOT_STARTED = "Not Started";
     public static final String MODEL_STATUS_IN_PROGRESS = "In Progress";
     public static final String MODEL_STATUS_COMPLETE = "Complete";

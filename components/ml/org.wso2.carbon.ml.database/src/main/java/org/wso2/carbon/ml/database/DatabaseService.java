@@ -655,4 +655,6 @@ public interface DatabaseService {
     public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
 
     void updateModelStatus(long modelId, String status) throws DatabaseHandlerException;
+
+    MLAnalysis getAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 }
