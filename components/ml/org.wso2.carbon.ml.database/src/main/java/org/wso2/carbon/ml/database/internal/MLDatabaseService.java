@@ -1676,6 +1676,7 @@ public class MLDatabaseService implements DatabaseService {
                 model.setStorageDirectory(result.getString(6));
                 model.setTenantId(tenantId);
                 model.setUserName(userName);
+                model.setStatus(result.getString(7));
                 return model;
             } else {
                 return null;
@@ -1714,6 +1715,7 @@ public class MLDatabaseService implements DatabaseService {
                 model.setName(result.getString(7));
                 model.setTenantId(tenantId);
                 model.setUserName(userName);
+                model.setStatus(result.getString(8));
                 models.add(model);
             }
             return models;
@@ -1750,6 +1752,7 @@ public class MLDatabaseService implements DatabaseService {
                 model.setName(result.getString(7));
                 model.setTenantId(tenantId);
                 model.setUserName(userName);
+                model.setStatus(result.getString(8));
                 models.add(model);
             }
             return models;
