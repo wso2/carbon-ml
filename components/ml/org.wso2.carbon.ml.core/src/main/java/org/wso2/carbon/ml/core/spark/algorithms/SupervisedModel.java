@@ -173,6 +173,7 @@ public class SupervisedModel {
             List<FeatureImportance> featureWeights = getFeatureWeights(logisticRegressionModel.weights().toArray(), 
                     headerRow.split(columnSeparator), responseIndex);
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
+            probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
@@ -205,6 +206,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             mlModel.setModel(decisionTreeModel);
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.DECISION_TREE.toString());
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building decision tree model: " + e.getMessage(),
@@ -243,6 +245,7 @@ public class SupervisedModel {
             List<FeatureImportance> featureWeights = getFeatureWeights(svmModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
+            probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.SVM.toString());
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building SVM model: " + e.getMessage(), e);
@@ -278,6 +281,7 @@ public class SupervisedModel {
             List<FeatureImportance> featureWeights = getFeatureWeights(linearRegressionModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
             regressionModelSummary.setFeatureImportance(featureWeights);
+            regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LINEAR_REGRESSION.toString());
             return regressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building linear regression model: "
@@ -314,6 +318,7 @@ public class SupervisedModel {
             
             List<FeatureImportance> featureWeights = getFeatureWeights(ridgeRegressionModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
+            regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.RIDGE_REGRESSION.toString());
             regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
@@ -350,6 +355,7 @@ public class SupervisedModel {
             
             List<FeatureImportance> featureWeights = getFeatureWeights(lassoModel.weights().toArray(), 
                 headerRow.split(columnSeparator), responseIndex);
+            regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LASSO_REGRESSION.toString());
             regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
         } catch (Exception e) {
@@ -379,6 +385,7 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             mlModel.setModel(naiveBayesModel);
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.NAIVE_BAYES.toString());
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building naive bayes model: " + e.getMessage(), e);

@@ -33,6 +33,15 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     private double error;
     private List<PredictedVsActual> predictedVsActuals;
     private List<FeatureImportance> featureImportance;
+    private String algorithm;
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
 
     /**
      * @return Returns classification error

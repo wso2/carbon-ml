@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.commons.domain;
 
 public interface ModelSummary {
+    
     /**
      *
      * @return Model summary type

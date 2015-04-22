@@ -230,6 +230,7 @@ public class MLModelHandler {
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
 
+            databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
 
         } catch (DatabaseHandlerException e) {
@@ -457,6 +458,11 @@ public class MLModelHandler {
                 EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint, emailTemplateParameters);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
+                try {
+                    databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
+                } catch (DatabaseHandlerException e1) {
+                    log.error(String.format("Failed to update the status of model [id] %s ", id), e);
+                }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint, emailTemplateParameters);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();

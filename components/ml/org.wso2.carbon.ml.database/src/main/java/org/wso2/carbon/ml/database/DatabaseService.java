@@ -653,4 +653,6 @@ public interface DatabaseService {
      * @throws          DatabaseHandlerException
      */
     public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
+
+    void updateModelStatus(long modelId, String status) throws DatabaseHandlerException;
 }

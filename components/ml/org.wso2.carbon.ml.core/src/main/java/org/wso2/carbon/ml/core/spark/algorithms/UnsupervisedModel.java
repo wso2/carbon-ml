@@ -118,6 +118,7 @@ public class UnsupervisedModel {
             clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
             clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(kMeansModel);
+            clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
             return clusterModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);
