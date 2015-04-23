@@ -72,6 +72,8 @@ public class UnsupervisedModel {
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
+            mlModel.setResponseVariable(workflow.getResponseVariable());
+
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {
