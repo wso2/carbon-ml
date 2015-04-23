@@ -169,6 +169,8 @@
 
     function loadModels() {
         
+        $('#accordion').empty();
+
         $.ajax({
             type: "GET",
             url: serverUrl+"/api/analyses/"+analysisId+"/models",
@@ -177,7 +179,7 @@
             },
             success: function(data) {
                 var analysisModels = data;
-
+                
                 if (analysisModels.length == 0) {
                     var accordionPanelNoModels = 
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
@@ -196,7 +198,7 @@
                     $("#accordion").append(createProject);                        
 
                     for (var i = 0; i < analysisModels.length; i++) {
-                        
+
                         accordionPanel = '' + 
                             '<div class="panel panel-default">' +
                                 '<div class="panel-heading" role="tab" id="heading'+i+'">' +
@@ -206,13 +208,15 @@
                                                 '<td>' +
                                                     '<span class="cu-acc-head-title">' + analysisModels[i]['name'] + '</span>' +
                                                     '<span class="cu-acc-head-created">[ Created: ' + analysisModels[i]['createdTime'] + ' ]</span>' +
+                                                    '<span class="cu-acc-head-created">[ Status: ' + analysisModels[i]['status'] + ' ]</span>' +
                                                     '<span class="cu-acc-head-workflow"></span>' +
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
+                                                        // TODO: disable below links when running
                                                         '<a href="#" id="view-model" class="cu-reg-btn btn-compare" data-modelname="'+analysisModels[i]['name']+'" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>View</span></a>' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-compare" data-modelname="'+analysisModels[i]['name']+'" data-modelid="'+analysisModels[i]['id']+'" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Predict</span></a>' +
-                                                        '<a href="#" id="delete-model" class="cu-reg-btn btn-delete">Delete Model</a>' +
+                                                        '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="'+analysisModels[i]['id']+'">Delete Model</a>' +
                                                     '</div>' +
                                                 '</td>' +
                                             '</tr>' +
@@ -259,6 +263,30 @@
             e.preventDefault();
 
             window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
+        });
+
+        $(document).on('click', '#delete-model', function(e){ 
+            e.preventDefault();
+            var modelId = $(this).data('modelid');
+            
+            $.ajax({
+                type: "DELETE",
+                url: serverUrl+"/api/models/"+modelId,
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                success : function(res){
+                    $('#accordion').empty();
+                    loadModels();
+                },
+                error : function(res){
+                    //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                    if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                        crtValArea.before(buildNortifications(res.responseJSON.status));
+                    }
+                }
+            });
         });
 
     }        

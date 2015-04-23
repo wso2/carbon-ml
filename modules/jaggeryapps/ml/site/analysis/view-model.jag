@@ -12,12 +12,12 @@
     <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
     <link rel="stylesheet" type="text/css" href="../../css/data.css">
     <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
 
-    <script src="../../js/respond.min.js"></script>
-    
+    <script src="../../js/respond.min.js"></script>  
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
-    <script src="../../js/nv.d3.js"></script>    
+    <script src="../../js/nv.d3.js"></script>
     <script src="../../js/wso2.ml.graphs.js"></script>
     
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>    
@@ -93,7 +93,14 @@
 
 			<h1 class="title">Model Summery</h1>
 			
-			<div class="col-md-12" id="rocGraph"></div>		
+			<div class="col-md-6">
+                <h4 class="title">ROC Graph</h4>
+                <div id="rocGraph">TEST</div>         
+            </div>
+            <div class="col-md-6" id="weights-chart">
+                <h4 class="title">Feature Importance</h4>
+                <svg></svg>
+            </div>
 
 		</div>
 		<!-- /content -->
@@ -206,9 +213,28 @@ $( document ).ready(function() {
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
-        success: function(res){
-        	var rocData  = JSON.parse(res['roc']);
-        	drawRocGraph(rocData, "#rocGraph", "X", "Y");
+        success: function(res){          
+            console.log(res['algorithm']);
+            if (res['algorithm'] == 'LOGISTIC_REGRESSION' || res['algorithm'] == 'SVM' ) {
+                // format data and draw ROC graph
+                var rocData  = JSON.parse(res['roc']);
+                drawRocGraph(rocData, "#rocGraph");
+                // create data object and draw weights chart
+                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
+                drawWeightsChart(featureImportanceData);                                
+            }
+            else if (res['algorithm'] == 'LINEAR_REGRESSION' || res['algorithm'] == 'RIDGE_REGRESSION' || res['algorithm'] == 'LASSO_REGRESSION' || res['algorithm'] == 'DECISION_TREE' || res['algorithm'] == 'NAIVE_BAYES') {
+                // remove ROC graph div
+                $( "#rocGraph" ).closest("div.col-md-6").remove();
+                // create data object and draw weights chart
+                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
+                drawWeightsChart(featureImportanceData);
+            }
+            else {
+                // TODO: add cluster diagram
+                console.log("K-means");
+            }
+
         },
         error: function(res){
             var crtValArea = btnArea.prev(".ctrl-validation-panel");
@@ -221,7 +247,7 @@ $( document ).ready(function() {
     $('#back-link').on('click', function(e){
         e.preventDefault();
         window.location.href = 'analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
-    });
+    });   
 	
 });
 
@@ -234,12 +260,37 @@ function drawRocGraph (data, cssClass) {
     rocGraph.setLineWidth(2);
     rocGraph.setPlotingAreaWidth(600);
     rocGraph.setPlotingAreaHeight(400);
-    rocGraph.setLineColor("#cf1fff"); 
+    rocGraph.setLineColor("#A366A3"); 
     rocGraph.plot(d3.select(cssClass),function(){
 	   	var xLoc = xScale.invert(d3.mouse(this)[0]);
         var yLoc = yScale.invert(d3.mouse(this)[1]);
     });
 };
+
+// function to draw weights chart
+function drawWeightsChart (data) {
+
+    nv.addGraph(function() {
+        var chart = nv.models.discreteBarChart()
+                        .x(function(d) { return d.label })
+                        .y(function(d) { return d.value })
+                        .staggerLabels(false)
+                        .tooltips(false)
+                        .showValues(false)
+                        .color(["#D1B2D1", "#A366A3", "#751975"]);
+
+        chart.yAxis.tickFormat(d3.format(".2e"));
+
+        chart.xAxis.axisLabel('Features')
+
+        d3.select('#weights-chart svg')
+            .datum(data)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+        return chart;
+    });
+}
 
 </script>
 

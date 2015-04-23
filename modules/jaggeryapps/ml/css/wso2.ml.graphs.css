@@ -34,3 +34,14 @@ commond to all type of graphs.*/
 	fill: none;	
 	stroke: #000;
 }
+
+
+/*model summery weights chart styles*/
+#weights-chart svg {
+	height: 500px;
+	width: 600px;
+}
+
+#weights-chart .tick line {
+	display: none;
+}
