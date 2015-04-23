@@ -29,6 +29,7 @@ public class MLModel implements Serializable {
     private String algorithmName;
     private String algorithmClass;
     private List<Feature> features;
+    private String responseVariable;
     private Serializable model;
 
     public String getAlgorithmName() {
@@ -54,6 +55,14 @@ public class MLModel implements Serializable {
 
     public void setFeatures(List<Feature> features) {
         this.features = features;
+    }
+
+    public String getResponseVariable() {
+        return responseVariable;
+    }
+
+    public void setResponseVariable(String responseVariable) {
+        this.responseVariable = responseVariable;
     }
 
     public Serializable getModel() {
