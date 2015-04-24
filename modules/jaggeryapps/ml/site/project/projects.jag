@@ -346,7 +346,7 @@
                 },
                 success : function(res){
                     $('#accordion').empty();
-                    loadProjects()
+                    loadProjects();
                 },
                 error : function(res){
                     //$('#workflow-name-error').text("* "+res.responseJSON.message);

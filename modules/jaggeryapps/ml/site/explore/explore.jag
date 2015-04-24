@@ -1008,7 +1008,6 @@ function drawClusterDiagramBase() {
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
-        async: false,
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
@@ -1034,7 +1033,7 @@ function drawClusterDiagramBase() {
 			graphString += "</div><div class='col-md-7' id='clusterDiagram'>Loading chart...</div>";
 
             $("#graphDiv").html(graphString);
-            //drawClusterDiagram();            
+            drawClusterDiagram();            
         },
         error : function(res){
             //$('#workflow-name-error').text("* "+res.responseJSON.message);
@@ -1045,38 +1044,39 @@ function drawClusterDiagramBase() {
     });
 }
 
-
-// TODO: fix back-end for cluster diagram
 function drawClusterDiagram() {
 
-	var projectId = getParameterByName('projid');    
-    // get categorical feature list from checkbox selection
+	// get categorical feature list from checkbox selection
     var numericalFeatureIndependent = $(".numericalFeatureIndependent").val().replace(/^\s+|\s+$/g, '');
     var numericalFeatureDependent = $(".numericalFeatureDependent").val().replace(/^\s+|\s+$/g, '');
     var noOfClusters = $(".noOfClusters").val().replace(/^\s+|\s+$/g, '');
     
-    // create object for axaj call
-    dataObj = {};
-    dataObj["projectId"] = projectId;
-    dataObj["numericalFeatureIndependent"] = numericalFeatureIndependent;
-    dataObj["numericalFeatureDependent"] = numericalFeatureDependent;
-    dataObj["noOfClusters"] = noOfClusters;
-
     // make ajax call
-    $.ajax({
-        type: "POST",
-        url: "./ajax/fetchClusterDiagramSamplePoints.jag",
-        data: dataObj,
+    $.ajax({        
+        type: "GET",
+        url: serverUrl+"/api/datasets/"+datasetId+"/cluster?features="+numericalFeatureIndependent+","+numericalFeatureDependent+"&noOfClusters="+noOfClusters,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
         success: function(response) {
-            
-        	var dataArray = JSON.parse(response);
-            drawScatterPlot(dataArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
+            var dataArray = response;
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var clusterData = [];
+            for (var i = 0; i < dataArray.length; i++) {                
+                var dataRow = [];
+                dataRow[0] = parseFloat(dataArray[i]['features']['0']);
+                dataRow[1] = parseFloat(dataArray[i]['features']['1']);
+                dataRow[2] = dataArray[i]['cluster'];
+                clusterData.push(dataRow);
+            }
+
+            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
         },
         error: function(response) {
             var message = "An error occured while fetching sample points from dataset.";
             console.log(message);
         }
-    })    
+    });
 }
 
 // drawing a simple scatter graph

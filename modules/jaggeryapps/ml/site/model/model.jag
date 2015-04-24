@@ -90,39 +90,12 @@
 
 				<h1 class="title">Model</h1>
 
-				<!-- <label class="input-label">Model name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" id="model-name" value="" placeholder=""/>
-				</div> -->
-
 				<label class="input-label">Dataset version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
                 <div class="input-control text">
                     <select id="dataset-version" class="form-control">
                         <!-- <option>Select..</option> -->
                     </select>
                 </div>
-
-                <div class="spcr-2"></div>
-
-				<label class="input-label">Storage type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                <div class="input-control text">
-                    <select id="storage-type" class="form-control">
-                        <option>Select..</option>
-                        <option value="file">File</option>
-                        <option value="hdfs">HDFS</option>
-                    </select>
-                </div>
-
-                <div class="spcr-2"></div>
-
-				<label class="input-label">Model storage<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" id="model-storage" value="/tmp" placeholder="input text"/>
-				</div>
-
-<!-- 				<div class="btn-group-actions">
-	            	<button id="run-analysis" class="btn btn-main" type="submit">Run analysis</button>
-	            </div>	 -->
 
 			</div>
 			
@@ -183,13 +156,10 @@ $( document ).ready(function() {
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
     	
-    	// TODO: fix back-end for model name
-        var modelName = analysisName;
+    	var modelName;
     	var datasetVersion = $('#dataset-version').val();
-    	var storageType = $('#storage-type').val();
-    	var modelStorage = $('#model-storage').val();
 
-    	jsonData = '{"name":"'+modelName+'","analysisId":"'+analysisId+'","versionSetId":"'+datasetVersion+'","storageType":"'+storageType+'","storageDirectory":"'+modelStorage+'"}';
+    	jsonData = '{"analysisId":"'+analysisId+'","versionSetId":"'+datasetVersion+'"}';
 
         //Create model
 	    $.ajax({
@@ -202,7 +172,7 @@ $( document ).ready(function() {
             contentType: "application/json",
             data: jsonData,
             success: function(res){
-                console.log('Model created.');
+                modelName = res['name'];
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");

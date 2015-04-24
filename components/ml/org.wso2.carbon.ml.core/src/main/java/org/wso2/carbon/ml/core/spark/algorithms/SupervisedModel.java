@@ -90,6 +90,7 @@ public class SupervisedModel {
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
+            mlModel.setResponseVariable(workflow.getResponseVariable());
             
             ModelSummary summaryModel = null;
             
