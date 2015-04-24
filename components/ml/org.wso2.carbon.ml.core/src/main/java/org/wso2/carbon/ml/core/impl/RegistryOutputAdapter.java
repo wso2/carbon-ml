@@ -32,6 +32,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+/**
+ * Registry adapter for ML. Responsible for writing a given input stream to a governance registry
+ */
+
 public class RegistryOutputAdapter implements MLOutputAdapter {
 
     @Override
