@@ -31,6 +31,10 @@
                   value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
         <Property name="bam.in"
                   value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+        <Property name="registry.in"
+                  value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter"/>
+        <Property name="registry.out"
+                  value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter"/>
     </Properties>
 
     <!-- Email address to which the model building status mails are sent. -->
@@ -43,10 +47,10 @@
     <!-- Optional element. This element should point to a HDFS location where ML is allowed to store files. -->
     <HdfsURL>hdfs://localhost:9000</HdfsURL>
 
-    <!-- Storage Details for muilt ML Models. StorageType can be either "file" or "hdfs" -->
+    <!-- Storage Details for built ML Models. StorageType can be either "file" ,"hdfs", "registry" -->
     <ModelStorage>
-        <StorageType>file</StorageType>
-        <StorageDirectory>/tmp</StorageDirectory>
+        <StorageType>registry</StorageType>
+        <StorageDirectory>/mlmodels</StorageDirectory>
     </ModelStorage>
 
     <Algorithms>
