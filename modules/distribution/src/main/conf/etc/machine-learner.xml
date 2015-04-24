@@ -31,6 +31,8 @@
 			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
 	    <Property name="bam.in"
 			value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+        <Property name="registry.in"
+                  value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter"/>
 	</Properties>
 
 	<!-- Email address to which the model building status mails are sent. -->
