@@ -2135,15 +2135,14 @@ public class MLDatabaseService implements DatabaseService {
                 boolean inclusion = mlCustomizedFeature.isInclude();
                 String lastModifiedUser = userName;
 
-                insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-                insertStatement.setLong(1, analysisId);
-                insertStatement.setInt(2, tenantId);
-                insertStatement.setString(3, featureName);
-                insertStatement.setString(4, type);
-                insertStatement.setString(5, imputeOption);
-                insertStatement.setBoolean(6, inclusion);
-                insertStatement.setString(7, lastModifiedUser);
-                insertStatement.setString(8, userName);
+                insertStatement = connection.prepareStatement(SQLQueries.UPDATE_FEATURE_CUSTOMIZED);
+                insertStatement.setString(1, type);
+                insertStatement.setString(2, imputeOption);
+                insertStatement.setBoolean(3, inclusion);
+                insertStatement.setString(4, lastModifiedUser);
+                insertStatement.setString(5, userName);
+                insertStatement.setLong(6, analysisId);
+                insertStatement.setString(7, featureName);
                 insertStatement.execute();
             }
             connection.commit();

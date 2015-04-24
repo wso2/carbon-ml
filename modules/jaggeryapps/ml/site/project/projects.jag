@@ -376,21 +376,22 @@
 
             var projectId = $(this).data('projid');
             var projectName = $(this).data('projectname');
-
             var datasetId = $(this).data('datasetid');
-            var comments = 'test comment'; //TODO: get actual comment from UI
-            var jsonData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
 
+            // create analysis
+            var comments = 'test comment'; //TODO: get actual comment from UI
+            var createAnalysisData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
             $.ajax({
                 type: "POST",
                 url: serverUrl+"/api/analyses",
+                async : false,
                 beforeSend : function(xhr) {
                     xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
                 },
                 contentType: "application/json",
-                data: jsonData,
+                data: createAnalysisData,
                 success : function(res){
-                    window.location.href = '../explore/explore.jag?projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
+                    console.log("Analysis created.");                    
                 },
                 error : function(res){
                     //$('#workflow-name-error').text("* "+res.responseJSON.message);
@@ -400,6 +401,47 @@
                     }
                 }
             });
+
+            // get analysis ID
+            var analysisId;
+            $.ajax({
+                type: 'GET',
+                url: serverUrl+"/api/analyses/"+analysisName,        
+                async : false,
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                success: function(res){
+                    analysisId = res['id'];
+                },
+                error: function(res){
+                    var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                    if (crtValArea.length == 0) {
+                        btnArea.before(buildNortifications(res.responseJSON.status));
+                    }
+                }
+            });
+
+            // set default impute options
+            var featureDefaultsData = '{"include" : true,"imputeOption": "DISCARD"}';
+            $.ajax({
+                type: 'POST',
+                url: serverUrl+"/api//analyses/"+analysisId+"/features/defaults",
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                contentType: "application/json",
+                data: featureDefaultsData,
+                success: function(res){
+                    window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+                },
+                error: function(res){
+                    var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                    if (crtValArea.length == 0) {
+                        btnArea.before(buildNortifications(res.responseJSON.status));
+                    }
+                }
+            });            
         });
 
 		// function that deletes an analysis

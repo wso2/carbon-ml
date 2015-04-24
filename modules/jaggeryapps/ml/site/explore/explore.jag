@@ -40,7 +40,7 @@
 	</div>
 	<div class="col-sm-4">
 		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
@@ -83,10 +83,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Explore</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Algorithms</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Model</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
 	    </ul>
 
 		
@@ -94,63 +95,23 @@
 </div>
 <div class="row">
 	<div class="col-md-12">
-		
-
 		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
+            
+            <h1 class="title">Explore Data</h1>
+            
+            <div class="col-md-2 wr-left-nav">
+                <ul class="ctrl-left-nav nav">
+                    <li role="presentation"><a href="#" id="scatter-plot-link">Scatter Plot</a></li>
+                    <li role="presentation"><a href="#" id="parallel-sets-link">Parallel Sets</a></li>
+                    <li role="presentation"><a href="#" id="trellis-chart-link">Trellis Chart</a></li>
+                    <li role="presentation"><a href="#" id="cluster-diagram-link">Cluster Diagram</a></li>
+                </ul>
+            </div>
 
-
-
-			<div role="tabpanel" class="wr-tabbed-container">
-
-			  <!-- Nav tabs -->
-			  <ul class="nav nav-tabs" role="tablist">
-			    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Preprocess</a></li>
-			    <li role="presentation"><a href="#explore" id="explore-tab" aria-controls="explore" role="tab" data-toggle="tab">Explore</a></li>
-			  </ul>
-
-			  <!-- Tab panes -->
-			  <div class="tab-content">
-			    <div role="tabpanel" class="tab-pane fade in active" id="home">
-			    	<!--h4>Pre Process Data</h4-->				    	
-					<table id="datasetTable">
-                        <div>Summary Statistics for the first 10,000 data rows: </div>
-                        <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Input</th>
-                            <th>Type</th>
-                            <th>Summary Statistics</th>
-                            <th>Impute</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-				</div>
-			    <div role="tabpanel" class="tab-pane fade in" id="explore">
-                    <h4>Explore Data</h4>
-                    
-                    <div class="col-md-2 wr-left-nav">
-                        <ul class="ctrl-left-nav nav">
-                            <li role="presentation"><a href="#" id="scatter-plot-link">Scatter Plot</a></li>
-                            <li role="presentation"><a href="#" id="parallel-sets-link">Parallel Sets</a></li>
-                            <li role="presentation"><a href="#" id="trellis-chart-link">Trellis Chart</a></li>
-                            <li role="presentation"><a href="#" id="cluster-diagram-link">Cluster Diagram</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-10" id="graphDiv"></div>
-
-                </div>
-			  </div>
-
-			</div>
-
+            <div class="col-md-10" id="graphDiv"></div>
 		</div>
 		<!-- /content -->
-
-
 	</div>
 </div>
 <!-- /content/body -->
@@ -165,6 +126,7 @@
 
 
 <script src="../../js/d3.v3.min.js" charset="utf-8"></script>
+<script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/jquery.dataTables.js"></script>
     
@@ -231,30 +193,7 @@ $( document ).ready(function() {
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);    
 
-    // TODO: replace this with set customized features
-    // set default impute options
-    var jsonDataFeatures = '{"include" : true,"imputeOption": "DISCARD"}';
-    $.ajax({
-        type: 'POST',
-        url: serverUrl+"/api//analyses/"+analysisId+"/features/defaults",
-        async : false,            
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        contentType: "application/json",
-        data: jsonDataFeatures,
-        success: function(res){
-            console.log("Default features set.");
-        },
-        error: function(res){
-            var crtValArea = btnArea.prev(".ctrl-validation-panel");
-            if (crtValArea.length == 0) {
-                btnArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
-    });
-
-	// binding events to chart links
+    // binding events to chart links
     $('#scatter-plot-link').on('click', function(e){
         e.preventDefault();
         drawScatterPlotBase();
@@ -274,173 +213,8 @@ $( document ).ready(function() {
 
     $('#next-btn').on('click', function(e){
         e.preventDefault();
-	    // create JSON object for AJAX call
-	    var customizedFeatures = [];
-	    $("#datasetTable tr.dataRow").each(function() {
-	    	var featureRow = {};
-	    	featureRow['type'] = $(this).find(".fieldType option:selected").text();
-	    	featureRow['name'] = $(this).find(".feature").text();
-	    	featureRow['include'] = $(this).find(".includeFeature").is(':checked');
-	    	featureRow['imputeOption'] = $(this).find(".imputeMethod option:selected").text();
-
-	    	customizedFeatures.push(featureRow);
-        });
-
-        // TODO: this should be used to set customized features
-/*        $.ajax({
-	        type: 'POST',
-	        headers: {
-        		"Accept" : "application/json",         
-                "Content-Type": "application/json"   
-  			},
-  			url: serverUrl+"/api/analyses/"+analysisId+"/features",
-	        async : false,            
-	        beforeSend : function(xhr) {
-	            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-	        },
-	        data: JSON.stringify(customizedFeatures),
-	        success: function(res){
-	            console.log("Customized features set.");
-	        },
-	        error: function(res){
-	            var crtValArea = btnArea.prev(".ctrl-validation-panel");
-	            if (crtValArea.length == 0) {
-	                btnArea.before(buildNortifications(res.responseJSON.status));
-	            }
-	        }
-	    });*/
-
 	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
-    });
-
-    var featuresString = "";
-    var json = {};
-
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/features?limit=0&offset=20",        
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-        	var features = res;
-
-            var tableData = "";
-            for (var i=0; i<features.length; i++) {
-                
-                tableData += '<tr class="dataRow">' +
-                				'<td><span class="feature">' + features[i]['fieldName'] + '</span></td>' +
-                				'<td>'+checkboxRenderer(features[i]['input'])+'</td>' +
-                				'<td>'+listSelectionRenderer({"categorical" : "CATEGORICAL","numerical" : "NUMERICAL"}, features[i]['type'].toString(),"fieldType")+'</td>' +
-                				'<td><div class="summaryStatistics">' + features[i]['summaryStats'] + '</div></td>' +
-                				'<td>'+listSelectionRenderer({"discard":"DISCARD","regressionImputation":"REGRESSION_IMPUTATION","replaceWithMean":"REPLACE_WTH_MEAN"}, features[i]['imputeOperation'].toString(),"imputeMethod")+'</td>' +
-                			 '</tr>';
-            }
-            $('#datasetTable tbody').append(tableData);
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
-    });
-
-	// draw table with DataTables
-	$('#datasetTable').dataTable( {
-	    "drawCallback": function( settings ) {
-	        drawSummeryStatistics();
-	    }
-	});
-
-    // Preserve pagination when refreshing datatable 
-    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
-        if(oSettings.oFeatures.bServerSide === false){
-            var before = oSettings._iDisplayStart;
-            oSettings.oApi._fnReDraw(oSettings);
-            oSettings._iDisplayStart = before;
-            oSettings.oApi._fnCalculateEnd(oSettings);
-        }
-        //draw the 'current' page
-        oSettings.oApi._fnDraw(oSettings);
-    };
-
-    $('#datasetTable').on('draw.dt', function() {
-        
-		drawSummeryStatistics();
-        
-        // TODO: AJAX call per change in the data-table is an overhead
-        // use the AJAX methods given by the datatable and improve this section
-        $('.fieldType').on('change', function(e) {
-            var closestTr = $(this).closest('tr');
-            var selectedFeature = closestTr.find('.feature').text();            
-            var selectedFeatureType = this.options[e.target.selectedIndex].text;
-            var workflowId = getParameterByName('wfid');
-
-            $.ajax({
-                type: "POST",
-                url: "./ajax/UpdateFeatureType.jag",
-                data: {
-                    'FEATURE_TYPE': selectedFeatureType,
-                    'FEATURE_NAME': selectedFeature,
-                    'wfid': workflowId
-                },
-                error: function(res){
-                    
-                }
-            });
-
-            // refresh datatable, preserving the current page
-            $('#datasetTable').dataTable().fnStandingRedraw();
-        });
-
-        $('.includeFeature').on('change', function(e) {
-            var closestTr = $(this).closest('tr');
-            var selectedFeature = closestTr.find('.feature').text();
-            var selectionFlag = 'false';
-
-            if (this.checked) {
-                selectionFlag = 'true';
-            }
-
-            var workflowId = getParameterByName('wfid');
-            
-            $.ajax({
-                type: "POST",
-                url: "./ajax/UpdateInputSelection.jag",
-                data: {
-                    'IS_FEATURE_SELECTED': selectionFlag,
-                    'FEATURE_NAME': selectedFeature,
-                    'wfid': workflowId
-                },
-                error : function(res){                    
-                }
-            });
-        });
-
-        $('.imputeMethod').on('change', function(e) {
-            var closestTr = $(this).closest('tr');
-            var selectedFeature = closestTr.find('.feature').text();
-            var imputedMethod = this.options[e.target.selectedIndex].text;
-            var workflowId = getParameterByName('wfid');
-
-            $.ajax({
-                type: "POST",
-                url: "./ajax/UpdateImputeMethod.jag",
-                data: {
-                    'IMPUTE_OPTION': imputedMethod,
-                    'FEATURE_NAME': selectedFeature,
-                    'wfid': workflowId
-                },
-                error: function(res){
-
-                }
-            });
-        });
-
-    });
+    });    
 });
 
 function drawScatterPlotBase() {
@@ -1091,131 +865,6 @@ function drawScatterPlot(data, cssClass, xLabel, yLabel) {
     scatter.setYAxisText(yLabel);
     scatter.plot(d3.select(cssClass));
 };
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-// generate check boxinputs for summery statistics table
-function checkboxRenderer(value) {
-    var checkboxControl = '<input type="checkbox"' + 'class="includeFeature" value="includeFeature"';
-    if (value) {      
-        checkboxControl = checkboxControl + "checked />";
-    } else {
-        checkboxControl = checkboxControl + "/>";
-    }
-    return checkboxControl;
-}; 
-
-// generate dropdown inputs for summery statistics table
-function listSelectionRenderer(list, selectedOption, cssClass) {
-    var selection = "<select class=" + cssClass + ">";
-    for (var item in list){
-        if (selectedOption.toUpperCase() == list[item].toUpperCase()) {
-            selection = selection + "<option selected value=\"" + list[item] + "\">" + list[item] + "</option>";
-        } else {
-            selection = selection + "<option value=\"" + list[item] + "\">" + list[item] + "</option>";
-        }
-    }
-    selection = selection + "</select>";
-    return selection;
-}
-
-function drawSummeryStatistics() {
-
-    $('.summaryStatistics').each(function() {
-        var jsonText = $(this).text();
-        // TODO: handle JSON parsing errors
-        var jsonObj  = JSON.parse(jsonText); 
-        // clear text in this cell and draw graphs
-        $(this).text("");
-
-        //get feature type
-        var closestTr = $(this).closest('tr');
-        var FeatureType = closestTr.find('.fieldType option:selected').text();
-
-        var frequencies = jsonObj[0].values;
-        
-        // transform dataset
-        var dataArray = $.map(frequencies, function(value, index) {
-            return value[1];
-        });
-        
-        if (FeatureType == 'CATEGORICAL'){          
-            
-            var w = 40;
-            var h = 40;
-            var pie = d3.layout.pie();
-            
-            var outerRadius = w / 2;
-            var innerRadius = 0;
-            var arc = d3.svg.arc()
-                            .innerRadius(innerRadius)
-                            .outerRadius(outerRadius);
-
-              var svg = d3.select(this)
-                        .append("svg")
-                        .attr("width", w)
-                        .attr("height", h)
-		    			.attr("class", "pieChart");
-
-              var arcs = svg.selectAll("g.arc")
-                    .data(pie(dataArray))
-                    .enter()
-                    .append("g")
-                    .attr("class", "arc")
-                    .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
-
-              //var color = d3.scale.category20();
-               var color = d3.scale.ordinal().range(["#D59C0C", "#3C2B02", '#614705', '#FFD64A', '#7A5C0F', '#FFF869', '#A8801C', '#F0D74C', '#D9AE21', '#FFC400', '#D9A90A', '#BFB011', '#B29E47', '#FFD64A', '#C6B902', '#C68202', '#95773B', '#8F6908', '#4F3903', '#FFDA00']);
-               
-              arcs.append("path")
-                .attr("fill", function(d, i) {
-                    return color(i);
-                })
-                .attr("d", arc);
-            
-        }
-        else {
-            
-            var w = 200;
-            var h = 40;                 
-            var barPadding = 1;
-            
-            // scaling this y-axis using a linear scaler 
-            var yScale = d3.scale.linear()
-                          .domain([0, d3.max(dataArray, function(d) {
-                             return d;
-                           })])
-                           .range([0,h]);
-            
-            var svg = d3.select(this)
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h)
-			.attr("class", "barChart");
-            
-            svg.selectAll("rect")
-                .data(dataArray)
-                .enter()
-                .append("rect")
-                .attr("x", function(d, i) {
-                    return i * (w / dataArray.length);
-                })
-                .attr("y", function(d) {
-                    return h - yScale(d);
-                })
-                .attr("width", w / dataArray.length - barPadding)
-                .attr("height", function(d) {
-                    return yScale(d);
-                })
-                .attr("fill", '#D59C0C');
-        }
-    });
-}
 
 </script>
 
