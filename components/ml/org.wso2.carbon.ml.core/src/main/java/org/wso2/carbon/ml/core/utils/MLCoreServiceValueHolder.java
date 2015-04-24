@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.spark.SparkConf;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
+import org.wso2.carbon.ml.commons.domain.config.DataStorage;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
@@ -41,6 +42,7 @@ public class MLCoreServiceValueHolder {
     private ConfigurationContextService configurationContextService;
     private OutputEventAdapterService outputEventAdapterService;
     private ModelStorage modelStorage;
+    private DataStorage dataStorage;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -139,5 +141,13 @@ public class MLCoreServiceValueHolder {
 
     public void setModelStorage(ModelStorage modelStorage) {
         this.modelStorage = modelStorage;
+    }
+
+    public void setDataStorage(DataStorage dataStorage) {
+        this.dataStorage = dataStorage;
+    }
+    
+    public DataStorage getDataStorage() {
+        return dataStorage;
     }
 }

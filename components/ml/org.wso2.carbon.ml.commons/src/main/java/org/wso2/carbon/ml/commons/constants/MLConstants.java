@@ -32,6 +32,9 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
     public static final String UPLOAD_LIMIT = "uploadLimit";
     
+    public static final String DATASET_SOURCE_TYPE_FILE = "file";
+    public static final String DATASET_SOURCE_TYPE_HDFS = "hdfs";
+    
     // Summary statistic calculation configurations  
     public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
     public static final String HISTOGRAM_BINS = "histogramBins";
