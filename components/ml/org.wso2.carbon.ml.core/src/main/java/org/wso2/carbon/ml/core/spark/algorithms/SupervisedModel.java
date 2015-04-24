@@ -60,10 +60,10 @@ public class SupervisedModel {
     private static final Log logger = LogFactory.getLog(SupervisedModel.class);
     
     /**
-     * @param modelID   Model ID
-     * @param workflow  Workflow ID
-     * @param sparkConf Spark configuration
-     * @throws MLModelBuilderException
+     * @param modelID       Model ID
+     * @param workflow      Workflow ID
+     * @param sparkConf     Spark configuration
+     * @throws              MLModelBuilderException
      */
     public MLModel buildModel(MLModelConfigurationContext context)
             throws MLModelBuilderException {
@@ -102,14 +102,16 @@ public class SupervisedModel {
                         headerRow, responseIndex, columnSeparator);
                 break;
             case DECISION_TREE:
-                summaryModel = buildDecisionTreeModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildDecisionTreeModel(modelId, trainingData, testingData, workflow, mlModel, headerRow, 
+                    responseIndex, columnSeparator);
                 break;
             case SVM:
                 summaryModel = buildSVMModel(modelId, trainingData, testingData, workflow, mlModel, headerRow, 
                         responseIndex, columnSeparator);
                 break;
             case NAIVE_BAYES:
-                summaryModel = buildNaiveBayesModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildNaiveBayesModel(modelId, trainingData, testingData, workflow, mlModel, headerRow, 
+                    responseIndex, columnSeparator);
                 break;
             case LINEAR_REGRESSION:
                 summaryModel = buildLinearRegressionModel(modelId, trainingData, testingData, workflow, mlModel,
@@ -144,12 +146,15 @@ public class SupervisedModel {
     /**
      * This method builds a logistic regression model
      *
-     * @param modelID      Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData  Testing data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @param mlModel      Deployable machine learning model
-     * @throws MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildLogisticRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
@@ -171,8 +176,10 @@ public class SupervisedModel {
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
             
-            List<FeatureImportance> featureWeights = getFeatureWeights(logisticRegressionModel.weights().toArray(), 
-                    headerRow.split(columnSeparator), responseIndex);
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            List<FeatureImportance> featureWeights = getFeatureWeights(predictorVariables, logisticRegressionModel
+                    .weights().toArray());
+            probabilisticClassificationModelSummary.setFeatures(predictorVariables);
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString());
             return probabilisticClassificationModelSummary;
@@ -185,15 +192,19 @@ public class SupervisedModel {
     /**
      * This method builds a decision tree model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildDecisionTreeModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
@@ -207,6 +218,9 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             mlModel.setModel(decisionTreeModel);
+            
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            classClassificationAndRegressionModelSummary.setFeatures(predictorVariables);
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.DECISION_TREE.toString());
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -219,12 +233,15 @@ public class SupervisedModel {
     /**
      * This method builds a support vector machine (SVM) model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildSVMModel(long modelID, JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData,
             Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,String columnSeparator)
@@ -243,8 +260,9 @@ public class SupervisedModel {
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
             mlModel.setModel(svmModel);
             
-            List<FeatureImportance> featureWeights = getFeatureWeights(svmModel.weights().toArray(), 
-                headerRow.split(columnSeparator), responseIndex);
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            List<FeatureImportance> featureWeights = getFeatureWeights(predictorVariables, svmModel.weights().toArray());
+            probabilisticClassificationModelSummary.setFeatures(predictorVariables);
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.SVM.toString());
             return probabilisticClassificationModelSummary;
@@ -256,12 +274,15 @@ public class SupervisedModel {
     /**
      * This method builds a linear regression model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildLinearRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
@@ -279,8 +300,10 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
             
-            List<FeatureImportance> featureWeights = getFeatureWeights(linearRegressionModel.weights().toArray(), 
-                headerRow.split(columnSeparator), responseIndex);
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            List<FeatureImportance> featureWeights = getFeatureWeights(predictorVariables, linearRegressionModel
+                    .weights().toArray());
+            regressionModelSummary.setFeatures(predictorVariables);
             regressionModelSummary.setFeatureImportance(featureWeights);
             regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LINEAR_REGRESSION.toString());
             return regressionModelSummary;
@@ -293,12 +316,15 @@ public class SupervisedModel {
     /**
      * This method builds a ridge regression model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildRidgeRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
@@ -317,8 +343,10 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
             
-            List<FeatureImportance> featureWeights = getFeatureWeights(ridgeRegressionModel.weights().toArray(), 
-                headerRow.split(columnSeparator), responseIndex);
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            List<FeatureImportance> featureWeights = getFeatureWeights(predictorVariables, ridgeRegressionModel
+                    .weights().toArray());
+            regressionModelSummary.setFeatures(predictorVariables);
             regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.RIDGE_REGRESSION.toString());
             regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
@@ -331,12 +359,15 @@ public class SupervisedModel {
     /**
      * This method builds a lasso regression model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildLassoRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
@@ -354,8 +385,10 @@ public class SupervisedModel {
                     .generateRegressionModelSummary(predictionsAndLabels);
             mlModel.setModel(lassoModel);
             
-            List<FeatureImportance> featureWeights = getFeatureWeights(lassoModel.weights().toArray(), 
-                headerRow.split(columnSeparator), responseIndex);
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            List<FeatureImportance> featureWeights = getFeatureWeights(predictorVariables, lassoModel.weights()
+                    .toArray());
+            regressionModelSummary.setFeatures(predictorVariables);
             regressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LASSO_REGRESSION.toString());
             regressionModelSummary.setFeatureImportance(featureWeights);
             return regressionModelSummary;
@@ -368,15 +401,19 @@ public class SupervisedModel {
     /**
      * This method builds a naive bayes model
      *
-     * @param modelID       Model ID
-     * @param trainingData  Training data as a JavaRDD of LabeledPoints
-     * @param testingData   Testing data as a JavaRDD of LabeledPoints
-     * @param workflow      Machine learning workflow
-     * @param mlModel       Deployable machine learning model
-     * @throws              MLModelBuilderException
+     * @param modelID           Model ID
+     * @param trainingData      Training data as a JavaRDD of LabeledPoints
+     * @param testingData       Testing data as a JavaRDD of LabeledPoints
+     * @param workflow          Machine learning workflow
+     * @param mlModel           Deployable machine learning model
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
+     * @throws                  MLModelBuilderException
      */
     private ModelSummary buildNaiveBayesModel(long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, String headerRow, int responseIndex,
+            String columnSeparator) throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
@@ -386,6 +423,9 @@ public class SupervisedModel {
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(predictionsAndLabels);
             mlModel.setModel(naiveBayesModel);
+            
+            String[] predictorVariables = getPredictorVariables(headerRow, columnSeparator, responseIndex);
+            classClassificationAndRegressionModelSummary.setFeatures(predictorVariables);
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.NAIVE_BAYES.toString());
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -394,22 +434,31 @@ public class SupervisedModel {
     }
     
     /**
+     * Get the list of predictor variables from the features list
      * 
-     * @param weights   Array of feature weights
-     * @param features  Array of Feature names
-     * @param Response  Index of response feature
+     * @param headerRow         Header row of the dataset
+     * @param responseIndex     Index of the response variable in the dataset
+     * @param columnSeparator   Column separator of dataset
      * @return
      */
-    private List<FeatureImportance> getFeatureWeights(double[] weights, String[] features, int Response) {
+    private String[] getPredictorVariables(String headerRow, String columnSeparator, int responseIndex){
+        List<String> featureNames = new ArrayList<String>(Arrays.asList(headerRow.split(columnSeparator)));
+        // Remove the response variable from features list
+        featureNames.remove(responseIndex);
+        return featureNames.toArray(new String[0]);
+    }
+    
+    /**
+     * 
+     * @param featureNames  Array of names of features
+     * @param weights       Array of weights of features
+     * @return
+     */
+    private List<FeatureImportance> getFeatureWeights(String [] featureNames, double[] weights) {
         List<FeatureImportance> featureWeights = new ArrayList<FeatureImportance>();
-        
-        // Remove the response variable from the features
-        List<String> featureNames = new ArrayList<String>(Arrays.asList(features));
-        featureNames.remove(Response);
-        
         for(int i = 0 ; i < weights.length ; i++) {
             FeatureImportance featureImportance = new FeatureImportance();
-            featureImportance.setLabel(featureNames.get(i));
+            featureImportance.setLabel(featureNames[i]);
             featureImportance.setValue(weights[i]);
             featureWeights.add(featureImportance);
         }

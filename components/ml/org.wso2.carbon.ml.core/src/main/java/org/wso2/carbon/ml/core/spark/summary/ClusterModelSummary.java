@@ -25,9 +25,11 @@ import java.io.Serializable;
 
 public class ClusterModelSummary implements ModelSummary, Serializable {
 
+    private static final long serialVersionUID = -2367643384961727119L;
     private double trainDataComputeCost;
     private double testDataComputeCost;
     private String algorithm;
+    private String[] features;
 
     public String getAlgorithm() {
         return algorithm;
@@ -55,5 +57,17 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
 
     public void setTestDataComputeCost(double testDataComputeCost) {
         this.testDataComputeCost = testDataComputeCost;
+    }
+    
+    /**
+     * @param features Array of names of the features
+     */
+    public void setFeatures(String[] features) {
+        this.features = features;
+    }
+
+    @Override
+    public String[] getFeatures() {
+        return features;
     }
 }
