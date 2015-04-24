@@ -34,6 +34,7 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     private List<PredictedVsActual> predictedVsActuals;
     private List<FeatureImportance> featureImportance;
     private String algorithm;
+    private String[] features;
 
     public String getAlgorithm() {
         return algorithm;
@@ -89,5 +90,17 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
      */
     public void setFeatureImportance(List<FeatureImportance> featureImportance) {
         this.featureImportance = featureImportance;
+    }
+
+    /**
+     * @param features Array of names of the features
+     */
+    public void setFeatures(String[] features) {
+        this.features = features;
+    }
+
+    @Override
+    public String[] getFeatures() {
+        return features;
     }
 }

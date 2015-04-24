@@ -24,6 +24,8 @@ import java.io.Serializable;
  * DTO class to store predicted vs. actual value
  */
 public class PredictedVsActual implements Serializable {
+
+    private static final long serialVersionUID = 6763495729970627524L;
     private double predicted;
     private double actual;
 
