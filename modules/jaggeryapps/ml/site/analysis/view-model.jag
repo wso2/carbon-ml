@@ -40,7 +40,7 @@
 	</div>
 	<div class="col-sm-4">
 		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
@@ -95,7 +95,7 @@
 			
 			<div class="col-md-6">
                 <h4 class="title">ROC Graph</h4>
-                <div id="rocGraph">TEST</div>         
+                <div id="rocGraph"></div>         
             </div>
             <div class="col-md-6" id="weights-chart">
                 <h4 class="title">Feature Importance</h4>
