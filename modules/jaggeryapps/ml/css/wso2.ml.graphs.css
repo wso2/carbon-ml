@@ -45,3 +45,22 @@ commond to all type of graphs.*/
 #weights-chart .tick line {
 	display: none;
 }
+
+/*confusion matrix table styles*/
+#confusion-matrix table {
+	text-align: center;
+	width: 80%;
+	height:200px;
+}
+#confusion-matrix .header-level-1 {
+	font-weight:bold;
+}
+#confusion-matrix .header-level-2 {
+	font-style: italic;
+}
+.ui-slider-horizontal {
+    width: 80%;
+}
+.threshold-value {
+    border: 0;
+}
