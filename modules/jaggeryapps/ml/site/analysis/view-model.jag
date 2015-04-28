@@ -13,7 +13,9 @@
     <link rel="stylesheet" type="text/css" href="../../css/data.css">
     <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
     <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
-
+    <!-- for threshold slider -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  	
     <script src="../../js/respond.min.js"></script>  
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
@@ -95,13 +97,35 @@
 			
 			<div class="col-md-6">
                 <h4 class="title">ROC Graph</h4>
-                <div id="rocGraph"></div>         
+                <div id="roc-graph"></div>
             </div>
             <div class="col-md-6" id="weights-chart">
                 <h4 class="title">Feature Importance</h4>
                 <svg></svg>
             </div>
 
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+			<div class="col-md-6">
+                <h4 class="title">Confusion Matrix</h4>
+                <div id="confusion-matrix"></div>
+                <br>                
+				<label class="input-label" for="amount">Threshold:</label>
+				<input type="text" class="threshold-value" id="amount" readonly>				
+				<div id="slider"></div>
+                <br><br>
+            </div>
 		</div>
 		<!-- /content -->
 
@@ -133,6 +157,9 @@
 <script src="../../js/d3.parsets.js"></script>
 <script src="../../js/figue.js"></script>
 
+<!-- for threshold slider -->
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
 <script type="text/javascript">
 
 var serverUrl = window.location.origin;
@@ -144,6 +171,7 @@ var modelId = getParameterByName('modelId');
 var analysisId;
 var tenantId;
 var userName;
+var predictedVsActuals;
 
 // redraw charts upon changes in selections
 $(document).on('change','select[class="numFeaturesIndependentDropdown"], select[class="numFeaturesDependentDropdown"], select[class="catFeaturesDropdown"]',function() {
@@ -160,6 +188,22 @@ $(document).on('change','input[class="numericalFeatureNames"], select[id="catego
 $(document).on('change','select[class="numericalFeatureIndependent"], select[class="numericalFeatureDependent"], select[class="noOfClusters"]',function() {
     $("#clusterDiagram").html("Loading chart...");
     drawClusterDiagram();
+});
+
+/*for threshold slider*/
+$(function() {
+    $("#slider").slider({
+        value: 0.5,
+        min: 0,
+        max: 1,
+        step: 0.1,
+        slide: function(event, ui) {
+            $("#amount").val(ui.value);
+            // redraw table on slider change
+            drawConfusionMatrix(predictedVsActuals, ui.value, "#confusion-matrix");
+        }
+    });
+    $("#amount").val($("#slider").slider("value"));
 });
 
 $( document ).ready(function() {
@@ -210,22 +254,36 @@ $( document ).ready(function() {
     $.ajax({
         type: 'GET',
         url: serverUrl+"/api/models/"+modelId+"/summary",
+        async : false,
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
-        success: function(res){          
-            console.log(res['algorithm']);
-            if (res['algorithm'] == 'LOGISTIC_REGRESSION' || res['algorithm'] == 'SVM' ) {
+        success: function(res){
+        	if (res['algorithm'] == 'LOGISTIC_REGRESSION') {                
                 // format data and draw ROC graph
                 var rocData  = JSON.parse(res['roc']);
-                drawRocGraph(rocData, "#rocGraph");
+                drawRocGraph(rocData, "#roc-graph");
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
-                drawWeightsChart(featureImportanceData);                                
+                drawWeightsChart(featureImportanceData);
+                // draw confusion matrix	            
+                predictedVsActuals = res['predictedVsActuals'];
+        		var threshold = $("#slider").slider("value");
+        		drawConfusionMatrix(predictedVsActuals, threshold, "#confusion-matrix");
             }
-            else if (res['algorithm'] == 'LINEAR_REGRESSION' || res['algorithm'] == 'RIDGE_REGRESSION' || res['algorithm'] == 'LASSO_REGRESSION' || res['algorithm'] == 'DECISION_TREE' || res['algorithm'] == 'NAIVE_BAYES') {
-                // remove ROC graph div
-                $( "#rocGraph" ).closest("div.col-md-6").remove();
+        	else if (res['algorithm'] == 'SVM' ) {                
+                // remove not applicable charts/tables
+                $("#confusion-matrix").closest("div.col-md-6").remove();
+                // format data and draw ROC graph
+                var rocData  = JSON.parse(res['roc']);
+                drawRocGraph(rocData, "#roc-graph");
+                // create data object and draw weights chart
+                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
+                drawWeightsChart(featureImportanceData);
+            }
+            else if (res['algorithm'] == 'LINEAR_REGRESSION' || res['algorithm'] == 'RIDGE_REGRESSION' || res['algorithm'] == 'LASSO_REGRESSION' || res['algorithm'] == 'DECISION_TREE' || res['algorithm'] == 'NAIVE_BAYES') {                
+                // remove not applicable charts/tables
+                $("#roc-graph, #confusion-matrix").closest("div.col-md-6").remove();
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
                 drawWeightsChart(featureImportanceData);
@@ -290,6 +348,88 @@ function drawWeightsChart (data) {
         nv.utils.windowResize(chart.update);
         return chart;
     });
+}
+
+// function to draw confusion matrix
+function drawConfusionMatrix (predictedVsActuals, threshold, cssSelector) {
+
+	var confusionMatrixValues = calculateConfusionMatrix (predictedVsActuals, threshold);
+	var confusionMatrixHtml = 	"<table border='1'>"+
+									"<tr>"+
+										"<td colspan='2' rowspan='2' class='header-level-1'>Total</td>"+
+										"<td colspan='2' class='header-level-1'>Predicted</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td class='header-level-2'>Positive</td>"+
+										"<td class='header-level-2'>Negative</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td rowspan='2' class='header-level-1'>Actual</td>"+
+										"<td class='header-level-2'>Positive</td>"+
+										"<td>"+confusionMatrixValues[0]+"</td>"+
+										"<td>"+confusionMatrixValues[1]+"</td>"+
+									"</tr>"+
+									"<tr>"+
+									"<td class='header-level-2'>Negative</td>"+
+										"<td>"+confusionMatrixValues[3]+"</td>"+
+										"<td>"+confusionMatrixValues[2]+"</td>"+
+									"</tr>"+
+									"<tr>"+
+										"<td colspan='3' class='header-level-1'>Accuracy</td>"+
+										"<td>"+confusionMatrixValues[4].toFixed(2)+"%</td>"+
+									"</tr>"+
+								"</table>";
+
+	$(cssSelector).html(confusionMatrixHtml);	
+}
+
+// function to calculate confusion matrix
+function calculateConfusionMatrix (predictedVsActuals, threshold) {
+	var truePositives = 0;
+	var falsePositives = 0;
+	var trueNegatives = 0;
+	var falseNegatives = 0;
+	var accuracy = 0;
+
+	for (var i = 0; i < predictedVsActuals.length; i++) {
+
+		var actual = predictedVsActuals[i]['actual'];
+		var predicted = calculatePredicted(predictedVsActuals[i]['predicted'], threshold);
+
+		if (predicted == 1 && actual == 1) {
+			truePositives++;
+		}
+		else if (predicted == 0 && actual == 1) {
+			falsePositives++;
+		}
+		else if (predicted == 0 && actual == 0) {
+			trueNegatives++;
+		}		
+		else { // predicted == 1 && actual == 0
+			falseNegatives++;
+		}
+	}
+
+	var total = truePositives+falsePositives+trueNegatives+falseNegatives;
+	accuracy = (truePositives+trueNegatives)/total*100;
+
+	var confusionMatrixValues = [];
+	confusionMatrixValues[0] = truePositives;
+	confusionMatrixValues[1] = falsePositives;
+	confusionMatrixValues[2] = trueNegatives;
+	confusionMatrixValues[3] = falseNegatives;
+	confusionMatrixValues[4] = accuracy;
+
+	return confusionMatrixValues;	
+}
+
+// function to get the binary value of a predicted value for given threshold
+function calculatePredicted (actualValue, threshold) {
+	var actual = 0;
+	if (actualValue >= threshold) {
+		actual = 1;
+	}
+	return actual;
 }
 
 </script>
