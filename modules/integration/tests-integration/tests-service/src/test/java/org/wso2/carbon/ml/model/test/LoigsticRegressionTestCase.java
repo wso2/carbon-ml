@@ -74,13 +74,12 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
         
         //Set default Hyper-parameters
         mlHttpclient.doHttpPost("/api/analyses/" + analysisId + "/hyperParams/defaults", null);
-        
+
         // Create a model
         mlHttpclient.createModel(modelName, analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
-        modelId = mlHttpclient.getModelId(modelName); 
-        
+
         //Set storage location for model
-        mlHttpclient.createFileModelStorage(modelId, getModelStorageDirectory());
+        mlHttpclient.createFileModelStorage(MLIntegrationTestConstants.MODEL_ID, getModelStorageDirectory());
     }
     
     @Test(description = "Build a Logistic Regression model")
