@@ -82,7 +82,7 @@ public class SupervisedModel {
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = MLUtils.getFeatureIndex(workflow.getResponseVariable(), headerRow, columnSeparator);
 
-            SortedMap<Integer,String> includedFeatures = MLUtils.getIncludedFeatureIndices(workflow, responseIndex);
+            SortedMap<Integer,String> includedFeatures = MLUtils.getIncludedFeatures(workflow, responseIndex);
             
             DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(includedFeatures, responseIndex);
             

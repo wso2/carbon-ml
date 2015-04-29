@@ -182,15 +182,15 @@ public class MLUtils {
      * @param workflow  Workflow
      * @return          A list of indices of features to be included in the model
      */
-    public static SortedMap<Integer, String> getIncludedFeatureIndices(Workflow workflow, int responseIndex) {
-        SortedMap<Integer, String> inlcudedFeatureIndices = new TreeMap<Integer, String>();
+    public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
+        SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
         List<Feature> features = workflow.getFeatures();
         for (Feature feature : features) {
             if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
-                inlcudedFeatureIndices.put(feature.getIndex(), feature.getName());
+                inlcudedFeatures.put(feature.getIndex(), feature.getName());
             }
         }
-        return inlcudedFeatureIndices;
+        return inlcudedFeatures;
     }
     
     /**
