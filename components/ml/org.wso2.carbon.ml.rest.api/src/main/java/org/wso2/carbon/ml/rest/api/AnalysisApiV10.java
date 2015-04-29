@@ -210,6 +210,49 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * get the algorithm name of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/algorithmName")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getAlgorithmName(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String responseVariable = mlAnalysisHandler.getAlgorithmName(analysisId);
+            return Response.ok(responseVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * get the train data fraction of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/trainDataFraction")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getTrainDataFraction(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            double responseVariable = mlAnalysisHandler.getTrainDataFraction(analysisId);
+            return Response.ok(responseVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
 
     /**
      * get summarized statistics of a feature of an analysis.
@@ -275,6 +318,28 @@ public class AnalysisApiV10 extends MLRestAPI {
         } catch (MLAnalysisHandlerException e) {
             logger.error(String
                     .format("Error occurred while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * get hyper-parameters of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/hyperParameters")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getHyperParameters(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLHyperParameter> responseVariable = mlAnalysisHandler.getHyperParameters(analysisId);
+            return Response.ok(responseVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                             analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
