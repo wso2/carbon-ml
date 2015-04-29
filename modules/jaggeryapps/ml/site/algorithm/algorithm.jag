@@ -254,7 +254,7 @@ $( document ).ready(function() {
             contentType: "application/json",
             data: jsonData,
             success: function(res){
-                window.location.href = '../parameters/parameters.jag?analysisId='+analysisId+'&projectName='+projectName+'&analysisName='+analysisName+'&algorithmName='+algorithmName+'&algorithmType='+algorithmType+'&datasetId='+datasetId+'&fromNext=0';
+                window.location.href = '../parameters/parameters.jag?analysisId='+analysisId+'&projectName='+projectName+'&analysisName='+analysisName+'&algorithmName='+algorithmName+'&algorithmType='+algorithmType+'&datasetId='+datasetId;
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");

@@ -216,7 +216,7 @@ $( document ).ready(function() {
 
     $('#next-btn').on('click', function(e){
         e.preventDefault();
-	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromParameters=0';
+	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
     });
 
     // function that cancels an analysis

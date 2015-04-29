@@ -184,6 +184,7 @@
     function loadFeatures() {
         var responseVariable;
 
+        // get response variable of this model
         $.ajax({
             type: "GET",
             url: serverUrl+"/api/analyses/"+analysisId+"/responseVariables",
@@ -199,22 +200,22 @@
             	var message = "An error occurred while retrieving tenant projects.";
             }
         });
-
-        $.ajax({        	
+        // get feature names of this model
+        $.ajax({
             type: "GET",
-            url: serverUrl+"/api/analyses/"+analysisId+"/features",
+            url: serverUrl+"/api/models/"+modelId+"/summary",
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
             success: function(data) {
-                var modelFeatures = data;
-
+                var modelFeatures = data['features'];
+                
                 for (var i = 0; i < modelFeatures.length; i++) {
 
-                	if (modelFeatures[i]['fieldName'] == responseVariable) continue;
+                    if (modelFeatures[i] == responseVariable) continue;
 
                     inputString = '' +
-                                '<label class="input-label">'+modelFeatures[i]['fieldName']+'<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+                                '<label class="input-label">'+modelFeatures[i]+'<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
                                 '<div class="input-control text">' +
                                     '<input type="text" id="sgd-data-fraction" value="" placeholder=""/>' +
                                 '</div>';
