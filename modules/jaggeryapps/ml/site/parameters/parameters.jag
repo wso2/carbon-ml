@@ -48,16 +48,13 @@
         </div>
 
 		<div class="wr-action-btn-bar">
-			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
-			<a href="#" class="cu-btn btn-save">Save and Create</a-->
-			<!-- <a href="../project/projects.jag" class="cu-btn btn-cancel">Cancel</a> -->
+			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
 		</div>
 	</div>
 
 	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
-			<!-- empty -->
-			<!-- <a href="#" id="btn-prev" class="cu-btn btn-prev">Previous</a> -->
+			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
 			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
 		</div>
 	</div>
@@ -144,190 +141,147 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+
 	var algorithmName = getParameterByName('algorithmName');
-    var analysisId = getParameterByName('analysisId');    
+    var projectName = getParameterByName('projectName');
+    var analysisName = getParameterByName('analysisName');	
+    var analysisId = getParameterByName('analysisId');
+    var datasetId = getParameterByName('datasetId');
     var algorithmType = getParameterByName('algorithmType');
+    var fromNext;
+
+    var hyperParametersArray = [];
+    // get previously set response variable
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters",
+        async : false,
+        dataType: 'json',
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res) {
+            var hyperParametersResponse = res;
+            if (hyperParametersResponse == '') {
+                fromNext = false;
+            }
+            else {
+                fromNext = true;
+                for (var i = 0; i < hyperParametersResponse.length; i++) {
+                    hyperParametersArray[i] = hyperParametersResponse[i]['value'];
+                }
+            }
+        },
+        error: function(res) { //TODO: display error
+            console.log("Error");
+        }
+    });
 
     // put path in application navigator
-    var projectName = getParameterByName('projectName');
-    var analysisName = getParameterByName('analysisName');
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);    
 
     $('#algo-cat').text(algorithmType);
     $('#display-name').text(algorithmName);
 
-    var inputString;
-
+    var inputString = '';
+    // set values for algorithm to build HTML inputs 
+    var hyperParameterInputValues;
     if (algorithmName == 'LINEAR_REGRESSION') {
-	    inputString = '' +
-	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Iterations','iterations',100],['Learning rate','learning-rate',0.001],['SGD data fraction','sgd-data-fraction',1]];
     }
     else if (algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
-	    inputString = '' +
-	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Iterations','iterations',100],['Learning rate','learning-rate',0.001],['Regularization parameter','reg-parameter',0.001],['SGD data fraction','sgd-data-fraction',1]];
     }
     else if (algorithmName == 'LOGISTIC_REGRESSION') {
-	    inputString = '' +
-	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Regularization type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="reg-type" value="L2" placeholder="input text"/>' +
-					'</div>' +					
-					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Iterations','iterations',100],['Learning rate','learning-rate',0.001],['Regularization type','reg-type','L2'],['Regularization parameter','reg-parameter',0.001],['SGD data fraction','sgd-data-fraction',1]];
     }
     else if (algorithmName == 'SVM') {
-	    inputString = '' +
-	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="iterations" value="100" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Learning rate<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="learning-rate" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Regularization type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="reg-type" value="L1" placeholder="input text"/>' +
-					'</div>' +					
-					'<label class="input-label">Regularization parameter<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="reg-parameter" value="0.001" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">SGD data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="sgd-data-fraction" value="1" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Iterations','iterations',100],['Learning rate','learning-rate',0.001],['Regularization type','reg-type','L1'],['Regularization parameter','reg-parameter',0.001],['SGD data fraction','sgd-data-fraction',1]];
     }
     else if (algorithmName == 'DECISION_TREE') {
-	    inputString = '' +
-	    			'<label class="input-label">Number of classes<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="num-classes" value="2" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Max depth<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="max-depth" value="5" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Max bins<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="max-bins" value="100" placeholder="input text"/>' +
-					'</div>' +					
-					'<label class="input-label">Impurity<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="impurity" value="gini" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Number of classes','num-classes',2],['Max depth','max-depth',5],['Max bins','max-bins',100],['Impurity','impurity','gini']];
     }    
     else if (algorithmName == 'NAIVE_BAYES') {
-	    inputString = '' +
-	    			'<label class="input-label">Lambda<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="lambda" value="1" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Lambda','lambda',1]];
     }
     else if (algorithmName == 'K_MEANS') {
-	    inputString = '' +
-	    			'<label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="iterations" value="20" placeholder="input text"/>' +
-					'</div>' +
-					'<label class="input-label">Number of clusters<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="num-clusters" value="3" placeholder="input text"/>' +
-					'</div>';
+    	hyperParameterInputValues = [['Iterations','iterations',20],['Number of clusters','num-clusters',3]];    	
     }
 
+    // build input HTML for hyper-parameters
+	for (var i = 0; i < hyperParameterInputValues.length; i++) {
+		if (fromNext) {
+	    	inputString += buildInput(hyperParameterInputValues[i][0],hyperParameterInputValues[i][1],hyperParametersArray[i]);	
+    	}
+    	else {
+	    	inputString += buildInput(hyperParameterInputValues[i][0],hyperParameterInputValues[i][1],hyperParameterInputValues[i][2]);	
+    	}
+	}
+
+    // set built input HTML
 	$("#parameter-inputs").append(inputString);
+
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+    });	
 
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
-    	var algorithmName = getParameterByName('algorithmName');
-    	var datasetId = getParameterByName('datasetId');
+    	var algorithmName = getParameterByName('algorithmName');    	
 
     	var jsonData;
+    	var hyperParameters = [];
 
 	    if (algorithmName == 'LINEAR_REGRESSION') {
-	    	var iterations = $('#iterations').val();
-	    	var learningRate = $('#learning-rate').val();
-	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+	    	
+	    	hyperParameters[0] = $('#iterations').val();
+	    	hyperParameters[1] = $('#learning-rate').val();
+	    	hyperParameters[2] = $('#sgd-data-fraction').val();
 
-	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    	jsonData = '[{ "key":"Iterations","value":"'+hyperParameters[0]+'"},{"key":"Learning_Rate","value":"'+hyperParameters[1]+'"},{"key":"SGD_Data_Fraction","value":"'+hyperParameters[2]+'"}]';
 	    }
 	    else if (algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
-	    	var iterations = $('#iterations').val();
-	    	var learningRate = $('#learning-rate').val();
-	    	var regParameter = $('#reg-parameter').val();
-	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+	    	
+	    	hyperParameters[0] = $('#iterations').val();
+	    	hyperParameters[1] = $('#learning-rate').val();
+	    	hyperParameters[2] = $('#reg-parameter').val();
+	    	hyperParameters[3] = $('#sgd-data-fraction').val();
 
-	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"Reg_Parameter","value":"'+regParameter+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    	jsonData = '[{ "key":"Iterations","value":"'+hyperParameters[0]+'"},{"key":"Learning_Rate","value":"'+hyperParameters[1]+'"},{"key":"Reg_Parameter","value":"'+hyperParameters[2]+'"},{"key":"SGD_Data_Fraction","value":"'+hyperParameters[3]+'"}]';
 	    }
 	    else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'SVM') {
-	    	var iterations = $('#iterations').val();
-	    	var learningRate = $('#learning-rate').val();
-	    	var regType = $('#reg-type').val();
-	    	var regParameter = $('#reg-parameter').val();
-	    	var sgdDataFraction = $('#sgd-data-fraction').val();
+	    	
+	    	hyperParameters[0] = $('#iterations').val();
+	    	hyperParameters[1] = $('#learning-rate').val();
+	    	hyperParameters[2] = $('#reg-type').val();
+	    	hyperParameters[3] = $('#reg-parameter').val();
+	    	hyperParameters[4] = $('#sgd-data-fraction').val();
 
-	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Learning_Rate","value":"'+learningRate+'"},{"key":"Reg_Type","value":"'+regType+'"},{"key":"Reg_Parameter","value":"'+regParameter+'"},{"key":"SGD_Data_Fraction","value":"'+sgdDataFraction+'"}]';
+	    	jsonData = '[{ "key":"Iterations","value":"'+hyperParameters[0]+'"},{"key":"Learning_Rate","value":"'+hyperParameters[1]+'"},{"key":"Reg_Type","value":"'+hyperParameters[2]+'"},{"key":"Reg_Parameter","value":"'+hyperParameters[3]+'"},{"key":"SGD_Data_Fraction","value":"'+hyperParameters[4]+'"}]';
 	    }
 	    else if (algorithmName == 'DECISION_TREE') {
-	    	var numClasses = $('#num-classes').val();
-	    	var maxDepth = $('#max-depth').val();
-	    	var maxBins = $('#rmax-bins').val();
-	    	var impurity = $('#impurity').val();
+	    	
+	    	hyperParameters[0] = $('#num-classes').val();
+	    	hyperParameters[1] = $('#max-depth').val();
+	    	hyperParameters[2] = $('#max-bins').val();
+	    	hyperParameters[3] = $('#impurity').val();
 
-	    	jsonData = '[{ "key":"Num_Classes","value":"'+numClasses+'"},{"key":"Max_Depth","value":"'+maxDepth+'"},{"key":"Max_Bins","value":"'+maxBins+'"},{"key":"Impurity","value":"'+impurity+'"}]';
+	    	jsonData = '[{ "key":"Num_Classes","value":"'+hyperParameters[0]+'"},{"key":"Max_Depth","value":"'+hyperParameters[1]+'"},{"key":"Max_Bins","value":"'+hyperParameters[2]+'"},{"key":"Impurity","value":"'+hyperParameters[3]+'"}]';
 	    }    
 	    else if (algorithmName == 'NAIVE_BAYES') {
-	    	var lambda = $('#lambda').val();
+	    	
+	    	hyperParameters[0] = $('#lambda').val();
 
-	    	jsonData = '[{ "key":"Lambda","value":"'+lambda+'"}]';
+	    	jsonData = '[{ "key":"Lambda","value":"'+hyperParameters[0]+'"}]';
 	    }
 	    else if (algorithmName == 'K_MEANS') {
-	    	var iterations = $('#iterations').val();
-	    	var numClusters = $('#num-clusters').val();
+	    	
+	    	hyperParameters[0] = $('#iterations').val();
+	    	hyperParameters[1] = $('#num-clusters').val();
 
-	    	jsonData = '[{ "key":"Iterations","value":"'+iterations+'"},{"key":"Num_Clusters","value":"'+numClusters+'"}]';
+	    	jsonData = '[{ "key":"Iterations","value":"'+hyperParameters[0]+'"},{"key":"Num_Clusters","value":"'+hyperParameters[1]+'"}]';
 	    }
 
 	    $.ajax({
@@ -339,7 +293,7 @@ $( document ).ready(function() {
             contentType: "application/json",
             data: jsonData,
             success: function(res){
-                window.location.href = '../model/model.jag?analysisId='+analysisId+'&projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
+                window.location.href = '../model/model.jag?analysisId='+analysisId+'&projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId+'&algorithmName='+algorithmName+'&algorithmName='+algorithmName+'&algorithmType='+algorithmType;
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
@@ -349,31 +303,27 @@ $( document ).ready(function() {
             }
         });        
 
-    });	
-    
-/*    if ( algoCat === 'CATEGORICAL') { //TODO: move constants to a separate file
-    	$('#algo-cat').text('Classification');    	
-    } else {
-    	$('#algo-cat').text('Numerical Prediction');
-    }
-    $('#title').text(projna);*/
-    
+    });
 
-	$.ajax({
-        url: './ajax/GetParameters.jag',
-        data: {algorithm: algo, wfid: wfid},
-        success: function(res){
-            var parameters = buildHyperparametersUI(res.parameters);                
-            var responseVarSelector = buildResponseSelector(wfid, algoCat);
-                
-            $('#hyper-parameters').html(parameters + responseVarSelector);
-            buildEvents('.hyper-double, .hyper-integer');                
-        },
-        error: function(res){
-            var msg = '<span class="form-val-error">' + res.responseJSON.error + '<span>';
-            $('#hyper-parameters').html(msg);
-                
-        }
+    // function that cancels an analysis
+    $('#cancel-analysis').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'DELETE',
+            url: serverUrl+"/api/analyses/"+analysisName,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(res){
+                window.location.href = '../project/projects.jag';
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
     });
 
 	$('#btn-build').on('click', function(e){
@@ -394,12 +344,16 @@ $( document ).ready(function() {
 		});
 
 	});
+});
 
-	 $('#btn-prev').on('click', function(e){
-        e.preventDefault();
-        window.location.href = '../algorithm/algorithm.jag?projid='+projid+'&projna='+projna+'&wfid='+wfid+'&wfname='+wfname;
-    });
-}); 
+function buildInput(displayName, id, value) {
+
+	inputString = 	'<label class="input-label">'+displayName+'<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+					'<div class="input-control text">' +
+					    '<input type="text" id="'+id+'" value="'+value+'" placeholder="input text"/>' +
+					'</div>';
+	return inputString;
+}
 
 function isValidDouble(number){
     return number.match(doubleRegEx) != null;
@@ -461,10 +415,6 @@ function buildDropdown(parameter){
 	
 	return label+controller;
 }
-
-function buildLabel(label){	
-	return '<label class="input-label">' + label + '<span class="help-tip glyphicon glyphicon-question-sign">'+
-           '</span></label>';}
 
 function buildResponseSelector(workflowId, algoCategory) {
 	var controller = '<div class="input-control text"> <select>';
