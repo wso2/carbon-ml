@@ -26,10 +26,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -145,7 +148,7 @@ public class MLUtils {
     public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption) {
         List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
         for (Feature feature : workflow.getFeatures()) {
-            if (feature.getImputeOption().equals(imputeOption)) {
+            if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
                 imputeFeatureIndices.add(feature.getIndex());
             }
         }
@@ -175,7 +178,33 @@ public class MLUtils {
         return featureIndex;
     }
     
-    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name, String version, URI targetPath, SamplePoints samplePoints) {
+    /**
+     * @param workflow  Workflow
+     * @return          A list of indices of features to be included in the model
+     */
+    public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
+        SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
+        List<Feature> features = workflow.getFeatures();
+        for (Feature feature : features) {
+            if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
+                inlcudedFeatures.put(feature.getIndex(), feature.getName());
+            }
+        }
+        return inlcudedFeatures;
+    }
+    
+    /**
+     * @param tenantId      Tenant ID of the current user
+     * @param datasetId     ID of the datstet
+     * @param userName      Name of the current user
+     * @param name          Dataset name
+     * @param version       Dataset version
+     * @param targetPath    path of the stored data set
+     * @param samplePoints  Sample points of the dataset
+     * @return              Dataset Version Object
+     */
+    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name, 
+            String version, URI targetPath, SamplePoints samplePoints) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);
@@ -187,6 +216,9 @@ public class MLUtils {
         return valueSet;
     }
     
+    /**
+     * @return  Current date and time
+     */
     public static String getDate() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         Date date = new Date();
@@ -209,6 +241,11 @@ public class MLUtils {
         
     }
     
+    /**
+     * 
+     * @param inArray   String array
+     * @return          Double array
+     */
     public static double[] toDoubleArray(String[] inArray) {
         double[] outArray = new double[inArray.length];
         int idx = 0;
@@ -220,6 +257,11 @@ public class MLUtils {
         return outArray;
     }
 
+    /**
+     * 
+     * @param inList
+     * @return
+     */
     public static List<Double> toDoubleList(List<Object> inList) {
         List<Double> outList = new ArrayList<Double>();
         for (Object inListObj : inList) {

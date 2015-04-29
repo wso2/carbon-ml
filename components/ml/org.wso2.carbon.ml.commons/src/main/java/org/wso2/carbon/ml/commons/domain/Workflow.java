@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.commons.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -143,5 +144,15 @@ public class Workflow implements Serializable {
      */
     public void setHyperParameters(Map<String, String> hyperParameters) {
         this.hyperParameters = hyperParameters;
+    }
+    
+    public List<Feature> getIncludedFeatures(){
+        List<Feature> includedFeatures = new ArrayList<Feature>();
+        for (Feature feature : features) {
+            if (feature.isInclude() == true && !responseVariable.equals(feature.getName())) {
+                includedFeatures.add(feature);
+            }
+        }
+        return includedFeatures;
     }
 }
