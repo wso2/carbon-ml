@@ -194,17 +194,17 @@ public class MLUtils {
     }
     
     /**
-     * 
-     * @param tenantId
-     * @param datasetId
-     * @param userName
-     * @param name
-     * @param version
-     * @param targetPath
-     * @param samplePoints
-     * @return
+     * @param tenantId      Tenant ID of the current user
+     * @param datasetId     ID of the datstet
+     * @param userName      Name of the current user
+     * @param name          Dataset name
+     * @param version       Dataset version
+     * @param targetPath    path of the stored data set
+     * @param samplePoints  Sample points of the dataset
+     * @return              Dataset Version Object
      */
-    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name, String version, URI targetPath, SamplePoints samplePoints) {
+    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name, 
+            String version, URI targetPath, SamplePoints samplePoints) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);
