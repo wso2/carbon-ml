@@ -32,9 +32,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<!-- module>tests-integration</module -->
+		<module>tests-integration</module>
 		<!-- <module>tests-ui-integration</module> -->
-		<!--  module>tests-common</module -->
+		<module>tests-common</module>
 	</modules>
 
 	<build>

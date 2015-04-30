@@ -41,12 +41,12 @@ import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTe
 /**
  * Contains test cases related to building a Logistic Regression model
  */
-@Test(groups="buildModels", dependsOnGroups="createModelStorage")
+@Test(groups="buildModels")
 public class LoigsticRegressionTestCase extends MLBaseTest {
     
     private MLHttpClient mlHttpclient;
     private static final String analysisName = "TestAnalysisForLogisticRegressionTestcase";
-    private static final String modelName = "TestModelForLogisticRegression";
+    private static String modelName;
     private static int analysisId;
     private static int modelId;
 
@@ -58,7 +58,7 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/projects/" + MLIntegrationTestConstants
                 .PROJECT_NAME);
         if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
-            throw new SkipException("Skipping tests becasue a project is not available");
+            throw new SkipException("Skipping tests because a project is not available");
         }
         //Create an analysis
         mlHttpclient.createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
@@ -74,11 +74,12 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
         
         //Set default Hyper-parameters
         mlHttpclient.doHttpPost("/api/analyses/" + analysisId + "/hyperParams/defaults", null);
-        
+
         // Create a model
-        mlHttpclient.createModel(modelName, analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
-        modelId = mlHttpclient.getModelId(modelName); 
-        
+        CloseableHttpResponse httpResponse = mlHttpclient.createModel(analysisId, MLIntegrationTestConstants.VERSIONSET_ID);
+        modelName = mlHttpclient.getModelName(httpResponse);
+        modelId = mlHttpclient.getModelId(modelName);
+
         //Set storage location for model
         mlHttpclient.createFileModelStorage(modelId, getModelStorageDirectory());
     }
@@ -86,7 +87,7 @@ public class LoigsticRegressionTestCase extends MLBaseTest {
     @Test(description = "Build a Logistic Regression model")
     public void testBuildLogisticRegressionModel() throws MLHttpClientException, IOException{
         CloseableHttpResponse response = mlHttpclient.doHttpPost("/api/models/" + modelId, null);
-        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+        assertEquals("Unexpected response received", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());
         response.close();
     }

@@ -41,7 +41,6 @@ import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTe
 public class CreateModelTestCase extends MLBaseTest {
     
     private MLHttpClient mlHttpclient;
-    private static final String modelName = "TestModelForModelCreateModelTestcase";
 
     @BeforeClass(alwaysRun = true)
     public void initTest() throws MLIntegrationBaseTestException, MLHttpClientException, IOException {
@@ -68,9 +67,10 @@ public class CreateModelTestCase extends MLBaseTest {
      */
     @Test(description = "Create a Model")
     public void testCreateModel() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.MODEL_NAME, 
-                MLIntegrationTestConstants.ANALYSIS_ID, MLIntegrationTestConstants.VERSIONSET_ID);
-        assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
+        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.ANALYSIS_ID,
+                MLIntegrationTestConstants.VERSIONSET_ID);
+        MLIntegrationTestConstants.MODEL_NAME = mlHttpclient.getModelName(response);
+        assertEquals("Unexpected response received", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());
         response.close();
     }
@@ -82,9 +82,8 @@ public class CreateModelTestCase extends MLBaseTest {
      */
     @Test(description = "Create a Model with an invalid analysis")
     public void testCreateModelWithInvalidAnalysis() throws MLHttpClientException, IOException  {
-        CloseableHttpResponse response = mlHttpclient.createModel(modelName, 999, MLIntegrationTestConstants
-                .VERSIONSET_ID);
-        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+        CloseableHttpResponse response = mlHttpclient.createModel(999, MLIntegrationTestConstants.VERSIONSET_ID);
+        assertEquals("Unexpected response received", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
                 .getStatusLine().getStatusCode());
         response.close();
     }
@@ -96,8 +95,8 @@ public class CreateModelTestCase extends MLBaseTest {
      */
     @Test(description = "Create a Model with an invalid versionset")
     public void testCreateModelWithInvalidVersionset() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.createModel(modelName, MLIntegrationTestConstants.ANALYSIS_ID, 999);
-        assertEquals("Unexpected response recieved", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
+        CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.ANALYSIS_ID, 999);
+        assertEquals("Unexpected response received", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response
                 .getStatusLine().getStatusCode());
         response.close();
     }
