@@ -200,6 +200,15 @@ public interface DatabaseService {
     public List<String> getFeatureNames(String analysisId, String featureType) throws DatabaseHandlerException;
 
     /**
+     * Returns all the feature names of an analysis.
+     *
+     * @param analysisId    Unique identifier of the current analysis
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(String analysisId) throws DatabaseHandlerException;
+
+    /**
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *

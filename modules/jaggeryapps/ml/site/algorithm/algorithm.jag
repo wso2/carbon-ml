@@ -288,32 +288,31 @@ $( document ).ready(function() {
 }); 
 
 function loadDatasetFeatures(setResponseVariable) {
-    var datasetId = getParameterByName('datasetId');
     $.ajax({
         type: "GET",
-        url: serverUrl+"/api/datasets/"+datasetId+"/versions",
+        url: serverUrl+"/api/analyses/"+analysisId+"/allFeatures",
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
         success: function(res) {
-            var datasetFeatures = res[0]['samplePoints']['header'];
-            $.each(datasetFeatures, function (key, value) {
+            var datasetFeatures = res;
+            $.each(datasetFeatures,function(index, feature){
                 $('#response-variable').append($('<option>', { 
-                    value: key,
-                    text : key
+                    value: feature,
+                    text : feature
                 }));
             });
             // set previously selected values when navigating from next page
             if (setResponseVariable != '') {
                 $('#response-variable option[value='+setResponseVariable+']').attr('selected','selected');
-            }            
+            }
         },
         error: function(res) { //TODO: display error
             var message = "An error occurred while retrieving tenant projects.";
         }
     });
 }
-	
+
 </script>
 
 </body>
