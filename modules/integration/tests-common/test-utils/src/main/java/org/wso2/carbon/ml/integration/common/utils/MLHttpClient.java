@@ -384,9 +384,9 @@ public class MLHttpClient {
      * @return              Response from the back-end
      * @throws              MLHttpClientException 
      */
-    public CloseableHttpResponse createModel(String name, int analysisId, int versionSetId) throws MLHttpClientException {
+    public CloseableHttpResponse createModel(int analysisId, int versionSetId) throws MLHttpClientException {
         try {
-            String payload ="{\"name\" : \"" + name + "\",\"analysisId\" :" + analysisId + ",\"versionSetId\" :" +
+            String payload ="{\"analysisId\" :" + analysisId + ",\"versionSetId\" :" +
                     versionSetId + "}";
             return doHttpPost("/api/models/", payload);
         } catch (MLHttpClientException e) {
@@ -444,5 +444,23 @@ public class MLHttpClient {
      */
     public String getResourceAbsolutePath(String resourceRelativePath) {
         return FrameworkPathUtil.getSystemResourceLocation() + resourceRelativePath;
+    }
+
+    /**
+     * Extract the model name from the response
+     * @param response
+     * @return
+     * @throws MLHttpClientException
+     */
+    public String getModelName(CloseableHttpResponse response) throws MLHttpClientException {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            JSONObject responseJson = new JSONObject(bufferedReader.readLine());
+            bufferedReader.close();
+            response.close();
+            return responseJson.getString("name");
+        } catch (IOException e) {
+            throw new MLHttpClientException("Failed to get the name of model" , e);
+        }
     }
 }
