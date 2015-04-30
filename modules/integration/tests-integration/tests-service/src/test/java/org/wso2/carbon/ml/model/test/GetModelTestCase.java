@@ -49,12 +49,6 @@ public class GetModelTestCase extends MLBaseTest {
     public void initTest() throws MLHttpClientException, MLIntegrationBaseTestException {
         super.init();
         mlHttpclient = new MLHttpClient(instance, userInfo);
-        // Check whether the model exists.
-        CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
-        if (Response.Status.OK.getStatusCode() != response.getStatusLine().getStatusCode()) {
-            throw new SkipException("Skipping tests becasue the model: " + MLIntegrationTestConstants.MODEL_NAME + 
-                    " is not available");
-        }
     }
 
     /**

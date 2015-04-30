@@ -69,6 +69,7 @@ public class CreateModelTestCase extends MLBaseTest {
     public void testCreateModel() throws MLHttpClientException, IOException {
         CloseableHttpResponse response = mlHttpclient.createModel(MLIntegrationTestConstants.ANALYSIS_ID,
                 MLIntegrationTestConstants.VERSIONSET_ID);
+        MLIntegrationTestConstants.MODEL_NAME = mlHttpclient.getModelName(response);
         assertEquals("Unexpected response received", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());
         response.close();
