@@ -41,7 +41,7 @@ import org.wso2.carbon.ml.integration.common.utils.exception.MLIntegrationBaseTe
 /**
  * Contains test cases related to building a Logistic Regression model
  */
-@Test(groups="buildModels")
+@Test(groups="buildModels", dependsOnGroups="getModels")
 public class LoigsticRegressionTestCase extends MLBaseTest {
     
     private MLHttpClient mlHttpclient;
