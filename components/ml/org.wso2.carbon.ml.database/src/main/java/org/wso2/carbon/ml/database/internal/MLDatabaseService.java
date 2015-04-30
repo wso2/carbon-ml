@@ -2650,6 +2650,60 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, model, result);
         }
     }
-    
 
+    @Override
+    public void deleteDataset(long datasetId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_SCHEMA);
+            preparedStatement.setLong(1, datasetId);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the dataset schema : " + datasetId);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting dataset schema: " + datasetId + ": "
+                    + e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
+        }
+    }
+
+    @Override
+    public void deleteDatasetVersion(long datasetVersionId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            MLDataSource dbh = new MLDataSource();
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_VERSION);
+            preparedStatement.setLong(1, datasetVersionId);
+            preparedStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully deleted the dataset version : " + datasetVersionId);
+            }
+        } catch (SQLException e) {
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("Error occurred while deleting dataset version: " + datasetVersionId + ": "
+                    + e.getMessage(), e);
+        } finally {
+            // enable auto commit
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
+        }
+    }
 }
