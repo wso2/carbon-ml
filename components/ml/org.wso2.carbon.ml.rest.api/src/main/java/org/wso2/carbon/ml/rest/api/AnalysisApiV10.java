@@ -187,6 +187,28 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+
+    /**
+     * get all feature names of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/allFeatures")
+    @Produces("application/json")
+    public Response getAllFeatures(@PathParam("analysisId") String analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+
+            List<String> features = mlAnalysisHandler.getFeatureNames(analysisId);
+            return Response.ok(features).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving feature names for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
     
     /**
      * get the response variable of an analysis.
