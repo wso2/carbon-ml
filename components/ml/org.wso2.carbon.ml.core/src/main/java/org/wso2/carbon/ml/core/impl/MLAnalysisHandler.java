@@ -107,6 +107,22 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e);
         }
     }
+
+    public String getAlgorithmName(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+
+    public double getTrainDataFraction(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
     
     public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
         try {
@@ -128,6 +144,14 @@ public class MLAnalysisHandler {
     public void addHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters) throws MLAnalysisHandlerException {
         try {
             databaseService.insertHyperParameters(analysisId, hyperParameters);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e);
+        }
+    }
+
+    public List<MLHyperParameter> getHyperParameters(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getHyperParametersOfModel(analysisId);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e);
         }

@@ -61,15 +61,13 @@
         </div>
 
 		<div class="wr-action-btn-bar">
-			<!--a href="#" class="cu-btn btn-add-new">Create Project</a>
-			<a href="#" class="cu-btn btn-save">Save Form</a-->
-            <!-- <a href="../project/projects.jag" class="cu-btn btn-cancel" id="cancel-project">Cancel</a> -->
+			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
 		</div>
 	</div>
 
 	<div class="col-md-3">
 		<div class="wr-secondary-links pull-right">
-			<!-- <a href="#" class="cu-btn btn-prev" id="prev-btn">Previous</a> -->
+			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
 			<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
 		</div>
 	</div>
@@ -211,10 +209,36 @@ $( document ).ready(function() {
         drawClusterDiagramBase();
     });
 
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+    });
+
     $('#next-btn').on('click', function(e){
         e.preventDefault();
-	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&datasetId='+datasetId;
-    });    
+	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+    });
+
+    // function that cancels an analysis
+    $('#cancel-analysis').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'DELETE',
+            url: serverUrl+"/api/analyses/"+analysisName,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(res){
+                window.location.href = '../project/projects.jag';
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    });
 });
 
 function drawScatterPlotBase() {

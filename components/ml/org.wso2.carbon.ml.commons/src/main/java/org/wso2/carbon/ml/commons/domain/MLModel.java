@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.commons.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
