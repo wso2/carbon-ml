@@ -666,4 +666,19 @@ public interface DatabaseService {
     void updateModelStatus(long modelId, String status) throws DatabaseHandlerException;
 
     MLAnalysis getAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+
+    /**
+     * Delete the dataset schema
+     * @param datasetId unique id of dataset schema
+     * @throws DatabaseHandlerException
+     */
+    public void deleteDataset(long datasetId) throws DatabaseHandlerException;
+
+    /**
+     * Delete the dataset version
+     * @param datasetVersionId unique id of dataset version
+     * @throws DatabaseHandlerException
+     */
+    public void deleteDatasetVersion(long datasetVersionId) throws DatabaseHandlerException;
+
 }
