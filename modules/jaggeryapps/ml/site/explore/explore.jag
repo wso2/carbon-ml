@@ -95,19 +95,203 @@
 	<div class="col-md-12">
 		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
-            
-            <h1 class="title">Explore Data</h1>
-            
-            <div class="col-md-2 wr-left-nav">
-                <ul class="ctrl-left-nav nav">
-                    <li role="presentation"><a href="#" id="scatter-plot-link">Scatter Plot</a></li>
-                    <li role="presentation"><a href="#" id="parallel-sets-link">Parallel Sets</a></li>
-                    <li role="presentation"><a href="#" id="trellis-chart-link">Trellis Chart</a></li>
-                    <li role="presentation"><a href="#" id="cluster-diagram-link">Cluster Diagram</a></li>
-                </ul>
-            </div>
 
-            <div class="col-md-10" id="graphDiv"></div>
+            <!-- <h1 class="title">Explore Data</h1> -->
+
+            <div role="tabpanel" class="wr-tabbed-container">
+
+				<!-- Nav tabs/graphs -->
+				<div class="wr-tabs-grphs">
+					<ul class="nav nav-pills">
+						 <li role="presentation" class="active"><a href="#scatter-plot" id="scatter-plot-link" aria-controls="scatter-plot" role="tab" data-toggle="tab">Scatter Plot</a></li>
+						 <li role="presentation"><a href="#parallel-sets" id="parallel-sets-link" aria-controls="parallel-sets" role="tab" data-toggle="tab">Parallel Sets</a></li>
+						 <li role="presentation"><a href="#trellis-chart" id="trellis-chart-link" aria-controls="trellis-chart" role="tab" data-toggle="tab">Trellis Chart</a></li>
+						 <li role="presentation"><a href="#cluster-diagram" id="cluster-diagram-link" aria-controls="cluster-diagram" role="tab" data-toggle="tab">Cluster Diagram</a></li>
+					</ul>
+				</div>
+
+
+				<!-- Tab panes -->
+				<div class="tab-content">
+
+					<div role="tabpanel" class="tab-pane fade in active" id="scatter-plot">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-x"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-y"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Group By<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-group"></select>
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='scatterPlotTitle' class='graphtitle'></div>
+					        <div id='scatter'></div>
+
+					        <div id='histogramIndependent' class='graph'>
+					            <div id='histogramIndependentTitle' class='graphtitle'></div>
+					            <svg></svg>
+					            <div id='numFeatureIndependentSummary' class='graphSummary'></div>
+					        </div>
+
+					        <div id='histogramDependent' class='graph'>
+					            <div id='histogramDependentTitle' class='graphtitle'></div>
+					            <svg></svg>
+					            <div id='numFeatureDependentSummary' class='graphSummary'></div>
+					        </div>
+
+					    </div>
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="parallel-sets">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div>
+					                <label class="input-label-sm">Categorical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="parallel-sets-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+					        <!-- /filters -->   
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='parallelSets'>Loading chart...</div>
+
+					    </div>
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="trellis-chart">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="trellis-cat-features">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div>
+					                <label class="input-label-sm">Numerical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="trellis-num-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />			            
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='trellisChart'>Loading chart...</div>
+
+					    </div>
+
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="cluster-diagram">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">First Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-independent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Second Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-dependent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-num-clusters">
+										    <option value='1'>1</option>
+										    <option value='2'>2</option>
+										    <option value='3' selected>3</option>
+										    <option value='4'>4</option>
+										    <option value='5'>5</option>
+										    <option value='6'>6</option>
+										    <option value='7'>7</option>
+										    <option value='8'>8</option>
+										    <option value='9'>9</option>
+										    <option value='10'>10</option>
+										    <option value='11'>11</option>
+										    <option value='12'>12</option>
+										    <option value='13'>13</option>
+										    <option value='14'>14</option>
+										    <option value='15'>15</option>                                    
+					                    </select>
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />				            
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='clusterDiagram'>Loading chart...</div>
+
+					    </div>
+
+					</div>
+
+				</div>
+
+            </div>
 		</div>
 		<!-- /content -->
 	</div>
@@ -116,7 +300,6 @@
 
 </div>
     
-
 
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
@@ -139,19 +322,22 @@ var analysisId;
 var tenantId;
 var userName;
 
+var categoricalFeatureNames;
+var numericalFeatureNames;
+
 // redraw charts upon changes in selections
-$(document).on('change','select[class="numFeaturesIndependentDropdown"], select[class="numFeaturesDependentDropdown"], select[class="catFeaturesDropdown"]',function() {
+$(document).on('change','select[id="scatter-x"], select[id="scatter-y"], select[id="scatter-group"]',function() {
     drawPlotsAjax();
 });
 $(document).on('change','input[class="categoricalFeatureNames"]',function() {
 	$("#parallelSets").html("Loading chart...");
 	drawParallelSets();
 });
-$(document).on('change','input[class="numericalFeatureNames"], select[id="categoricalFeature"]',function() {
+$(document).on('change','input[class="numericalFeatureNames"], select[id="trellis-cat-features"]',function() {
     $("#trellisChart").html("Loading chart...");
     drawTrellisChart();
 });
-$(document).on('change','select[class="numericalFeatureIndependent"], select[class="numericalFeatureDependent"], select[class="noOfClusters"]',function() {
+$(document).on('change','select[id="cluster-independent"], select[id="cluster-dependent"], select[id="cluster-num-clusters"]',function() {
     $("#clusterDiagram").html("Loading chart...");
     drawClusterDiagram();
 });
@@ -186,6 +372,45 @@ $( document ).ready(function() {
         }
     });
 
+    // get categorical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+            categoricalFeatureNames = res;
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });    
+    // get numerical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+            numericalFeatureNames = res;
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
     // put path in application navigator
     var projectName = getParameterByName('projectName');
     $('#nav-project').text(projectName);
@@ -208,6 +433,9 @@ $( document ).ready(function() {
         e.preventDefault();
         drawClusterDiagramBase();
     });
+
+    // draw scatter plot on page load
+    drawScatterPlotBase();
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
@@ -241,95 +469,32 @@ $( document ).ready(function() {
     });
 });
 
-function drawScatterPlotBase() {
-    
-    var categoricalFeatureNames;
-    var numericalFeatureNames;
-
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            categoricalFeatureNames = res;
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
-    });    
-
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            numericalFeatureNames = res;
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
+function drawScatterPlotBase() { 
+ 
+    $('#scatter-x, #scatter-y, #scatter-group').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+        $('#scatter-x, #scatter-y').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
     });
-    
-    var graphString = "<div class='col-md-3'><p>X-Axis:</p><select class='numFeaturesIndependentDropdown'>";
-    
-    for (var i = 0; i < numericalFeatureNames.length; i++) {
-        graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";
-    }
+    $('#scatter-y option')[1].selected = true;
+    $.each(categoricalFeatureNames,function(index, feature){
+        $('#scatter-group').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
+    });
 
-    graphString += "</select><br><br><p>Y-Axis:</p><select class='numFeaturesDependentDropdown'>";
-    
-    for (var i = 0; i < numericalFeatureNames.length; i++) {                
-        // make second option selected by default
-        if (i == 1) {
-            graphString += "<option value='"+numericalFeatureNames[i]+"' selected>"+numericalFeatureNames[i]+"</option>";
-        }
-        else {
-            graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";    
-        }                
-    }
-    
-    graphString += "</select><br><br><p>Group By:</p><select class='catFeaturesDropdown'>";
-
-    for (var i = 0; i < categoricalFeatureNames.length; i++) {            
-        
-        graphString += "<option value='"+categoricalFeatureNames[i]+"'>"+categoricalFeatureNames[i]+"</option>";
-    }
-
-    graphString += "</select></div><div class='col-md-7'>" +
-                        "<div id='scatterPlotTitle' class='graphtitle'></div>" +
-                        "<div id='scatter'></div>" +
-                        "<div id='histogramIndependent' class='graph'>" +
-                        "<div id='histogramIndependentTitle' class='graphtitle'></div>" +
-                        "<svg></svg>" +
-                        "<div id='numFeatureIndependentSummary' class='graphSummary'></div>" +
-                        "<div id='histogramDependent' class='graph'><div id='histogramDependentTitle' class='graphtitle'></div><svg></svg><div id='numFeatureDependentSummary' class='graphSummary'>" +
-                        "</div></div>" +
-                        "</div></div>";
-    $("#graphDiv").html(graphString);
-    
     drawPlotsAjax();
 }
 
 function drawPlotsAjax() {
 
 	//TODO: put regex as golbal var
-	var numFeatureIndependent = $(".numFeaturesIndependentDropdown").val().replace(/^\s+|\s+$/g, '');
-    var numFeatureDependent = $(".numFeaturesDependentDropdown").val().replace(/^\s+|\s+$/g, '');
-    var catFeature = $(".catFeaturesDropdown").val().replace(/^\s+|\s+$/g, '');
+	var numFeatureIndependent = $("#scatter-x").val().replace(/^\s+|\s+$/g, '');
+    var numFeatureDependent = $("#scatter-y").val().replace(/^\s+|\s+$/g, '');
+    var catFeature = $("#scatter-group").val().replace(/^\s+|\s+$/g, '');
 
     //TODO: remove versionsetId
     // get scatter plot data
@@ -479,41 +644,18 @@ function drawHistogram(data, divID) {
     });
 }
 
-function drawParallelSetsBase() {
-    
-    // get categorical feature names
-    var categoricalFeatureNames;
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            categoricalFeatureNames = res;
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+function drawParallelSetsBase() {    
 
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
-    });
-
-    var graphString = "<div class='col-md-3' id='categoricalFeatureSelect'><p id='categoricalFeatureTitle'>Categorical Features:</p>";
-    for (i = 0; i < categoricalFeatureNames.length; i++) {            
-        // first 5 categorical features are plotted by default
-        if (i <5){
-            graphString += "<label><input type='checkbox' class='categoricalFeatureNames' value='"+categoricalFeatureNames[i]+"' checked> "+categoricalFeatureNames[i]+"</label><br>";
+    $('#parallel-sets-features').empty();
+    $.each(categoricalFeatureNames,function(index, feature){
+        if (index <5){
+            $('#parallel-sets-features').append('<label class="checkbox"><input type="checkbox" class="categoricalFeatureNames" id="inlineCheckbox1" value="'+categoricalFeatureNames[index]+'" checked>'+categoricalFeatureNames[index]+'</label>');
         }
         else {
-            graphString += "<label><input type='checkbox' class='categoricalFeatureNames' value='"+categoricalFeatureNames[i]+"'> "+categoricalFeatureNames[i]+"</label><br>";
-        }
-    }
-    graphString += "</div><div class='col-md-7' id='parallelSets'>Loading chart...</div>";
-    $("#graphDiv").html(graphString);
+            $('#parallel-sets-features').append('<label class="checkbox"><input type="checkbox" class="categoricalFeatureNames" id="inlineCheckbox1" value="'+categoricalFeatureNames[index]+'">'+categoricalFeatureNames[index]+'</label>');
+        }        
+    });
+
     drawParallelSets();
 }
 
@@ -544,7 +686,7 @@ function drawParallelSets() {
                 }
                 // clear the div contains parallel sets chart
                 $("#parallelSets").html("");
-                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(600).height(500);
+                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(800).height(600);
                 var vis = d3.select("#parallelSets").append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
 
                 vis.datum(res).call(chart);
@@ -563,69 +705,26 @@ function drawParallelSets() {
 }
 
 function drawTrellisChartBase() {
-    
-    var categoricalFeatureNames;
 
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            categoricalFeatureNames = res;
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
+    $('#trellis-cat-features').empty();
+    $.each(categoricalFeatureNames,function(index, feature){
+        $('#trellis-cat-features').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
     });
 
-    var numericalFeatureNames;
-
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            numericalFeatureNames = res;
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
-    });
-
-    var graphString = "<div class='col-md-3' id='categoricalFeatureSelect'><p id='categoricalFeatureTitle'>Categorical Feature:</p><select id='categoricalFeature'>";
-
-    for (var i = 0; i < categoricalFeatureNames.length; i++) {            
-        
-        graphString += "<option value='"+categoricalFeatureNames[i]+"'>"+categoricalFeatureNames[i]+"</option>";
-    }
-
-    graphString += "</select><br><br><p id='categoricalFeatureTitle'>Numerical features:</p>";
-
-    for (var i = 0; i < numericalFeatureNames.length; i++) {            
-        // first 4 categorical features are plotted by default
-        if (i < 4){
-            graphString += "<label><input type='checkbox' class='numericalFeatureNames' value='"+numericalFeatureNames[i]+"' checked> "+numericalFeatureNames[i]+"</label><br>";
+    $('#trellis-num-features').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+    	// first 4 categorical features are plotted by default
+        if (index < 4){
+            $('#trellis-num-features').append('<label class="checkbox"><input type="checkbox" class="numericalFeatureNames" value="'+numericalFeatureNames[index]+'" checked>'+numericalFeatureNames[index]+'</label>');
         }
         else {
-            graphString += "<label><input type='checkbox' class='numericalFeatureNames' value='"+numericalFeatureNames[i]+"'> "+numericalFeatureNames[i]+"</label><br>";
-        }
-    }
+            $('#trellis-num-features').append('<label class="checkbox"><input type="checkbox" class="numericalFeatureNames" value="'+numericalFeatureNames[index]+'">'+numericalFeatureNames[index]+'</label>');
+        }        
+    });    
 
-    graphString += "</div><div class='col-md-7' id='trellisChart'>Loading chart...</div>";
-    $("#graphDiv").html(graphString);
     drawTrellisChart();
 }
 
@@ -633,7 +732,7 @@ function drawTrellisChart() {
     
     var featureNames = [];
     // get selected categorical feature
-    var categoricalHeader = $("#categoricalFeature").val().replace(/^\s+|\s+$/g, '');
+    var categoricalHeader = $("#trellis-cat-features").val().replace(/^\s+|\s+$/g, '');
     featureNames[0] = categoricalHeader;
     // get numerical feature list from checkbox selection
     $('.numericalFeatureNames:checked').each(function() {
@@ -800,54 +899,26 @@ function drawTrellisChart() {
 }
 
 function drawClusterDiagramBase() {
-    
-    var numericalFeatureNames;
 
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-            numericalFeatureNames = res;
-
-            var graphString = "	<div class='col-md-3'><p>First Numerical Feature:</p><select class='numericalFeatureIndependent'>";
-            for (var i = 0; i < numericalFeatureNames.length; i++) {            
-                
-                graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";
-            }
-            graphString += "</select><br><br><p>Second Numerical Feature:</p><select class='numericalFeatureDependent'>";
-            for (var i = 0; i < numericalFeatureNames.length; i++) {                
-                // make second option selected by default
-                if (i == 1) {
-                	graphString += "<option value='"+numericalFeatureNames[i]+"' selected>"+numericalFeatureNames[i]+"</option>";
-                }
-                else {
-                	graphString += "<option value='"+numericalFeatureNames[i]+"'>"+numericalFeatureNames[i]+"</option>";	
-                }                
-            }
-            graphString += "</select><br><br><p>No. of Clusters:</p><select class='noOfClusters'><option value='1'>1</option><option value='2'>2</option><option value='3' selected>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option></select>";
-			graphString += "</div><div class='col-md-7' id='clusterDiagram'>Loading chart...</div>";
-
-            $("#graphDiv").html(graphString);
-            drawClusterDiagram();            
-        },
-        error : function(res){
-            //$('#workflow-name-error').text("* "+res.responseJSON.message);
-            if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                crtValArea.before(buildNortifications(res.responseJSON.status));
-            }
-        }
+    $('#cluster-independent, #cluster-dependent').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+        $('#cluster-independent, #cluster-dependent').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
     });
+    // make second option selected by default
+    $('#cluster-dependent option')[1].selected = true;
+
+    drawClusterDiagram();
 }
 
 function drawClusterDiagram() {
 
 	// get categorical feature list from checkbox selection
-    var numericalFeatureIndependent = $(".numericalFeatureIndependent").val().replace(/^\s+|\s+$/g, '');
-    var numericalFeatureDependent = $(".numericalFeatureDependent").val().replace(/^\s+|\s+$/g, '');
-    var noOfClusters = $(".noOfClusters").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+    var noOfClusters = $("#cluster-num-clusters").val().replace(/^\s+|\s+$/g, '');
     
     // make ajax call
     $.ajax({        
@@ -882,8 +953,8 @@ function drawScatterPlot(data, cssClass, xLabel, yLabel) {
     $(cssClass).empty();
     var scatter = new ScatterPlot(data);
 
-    scatter.setPlotingAreaWidth(600);
-    scatter.setPlotingAreaHeight(400);
+    scatter.setPlotingAreaWidth(800);
+    scatter.setPlotingAreaHeight(500);
     scatter.setMarkerSize("2");
     scatter.setXAxisText(xLabel);
     scatter.setYAxisText(yLabel);

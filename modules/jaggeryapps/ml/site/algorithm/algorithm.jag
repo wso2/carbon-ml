@@ -91,14 +91,20 @@
                 <div class="input-control text">
                     <select id="algorithm-name" class="form-control">
                         <option>Select..</option>
-                        <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
-                        <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
-                        <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
-                        <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION</option>
-                        <option value="SVM">SVM</option>
-                        <option value="DECISION_TREE">DECISION TREE</option>
-                        <option value="NAIVE_BAYES">NAIVE BAYES</option>
-                        <option value="K_MEANS">K-MEANS</option>
+                        <optgroup label="Numerical Prediction">
+	                        <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
+	                        <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
+	                        <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
+                        </optgroup>                        
+	                    <optgroup label="Classification">
+	                        <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION</option>
+	                        <option value="SVM">SVM</option>
+	                        <option value="DECISION_TREE">DECISION TREE</option>
+	                        <option value="NAIVE_BAYES">NAIVE BAYES</option>
+                        </optgroup>
+                        <optgroup label="Clustering">
+                        	<option value="K_MEANS">K-MEANS</option>
+                        </optgroup>
                     </select>
                 </div>
 
