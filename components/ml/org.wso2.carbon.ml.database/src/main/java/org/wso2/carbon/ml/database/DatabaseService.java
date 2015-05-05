@@ -681,4 +681,9 @@ public interface DatabaseService {
      */
     public void deleteDatasetVersion(long datasetVersionId) throws DatabaseHandlerException;
 
+    /**
+     * Returns an analysis of a given name in a given project.
+     */
+    public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws DatabaseHandlerException;
+
 }

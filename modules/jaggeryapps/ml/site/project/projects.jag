@@ -410,7 +410,7 @@
             var analysisId;
             $.ajax({
                 type: 'GET',
-                url: serverUrl+"/api/analyses/"+analysisName,        
+                url: serverUrl+"/api/projects/"+projectId+"/analyses/"+analysisName,        
                 async : false,
                 beforeSend : function(xhr) {
                     xhr.setRequestHeader("Authorization", "Basic " + authEncoded);

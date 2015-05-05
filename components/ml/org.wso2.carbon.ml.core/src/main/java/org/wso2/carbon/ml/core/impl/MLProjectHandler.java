@@ -96,4 +96,12 @@ public class MLProjectHandler {
         return null;
     }
 
+    public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws MLProjectHandlerException {
+        try {
+            return databaseService.getAnalysisOfProject(tenantId, userName, projectId, analysisName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e);
+        }
+    }
+
 }

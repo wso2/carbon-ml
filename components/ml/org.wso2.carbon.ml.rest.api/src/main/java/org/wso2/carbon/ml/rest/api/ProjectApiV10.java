@@ -177,8 +177,26 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok(analyses).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all projects of tenant [id] %s and [user] %s . Cause: %s",
-                    tenantId, userName, e.getMessage()));
+                    "Error occurred while retrieving all analyses of tenant [id] %s [user] %s [project] %s . Cause: %s",
+                    tenantId, userName, projectId, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/{projectId}/analyses/{analysisName}")
+    @Produces("application/json")
+    public Response getAnalysisOfProject(@PathParam("projectId") long projectId, @PathParam("analysisName") String analysisName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLAnalysis analysis = mlProjectHandler.getAnalysisOfProject(tenantId, userName, projectId, analysisName);
+            return Response.ok(analysis).build();
+        } catch (MLProjectHandlerException e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving analysis of tenant [id] %s [user] %s [project] %s [analysis] %s. Cause: %s",
+                    tenantId, userName, projectId, analysisName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
