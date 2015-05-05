@@ -332,4 +332,22 @@ public class MLDatasetProcessor {
         }
     }
 
+    public void deleteDataset(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
+        try {
+            databaseService.deleteDataset(datasetId);
+            log.info(String.format("[Deleted] [dataset] %s of [user] %s of [tenant] %s", datasetId, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+
+    public void deleteDatasetVersion(int tenantId, String userName, long versionsetId) throws MLDataProcessingException {
+        try {
+            databaseService.deleteDatasetVersion(versionsetId);
+            log.info(String.format("[Deleted] [dataset version] %s of [user] %s of [tenant] %s", versionsetId, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e);
+        }
+    }
+
 }

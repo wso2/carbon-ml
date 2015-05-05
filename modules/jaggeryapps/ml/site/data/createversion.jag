@@ -112,17 +112,17 @@
 				<label class="input-label">Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="src-type">
-					  <option>File</option>
-					  <option>HDFS</option>
-					  <option>BAM</option>
+					  <option value="file">File</option>
+					  <option value="hdfs">HDFS</option>
+					  <option value="bam">BAM</option>
 					</select>				
 				</div>	
 
 				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="dest-type">
-                      <option>File</option>
-					  <option>HDFS</option>					  
+                      <option value="file">File</option>
+					  <option value="hdfs">HDFS</option>					  
 					</select>				
 				</div>
                 
@@ -134,8 +134,8 @@
 				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="data-format">
-                      <option>CSV</option>
-					  <option>TSV</option>					  
+                      <option value="csv">CSV</option>
+					  <option value="tsv">TSV</option>					  
 					</select>				
 				</div>
 
@@ -232,10 +232,10 @@ $( document ).ready(function() {
 
 		//var name = getParameterByName('dsnam');
 		var datasetVersion = getParameterByName('datasetVersion');
-		var dataSourceType = $('#src-type option:selected').text();
-		var dataTargetType =  $('#dest-type option:selected').text();
+		var dataSourceType = $('#src-type option:selected').val();
+		var dataTargetType =  $('#dest-type option:selected').val();
 		var sourcePath =  $('#src-path').val();
-		var dataType =  $('#data-format option:selected').text();
+		var dataType =  $('#data-format option:selected').val();
 		var comments =  getParameterByName('dscomt');
 
 		var baseUrl = getBaseUrl(window.location.href);

@@ -18,14 +18,7 @@ package org.wso2.carbon.ml.rest.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
@@ -348,6 +341,48 @@ public class DatasetApiV10 extends MLRestAPI {
                     String.format(
                             "Error occurred while retrieving cluster points of dataset version [id] %s of tenant [id] %s [user] %s ",
                             datasetId, tenantId, userName), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * Delete the dataset of a given dataset ID.
+     */
+    @DELETE
+    @Path("/{datasetId}")
+    @Produces("application/json")
+    public Response deleteDataset(@PathParam("datasetId") long datasetId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            datasetProcessor.deleteDataset(tenantId, userName, datasetId);
+            return Response.ok().build();
+        } catch (MLDataProcessingException e) {
+            logger.error(String.format(
+                    "Error occurred while deleting dataset [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    datasetId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * Delete the dataset version of a given dataset version ID.
+     */
+    @DELETE
+    @Path("/versions/{versionsetId}")
+    @Produces("application/json")
+    public Response deleteDatasetVersion(@PathParam("versionsetId") long versionsetId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            datasetProcessor.deleteDatasetVersion(tenantId, userName, versionsetId);
+            return Response.ok().build();
+        } catch (MLDataProcessingException e) {
+            logger.error(String.format(
+                    "Error occurred while deleting dataset version [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    versionsetId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

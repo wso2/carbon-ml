@@ -279,9 +279,13 @@
                                         '<table>' +
                                             '<tr>' +
                                                 '<td class="c-padd project-description" valign="top">' + description + '</td>' +
-                                                '<td>' + buildNewAnalysisUx(projid, projna, datasetId) +
+                                                '<td>';
+                                                // let user to create a new analysis of this project only if the dataset exists
+                                                if (tenantProjects[i]['datasetId'] != 0) {
+                                                    accordionPanel += buildNewAnalysisUx(projid, projna, datasetId)
+                                                }
+                                    accordionPanel += '' +
                                                     '<table class="tbl-project-desc" id="table'+i+'">';
-
                                     for (var j = 0; j < tenantProjects[i]['analyses'].length; j++) {                                            
                                         var workflowId = tenantProjects[i]['analyses'][j]['id'];
                                         var analysisName = tenantProjects[i]['analyses'][j]['name'];
