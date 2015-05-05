@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>
+    
+</head>
+
+<body>
+
+    <div class="container col-lg-12 col-md-12 col-sm-12">
+
+        <header>
+            <div class="row wr-global-header">
+                <div class="col-sm-8 app-logo">
+                	<a href="home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+				</div>
+                <div class="col-sm-4">
+                    <div class="wr-auth pull-right">
+                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                        <div class="dropdown-menu">
+                            <div class="cu-arrow"></div>
+                            <div class="dropdown-menu-content">
+                                <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container"></div>
+
+	<div class="col-md-3 wr-wiz-nav">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">		
+		<!-- Wizard -->		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+			<!-- form content placeholder -->
+			<div id="master-page-blocks" class="container">
+				<div class="row row-centered">
+
+					<div class="ctrl-summary-navigator col-centered">
+						<a href="../data/datasets.jag" class="no-deco">
+							<h3 class="ico-datasets">Datasets</h3>
+							<div class="content">
+								<p>Dataset is a collection of data organized according to a defined schema in an CSV or TSV format. Datasets can be uploaded from file system, HDFS or WSO2 BAM.</p>
+							</div>
+						</a>
+						<div class="bg-summary-actions">
+							<label><a href="../data/datasets.jag">You have (<span id="dataset-count">0</span>) Datasets</a></label>
+							<a href="../data/createdataset.jag" class="btn-summary btn-add-new">Add Dataset</a>
+						</div>
+					</div>
+
+					<div class="ctrl-summary-navigator col-centered">
+						<a href="../project/projects.jag" class="no-deco">
+							<h3 class="ico-projects">Projects</h3>
+							<div class="content">
+								<p>Project is a logical grouping of machine learning analyses, which are performed on a dataset. To analyze multiple datasets, you need to create multiple projects.</p>
+							</div>
+						</a>
+						<div class="bg-summary-actions">
+							<!-- <label><a href="../project/projects.jag">You have (0) Projects</a></label> -->
+							<label><a href="../project/projects.jag">You have (<span id="project-count">0</span>) Projects</a></label>
+							<a href="../project/create_project.jag" class="btn-summary btn-add-new">Add Project</a>
+						</div>		
+					</div>
+
+				</div>
+			</div>
+			
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+var serverUrl = window.location.origin;
+
+$( document ).ready(function() {
+
+    $('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+	$.ajax({
+        type : 'GET',
+        url: serverUrl + '/api/datasets/versions',
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(response){
+        	$("#dataset-count").html(response.length);
+        },
+        error :  function(response){
+        	//TODO: handle errors
+        }
+	});	
+
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/projects/analyses",
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(response) {
+            $("#project-count").html(response.length);
+        },
+        error: function(response) {
+            //TODO: handle errors
+        }
+    });
+
+}); 
+
+</script>
+
+</body>
+</html>

@@ -23,8 +23,8 @@
 
         <header>
             <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo"><img src="../../images/logo.png" />
-                    <h2 class="app-title">Machine Learner</h2>
+                <div class="col-sm-8 app-logo">
+                    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
                 </div>
                 <div class="col-sm-4">
                     <div class="wr-auth pull-right">
@@ -203,7 +203,7 @@
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
             success: function(data) {
-            	var tenantProjects = data;
+                var tenantProjects = data;
 
                 if (tenantProjects.length == 0) {
                     var accordionPanelNoProjects = 
