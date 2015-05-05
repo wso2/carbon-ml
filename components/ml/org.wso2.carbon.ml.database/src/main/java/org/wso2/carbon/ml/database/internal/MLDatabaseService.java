@@ -1386,8 +1386,10 @@ public class MLDatabaseService implements DatabaseService {
                 project.setTenantId(tenantId);
                 project.setUserName(userName);
                 project.setCreatedTime(result.getString(4));
-                MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
-                project.setDatasetName(dataset.getName());
+                if(project.getDatasetId() != 0) {
+                    MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                    project.setDatasetName(dataset.getName());
+                }
                 return project;
             } else {
                 return null;
@@ -1423,8 +1425,10 @@ public class MLDatabaseService implements DatabaseService {
                 project.setUserName(userName);
                 project.setDatasetId(result.getLong(4));
                 project.setCreatedTime(result.getString(5));
-                MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
-                project.setDatasetName(dataset.getName());
+                if(project.getDatasetId() != 0) {
+                    MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                    project.setDatasetName(dataset.getName());
+                }
                 projects.add(project);
             }
             return projects;

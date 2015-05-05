@@ -129,7 +129,7 @@
 
 var baseUrl = getBaseUrl(window.location.href);
 
-function buildAccordingHeader(collapseSection, datasetName, numVersions){
+function buildAccordingHeader(collapseSection, datasetName, numVersions, datasetId){
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
@@ -143,7 +143,7 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 						    '<td class="c-right">' +			        
 						        '<div>' +
 						        	'<a href="#" id="create-project" class="cu-reg-btn btn-edit" data-dsname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
-									'<!-- <a href="#" class="cu-reg-btn btn-delete" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a> -->' +
+									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-dsid="'+ datasetId +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
 								'</div>' +
 							'</td>'+
 						'</tr>'+
@@ -153,13 +153,11 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions){
 }
 
 function version(versionNumbers){
-    var versionHtml = "";
+	var versionHtml = "";
     for(var i = 0; i < versionNumbers.length; i++){
     	versionHtml += '<tr>' +
 				 				'<td class="c-padd"><a href="#" class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + versionNumbers[i].version+'</a></td>' +
-				 				'<td>' +
-				 					'<!-- <a href="#" class="cu-level2-btn btn-delete-dark" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a> -->' +
-				 				'</td>' +
+				 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="'+ versionNumbers[i].id +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a></td>' +
 				 			'</tr>';
     }
     return versionHtml;
@@ -200,12 +198,13 @@ function accordiang(datasets){
     var allDatasetsHtml = '';
 	for(var i=0; i<datasets.length; i++){
         var dataset = datasets[i];
+        var datasetId = dataset.id;
         var datasetVersions = dataset.versions;
 
         var datasetHtml = '<div class="panel panel-default">' +
 			    '<div class="panel-heading" role="tab" id="heading_'+i+'">' +
 			      
-			      buildAccordingHeader('collapse_'+i, dataset.name, datasetVersions.length) +
+			      buildAccordingHeader('collapse_'+i, dataset.name, datasetVersions.length, datasetId) +
 			     
 			    '</div>' +
 			    '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
@@ -237,27 +236,8 @@ $( document ).ready(function() {
           return $('#content-asset-types').html();
         }
     });
-	
-	$.ajax({
-        type : 'GET',
-        url: baseUrl + '/api/datasets/versions',
-        async: false,
-        beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-        success : function(res){
-        	if (res.length == 0) {
-        		var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
-        		$('#create-dataset').before(accordionPanelNoDatasets);
-        	}
-        	else {
-        		$('.panel-group').html(accordiang(res));
-        	}
-        },
-        error :  function(res){
-        	//TODO: display a suitable error message
-        }
-	});
+
+    loadDatasets();
 
 	$('.create-version').on('click', function(e){
 		e.preventDefault();
@@ -279,6 +259,79 @@ function bindEvents() {
 		var datasetName = $(this).data('dsname');
 		window.location = baseUrl + '/ml/site/project/create_project.jag?datasetName='+datasetName;
 	});
+
+    // deletes a datasets
+    $(document).on('click', '#delete-dataset', function(e){ 
+        e.preventDefault();
+        var datasetId = $(this).data('dsid');
+
+        $.ajax({
+            type: "DELETE",
+            url: baseUrl+"/api/datasets/"+datasetId,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success : function(res){
+                $('.panel-group').empty();
+                loadDatasets();
+            },
+            error : function(res){
+                //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                    crtValArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    });
+
+    // deletes a dataset version
+    $(document).on('click', '#delete-dataset-version', function(e){ 
+        e.preventDefault();
+        var versionId = $(this).data('versionid');
+
+        $.ajax({
+            type: "DELETE",
+            url: baseUrl+"/api/datasets/versions/"+versionId,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success : function(res){
+                $('.panel-group').empty();
+                loadDatasets();
+            },
+            error : function(res){
+                //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                    crtValArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    });   
+}
+
+function loadDatasets() {
+	$.ajax({
+        type : 'GET',
+        url: baseUrl + '/api/datasets/versions',
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+        	if (res.length == 0) {
+        		var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
+        		$('#create-dataset').before(accordionPanelNoDatasets);
+        	}
+        	else {
+        		$('.panel-group').html(accordiang(res));
+        	}
+        },
+        error :  function(res){
+        	//TODO: display a suitable error message
+        }
+	});	
 }
 
 </script>
