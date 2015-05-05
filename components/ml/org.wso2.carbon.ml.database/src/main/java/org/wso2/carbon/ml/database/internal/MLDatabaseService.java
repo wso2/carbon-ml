@@ -176,15 +176,25 @@ public class MLDatabaseService implements DatabaseService {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
+        int tenantId = analysis.getTenantId();
+        String userName = analysis.getUserName();
+        long projectId = analysis.getProjectId();
+        String analysisName = analysis.getName();
+        
+        if (getAnalysisOfProject(tenantId, userName, projectId, analysisName) != null) {
+            throw new DatabaseHandlerException(String.format(
+                    "Analysis [name] %s already exists in project [id] %s of tenant [id] %s and user [name] %s.",
+                    analysisName, projectId, tenantId, userName));
+        }
         try {
             // Insert the analysis to the database.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             insertStatement = connection.prepareStatement(SQLQueries.INSERT_ANALYSIS);
-            insertStatement.setLong(1, analysis.getProjectId());
-            insertStatement.setString(2, analysis.getName());
-            insertStatement.setInt(3, analysis.getTenantId());
-            insertStatement.setString(4, analysis.getUserName());
+            insertStatement.setLong(1, projectId);
+            insertStatement.setString(2, analysisName);
+            insertStatement.setInt(3, tenantId);
+            insertStatement.setString(4, userName);
             insertStatement.setString(5, analysis.getComments());
             insertStatement.execute();
             connection.commit();

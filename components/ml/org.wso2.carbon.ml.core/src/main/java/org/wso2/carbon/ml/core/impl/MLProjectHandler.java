@@ -100,7 +100,7 @@ public class MLProjectHandler {
         try {
             return databaseService.getAnalysisOfProject(tenantId, userName, projectId, analysisName);
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
 

@@ -53,7 +53,7 @@ public class MLAnalysisHandler {
             databaseService.insertAnalysis(analysis);
             log.info(String.format("[Created] %s", analysis));
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
