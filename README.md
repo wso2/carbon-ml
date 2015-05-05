@@ -55,7 +55,7 @@ Installation & Running
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
-    https://localhost:9443/mlUI
+    https://localhost:9443/ml
 
 4. Use the following username and password to login
 
