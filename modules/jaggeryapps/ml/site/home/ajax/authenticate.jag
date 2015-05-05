@@ -26,7 +26,7 @@
             message = 'login success';            
             
         } else {
-            message = 'Login did not work, check your user name and password and try again';
+            message = 'Login failed, please check your user name and password.';
             statusCode = 401;
         }   
         

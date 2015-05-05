@@ -117,7 +117,7 @@ $( document ).ready(function() {
 	});	
 
 	$('.wr-validation-summary').hide();
-	$('.wr-validation-summary').html('<p>Login did not work, check your user name and password and try again</p>');
+	$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
 	
 	$('#login-btn').on('click', function(e){
 	    authenticate();	
@@ -133,7 +133,7 @@ $( document ).ready(function() {
 function authenticate(){
 	var user = $('#userName').val();
 	var passwd = $('#password').val(); 
-    $('.wr-validation-summary').html('<p>Login did not work, check your user name and password and try again</p>');
+    $('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
 
     if(validate(user) && validate(passwd)){
     	var auth = user+":"+passwd;
@@ -143,9 +143,10 @@ function authenticate(){
 			url : './ajax/authenticate.jag',
 			data : {userName: user, password: passwd, authEncoded: authEncoded},
 			success : function(res){
-				window.location.href = "../data/datasets.jag"
+				window.location.href = "../home/home.jag"
 			},
 			error : function(res){
+				console.log(res);
 				$('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');
                 $('.wr-validation-summary').show();	
 			}

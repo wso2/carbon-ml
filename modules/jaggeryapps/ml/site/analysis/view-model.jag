@@ -37,21 +37,22 @@
 
 <!-- header -->
 <header>
-<div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-			<div class="dropdown-menu">
-				<div class="cu-arrow"></div>
-				<div class="dropdown-menu-content">
-					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
-				</div>
-			</div>			
-		</div>
-	</div>
-</div>
+    <div class="row wr-global-header">
+        <div class="col-sm-8 app-logo">
+            <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+        </div>
+    	<div class="col-sm-4">
+    		<div class="wr-auth pull-right">
+    			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+    			<div class="dropdown-menu">
+    				<div class="cu-arrow"></div>
+    				<div class="dropdown-menu-content">
+    					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+    				</div>
+    			</div>			
+    		</div>
+    	</div>
+    </div>
 </header>
 <!-- /header -->
 
