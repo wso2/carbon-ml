@@ -385,6 +385,7 @@
             // create analysis
             var comments = 'test comment'; //TODO: get actual comment from UI
             var createAnalysisData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
+	    var isError = 'false';
             $.ajax({
                 type: "POST",
                 url: serverUrl+"/api/analyses",
@@ -399,12 +400,14 @@
                 },
                 error : function(res){
                     //$('#workflow-name-error').text("* "+res.responseJSON.message);
-
-                    if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                        crtValArea.before(buildNortifications(res.responseJSON.status));
+                    if (nortificationArea.length == 0){
+                        crtValArea.before(buildNortifications(res.responseText));
                     }
+		    isError = 'true';
                 }
             });
+	if (isError == 'false') {
+
 
             // get analysis ID
             var analysisId;
@@ -419,13 +422,14 @@
                     analysisId = res['id'];
                 },
                 error: function(res){
-                    var crtValArea = btnArea.prev(".ctrl-validation-panel");
-                    if (crtValArea.length == 0) {
-                        btnArea.before(buildNortifications(res.responseJSON.status));
+                    if (nortificationArea.length == 0) {
+                        btnArea.before(buildNortifications(res.responseText));
                     }
+		    isError = 'true';
                 }
             });
-
+	}
+	if (isError == 'false') {
             // set default impute options
             var featureDefaultsData = '{"include" : true,"imputeOption": "DISCARD"}';
             $.ajax({
@@ -440,12 +444,13 @@
                     window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
                 },
                 error: function(res){
-                    var crtValArea = btnArea.prev(".ctrl-validation-panel");
-                    if (crtValArea.length == 0) {
-                        btnArea.before(buildNortifications(res.responseJSON.status));
+                    if (nortificationArea.length == 0) {
+                        btnArea.before(buildNortifications(res.responseText));
                     }
+		    isError = 'true';
                 }
-            });            
+            }); 
+}           
         });
 
 		// function that deletes an analysis
