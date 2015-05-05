@@ -1061,6 +1061,9 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement getFeatues = null;
         ResultSet result = null;
+        
+        long datasetSchemaId = getDatasetSchemaIdFromAnalysisId(analysisId);
+        
         try {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
@@ -1069,8 +1072,9 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setLong(1, analysisId);
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
-            getFeatues.setInt(4, numberOfFeatures);
-            getFeatues.setInt(5, startIndex);
+            getFeatues.setLong(4, datasetSchemaId);
+            getFeatues.setInt(5, numberOfFeatures);
+            getFeatues.setInt(6, startIndex);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
