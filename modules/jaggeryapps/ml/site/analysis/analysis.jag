@@ -262,7 +262,7 @@
         $(document).on('click', '#create-model', function(e){ 
             e.preventDefault();
 
-            window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
+            window.location.href = '../model/model.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName+"&fromModels=true";
         });
 
         $(document).on('click', '#delete-model', function(e){ 

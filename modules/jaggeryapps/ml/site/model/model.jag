@@ -125,6 +125,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var algorithmName = getParameterByName('algorithmName');
 var algorithmType = getParameterByName('algorithmType');
+var fromModels = getParameterByName('fromModels');
 
 $( document ).ready(function() {
 
@@ -219,22 +220,28 @@ $( document ).ready(function() {
     // function that cancels an analysis
     $('#cancel-analysis').on('click', function(e){
         e.preventDefault();
-        $.ajax({
-            type: 'DELETE',
-            url: serverUrl+"/api/analyses/"+analysisName,
-            beforeSend : function(xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-            },
-            success: function(res){
-                window.location.href = '../project/projects.jag';
-            },
-            error: function(res){
-                var crtValArea = btnArea.prev(".ctrl-validation-panel");
-                if (crtValArea.length == 0) {
-                    btnArea.before(buildNortifications(res.responseJSON.status));
+        // if navigation is from analysis page do not delete the analysis
+        if (fromModels == 'true') {
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
+        }
+        else {
+            $.ajax({
+                type: 'DELETE',
+                url: serverUrl+"/api/analyses/"+analysisName,
+                beforeSend : function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+                },
+                success: function(res){
+                    window.location.href = '../project/projects.jag';
+                },
+                error: function(res){
+                    var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                    if (crtValArea.length == 0) {
+                        btnArea.before(buildNortifications(res.responseJSON.status));
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 });
 
