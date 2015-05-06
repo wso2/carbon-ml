@@ -199,6 +199,15 @@ public class MLAnalysisHandler {
         }
     }
     
+    public void deleteAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
+        try {
+            databaseService.deleteAnalysis(tenantId, userName, analysisId);
+            log.info(String.format("[Deleted] [analysis id] %s of [user] %s of [tenant] %s", analysisId, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+    
     public long getAnalysisId(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAnalysisId(tenantId, userName, analysisName);

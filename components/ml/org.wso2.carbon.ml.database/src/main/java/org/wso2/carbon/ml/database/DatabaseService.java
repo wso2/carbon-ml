@@ -686,4 +686,6 @@ public interface DatabaseService {
      */
     public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws DatabaseHandlerException;
 
+    void deleteAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+
 }
