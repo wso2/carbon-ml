@@ -385,7 +385,7 @@
             // create analysis
             var comments = 'test comment'; //TODO: get actual comment from UI
             var createAnalysisData = '{"name":"'+analysisName+'","comments":"'+comments+'","projectId":"'+projectId+'"}';
-	    var isError = 'false';
+	    var isError = false;
             $.ajax({
                 type: "POST",
                 url: serverUrl+"/api/analyses",
@@ -403,10 +403,10 @@
                     if (nortificationArea.length == 0){
                         crtValArea.before(buildNortifications(res.responseText));
                     }
-		    isError = 'true';
+		    isError = true;
                 }
             });
-	if (isError == 'false') {
+	if (!isError) {
 
 
             // get analysis ID
@@ -425,11 +425,11 @@
                     if (nortificationArea.length == 0) {
                         btnArea.before(buildNortifications(res.responseText));
                     }
-		    isError = 'true';
+		    isError = true;
                 }
             });
 	}
-	if (isError == 'false') {
+	if (!isError) {
             // set default impute options
             var featureDefaultsData = '{"include" : true,"imputeOption": "DISCARD"}';
             $.ajax({
@@ -447,7 +447,7 @@
                     if (nortificationArea.length == 0) {
                         btnArea.before(buildNortifications(res.responseText));
                     }
-		    isError = 'true';
+		    isError = true;
                 }
             }); 
 }           
