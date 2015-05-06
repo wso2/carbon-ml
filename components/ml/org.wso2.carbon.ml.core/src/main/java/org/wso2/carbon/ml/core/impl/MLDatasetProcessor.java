@@ -95,7 +95,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -103,7 +103,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getVersionset(tenantId, userName, versionsetId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -111,7 +111,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getAllDatasets(tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -119,7 +119,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getDataset(tenantId, userName, datasetId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -127,7 +127,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -141,7 +141,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getDatasetId(datasetVersionId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -151,7 +151,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getDefaultFeatures(datasetVersionId, startIndex, numberOfFeatures);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -159,7 +159,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getScatterPlotPoints(scatterPlotPoints);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -170,7 +170,7 @@ public class MLDatasetProcessor {
             scatterPlotPoints.setVersionsetId(versionsetId);
             return databaseService.getScatterPlotPoints(scatterPlotPoints);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -178,7 +178,7 @@ public class MLDatasetProcessor {
         try {
             return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -188,7 +188,7 @@ public class MLDatasetProcessor {
             long versionsetId = versions.get(versions.size()-1).getId();
             return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
     
@@ -274,13 +274,13 @@ public class MLDatasetProcessor {
             log.info(String.format("[Created] %s", dataset));
 
         } catch (MLInputAdapterException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         } catch (MLOutputAdapterException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         } catch (MLMalformedDatasetException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         } catch (MLConfigurationParserException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
             if (input != null) {
                 try {
@@ -296,7 +296,7 @@ public class MLDatasetProcessor {
         try {
             databaseService.insertDatasetVersion(versionset);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
 
@@ -322,7 +322,7 @@ public class MLDatasetProcessor {
             }
             dataset.setId(datasetId);
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
 
@@ -337,7 +337,7 @@ public class MLDatasetProcessor {
             databaseService.deleteDataset(datasetId);
             log.info(String.format("[Deleted] [dataset] %s of [user] %s of [tenant] %s", datasetId, userName, tenantId));
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
 
@@ -346,7 +346,7 @@ public class MLDatasetProcessor {
             databaseService.deleteDatasetVersion(versionsetId);
             log.info(String.format("[Deleted] [dataset version] %s of [user] %s of [tenant] %s", versionsetId, userName, tenantId));
         } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e);
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
 

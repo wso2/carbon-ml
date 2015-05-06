@@ -46,7 +46,7 @@ public class MLProjectHandler {
             databaseService.insertProject(project);
             log.info(String.format("[Created] %s", project));
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
     
@@ -55,7 +55,7 @@ public class MLProjectHandler {
             databaseService.deleteProject(tenantId, userName, projectName);
             log.info(String.format("[Deleted] [project] %s of [user] %s of [tenant] %s", projectName, userName, tenantId));
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
     
@@ -63,7 +63,7 @@ public class MLProjectHandler {
         try {
             return databaseService.getProjectId(tenantId, userName, projectName);
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
 
@@ -71,7 +71,7 @@ public class MLProjectHandler {
         try {
             return databaseService.getProject(tenantId, userName, projectName);
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
     
@@ -79,7 +79,7 @@ public class MLProjectHandler {
         try {
             return databaseService.getAllProjects(tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
     
@@ -87,7 +87,7 @@ public class MLProjectHandler {
         try {
             return databaseService.getAllAnalysesOfProject(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e);
+            throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
 
