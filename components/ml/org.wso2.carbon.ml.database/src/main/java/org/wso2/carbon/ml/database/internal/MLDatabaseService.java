@@ -913,7 +913,7 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     /**
-     * Update the model storage
+     * Update the model status
      */
     @Override
     public void updateModelStatus(long modelId, String status) throws DatabaseHandlerException {
@@ -934,6 +934,37 @@ public class MLDatabaseService implements DatabaseService {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occurred while updating the status" + "of model "
+                    + modelId + ": " + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
+        }
+    }
+    
+    /**
+     * Update the model storage
+     */
+    @Override
+    public void updateModelError(long modelId, String error) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_MODEL_ERROR);
+            updateStatement.setString(1, error);
+            updateStatement.setLong(2, modelId);
+            updateStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the error of model: " + modelId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while updating the error " + "of model "
                     + modelId + ": " + e.getMessage(), e);
         } finally {
             // Enable auto commit.
@@ -1802,6 +1833,7 @@ public class MLDatabaseService implements DatabaseService {
                 model.setTenantId(tenantId);
                 model.setUserName(userName);
                 model.setStatus(result.getString(8));
+                model.setError(result.getString(9));
                 models.add(model);
             }
             return models;

@@ -688,4 +688,6 @@ public interface DatabaseService {
 
     void deleteAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
+    void updateModelError(long modelId, String error) throws DatabaseHandlerException;
+
 }

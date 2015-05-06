@@ -32,6 +32,7 @@ public class MLModelNew {
     private String storageType;
     private String storageDirectory;
     private String status;
+    private String error;
 
     public int getTenantId() {
         return tenantId;
@@ -113,11 +114,20 @@ public class MLModelNew {
         this.status = status;
     }
 
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     @Override
     public String toString() {
         return "MLModelNew [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
-                + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", valueSetId=" + versionSetId
-                + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + ", status=" + status + "]";
+                + ", createdTime=" + createdTime + ", analysisId=" + analysisId + ", versionSetId=" + versionSetId
+                + ", storageType=" + storageType + ", storageDirectory=" + storageDirectory + ", status=" + status
+                + ", error=" + error + "]";
     }
 
 }
