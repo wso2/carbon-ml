@@ -350,11 +350,31 @@ $( document ).ready(function() {
 	      }
 	});
 
+    var projectName = getParameterByName('projectName');
+    var projectId;
+    $.ajax({
+        type: 'GET',
+        url: serverUrl+"/api/projects/"+projectName,
+        async : false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res){
+            projectId = res['id'];
+        },
+        error: function(res){
+            var crtValArea = btnArea.prev(".ctrl-validation-panel");
+            if (crtValArea.length == 0) {
+                btnArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
     // set commonly used variables
     var analysisName = getParameterByName('analysisName');
     $.ajax({
         type: 'GET',
-        url: serverUrl+"/api/analyses/"+analysisName,        
+        url: serverUrl+"/api/projects/"+projectId+"/analyses/"+analysisName,        
         async : false,
         beforeSend : function(xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
@@ -412,7 +432,6 @@ $( document ).ready(function() {
     });
 
     // put path in application navigator
-    var projectName = getParameterByName('projectName');
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);    
 
