@@ -70,8 +70,9 @@ public class DatasetApiV10 extends MLRestAPI {
                 || dataset.getVersion() == null || dataset.getDataSourceType() == null
                 || dataset.getDataSourceType().isEmpty() || dataset.getDataType() == null
                 || dataset.getDataType().isEmpty()) {
-            logger.error("Required parameters are missing: " + dataset);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+            String msg = "Required parameters are missing: " + dataset;
+            logger.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
