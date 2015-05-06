@@ -391,6 +391,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Retrieving an analysis by a name.
+     * @deprecated
      */
     @GET
     @Path("/{analysisName}")
