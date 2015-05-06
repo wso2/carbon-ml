@@ -204,7 +204,7 @@ $( document ).ready(function() {
             },
             success: function(res){
                 console.log("Build success.");
-                window.location.href = '../project/projects.jag';
+                window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&analysisName='+analysisName+'&projectName='+projectName+'&datasetId='+datasetId;
             },
             error: function(res){
                 var crtValArea = btnArea.prev(".ctrl-validation-panel");
