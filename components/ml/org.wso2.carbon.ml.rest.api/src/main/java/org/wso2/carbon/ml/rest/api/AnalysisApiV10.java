@@ -456,31 +456,6 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * delete an analysis of a given name.
-     * @deprecated
-     */
-    @DELETE
-    @Path("/{analysisName}")
-    @Produces("application/json")
-    public Response deleteAnalysis(@PathParam("analysisName") String analysisName) {
-        if (analysisName == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            mlAnalysisHandler.deleteAnalysis(tenantId, userName, analysisName);
-            return Response.ok().build();
-        } catch (MLAnalysisHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while deleting an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    analysisName, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-    
-    /**
      * delete an analysis of a given id.
      */
     @DELETE

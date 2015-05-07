@@ -40,6 +40,7 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
 
     private MLHttpClient mlHttpclient;
     private static final String analysisName = "TestAnalysisForDeleteAnalysesTestcase";
+    private long analysisId;
 
     @BeforeClass(alwaysRun = true)
     public void initTest() throws Exception {
@@ -53,6 +54,8 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
         }
         //Create an analysis in the project, for deletion
         mlHttpclient.createAnalysis(analysisName, MLIntegrationTestConstants.PROJECT_ID);
+        
+        analysisId = mlHttpclient.getAnalysisId(analysisName);
     }
 
     /**
@@ -63,7 +66,7 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
      */
     @Test(description = "Delete an analysis by name")
     public void testDeleteAnalysis() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + analysisName);
+        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + analysisId);
         assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());
         response.close();
@@ -77,7 +80,7 @@ public class DeleteAnalysesTestCase extends MLBaseTest {
      */
     @Test(description = "Delete a non-existing analysis")
     public void testDeleteNonExistingAnalysis() throws MLHttpClientException, IOException {
-        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + "nonExistinfAnalysisName");
+        CloseableHttpResponse response = mlHttpclient.doHttpDelete("/api/analyses/" + 100);
         assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());
         response.close();
