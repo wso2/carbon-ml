@@ -471,7 +471,7 @@ $( document ).ready(function() {
         e.preventDefault();
         $.ajax({
             type: 'DELETE',
-            url: serverUrl+"/api/analyses/"+analysisName,
+            url: serverUrl+"/api/analyses/"+analysisId,
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
