@@ -164,7 +164,7 @@
 		return '';
 	}
         var builtErrors = 
-        '<div class="ctrl-validation-panel col-md-12 col-centered">' +
+        '<div class="ctrl-validation-panel-left col-md-12 col-centered">' +
         '<p>' + message + '</p>'
         '</div>';
         return builtErrors;

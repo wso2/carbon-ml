@@ -765,6 +765,14 @@ h4.h-option-head span {
 	text-align: center;
 }
 
+.ctrl-validation-panel-left {
+	padding:5px 10px;
+	border-top:1px solid #ffe8e8;
+	border-bottom:1px solid #ffe8e8;
+	background:#fff4f4;
+	text-align: left;
+}
+
 
 /* left nav */
 .wr-left-nav {
