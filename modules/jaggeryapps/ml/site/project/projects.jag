@@ -297,7 +297,7 @@
                                                                 '</td>' +
                                                                 '<td>' +
                                                                     '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-workflowid="'+workflowId+'" data-projId="'+projid+'" data-projectname="'+projna+'" data-analysisname="'+analysisName+'" data-datasetid="'+datasetId+'"><span>View</span></a>' +
-                                                                    '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+analysisName+'">Delete</a>' +
+                                                                    '<a href="#" class="del-wf cu-level2-btn btn-delete-dark" data-workflowId="'+workflowId+'">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       
                                     };
