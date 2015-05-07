@@ -260,29 +260,31 @@ $( document ).ready(function() {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
         success: function(res){
-        	if (res['algorithm'] == 'LOGISTIC_REGRESSION') {                
+            if (res.algorithm == 'LOGISTIC_REGRESSION') {                
                 // format data and draw ROC graph
-                var rocData  = JSON.parse(res['roc']);
-                drawRocGraph(rocData, "#roc-graph");
+                var rocData  = JSON.parse(res.roc);
+                var auc  = parseFloat(res.auc).toFixed(3);
+                drawRocGraph(rocData, auc, "#roc-graph");
                 // create data object and draw weights chart
-                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
+                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
                 // draw confusion matrix	            
-                predictedVsActuals = res['predictedVsActuals'];
+                predictedVsActuals = res.predictedVsActuals;
         		var threshold = $("#slider").slider("value");
         		drawConfusionMatrix(predictedVsActuals, threshold, "#confusion-matrix");
             }
-        	else if (res['algorithm'] == 'SVM' ) {                
+        	else if (res.algorithm == 'SVM' ) {                
                 // remove not applicable charts/tables
                 $("#confusion-matrix").closest("div.col-md-6").remove();
                 // format data and draw ROC graph
-                var rocData  = JSON.parse(res['roc']);
-                drawRocGraph(rocData, "#roc-graph");
+                var rocData  = JSON.parse(res.roc);
+                var auc  = parseFloat(res.auc).toFixed(3);
+                drawRocGraph(rocData, auc, "#roc-graph");
                 // create data object and draw weights chart
-                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res['featureImportance']}];
+                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
             }
-            else if (res['algorithm'] == 'LINEAR_REGRESSION' || res['algorithm'] == 'RIDGE_REGRESSION' || res['algorithm'] == 'LASSO_REGRESSION' || res['algorithm'] == 'DECISION_TREE' || res['algorithm'] == 'NAIVE_BAYES') {                
+            else if (res.algorithm == 'LINEAR_REGRESSION' || res.algorithm == 'RIDGE_REGRESSION' || res.algorithm == 'LASSO_REGRESSION' || res.algorithm == 'DECISION_TREE' || res.algorithm == 'NAIVE_BAYES') {                
                 // remove not applicable charts/tables
                 $("#roc-graph, #confusion-matrix").closest("div.col-md-6").remove();
                 // create data object and draw weights chart
@@ -311,11 +313,11 @@ $( document ).ready(function() {
 });
 
 // function to draw ROC graph
-function drawRocGraph (data, cssClass) {
+function drawRocGraph (data, auc, cssClass) {
     var rocGraph = new ROCGraph(data);
     rocGraph.setXAxisText("False positive rate");
     rocGraph.setYAxisText("True positive rate");
-    rocGraph.setLegendName("roc curve (area=0.91)");
+    rocGraph.setLegendName("ROC curve (AUC = "+auc+")");
     rocGraph.setLineWidth(2);
     rocGraph.setPlotingAreaWidth(600);
     rocGraph.setPlotingAreaHeight(400);
@@ -331,7 +333,7 @@ function drawWeightsChart (data) {
 
     nv.addGraph(function() {
         var chart = nv.models.discreteBarChart()
-                        .x(function(d) { return d.label })
+                        .x(function(d) { return shortenLabel(d.label) })
                         .y(function(d) { return d.value })
                         .staggerLabels(false)
                         .tooltips(false)
@@ -349,6 +351,14 @@ function drawWeightsChart (data) {
         nv.utils.windowResize(chart.update);
         return chart;
     });
+}
+
+// function to shorten the label
+function shortenLabel (label) {
+    if(label.length > 4)
+        return label.substring(0,4)+'.';
+    else
+        return label;                       
 }
 
 // function to draw confusion matrix
