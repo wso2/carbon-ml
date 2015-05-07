@@ -104,7 +104,7 @@ public class MLModelHandler {
             log.info(String.format("[Created] %s", model));
             return model;
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -113,7 +113,7 @@ public class MLModelHandler {
             databaseService.deleteModel(tenantId, userName, modelId);
             log.info(String.format("[Deleted] Model [id] %s", modelId));
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -121,7 +121,7 @@ public class MLModelHandler {
         try {
             return databaseService.getModelId(tenantId, userName, modelName);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -129,7 +129,7 @@ public class MLModelHandler {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -137,7 +137,7 @@ public class MLModelHandler {
         try {
             return databaseService.getAllModels(tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -145,7 +145,7 @@ public class MLModelHandler {
         try {
             return databaseService.isValidModelId(tenantId, userName, modelId);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -158,7 +158,7 @@ public class MLModelHandler {
         try {
             databaseService.updateModelStorage(modelId, storage.getType(), storage.getLocation());
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
     
@@ -174,7 +174,7 @@ public class MLModelHandler {
         try {
             return databaseService.getModelSummary(modelId);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e);
+            throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
 
@@ -467,6 +467,7 @@ public class MLModelHandler {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
                     databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
+                    databaseService.updateModelError(id, e.getMessage());
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e);
                 }

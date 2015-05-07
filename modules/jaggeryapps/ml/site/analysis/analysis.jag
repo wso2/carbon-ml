@@ -159,9 +159,12 @@
         loadModels();
     });
     
-    function buildNortifications(message){
+    function buildNotifications(message){
+        if(message == null) {
+		return '';
+	}
         var builtErrors = 
-        '<div class="ctrl-validation-panel col-md-12 col-centered">' +
+        '<div class="ctrl-validation-panel-left col-md-12 col-centered">' +
         '<p>' + message + '</p>'
         '</div>';
         return builtErrors;
@@ -206,10 +209,12 @@
                                         '<table class="tbl-projects" projectID="' + analysisModels[i]['id'] + '">' +
                                             '<tr>' +
                                                 '<td>' +
+						    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
                                                     '<span class="cu-acc-head-title">' + analysisModels[i]['name'] + '</span>' +
                                                     '<span class="cu-acc-head-created">[ Created: ' + analysisModels[i]['createdTime'] + ' ]</span>' +
-                                                    '<span class="cu-acc-head-created">[ Status: ' + analysisModels[i]['status'] + ' ]</span>' +
                                                     '<span class="cu-acc-head-workflow"></span>' +
+                                                    '<span class="cu-acc-head-created">[ Status: ' + analysisModels[i]['status'] + ' ]</span>' +
+                                                    '</a>' +
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
@@ -225,6 +230,7 @@
                                 '</div>' +
                                 '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
                                     '<div class="panel-body">' +
+					buildNotifications(analysisModels[i]['error']);
                                     '</div>' +
                                 '</div>' +
                             '</div>';
@@ -283,7 +289,7 @@
                     //$('#workflow-name-error').text("* "+res.responseJSON.message);
 
                     if (crtValArea.prev("ctrl-validation-panel").length == 0){
-                        crtValArea.before(buildNortifications(res.responseJSON.status));
+                        crtValArea.before(buildNotifications(res.responseJSON.status));
                     }
                 }
             });

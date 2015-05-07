@@ -62,7 +62,7 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertFeatureCustomized(analysisId, customizedFeatures, tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -71,7 +71,7 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertDefaultsIntoFeatureCustomized(analysisId, customizedValues);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -80,7 +80,7 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertFeatureCustomized(analysisId, customizedFeature);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -88,7 +88,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getFeatures(tenantId, userName, analysisId, limit, offset);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -96,7 +96,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getFeatureNames(analysisId, featureType);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -104,7 +104,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getFeatureNames(analysisId);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -112,7 +112,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -120,7 +120,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -128,7 +128,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -136,7 +136,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getSummaryStats(tenantId, userName, analysisId, featureName);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -145,7 +145,7 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertModelConfigurations(analysisId, modelConfigs);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -153,7 +153,7 @@ public class MLAnalysisHandler {
         try {
             databaseService.insertHyperParameters(analysisId, hyperParameters);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -161,7 +161,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getHyperParametersOfModel(analysisId);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -186,7 +186,7 @@ public class MLAnalysisHandler {
             // add default hyper params
             databaseService.insertHyperParameters(analysisId, hyperParameters);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -195,7 +195,16 @@ public class MLAnalysisHandler {
             databaseService.deleteAnalysis(tenantId, userName, analysisName);
             log.info(String.format("[Deleted] [analysis] %s of [user] %s of [tenant] %s", analysisName, userName, tenantId));
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+    
+    public void deleteAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
+        try {
+            databaseService.deleteAnalysis(tenantId, userName, analysisId);
+            log.info(String.format("[Deleted] [analysis id] %s of [user] %s of [tenant] %s", analysisId, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -203,7 +212,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAnalysisId(tenantId, userName, analysisName);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -211,7 +220,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAnalysis(tenantId, userName, analysisName);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
@@ -219,7 +228,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAllAnalyses(tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
     
@@ -227,7 +236,7 @@ public class MLAnalysisHandler {
         try {
             return databaseService.getAllModels(tenantId, userName, analysisId);
         } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e);
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
