@@ -245,7 +245,7 @@ $( document ).ready(function() {
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
                         '","comments":"'+comments+
-                        '","version":"'+datasetVersion+'"}';
+                        '","containsHeader":"true","version":"'+datasetVersion+'"}';
        $.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 

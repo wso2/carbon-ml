@@ -229,7 +229,7 @@ public class MLModelHandler {
             // parse lines in the dataset
             JavaRDD<String> lines = sparkContext.textFile(dataUrl);
             // get header line
-            String headerRow = lines.take(1).get(0);
+            String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
             context.setSparkContext(sparkContext);
             context.setLines(lines);
             context.setHeaderRow(headerRow);
@@ -370,10 +370,10 @@ public class MLModelHandler {
             JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
             // parse lines in the dataset
             JavaRDD<String> lines = sparkContext.textFile(datasetURL);
-            // get header line
-            String headerRow = lines.take(1).get(0);
             // get column separator
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
+            // get header line
+            String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
             Pattern pattern = Pattern.compile(columnSeparator);
             // get selected feature indices
             List<Integer> featureIndices = new ArrayList<Integer>();

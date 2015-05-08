@@ -230,8 +230,8 @@ $( document ).ready(function() {
                         '","dataTargetType":"'+dataTargetType+
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
-                        '","comments":"'+comments+
-                        '","version":"'+version+'"}';      
+			'","comments":"'+comments+
+                        '","containsHeader":"true","version":"'+version+'"}';
        	$.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 

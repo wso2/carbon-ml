@@ -1200,6 +1200,64 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatues, result);
         }
     }
+    
+    /**
+     * Get feature names in order and separated by the given column separator.
+     */
+    @Override
+    public String getFeatureNamesInOrderUsingDatasetVersion(long datasetVersionId, String columnSeparator) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        
+        long datasetId = getDatasetId(datasetVersionId);
+        try {
+            return getFeatureNamesInOrder(datasetId, columnSeparator);
+        } catch (DatabaseHandlerException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset of a dataset version: " + datasetVersionId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
+    
+    /**
+     * Get feature names in order and separated by the given column separator.
+     */
+    @Override
+    public String getFeatureNamesInOrder(long datasetId, String columnSeparator) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        StringBuilder headerRow = new StringBuilder();
+        
+        try {
+            connection = dbh.getDataSource().getConnection();
+
+            // Create a prepared statement and retrieve model configurations
+            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES_IN_ORDER);
+            getFeatureNamesStatement.setLong(1, datasetId);
+
+            result = getFeatureNamesStatement.executeQuery();
+            // Convert the result in to a string array to e returned.
+            while (result.next()) {
+                headerRow.append(result.getString(1));
+                if (!result.isLast()) {
+                    headerRow.append(columnSeparator);
+                }
+            }
+            return headerRow.toString();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset : " + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
 
     /**
      * Returns the names of the features of the model

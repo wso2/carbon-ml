@@ -692,4 +692,9 @@ public interface DatabaseService {
 
     void updateModelError(long modelId, String error) throws DatabaseHandlerException;
 
+    String getFeatureNamesInOrder(long datasetId, String columnSeparator) throws DatabaseHandlerException;
+
+    String getFeatureNamesInOrderUsingDatasetVersion(long datasetVersionId, String columnSeparator)
+            throws DatabaseHandlerException;
+
 }

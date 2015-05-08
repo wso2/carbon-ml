@@ -51,6 +51,8 @@ public class MLDataset {
      * Version of the data-set
      */
     private String version;
+    
+    private boolean containsHeader;
 
     public String getName() {
         return name;
@@ -132,11 +134,20 @@ public class MLDataset {
         this.id = id;
     }
 
+    public boolean isContainsHeader() {
+        return containsHeader;
+    }
+
+    public void setContainsHeader(boolean containsHeader) {
+        this.containsHeader = containsHeader;
+    }
+
     @Override
     public String toString() {
         return "MLDataset [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
                 + ", dataSourceType=" + dataSourceType + ", dataTargetType=" + dataTargetType + ", sourcePath="
-                + sourcePath + ", dataType=" + dataType + ", comments=" + comments + ", version=" + version + "]";
+                + sourcePath + ", dataType=" + dataType + ", comments=" + comments + ", version=" + version
+                + ", containsHeader=" + containsHeader + "]";
     }
-    
+
 }

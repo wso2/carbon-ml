@@ -241,7 +241,7 @@ public class MLDatasetProcessor {
 
             // extract sample points
             SamplePoints samplePoints = MLUtils.getSamplePoints(input, dataset.getDataType(),
-                    summaryStatsSettings.getSampleSize());
+                    summaryStatsSettings.getSampleSize(), dataset.isContainsHeader());
 
             // persist data-set and data-set version in DB
             persistDataset(dataset);
