@@ -2149,7 +2149,7 @@ public class MLDatabaseService implements DatabaseService {
             getStatement.setLong(1, analysisId);
             result = getStatement.executeQuery();
 
-            if (!algorithmName.equals(result)) {
+            if (algorithmName != null && !algorithmName.equals(result)) {
                 deleteStatement = connection.prepareStatement(SQLQueries.DELETE_HYPER_PARAMETERS);
                 deleteStatement.setLong(1, analysisId);
                 deleteStatement.execute();
