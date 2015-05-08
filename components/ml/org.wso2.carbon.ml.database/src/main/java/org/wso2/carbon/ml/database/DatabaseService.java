@@ -352,9 +352,10 @@ public interface DatabaseService {
      * Insert a list of HyperParameters into the database
      * @param analysisId         Analysis Id
      * @param hyperParameters    MLHyperParameter list
+     * @param algorithmName      Algorithm name
      * @throws DatabaseHandlerException
      */
-    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters) 
+    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName)
             throws DatabaseHandlerException;
 
     /**
@@ -458,11 +459,12 @@ public interface DatabaseService {
 
     /**
      * Get the list of Hyper-parameters of the model
-     * @param analysisId unique id of the analysis
+     * @param analysisId     Unique ID of the analysis
+     * @param algorithmName  Algorithm name
      * @return
      * @throws DatabaseHandlerException
      */
-    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId) throws DatabaseHandlerException;
+    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId, String algorithmName) throws DatabaseHandlerException;
 
     /**
      * Get the Hyper-parameters of the model as a Map

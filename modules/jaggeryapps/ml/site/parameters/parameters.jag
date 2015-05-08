@@ -142,19 +142,19 @@ $( document ).ready(function() {
 	      }
 	});
 
-	var algorithmName = getParameterByName('algorithmName');
-    var projectName = getParameterByName('projectName');
+	var projectName = getParameterByName('projectName');
     var analysisName = getParameterByName('analysisName');	
     var analysisId = getParameterByName('analysisId');
     var datasetId = getParameterByName('datasetId');
+    var algorithmName = getParameterByName('algorithmName');
     var algorithmType = getParameterByName('algorithmType');
     var fromNext;
 
     var hyperParametersArray = [];
-    // get previously set response variable
+    // get previously set hyper-parameters
     $.ajax({
         type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters",
+        url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters?algorithmName="+algorithmName,
         async : false,
         dataType: 'json',
         beforeSend : function(xhr) {
@@ -167,9 +167,37 @@ $( document ).ready(function() {
             }
             else {
                 fromNext = true;
-                for (var i = 0; i < hyperParametersResponse.length; i++) {
-                    hyperParametersArray[i] = hyperParametersResponse[i]['value'];
+                if (algorithmName == 'LINEAR_REGRESSION') {
+                    hyperParametersArray[0] = hyperParametersResponse[0].value;
+                    hyperParametersArray[1] = hyperParametersResponse[1].value;
+                    hyperParametersArray[2] = hyperParametersResponse[2].value;
                 }
+                else if (algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
+                    hyperParametersArray[0] = hyperParametersResponse[0].value;
+                    hyperParametersArray[1] = hyperParametersResponse[1].value;
+                    hyperParametersArray[2] = hyperParametersResponse[2].value;
+                    hyperParametersArray[3] = hyperParametersResponse[3].value;
+                }
+                else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'SVM') {
+                    hyperParametersArray[0] = hyperParametersResponse[0].value;
+                    hyperParametersArray[1] = hyperParametersResponse[1].value;
+                    hyperParametersArray[2] = hyperParametersResponse[3].value;
+                    hyperParametersArray[3] = hyperParametersResponse[2].value;
+                    hyperParametersArray[4] = hyperParametersResponse[4].value;
+                }
+                else if (algorithmName == 'DECISION_TREE') {
+                    hyperParametersArray[0] = hyperParametersResponse[3].value;
+                    hyperParametersArray[1] = hyperParametersResponse[2].value;
+                    hyperParametersArray[2] = hyperParametersResponse[1].value;
+                    hyperParametersArray[3] = hyperParametersResponse[0].value;
+                }    
+                else if (algorithmName == 'NAIVE_BAYES') {
+                    hyperParametersArray[0] = hyperParametersResponse[0].value;
+                }
+                else if (algorithmName == 'K_MEANS') {
+                    hyperParametersArray[0] = hyperParametersResponse[0].value;
+                    hyperParametersArray[1] = hyperParametersResponse[1].value;
+                }                
             }
         },
         error: function(res) { //TODO: display error
@@ -286,7 +314,7 @@ $( document ).ready(function() {
 
 	    $.ajax({
             type: 'POST',
-            url: serverUrl+"/api//analyses/"+analysisId+"/hyperParams",
+            url: serverUrl+"/api//analyses/"+analysisId+"/hyperParams?algorithmName="+algorithmName,
             beforeSend : function(xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },

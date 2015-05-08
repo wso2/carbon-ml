@@ -326,7 +326,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Adding hyper parameters for the selected algorithm of this analysis.
      */
-    @POST
+    /*@POST
     @Path("/{analysisId}/hyperParams")
     @Produces("application/json")
     @Consumes("application/json")
@@ -343,6 +343,28 @@ public class AnalysisApiV10 extends MLRestAPI {
                             analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
+    }*/
+
+    /**
+     * Adding hyper parameters for the selected algorithm of this analysis.
+     */
+    @POST
+    @Path("/{analysisId}/hyperParams")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response addHyperParameters(@PathParam("analysisId") long analysisId, List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlAnalysisHandler.addHyperParameters(analysisId, hyperParameters, algorithmName);
+            return Response.ok().build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
     }
 
     /**
@@ -352,12 +374,12 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/hyperParameters")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response getHyperParameters(@PathParam("analysisId") long analysisId) {
+    public Response getHyperParameters(@PathParam("analysisId") long analysisId, @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLHyperParameter> responseVariable = mlAnalysisHandler.getHyperParameters(analysisId);
+            List<MLHyperParameter> responseVariable = mlAnalysisHandler.getHyperParameters(analysisId, algorithmName);
             return Response.ok(responseVariable).build();
         } catch (MLAnalysisHandlerException e) {
             logger.error(String
