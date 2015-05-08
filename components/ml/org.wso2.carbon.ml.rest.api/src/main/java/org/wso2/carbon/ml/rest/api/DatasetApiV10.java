@@ -284,7 +284,7 @@ public class DatasetApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<Object> points = datasetProcessor.getChartSamplePoints(tenantId, userName, datasetId,
+            List<Object> points = datasetProcessor.getChartSamplePointsOfLatestVersion(tenantId, userName, datasetId,
                     featureListString);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {
