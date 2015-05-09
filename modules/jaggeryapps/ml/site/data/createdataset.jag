@@ -93,66 +93,63 @@
 
 				<h1 class="title">Create Dataset</h1>
 
+			   	<form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+					<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name" name="datasetName"/>
+					    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
+					</div>
 
-				<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name"/>
-				    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
-				</div>
+					<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <input type="text" value="1.0.0" placeholder="" id="dataset-version" name="version"/>
+					</div>				
 
-				<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <input type="text" value="1.0.0" placeholder="" id="dataset-version"/>
-				</div>				
+					<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <textarea rows="3" id="dataset-desc" name="description"></textarea>
+					</div>
 
-				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-				    <textarea rows="3" id="dataset-desc"></textarea>
-				</div>
+					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+						<select class="form-control" id="src-type" name="sourceType">
+						  <option value="file">File</option>
+						  <option value="hdfs">HDFS</option>
+						  <option value="bam">BAM</option>
+						</select>				
+					</div>	
 
-				<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-					<select class="form-control" id="src-type">
-					  <option value="file">File</option>
-					  <option value="hdfs">HDFS</option>
-					  <option value="bam">BAM</option>
-					</select>				
-				</div>	
+					<label class="input-label">Data Source<span class="File Location"></span></label>
+		                        <div id="source-file" class="input-control file info-state" data-role="input-control">
+			       			<input type="file" id="fileInput" name="file"/>
+			    		</div>
+					<div id="source-hdfs-bam" class="input-control text">
+					    <input type="text" value="" placeholder="e.g. file:///home/datasets/iris.csv" id="src-path" name="sourcePath" />
+					</div>
 
-				<label class="input-label">Data Source<span class="File Location"></span></label>
-                <!-- <div id="source-file" class="input-control file info-state" data-role="input-control">
-	                <input type="file">
-	            </div> -->
-				<div id="source-hdfs-bam" class="input-control text">
-				    <input type="text" value="" placeholder="e.g. file:///home/datasets/iris.csv" id="src-path"/>
-				</div>
+					<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+						<select class="form-control" id="data-format" name="dataFormat">
+		             			  <option value="csv">CSV</option>
+						  <option value="tsv">TSV</option>					  
+						</select>				
+					</div>
 
-				<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-					<select class="form-control" id="data-format">
-                      <option value="csv">CSV</option>
-					  <option value="tsv">TSV</option>					  
-					</select>				
-				</div>
-
-				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-				<div class="input-control text">
-					<select class="form-control" id="dest-type">
-                      <option value="file">File</option>
-					  <option value="hdfs">HDFS</option>					  
-					</select>				
-				</div>
-
-				<div class="btn-group-actions">
-	            	<button class="btn btn-main" type="submit" id="submit-dataset">Create Dataset</button>
-	            </div>	            
-
+					<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+						<select class="form-control" id="dest-type" name="destination">
+		              			  <option value="file">File</option>
+						  <option value="hdfs">HDFS</option>					  
+						</select>				
+					</div>
+					<div class="btn-group-actions">
+			    			<button class="btn btn-main" type="submit" id="submit-dataset">Create Dataset</button>
+			    		</div>
+				</form>
 			</div>
 
 		</div>
 		<!-- /content -->
-
-
 	</div>
 </div>
 <!-- /content/body -->
@@ -177,7 +174,7 @@
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
-
+<script src="../../js/jquery.form.min.js"></script> 
 
 <script type="text/javascript">
 
@@ -190,7 +187,22 @@ console.log(builtErrors);
         return builtErrors;
     }     
 
+function displayDataSource() {
+		var dataSourceType = $('#src-type option:selected').text();
+		if (dataSourceType == 'HDFS' || dataSourceType == 'BAM') {
+			$('#source-file').hide();
+			$('#source-hdfs-bam').show();
+		}
+		else {
+			$('#source-hdfs-bam').hide();
+			$('#source-file').show();	
+		}
+}
+
 $( document ).ready(function() {
+
+	// Display only the correct dataSource input 
+	displayDataSource();
 
 	$('#nav').affix({
 	      offset: {
@@ -210,7 +222,23 @@ $( document ).ready(function() {
     // hide HDFS/BAM data source input for default case
     //$('#source-hdfs-bam').hide();
 
-    
+	var baseUrl = getBaseUrl(window.location.href);
+
+        $('#fileUploadForm').ajaxForm({
+	    url: baseUrl + '/api/datasets',
+	    beforeSend: function(xhr) {
+	        xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+	    },
+            success : function(res){
+        	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
+            },
+            error :  function(res){
+        	    notificationArea.remove();
+                        crtValArea.before(buildNotifications(res.responseText));
+            }                               
+          });
+
+/*
 	$('#submit-dataset').on('click', function(e){
 		e.preventDefault();
 		var crtValArea = $(this).closest(".wr-form");
@@ -249,23 +277,16 @@ $( document ).ready(function() {
             }   
         });
 	})
+*/
 
 	$('#cancel-dataset').on('click', function(e){
 		window.location.href = './datasets.jag';
 	});
 
 	// change data source input according to data source type input
-	/*$('#src-type').on('change', function(e){
-		var dataSourceType = $('#src-type option:selected').text();
-		if (dataSourceType == 'HDFS' || dataSourceType == 'BAM') {
-			$('#source-file').hide();
-			$('#source-hdfs-bam').show();
-		}
-		else {
-			$('#source-hdfs-bam').hide();
-			$('#source-file').show();	
-		}
-	});*/
+	$('#src-type').on('change', function(e){
+		displayDataSource();
+	});
 
 }); 
 

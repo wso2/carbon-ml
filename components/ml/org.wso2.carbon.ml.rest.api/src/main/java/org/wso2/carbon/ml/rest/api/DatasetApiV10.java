@@ -15,16 +15,22 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -62,7 +68,7 @@ public class DatasetApiV10 extends MLRestAPI {
     /**
      * Upload a new data-set.
      */
-    @POST
+    /*@POST
     @Produces("application/json")
     @Consumes("application/json")
     public Response uploadDataset(MLDataset dataset) {
@@ -86,7 +92,64 @@ public class DatasetApiV10 extends MLRestAPI {
             logger.error("Error occurred while uploading a dataset : " + dataset, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-    }
+    }*/
+    
+        @POST
+        @Produces(MediaType.APPLICATION_JSON)
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        public Response uploadDataset(@Multipart("datasetName") String datasetName,
+                                      @Multipart("version") String version,
+                                      @Multipart("description") String description,
+                                      @Multipart("sourceType") String sourceType,
+                                      @Multipart("destination") String destination,
+                                      @Multipart("sourcePath") String sourcePath,
+                                      @Multipart("dataFormat") String dataFormat,
+                                      @Multipart("file") InputStream inputStream) {
+            MLDataset dataset = new MLDataset();
+            try {
+                //InputStream inputStream = attachment.getObject(InputStream.class);
+                if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty() || sourceType == null || sourceType.isEmpty()
+                        || destination.isEmpty() || destination == null || dataFormat.isEmpty() || dataFormat == null) {
+                    logger.error("Required parameters are missing.");
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+                }
+                if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
+                    // if it is a file upload, check whether the file is sent
+                    if(inputStream == null) {
+                        logger.error("File is missing.");
+                        return Response.status(Response.Status.BAD_REQUEST).entity("File is missing").build();
+                    }
+                } else if (sourcePath.isEmpty() || sourcePath == null) {
+                    // if not a file upload, and if source path is missing:
+                    logger.error("Dataset Source is missing.");
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Dataset Source is missing").build();
+                } else {
+                    dataset.setSourcePath(new URI(sourcePath));
+                }
+                
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                int tenantId = carbonContext.getTenantId();
+                String userName = carbonContext.getUsername();
+    
+                dataset.setName(datasetName);
+                dataset.setVersion(version);
+                dataset.setDataSourceType(sourceType);
+                dataset.setComments(description);
+                dataset.setDataTargetType(destination);
+                dataset.setDataType(dataFormat);
+                dataset.setTenantId(tenantId);
+                dataset.setUserName(userName);
+                
+                datasetProcessor.process(dataset, inputStream);
+                return Response.ok(dataset).build();
+            } catch (MLDataProcessingException e) {
+                logger.error("Error occurred while uploading a dataset : " + dataset, e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            } catch (URISyntaxException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            }
+        }
+    
 
     /**
      * Get all datasets of this tenant and user. This doesn't return version sets.
