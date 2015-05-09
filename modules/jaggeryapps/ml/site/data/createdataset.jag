@@ -7,7 +7,12 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>    
 </head>
 
 <body>
@@ -135,6 +140,14 @@
 					</select>				
 				</div>
 
+				<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+					<select class="form-control" id="column-header">
+                      <option value="true">Yes</option>
+					  <option value="false">No</option>					  
+					</select>				
+				</div>				
+
 				<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control text">
 					<select class="form-control" id="dest-type">
@@ -221,9 +234,10 @@ $( document ).ready(function() {
 		var dataTargetType =  $('#dest-type option:selected').val();
 		var sourcePath =  $('#src-path').val();
 		var dataType =  $('#data-format option:selected').val();
+		var containsHeader =  $('#column-header option:selected').val();
 		var comments =  $('#dataset-desc').val();
 		var version = $('#dataset-version').val();
-       
+
        	var baseUrl = getBaseUrl(window.location.href);
        	var jsonData = '{"name":"'+name+
                         '","dataSourceType":"'+dataSourceType+
@@ -231,14 +245,14 @@ $( document ).ready(function() {
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
 			'","comments":"'+comments+
-                        '","containsHeader":"true","version":"'+version+'"}';
+                        '","containsHeader":"'+containsHeader+'","version":"'+version+'"}';
        	$.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 
        	    contentType: "application/json",
        	    data: jsonData,
        	    beforeSend : function(xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
             },
             success : function(res){
         	    window.location = baseUrl + '/ml/site/data/datasets.jag';   
