@@ -213,11 +213,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${apache.httpclient.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml.apis.version}</version>
@@ -621,14 +616,14 @@
 				<version>${carbon.identity.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
+				<groupId>org.apache.httpcomponents.wso2</groupId>
 				<artifactId>httpcore</artifactId>
-				<version>${apache.httpcomponents.version}</version>
+				<version>${apache.httpcore.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
+				<groupId>org.wso2.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>${apache.httpcomponents.version}</version>
+				<version>${apache.httpclient.version}</version>
 			</dependency>
 
 			<!-- Dependencies on WSO2 Carbon ML components -->
@@ -951,8 +946,8 @@
 		<junit.version>4.12</junit.version>
 		<jaxen.version>1.1.1</jaxen.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
-		<apache.httpcomponents.version>4.4</apache.httpcomponents.version>
-		<apache.httpclient.version>4.3.5</apache.httpclient.version>
+		<apache.httpcore.version>4.3.3.wso2v1</apache.httpcore.version>
+		<apache.httpclient.version>4.3.1.wso2v1</apache.httpclient.version>
 	</properties>
 
 	<organization>

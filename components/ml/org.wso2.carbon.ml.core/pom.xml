@@ -72,11 +72,11 @@
 			<artifactId>org.wso2.carbon.ml.commons</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
+			<groupId>org.apache.httpcomponents.wso2</groupId>
 			<artifactId>httpcore</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
+			<groupId>org.wso2.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
@@ -226,6 +226,7 @@
 							org.apache.commons.logging,
 							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
 							org.wso2.carbon.ml.dataset.*;version="${ml.imp.pkg.version}",
+							<!-- org.apache.http.*;version="[4.3.1, 4.5)", -->
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>

@@ -19,18 +19,24 @@
 package org.wso2.carbon.ml.integration.common.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
@@ -51,6 +57,7 @@ public class MLHttpClient {
     
     private User userInfo;
     private Instance mlInstance;
+    private static final Log logger = LogFactory.getLog(MLHttpClient.class);
     
     public MLHttpClient(Instance mlInstance, User userInfo) {
         this.mlInstance = mlInstance;
@@ -191,27 +198,33 @@ public class MLHttpClient {
      */
     public CloseableHttpResponse uploadDatasetFromCSV(String DatasetName, String version, String resourcePath)
             throws MLHttpClientException {
-        String payload;
-        if (DatasetName == null) {
-            payload = "{\"dataSourceType\" : \"file\",\"dataTargetType\" : \"file\",\"sourcePath\" : \"" +
-                    getResourceAbsolutePath(resourcePath) + "\",\"dataType\":\"csv\"," + "\"comments\":\"Sample " +
-                    "dataset for Testing\",\"version\" : \"" + version + "\"}";
-        } else if (version == null) {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\"}";
-        } else if (resourcePath == null) {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\",\"dataType\":\"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \""
-                    + version + "\"}";
-        } else {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \"" + version + "\"}";
-        }
+        CloseableHttpClient httpClient =  HttpClients.createDefault();
         try {
-            return doHttpPost("/api/datasets", payload);
-        } catch (MLHttpClientException e) {
+            HttpPost httpPost = new HttpPost(getServerUrlHttps() + "/api/datasets/");
+            httpPost.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
+
+            MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+            multipartEntityBuilder.addPart("description", new StringBody("Sample dataset for Testing", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("sourceType", new StringBody("file", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("destination", new StringBody("file", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("dataFormat", new StringBody("CSV", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("containsHeader", new StringBody("true", ContentType.TEXT_PLAIN));
+
+            if (DatasetName != null) {
+                multipartEntityBuilder.addPart("datasetName", new StringBody(DatasetName, ContentType.TEXT_PLAIN));
+            }
+            if (version != null) {
+                multipartEntityBuilder.addPart("version", new StringBody(version, ContentType.TEXT_PLAIN));
+            }
+            if (resourcePath != null) {
+                File file = new File(getResourceAbsolutePath(resourcePath));
+                multipartEntityBuilder.addBinaryBody("file", file, ContentType.APPLICATION_OCTET_STREAM, "IndiansDiabetes.csv");
+            }
+            httpPost.setEntity(multipartEntityBuilder.build());
+            return httpClient.execute(httpPost);
+        } catch (ClientProtocolException e) {
+            throw new MLHttpClientException("Faile to upload dataset from csv " + resourcePath, e);
+        } catch (IOException e) {
             throw new MLHttpClientException("Faile to upload dataset from csv " + resourcePath, e);
         }
     }
