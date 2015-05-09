@@ -188,15 +188,15 @@ console.log(builtErrors);
     }     
 
 function displayDataSource() {
-		var dataSourceType = $('#src-type option:selected').text();
-		if (dataSourceType == 'HDFS' || dataSourceType == 'BAM') {
-			$('#source-file').hide();
-			$('#source-hdfs-bam').show();
-		}
-		else {
-			$('#source-hdfs-bam').hide();
-			$('#source-file').show();	
-		}
+	var dataSourceType = $('#src-type option:selected').text();
+	if (dataSourceType == 'HDFS' || dataSourceType == 'BAM') {
+		$('#source-file').hide();
+		$('#source-hdfs-bam').show();
+	}
+	else {
+		$('#source-hdfs-bam').hide();
+		$('#source-file').show();	
+	}
 }
 
 $( document ).ready(function() {
@@ -238,46 +238,6 @@ $( document ).ready(function() {
             }                               
           });
 
-/*
-	$('#submit-dataset').on('click', function(e){
-		e.preventDefault();
-		var crtValArea = $(this).closest(".wr-form");
-            	var notificationArea = crtValArea.prev(".ctrl-validation-panel");
-
-		var name = $('#dataset-name').val();
-		var dataSourceType = $('#src-type option:selected').val();
-		var dataTargetType =  $('#dest-type option:selected').val();
-		var sourcePath =  $('#src-path').val();
-		var dataType =  $('#data-format option:selected').val();
-		var comments =  $('#dataset-desc').val();
-		var version = $('#dataset-version').val();
-       
-       	var baseUrl = getBaseUrl(window.location.href);
-       	var jsonData = '{"name":"'+name+
-                        '","dataSourceType":"'+dataSourceType+
-                        '","dataTargetType":"'+dataTargetType+
-                        '","sourcePath":"'+sourcePath+
-                        '","dataType":"'+dataType+
-			'","comments":"'+comments+
-                        '","containsHeader":"true","version":"'+version+'"}';
-       	$.ajax({
-       	    type: 'POST',
-       	    url: baseUrl + '/api/datasets', 
-       	    contentType: "application/json",
-       	    data: jsonData,
-       	    beforeSend : function(xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
-            },
-            success : function(res){
-        	    window.location = baseUrl + '/ml/site/data/datasets.jag';   
-            },
-            error :  function(res){
-			notificationArea.remove();
-                        crtValArea.before(buildNotifications(res.responseText));
-            }   
-        });
-	})
-*/
 
 	$('#cancel-dataset').on('click', function(e){
 		window.location.href = './datasets.jag';
