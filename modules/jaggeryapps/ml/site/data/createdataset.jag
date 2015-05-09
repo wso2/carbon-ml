@@ -7,7 +7,12 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %>    
 </head>
 
 <body>
@@ -135,6 +140,14 @@
 						</select>				
 					</div>
 
+					<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+						<select class="form-control" id="column-header">
+                     					<option value="true">Yes</option>
+					  		<option value="false">No</option>					  
+						</select>				
+					</div>	
+
 					<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 					<div class="input-control text">
 						<select class="form-control" id="dest-type" name="destination">
@@ -227,7 +240,7 @@ $( document ).ready(function() {
         $('#fileUploadForm').ajaxForm({
 	    url: baseUrl + '/api/datasets',
 	    beforeSend: function(xhr) {
-	        xhr.setRequestHeader("Authorization", "Basic " + "YWRtaW46YWRtaW4=");
+	        xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
 	    },
             success : function(res){
         	     window.location = baseUrl + '/ml/site/data/datasets.jag';   

@@ -139,6 +139,14 @@
 					</select>				
 				</div>
 
+				<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<div class="input-control text">
+					<select class="form-control" id="column-header">
+                      <option value="true">Yes</option>
+					  <option value="false">No</option>					  
+					</select>				
+				</div>				
+
 				<!--label class="input-label">Data Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 				<div class="input-control file info-state" data-role="input-control">
 	                <input type="file">
@@ -149,14 +157,14 @@
 				    60%
 				  </div>
 				</div-->
-				<div class="progress progress-striped active">
+				<!-- <div class="progress progress-striped active">
                     <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
                     </div>
                 </div>
 
 				<div class="input-control file info-state info-file-name-and-delete-option" data-role="input-control">
 	                <span class="t-data-file">Data-file-2014-01-12.csv</span><a href="#" class="cu-level2-btn btn-delete-dark">Delete File</a>
-	            </div>
+	            </div> -->
 
 	            <!--div>
 	            	<button class="btn btn-aux" type="submit">Upload Datafile</button>
@@ -236,6 +244,7 @@ $( document ).ready(function() {
 		var dataTargetType =  $('#dest-type option:selected').val();
 		var sourcePath =  $('#src-path').val();
 		var dataType =  $('#data-format option:selected').val();
+		var containsHeader =  $('#column-header option:selected').val();
 		var comments =  getParameterByName('dscomt');
 
 		var baseUrl = getBaseUrl(window.location.href);
@@ -245,7 +254,7 @@ $( document ).ready(function() {
                         '","sourcePath":"'+sourcePath+
                         '","dataType":"'+dataType+
                         '","comments":"'+comments+
-                        '","containsHeader":"true","version":"'+datasetVersion+'"}';
+                        '","containsHeader":"'+containsHeader+'","version":"'+datasetVersion+'"}';
        $.ajax({
        	    type: 'POST',
        	    url: baseUrl + '/api/datasets', 
