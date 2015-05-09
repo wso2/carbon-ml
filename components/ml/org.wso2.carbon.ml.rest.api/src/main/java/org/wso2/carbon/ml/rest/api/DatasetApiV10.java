@@ -68,87 +68,57 @@ public class DatasetApiV10 extends MLRestAPI {
     /**
      * Upload a new data-set.
      */
-    /*@POST
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response uploadDataset(MLDataset dataset) {
-        if (dataset.getName() == null || dataset.getName().isEmpty() || dataset.getSourcePath() == null
-                || dataset.getVersion() == null || dataset.getDataSourceType() == null
-                || dataset.getDataSourceType().isEmpty() || dataset.getDataType() == null
-                || dataset.getDataType().isEmpty()) {
-            String msg = "Required parameters are missing: " + dataset;
-            logger.error(msg);
-            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
-        }
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadDataset(@Multipart("datasetName") String datasetName, @Multipart("version") String version,
+            @Multipart("description") String description, @Multipart("sourceType") String sourceType,
+            @Multipart("destination") String destination, @Multipart("sourcePath") String sourcePath,
+            @Multipart("dataFormat") String dataFormat, @Multipart("file") InputStream inputStream) {
+        MLDataset dataset = new MLDataset();
         try {
+            // validate input parameters
+            if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty() ||
+                sourceType == null || sourceType.isEmpty() || destination.isEmpty() || destination == null ||
+                dataFormat.isEmpty() || dataFormat == null) {
+                logger.error("Required parameters are missing.");
+                return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+            }
+            if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
+                // if it is a file upload, check whether the file is sent
+                if (inputStream == null) {
+                    logger.error("File is missing.");
+                    return Response.status(Response.Status.BAD_REQUEST).entity("File is missing").build();
+                }
+            } else if (sourcePath == null || sourcePath.isEmpty()) {
+                // if the source is hdfs/bam, and if source path is missing:
+                logger.error("Dataset Source is missing.");
+                return Response.status(Response.Status.BAD_REQUEST).entity("Dataset Source is missing").build();
+            } else {
+                dataset.setSourcePath(new URI(sourcePath));
+            }
+
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            int tenantId = carbonContext.getTenantId();
+            String userName = carbonContext.getUsername();
+
+            dataset.setName(datasetName);
+            dataset.setVersion(version);
+            dataset.setDataSourceType(sourceType);
+            dataset.setComments(description);
+            dataset.setDataTargetType(destination);
+            dataset.setDataType(dataFormat);
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
-            datasetProcessor.process(dataset);
+            datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occurred while uploading a dataset : " + dataset, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (URISyntaxException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
-    }*/
-    
-        @POST
-        @Produces(MediaType.APPLICATION_JSON)
-        @Consumes(MediaType.MULTIPART_FORM_DATA)
-        public Response uploadDataset(@Multipart("datasetName") String datasetName,
-                                      @Multipart("version") String version,
-                                      @Multipart("description") String description,
-                                      @Multipart("sourceType") String sourceType,
-                                      @Multipart("destination") String destination,
-                                      @Multipart("sourcePath") String sourcePath,
-                                      @Multipart("dataFormat") String dataFormat,
-                                      @Multipart("file") InputStream inputStream) {
-            MLDataset dataset = new MLDataset();
-            try {
-                //InputStream inputStream = attachment.getObject(InputStream.class);
-                if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty() || sourceType == null || sourceType.isEmpty()
-                        || destination.isEmpty() || destination == null || dataFormat.isEmpty() || dataFormat == null) {
-                    logger.error("Required parameters are missing.");
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
-                }
-                if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
-                    // if it is a file upload, check whether the file is sent
-                    if(inputStream == null) {
-                        logger.error("File is missing.");
-                        return Response.status(Response.Status.BAD_REQUEST).entity("File is missing").build();
-                    }
-                } else if (sourcePath.isEmpty() || sourcePath == null) {
-                    // if not a file upload, and if source path is missing:
-                    logger.error("Dataset Source is missing.");
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Dataset Source is missing").build();
-                } else {
-                    dataset.setSourcePath(new URI(sourcePath));
-                }
-                
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                int tenantId = carbonContext.getTenantId();
-                String userName = carbonContext.getUsername();
-    
-                dataset.setName(datasetName);
-                dataset.setVersion(version);
-                dataset.setDataSourceType(sourceType);
-                dataset.setComments(description);
-                dataset.setDataTargetType(destination);
-                dataset.setDataType(dataFormat);
-                dataset.setTenantId(tenantId);
-                dataset.setUserName(userName);
-                
-                datasetProcessor.process(dataset, inputStream);
-                return Response.ok(dataset).build();
-            } catch (MLDataProcessingException e) {
-                logger.error("Error occurred while uploading a dataset : " + dataset, e);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-            } catch (URISyntaxException e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-            }
-        }
+    }
     
 
     /**

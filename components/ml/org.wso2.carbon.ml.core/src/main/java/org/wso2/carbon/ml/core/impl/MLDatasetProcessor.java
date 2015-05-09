@@ -218,15 +218,15 @@ public class MLDatasetProcessor {
         MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() + MLConstants.OUT_SUFFIX);
         handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
                 dataset.getDataTargetType(), dataset.getName()));
-        /*handleNull(dataset.getSourcePath(), String.format("Null data source path provided [data-set] %s", 
-                dataset.getName()));*/
         InputStream input = null;
         URI targetUri = null;
         try {
             // write the data-set to a server side location
             if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(dataset.getDataSourceType())) {
+                // if the source is a file, read the inputstream
                 input = inputStream;
             } else {
+                // if the source is hdfs/bam read from the source path
                 input = inputAdapter.readDataset(dataset.getSourcePath());
             }
             handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
@@ -254,7 +254,6 @@ public class MLDatasetProcessor {
             if (log.isDebugEnabled()) {
                 log.debug("datasetSchemaId: " + datasetSchemaId);
             }
-
             String versionsetName = dataset.getName()+"-"+dataset.getVersion();
 
             // build the MLDatasetVersion
@@ -274,9 +273,7 @@ public class MLDatasetProcessor {
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId,  summaryStatsSettings,
                     samplePoints));
-            
             log.info(String.format("[Created] %s", dataset));
-
         } catch (MLInputAdapterException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         } catch (MLOutputAdapterException e) {
