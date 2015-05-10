@@ -98,7 +98,7 @@
 
 				<h1 class="title">Create Dataset</h1>
 
-			   	<form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+			   	<form id="create-dataset-form" method="POST" enctype="multipart/form-data">
 					<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 					<div class="input-control text">
 					    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name" name="datasetName"/>
@@ -240,7 +240,7 @@ $( document ).ready(function() {
 	var crtValArea = $(this).closest(".wr-form");
         var notificationArea = crtValArea.prev(".ctrl-validation-panel");
 
-        $('#fileUploadForm').ajaxForm({
+        $('#create-dataset-form').ajaxForm({
 	    url: baseUrl + '/api/datasets',
 	    beforeSend: function(xhr) {
 	        xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
