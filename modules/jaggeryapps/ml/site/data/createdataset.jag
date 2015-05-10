@@ -142,7 +142,7 @@
 
 					<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 					<div class="input-control text">
-						<select class="form-control" id="column-header">
+						<select class="form-control" id="column-header" name="containsHeader">
                      					<option value="true">Yes</option>
 					  		<option value="false">No</option>					  
 						</select>				
@@ -241,13 +241,15 @@ $( document ).ready(function() {
 	    url: baseUrl + '/api/datasets',
 	    beforeSend: function(xhr) {
 	        xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+		var crtValArea = $(this).closest(".wr-form");
+            	var notificationArea = crtValArea.prev(".ctrl-validation-panel");
 	    },
             success : function(res){
         	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
             },
             error :  function(res){
         	    notificationArea.remove();
-                        crtValArea.before(buildNotifications(res.responseText));
+                    crtValArea.before(buildNotifications(res.responseText));
             }                               
           });
 

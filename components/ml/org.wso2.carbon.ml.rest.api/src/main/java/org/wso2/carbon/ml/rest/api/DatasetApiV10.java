@@ -15,6 +15,7 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -74,7 +75,8 @@ public class DatasetApiV10 extends MLRestAPI {
     public Response uploadDataset(@Multipart("datasetName") String datasetName, @Multipart("version") String version,
             @Multipart("description") String description, @Multipart("sourceType") String sourceType,
             @Multipart("destination") String destination, @Multipart("sourcePath") String sourcePath,
-            @Multipart("dataFormat") String dataFormat, @Multipart("file") InputStream inputStream) {
+            @Multipart("dataFormat") String dataFormat, @Multipart("containsHeader") boolean containsHeader,
+            @Multipart("file") InputStream inputStream) {
         MLDataset dataset = new MLDataset();
         try {
             // validate input parameters
@@ -86,9 +88,9 @@ public class DatasetApiV10 extends MLRestAPI {
             }
             if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
                 // if it is a file upload, check whether the file is sent
-                if (inputStream == null) {
-                    logger.error("File is missing.");
-                    return Response.status(Response.Status.BAD_REQUEST).entity("File is missing").build();
+                if (inputStream == null || inputStream.available() == 0) {
+                    logger.error("Cannot read the file.");
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Cannot read the file").build();
                 }
             } else if (sourcePath == null || sourcePath.isEmpty()) {
                 // if the source is hdfs/bam, and if source path is missing:
@@ -110,12 +112,15 @@ public class DatasetApiV10 extends MLRestAPI {
             dataset.setDataType(dataFormat);
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
+            dataset.setContainsHeader(containsHeader);
             datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occurred while uploading a dataset : " + dataset, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         } catch (URISyntaxException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (IOException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
