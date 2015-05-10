@@ -208,6 +208,16 @@
 
 <script type="text/javascript">
 
+function buildNotifications(message){
+        var builtErrors = 
+        '<div class="ctrl-validation-panel col-md-12 col-centered">' +
+        '<p>' + message + '</p>'
+        '</div>';
+console.log(builtErrors);
+        return builtErrors;
+    }     
+
+
 $( document ).ready(function() {
 
 	$('#nav').affix({
@@ -237,6 +247,8 @@ $( document ).ready(function() {
 
 	$('#submit-dataset').on('click', function(e){
 		e.preventDefault();
+		var crtValArea = $(this).closest(".wr-form");
+             	var notificationArea = crtValArea.prev(".ctrl-validation-panel");
 
 		//var name = getParameterByName('dsnam');
 		var datasetVersion = getParameterByName('datasetVersion');
@@ -267,7 +279,8 @@ $( document ).ready(function() {
         	   window.location = baseUrl + '/ml/site/data/datasets.jag'; 
             },
             error :  function(res){
-              //TODO: handle error        	    
+		notificationArea.remove();          
+		crtValArea.before(buildNotifications(res.responseText));
             }   
         });
 	})
