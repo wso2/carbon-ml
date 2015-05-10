@@ -66,19 +66,19 @@
 			<artifactId>spark-core_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-sql_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-mllib_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-streaming_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.scalanlp</groupId>
+			<groupId>org.wso2.orbit.org.scalanlp</groupId>
 			<artifactId>breeze_2.10</artifactId>
 		</dependency>
 		<dependency>
