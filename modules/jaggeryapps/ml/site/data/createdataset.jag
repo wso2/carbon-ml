@@ -237,12 +237,13 @@ $( document ).ready(function() {
 
 	var baseUrl = getBaseUrl(window.location.href);
 
+	var crtValArea = $(this).closest(".wr-form");
+        var notificationArea = crtValArea.prev(".ctrl-validation-panel");
+
         $('#fileUploadForm').ajaxForm({
 	    url: baseUrl + '/api/datasets',
 	    beforeSend: function(xhr) {
 	        xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-		var crtValArea = $(this).closest(".wr-form");
-            	var notificationArea = crtValArea.prev(".ctrl-validation-panel");
 	    },
             success : function(res){
         	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
@@ -251,7 +252,7 @@ $( document ).ready(function() {
         	    notificationArea.remove();
                     crtValArea.before(buildNotifications(res.responseText));
             }                               
-          });
+        });
 
 
 	$('#cancel-dataset').on('click', function(e){
