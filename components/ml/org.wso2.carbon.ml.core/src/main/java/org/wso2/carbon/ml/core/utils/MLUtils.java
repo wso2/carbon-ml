@@ -104,16 +104,22 @@ public class MLUtils {
                 }
                 
                 for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                    // Append the cell to the respective column.
-                    columnData.get(currentCol).add(row.get(currentCol));
-                    
-                    if (row.get(currentCol).isEmpty()) {
-                     // If the cell is empty, increase the missing value count.
-                        missing[currentCol]++;
-                    } else {
-                        if (!NumberUtils.isNumber(row.get(currentCol))) {
-                            stringCellCount[currentCol]++;
+                    //Check whether the row is complete.
+                    if(currentCol < row.size()){
+                        // Append the cell to the respective column.
+                        columnData.get(currentCol).add(row.get(currentCol));
+                        
+                        if (row.get(currentCol).isEmpty()) {
+                         // If the cell is empty, increase the missing value count.
+                            missing[currentCol]++;
+                        } else {
+                            if (!NumberUtils.isNumber(row.get(currentCol))) {
+                                stringCellCount[currentCol]++;
+                            }
                         }
+                    } else {
+                        columnData.get(currentCol).add(null);
+                        missing[currentCol]++;
                     }
                 }
                 recordsCount++;

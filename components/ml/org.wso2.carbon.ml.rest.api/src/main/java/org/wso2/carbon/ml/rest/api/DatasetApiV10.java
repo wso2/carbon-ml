@@ -90,7 +90,7 @@ public class DatasetApiV10 extends MLRestAPI {
                 // if it is a file upload, check whether the file is sent
                 if (inputStream == null || inputStream.available() == 0) {
                     logger.error("Cannot read the file.");
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Cannot read the file").build();
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
                 }
             } else if (sourcePath == null || sourcePath.isEmpty()) {
                 // if the source is hdfs/bam, and if source path is missing:
