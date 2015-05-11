@@ -322,6 +322,8 @@ public class MLHttpClient {
             throw new MLHttpClientException("Faile to get ID of project: " + projectName, e);
         } catch (IOException e) {
             throw new MLHttpClientException("Faile to get ID of project: " + projectName, e);
+        } catch (JSONException e) {
+            throw new MLHttpClientException("Faile to get ID of project: " + projectName, e);
         }
     }
     
@@ -345,8 +347,10 @@ public class MLHttpClient {
             throw new MLHttpClientException("Faile to get ID of analysis: " + analysisName, e);
         } catch (IOException e) {
             throw new MLHttpClientException("Faile to get ID of analysis: " + analysisName, e);
+        } catch (JSONException e) {
+            throw new MLHttpClientException("Faile to get ID of analysis: " + analysisName, e);
         }
-        
+
     }
     
     /**
@@ -415,6 +419,8 @@ public class MLHttpClient {
             throw new MLHttpClientException("Faile to get a version set ID of model: " + modelName, e);
         } catch (IOException e) {
             throw new MLHttpClientException("Faile to get a version set ID of model: " + modelName, e);
+        } catch (JSONException e) {
+            throw new MLHttpClientException("Faile to get a version set ID of model: " + modelName, e);
         }
     }
     
@@ -460,6 +466,8 @@ public class MLHttpClient {
             response.close();
             return responseJson.getString("name");
         } catch (IOException e) {
+            throw new MLHttpClientException("Failed to get the name of model" , e);
+        } catch (JSONException e) {
             throw new MLHttpClientException("Failed to get the name of model" , e);
         }
     }

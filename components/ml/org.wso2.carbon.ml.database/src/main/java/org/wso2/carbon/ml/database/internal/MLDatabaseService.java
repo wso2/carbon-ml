@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
@@ -2409,7 +2410,7 @@ public class MLDatabaseService implements DatabaseService {
             if (logger.isDebugEnabled()) {
                 logger.debug("Successfully updated the summary statistics for dataset version " + datasetVersionId);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occurred while updating the database "
@@ -2435,7 +2436,7 @@ public class MLDatabaseService implements DatabaseService {
      * @return JSON representation of the summary statistics of the column
      */
     private JSONArray createJson(String type, SortedMap<?, Integer> graphFrequencies, int missing, int unique,
-            DescriptiveStatistics descriptiveStats) {
+            DescriptiveStatistics descriptiveStats) throws JSONException {
 
         JSONObject json = new JSONObject();
         JSONArray freqs = new JSONArray();

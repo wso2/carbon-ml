@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.testng.annotations.AfterClass;
@@ -57,7 +58,7 @@ public class GetDatasetsTestCase extends MLBaseTest {
      * @throws IOException 
      */
     @Test(description = "Get a dataset with a known ID")
-    public void testGetDataset() throws MLHttpClientException, IOException {
+    public void testGetDataset() throws MLHttpClientException, IOException, JSONException {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/" + MLIntegrationTestConstants
                     .DATASET_ID);
         assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
@@ -102,7 +103,7 @@ public class GetDatasetsTestCase extends MLBaseTest {
      * @throws IOException 
      */
     @Test(description = "Get all available versions of a dataset")
-    public void testGetVersionSetsOfdataset() throws MLHttpClientException, IOException  {
+    public void testGetVersionSetsOfdataset() throws MLHttpClientException, IOException, JSONException {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/datasets/" + MLIntegrationTestConstants
                 .DATASET_ID + "/versions");
         assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
