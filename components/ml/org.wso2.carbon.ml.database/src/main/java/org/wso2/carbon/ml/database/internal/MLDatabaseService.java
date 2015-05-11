@@ -995,7 +995,10 @@ public class MLDatabaseService implements DatabaseService {
         int secondFeatureColumn = dataHeaders.get(scatterPlotPoints.getyAxisFeature());
         int thirdFeatureColumn = dataHeaders.get(scatterPlotPoints.getGroupByFeature());
         for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
-            if (!columnData.get(firstFeatureColumn).get(row).isEmpty()
+            if (columnData.get(firstFeatureColumn).get(row) != null
+                    && columnData.get(secondFeatureColumn).get(row) != null
+                    && columnData.get(thirdFeatureColumn).get(row) != null
+                    && !columnData.get(firstFeatureColumn).get(row).isEmpty()
                     && !columnData.get(secondFeatureColumn).get(row).isEmpty()
                     && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
                 Map<Double, Object> map1 = new HashMap<Double, Object>();
@@ -1199,6 +1202,64 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatues, result);
+        }
+    }
+    
+    /**
+     * Get feature names in order and separated by the given column separator.
+     */
+    @Override
+    public String getFeatureNamesInOrderUsingDatasetVersion(long datasetVersionId, String columnSeparator) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        
+        long datasetId = getDatasetId(datasetVersionId);
+        try {
+            return getFeatureNamesInOrder(datasetId, columnSeparator);
+        } catch (DatabaseHandlerException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset of a dataset version: " + datasetVersionId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
+    
+    /**
+     * Get feature names in order and separated by the given column separator.
+     */
+    @Override
+    public String getFeatureNamesInOrder(long datasetId, String columnSeparator) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        StringBuilder headerRow = new StringBuilder();
+        
+        try {
+            connection = dbh.getDataSource().getConnection();
+
+            // Create a prepared statement and retrieve model configurations
+            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES_IN_ORDER);
+            getFeatureNamesStatement.setLong(1, datasetId);
+
+            result = getFeatureNamesStatement.executeQuery();
+            // Convert the result in to a string array to e returned.
+            while (result.next()) {
+                headerRow.append(result.getString(1));
+                if (!result.isLast()) {
+                    headerRow.append(columnSeparator);
+                }
+            }
+            return headerRow.toString();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset : " + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
         }
     }
 
@@ -2075,15 +2136,28 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters)
+    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName)
             throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
+        PreparedStatement getStatement = null;
+        PreparedStatement deleteStatement = null;
+        ResultSet result = null;
         try {
             // Insert the hyper parameter to the database
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
+
+            getStatement = connection.prepareStatement(SQLQueries.GET_EXISTING_ALGORITHM);
+            getStatement.setLong(1, analysisId);
+            result = getStatement.executeQuery();
+
+            if (algorithmName != null && !algorithmName.equals(result)) {
+                deleteStatement = connection.prepareStatement(SQLQueries.DELETE_HYPER_PARAMETERS);
+                deleteStatement.setLong(1, analysisId);
+                deleteStatement.execute();
+            }
 
             for (MLHyperParameter mlHyperParameter : hyperParameters) {
                 String name = mlHyperParameter.getKey();
@@ -2091,8 +2165,9 @@ public class MLDatabaseService implements DatabaseService {
 
                 insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
                 insertStatement.setLong(1, analysisId);
-                insertStatement.setString(2, name);
-                insertStatement.setString(3, value);
+                insertStatement.setString(2, algorithmName);
+                insertStatement.setString(3, name);
+                insertStatement.setString(4, value);
                 insertStatement.execute();
             }
 
@@ -2114,7 +2189,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId) throws DatabaseHandlerException {
+    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId, String algorithmName) throws DatabaseHandlerException {
         List<MLHyperParameter> hyperParams = new ArrayList<MLHyperParameter>();
         Connection connection = null;
         PreparedStatement getFeatues = null;
@@ -2123,8 +2198,15 @@ public class MLDatabaseService implements DatabaseService {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
-            getFeatues.setLong(1, analysisId);
+            if (algorithmName == null) {
+                getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
+                getFeatues.setLong(1, analysisId);
+            }
+            else {
+                getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS_WITH_ALGORITHM);
+                getFeatues.setLong(1, analysisId);
+                getFeatues.setString(2, algorithmName);
+            }
             result = getFeatues.executeQuery();
             while (result.next()) {
                 MLHyperParameter param = new MLHyperParameter();

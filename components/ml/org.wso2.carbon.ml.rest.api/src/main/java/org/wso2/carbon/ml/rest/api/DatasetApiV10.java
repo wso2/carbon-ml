@@ -15,16 +15,23 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -63,30 +70,61 @@ public class DatasetApiV10 extends MLRestAPI {
      * Upload a new data-set.
      */
     @POST
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response uploadDataset(MLDataset dataset) {
-        if (dataset.getName() == null || dataset.getName().isEmpty() || dataset.getSourcePath() == null
-                || dataset.getVersion() == null || dataset.getDataSourceType() == null
-                || dataset.getDataSourceType().isEmpty() || dataset.getDataType() == null
-                || dataset.getDataType().isEmpty()) {
-            String msg = "Required parameters are missing: " + dataset;
-            logger.error(msg);
-            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
-        }
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadDataset(@Multipart("datasetName") String datasetName, @Multipart("version") String version,
+            @Multipart("description") String description, @Multipart("sourceType") String sourceType,
+            @Multipart("destination") String destination, @Multipart("sourcePath") String sourcePath,
+            @Multipart("dataFormat") String dataFormat, @Multipart("containsHeader") boolean containsHeader,
+            @Multipart("file") InputStream inputStream) {
+        MLDataset dataset = new MLDataset();
         try {
+            // validate input parameters
+            if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty() ||
+                sourceType == null || sourceType.isEmpty() || destination.isEmpty() || destination == null ||
+                dataFormat.isEmpty() || dataFormat == null) {
+                logger.error("Required parameters are missing.");
+                return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
+            }
+            if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
+                // if it is a file upload, check whether the file is sent
+                if (inputStream == null || inputStream.available() == 0) {
+                    logger.error("Cannot read the file.");
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
+                }
+            } else if (sourcePath == null || sourcePath.isEmpty()) {
+                // if the source is hdfs/bam, and if source path is missing:
+                logger.error("Dataset Source is missing.");
+                return Response.status(Response.Status.BAD_REQUEST).entity("Dataset Source is missing").build();
+            } else {
+                dataset.setSourcePath(new URI(sourcePath));
+            }
+
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            int tenantId = carbonContext.getTenantId();
+            String userName = carbonContext.getUsername();
+
+            dataset.setName(datasetName);
+            dataset.setVersion(version);
+            dataset.setDataSourceType(sourceType);
+            dataset.setComments(description);
+            dataset.setDataTargetType(destination);
+            dataset.setDataType(dataFormat);
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
-            datasetProcessor.process(dataset);
+            dataset.setContainsHeader(containsHeader);
+            datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();
         } catch (MLDataProcessingException e) {
             logger.error("Error occurred while uploading a dataset : " + dataset, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (URISyntaxException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+    
 
     /**
      * Get all datasets of this tenant and user. This doesn't return version sets.
@@ -284,7 +322,7 @@ public class DatasetApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<Object> points = datasetProcessor.getChartSamplePoints(tenantId, userName, datasetId,
+            List<Object> points = datasetProcessor.getChartSamplePointsOfLatestVersion(tenantId, userName, datasetId,
                     featureListString);
             return Response.ok(points).build();
         } catch (MLDataProcessingException e) {

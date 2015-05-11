@@ -489,6 +489,8 @@ $( document ).ready(function() {
 });
 
 function drawScatterPlotBase() { 
+
+if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
  
     $('#scatter-x, #scatter-y, #scatter-group').empty();
     $.each(numericalFeatureNames,function(index, feature){
@@ -506,6 +508,10 @@ function drawScatterPlotBase() {
     });
 
     drawPlotsAjax();
+
+} else {
+        $("#scatter").html("Minimum of two numerical features and one categorical feature required to draw a Scatter plot.");
+}
 }
 
 function drawPlotsAjax() {

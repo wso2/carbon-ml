@@ -57,7 +57,7 @@ public class SummaryStatsGeneratorTest {
 
             // extract limited set of points
             int size = 10000;
-            samplePoints = MLUtils.getSamplePoints(in, "csv", size);
+            samplePoints = MLUtils.getSamplePoints(in, "csv", size, true);
             Assert.assertNotNull(samplePoints);
 
         } catch (MLMalformedDatasetException e) {

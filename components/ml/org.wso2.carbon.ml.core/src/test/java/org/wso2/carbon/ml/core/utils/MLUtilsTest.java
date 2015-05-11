@@ -54,7 +54,7 @@ public class MLUtilsTest {
 
             // extract limited set of points
             int size = 10000;
-            samplePoints = MLUtils.getSamplePoints(in, "csv", size);
+            samplePoints = MLUtils.getSamplePoints(in, "csv", size, true);
             List<List<String>> columnData = samplePoints.getSamplePoints();
             Assert.assertEquals(samplePoints.getSamplePoints().size(), 55);
             int totalPoints = columnData.get(0).size();
@@ -62,7 +62,7 @@ public class MLUtilsTest {
 
             // extract all points
             in = inputAdapter.readDataset(uri);
-            samplePoints = MLUtils.getSamplePoints(in, "csv", -1);
+            samplePoints = MLUtils.getSamplePoints(in, "csv", -1, true);
             columnData = samplePoints.getSamplePoints();
             totalPoints = columnData.get(0).size();
             Assert.assertEquals(totalPoints, 1000);
@@ -76,7 +76,7 @@ public class MLUtilsTest {
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
         in = inputAdapter.readDataset(uri);
         try {
-            samplePoints = MLUtils.getSamplePoints(in, "csv", 10);
+            samplePoints = MLUtils.getSamplePoints(in, "csv", 10, true);
         } catch (Exception e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e instanceof MLMalformedDatasetException, true);
@@ -85,7 +85,7 @@ public class MLUtilsTest {
         // null input stream
         in = null;
         try {
-            samplePoints = MLUtils.getSamplePoints(in, "csv", 10);
+            samplePoints = MLUtils.getSamplePoints(in, "csv", 10, true);
         } catch (Exception e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e instanceof MLMalformedDatasetException, true);
@@ -96,7 +96,22 @@ public class MLUtilsTest {
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
         in = inputAdapter.readDataset(uri);
         try {
-            samplePoints = MLUtils.getSamplePoints(in, "tsv", 550);
+            samplePoints = MLUtils.getSamplePoints(in, "tsv", 550, true);
+            List<List<String>> columnData = samplePoints.getSamplePoints();
+            Assert.assertEquals(samplePoints.getSamplePoints().size(), 55);
+            int totalPoints = columnData.get(0).size();
+            Assert.assertEquals(totalPoints, 550 / 55);
+        } catch (Exception e) {
+            Assert.assertNull(e);
+        }
+        
+        // test CSV file without header
+        uriString = "src/test/resources/fcSampleWithoutHeader.csv";
+        uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
+        in = inputAdapter.readDataset(uri);
+        try {
+            samplePoints = MLUtils.getSamplePoints(in, "csv", 550, false);
+            Assert.assertEquals(samplePoints.getHeader().size(), 55);
             List<List<String>> columnData = samplePoints.getSamplePoints();
             Assert.assertEquals(samplePoints.getSamplePoints().size(), 55);
             int totalPoints = columnData.get(0).size();

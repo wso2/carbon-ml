@@ -78,19 +78,19 @@
 			<artifactId>spark-core_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-sql_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-mllib_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.apache.spark</groupId>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-streaming_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.scalanlp</groupId>
+			<groupId>org.wso2.orbit.org.scalanlp</groupId>
 			<artifactId>breeze_2.10</artifactId>
 		</dependency>
 		<dependency>
@@ -335,6 +335,14 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.wso2.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<!-- <dependency>
+			<groupId>org.apache.httpcomponents.wso2</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -359,10 +367,10 @@
 							</adviceFile>
 							<bundles>
 								<bundleDef>org.wso2.orbit.org.apache.spark:spark-core_2.10</bundleDef>
-								<bundleDef>org.wso2.apache.spark:spark-sql_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.apache.spark:spark-mllib_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.apache.spark:spark-streaming_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.scalanlp:breeze_2.10</bundleDef>
+								<bundleDef>org.wso2.orbit.org.apache.spark:spark-sql_2.10</bundleDef>
+								<bundleDef>org.wso2.orbit.org.apache.spark:spark-mllib_2.10</bundleDef>
+								<bundleDef>org.wso2.orbit.org.apache.spark:spark-streaming_2.10</bundleDef>
+								<bundleDef>org.wso2.orbit.org.scalanlp:breeze_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
 								<bundleDef>org.wso2.uncommons.maths:uncommons-maths</bundleDef>
@@ -435,6 +443,9 @@
 								<bundleDef>org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.email</bundleDef>
 								<bundleDef>org.apache.axis2:axis2-transport-mail</bundleDef>
 								<bundleDef>org.apache.axis2:axis2-transport-base</bundleDef>
+								
+								<bundleDef>org.wso2.apache.httpcomponents:httpclient</bundleDef>
+								<!-- <bundleDef>org.apache.httpcomponents.wso2:httpcore</bundleDef> -->
 							</bundles>
 						</configuration>
 					</execution>

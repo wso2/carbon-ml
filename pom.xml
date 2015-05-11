@@ -213,11 +213,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${apache.httpclient.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml.apis.version}</version>
@@ -250,22 +245,22 @@
 				<version>${spark.core.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.apache.spark</groupId>
+				<groupId>org.wso2.orbit.org.apache.spark</groupId>
 				<artifactId>spark-sql_2.10</artifactId>
 				<version>${spark.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.orbit.apache.spark</groupId>
+				<groupId>org.wso2.orbit.org.apache.spark</groupId>
 				<artifactId>spark-mllib_2.10</artifactId>
 				<version>${spark.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.orbit.apache.spark</groupId>
+				<groupId>org.wso2.orbit.org.apache.spark</groupId>
 				<artifactId>spark-streaming_2.10</artifactId>
 				<version>${spark.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.orbit.scalanlp</groupId>
+				<groupId>org.wso2.orbit.org.scalanlp</groupId>
 				<artifactId>breeze_2.10</artifactId>
 				<version>${breeze.version}</version>
 			</dependency>
@@ -621,14 +616,14 @@
 				<version>${carbon.identity.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
+				<groupId>org.apache.httpcomponents.wso2</groupId>
 				<artifactId>httpcore</artifactId>
-				<version>${apache.httpcomponents.version}</version>
+				<version>${apache.httpcore.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
+				<groupId>org.wso2.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>${apache.httpcomponents.version}</version>
+				<version>${apache.httpclient.version}</version>
 			</dependency>
 
 			<!-- Dependencies on WSO2 Carbon ML components -->
@@ -858,10 +853,10 @@
 		<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
 		<!-- Spark dependency versions -->
-		<spark.version>1.2.1.wso2v1</spark.version>
-		<spark.core.version>1.2.1.wso2v2</spark.core.version>
+		<spark.version>1.3.0.wso2v1</spark.version>
+		<spark.core.version>1.3.0.wso2v1</spark.core.version>
 		<hadoop.client.version>2.6.0.wso2v1</hadoop.client.version>
-		<breeze.version>0.10.wso2v1</breeze.version>
+		<breeze.version>0.11.1.wso2v1</breeze.version>
 		<spire.version>0.7.4.wso2v1</spire.version>
 		<jblas.version>1.2.3.wso2v1</jblas.version>
 		<uncommons.maths.version>1.2.2.wso2v1</uncommons.maths.version>
@@ -951,8 +946,8 @@
 		<junit.version>4.12</junit.version>
 		<jaxen.version>1.1.1</jaxen.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
-		<apache.httpcomponents.version>4.4</apache.httpcomponents.version>
-		<apache.httpclient.version>4.3.5</apache.httpclient.version>
+		<apache.httpcore.version>4.3.3.wso2v1</apache.httpcore.version>
+		<apache.httpclient.version>4.3.1.wso2v1</apache.httpclient.version>
 	</properties>
 
 	<organization>

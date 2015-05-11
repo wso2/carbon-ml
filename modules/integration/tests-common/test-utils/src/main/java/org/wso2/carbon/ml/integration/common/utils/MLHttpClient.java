@@ -19,18 +19,24 @@
 package org.wso2.carbon.ml.integration.common.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
@@ -51,6 +57,7 @@ public class MLHttpClient {
     
     private User userInfo;
     private Instance mlInstance;
+    private static final Log logger = LogFactory.getLog(MLHttpClient.class);
     
     public MLHttpClient(Instance mlInstance, User userInfo) {
         this.mlInstance = mlInstance;
@@ -115,9 +122,9 @@ public class MLHttpClient {
             get.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
             return httpClient.execute(get);
         } catch (ClientProtocolException e) {
-            throw new MLHttpClientException("Failed to get " + resourcePath, e);
+            throw new MLHttpClientException("Faile to get " + resourcePath, e);
         } catch (IOException e) {
-            throw new MLHttpClientException("Failed to get " + resourcePath, e);
+            throw new MLHttpClientException("Faile to get " + resourcePath, e);
         }
     	
     }
@@ -142,9 +149,9 @@ public class MLHttpClient {
             }
             return httpClient.execute(post);
         } catch (ClientProtocolException e) {
-            throw new MLHttpClientException("Failed to post to " + resourcePath, e);
+            throw new MLHttpClientException("Faile to post to " + resourcePath, e);
         } catch (IOException e) {
-            throw new MLHttpClientException("Failed to post to " + resourcePath, e);
+            throw new MLHttpClientException("Faile to post to " + resourcePath, e);
         }
     }
     
@@ -163,9 +170,9 @@ public class MLHttpClient {
             delete.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
             return httpClient.execute(delete);
         } catch (ClientProtocolException e) {
-            throw new MLHttpClientException("Failed to delete " + resourcePath, e);
+            throw new MLHttpClientException("Faile to delete " + resourcePath, e);
         } catch (IOException e) {
-            throw new MLHttpClientException("Failed to delete " + resourcePath, e);
+            throw new MLHttpClientException("Faile to delete " + resourcePath, e);
         }
     }
     
@@ -191,28 +198,34 @@ public class MLHttpClient {
      */
     public CloseableHttpResponse uploadDatasetFromCSV(String DatasetName, String version, String resourcePath)
             throws MLHttpClientException {
-        String payload;
-        if (DatasetName == null) {
-            payload = "{\"dataSourceType\" : \"file\",\"dataTargetType\" : \"file\",\"sourcePath\" : \"" +
-                    getResourceAbsolutePath(resourcePath) + "\",\"dataType\":\"csv\"," + "\"comments\":\"Sample " +
-                    "dataset for Testing\",\"version\" : \"" + version + "\"}";
-        } else if (version == null) {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\"}";
-        } else if (resourcePath == null) {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\",\"dataType\":\"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \""
-                    + version + "\"}";
-        } else {
-            payload = "{\"name\" : \"" + DatasetName + "\",\"dataSourceType\" : \"file\",\"dataTargetType\" : "
-                    + "\"file\"," + "\"sourcePath\" : \""+ getResourceAbsolutePath(resourcePath) + "\",\"dataType\""
-                    + " : \"csv\"," + "\"comments\" : \"Sample dataset for Testing\",\"version\" : \"" + version + "\"}";
-        }
+        CloseableHttpClient httpClient =  HttpClients.createDefault();
         try {
-            return doHttpPost("/api/datasets", payload);
-        } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to upload dataset from csv " + resourcePath, e);
+            HttpPost httpPost = new HttpPost(getServerUrlHttps() + "/api/datasets/");
+            httpPost.setHeader(MLIntegrationTestConstants.AUTHORIZATION_HEADER, getBasicAuthKey());
+
+            MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+            multipartEntityBuilder.addPart("description", new StringBody("Sample dataset for Testing", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("sourceType", new StringBody("file", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("destination", new StringBody("file", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("dataFormat", new StringBody("CSV", ContentType.TEXT_PLAIN));
+            multipartEntityBuilder.addPart("containsHeader", new StringBody("true", ContentType.TEXT_PLAIN));
+
+            if (DatasetName != null) {
+                multipartEntityBuilder.addPart("datasetName", new StringBody(DatasetName, ContentType.TEXT_PLAIN));
+            }
+            if (version != null) {
+                multipartEntityBuilder.addPart("version", new StringBody(version, ContentType.TEXT_PLAIN));
+            }
+            if (resourcePath != null) {
+                File file = new File(getResourceAbsolutePath(resourcePath));
+                multipartEntityBuilder.addBinaryBody("file", file, ContentType.APPLICATION_OCTET_STREAM, "IndiansDiabetes.csv");
+            }
+            httpPost.setEntity(multipartEntityBuilder.build());
+            return httpClient.execute(httpPost);
+        } catch (ClientProtocolException e) {
+            throw new MLHttpClientException("Faile to upload dataset from csv " + resourcePath, e);
+        } catch (IOException e) {
+            throw new MLHttpClientException("Faile to upload dataset from csv " + resourcePath, e);
         }
     }
     
@@ -236,7 +249,7 @@ public class MLHttpClient {
             }
             return doHttpPost("/api/projects", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to create project " + ProjectName, e);
+            throw new MLHttpClientException("Faile to create project " + ProjectName, e);
         }
     }
     
@@ -260,7 +273,7 @@ public class MLHttpClient {
             }
             return doHttpPost("/api/analyses", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to create analysis: " + AnalysisName + " in project: " + ProjectId, e);
+            throw new MLHttpClientException("Faile to create analysis: " + AnalysisName + " in project: " + ProjectId, e);
         }
     }
     
@@ -276,7 +289,7 @@ public class MLHttpClient {
         try {
             return doHttpPost("/api/analyses/" + analysisId + "/features/defaults", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to set Feature defaults to analysis: " + analysisId, e);
+            throw new MLHttpClientException("Faile to set Feature defaults to analysis: " + analysisId, e);
         }
     }
     
@@ -298,7 +311,7 @@ public class MLHttpClient {
             payload = payload.substring(0, payload.length()-1) + "]";
             return doHttpPost("/api/analyses/" + analysisId + "/configurations", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to set model configurations to analysis: " + analysisId, e);
+            throw new MLHttpClientException("Faile to set model configurations to analysis: " + analysisId, e);
         }
     }
     
@@ -318,8 +331,10 @@ public class MLHttpClient {
             bufferedReader.close();
             response.close();
             return responseJson.getInt("id");
-        } catch (Exception e) {
-            throw new MLHttpClientException("Failed to get ID of project: " + projectName, e);
+        } catch (MLHttpClientException e) {
+            throw new MLHttpClientException("Faile to get ID of project: " + projectName, e);
+        } catch (IOException e) {
+            throw new MLHttpClientException("Faile to get ID of project: " + projectName, e);
         }
     }
     
@@ -340,13 +355,11 @@ public class MLHttpClient {
             response.close();
             return responseJson.getInt("id");
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to get ID of analysis: " + analysisName, e);
+            throw new MLHttpClientException("Faile to get ID of analysis: " + analysisName, e);
         } catch (IOException e) {
-            throw new MLHttpClientException("Failed to get ID of analysis: " + analysisName, e);
-        } catch (JSONException e) {
-            throw new MLHttpClientException("Failed to get ID of analysis: " + analysisName, e);
+            throw new MLHttpClientException("Faile to get ID of analysis: " + analysisName, e);
         }
-
+        
     }
     
     /**
@@ -367,11 +380,11 @@ public class MLHttpClient {
             JSONObject datsetVersionJson = (JSONObject) responseJson.get(0);
             return datsetVersionJson.getInt("id");
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to get a version set ID of dataset: " + datasetId, e);
+            throw new MLHttpClientException("Faile to get a version set ID of dataset: " + datasetId, e);
         } catch (JSONException e) {
-            throw new MLHttpClientException("Failed to get a version set ID of dataset: " + datasetId, e);
+            throw new MLHttpClientException("Faile to get a version set ID of dataset: " + datasetId, e);
         } catch (IOException e) {
-            throw new MLHttpClientException("Failed to get a version set ID of dataset: " + datasetId, e);
+            throw new MLHttpClientException("Faile to get a version set ID of dataset: " + datasetId, e);
         }
     }
 
@@ -390,7 +403,7 @@ public class MLHttpClient {
                     versionSetId + "}";
             return doHttpPost("/api/models/", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to create a model in analysis: " + analysisId + "using versionset: "
+            throw new MLHttpClientException("Faile to create a model in analysis: " + analysisId + "using versionset: "
                     + versionSetId, e);
         }
     }
@@ -411,8 +424,10 @@ public class MLHttpClient {
             bufferedReader.close();
             response.close();
             return responseJson.getInt("id");
-        } catch (Exception e) {
-            throw new MLHttpClientException("Failed to get a version set ID of model: " + modelName, e);
+        } catch (MLHttpClientException e) {
+            throw new MLHttpClientException("Faile to get a version set ID of model: " + modelName, e);
+        } catch (IOException e) {
+            throw new MLHttpClientException("Faile to get a version set ID of model: " + modelName, e);
         }
     }
     
@@ -429,7 +444,7 @@ public class MLHttpClient {
         try {
             return doHttpPost("/api/models/"+ modelId + "/storages", payload);
         } catch (MLHttpClientException e) {
-            throw new MLHttpClientException("Failed to file storage for model: " + modelId, e);
+            throw new MLHttpClientException("Faile to file storage for model: " + modelId, e);
         }
     }
     
@@ -457,7 +472,7 @@ public class MLHttpClient {
             bufferedReader.close();
             response.close();
             return responseJson.getString("name");
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new MLHttpClientException("Failed to get the name of model" , e);
         }
     }

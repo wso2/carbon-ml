@@ -156,7 +156,7 @@ public class SummaryStatsGenerator implements Runnable {
                 // Convert each cell value to double and append to the
                 // Descriptive-statistics object.
                 for (int row = 0; row < this.columnData.get(currentCol).size(); row++) {
-                    if (!this.columnData.get(currentCol).get(row).isEmpty()) {
+                    if (this.columnData.get(currentCol).get(row) != null && !this.columnData.get(currentCol).get(row).isEmpty()) {
                         cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
                         this.descriptiveStats.get(currentCol).addValue(cellValue);
                     }
@@ -186,8 +186,9 @@ public class SummaryStatsGenerator implements Runnable {
             // Count the frequencies in each unique value.
             this.unique[currentCol] = uniqueSet.size();
             for (String uniqueValue : uniqueSet) {
-                frequencies.put(uniqueValue.toString(),
-                        Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                if (uniqueValue != null){
+                    frequencies.put(uniqueValue.toString(), Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                }
             }
             graphFrequencies.set(currentCol, frequencies);
         }
@@ -219,7 +220,7 @@ public class SummaryStatsGenerator implements Runnable {
                 // Calculate the category frequencies.
                 SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
                 for (String uniqueValue : uniqueSet) {
-                    if (!uniqueValue.isEmpty()) {
+                    if (uniqueValue != null && !uniqueValue.isEmpty()) {
                         frequencies.put(Double.parseDouble(uniqueValue),
                                 Collections.frequency(this.columnData.get(currentCol), uniqueValue));
                     }
@@ -245,7 +246,7 @@ public class SummaryStatsGenerator implements Runnable {
         double[] data = new double[this.columnData.get(column).size()];
         // Create an array from the column data.
         for (int row = 0; row < columnData.get(column).size(); row++) {
-            if (!this.columnData.get(column).get(row).isEmpty()) {
+            if (this.columnData.get(column).get(row) != null && !this.columnData.get(column).get(row).isEmpty()) {
                 data[row] = Double.parseDouble(this.columnData.get(column).get(row));
             }
         }

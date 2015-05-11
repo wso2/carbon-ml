@@ -149,17 +149,17 @@ public class MLAnalysisHandler {
         }
     }
 
-    public void addHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters) throws MLAnalysisHandlerException {
+    public void addHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName) throws MLAnalysisHandlerException {
         try {
-            databaseService.insertHyperParameters(analysisId, hyperParameters);
+            databaseService.insertHyperParameters(analysisId, hyperParameters, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
 
-    public List<MLHyperParameter> getHyperParameters(long analysisId) throws MLAnalysisHandlerException {
+    public List<MLHyperParameter> getHyperParameters(long analysisId,String algorithmName) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getHyperParametersOfModel(analysisId);
+            return databaseService.getHyperParametersOfModel(analysisId, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -184,7 +184,7 @@ public class MLAnalysisHandler {
                 throw new MLAnalysisHandlerException("Cannot find the default hyper parameters for algorithm [name] "+algorithmName);
             }
             // add default hyper params
-            databaseService.insertHyperParameters(analysisId, hyperParameters);
+            databaseService.insertHyperParameters(analysisId, hyperParameters, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
