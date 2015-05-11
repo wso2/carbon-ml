@@ -994,7 +994,10 @@ public class MLDatabaseService implements DatabaseService {
         int secondFeatureColumn = dataHeaders.get(scatterPlotPoints.getyAxisFeature());
         int thirdFeatureColumn = dataHeaders.get(scatterPlotPoints.getGroupByFeature());
         for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
-            if (!columnData.get(firstFeatureColumn).get(row).isEmpty()
+            if (columnData.get(firstFeatureColumn).get(row) != null
+                    && columnData.get(secondFeatureColumn).get(row) != null
+                    && columnData.get(thirdFeatureColumn).get(row) != null
+                    && !columnData.get(firstFeatureColumn).get(row).isEmpty()
                     && !columnData.get(secondFeatureColumn).get(row).isEmpty()
                     && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
                 Map<Double, Object> map1 = new HashMap<Double, Object>();

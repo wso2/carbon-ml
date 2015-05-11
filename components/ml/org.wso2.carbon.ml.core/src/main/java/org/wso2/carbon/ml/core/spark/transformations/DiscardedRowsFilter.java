@@ -41,7 +41,7 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
         try {
             Boolean keep = true;
             for (Integer index : indices) {
-                if (MLConstants.EMPTY.equals(tokens[index]) || MLConstants.NA.equals(tokens[index])) {
+                if (index >= tokens.length || MLConstants.EMPTY.equals(tokens[index]) || MLConstants.NA.equals(tokens[index])) {
                     keep = false;
                     break;
                 }
