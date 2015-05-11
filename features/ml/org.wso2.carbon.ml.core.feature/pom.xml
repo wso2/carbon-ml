@@ -259,11 +259,11 @@
 			<artifactId>derby</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon.event-processing</groupId>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
 			<artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon.event-processing</groupId>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
 			<artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
 		</dependency>
 		<dependency>
@@ -363,7 +363,6 @@
 							<adviceFile>
 								<properties>
 									<propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-									<propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
 								</properties>
 							</adviceFile>
 							<bundles>
@@ -440,8 +439,8 @@
 								<bundleDef>org.apache.curator:curator-client</bundleDef>
 								<bundleDef>org.apache.zookeeper:zookeeper</bundleDef>
 
-								<bundleDef>org.wso2.carbon.event-processing:org.wso2.carbon.event.output.adapter.core</bundleDef>
-								<bundleDef>org.wso2.carbon.event-processing:org.wso2.carbon.event.output.adapter.email</bundleDef>
+								<bundleDef>org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.core</bundleDef>
+								<bundleDef>org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.email</bundleDef>
 								<bundleDef>org.apache.axis2:axis2-transport-mail</bundleDef>
 								<bundleDef>org.apache.axis2:axis2-transport-base</bundleDef>
 								

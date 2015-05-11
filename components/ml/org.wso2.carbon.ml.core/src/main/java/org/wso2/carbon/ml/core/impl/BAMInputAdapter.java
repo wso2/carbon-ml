@@ -32,6 +32,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.CDL;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -104,7 +105,8 @@ public class BAMInputAdapter implements MLInputAdapter {
             throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
         } catch (URISyntaxException e) {
             throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
-        } finally{
+        } catch (JSONException e) {
+            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);        } finally{
             if(httpClient != null){ 
                 try {
                     httpClient.close();
@@ -143,6 +145,8 @@ public class BAMInputAdapter implements MLInputAdapter {
             return "success".equalsIgnoreCase(outputJson.get("status").toString());
         } catch (URISyntaxException e) {
             throw new MLInputAdapterException("Invalid Uri Syntax:" + e.getMessage(), e);
+        } catch (JSONException e) {
+            throw new MLInputAdapterException("Error while reading response:" + e.getMessage(), e);
         }
     }
     

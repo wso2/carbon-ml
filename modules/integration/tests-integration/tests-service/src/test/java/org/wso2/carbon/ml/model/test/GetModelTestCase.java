@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
@@ -57,7 +58,7 @@ public class GetModelTestCase extends MLBaseTest {
      * @throws IOException 
      */
     @Test(description = "retrieve a model")
-    public void testGetModel() throws MLHttpClientException, IOException {
+    public void testGetModel() throws MLHttpClientException, IOException, JSONException {
         CloseableHttpResponse response = mlHttpclient.doHttpGet("/api/models/" + MLIntegrationTestConstants.MODEL_NAME);
         assertEquals("Unexpected response recieved", Response.Status.OK.getStatusCode(), response.getStatusLine()
                 .getStatusCode());

@@ -187,7 +187,7 @@
                                 
                                 <!-- Email Adapter Feature -->
                                 <featureArtifactDef>
-                                     org.wso2.carbon.event-processing:org.wso2.carbon.event.output.adapter.server.feature:${carbon.event.processing.version}
+                                     org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.server.feature:${carbon.analytics.common.version}
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
@@ -342,7 +342,7 @@
                                 <!-- Email Adapter Feature -->
                                 <feature>
                                     <id>org.wso2.carbon.event.output.adapter.server.feature.group</id>
-                                    <version>${carbon.event.processing.version}</version>
+                                    <version>${carbon.analytics.common.version}</version>
                                 </feature>
                             </features>
                         </configuration>
