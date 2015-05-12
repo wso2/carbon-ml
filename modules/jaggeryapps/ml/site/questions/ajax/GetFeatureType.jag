@@ -1,0 +1,29 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+    var uuid = require('uuid');
+
+    var datasetServ = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');    
+    var wfid = request.getParameter('wfid');
+    var featureName = request.getParameter('featureName');    
+
+    response.contentType = 'application/json';
+
+    try {
+
+        var featueType = datasetServ.getFeatureType(wfid, featureName);                           
+        
+        response.status = 200;
+        response.content = { type : featueType };        
+        
+    } catch(e) {
+        var errorMessage = 'An error has occurred while extracting featue type for workflow id: ' + wfid + 
+                      ' and feature name: ' + featureName + 'error message: ' + e.message;
+
+        log.error(errorMessage);
+        
+        response.status = 500;
+        response.content = { message : errorMessage };        
+    }  
+    
+%>

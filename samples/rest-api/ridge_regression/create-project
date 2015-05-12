@@ -1,0 +1,5 @@
+{
+"name" : "winequality",
+"description" : "This project tests ml workflow for linear regression",  
+"datasetName" : "winequality"
+}

@@ -1,0 +1,26 @@
+<%
+    var carbon = require('carbon');
+    var projectManagementService = carbon.server.osgiService('org.wso2.carbon.ml.project.mgt.ProjectManagementService');
+    
+    var statusCode = 200;
+    var statusMsg = '';
+
+    var projectID = null;
+    try {
+        projectID = request.getParameter("projectID");
+        projectManagementService.deleteProject(projectID);
+        statusMsg = 'project :' + projectID + 'successfully deleted';  
+
+    } catch(e) {
+    	var msg = 'An error occurred while deleting project associated with Id : ' + projectID + 
+    	          ' error message: ' + e.message;
+    	log.error(msg);
+
+    	statusMsg = msg;
+    	statusCode = 500;        
+    } finally {
+    	response.contentType = 'application/json';
+    	response.content = {status: statusMsg};
+        response.status = statusCode;
+    }
+%>

@@ -1,0 +1,38 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+
+    var modelSrv = carbon.server.osgiService('org.wso2.carbon.ml.model.ModelService');
+    var algoCategory = request.getParameter('algocat');
+
+    try{
+    	var algorithms = modelSrv.getAlgorithmsByType(algoCategory);
+    	for(var i=0; i<algorithms.size(); i++) {
+    		log.info(algorithms.get(i));
+    	}
+    } catch(e) {
+        var msg = 'An error has occurred while algorithms for category:' + algoCategory + ' error message: ' + 
+                   e.message;
+
+    } finally {
+
+    }
+
+    function getDisplayName(algo) {
+    	if ( algo === 'LOGISTIC_REGRESSION') {
+    		return 'Logistic Regression';
+    	}
+    	if (algo === 'SVM') {
+    		return 'Support Vector Machine';
+    	}
+    	if (algo === 'DECISION_TREE') {
+    		return 'Naive Bayes';
+    	}
+    	if ( algo === 'DECISION_TREE') {
+    		return 'Decision Tree';
+    	}
+
+    	throw new Error('Unrecognized algorithm type: ' + algo);
+    }
+
+%>

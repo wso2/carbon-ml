@@ -1,0 +1,9 @@
+{
+"name" : "winequality",
+"dataSourceType" : "file",
+"dataTargetType" : "file",
+"sourcePath" : "file://PATH/winequality-red.csv",
+"dataType" : "csv",
+"comments" : "Wine quality dataset",
+"version" : "1.0"
+}

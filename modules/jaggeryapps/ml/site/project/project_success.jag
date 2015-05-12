@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user">Administrator</a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+		<div class="wr-project">
+			<span class="title">PROJECT \ </span><span id="project-display-name"></span>
+		</div>
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+			<!--a href="#" id="create-wf" class="cu-btn btn-save" id="save-project">Create Workflow</a-->
+			<a href="../project/projects.jag" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<!--a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+	    </ul-->
+	    		
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+        		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+
+
+			<div role="tabpanel" class="wr-tabbed-container">
+
+			  <!-- Nav tabs -->
+			  <!--ul class="nav nav-tabs" role="tablist">
+			    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Preprocess</a></li>			    
+			  </ul-->
+
+			  <!-- Tab panes -->
+			  <div class="tab-content">
+			    <div role="tabpanel" class="tab-pane fade in active" id="home">
+			    	<!--h4>Pre Process Data</h4-->				    	
+					<table id="datasetTable">
+                        <div>Summary Statistics for the first 10,000 data rows: </div>
+                        <thead>
+	                        <tr>
+	                            <th>Feature</th>
+	                            <th>Type</th>
+	                            <th>Summary Statistics</th>                            
+	                        </tr>
+                    	</thead>                    	
+                    	<tbody>
+                    	</tbody>
+                	</table>
+				</div>
+			  </div>
+			</div>
+            <!-- analysis creation -->
+					  		<div class="wr-analysis">
+								<label class="input-label">Create new Analysis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+								<div class="input-control text">
+									<table>
+										<tr>
+											<td class="f-input-w-md">
+								    			<input id="new-analysis" type="text" value="" class="f-input-w-md" placeholder="eg: myanalysis"/>
+								    		</td>
+								    		<td>
+								    			<a href="#" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Analysis"><span>Create Analysis</span></a>
+								    		</td>
+								    	</tr>
+								    </table>
+								</div>
+							</div>
+							<!-- /analysis creation -->
+		</div>
+		<!-- /content -->
+	</div>
+</div>
+<!-- /content/body -->
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
+<script src="../../js/d3.parsets.js"></script>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});	
+    
+    var projid = getParameterByName('projid');
+    var datid = getParameterByName('datid');
+    var datname = getParameterByName('datname');
+    var projna = getParameterByName('projna');
+
+    $('#project-display-name').text(projna);
+
+/*	$('#create-wf').on('click', function(e){
+        e.preventDefault();        
+        var url = '../workflow/create_workflow.jag?projid='+projid+
+                  '&projna='+projna+'&datid='+datid;
+        window.location.href = url;     
+	});	*/
+
+	$('#datasetTable').dataTable({
+        "bServerSide": true,
+        "sAjaxSource": './ajax/DatasetDescription.jag?projid='+projid,
+        "bProcessing": false,
+        "bLengthChange": false,
+        "bFilter": false,
+        "iDisplayLength": 5
+    });
+
+    // Preserve pagination when refreshing datatable 
+    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+        if(oSettings.oFeatures.bServerSide === false){
+            var before = oSettings._iDisplayStart;
+            oSettings.oApi._fnReDraw(oSettings);
+            oSettings._iDisplayStart = before;
+            oSettings.oApi._fnCalculateEnd(oSettings);
+        }
+        //draw the 'current' page
+        oSettings.oApi._fnDraw(oSettings);
+    };
+
+    $('#datasetTable').on('draw.dt', function() {
+        
+        $('.summaryStatistics').each(function() {
+            var jsonText = $(this).text();
+            //console.log('text: '+jsonText);
+            // TODO: handle JSON parsing errors
+            var jsonObj  = JSON.parse(jsonText); 
+
+
+            // clear text in this cell and draw graphs
+            $(this).text("");
+
+            //get feature type
+            var closestTr = $(this).closest('tr');
+            var FeatureType = closestTr.find('.featureType').text();
+            var frequencies = jsonObj[0].values;
+            
+            // transform dataset
+            var dataArray = $.map(frequencies, function(value, index) {
+                return value[1];
+            });
+            
+            if (FeatureType == 'CATEGORICAL'){          
+                
+                var w = 40;
+                var h = 40;
+                var pie = d3.layout.pie();
+                
+                var outerRadius = w / 2;
+                var innerRadius = 0;
+                var arc = d3.svg.arc()
+                                .innerRadius(innerRadius)
+                                .outerRadius(outerRadius);
+
+                  var svg = d3.select(this)
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+			    .attr("class", "pieChart");
+
+                  var arcs = svg.selectAll("g.arc")
+                        .data(pie(dataArray))
+                        .enter()
+                        .append("g")
+                        .attr("class", "arc")
+                        .attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
+
+                  //var color = d3.scale.category20();
+                   var color = d3.scale.ordinal().range(["#D59C0C", "#3C2B02", '#614705', '#FFD64A', '#7A5C0F', '#FFF869', '#A8801C', '#F0D74C', '#D9AE21', '#FFC400', '#D9A90A', '#BFB011', '#B29E47', '#FFD64A', '#C6B902', '#C68202', '#95773B', '#8F6908', '#4F3903', '#FFDA00']);
+                   
+                  arcs.append("path")
+                    .attr("fill", function(d, i) {
+                        return color(i);
+                    })
+                    .attr("d", arc);
+                
+            }else{
+                
+                var w = 200;
+                var h = 40;                 
+                var barPadding = 1;
+                
+                // scaling this y-axis using a linear scaler 
+                var yScale = d3.scale.linear()
+                              .domain([0, d3.max(dataArray, function(d) {
+                                 return d;
+                               })])
+                               .range([0,h]);
+                
+                var svg = d3.select(this)
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h)
+		.attr("class", "barChart");
+                
+                svg.selectAll("rect")
+                    .data(dataArray)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {
+                        return i * (w / dataArray.length);
+                    })
+                    .attr("y", function(d) {
+                        return h - yScale(d);
+                    })
+                    .attr("width", w / dataArray.length - barPadding)
+                    .attr("height", function(d) {
+                        return yScale(d);
+                    })
+                    .attr("fill", '#D59C0C');
+            }
+        });        
+        
+    });    
+
+    	
+        $('.cu-level2-btn').on('click', function(e){
+            e.preventDefault();
+            var projectId = getParameterByName('projid');
+            var projectName = getParameterByName('projna');
+            var analysisName = $('#new-analysis').val();
+            
+            createAnalysis(analysisName, projectId, projectName);
+        });        
+             
+});
+
+function createAnalysis(analysisName, projectId, projectName) {
+    $.ajax({
+        url: '../workflow/ajax/CreateWorkflow.jag',
+        type: 'post',
+        data: {
+            wfname: analysisName,
+            projid: projectId
+        },
+        success: function(res) {
+            var wfid = res.wfid;
+            window.location.href = '../explore/explore.jag?projid=' + projectId + '&projna=' + projectName + '&wfid=' + wfid + '&wfname=' + analysisName;
+            //console.log('suc: ' + res);
+        },
+        error: function(res) {
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0) {
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

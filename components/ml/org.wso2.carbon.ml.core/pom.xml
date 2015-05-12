@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>ml-components</artifactId>
+		<groupId>org.wso2.carbon</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>org.wso2.carbon.ml.core</artifactId>
+	<packaging>bundle</packaging>
+	<name>WSO2 Carbon - Machine Learner Core Component</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.ml.database</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi.services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.json.wso2</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.ml.commons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents.wso2</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
+		</dependency>
+
+		<!-- Spark Dependencies -->
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
+			<artifactId>spark-core_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
+			<artifactId>spark-sql_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
+			<artifactId>spark-mllib_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.spark</groupId>
+			<artifactId>spark-streaming_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.scalanlp</groupId>
+			<artifactId>breeze_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.jblas</groupId>
+			<artifactId>jblas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.spire-math</groupId>
+			<artifactId>spire_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.uncommons.maths</groupId>
+			<artifactId>uncommons-maths</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.json4s</groupId>
+			<artifactId>json4s-jackson_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.twitter</groupId>
+			<artifactId>chill_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.clearspring.analytics</groupId>
+			<artifactId>stream</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.netty.wso2</groupId>
+			<artifactId>netty-all</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.esotericsoftware.kryo</groupId>
+			<artifactId>kryo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
+			<artifactId>minlog</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.apache.mesos</groupId>
+			<artifactId>mesos</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.spark-project.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.github.rwl</groupId>
+			<artifactId>jtransforms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.github.fommil.netlib</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
+			<artifactId>arpack_combined</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.spark-project.akka</groupId>
+			<artifactId>akka-remote_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.spark-project.akka</groupId>
+			<artifactId>akka-actor_2.10</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Private-Package>
+						</Private-Package>
+						<Export-Package>
+							org.wso2.carbon.ml.core.*;version="${ml.exp.pkg.version}",
+						</Export-Package>
+						<Import-Package>
+							org.apache.commons.logging,
+							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
+							org.wso2.carbon.ml.dataset.*;version="${ml.imp.pkg.version}",
+							<!-- org.apache.http.*;version="[4.3.1, 4.5)", -->
+							*;resolution:=optional
+						</Import-Package>
+						<DynamicImport-Package>*</DynamicImport-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

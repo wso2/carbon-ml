@@ -1,0 +1,992 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML - Machine Learner</title>
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
+    <link rel="stylesheet" type="text/css" href="../../css/data.css">
+    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+
+    <script src="../../js/respond.min.js"></script>
+    
+    <script src="../../js/d3.v3.min.js"></script>
+    <script src="../../js/d3.js"></script>
+    <script src="../../js/nv.d3.js"></script>    
+    <script src="../../js/wso2.ml.graphs.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>    
+
+    <%
+        include("../../includes/tenantAware.jag");
+        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+    %> 
+
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+        <div class="wr-project">
+            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+        </div>
+
+		<div class="wr-action-btn-bar">
+			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+			<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <ul class="nav nav-pills nav-wizard">
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
+	    </ul>
+
+		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+            <!-- <h1 class="title">Explore Data</h1> -->
+
+            <div role="tabpanel" class="wr-tabbed-container">
+
+				<!-- Nav tabs/graphs -->
+				<div class="wr-tabs-grphs">
+					<ul class="nav nav-pills">
+						 <li role="presentation" class="active"><a href="#scatter-plot" id="scatter-plot-link" aria-controls="scatter-plot" role="tab" data-toggle="tab">Scatter Plot</a></li>
+						 <li role="presentation"><a href="#parallel-sets" id="parallel-sets-link" aria-controls="parallel-sets" role="tab" data-toggle="tab">Parallel Sets</a></li>
+						 <li role="presentation"><a href="#trellis-chart" id="trellis-chart-link" aria-controls="trellis-chart" role="tab" data-toggle="tab">Trellis Chart</a></li>
+						 <li role="presentation"><a href="#cluster-diagram" id="cluster-diagram-link" aria-controls="cluster-diagram" role="tab" data-toggle="tab">Cluster Diagram</a></li>
+					</ul>
+				</div>
+
+
+				<!-- Tab panes -->
+				<div class="tab-content">
+
+					<div role="tabpanel" class="tab-pane fade in active" id="scatter-plot">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-x"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-y"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Group By<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-group"></select>
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='scatterPlotTitle' class='graphtitle'></div>
+					        <div id='scatter'></div>
+
+					        <div id='histogramIndependent' class='graph'>
+					            <div id='histogramIndependentTitle' class='graphtitle'></div>
+					            <svg></svg>
+					            <div id='numFeatureIndependentSummary' class='graphSummary'></div>
+					        </div>
+
+					        <div id='histogramDependent' class='graph'>
+					            <div id='histogramDependentTitle' class='graphtitle'></div>
+					            <svg></svg>
+					            <div id='numFeatureDependentSummary' class='graphSummary'></div>
+					        </div>
+
+					    </div>
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="parallel-sets">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div>
+					                <label class="input-label-sm">Categorical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="parallel-sets-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+					        <!-- /filters -->   
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='parallelSets'>Loading chart...</div>
+
+					    </div>
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="trellis-chart">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="trellis-cat-features">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div>
+					                <label class="input-label-sm">Numerical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="trellis-num-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />			            
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='trellisChart'>Loading chart...</div>
+
+					    </div>
+
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="cluster-diagram">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">First Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-independent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Second Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-dependent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-num-clusters">
+										    <option value='1'>1</option>
+										    <option value='2'>2</option>
+										    <option value='3' selected>3</option>
+										    <option value='4'>4</option>
+										    <option value='5'>5</option>
+										    <option value='6'>6</option>
+										    <option value='7'>7</option>
+										    <option value='8'>8</option>
+										    <option value='9'>9</option>
+										    <option value='10'>10</option>
+										    <option value='11'>11</option>
+										    <option value='12'>12</option>
+										    <option value='13'>13</option>
+										    <option value='14'>14</option>
+										    <option value='15'>15</option>                                    
+					                    </select>
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />				            
+
+					        </div>
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div id='clusterDiagram'>Loading chart...</div>
+
+					    </div>
+
+					</div>
+
+				</div>
+
+            </div>
+		</div>
+		<!-- /content -->
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+<script src="../../js/d3.v3.min.js" charset="utf-8"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
+    
+<script src="../../js/d3.parsets.js"></script>
+<script src="../../js/figue.js"></script>
+
+<script type="text/javascript">
+
+var serverUrl = window.location.origin;
+var datasetId = getParameterByName('datasetId');
+var analysisId;
+var tenantId;
+var userName;
+
+var categoricalFeatureNames;
+var numericalFeatureNames;
+
+// redraw charts upon changes in selections
+$(document).on('change','select[id="scatter-x"], select[id="scatter-y"], select[id="scatter-group"]',function() {
+    drawPlotsAjax();
+});
+$(document).on('change','input[class="categoricalFeatureNames"]',function() {
+	$("#parallelSets").html("Loading chart...");
+	drawParallelSets();
+});
+$(document).on('change','input[class="numericalFeatureNames"], select[id="trellis-cat-features"]',function() {
+    $("#trellisChart").html("Loading chart...");
+    drawTrellisChart();
+});
+$(document).on('change','select[id="cluster-independent"], select[id="cluster-dependent"], select[id="cluster-num-clusters"]',function() {
+    $("#clusterDiagram").html("Loading chart...");
+    drawClusterDiagram();
+});
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    var projectName = getParameterByName('projectName');
+    var projectId;
+    $.ajax({
+        type: 'GET',
+        url: serverUrl+"/api/projects/"+projectName,
+        async : false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res){
+            projectId = res['id'];
+        },
+        error: function(res){
+            var crtValArea = btnArea.prev(".ctrl-validation-panel");
+            if (crtValArea.length == 0) {
+                btnArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
+    // set commonly used variables
+    var analysisName = getParameterByName('analysisName');
+    $.ajax({
+        type: 'GET',
+        url: serverUrl+"/api/projects/"+projectId+"/analyses/"+analysisName,        
+        async : false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(res){
+            analysisId = res['id'];
+            tenantId = res['tenantId'];
+            userName = res['userName'];            
+        },
+        error: function(res){
+            var crtValArea = btnArea.prev(".ctrl-validation-panel");
+            if (crtValArea.length == 0) {
+                btnArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
+    // get categorical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+            categoricalFeatureNames = res;
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });    
+    // get numerical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=NUMERICAL",
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+            numericalFeatureNames = res;
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
+    // put path in application navigator
+    $('#nav-project').text(projectName);
+    $('#nav-analysis').text(" \\ "+analysisName);    
+
+    // binding events to chart links
+    $('#scatter-plot-link').on('click', function(e){
+        e.preventDefault();
+        drawScatterPlotBase();
+    });
+    $('#parallel-sets-link').on('click', function(e){
+        e.preventDefault();
+        drawParallelSetsBase();
+    });
+    $('#trellis-chart-link').on('click', function(e){
+        e.preventDefault();
+        drawTrellisChartBase();
+    });
+    $('#cluster-diagram-link').on('click', function(e){
+        e.preventDefault();
+        drawClusterDiagramBase();
+    });
+
+    // draw scatter plot on page load
+    drawScatterPlotBase();
+
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+        window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+    });
+
+    $('#next-btn').on('click', function(e){
+        e.preventDefault();
+	    window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId;
+    });
+
+    // function that cancels an analysis
+    $('#cancel-analysis').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'DELETE',
+            url: serverUrl+"/api/analyses/"+analysisId,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success: function(res){
+                window.location.href = '../project/projects.jag';
+            },
+            error: function(res){
+                var crtValArea = btnArea.prev(".ctrl-validation-panel");
+                if (crtValArea.length == 0) {
+                    btnArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    });
+});
+
+function drawScatterPlotBase() { 
+
+if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
+ 
+    $('#scatter-x, #scatter-y, #scatter-group').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+        $('#scatter-x, #scatter-y').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
+    });
+    $('#scatter-y option')[1].selected = true;
+    $.each(categoricalFeatureNames,function(index, feature){
+        $('#scatter-group').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
+    });
+
+    drawPlotsAjax();
+
+} else {
+        $("#scatter").html("Minimum of two numerical features and one categorical feature required to draw a Scatter plot.");
+}
+}
+
+function drawPlotsAjax() {
+
+	//TODO: put regex as golbal var
+	var numFeatureIndependent = $("#scatter-x").val().replace(/^\s+|\s+$/g, '');
+    var numFeatureDependent = $("#scatter-y").val().replace(/^\s+|\s+$/g, '');
+    var catFeature = $("#scatter-group").val().replace(/^\s+|\s+$/g, '');
+
+    //TODO: remove versionsetId
+    // get scatter plot data
+    var jsonData = '{"tenantId" : "'+tenantId+'","user" : "'+userName+'","versionsetId" : 1,"xAxisFeature" : "'+numFeatureIndependent+'","yAxisFeature" : "'+numFeatureDependent+'","groupByFeature" : "'+catFeature+'"}';
+    $.ajax({
+        type: "POST",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl+"/api/datasets/"+datasetId+"/scatter",
+		data: jsonData,
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res) {
+
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var scatterData = [];
+            for (var i = 0; i < res.length; i++) {
+                
+                var parentObject = res[i];
+                var parentObjectKey = Object.keys(parentObject)[0];
+                var childObject = parentObject[parentObjectKey];
+                var childObjectKey = Object.keys(childObject)[0];
+                var childObjectValue = childObject[childObjectKey];
+
+                var dataRow = [];
+                dataRow[0] = parseFloat(parentObjectKey);
+                dataRow[1] = parseFloat(childObjectKey);
+                dataRow[2] = childObjectValue;
+                scatterData.push(dataRow);
+            }
+
+        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent);
+		   	$("#scatterPlotTitle").html(numFeatureIndependent + " vs. " + numFeatureDependent);            
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
+    // get summery data for independent variable
+	$.ajax({
+        type: "GET",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl+"/api/analyses/"+analysisId+"/stats?feature="+numFeatureIndependent,
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+        	var jsonObj = res;
+		   	var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp;  Median: " + jsonObj[0].median + "&emsp;&emsp;&emsp; Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   	$("#histogramIndependentTitle").html(numFeatureIndependent);
+		   	$("#numFeatureIndependentSummary").html(summary);
+		   	// transform dataset
+		   	drawHistogram(jsonObj, "#histogramIndependent");
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+
+    // get summery data for dependent variable
+    $.ajax({
+        type: "GET",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl+"/api/analyses/"+analysisId+"/stats?feature="+numFeatureDependent,
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+        	var jsonObj = res;
+		   	var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp; Median: " + jsonObj[0].median + "&emsp;&emsp;&emsp; Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   	$("#histogramDependentTitle").html(numFeatureDependent);
+		   	$("#numFeatureDependentSummary").html(summary);
+		   	// transform dataset
+		   	drawHistogram(jsonObj, "#histogramDependent");
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+}
+
+function drawHistogram(data, divID) {
+    $(divID + ' svg').empty();
+
+    nv.addGraph(function () {
+
+        var chart = nv.models.linePlusBarChart()
+                .margin({top: 30, right: 60, bottom: 50, left: 70})
+                .x(function (d, i) {
+                       return i
+                   })
+                .y(function (d) {
+                       return d[1]
+                   })
+                .color(["#C99614"])
+            ;
+
+        chart.xAxis
+            .showMaxMin(false)
+            .tickFormat(function (d) {
+                            return data[0].values[d][0];
+                        });
+
+        chart.y1Axis
+            .tickFormat(d3.format(',f'));
+
+        chart.y2Axis
+            .tickFormat(function (d) {
+                            return '$' + d3.format(',f')(d)
+                        });
+
+        chart.bars.forceY([0]);
+
+        d3.select(divID + ' svg')
+            .datum(data)
+            .transition().duration(500)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function drawParallelSetsBase() {    
+
+    $('#parallel-sets-features').empty();
+    $.each(categoricalFeatureNames,function(index, feature){
+        if (index <5){
+            $('#parallel-sets-features').append('<label class="checkbox"><input type="checkbox" class="categoricalFeatureNames" id="inlineCheckbox1" value="'+categoricalFeatureNames[index]+'" checked>'+categoricalFeatureNames[index]+'</label>');
+        }
+        else {
+            $('#parallel-sets-features').append('<label class="checkbox"><input type="checkbox" class="categoricalFeatureNames" id="inlineCheckbox1" value="'+categoricalFeatureNames[index]+'">'+categoricalFeatureNames[index]+'</label>');
+        }        
+    });
+
+    drawParallelSets();
+}
+
+function drawParallelSets() {
+
+    // get categorical feature list from checkbox selection
+    var catFeaturesDropdownValues = [];
+    $('.categoricalFeatureNames:checked').each(function() {
+        catFeaturesDropdownValues.push($(this).val().replace(/^\s+|\s+$/g, ''));
+    });
+
+    var noOfCategoricalFeatures = catFeaturesDropdownValues.length;
+
+    if (noOfCategoricalFeatures > 1) {
+
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/datasets/"+datasetId+"/charts?features="+catFeaturesDropdownValues.toString(),
+            async: false,
+            beforeSend : function(xhr) {
+                xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+            },
+            success : function(res){
+
+            	var categoricalFeatureArray = [catFeaturesDropdownValues.length];
+                for (i = 0; i < noOfCategoricalFeatures; i++) {
+                    categoricalFeatureArray[i] = catFeaturesDropdownValues[i];
+                }
+                // clear the div contains parallel sets chart
+                $("#parallelSets").html("");
+                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(800).height(600);
+                var vis = d3.select("#parallelSets").append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
+
+                vis.datum(res).call(chart);
+            },
+            error : function(res){
+                //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+                if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                    crtValArea.before(buildNortifications(res.responseJSON.status));
+                }
+            }
+        });
+    } else {
+        $("#parallelSets").html("Minimum of two categorical features required for Parallel Sets.");
+    }
+}
+
+function drawTrellisChartBase() {
+
+    $('#trellis-cat-features').empty();
+    $.each(categoricalFeatureNames,function(index, feature){
+        $('#trellis-cat-features').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
+    });
+
+    $('#trellis-num-features').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+    	// first 4 categorical features are plotted by default
+        if (index < 4){
+            $('#trellis-num-features').append('<label class="checkbox"><input type="checkbox" class="numericalFeatureNames" value="'+numericalFeatureNames[index]+'" checked>'+numericalFeatureNames[index]+'</label>');
+        }
+        else {
+            $('#trellis-num-features').append('<label class="checkbox"><input type="checkbox" class="numericalFeatureNames" value="'+numericalFeatureNames[index]+'">'+numericalFeatureNames[index]+'</label>');
+        }        
+    });    
+
+    drawTrellisChart();
+}
+
+function drawTrellisChart() {
+    
+    var featureNames = [];
+    // get selected categorical feature
+    var categoricalHeader = $("#trellis-cat-features").val().replace(/^\s+|\s+$/g, '');
+    featureNames[0] = categoricalHeader;
+    // get numerical feature list from checkbox selection
+    $('.numericalFeatureNames:checked').each(function() {
+        featureNames.push($(this).val().replace(/^\s+|\s+$/g, ''));
+    });
+
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/datasets/"+datasetId+"/charts?features="+featureNames.toString(),
+        async: false,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success : function(res){
+        	/* D3.js Trellis Chart code */
+            var width = 960,
+                size = 150,
+                padding = 19.5;
+            var x = d3.scale.linear().range([padding / 2, size - padding / 2]);
+            var y = d3.scale.linear().range([size - padding / 2, padding / 2]);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+            var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+            var color = d3.scale.category10();
+            
+            var data = res;
+
+            var domainByTrait = {},
+                traits = d3.keys(data[0]).filter(
+                    function(d) {
+                        return d !== categoricalHeader;
+                    }),
+                n = traits.length;
+
+            traits.forEach(function(trait) {
+                domainByTrait[trait] = d3.extent(data, function(d) {
+                    return d[trait];
+                });
+            });
+
+            xAxis.tickSize(size * n);
+            yAxis.tickSize(-size * n);
+
+            var brush = d3.svg.brush().x(x).y(y).on("brushstart", brushstart)
+                .on("brush", brushmove).on("brushend", brushend);
+
+            $("#trellisChart").html("");
+            var svg = d3.select("#trellisChart").append("svg").attr("width",
+                    size * n + padding).attr("height", size * n + padding)
+                .append("g").attr("transform",
+                    "translate(" + padding + "," + padding / 2 + ")");
+
+            svg.selectAll(".x.axis").data(traits).enter().append("g").attr(
+                "class", "x axis").attr("transform", function(d, i) {
+                return "translate(" + (n - i - 1) * size + ",0)";
+            }).each(function(d) {
+                x.domain(domainByTrait[d]);
+                d3.select(this).call(xAxis);
+            });
+
+            svg.selectAll(".y.axis").data(traits).enter().append("g").attr(
+                "class", "y axis").attr("transform", function(d, i) {
+                return "translate(0," + i * size + ")";
+            }).each(function(d) {
+                y.domain(domainByTrait[d]);
+                d3.select(this).call(yAxis);
+            });
+
+            var cell = svg.selectAll(".cell").data(cross(traits, traits))
+                .enter().append("g").attr("class", "cell").attr(
+                    "transform",
+                    function(d) {
+                        return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")";
+                    }).each(plot);
+
+            // Titles for the diagonal
+            cell.filter(function(d) {
+                return d.i === d.j;
+            }).append("text").attr("x", padding).attr("y", padding).attr("dy",
+                ".71em").text(function(d) {
+                return d.x;
+            });
+
+            cell.call(brush);
+
+            function plot(p) {
+                var cell = d3.select(this);
+
+                x.domain(domainByTrait[p.x]);
+                y.domain(domainByTrait[p.y]);
+
+                cell.append("rect").attr("class", "frame").attr("x",
+                    padding / 2).attr("y", padding / 2).attr("width",
+                    size - padding).attr("height", size - padding);
+
+                cell.selectAll("circle").data(data).enter().append("circle")
+                    .attr("cx", function(d) {
+                        return x(d[p.x]);
+                    }).attr("cy", function(d) {
+                        return y(d[p.y]);
+                    }).attr("r", 0.7).style("fill", function(d) {
+                        // replace current header of categorical feature header with common header
+                        // can be accessed by color
+                        var dString = JSON.stringify(d);
+                        dString = dString.replace(categoricalHeader, "categoricalFeature");
+                        var dNew = JSON.parse(dString);
+                        return color(dNew.categoricalFeature);
+                    });
+            }
+            var brushCell;
+
+            // Clear the previously-active brush, if any.
+            function brushstart(p) {
+                if (brushCell !== this) {
+                    d3.select(brushCell).call(brush.clear());
+                    x.domain(domainByTrait[p.x]);
+                    y.domain(domainByTrait[p.y]);
+                    brushCell = this;
+                }
+            }
+
+            // Highlight the selected circles.
+            function brushmove(p) {
+                var e = brush.extent();
+                svg.selectAll("circle").classed(
+                    "hidden",
+                    function(d) {
+                        return e[0][0] > d[p.x] || d[p.x] > e[1][0] || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+                    });
+            }
+
+            // If the brush is empty, select all circles.
+            function brushend() {
+                if (brush.empty())
+                    svg.selectAll(".hidden").classed("hidden", false);
+            }
+
+            function cross(a, b) {
+                var c = [],
+                    n = a.length,
+                    m = b.length,
+                    i, j;
+                for (i = -1; ++i < n;)
+                    for (j = -1; ++j < m;)
+                        c.push({
+                            x: a[i],
+                            i: i,
+                            y: b[j],
+                            j: j
+                        });
+                return c;
+            }
+
+            d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");	        
+            // array for parsets dimensions with categorical feature names
+        },
+        error : function(res){
+            //$('#workflow-name-error').text("* "+res.responseJSON.message);
+
+            if (crtValArea.prev("ctrl-validation-panel").length == 0){
+                crtValArea.before(buildNortifications(res.responseJSON.status));
+            }
+        }
+    });
+}
+
+function drawClusterDiagramBase() {
+
+    $('#cluster-independent, #cluster-dependent').empty();
+    $.each(numericalFeatureNames,function(index, feature){
+        $('#cluster-independent, #cluster-dependent').append($('<option>', { 
+            value: feature,
+            text : feature
+        }));
+    });
+    // make second option selected by default
+    $('#cluster-dependent option')[1].selected = true;
+
+    drawClusterDiagram();
+}
+
+function drawClusterDiagram() {
+
+	// get categorical feature list from checkbox selection
+    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+    var noOfClusters = $("#cluster-num-clusters").val().replace(/^\s+|\s+$/g, '');
+    
+    // make ajax call
+    $.ajax({        
+        type: "GET",
+        url: serverUrl+"/api/datasets/"+datasetId+"/cluster?features="+numericalFeatureIndependent+","+numericalFeatureDependent+"&noOfClusters="+noOfClusters,
+        beforeSend : function(xhr) {
+            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+        },
+        success: function(response) {
+            var dataArray = response;
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var clusterData = [];
+            for (var i = 0; i < dataArray.length; i++) {                
+                var dataRow = [];
+                dataRow[0] = parseFloat(dataArray[i]['features']['0']);
+                dataRow[1] = parseFloat(dataArray[i]['features']['1']);
+                dataRow[2] = dataArray[i]['cluster'];
+                clusterData.push(dataRow);
+            }
+
+            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent);
+        },
+        error: function(response) {
+            var message = "An error occured while fetching sample points from dataset.";
+            console.log(message);
+        }
+    });
+}
+
+// drawing a simple scatter graph
+function drawScatterPlot(data, cssClass, xLabel, yLabel) {
+    $(cssClass).empty();
+    var scatter = new ScatterPlot(data);
+
+    scatter.setPlotingAreaWidth(800);
+    scatter.setPlotingAreaHeight(500);
+    scatter.setMarkerSize("2");
+    scatter.setXAxisText(xLabel);
+    scatter.setYAxisText(yLabel);
+    scatter.plot(d3.select(cssClass));
+};
+
+</script>
+
+</body>
+</html>

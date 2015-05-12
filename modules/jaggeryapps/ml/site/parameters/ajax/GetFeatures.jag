@@ -1,0 +1,31 @@
+<%
+    var log = new Log();
+    var carbon = require('carbon');
+
+    var algoCat = request.getParameter('algocat');   
+    var workflowId = request.getParameter('wfid');
+    var statusCode = 200;
+    var output = '';
+
+    try {
+    	var dsSrv = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    	var features = dsSrv.getFeatureNames(workflowId, algoCat);
+        
+        var featuresOfThisCat = [];
+    	for (var i=0; i<features.size(); i++) {
+    		featuresOfThisCat.push(features.get(i));
+    	}
+    	output = { features: featuresOfThisCat };
+
+    } catch (e) {      
+        statusCode = 500;
+        output = 'An error has occurred while features associated with workflow: ' + workflowId + ' error message:' +
+                  e.message;
+
+    } finally {
+        response.contentType = 'application/json';
+        response.content = output;
+        response.status = statusCode;
+    }
+
+%>

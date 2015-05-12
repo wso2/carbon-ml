@@ -1,0 +1,35 @@
+<%
+    var carbon = require('carbon');
+    var mlDatasetService = carbon.server.osgiService('org.wso2.carbon.ml.dataset.DatasetService');
+    var wfid = request.getParameter('wfid');
+
+    var statusCode = 200;
+    var statusMsg = '';
+
+    try{        
+        if (wfid){
+            var imputeOption = request.getParameter("IMPUTE_OPTION");
+            var featureName = request.getParameter("FEATURE_NAME");
+            mlDatasetService.updateImputeOption(featureName, wfid, imputeOption);
+
+            statusMsg = 'Impute option of feature: ' + featureName + ' is successfully updated';
+        
+        } else {
+            statusMsg = 'Workflow id is null or empty';
+            statusCode = 400;
+        }
+
+    } catch(e) {
+
+        var msg = "An error occured while updating impute option of feature : " + featureName + " in workflow id: " + wfid;
+        log.error(msg);
+
+        statusCode = 500;
+        statusMsg = msg;
+    
+    } finally {
+        response.contentType = 'application/json';
+        response.content = { message : statusMsg };
+        response.status = statusCode;
+    }
+%>
