@@ -38,7 +38,6 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
@@ -63,6 +62,7 @@ import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+
 import scala.Tuple2;
 
 /**
@@ -247,8 +247,8 @@ public class MLModelHandler {
             Thread.currentThread().setContextClassLoader(tccl);
         }
     }
-
-    public List<?> predict(int tenantId, String userName, long modelId, String[] data) throws MLModelHandlerException,
+    
+    public List<?> predict(int tenantId, String userName, long modelId, List<double[]> data) throws MLModelHandlerException,
             MLModelBuilderException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
@@ -257,42 +257,23 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
-        /**
-         * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
-         * needs to be switched temporarily.
-         */
-        // assign current thread context class loader to a variable
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try {
-            // class loader is switched to JavaSparkContext.class's class loader
-            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+        MLModel builtModel = retrieveModel(modelId);
+        // predict
+        Predictor predictor = new Predictor(modelId, builtModel, data);
+        List<?> predictions = predictor.predict();
 
-            MLModelConfigurationContext context = new MLModelConfigurationContext();
-            context.setModelId(modelId);
-            context.setDataToBePredicted(data);
+        log.info(String.format("Prediction from model [id] %s was successful.", modelId));
+        return predictions;
+    }
 
-            JavaSparkContext sparkContext = null;
-            sparkConf.setAppName(String.valueOf(modelId));
-            // create a new java spark context
-            sparkContext = new JavaSparkContext(sparkConf);
-            context.setSparkContext(sparkContext);
-            
-            MLModel builtModel = retrieveModel(modelId);
+    public List<?> predict(int tenantId, String userName, long modelId, String[] data) throws MLModelHandlerException,
+            MLModelBuilderException {
 
-            // predict
-            Predictor predictor = new Predictor(modelId, builtModel, context);
-            List<?> predictions = predictor.predict();
+        List<double[]> dataToBePredicted = new ArrayList<double[]>();
+        dataToBePredicted.add(MLUtils.toDoubleArray(data));
+        //predict
+        return predict(tenantId, userName, modelId, dataToBePredicted);
 
-            log.info(String.format("Prediction from model [id] %s was successful.", modelId));
-            return predictions;
-
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while predicting: " + e.getMessage(), e);
-        } finally {
-            // switch class loader back to thread context class loader
-            Thread.currentThread().setContextClassLoader(tccl);
-        }
     }
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {

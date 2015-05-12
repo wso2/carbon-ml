@@ -22,158 +22,87 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.classification.NaiveBayesModel;
-import org.apache.spark.mllib.classification.SVMModel;
+import org.apache.spark.mllib.classification.ClassificationModel;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.linalg.DenseVector;
 import org.apache.spark.mllib.linalg.Vector;
-import org.apache.spark.mllib.regression.LassoModel;
-import org.apache.spark.mllib.regression.LinearRegressionModel;
-import org.apache.spark.mllib.regression.RidgeRegressionModel;
-import org.apache.spark.mllib.tree.model.DecisionTreeModel;
-import org.apache.spark.rdd.RDD;
+import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
-import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
- * Predict using a input data row.
+ * Predict using input data rows.
  */
 public class Predictor {
 
     private static final Log log = LogFactory.getLog(Predictor.class);
     private long id;
-    private MLModelConfigurationContext ctxt;
     private MLModel model;
+    private List<Vector> dataToBePredicted;
 
-    public Predictor(long modelId, MLModel mlModel, MLModelConfigurationContext context) {
+    public Predictor(long modelId, MLModel mlModel, List<double[]> data) {
         id = modelId;
-        ctxt = context;
         model = mlModel;
+        dataToBePredicted = getVectors(data);
     }
 
-    public List<?> predict() {
-        try {
-            // class loader is switched to JavaSparkContext.class's class loader
-            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            String algorithmType = model.getAlgorithmClass();
-            if (MLConstants.CLASSIFICATION.equals(algorithmType)
-                    || MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
-                
-                SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
-                
-                JavaSparkContext context = ctxt.getSparkContext();
-                List<double[]> dataList = new ArrayList<double[]>();
-                dataList.add(MLUtils.toDoubleArray(ctxt.getDataToBePredicted()));
-                context.parallelize(dataList);
-                JavaRDD<double[]> dataRDD = context.parallelize(dataList);
-                JavaRDD<Vector> dataVector = dataRDD.map(new DoubleArrayToVector());
-                
-                switch (supervisedAlgorithm) {
-                case LOGISTIC_REGRESSION:
-                    LogisticRegressionModel logisticModel = (LogisticRegressionModel) model.getModel();                    
-                    JavaRDD<Double> predictedData = logisticModel.predict(dataVector);
-                    List<Double> predictedDataList = predictedData.collect();
-                    for (Double double1 : predictedDataList) {
-                        log.info("Prediction: " + double1);
-                    }
-                    return predictedDataList;
-                case DECISION_TREE:
-                    DecisionTreeModel decisionTreeModel = (DecisionTreeModel) model.getModel();
-                    RDD<Vector> dataVectorRDD = dataVector.rdd();
-                    RDD<Object> decisionTreePredictedData = decisionTreeModel.predict(dataVectorRDD);
+    public List<?> predict() throws MLModelBuilderException {
+        String algorithmType = model.getAlgorithmClass();
 
-                    List<Object> decisionTreePredictedDataList = decisionTreePredictedData.toJavaRDD().collect();
-                    for (Double decisionTreeDouble : MLUtils.toDoubleList(decisionTreePredictedDataList)) {
-                        log.info("Prediction: " + decisionTreeDouble);
-                    }
-                    return decisionTreePredictedDataList;
-                case SVM:
-                    SVMModel svmModel = (SVMModel) model.getModel();
-                    JavaRDD<Double> svmPredictedData = svmModel.predict(dataVector);
+        if (MLConstants.CLASSIFICATION.equals(algorithmType)) {
+            ClassificationModel classificationModel = (ClassificationModel) model.getModel();
+            List<Double> predictions = new ArrayList<Double>();
+            for (Vector vector : dataToBePredicted) {
 
-                    List<Double> svmPredictedDataList = svmPredictedData.collect();
-                    for (Double svmDouble : svmPredictedDataList) {
-                        log.info("Prediction: " + svmDouble);
-                    }
-                    return svmPredictedDataList;
-                case NAIVE_BAYES:
-                    NaiveBayesModel naiveBayesModel = (NaiveBayesModel) model.getModel();
-                    JavaRDD<Double> naiveBayesPredictedData = naiveBayesModel.predict(dataVector);
-
-                    List<Double> naiveBayesPredictedDataList = naiveBayesPredictedData.collect();
-                    for (Double naiveBayesDouble : naiveBayesPredictedDataList) {
-                        log.info("Prediction: " + naiveBayesDouble);
-                    }
-                    return naiveBayesPredictedDataList;
-                case LINEAR_REGRESSION:
-                    LinearRegressionModel lrModel = (LinearRegressionModel)model.getModel();
-                    JavaRDD<Double> testingData = lrModel.predict(dataVector);
-                    List<Double> predictions = testingData.collect();
-                    for (Double prediction : predictions) {
-                        log.info("Prediction: " + prediction);
-                    }
-                    return predictions;                    
-                case RIDGE_REGRESSION:
-                    RidgeRegressionModel ridgeModel = (RidgeRegressionModel)model.getModel();
-                    JavaRDD<Double> ridgeTestingData = ridgeModel.predict(dataVector);
-                    List<Double> ridgePredictions = ridgeTestingData.collect();
-                    for (Double prediction : ridgePredictions) {
-                        log.info("Prediction: " + prediction);
-                    }
-                    return ridgePredictions;                    
-                case LASSO_REGRESSION:
-                    LassoModel lassoModel = (LassoModel)model.getModel();
-                    JavaRDD<Double> lassoTestingData = lassoModel.predict(dataVector);
-                    List<Double> lassoPredictions = lassoTestingData.collect();
-                    for (Double prediction : lassoPredictions) {
-                        log.info("Prediction: " + prediction);
-                    }
-                    return lassoPredictions; 
-                default:
-                    throw new AlgorithmNameException("Incorrect algorithm name");
-                }
-                
-            } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
-                UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
-
-                JavaSparkContext context = ctxt.getSparkContext();
-                List<double[]> dataList = new ArrayList<double[]>();
-                dataList.add(MLUtils.toDoubleArray(ctxt.getDataToBePredicted()));
-                context.parallelize(dataList);
-                JavaRDD<double[]> dataRDD = context.parallelize(dataList);
-                JavaRDD<Vector> dataVector = dataRDD.map(new DoubleArrayToVector());
-
-                switch (unsupervised_algorithm) {
-                case K_MEANS:
-                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
-                    JavaRDD<Integer> kMeansPredictedData = kMeansModel.predict(dataVector);
-                    List<Integer> kMeansPredictedDataList = kMeansPredictedData.collect();
-                    for (Integer kMeansInteger : kMeansPredictedDataList) {
-                        log.info("Prediction: " + kMeansInteger);
-                    }
-                    return kMeansPredictedDataList;
-                default:
-                    throw new AlgorithmNameException("Incorrect algorithm name: "+model.getAlgorithmName()+" for model id: "+id);
-                }
-            } else {
-                throw new MLModelBuilderException(String.format(
-                        "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
+                double predictedData = classificationModel.predict(vector);
+                predictions.add(predictedData);
+                log.info("Prediction: " + predictedData);
             }
+            return predictions;
 
-        } catch (Exception e) {
-            log.error(String.format("Failed to predict from the model [id] %s ", id), e);
+        } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
+            GeneralizedLinearModel generalizedLinearModel = (GeneralizedLinearModel) model.getModel();
+            List<Double> predictions = new ArrayList<Double>();
+            for (Vector vector : dataToBePredicted) {
+
+                double predictedData = generalizedLinearModel.predict(vector);
+                predictions.add(predictedData);
+                log.info("Prediction: " + predictedData);
+            }
+            return predictions;
+        } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
+            UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
+            switch (unsupervised_algorithm) {
+            case K_MEANS:
+                List<Integer> predictions = new ArrayList<Integer>();
+                KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                for (Vector vector : dataToBePredicted) {
+
+                    int predictedData = kMeansModel.predict(vector);
+                    predictions.add(predictedData);
+                    log.info("Prediction: " + predictedData);
+                }
+                return predictions;
+            default:
+                throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
+                        + " for model id: " + id);
+            }
+        } else {
+            throw new MLModelBuilderException(String.format(
+                    "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
         }
-        return new ArrayList<String>();
+    }
+
+    private List<Vector> getVectors(List<double[]> data) {
+        List<Vector> vectors = new ArrayList<Vector>();
+        for (double[] ds : data) {
+            Vector vector = new DenseVector(ds);
+            vectors.add(vector);
+        }
+        return vectors;
     }
 
 }
