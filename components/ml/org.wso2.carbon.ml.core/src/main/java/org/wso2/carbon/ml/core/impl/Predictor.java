@@ -27,7 +27,9 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.DenseVector;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
+import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
@@ -53,13 +55,25 @@ public class Predictor {
         String algorithmType = model.getAlgorithmClass();
 
         if (MLConstants.CLASSIFICATION.equals(algorithmType)) {
-            ClassificationModel classificationModel = (ClassificationModel) model.getModel();
+            SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
-            for (Vector vector : dataToBePredicted) {
+            switch (supervised_algorithm) {
+            case DECISION_TREE:
+                DecisionTreeModel decisionTreeModel = (DecisionTreeModel) model.getModel();
+                for (Vector vector : dataToBePredicted) {
 
-                double predictedData = classificationModel.predict(vector);
-                predictions.add(predictedData);
-                log.info("Prediction: " + predictedData);
+                    double predictedData = decisionTreeModel.predict(vector);
+                    predictions.add(predictedData);
+                    log.info("Prediction: " + predictedData);
+                }
+            default:
+                ClassificationModel classificationModel = (ClassificationModel) model.getModel();
+                for (Vector vector : dataToBePredicted) {
+
+                    double predictedData = classificationModel.predict(vector);
+                    predictions.add(predictedData);
+                    log.info("Prediction: " + predictedData);
+                }
             }
             return predictions;
 
