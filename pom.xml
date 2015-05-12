@@ -22,11 +22,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.wso2.ml</groupId>
-	<artifactId>ml-parent</artifactId>
+	<groupId>org.wso2.carbon.ml</groupId>
+	<artifactId>carbon-ml</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>WSO2 Machine Learner - Aggregator Module</name>
+	<name>WSO2 Carbon - Machine Learner Aggregator POM</name>
 	<url>http://wso2.com/products/machine-learner</url>
 	<description>WSO2 Machine Learner (WSO2 ML)</description>
 
@@ -37,9 +37,9 @@
 	</parent>
 
 	<scm>
-		<url>https://github.com/wso2/product-ml.git</url>
-		<developerConnection>scm:git:https://github.com/wso2/product-ml.git</developerConnection>
-		<connection>scm:git:https://github.com/wso2/product-ml.git</connection>
+		<url>https://github.com/wso2/carbon-ml.git</url>
+		<developerConnection>scm:git:https://github.com/wso2/carbon-ml.git</developerConnection>
+		<connection>scm:git:https://github.com/wso2/carbon-ml.git</connection>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -51,11 +51,8 @@
 	</licenses>
 
 	<modules>
-		<module>modules/components</module>
-		<module>modules/features</module>
-		<module>modules/p2-profile</module>
-		<module>modules/distribution</module>
-		<module>modules/integration</module>
+		<module>components/ml</module>
+		<module>features/ml</module>
 	</modules>
 
 	<repositories>
@@ -216,16 +213,6 @@
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml.apis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wso2.ml</groupId>
-				<artifactId>ui-pages</artifactId>
-				<version>${ml.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wso2.ml</groupId>
-				<artifactId>test-integration-utils</artifactId>
-				<version>${ml.version}</version>
 			</dependency>
 
 			<!-- End of dependencies for test framework -->
@@ -628,42 +615,37 @@
 
 			<!-- Dependencies on WSO2 Carbon ML components -->
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.core</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.model</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.dataset</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.database</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.decomposition</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
-				<artifactId>org.wso2.carbon.ml.project.mgt</artifactId>
-				<version>${ml.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.commons</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.wso2.carbon</groupId>
+				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.rest.api</artifactId>
 				<version>${ml.version}</version>
 				<type>war</type>

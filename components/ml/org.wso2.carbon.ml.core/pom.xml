@@ -21,8 +21,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>ml-components</artifactId>
-		<groupId>org.wso2.carbon</groupId>
+		<artifactId>ml</artifactId>
+		<groupId>org.wso2.carbon.ml</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -32,7 +32,7 @@
 	<name>WSO2 Carbon - Machine Learner Core Component</name>
 	<dependencies>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
+			<groupId>org.wso2.carbon.ml</groupId>
 			<artifactId>org.wso2.carbon.ml.database</artifactId>
 		</dependency>
 		<dependency>
@@ -68,7 +68,7 @@
 			<artifactId>json</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
+			<groupId>org.wso2.carbon.ml</groupId>
 			<artifactId>org.wso2.carbon.ml.commons</artifactId>
 		</dependency>
 		<dependency>
@@ -225,7 +225,7 @@
 						<Import-Package>
 							org.apache.commons.logging,
 							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
-							org.wso2.carbon.ml.dataset.*;version="${ml.imp.pkg.version}",
+							org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
 							<!-- org.apache.http.*;version="[4.3.1, 4.5)", -->
 							*;resolution:=optional
 						</Import-Package>
