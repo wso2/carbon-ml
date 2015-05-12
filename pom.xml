@@ -17,15 +17,13 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.wso2.carbon.ml</groupId>
 	<artifactId>carbon-ml</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>WSO2 Carbon - Machine Learner Aggregator POM</name>
 	<url>http://wso2.com/products/machine-learner</url>
 	<description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -40,7 +38,7 @@
 		<url>https://github.com/wso2/carbon-ml.git</url>
 		<developerConnection>scm:git:https://github.com/wso2/carbon-ml.git</developerConnection>
 		<connection>scm:git:https://github.com/wso2/carbon-ml.git</connection>
-		<tag>HEAD</tag>
+		<tag>v1.0.0</tag>
 	</scm>
 
 	<licenses>
@@ -818,7 +816,7 @@
 		<project.scm.id>my-scm-server</project.scm.id>
 
 		<!-- Product ML version -->
-		<ml.version>1.0.0-SNAPSHOT</ml.version>
+		<ml.version>1.0.0</ml.version>
 		<ml.exp.pkg.version>1.0.0</ml.exp.pkg.version>
 		<ml.imp.pkg.version>[1.0.0, 1.1.0)</ml.imp.pkg.version>
 
