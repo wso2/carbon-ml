@@ -66,6 +66,7 @@ public class Predictor {
                     predictions.add(predictedData);
                     log.info("Prediction: " + predictedData);
                 }
+                return predictions;
             default:
                 ClassificationModel classificationModel = (ClassificationModel) model.getModel();
                 for (Vector vector : dataToBePredicted) {
@@ -74,8 +75,8 @@ public class Predictor {
                     predictions.add(predictedData);
                     log.info("Prediction: " + predictedData);
                 }
+                return predictions;
             }
-            return predictions;
 
         } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
             GeneralizedLinearModel generalizedLinearModel = (GeneralizedLinearModel) model.getModel();
