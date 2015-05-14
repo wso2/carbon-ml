@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
@@ -35,6 +38,8 @@ public class MLModelConfigurationContext {
     private String headerRow;
     private String columnSeparator;
     private String[] dataToBePredicted;
+    private Map<String,String> summaryStatsOfFeatures;
+    private List<Map<String, Integer>> encodings;
     
     public long getModelId() {
         return modelId;
@@ -83,6 +88,18 @@ public class MLModelConfigurationContext {
     }
     public void setModel(MLModelNew model) {
         this.model = model;
+    }
+    public Map<String,String> getSummaryStatsOfFeatures() {
+        return summaryStatsOfFeatures;
+    }
+    public void setSummaryStatsOfFeatures(Map<String,String> summaryStatsOfFeatures) {
+        this.summaryStatsOfFeatures = summaryStatsOfFeatures;
+    }
+    public List<Map<String, Integer>> getEncodings() {
+        return encodings;
+    }
+    public void setEncodings(List<Map<String, Integer>> encodings) {
+        this.encodings = encodings;
     }
     
     

@@ -1405,6 +1405,41 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
         }
     }
+    
+    /**
+     * Retrieve and returns the Summary statistics for a given feature of a given data-set version, from the database.
+     *
+     * @param datasetVersionId Unique identifier of the data-set version
+     * @return Map; key - feature name : value - stats
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public Map<String,String> getSummaryStats(long datasetVersionId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getSummaryStatement = null;
+        ResultSet result = null;
+        Map<String,String> summaryStatsOfFeatures = new HashMap<String, String>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS_OF_VERSION);
+            getSummaryStatement.setLong(1, datasetVersionId);
+            result = getSummaryStatement.executeQuery();
+            while (result.next()) {
+                summaryStatsOfFeatures.put(result.getString(1), result.getString(2));
+            }
+            
+            return summaryStatsOfFeatures;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving summary "
+                    + "statistics for the dataset version: " + datasetVersionId
+                    + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
+        }
+    }
 
     /**
      * Returns the number of features of a given data-set version

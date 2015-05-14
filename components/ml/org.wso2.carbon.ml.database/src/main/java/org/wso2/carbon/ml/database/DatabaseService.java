@@ -697,4 +697,6 @@ public interface DatabaseService {
     String getFeatureNamesInOrderUsingDatasetVersion(long datasetVersionId, String columnSeparator)
             throws DatabaseHandlerException;
 
+    Map<String, String> getSummaryStats(long datasetVersionId) throws DatabaseHandlerException;
+
 }

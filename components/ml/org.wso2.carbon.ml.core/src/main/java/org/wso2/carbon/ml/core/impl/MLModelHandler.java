@@ -215,12 +215,14 @@ public class MLModelHandler {
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
+            Map<String,String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
 
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
             context.setColumnSeparator(columnSeparator);
             context.setFacts(facts);
             context.setModel(model);
+            context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
 
             JavaSparkContext sparkContext = null;
             sparkConf.setAppName(String.valueOf(modelId));
@@ -248,7 +250,7 @@ public class MLModelHandler {
         }
     }
     
-    public List<?> predict(int tenantId, String userName, long modelId, List<double[]> data) throws MLModelHandlerException,
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data) throws MLModelHandlerException,
             MLModelBuilderException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
@@ -269,8 +271,8 @@ public class MLModelHandler {
     public List<?> predict(int tenantId, String userName, long modelId, String[] data) throws MLModelHandlerException,
             MLModelBuilderException {
 
-        List<double[]> dataToBePredicted = new ArrayList<double[]>();
-        dataToBePredicted.add(MLUtils.toDoubleArray(data));
+        List<String[]> dataToBePredicted = new ArrayList<String[]>();
+        dataToBePredicted.add(data);
         //predict
         return predict(tenantId, userName, modelId, dataToBePredicted);
 
@@ -389,7 +391,7 @@ public class MLModelHandler {
                 clusterPoint.setFeatures(kMeansPrediction._2().toArray());
                 clusterPoints.add(clusterPoint);
             }
-            sparkContext.stop();
+            sparkContext.close();
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
             throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);

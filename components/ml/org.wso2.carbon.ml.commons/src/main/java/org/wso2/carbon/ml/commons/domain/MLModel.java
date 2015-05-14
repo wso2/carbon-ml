@@ -21,6 +21,7 @@ package org.wso2.carbon.ml.commons.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DTO class to hold a deployable machine learning model
@@ -31,6 +32,8 @@ public class MLModel implements Serializable {
     private String algorithmClass;
     private List<Feature> features;
     private String responseVariable;
+    private int responseIndex;
+    private List<Map<String, Integer>> encodings;
     private Serializable model;
 
     public String getAlgorithmName() {
@@ -72,5 +75,21 @@ public class MLModel implements Serializable {
 
     public void setModel(Serializable model) {
         this.model = model;
+    }
+
+    public List<Map<String, Integer>> getEncodings() {
+        return encodings;
+    }
+
+    public void setEncodings(List<Map<String, Integer>> encodings) {
+        this.encodings = encodings;
+    }
+
+    public int getResponseIndex() {
+        return responseIndex;
+    }
+
+    public void setResponseIndex(int responseIndex) {
+        this.responseIndex = responseIndex;
     }
 }

@@ -54,14 +54,11 @@ public class UnsupervisedModel {
         try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
-            String headerRow = context.getHeaderRow();
-            String columnSeparator = context.getColumnSeparator();
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
             
             // apply pre processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, context.getLines(), headerRow,
-                    columnSeparator);
+            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
             JavaRDD<Vector> data = features.map(doubleArrayToVector);
@@ -73,6 +70,8 @@ public class UnsupervisedModel {
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
+            mlModel.setEncodings(context.getEncodings());
+            mlModel.setResponseIndex(-1);
 
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());

@@ -78,7 +78,7 @@ public class SupervisedModel {
             long modelId = context.getModelId();
             
             // apply pre-processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(sparkContext, workflow, context.getLines(), headerRow, columnSeparator);
+            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = MLUtils.getFeatureIndex(workflow.getResponseVariable(), headerRow, columnSeparator);
 
@@ -96,6 +96,8 @@ public class SupervisedModel {
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getIncludedFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
+            mlModel.setEncodings(context.getEncodings());
+            mlModel.setResponseIndex(responseIndex);
             
             ModelSummary summaryModel = null;
             

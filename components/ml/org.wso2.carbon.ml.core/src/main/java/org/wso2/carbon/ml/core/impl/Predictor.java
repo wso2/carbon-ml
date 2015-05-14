@@ -19,6 +19,7 @@ package org.wso2.carbon.ml.core.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,8 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.spark.transformations.OneHotEncoder;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
  * Predict using input data rows.
@@ -45,7 +48,7 @@ public class Predictor {
     private MLModel model;
     private List<Vector> dataToBePredicted;
 
-    public Predictor(long modelId, MLModel mlModel, List<double[]> data) {
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
         model = mlModel;
         dataToBePredicted = getVectors(data);
@@ -64,18 +67,18 @@ public class Predictor {
 
                     double predictedData = decisionTreeModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Prediction: " + predictedData);
+                    log.info("Predicted value before decoding: " + predictedData);
                 }
-                return predictions;
+                return decodePredictedValues(predictions);
             default:
                 ClassificationModel classificationModel = (ClassificationModel) model.getModel();
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = classificationModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Prediction: " + predictedData);
+                    log.info("Predicted value before decoding: " + predictedData);
                 }
-                return predictions;
+                return decodePredictedValues(predictions);
             }
 
         } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
@@ -85,9 +88,10 @@ public class Predictor {
 
                 double predictedData = generalizedLinearModel.predict(vector);
                 predictions.add(predictedData);
-                log.info("Prediction: " + predictedData);
+                log.info("Predicted value before decoding: " + predictedData);
             }
-            return predictions;
+            return decodePredictedValues(predictions);
+
         } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
@@ -98,9 +102,9 @@ public class Predictor {
 
                     int predictedData = kMeansModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Prediction: " + predictedData);
+                    log.info("Predicted value before decoding: " + predictedData);
                 }
-                return predictions;
+                return decodePredictedValues(predictions);
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
                         + " for model id: " + id);
@@ -111,13 +115,62 @@ public class Predictor {
         }
     }
 
-    private List<Vector> getVectors(List<double[]> data) {
+    private List<Vector> getVectors(List<String[]> data) {
         List<Vector> vectors = new ArrayList<Vector>();
-        for (double[] ds : data) {
-            Vector vector = new DenseVector(ds);
+        List<Map<String, Integer>> encodings = model.getEncodings();
+        OneHotEncoder encoder = new OneHotEncoder(encodings);
+        for (String[] dataEntry : data) {
+            String[] encodedEntry;
+            try {
+                encodedEntry = encoder.call(dataEntry);
+            } catch (Exception e) {
+                log.warn("Data encoding failed for " + dataEntry + "; Cause: " + e.getMessage());
+                encodedEntry = dataEntry;
+            }
+            double[] doubleValues = MLUtils.toDoubleArray(encodedEntry);
+            Vector vector = new DenseVector(doubleValues);
             vectors.add(vector);
         }
         return vectors;
+    }
+
+    // write a method to decode the predicted value
+    private List<?> decodePredictedValues(List<?> predictions) {
+        int index = model.getResponseIndex();
+        if (index == -1) {
+            return predictions;
+        }
+        List<Map<String, Integer>> encodings = model.getEncodings();
+        Map<String, Integer> encodingMap = encodings.get(index);
+        if (encodingMap == null || encodingMap.isEmpty()) {
+            // no change
+            return predictions;
+        } else {
+            List<String> decodedPredictions = new ArrayList<String>();
+            for (Object val : predictions) {
+                int roundedValue;
+                if (val instanceof Double) {
+                    roundedValue = (int) Math.round((Double) val);
+                } else if (val instanceof Integer) {
+                    roundedValue = (Integer) val;
+                } else {
+                    // fail to recognize the value, stop decoding
+                    return predictions;
+                }
+                String decodedValue = decode(encodingMap, roundedValue);
+                decodedPredictions.add(decodedValue);
+            }
+            return decodedPredictions;
+        }
+    }
+
+    private String decode(Map<String, Integer> encodingMap, int roundedValue) {
+        for (Map.Entry<String, Integer> entry : encodingMap.entrySet()) {
+            if (roundedValue == entry.getValue()) {
+                return entry.getKey();
+            }
+        }
+        return String.valueOf(roundedValue);
     }
 
 }
