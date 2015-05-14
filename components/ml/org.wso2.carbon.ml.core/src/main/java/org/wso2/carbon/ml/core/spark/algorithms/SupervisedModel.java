@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -56,8 +54,6 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import scala.Tuple2;
 
 public class SupervisedModel {
-    
-    private static final Log logger = LogFactory.getLog(SupervisedModel.class);
     
     /**
      * @param modelID       Model ID

@@ -23,8 +23,6 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
-import java.util.Map;
-
 /**
  * This class transforms double array to labeled point
  */

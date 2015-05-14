@@ -336,7 +336,7 @@ public class MLModelHandler {
             throws DatabaseHandlerException {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-
+        JavaSparkContext sparkContext = null;
         List<String> features = Arrays.asList(featureListString.split("\\s*,\\s*"));
 
         try {
@@ -350,7 +350,7 @@ public class MLModelHandler {
 			// set app name
             sparkConf.setAppName(String.valueOf(datasetId));
             // create a new java spark context
-            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+            sparkContext = new JavaSparkContext(sparkConf);
             // parse lines in the dataset
             JavaRDD<String> lines = sparkContext.textFile(datasetURL);
             // get column separator
@@ -391,11 +391,13 @@ public class MLModelHandler {
                 clusterPoint.setFeatures(kMeansPrediction._2().toArray());
                 clusterPoints.add(clusterPoint);
             }
-            sparkContext.close();
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
             throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
         } finally {
+            if (sparkContext != null) {
+                sparkContext.close();
+            }
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }

@@ -57,7 +57,6 @@ import scala.Tuple2;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -135,6 +134,8 @@ public class SparkModelUtils {
         // calculate mean squared error (MSE)
         double meanSquaredError = new JavaDoubleRDD(predictionsAndLabels.map(
                 new Function<Tuple2<Double, Double>, Object>() {
+                    private static final long serialVersionUID = -162193633199074816L;
+
                     public Object call(Tuple2<Double, Double> pair) {
                         return Math.pow(pair._1() - pair._2(), 2.0);
                     }
@@ -165,6 +166,8 @@ public class SparkModelUtils {
         classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate test error
         double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
+            private static final long serialVersionUID = -3063364114286182333L;
+
             @Override
             public Boolean call(Tuple2<Double, Double> pl) {
                 return !pl._1().equals(pl._2());
@@ -247,9 +250,9 @@ public class SparkModelUtils {
         // calculate mean and populate mean imputation hashmap
         TokensToVectors tokensToVectors = new TokensToVectors(meanImputeIndices);
         if (sampleFraction < 1.0) {
-            features = tokens.sample(false, sampleFraction).map(tokensToVectors);
+            features = missingValuesRemoved.sample(false, sampleFraction).map(tokensToVectors);
         } else {
-            features = tokens.map(tokensToVectors);
+            features = missingValuesRemoved.map(tokensToVectors);
         }
         MultivariateStatisticalSummary summary = Statistics.colStats(features.rdd());
         double[] means = summary.mean().toArray();

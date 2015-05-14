@@ -23,7 +23,6 @@ import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
-import java.util.List;
 import java.util.Map;
 
 /**

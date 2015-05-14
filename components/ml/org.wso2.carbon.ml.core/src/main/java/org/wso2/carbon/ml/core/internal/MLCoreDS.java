@@ -27,7 +27,6 @@ import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
-import org.wso2.carbon.ml.core.impl.EmailNotificationSender;
 import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
