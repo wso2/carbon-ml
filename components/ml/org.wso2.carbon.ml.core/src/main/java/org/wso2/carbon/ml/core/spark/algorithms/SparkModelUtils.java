@@ -272,10 +272,7 @@ public class SparkModelUtils {
             if (feature.getType().equals(FeatureType.CATEGORICAL)) {
                 List<String> uniqueVals = getUniqueValues(feature.getIndex(), summaryStats.get(feature.getName()));
                 for (int i = 0; i < uniqueVals.size(); i++) {
-                    String value = uniqueVals.get(i);
-                    if (!NumberUtils.isNumber(value)) {
-                        encodingMap.put(uniqueVals.get(i), i);
-                    }
+                    encodingMap.put(uniqueVals.get(i), i);
                 }
                 encodings.set(feature.getIndex(), encodingMap);
             }
