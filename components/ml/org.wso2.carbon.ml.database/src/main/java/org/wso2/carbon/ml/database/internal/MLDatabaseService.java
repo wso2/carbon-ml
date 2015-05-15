@@ -1579,6 +1579,55 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    /**
+     * Get all models of a given project
+     * @param tenantId   tenant ID
+     * @param userName   username
+     * @param projectId  Project ID
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_PROJECT_MODELS);
+            statement.setLong(1, projectId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            while (result.next()) {
+                MLModelNew model = new MLModelNew();
+                model.setId(result.getLong(1));
+                model.setName(result.getString(2));
+                model.setAnalysisId(result.getLong(3));
+                model.setVersionSetId(result.getLong(4));
+                model.setCreatedTime(result.getString(5));
+                ModelSummary modelSummary = (ModelSummary) result.getObject(6);
+                model.setModelSummary(modelSummary);
+                model.setStorageType(result.getString(7));
+                model.setStorageDirectory(result.getString(8));
+                model.setTenantId(tenantId);
+                model.setUserName(userName);
+                model.setStatus(result.getString(9));
+                model.setError(result.getString(10));
+                models.add(model);
+            }
+            return models;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting all models of"
+                    + "project ID:" + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
     @Override
     public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
 

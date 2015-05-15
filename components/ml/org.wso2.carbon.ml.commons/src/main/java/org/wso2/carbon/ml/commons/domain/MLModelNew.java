@@ -33,6 +33,7 @@ public class MLModelNew {
     private String storageDirectory;
     private String status;
     private String error;
+    private ModelSummary modelSummary;
 
     public int getTenantId() {
         return tenantId;
@@ -120,6 +121,14 @@ public class MLModelNew {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public ModelSummary getModelSummary() {
+        return modelSummary;
+    }
+
+    public void setModelSummary(ModelSummary modelSummary) {
+        this.modelSummary = modelSummary;
     }
 
     @Override

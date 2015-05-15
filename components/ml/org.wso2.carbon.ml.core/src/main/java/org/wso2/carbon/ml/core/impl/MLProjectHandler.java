@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -78,6 +79,14 @@ public class MLProjectHandler {
     public List<MLProject> getAllProjects(int tenantId, String userName) throws MLProjectHandlerException {
         try {
             return databaseService.getAllProjects(tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
+        try {
+            return databaseService.getProjectModels(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }

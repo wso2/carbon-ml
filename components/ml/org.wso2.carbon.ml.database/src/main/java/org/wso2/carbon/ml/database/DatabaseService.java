@@ -510,6 +510,16 @@ public interface DatabaseService {
     public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
+     * Get all models of a given project
+     * @param tenantId   tenant ID
+     * @param userName   username
+     * @param projectId  Project ID
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+
+    /**
      * Get the Analysis having the given analysis name
      * @param tenantId      tenant id
      * @param userName      username

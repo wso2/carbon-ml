@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLProjectHandler;
@@ -119,6 +120,24 @@ public class ProjectApiV10 extends MLRestAPI {
             logger.error(String.format(
                     "Error occured while retrieving all projects of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/{projectId}/models")
+    @Produces("application/json")
+    public Response getProjectModels(@PathParam("projectId") long projectId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLModelNew> projects = mlProjectHandler.getProjectModels(tenantId, userName, projectId);
+            return Response.ok(projects).build();
+        } catch (MLProjectHandlerException e) {
+            logger.error(String.format(
+                    "Error occured while retrieving all models of project [id] %s tenant [id] %s [user] %s . Cause: %s",
+                    projectId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
