@@ -218,10 +218,10 @@ public class SummaryStatsGenerator implements Runnable {
                 // Change the data type to categorical.
                 this.type[currentCol] = FeatureType.CATEGORICAL;
                 // Calculate the category frequencies.
-                SortedMap<Double, Integer> frequencies = new TreeMap<Double, Integer>();
+                SortedMap<String, Integer> frequencies = new TreeMap<String, Integer>();
                 for (String uniqueValue : uniqueSet) {
                     if (uniqueValue != null && !uniqueValue.isEmpty()) {
-                        frequencies.put(Double.parseDouble(uniqueValue),
+                        frequencies.put(uniqueValue,
                                 Collections.frequency(this.columnData.get(currentCol), uniqueValue));
                     }
                 }
