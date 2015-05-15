@@ -37,6 +37,7 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private List<PredictedVsActual> predictedVsActuals;
     private String algorithm;
     private String[] features;
+    private double modelAccuracy;
 
     public String getAlgorithm() {
         return algorithm;
@@ -113,6 +114,20 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      */
     public void setFeatures(String[] features) {
         this.features = features;
+    }
+
+    /**
+     * @return Returns model accuracy
+     */
+    public double getModelAccuracy() {
+        return modelAccuracy;
+    }
+
+    /**
+     * @param modelAccuracy Sets model accuracy
+     */
+    public void setModelAccuracy(double modelAccuracy) {
+        this.modelAccuracy = modelAccuracy;
     }
 
     @Override

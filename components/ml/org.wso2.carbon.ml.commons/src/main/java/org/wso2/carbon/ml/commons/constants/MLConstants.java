@@ -153,6 +153,8 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_1 = 5;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
+
+    public static final double DEFAULT_THRESHOLD = 0.5;
     
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";

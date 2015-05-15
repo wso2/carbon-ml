@@ -35,6 +35,8 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     private List<FeatureImportance> featureImportance;
     private String algorithm;
     private String[] features;
+    private double modelAccuracy;
+    private double meanSquaredError;
 
     public String getAlgorithm() {
         return algorithm;
@@ -97,6 +99,34 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
      */
     public void setFeatures(String[] features) {
         this.features = features;
+    }
+
+    /**
+     * @return Returns model accuracy
+     */
+    public double getModelAccuracy() {
+        return modelAccuracy;
+    }
+
+    /**
+     * @param modelAccuracy Sets model accuracy
+     */
+    public void setModelAccuracy(double modelAccuracy) {
+        this.modelAccuracy = modelAccuracy;
+    }
+
+    /**
+     * @return Returns mean squared error
+     */
+    public double getMeanSquaredError() {
+        return meanSquaredError;
+    }
+
+    /**
+     * @param meanSquaredError Sets mean squared error
+     */
+    public void setMeanSquaredError(double meanSquaredError) {
+        this.meanSquaredError = meanSquaredError;
     }
 
     @Override
