@@ -108,7 +108,8 @@ public class SupervisedModel {
                    includedFeatures);
                 break;
             case DECISION_TREE:
-                summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                Map<Integer,Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings(), responseIndex);
+                summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case SVM:
                 summaryModel = buildSVMModel(modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
@@ -144,6 +145,16 @@ public class SupervisedModel {
                 sparkContext.stop();
             }
         }
+    }
+
+    private Map<Integer, Integer> getCategoricalFeatureInfo(List<Map<String, Integer>> encodings, int responseIndex) {
+        Map<Integer, Integer> info = new HashMap<Integer, Integer>();
+        for (int i = 0; i < encodings.size(); i++) {
+            if (encodings.get(i).size() > 0 && i != responseIndex) {
+                info.put(i, encodings.get(i).size());
+            }
+        }
+        return info;
     }
 
     /**
@@ -209,14 +220,14 @@ public class SupervisedModel {
      * @throws                  MLModelBuilderException
      */
     private ModelSummary buildDecisionTreeModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures, Map<Integer,Integer> categoricalFeatureInfo) throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
             // Lochana: passing an empty map since we are not currently handling categorical Features
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLASSES)),
-                    new HashMap<Integer, Integer>(), hyperParameters.get(MLConstants.IMPURITY),
+                    categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel, testingData);
