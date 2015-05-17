@@ -264,7 +264,7 @@ public class SparkModelUtils {
     
     private static List<Map<String, Integer>> buildEncodings(List<Feature> features, Map<String,String> summaryStats) {
         List<Map<String, Integer>> encodings = new ArrayList<Map<String, Integer>>();
-        for (int i = 0; i < features.size(); i++) {
+        for (int i = 0; i <= findLargestIndex(features); i++) {
             encodings.add(new HashMap<String, Integer>());
         }
         for (Feature feature : features) {
@@ -279,6 +279,16 @@ public class SparkModelUtils {
         }
         
         return encodings;
+    }
+    
+    private static int findLargestIndex(List<Feature> features) {
+        int idx = 0;
+        for (Feature feature : features) {
+            if (feature.getIndex() > idx) {
+                idx = feature.getIndex();
+            }
+        }
+        return idx;
     }
     
     private static List<String> getUniqueValues(int index, String statsAsJson) {

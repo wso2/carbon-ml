@@ -187,7 +187,7 @@ public class MLModelHandler {
      * @throws MLModelHandlerException
      * @throws MLModelBuilderException
      */
-    public void buildModel(int tenantId, String userName, long modelId) throws MLModelHandlerException,
+    public Workflow buildModel(int tenantId, String userName, long modelId) throws MLModelHandlerException,
             MLModelBuilderException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
@@ -242,6 +242,7 @@ public class MLModelHandler {
             databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
 
+            return facts;
         } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
         } finally {

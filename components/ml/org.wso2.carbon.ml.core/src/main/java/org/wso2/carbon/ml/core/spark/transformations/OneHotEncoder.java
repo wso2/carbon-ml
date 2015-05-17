@@ -40,7 +40,7 @@ public class OneHotEncoder implements Function<String[], String[]> {
         try {
             for (int i = 0; i < tokens.length; i++) {
                 Map<String, Integer> encoding = encodings.get(i);
-                if (!encoding.isEmpty()) {
+                if (encoding != null && !encoding.isEmpty()) {
                     String code = encoding.get(tokens[i]) == null ? tokens[i] : String.valueOf(encoding.get(tokens[i]));
                     // replace the value with the encoded value
                     tokens[i] = code;
