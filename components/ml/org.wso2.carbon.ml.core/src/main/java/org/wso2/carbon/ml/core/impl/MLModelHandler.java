@@ -94,10 +94,17 @@ public class MLModelHandler {
             model.setStorageType(modelStorage.getStorageType());
             model.setStorageDirectory(modelStorage.getStorageDirectory());
 
-            MLAnalysis analysis = databaseService.getAnalysis(model.getTenantId(), model.getUserName(),
-                    model.getAnalysisId());
+            int tenantId = model.getTenantId();
+            String userName = model.getUserName();
+            MLAnalysis analysis = databaseService.getAnalysis(tenantId, userName, model.getAnalysisId());
             if (analysis == null) {
                 throw new MLModelHandlerException("Invalid analysis [id] " + model.getAnalysisId());
+            }
+
+            MLDatasetVersion versionSet = databaseService.getVersionset(tenantId, userName, model.getVersionSetId());
+            if (versionSet == null) {
+                throw new MLModelHandlerException("Invalid version set [id] " + model.getVersionSetId());
+
             }
             // set model name
             String modelName = analysis.getName();
