@@ -93,13 +93,18 @@ public class MLModelHandler {
             ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
             model.setStorageType(modelStorage.getStorageType());
             model.setStorageDirectory(modelStorage.getStorageDirectory());
-            
+
+            MLAnalysis analysis = databaseService.getAnalysis(model.getTenantId(), model.getUserName(),
+                    model.getAnalysisId());
+            if (analysis == null) {
+                throw new MLModelHandlerException("Invalid analysis [id] " + model.getAnalysisId());
+            }
             // set model name
-            String modelName = databaseService.getAnalysis(model.getTenantId(), model.getUserName(), model.getAnalysisId()).getName();
-            modelName = modelName + "." + MLConstants.MODEL_NAME +  "." + MLUtils.getDate();
+            String modelName = analysis.getName();
+            modelName = modelName + "." + MLConstants.MODEL_NAME + "." + MLUtils.getDate();
             model.setName(modelName);
             model.setStatus(MLConstants.MODEL_STATUS_NOT_STARTED);
-            
+
             databaseService.insertModel(model);
             log.info(String.format("[Created] %s", model));
             return model;
