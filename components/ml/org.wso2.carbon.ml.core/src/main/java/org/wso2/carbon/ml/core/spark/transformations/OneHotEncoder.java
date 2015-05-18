@@ -39,6 +39,9 @@ public class OneHotEncoder implements Function<String[], String[]> {
     public String[] call(String[] tokens) throws Exception {
         try {
             for (int i = 0; i < tokens.length; i++) {
+                if (encodings.size() <= i) {
+                    continue;
+                }
                 Map<String, Integer> encoding = encodings.get(i);
                 if (encoding != null && !encoding.isEmpty()) {
                     String code = encoding.get(tokens[i]) == null ? tokens[i] : String.valueOf(encoding.get(tokens[i]));
