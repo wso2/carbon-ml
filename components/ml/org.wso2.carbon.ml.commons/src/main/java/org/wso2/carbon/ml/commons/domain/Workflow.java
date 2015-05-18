@@ -155,4 +155,11 @@ public class Workflow implements Serializable {
         }
         return includedFeatures;
     }
+
+    @Override
+    public String toString() {
+        return "Model Configuration [algorithmName=" + algorithmName + ", algorithmClass="
+                + algorithmClass + ", responseVariable=" + responseVariable + ", trainDataFraction="
+                + trainDataFraction + ", features=" + features + ", hyperParameters=" + hyperParameters + "]";
+    }
 }

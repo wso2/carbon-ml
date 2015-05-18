@@ -100,4 +100,10 @@ public class Feature implements Serializable {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    @Override
+    public String toString() {
+        return "Feature [name=" + name + ", index=" + index + ", type=" + type + ", imputeOption=" + imputeOption
+                + ", include=" + include + "]";
+    }
 }
