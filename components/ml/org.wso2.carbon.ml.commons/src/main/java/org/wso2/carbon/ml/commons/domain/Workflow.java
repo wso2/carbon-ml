@@ -160,6 +160,6 @@ public class Workflow implements Serializable {
     public String toString() {
         return "Model Configuration [algorithmName=" + algorithmName + ", algorithmClass="
                 + algorithmClass + ", responseVariable=" + responseVariable + ", trainDataFraction="
-                + trainDataFraction + ", features=" + features + ", hyperParameters=" + hyperParameters + "]";
+                + trainDataFraction + ", hyperParameters=" + hyperParameters + ", features=" + features + "]";
     }
 }
