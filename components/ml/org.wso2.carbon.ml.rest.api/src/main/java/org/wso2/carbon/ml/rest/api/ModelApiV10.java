@@ -103,7 +103,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while adding storage for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while adding storage for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -122,7 +122,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (Exception e) {
             logger.error(String.format(
-                    "Error occured while building the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -141,7 +141,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok(predictions).build();
         } catch (Exception e) {
             logger.error(String.format(
-                    "Error occured while predicting from model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -162,7 +162,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok(model).build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving a model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving a model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -179,7 +179,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok(models).build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all models of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving all models of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -197,7 +197,7 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
             logger.error(String.format(
-                    "Error occured while deleting a model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while deleting a model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -216,7 +216,7 @@ public class ModelApiV10 extends MLRestAPI {
             ModelSummary modelSummary =  mlModelHandler.getModelSummary(modelId);
             return Response.ok(modelSummary).build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format("Error occured while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+            logger.error(String.format("Error occurred while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

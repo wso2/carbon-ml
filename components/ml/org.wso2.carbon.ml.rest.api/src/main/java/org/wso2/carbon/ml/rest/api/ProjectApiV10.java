@@ -81,7 +81,7 @@ public class ProjectApiV10 extends MLRestAPI {
             mlProjectHandler.createProject(project);
             return Response.ok().build();
         } catch (MLProjectHandlerException e) {
-            logger.error("Error occured while creating a project : " + project + " : " + e.getMessage());
+            logger.error("Error occurred while creating a project : " + project + " : " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
@@ -101,7 +101,7 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok(project).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving a project [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving a project [name] %s of tenant [id] %s and [user] %s . Cause: %s",
                     projectName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -118,7 +118,7 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok(projects).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all projects of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving all projects of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -136,7 +136,7 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok(projects).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all models of project [id] %s tenant [id] %s [user] %s . Cause: %s",
+                    "Error occurred while retrieving all models of project [id] %s tenant [id] %s [user] %s . Cause: %s",
                     projectId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -178,7 +178,7 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok(projectBeans).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while retrieving all analyses of tenant [id] %s and [user] %s . Cause: %s",
                     tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -232,7 +232,7 @@ public class ProjectApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occured while deleting a project [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    "Error occurred while deleting a project [name] %s of tenant [id] %s and [user] %s . Cause: %s",
                     projectName, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
