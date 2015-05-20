@@ -48,7 +48,7 @@ public class MLUtilsTest {
         URI uri;
         InputStream in = null;
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         SamplePoints samplePoints;
         try {
 
@@ -61,7 +61,7 @@ public class MLUtilsTest {
             Assert.assertEquals(totalPoints, size / 55);
 
             // extract all points
-            in = inputAdapter.readDataset(uri);
+            in = inputAdapter.read(uri);
             samplePoints = MLUtils.getSamplePoints(in, "csv", -1, true);
             columnData = samplePoints.getSamplePoints();
             totalPoints = columnData.get(0).size();
@@ -74,7 +74,7 @@ public class MLUtilsTest {
         // malformed document
         uriString = "src/test/resources/fcMalformedSample.csv";
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         try {
             samplePoints = MLUtils.getSamplePoints(in, "csv", 10, true);
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class MLUtilsTest {
         // test TSV file
         uriString = "src/test/resources/fcSample.tsv";
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         try {
             samplePoints = MLUtils.getSamplePoints(in, "tsv", 550, true);
             List<List<String>> columnData = samplePoints.getSamplePoints();
@@ -108,7 +108,7 @@ public class MLUtilsTest {
         // test CSV file without header
         uriString = "src/test/resources/fcSampleWithoutHeader.csv";
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         try {
             samplePoints = MLUtils.getSamplePoints(in, "csv", 550, false);
             Assert.assertEquals(samplePoints.getHeader().size(), 55);

@@ -47,7 +47,7 @@ public class BamInputAdapterTest {
         BAMInputAdapter bamInputAdaptor = new BAMInputAdapter();
         InputStream inputStream = null;
         try {
-            inputStream = bamInputAdaptor.readDataset(new URI(bamTableUrl));
+            inputStream = bamInputAdaptor.read(new URI(bamTableUrl));
             Assert.assertNotNull(inputStream);
             Assert.assertEquals(inputStream.available() != 0, true);
         } catch (Exception e) {

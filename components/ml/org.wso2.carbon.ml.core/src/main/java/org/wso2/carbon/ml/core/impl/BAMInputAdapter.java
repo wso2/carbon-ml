@@ -66,14 +66,14 @@ public class BAMInputAdapter implements MLInputAdapter {
                 tableResourcePath;
         try {
             URI uri = new URI(tableUri);
-            return readDataset(uri);
+            return read(uri);
         } catch (URISyntaxException e) {
             throw new MLInputAdapterException("Invalid URI Syntax: " + tableUri + " : " + e.getMessage(), e);
         }
     }
     
     @Override
-    public InputStream readDataset(URI uri) throws MLInputAdapterException {
+    public InputStream read(URI uri) throws MLInputAdapterException {
         try {
             if (isValidTable(uri)) {
                 int sampleSize = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();

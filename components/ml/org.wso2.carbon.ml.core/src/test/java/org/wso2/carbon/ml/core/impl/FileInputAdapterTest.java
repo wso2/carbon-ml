@@ -38,25 +38,25 @@ public class FileInputAdapterTest {
         InputStream in = null;
         // test a relative path
         try {
-            in = inputAdapter.readDataset(uri);
+            in = inputAdapter.read(uri);
         } catch (Exception e) {
             Assert.assertEquals(e instanceof MLInputAdapterException, true);
         }
 
         // test a full path
         uri = new URI(filePrefix + System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
         
         // test a uri without file:// prefix 
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
         
         // file not found
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString+".csv");
         try {
-            in = inputAdapter.readDataset(uri);
+            in = inputAdapter.read(uri);
         } catch (Exception e) {
             Assert.assertEquals(e instanceof MLInputAdapterException, true);
         }

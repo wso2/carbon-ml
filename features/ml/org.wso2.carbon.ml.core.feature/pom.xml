@@ -141,6 +141,10 @@
 			<artifactId>scala-library</artifactId>
 		</dependency>
 		<dependency>
+                	<groupId>org.scala-lang</groupId>
+                	<artifactId>scala-reflect</artifactId>
+            	</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-plus</artifactId>
 		</dependency>
@@ -408,6 +412,7 @@
 								<bundleDef>org.json.wso2:json</bundleDef>
 								<bundleDef>io.netty.wso2:netty-all</bundleDef>
 								<bundleDef>org.scala-lang:scala-library</bundleDef>
+								<bundleDef>org.scala-lang:scala-reflect</bundleDef>
 								<bundleDef>org.eclipse.jetty:jetty-plus</bundleDef>
 								<bundleDef>org.eclipse.jetty:jetty-security</bundleDef>
 								<bundleDef>org.eclipse.jetty:jetty-server</bundleDef>

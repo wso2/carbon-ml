@@ -26,6 +26,7 @@ public class MLHyperParameter {
 
     private String key;
     private String value;
+    private String description;
 
     @XmlElement(name = "Name")
     public String getKey() {
@@ -45,9 +46,19 @@ public class MLHyperParameter {
         this.value = value;
     }
 
+    @XmlElement(name = "Description")
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     @Override
     public String toString() {
-        return "MLHyperParameter [key=" + key + ", value=" + value + "]";
+        return "MLHyperParameter [key=" + key + ", value=" + value + ", description=" + description + "]";
     }
+
 
 }

@@ -63,7 +63,7 @@ public class HdfsInputAndOutputAdapterTest {
 
         // read a local file and get an input stream
         uri = new URI(filePrefix + System.getProperty("user.dir") + File.separator + uriString);
-        in = fileInAdapter.readDataset(uri);
+        in = fileInAdapter.read(uri);
         Assert.assertNotNull(in);
 
         // write it to hdfs
@@ -78,7 +78,7 @@ public class HdfsInputAndOutputAdapterTest {
         // read back from hdfs
         MLInputAdapter hdfsInAdapter = new HdfsInputAdapter();
         try {
-            in = hdfsInAdapter.readDataset(URI.create(outPath));
+            in = hdfsInAdapter.read(URI.create(outPath));
             Assert.assertNotNull(in);
             Assert.assertEquals(in.available() != 0, true);
 

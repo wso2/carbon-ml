@@ -124,6 +124,14 @@ public class MLAnalysisHandler {
         }
     }
 
+    public String getAlgorithmType(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_TYPE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
     public double getTrainDataFraction(long analysisId) throws MLAnalysisHandlerException {
         try {
             return databaseService.getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);

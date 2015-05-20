@@ -245,6 +245,11 @@
 				<version>${spark.version}</version>
 			</dependency>
 			<dependency>
+                    		<groupId>org.scala-lang</groupId>
+                    		<artifactId>scala-reflect</artifactId>
+				<version>${scala.version}</version>
+                	</dependency>
+			<dependency>
 				<groupId>org.wso2.orbit.org.scalanlp</groupId>
 				<artifactId>breeze_2.10</artifactId>
 				<version>${breeze.version}</version>
@@ -855,8 +860,6 @@
 		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
 		<akka.version>2.3.4-spark</akka.version>
 		<typesafe.version>1.2.0</typesafe.version>
-
-
 
 		<!-- Jaggery dependency versions -->
 		<jaggery.version>0.10.1</jaggery.version>
