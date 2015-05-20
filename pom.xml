@@ -51,6 +51,8 @@
 	<modules>
 		<module>components/ml</module>
 		<module>features/ml</module>
+        <module>components/extensions</module>
+        <module>features/extensions</module>
 	</modules>
 
 	<repositories>
@@ -739,6 +741,61 @@
     				<artifactId>htrace-core</artifactId>
     				<version>${orbit.version.htrace}</version>
 			</dependency>
+
+            <!-- Dependencies for ESB Mediator -->
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-core</artifactId>
+                <version>${synapse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mediation</groupId>
+                <artifactId>org.wso2.carbon.mediator.service</artifactId>
+                <version>${carbon.mediation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.logging</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ui</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom</groupId>
+                <artifactId>axiom-api</artifactId>
+                <version>${axiom.api.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+                <artifactId>axiom</artifactId>
+                <version>${axiom.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.mediator.predict</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.mediator.predict.ui</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.mediator.predict.server.feature</artifactId>
+                <version>${ml.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.mediator.predict.ui.feature</artifactId>
+                <version>${ml.version}</version>
+                <type>zip</type>
+            </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -931,7 +988,13 @@
 		<xml.apis.version>1.4.01</xml.apis.version>
 		<apache.httpcore.version>4.3.3.wso2v1</apache.httpcore.version>
 		<apache.httpclient.version>4.3.1.wso2v1</apache.httpclient.version>
-	</properties>
+
+        <!--ESB Mediator Dependency versions -->
+        <synapse.version>2.1.3-wso2v4</synapse.version>
+        <carbon.mediation.version>4.4.0</carbon.mediation.version>
+        <axiom.api.wso2.version>1.2.11-wso2v6</axiom.api.wso2.version>
+
+    </properties>
 
 	<organization>
 		<name>WSO2, Inc.</name>
