@@ -247,7 +247,29 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.ok(responseVariable).build();
         } catch (MLAnalysisHandlerException e) {
             logger.error(String
-                    .format("Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    .format("Error occurred while retrieving algorithm name for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            analysisId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * get the algorithm type of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/algorithmType")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getAlgorithmType(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String responseVariable = mlAnalysisHandler.getAlgorithmType(analysisId);
+            return Response.ok(responseVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving algorithm type for the analysis [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                             analysisId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
