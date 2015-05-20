@@ -108,7 +108,7 @@ public class ModelHandler {
         }
         MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-        InputStream in = inputAdapter.readDataset(new URI(modelStorageLocation));
+        InputStream in = inputAdapter.read(new URI(modelStorageLocation));
         ObjectInputStream ois = new ObjectInputStream(in);
         MLModel mlModel = (MLModel) ois.readObject();
         ois.close();
