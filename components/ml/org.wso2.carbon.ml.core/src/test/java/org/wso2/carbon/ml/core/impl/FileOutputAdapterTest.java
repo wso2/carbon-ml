@@ -42,7 +42,7 @@ public class FileOutputAdapterTest {
 
         // test a full path
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
         
         // test stream write

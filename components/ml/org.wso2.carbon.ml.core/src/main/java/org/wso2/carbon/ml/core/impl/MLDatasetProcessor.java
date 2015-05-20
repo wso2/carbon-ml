@@ -227,7 +227,7 @@ public class MLDatasetProcessor {
                 input = inputStream;
             } else {
                 // if the source is hdfs/bam read from the source path
-                input = inputAdapter.readDataset(dataset.getSourcePath());
+                input = inputAdapter.read(dataset.getSourcePath());
             }
             handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
                     dataset.getSourcePath(), dataset.getName()));
@@ -238,7 +238,7 @@ public class MLDatasetProcessor {
             // read the file that was written
             inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
             try {
-                input = inputAdapter.readDataset(targetUri);
+                input = inputAdapter.read(targetUri);
             } catch (MLInputAdapterException e) {
                 throw new MLDataProcessingException("Unable to read the data-set file from: " + targetUri.toString(), e);
             }

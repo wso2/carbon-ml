@@ -34,5 +34,5 @@ public interface MLInputAdapter {
      * @return the given data-set as an {@link InputStream}
      * @throws MLInputAdapterException on a read failure.
      */
-    InputStream readDataset(URI uri) throws MLInputAdapterException;
+    InputStream read(URI uri) throws MLInputAdapterException;
 }

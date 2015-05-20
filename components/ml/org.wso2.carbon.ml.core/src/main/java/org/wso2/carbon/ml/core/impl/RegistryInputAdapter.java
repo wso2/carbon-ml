@@ -36,7 +36,7 @@ import java.net.URI;
 public class RegistryInputAdapter implements MLInputAdapter {
 
     @Override
-    public InputStream readDataset(URI uri) throws MLInputAdapterException {
+    public InputStream read(URI uri) throws MLInputAdapterException {
         try {
             if (!uri.isAbsolute()) {
                 String registryResourcePath = uri.toString();

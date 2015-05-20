@@ -51,7 +51,7 @@ public class SummaryStatsGeneratorTest {
         SamplePoints samplePoints = null;
         InputStream in = null;
         uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
-        in = inputAdapter.readDataset(uri);
+        in = inputAdapter.read(uri);
 
         try {
 

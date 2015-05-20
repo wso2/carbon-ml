@@ -246,7 +246,7 @@ public class MLModelHandler {
             sparkConf.setAppName(String.valueOf(modelId));
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
-            //TODO following is a temporary testing unharmful code.
+            //TODO following is a temporary testing; unharmful code.
             if (System.getProperty("bam") != null && System.getProperty("bam").equalsIgnoreCase("true")) {
                 SQLContext sqlCtx = new SQLContext(sparkContext);
                 sqlCtx.sql(
