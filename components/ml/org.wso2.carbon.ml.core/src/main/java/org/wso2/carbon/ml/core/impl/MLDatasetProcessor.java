@@ -351,4 +351,20 @@ public class MLDatasetProcessor {
         }
     }
 
+    public List<String> getFeatureNames(long datasetId, String featureType) throws MLDataProcessingException {
+        try {
+            return databaseService.getFeatureNames(datasetId, featureType);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
+    public String getSummaryStats(long datasetId, String featureName) throws MLDataProcessingException {
+        try {
+            return databaseService.getSummaryStats(datasetId, featureName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
 }

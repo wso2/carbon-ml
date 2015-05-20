@@ -209,6 +209,17 @@ public interface DatabaseService {
     public List<String> getFeatureNames(String analysisId) throws DatabaseHandlerException;
 
     /**
+     * Returns the names of the features, belongs to a particular type
+     * (Categorical/Numerical), of a dataset.
+     *
+     * @param datasetId     Unique identifier of a dataset
+     * @param featureType   Type of the feature
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(long datasetId, String featureType) throws DatabaseHandlerException;
+
+    /**
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *
@@ -218,6 +229,16 @@ public interface DatabaseService {
      * @throws                     DatabaseHandlerException
      */
     public String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException;
+
+    /**
+     * Retrieve and returns summary statistics for a given feature of a given dataset
+     *
+     * @param datasetId     Unique identifier of a dataset
+     * @param featureName   Name of the feature of which summary statistics are needed
+     * @return JSON string containing summary statistics
+     * @throws DatabaseHandlerException
+     */
+    public String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version

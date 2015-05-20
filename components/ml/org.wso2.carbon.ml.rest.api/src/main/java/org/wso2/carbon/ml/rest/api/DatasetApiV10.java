@@ -385,6 +385,52 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
+     * get filtered feature names of a dataset.
+     */
+    @GET
+    @Path("/{datasetId}/filteredFeatures")
+    @Produces("application/json")
+    public Response getfilteredFeatures(@PathParam("datasetId") long datasetId, @QueryParam("featureType") String featureType) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+
+            List<String> features = datasetProcessor.getFeatureNames(datasetId, featureType);
+            return Response.ok(features).build();
+        } catch (MLDataProcessingException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving feature names for the dataset [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            datasetId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * get summarized statistics of a feature of a dataset.
+     */
+    @GET
+    @Path("/{datasetId}/stats")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getSummaryStatistics(@PathParam("datasetId") long datasetId,
+                                         @QueryParam("feature") String featureName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+
+            String summary = datasetProcessor.getSummaryStats(datasetId, featureName);
+            return Response.ok(summary).build();
+        } catch (MLDataProcessingException e) {
+            logger.error(String
+                    .format("Error occurred while retrieving summarized stats of feature [name] %s for the dataset [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                            featureName, datasetId, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    /**
      * Delete the dataset of a given dataset ID.
      */
     @DELETE
