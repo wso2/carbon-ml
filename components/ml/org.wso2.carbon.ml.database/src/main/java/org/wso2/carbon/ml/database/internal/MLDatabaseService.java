@@ -1372,6 +1372,44 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     /**
+     * Returns the names of the features, belongs to a particular type
+     * (Categorical/Numerical), of a dataset.
+     *
+     * @param datasetId     Unique identifier of a dataset
+     * @param featureType   Type of the feature
+     * @return              A list of feature names
+     * @throws              DatabaseHandlerException
+     */
+    public List<String> getFeatureNames(long datasetId, String featureType)
+            throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+        List<String> featureNames = new ArrayList<String>();
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            // Create a prepared statement and retrieve dataset configurations.
+            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FILTERED_FEATURE_NAMES_OF_DATASET);
+            getFeatureNamesStatement.setLong(1, datasetId);
+            getFeatureNamesStatement.setString(2, featureType);
+
+            result = getFeatureNamesStatement.executeQuery();
+            // Convert the result in to a string array to be returned.
+            while (result.next()) {
+                featureNames.add(result.getString(1));
+            }
+            return featureNames;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException( "An error occurred while retrieving feature " +
+                    "feature names of the dataset: " + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
+
+    /**
      * Retrieve and returns the Summary statistics for a given feature of a given data-set version, from the database.
      *
      * @param datasetVersionId Unique identifier of the data-set version
@@ -1434,6 +1472,39 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving summary "
                     + "statistics for the dataset version: " + datasetVersionId
+                    + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
+        }
+    }
+
+    /**
+     * Retrieve and returns summary statistics for a given feature of a given dataset
+     *
+     * @param datasetId     Unique identifier of a dataset
+     * @param featureName   Name of the feature of which summary statistics are needed
+     * @return JSON string containing summary statistics
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getSummaryStatement = null;
+        ResultSet result = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            getSummaryStatement = connection.prepareStatement(SQLQueries.GET_SUMMARY_STATS_OF_DATASET);
+            getSummaryStatement.setLong(1, datasetId);
+            getSummaryStatement.setString(2, featureName);
+            result = getSummaryStatement.executeQuery();
+            result.first();
+            return result.getString(1);
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving summary "
+                    + "statistics for the dataset: " + datasetId
                     + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
