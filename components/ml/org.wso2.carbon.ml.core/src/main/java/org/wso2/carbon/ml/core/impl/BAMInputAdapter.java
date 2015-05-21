@@ -74,47 +74,50 @@ public class BAMInputAdapter implements MLInputAdapter {
     
     @Override
     public InputStream read(URI uri) throws MLInputAdapterException {
-        try {
-            if (isValidTable(uri)) {
-                int sampleSize = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
-                // retrieve the data from BAM
-                HttpGet get = new HttpGet(getUriWithSampleSize(uri, sampleSize));
-                response = httpClient.execute(get);
-                // convert the json response to csv format
-                BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                JSONArray outputJson = new JSONArray();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    JSONArray inputJson = new JSONArray(line);
-                    for (int i = 0; i < inputJson.length(); i++) {
-                        outputJson.put(inputJson.getJSONObject(i).getJSONObject(MLConstants.BAM_DATA_VALUES));
-                    }
-                }
-                // Check whether BAM Table contains any data
-                if (outputJson.length() == 0) {
-                    throw new MLInputAdapterException("No data available at: " + uri);
-                }
-                // create a inputstream from the csv.
-                return IOUtils.toInputStream(CDL.toString(outputJson), MLConstants.UTF_8);
-            } else {
-                throw new MLInputAdapterException("Invalid Data source : " + uri);
-            }
-        } catch (ClientProtocolException e) {
-            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
-        } catch (JSONException e) {
-            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);        } finally{
-            if(httpClient != null){ 
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    throw new MLInputAdapterException("Failed to close the http client:" + e.getMessage(), e);
-                }
-            }
-        }
+        
+        InputStream stream = IOUtils.toInputStream("");
+        return stream;
+//        try {
+//            if (isValidTable(uri)) {
+//                int sampleSize = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
+//                // retrieve the data from BAM
+//                HttpGet get = new HttpGet(getUriWithSampleSize(uri, sampleSize));
+//                response = httpClient.execute(get);
+//                // convert the json response to csv format
+//                BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//                JSONArray outputJson = new JSONArray();
+//                String line;
+//                while ((line = br.readLine()) != null) {
+//                    JSONArray inputJson = new JSONArray(line);
+//                    for (int i = 0; i < inputJson.length(); i++) {
+//                        outputJson.put(inputJson.getJSONObject(i).getJSONObject(MLConstants.BAM_DATA_VALUES));
+//                    }
+//                }
+//                // Check whether BAM Table contains any data
+//                if (outputJson.length() == 0) {
+//                    throw new MLInputAdapterException("No data available at: " + uri);
+//                }
+//                // create a inputstream from the csv.
+//                return IOUtils.toInputStream(CDL.toString(outputJson), MLConstants.UTF_8);
+//            } else {
+//                throw new MLInputAdapterException("Invalid Data source : " + uri);
+//            }
+//        } catch (ClientProtocolException e) {
+//            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
+//        } catch (IOException e) {
+//            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
+//        } catch (URISyntaxException e) {
+//            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);
+//        } catch (JSONException e) {
+//            throw new MLInputAdapterException("Failed to read the dataset from uri " + uri + " : " + e.getMessage(), e);        } finally{
+//            if(httpClient != null){ 
+//                try {
+//                    httpClient.close();
+//                } catch (IOException e) {
+//                    throw new MLInputAdapterException("Failed to close the http client:" + e.getMessage(), e);
+//                }
+//            }
+//        }
     }
     
     /**
