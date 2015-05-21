@@ -235,14 +235,6 @@ public class MLDatasetProcessor {
             handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
             targetUri = outputAdapter.write(targetPath, input);
 
-            // read the file that was written
-            inputAdapter = ioFactory.getInputAdapter(dataset.getDataTargetType() + MLConstants.IN_SUFFIX);
-            try {
-                input = inputAdapter.read(targetUri);
-            } catch (MLInputAdapterException e) {
-                throw new MLDataProcessingException("Unable to read the data-set file from: " + targetUri.toString(), e);
-            }
-
             // extract sample points
             SamplePoints samplePoints = MLUtils.getSample(targetUri.toString(), dataset.getDataType(),
                     summaryStatsSettings.getSampleSize(), dataset.isContainsHeader());
