@@ -46,6 +46,7 @@ import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
@@ -362,6 +363,44 @@ public class MLModelHandler {
             if (ois != null) {
                 try {
                     ois.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Publish a ML model to registry.
+     *
+     * @param tenantId    Unique ID of the tenant.
+     * @param userName    Username of the user.
+     * @param modelId     Unique ID of the built ML model.
+     * @throws MLModelBuilderException
+     */
+    public void publishModel(int tenantId, String userName, long modelId) throws MLModelBuilderException {
+        InputStream in = null;
+        try {
+            // read model
+            MLStorage storage = databaseService.getModelStorage(modelId);
+            String storageType = storage.getType();
+            String storageLocation = storage.getLocation();
+            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+            MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+            in = inputAdapter.read(new URI(storageLocation));
+            // create registry path
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+            String registryPath = File.separator + valueHolder.getModelRegistryLocation() + File.separator + modelName;
+            // publish to registry
+            RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
+            registryOutputAdapter.write(registryPath, in);
+
+        } catch (Exception e) {
+            throw new MLModelBuilderException("Failed to publish the model [id] " + modelId, e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
                 } catch (IOException ignore) {
                 }
             }

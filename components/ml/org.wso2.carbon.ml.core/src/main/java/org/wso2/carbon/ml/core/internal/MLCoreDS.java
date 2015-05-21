@@ -69,6 +69,7 @@ public class MLCoreDS {
             valueHolder.setHdfsUrl(mlConfig.getHdfsUrl());
             valueHolder.setAlgorithms(mlConfig.getMlAlgorithms());
             valueHolder.setEmailNotificationEndpoint(mlConfig.getEmailNotificationEndpoint());
+            valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
             valueHolder.setDataStorage(mlConfig.getDataStorage());
 

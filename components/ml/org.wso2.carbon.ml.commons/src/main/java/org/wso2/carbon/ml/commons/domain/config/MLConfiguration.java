@@ -44,6 +44,9 @@ public class MLConfiguration {
     
     @XmlElement(name = "EmailNotificationEndpoint")
     private String emailNotificationEndpoint;
+
+    @XmlElement(name = "ModelRegistryLocation")
+    private String modelRegistryLocation;
     
     @XmlElementWrapper(name="Properties")
     @XmlElement(name = "Property")
@@ -112,6 +115,10 @@ public class MLConfiguration {
     }
     public String getEmailNotificationEndpoint() {
         return emailNotificationEndpoint;
+    }
+    public String getModelRegistryLocation() { return modelRegistryLocation; }
+    public void setModelRegistryLocation(String modelRegistryLocation) {
+        this.modelRegistryLocation = modelRegistryLocation;
     }
     public void setEmailNotificationEndpoint(String emailNotificationEndpoint) {
         this.emailNotificationEndpoint = emailNotificationEndpoint;

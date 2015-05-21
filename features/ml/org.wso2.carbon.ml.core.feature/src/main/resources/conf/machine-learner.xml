@@ -40,6 +40,9 @@
     <!-- Email address to which the model building status mails are sent. -->
     <EmailNotificationEndpoint></EmailNotificationEndpoint>
 
+    <!-- Registry location where ML models are published. -->
+    <ModelRegistryLocation>ml</ModelRegistryLocation>
+
     <!-- Server URL of the remote BAM server used to get data. Must be specified
         in protocol://hostname:port format. -->
     <BAMServerURL>http://localhost:9763</BAMServerURL>
