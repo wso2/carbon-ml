@@ -119,7 +119,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(3, datasetVersion.getVersion());
             insertStatement.setInt(4, datasetVersion.getTenantId());
             insertStatement.setString(5, datasetVersion.getUserName());
-            insertStatement.setString(6, datasetVersion.getTargetPath().toString());
+            insertStatement.setString(6, datasetVersion.getTargetPath() == null ? null : datasetVersion.getTargetPath().toString());
             insertStatement.setObject(7, datasetVersion.getSamplePoints());
             insertStatement.execute();
             connection.commit();
@@ -599,7 +599,7 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setVersion(result.getString(3));
-                versionset.setTargetPath(new URI(result.getString(4)));
+                versionset.setTargetPath(result.getString(4) == null ? null : new URI(result.getString(4)));
                 versionset.setSamplePoints((SamplePoints)result.getObject(5));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -638,7 +638,7 @@ public class MLDatabaseService implements DatabaseService {
                 MLDatasetVersion versionset = new MLDatasetVersion();
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
-                versionset.setTargetPath(new URI(result.getString(3)));
+                versionset.setTargetPath(result.getString(3) == null ? null : new URI(result.getString(3)));
                 versionset.setSamplePoints((SamplePoints)result.getObject(4));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);

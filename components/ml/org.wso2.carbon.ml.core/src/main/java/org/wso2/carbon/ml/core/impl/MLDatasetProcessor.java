@@ -220,24 +220,48 @@ public class MLDatasetProcessor {
                 dataset.getDataTargetType(), dataset.getName()));
         InputStream input = null;
         URI targetUri = null;
+        SamplePoints samplePoints = null;
         try {
+            //TODO introduce proper inheritance.
             // write the data-set to a server side location
             if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(dataset.getDataSourceType())) {
                 // if the source is a file, read the inputstream
                 input = inputStream;
+            } else if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
+                handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
+                        dataset.getSourcePath(), dataset.getName()));
+                // in BAM case, we do not persist the data into a server side file.
+                String sourcePath = dataset.getSourcePath().toString();
+                if (!sourcePath.contains(":")) {
+                    throw new MLDataProcessingException(String.format("Invalid data source path %s for [data set name] %s [version] %s", sourcePath, 
+                            dataset.getName(), dataset.getVersion()));
+                }
+                
             } else {
+                handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
+                        dataset.getSourcePath(), dataset.getName()));
                 // if the source is hdfs/bam read from the source path
                 input = inputAdapter.read(dataset.getSourcePath());
             }
-            handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
-                    dataset.getSourcePath(), dataset.getName()));
-            String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
-            handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
-            targetUri = outputAdapter.write(targetPath, input);
+            
+            if (!MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
+                
+                handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
+                        dataset.getSourcePath(), dataset.getName()));
+                String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
+                handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
+                targetUri = outputAdapter.write(targetPath, input);
+                // extract sample points
+                samplePoints = MLUtils.getSample(targetUri.toString(), dataset.getDataType(),
+                        summaryStatsSettings.getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
+                
+            } else {
+                targetUri = dataset.getSourcePath();
+                // extract sample points
+                samplePoints = MLUtils.getSample(dataset.getSourcePath().toString(), "csv",
+                        summaryStatsSettings.getSampleSize(), false, dataset.getDataSourceType(), dataset.getTenantId());
+            }
 
-            // extract sample points
-            SamplePoints samplePoints = MLUtils.getSample(targetUri.toString(), dataset.getDataType(),
-                    summaryStatsSettings.getSampleSize(), dataset.isContainsHeader());
 
             // persist data-set and data-set version in DB
             persistDataset(dataset);

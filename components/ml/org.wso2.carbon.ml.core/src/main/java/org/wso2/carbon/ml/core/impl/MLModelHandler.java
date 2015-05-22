@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
@@ -47,6 +48,7 @@ import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
+import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -64,6 +66,7 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
+import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
@@ -224,17 +227,19 @@ public class MLModelHandler {
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
-            // long datasetVersionId = databaseService.getDatasetVersionId(datasetVersionId);
-            // long datasetId = databaseService.getDatasetId(datasetVersionId);
+            long datasetId = databaseService.getDatasetId(datasetVersionId);
+            MLDataset dataset = databaseService.getDataset(tenantId, userName, datasetId);
+            String dataSourceType = dataset.getDataSourceType();
             String dataType = databaseService.getDataTypeOfModel(modelId);
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
+            handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
-            Map<String,String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
+            Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
 
             JavaRDD<String> lines;
-            
+
             MLModelConfigurationContext context = new MLModelConfigurationContext();
             context.setModelId(modelId);
             context.setColumnSeparator(columnSeparator);
@@ -246,25 +251,30 @@ public class MLModelHandler {
             sparkConf.setAppName(String.valueOf(modelId));
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
-            //TODO following is a temporary testing; unharmful code.
-            if (System.getProperty("bam") != null && System.getProperty("bam").equalsIgnoreCase("true")) {
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql(
-                        "CREATE TEMPORARY TABLE LOG USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider " +
-                        "OPTIONS (" +
-                        "tenantId \"-1234\", " +
-                        "tableName \"LOG\", " +
-                        "schema \"id STRING, name STRING\"" +
-                        ")");
-                
-                DataFrame dataFrame = sqlCtx.sql("select * from LOG");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(columnSeparator));
 
+            if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataSourceType)) {
+                CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
+                String tableName = MLUtils.extractTableName(dataUrl);
+                String tableSchema = MLUtils.extractTableSchema(dataUrl);
+                SQLContext sqlCtx = new SQLContext(sparkContext);
+                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                        + "OPTIONS ("
+                        + "tenantId \""
+                        + tenantId
+                        + "\", "
+                        + "tableName \""
+                        + tableName
+                        + "\", "
+                        + "schema \"" + tableSchema + "\"" + ")");
+
+                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
+                JavaRDD<Row> rows = dataFrame.javaRDD();
+                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
             } else {
                 // parse lines in the dataset
                 lines = sparkContext.textFile(dataUrl);
             }
+            
             // get header line
             String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
             context.setSparkContext(sparkContext);
@@ -496,6 +506,12 @@ public class MLModelHandler {
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
+        }
+    }
+    
+    private void handleNull(Object obj, String msg) throws MLModelHandlerException {
+        if (obj == null) {
+            throw new MLModelHandlerException(msg);
         }
     }
 }
