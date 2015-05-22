@@ -127,6 +127,25 @@ public class ModelApiV10 extends MLRestAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+
+    @POST
+    @Path("/{modelId}/publish")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response publishModel(@PathParam("modelId") long modelId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            mlModelHandler.publishModel(tenantId, userName, modelId);
+            return Response.ok().build();
+        } catch (Exception e) {
+            logger.error(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
     
     @POST
     @Path("/{modelId}/predict")
