@@ -50,6 +50,7 @@ import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
@@ -375,9 +376,9 @@ public class MLModelHandler {
      * @param tenantId    Unique ID of the tenant.
      * @param userName    Username of the user.
      * @param modelId     Unique ID of the built ML model.
-     * @throws MLModelBuilderException
+     * @throws MLModelPublisherException
      */
-    public void publishModel(int tenantId, String userName, long modelId) throws MLModelBuilderException {
+    public void publishModel(int tenantId, String userName, long modelId) throws MLModelPublisherException {
         InputStream in = null;
         try {
             // read model
@@ -387,6 +388,9 @@ public class MLModelHandler {
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(new URI(storageLocation));
+            if (in == null) {
+                throw new MLModelPublisherException("Invalid model [id] " + modelId);
+            }
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
@@ -396,7 +400,7 @@ public class MLModelHandler {
             registryOutputAdapter.write(registryPath, in);
 
         } catch (Exception e) {
-            throw new MLModelBuilderException("Failed to publish the model [id] " + modelId, e);
+            throw new MLModelPublisherException("Failed to publish the model [id] " + modelId, e);
         } finally {
             if (in != null) {
                 try {

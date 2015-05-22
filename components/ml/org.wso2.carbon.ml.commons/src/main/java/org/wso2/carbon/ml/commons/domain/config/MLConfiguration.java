@@ -116,7 +116,9 @@ public class MLConfiguration {
     public String getEmailNotificationEndpoint() {
         return emailNotificationEndpoint;
     }
-    public String getModelRegistryLocation() { return modelRegistryLocation; }
+    public String getModelRegistryLocation() {
+        return modelRegistryLocation;
+    }
     public void setModelRegistryLocation(String modelRegistryLocation) {
         this.modelRegistryLocation = modelRegistryLocation;
     }
