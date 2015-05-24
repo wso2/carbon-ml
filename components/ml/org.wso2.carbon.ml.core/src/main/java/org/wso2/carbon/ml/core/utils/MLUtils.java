@@ -42,23 +42,29 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SQLContext;
+
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
+import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+
 
 public class MLUtils {
 
     /**
      * Generate a random sample of the dataset using Spark.
      */
-    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader)
+    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader, String sourceType, int tenantId)
             throws MLMalformedDatasetException {
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
@@ -81,8 +87,29 @@ public class MLUtils {
             sparkConf.setAppName("sample-generator-" + Math.random());
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
-            // parse lines in the dataset
-            JavaRDD<String> lines = sparkContext.textFile(path);
+            JavaRDD<String> lines;
+
+            if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(sourceType)) {
+                String tableName = extractTableName(path);
+                String tableSchema = extractTableSchema(path);
+                SQLContext sqlCtx = new SQLContext(sparkContext);
+                sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                        + "OPTIONS ("
+                        + "tenantId \""
+                        + tenantId
+                        + "\", "
+                        + "tableName \""
+                        + tableName
+                        + "\", "
+                        + "schema \"" + tableSchema + "\"" + ")");
+
+                DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
+                JavaRDD<Row> rows = dataFrame.javaRDD();
+                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+            } else {
+                // parse lines in the dataset
+                lines = sparkContext.textFile(path);
+            }
             // take the first line
              String firstLine = lines.first();
             // count the number of features
@@ -156,6 +183,31 @@ public class MLUtils {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    public static String extractTableSchema(String path) {
+        if (path == null) {
+            return null;
+        }
+        String[] segments = path.split(":");
+        if (segments.length>1) {
+            String schema = segments[1];
+            schema = schema.replace(',', ' ');
+            schema = schema.replace(';', ',');
+            return schema;
+        }
+        return null;
+    }
+
+    public static String extractTableName(String path) {
+        if (path == null) {
+            return null;
+        }
+        String[] segments = path.split(":");
+        if (segments.length>0) {
+            return segments[0];
+        }
+        return null;
     }
 
     /**
@@ -254,8 +306,8 @@ public class MLUtils {
         }
     }
 
-    private static class DataTypeFactory {
-        static CSVFormat getCSVFormat(String dataType) {
+    public static class DataTypeFactory {
+        public static CSVFormat getCSVFormat(String dataType) {
             if ("TSV".equalsIgnoreCase(dataType)) {
                 return CSVFormat.TDF;
             }

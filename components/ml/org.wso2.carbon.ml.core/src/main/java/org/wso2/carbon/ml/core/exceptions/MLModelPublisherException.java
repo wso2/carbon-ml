@@ -15,21 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.core.impl;
 
-import java.io.InputStream;
-import java.net.URI;
-import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
-import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+package org.wso2.carbon.ml.core.exceptions;
 
-/**
- * For BAM case, the Input Adapter is of no use, as we read the data from within Spark.
- */
-public class BAMInputAdapter implements MLInputAdapter {
+public class MLModelPublisherException extends Exception {
+    private static final long serialVersionUID = -8346783977372279074L;
 
-    @Override
-    public InputStream read(URI uri) throws MLInputAdapterException {
-        throw new UnsupportedOperationException();
+    public MLModelPublisherException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
+
+    public MLModelPublisherException(String message) {
+        super(message);
+    }
+
+    public MLModelPublisherException(Throwable cause) {
+        super(cause);
+    }
 }

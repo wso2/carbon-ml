@@ -37,6 +37,7 @@ public class MLCoreServiceValueHolder {
     private String  bamServerUrl;
     private String  hdfsUrl;
     private String emailNotificationEndpoint;
+    private String modelRegistryLocation;
     private List<MLAlgorithm> algorithms;
     private SparkConf sparkConf;
     private ConfigurationContextService configurationContextService;
@@ -133,6 +134,14 @@ public class MLCoreServiceValueHolder {
 
     public void setEmailNotificationEndpoint(String emailNotificationEndpoint) {
         this.emailNotificationEndpoint = emailNotificationEndpoint;
+    }
+
+    public String getModelRegistryLocation() {
+        return modelRegistryLocation;
+    }
+
+    public void setModelRegistryLocation(String modelRegistryLocation) {
+        this.modelRegistryLocation = modelRegistryLocation;
     }
     
     public ModelStorage getModelStorage() {

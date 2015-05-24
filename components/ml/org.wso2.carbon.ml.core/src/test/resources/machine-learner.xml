@@ -33,6 +33,9 @@
 			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
 	</Properties>
 
+	<!-- Registry location where ML models are published. -->
+	<ModelRegistryLocation>ml</ModelRegistryLocation>
+
 	<!-- Server URL of the remote BAM server used to get data. Must be specified 
 		in protocol://hostname:port format. -->
 	<BAMServerURL>http://localhost:9763</BAMServerURL>

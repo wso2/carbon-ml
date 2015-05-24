@@ -35,9 +35,9 @@ import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-public class MLRequestAuthenticationHandler implements RequestHandler{
+public class MLBasicAuthenticationHandler implements RequestHandler {
 	
-	private static final Log logger = LogFactory.getLog(MLRequestAuthenticationHandler.class);
+	private static final Log logger = LogFactory.getLog(MLBasicAuthenticationHandler.class);
     private PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
 
     /**
@@ -50,17 +50,17 @@ public class MLRequestAuthenticationHandler implements RequestHandler{
 	        logger.debug(String.format("Authenticating request: " + message.getId()));
         }
 	    
+        // Extract auth header from the message.
+        AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
+        if (policy == null) {
+            // if auth header is missing, proceed to next auth handler.
+            return null;
+        }
+        
         // If Mutual SSL is enabled
         HttpServletRequest request = (HttpServletRequest) message.get(RestAPIConstants.HTTP_REQUEST_HEADER);
         Object certObject = request.getAttribute(RestAPIConstants.CERTIFICATE_HEADER);
         
-        // Extract auth header from the message.
-        AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
-        if (policy == null) {
-            logger.error("Authentication header missing.");
-            return Response.status(Response.Status.UNAUTHORIZED).type(MediaType.APPLICATION_JSON).entity(
-                    "Authentication header missing.").build();
-        }
         // Extract user credentials from the auth header.
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();

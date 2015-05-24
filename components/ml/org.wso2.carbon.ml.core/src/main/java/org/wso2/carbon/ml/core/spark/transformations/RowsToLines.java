@@ -42,7 +42,7 @@ public class RowsToLines implements Function<Row, String> {
                 return "";
             }
             for (int i = 0; i < row.length(); i++) {
-                sb.append(row.getString(i) + columnSeparator);
+                sb.append(row.get(i) + columnSeparator);
             }
             return sb.substring(0, sb.length() - 1);
         } catch (Exception e) {

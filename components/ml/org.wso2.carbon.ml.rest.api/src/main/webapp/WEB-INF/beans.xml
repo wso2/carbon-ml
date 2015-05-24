@@ -36,6 +36,7 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
+        	<bean class="org.wso2.carbon.ml.rest.api.LoginLogoutApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ProjectApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
@@ -43,11 +44,11 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
-            <ref bean="authorizationFilter"/>
+            <ref bean="basicAuthenticationFilter"/>
+            <ref bean="sessionAuthenticationFilter"/>
         </jaxrs:providers>
     </jaxrs:server>
     
-    <bean id="authorizationFilter" class="org.wso2.carbon.ml.rest.api.handler.MLRequestAuthenticationHandler">
-        <!-- authorization bean properties -->
-    </bean>
+    <bean id="basicAuthenticationFilter" class="org.wso2.carbon.ml.rest.api.handler.MLBasicAuthenticationHandler"/>
+    <bean id="sessionAuthenticationFilter" class="org.wso2.carbon.ml.rest.api.handler.SessionBasedAuthenticationHandler"/>
 </beans>
