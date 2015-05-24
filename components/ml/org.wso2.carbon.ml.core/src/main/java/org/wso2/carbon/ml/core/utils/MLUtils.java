@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -41,12 +42,16 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 
 public class MLUtils {
 
@@ -79,9 +84,16 @@ public class MLUtils {
             // parse lines in the dataset
             JavaRDD<String> lines = sparkContext.textFile(path);
             // take the first line
-            String firstLine = lines.first();
+             String firstLine = lines.first();
             // count the number of features
             featureSize = getFeatureSize(firstLine, dataFormat);
+
+            List<Integer> featureIndices = new ArrayList<Integer>();
+            for (int i = 0; i < featureSize; i++)
+                featureIndices.add(i);
+
+            JavaRDD<String[]> tokensDiscardedRemoved = filterRows(String.valueOf(dataFormat.getDelimiter()),
+                    lines.first(), lines, featureIndices);
 
             missing = new int[featureSize];
             stringCellCount = new int[featureSize];
@@ -100,17 +112,11 @@ public class MLUtils {
             }
 
             // take a random sample
-            List<String> sampleLines = lines.takeSample(false, sampleSize);
+            List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
+
 
             // iterate through sample lines
-            for (String row : sampleLines) {
-                // if it is the header row, we have to skip it
-                if (containsHeader && row.equals(firstLine)) {
-                    continue;
-                }
-                // get the column values of this data row
-                String[] columnValues = getColumnValues(row, dataFormat);
-                // traverse through columns and study the sample set
+            for (String[] columnValues : sampleLines) {
                 for (int currentCol = 0; currentCol < featureSize; currentCol++) {
                     // Check whether the row is complete.
                     if (currentCol < columnValues.length) {
@@ -423,6 +429,30 @@ public class MLUtils {
 
     public static String[] getColumnValues(String line, CSVFormat format) {
         return line.split("" + format.getDelimiter());
+    }
+
+    /**
+     * Applies the discard filter to a JavaRDD
+     * @param delimiter         Column separator of the dataset
+     * @param headerRow         Header row
+     * @param lines             JavaRDD which contains the dataset
+     * @param featureIndices    Indices of the features to apply filter
+     * @return filtered JavaRDD
+     */
+    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines, List<Integer> featureIndices){
+        String columnSeparator = String.valueOf(delimiter);
+        HeaderFilter headerFilter = new HeaderFilter(headerRow);
+        JavaRDD<String> data = lines.filter(headerFilter);
+        Pattern pattern = Pattern.compile(columnSeparator);
+        LineToTokens lineToTokens = new LineToTokens(pattern);
+        JavaRDD<String[]> tokens = data.map(lineToTokens);
+
+        // get feature indices for discard imputation
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(featureIndices);
+        // Discard the row if any of the impute indices content have a missing value
+        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
+
+        return tokensDiscardedRemoved;
     }
 
 }

@@ -41,11 +41,13 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
         try {
             Boolean keep = true;
             for (Integer index : indices) {
-                if (index >= tokens.length || MLConstants.EMPTY.equals(tokens[index]) || MLConstants.NA.equals(tokens[index])) {
+                if (index >= tokens.length || MLConstants.EMPTY.equals(tokens[index]) ||
+                        MLConstants.NA.equals(tokens[index]) || MLConstants.QUESTION.equals(tokens[index])) {
                     keep = false;
                     break;
                 }
             }
+            MLConstants.SUPERVISED_ALGORITHM.values();
             return keep;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while removing discarded rows: " + e.getMessage(), e);

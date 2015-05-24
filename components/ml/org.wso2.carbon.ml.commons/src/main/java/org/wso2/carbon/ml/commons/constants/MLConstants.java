@@ -143,6 +143,7 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
     public static final Long RANDOM_SEED = 11L;
     public static final String EMPTY = "";
     public static final String NA = "NA";
+    public static final String QUESTION = "?";
     public static final String DECIMAL_FORMAT = "#.00";
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";

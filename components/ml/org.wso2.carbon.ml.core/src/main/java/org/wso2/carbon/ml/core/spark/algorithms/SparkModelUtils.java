@@ -198,17 +198,10 @@ public class SparkModelUtils {
         
         List<Map<String, Integer>> encodings = buildEncodings(workflow.getFeatures(), summaryStatsOfFeatures);
         context.setEncodings(encodings);
-        
-            HeaderFilter headerFilter = new HeaderFilter(headerRow);
-            JavaRDD<String> data = lines.filter(headerFilter);
-            Pattern pattern = Pattern.compile(columnSeparator);
-            LineToTokens lineToTokens = new LineToTokens(pattern);
-            JavaRDD<String[]> tokens = data.map(lineToTokens);
-            // get feature indices for discard imputation
-            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(
+
+            // Apply the filter to discard rows with missing values.
+            JavaRDD<String[]> tokensDiscardedRemoved = MLUtils.filterRows(columnSeparator, headerRow, lines,
                     MLUtils.getImputeFeatureIndices(workflow, MLConstants.DISCARD));
-            // Discard the row if any of the impute indices content have a missing or NA value
-            JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
             JavaRDD<String[]> encodedTokens = tokensDiscardedRemoved.map(new OneHotEncoder(encodings));
             JavaRDD<double[]> features = null;
             // get feature indices for mean imputation
