@@ -928,7 +928,7 @@
 		<uuid.feature.version>1.0.0</uuid.feature.version>
 		<!-- End of jaggery dependency versions -->
 		<scala.version>2.10.4</scala.version>
-		<commons.math.version>3.3</commons.math.version>
+		<commons.math.version>3.1.1</commons.math.version>
 		<commons.csv.version>1.0</commons.csv.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<commons-lang3.version>3.3.2</commons-lang3.version>
