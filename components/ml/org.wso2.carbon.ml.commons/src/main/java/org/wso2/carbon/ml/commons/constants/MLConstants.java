@@ -142,9 +142,6 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
 
     // other
     public static final Long RANDOM_SEED = 11L;
-    public static final String EMPTY = "";
-    public static final String NA = "NA";
-    public static final String QUESTION = "?";
     public static final String DECIMAL_FORMAT = "#.00";
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
@@ -177,5 +174,26 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
 
     public enum UNSUPERVISED_ALGORITHM {
         K_MEANS
+    }
+
+    public enum MISSING_VALUES {
+        EMPTY(""), NA("NA"), QUESTION("?");
+
+        private final String value;
+        private MISSING_VALUES(final String str) {
+            this.value = str;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static boolean contains(String s) {
+            for (MISSING_VALUES val : values())
+                if (val.toString().equals(s))
+                    return true;
+            return false;
+        }
     }
 }
