@@ -52,6 +52,7 @@ import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.OneHotEncoder;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
 import scala.Tuple2;
@@ -111,8 +112,8 @@ public class SparkModelUtils {
         JavaRDD<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualJavaRDD = sparkContext.parallelize(featuresWithPredictedVsActualList);
         // collect RDD as a sampled list
         List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualSample;
-        if(featuresWithPredictedVsActualJavaRDD.count() > 10000) {
-            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.takeSample(true, 10000);
+        if(featuresWithPredictedVsActualJavaRDD.count() > MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize()) {
+            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.takeSample(true, MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize());
         }
         else {
             featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.collect();
