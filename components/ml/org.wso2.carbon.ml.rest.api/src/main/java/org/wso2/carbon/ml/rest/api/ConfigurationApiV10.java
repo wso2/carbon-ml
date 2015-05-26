@@ -64,7 +64,7 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 return Response.ok(mlAlgorithm).build();
             }
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        return Response.status(Response.Status.NOT_FOUND)
                 .entity("No algorithm found with the name: " + algorithmName).build();
     }
 
@@ -82,7 +82,7 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 return Response.ok(mlAlgorithm.getParameters()).build();
             }
         }
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        return Response.status(Response.Status.NOT_FOUND)
                 .entity("No algorithm found with the name: " + algorithmName).build();
     }
 
