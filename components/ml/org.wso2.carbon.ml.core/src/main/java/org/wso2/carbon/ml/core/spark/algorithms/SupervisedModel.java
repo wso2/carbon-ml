@@ -104,7 +104,7 @@ public class SupervisedModel {
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
             case LOGISTIC_REGRESSION:
-                summaryModel = buildLogisticRegressionModel(modelId, trainingData, testingData, workflow, mlModel, 
+                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
                    includedFeatures);
                 break;
             case DECISION_TREE:
@@ -112,7 +112,7 @@ public class SupervisedModel {
                 summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case SVM:
-                summaryModel = buildSVMModel(modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                summaryModel = buildSVMModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
                 break;
             case NAIVE_BAYES:
                 summaryModel = buildNaiveBayesModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
@@ -170,7 +170,7 @@ public class SupervisedModel {
      * @param columnSeparator   Column separator of dataset
      * @throws                  MLModelBuilderException
      */
-    private ModelSummary buildLogisticRegressionModel(long modelID, JavaRDD<LabeledPoint> trainingData,
+    private ModelSummary buildLogisticRegressionModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
         try {
             LogisticRegression logisticRegression = new LogisticRegression();
@@ -186,7 +186,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(logisticRegressionModel,
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-                    SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
+                    SparkModelUtils.generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, logisticRegressionModel
@@ -263,7 +263,7 @@ public class SupervisedModel {
      * @param columnSeparator   Column separator of dataset
      * @throws                  MLModelBuilderException
      */
-    private ModelSummary buildSVMModel(long modelID, JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData,
+    private ModelSummary buildSVMModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData,
             Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures)
             throws MLModelBuilderException {
         try {
@@ -277,7 +277,7 @@ public class SupervisedModel {
             svmModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel, testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-                    SparkModelUtils.generateProbabilisticClassificationModelSummary(scoresAndLabels);
+                    SparkModelUtils.generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
             mlModel.setModel(svmModel);
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, svmModel.weights().toArray());

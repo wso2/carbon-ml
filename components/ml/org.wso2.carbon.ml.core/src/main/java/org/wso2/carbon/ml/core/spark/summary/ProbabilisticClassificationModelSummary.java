@@ -35,6 +35,7 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private double auc;
     private  List<FeatureImportance> featureImportance;
     private List<PredictedVsActual> predictedVsActuals;
+    private List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualSample;
     private String algorithm;
     private String[] features;
     private double modelAccuracy;
@@ -74,6 +75,20 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      */
     public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
         this.predictedVsActuals = predictedVsActuals;
+    }
+
+    /**
+     * @return Returns a list of features with predicted vs. actual values
+     */
+    public List<FeaturesWithPredictedVsActual> getFeaturesWithPredictedVsActualSample() {
+        return featuresWithPredictedVsActualSample;
+    }
+
+    /**
+     * @param featuresWithPredictedVsActualSample Sets features with predicted vs. actual values
+     */
+    public void setFeaturesWithPredictedVsActualSample(List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualSample) {
+        this.featuresWithPredictedVsActualSample = featuresWithPredictedVsActualSample;
     }
 
     /**

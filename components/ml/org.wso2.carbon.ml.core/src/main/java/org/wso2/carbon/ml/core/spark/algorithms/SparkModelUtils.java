@@ -28,6 +28,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.Vector;
+import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
 import org.apache.spark.mllib.stat.Statistics;
 import org.json.JSONArray;
@@ -40,6 +41,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
+import org.wso2.carbon.ml.core.spark.summary.FeaturesWithPredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
@@ -55,10 +57,7 @@ import org.wso2.carbon.ml.core.utils.MLUtils;
 import scala.Tuple2;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class SparkModelUtils {
@@ -76,16 +75,17 @@ public class SparkModelUtils {
      * @param scoresAndLabels   Tuple2 containing scores and labels
      * @return                  Probabilistic classification model summary
      */
-    public static ProbabilisticClassificationModelSummary generateProbabilisticClassificationModelSummary(
-            JavaRDD<Tuple2<Object, Object>> scoresAndLabels) {
+    public static ProbabilisticClassificationModelSummary generateProbabilisticClassificationModelSummary(JavaSparkContext sparkContext,
+                                                                                                          JavaRDD<LabeledPoint> testingData,
+                                                                                                          JavaRDD<Tuple2<Object, Object>> scoresAndLabels) {
         ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-            new ProbabilisticClassificationModelSummary();
+                new ProbabilisticClassificationModelSummary();
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
         for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
-            //TODO: handle NaN 
+            //TODO: handle NaN
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
             predictedVsActuals.add(predictedVsActual);
@@ -93,6 +93,31 @@ public class SparkModelUtils {
                 log.trace("Predicted: "+predictedVsActual.getPredicted() + " ------ Actual: "+predictedVsActual.getActual());
             }
         }
+        // create a list of feature values
+        List<double[]> features = new ArrayList<double[]>();
+        for (LabeledPoint labeledPoint : testingData.collect()) {
+            double[] rowFeatures = labeledPoint.features().toArray();
+            features.add(rowFeatures);
+        }
+        // create a list of feature values with predicted vs. actuals
+        List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualList = new ArrayList<FeaturesWithPredictedVsActual>();
+        for(int i = 0; i < features.size(); i++) {
+            FeaturesWithPredictedVsActual featuresWithPredictedVsActual = new FeaturesWithPredictedVsActual();
+            featuresWithPredictedVsActual.setPredictedVsActual(predictedVsActuals.get(i));
+            featuresWithPredictedVsActual.setRowFeatures(features.get(i));
+            featuresWithPredictedVsActualList.add(featuresWithPredictedVsActual);
+        }
+        // covert List to JavaRDD
+        JavaRDD<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualJavaRDD = sparkContext.parallelize(featuresWithPredictedVsActualList);
+        // collect RDD as a sampled list
+        List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualSample;
+        if(featuresWithPredictedVsActualJavaRDD.count() > 10000) {
+            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.takeSample(true, 10000);
+        }
+        else {
+            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.collect();
+        }
+        probabilisticClassificationModelSummary.setFeaturesWithPredictedVsActualSample(featuresWithPredictedVsActualSample);
         probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // generate binary classification metrics
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoresAndLabels));
