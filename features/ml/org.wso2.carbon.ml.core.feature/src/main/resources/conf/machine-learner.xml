@@ -74,17 +74,17 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
-				<Description>Iterations - Number of iterations to be run</Description>
+				<Description>Number of times optimizer runs before completing the optimization process</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Step size of the optimization algorithm</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>SGD_Data_Fraction</Description>
+				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -97,12 +97,12 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
-				<Description>Iterations</Description>
+				<Description>Number of times optimizer runs before completing the optimization process</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Step size of the optimization algorithm</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
@@ -112,7 +112,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>SGD_Data_Fraction</Description>
+				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -140,7 +140,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>SGD_Data_Fraction</Description>
+				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -173,7 +173,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>SGD_Data_Fraction</Description>
+				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
