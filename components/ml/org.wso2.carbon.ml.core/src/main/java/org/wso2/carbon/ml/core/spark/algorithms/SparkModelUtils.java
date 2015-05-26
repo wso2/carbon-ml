@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaDoubleRDD;
@@ -41,12 +40,9 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
-import org.wso2.carbon.ml.core.spark.summary.FeaturesWithPredictedVsActual;
+import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
 import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
-import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.OneHotEncoder;
@@ -59,7 +55,6 @@ import scala.Tuple2;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class SparkModelUtils {
     private static final Log log = LogFactory.getLog(SparkModelUtils.class);
@@ -101,24 +96,24 @@ public class SparkModelUtils {
             features.add(rowFeatures);
         }
         // create a list of feature values with predicted vs. actuals
-        List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualList = new ArrayList<FeaturesWithPredictedVsActual>();
+        List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
         for(int i = 0; i < features.size(); i++) {
-            FeaturesWithPredictedVsActual featuresWithPredictedVsActual = new FeaturesWithPredictedVsActual();
-            featuresWithPredictedVsActual.setPredictedVsActual(predictedVsActuals.get(i));
-            featuresWithPredictedVsActual.setRowFeatures(features.get(i));
-            featuresWithPredictedVsActualList.add(featuresWithPredictedVsActual);
+            TestResultDataPoint testResultDataPoint = new TestResultDataPoint();
+            testResultDataPoint.setPredictedVsActual(predictedVsActuals.get(i));
+            testResultDataPoint.setFeatureValues(features.get(i));
+            testResultDataPoints.add(testResultDataPoint);
         }
         // covert List to JavaRDD
-        JavaRDD<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualJavaRDD = sparkContext.parallelize(featuresWithPredictedVsActualList);
+        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints);
         // collect RDD as a sampled list
-        List<FeaturesWithPredictedVsActual> featuresWithPredictedVsActualSample;
-        if(featuresWithPredictedVsActualJavaRDD.count() > MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize()) {
-            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.takeSample(true, MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize());
+        List<TestResultDataPoint> testResultDataPointsSample;
+        if(testResultDataPointsJavaRDD.count() > MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize()) {
+            testResultDataPointsSample = testResultDataPointsJavaRDD.takeSample(true, MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize());
         }
         else {
-            featuresWithPredictedVsActualSample = featuresWithPredictedVsActualJavaRDD.collect();
+            testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
-        probabilisticClassificationModelSummary.setFeaturesWithPredictedVsActualSample(featuresWithPredictedVsActualSample);
+        probabilisticClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
         probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // generate binary classification metrics
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoresAndLabels));

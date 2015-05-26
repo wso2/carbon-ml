@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,13 +21,13 @@ package org.wso2.carbon.ml.core.spark.summary;
 import java.io.Serializable;
 
 /**
- * DTO class to store features with predicted vs. actual
+ * DTO class to store features, predicted and actual values of a single test dataset row
  */
-public class FeaturesWithPredictedVsActual implements Serializable {
+public class TestResultDataPoint implements Serializable {
 
     private static final long serialVersionUID = 6763495729970627524L;
     private PredictedVsActual predictedVsActual;
-    private double[] rowFeatures;
+    private double[] featureValues;
 
     /**
      * @return Returns predicted vs. actual
@@ -46,14 +46,14 @@ public class FeaturesWithPredictedVsActual implements Serializable {
     /**
      * @return Returns row features
      */
-    public double[] getRowFeatures() {
-        return rowFeatures;
+    public double[] getFeatureValues() {
+        return featureValues;
     }
 
     /**
-     * @param rowFeatures Sets row features
+     * @param featureValues Sets row features
      */
-    public void setRowFeatures(double[] rowFeatures) {
-        this.rowFeatures = rowFeatures;
+    public void setFeatureValues(double[] featureValues) {
+        this.featureValues = featureValues;
     }
 }
