@@ -1,237 +1,272 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MachineLearner>
-    <!-- JNDI name of the data source to be used by the Machine Learner. This
-        data source should be defined in the master-datasources.xml file in conf/datasources
-        directory. -->
-    <Database>jdbc/WSO2ML_DB</Database>
+	<!-- JNDI name of the data source to be used by the Machine Learner. This 
+		data source should be defined in the master-datasources.xml file in conf/datasources 
+		directory. -->
+	<Database>jdbc/WSO2ML_DB</Database>
 
-    <!-- Configurations to calculate summary statistics from a dataset. histogramBins
-        : Number of intervals in a histogram. categoricalThreshold : The maximum
-        number of categories that can have in a non-string categorical feature. If
-        exeeds, the feature will be treated as a numerical feature. sampleSize :
-        Size of the dataset sample which will be used for summary statistics calculation
-        and visualization. -->
-    <SummaryStatisticsSettings>
-        <HistogramBins>20</HistogramBins>
-        <CategoricalThreshold>20</CategoricalThreshold>
-        <SampleSize>10000</SampleSize>
-    </SummaryStatisticsSettings>
+	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
+		: Number of intervals in a histogram. categoricalThreshold : The maximum 
+		number of categories that can have in a non-string categorical feature. If 
+		exeeds, the feature will be treated as a numerical feature. sampleSize : 
+		Size of the dataset sample which will be used for summary statistics calculation 
+		and visualization. -->
+	<SummaryStatisticsSettings>
+		<HistogramBins>20</HistogramBins>
+		<CategoricalThreshold>20</CategoricalThreshold>
+		<SampleSize>10000</SampleSize>
+	</SummaryStatisticsSettings>
 
-    <!-- -->
-    <Properties>
-        <Property name="ml.thread.pool.size" value="100" />
-        <Property name="target.home" value="/tmp" />
-        <Property name="file.in"
-                  value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
-        <Property name="file.out"
-                  value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
-        <Property name="hdfs.in"
-                  value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
-        <Property name="hdfs.out"
-                  value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
-        <Property name="bam.in"
-                  value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+	<!-- -->
+	<Properties>
+		<Property name="ml.thread.pool.size" value="100" />
+		<Property name="target.home" value="/tmp" />
+		<Property name="file.in"
+			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
+		<Property name="file.out"
+			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+	    <Property name="hdfs.in"
+			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
+		<Property name="hdfs.out"
+			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
+	    <Property name="bam.in"
+			value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
         <Property name="registry.in"
                   value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter"/>
         <Property name="registry.out"
                   value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter"/>
-    </Properties>
+	</Properties>
 
-    <!-- Email address to which the model building status mails are sent. -->
-    <EmailNotificationEndpoint></EmailNotificationEndpoint>
+	<!-- Email address to which the model building status mails are sent. -->
+	<EmailNotificationEndpoint></EmailNotificationEndpoint>
 
-    <!-- Registry location where ML models are published. -->
-    <ModelRegistryLocation>ml</ModelRegistryLocation>
+	<!-- Registry location where ML models are published. -->
+	<ModelRegistryLocation>ml</ModelRegistryLocation>
 
-    <!-- Server URL of the remote BAM server used to get data. Must be specified
-        in protocol://hostname:port format. -->
-    <BAMServerURL>http://localhost:9763</BAMServerURL>
+	<!-- Server URL of the remote BAM server used to get data. Must be specified 
+		in protocol://hostname:port format. -->
+	<BAMServerURL>http://localhost:9763</BAMServerURL>
+	
+	<!-- Optional element. This element should point to a HDFS location where ML is allowed to store files. -->
+	<HdfsURL>hdfs://localhost:9000</HdfsURL>
 
-    <!-- Optional element. This element should point to a HDFS location where ML is allowed to store files. -->
-    <HdfsURL>hdfs://localhost:9000</HdfsURL>
+        <!-- Storage Details for built ML Models. StorageType can be either "file" or "hdfs" -->
+	<ModelStorage>
+		<StorageType>file</StorageType>
+	    	<StorageDirectory>/tmp</StorageDirectory>
+        </ModelStorage>
 
-    <!-- Storage Details for built ML Models. StorageType can be either "file" ,"hdfs", "registry" -->
-    <ModelStorage>
-        <StorageType>registry</StorageType>
-        <StorageDirectory>/mlmodels</StorageDirectory>
-    </ModelStorage>
+	<!-- Storage Details for uploaded datasets. "fileLocation" refers to the directory in the file system to which the dataset should be uploaded.
+		"hdfsLocation" refers to the directory in the hdfs to which the dataset should be uploaded, when using hdfs. -->
+	<DataStorage>
+		<FileLocation>/</FileLocation>
+		<HdfsLocation>/</HdfsLocation>
+	</DataStorage>
 
-    <Algorithms>
-        <Algorithm>
-            <Name>LINEAR_REGRESSION</Name>
-            <Type>Numerical_Prediction</Type>
-            <Interpretability>5</Interpretability>
-            <Scalability>5</Scalability>
-            <Multicollinearity>1</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Learning_Rate</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>SGD_Data_Fraction</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>RIDGE_REGRESSION</Name>
-            <Type>Numerical_Prediction</Type>
-            <Interpretability>5</Interpretability>
-            <Scalability>5</Scalability>
-            <Multicollinearity>1</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Learning_Rate</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Parameter</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>SGD_Data_Fraction</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>LASSO_REGRESSION</Name>
-            <Type>Numerical_Prediction</Type>
-            <Interpretability>5</Interpretability>
-            <Scalability>5</Scalability>
-            <Multicollinearity>1</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Learning_Rate</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Parameter</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>SGD_Data_Fraction</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>LOGISTIC_REGRESSION</Name>
-            <Type>Classification</Type>
-            <Interpretability>3</Interpretability>
-            <Scalability>5</Scalability>
-            <Multicollinearity>1</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Learning_Rate</Name>
-                <Value>0.1</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Type</Name>
-                <Value>L2</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Parameter</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>SGD_Data_Fraction</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>SVM</Name>
-            <Type>Classification</Type>
-            <Interpretability>1</Interpretability>
-            <Scalability>1</Scalability>
-            <Multicollinearity>5</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Learning_Rate</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Type</Name>
-                <Value>L1</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Reg_Parameter</Name>
-                <Value>0.001</Value>
-            </Parameters>
-            <Parameters>
-                <Name>SGD_Data_Fraction</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>DECISION_TREE</Name>
-            <Type>Classification</Type>
-            <Interpretability>5</Interpretability>
-            <Scalability>4</Scalability>
-            <Multicollinearity>5</Multicollinearity>
-            <Dimensionality>3</Dimensionality>
-            <Parameters>
-                <Name>Num_Classes</Name>
-                <Value>2</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Max_Depth</Name>
-                <Value>5</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Max_Bins</Name>
-                <Value>100</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Impurity</Name>
-                <Value>gini</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>NAIVE_BAYES</Name>
-            <Type>Classification</Type>
-            <Interpretability>3</Interpretability>
-            <Scalability>5</Scalability>
-            <Multicollinearity>1</Multicollinearity>
-            <Dimensionality>5</Dimensionality>
-            <Parameters>
-                <Name>Lambda</Name>
-                <Value>1</Value>
-            </Parameters>
-        </Algorithm>
-        <Algorithm>
-            <Name>K_MEANS</Name>
-            <Type>Clustering</Type>
-            <Interpretability>5</Interpretability>
-            <Scalability>2</Scalability>
-            <Multicollinearity>5</Multicollinearity>
-            <Dimensionality>2</Dimensionality>
-            <Parameters>
-                <Name>Iterations</Name>
-                <Value>20</Value>
-            </Parameters>
-            <Parameters>
-                <Name>Num_Clusters</Name>
-                <Value>3</Value>
-            </Parameters>
-        </Algorithm>
-    </Algorithms>
+	<Algorithms>
+		<Algorithm>
+			<Name>LINEAR_REGRESSION</Name>
+			<Type>Numerical_Prediction</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>100</Value>
+				<Description>Iterations - Number of iterations to be run</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>
+			<Parameters>
+				<Name>SGD_Data_Fraction</Name>
+				<Value>1</Value>
+				<Description>SGD_Data_Fraction</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>RIDGE_REGRESSION</Name>
+			<Type>Numerical_Prediction</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>100</Value>
+				<Description>Iterations</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Parameter</Name>
+				<Value>0.001</Value>
+				<Description>Reg_Parameter</Description>
+			</Parameters>
+			<Parameters>
+				<Name>SGD_Data_Fraction</Name>
+				<Value>1</Value>
+				<Description>SGD_Data_Fraction</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>LASSO_REGRESSION</Name>
+			<Type>Numerical_Prediction</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>100</Value>
+				<Description>Iterations</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Parameter</Name>
+				<Value>0.001</Value>
+				<Description>Reg_Parameter</Description>
+			</Parameters>
+			<Parameters>
+				<Name>SGD_Data_Fraction</Name>
+				<Value>1</Value>
+				<Description>SGD_Data_Fraction</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>LOGISTIC_REGRESSION</Name>
+			<Type>Classification</Type>
+			<Interpretability>3</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>100</Value>
+				<Description>Iterations</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.1</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Type</Name>
+				<Value>L2</Value>
+				<Description>Reg_Type</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Parameter</Name>
+				<Value>0.001</Value>
+				<Description>Reg_Parameter</Description>
+			</Parameters>
+			<Parameters>
+				<Name>SGD_Data_Fraction</Name>
+				<Value>1</Value>
+				<Description>SGD_Data_Fraction</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>SVM</Name>
+			<Type>Classification</Type>
+			<Interpretability>1</Interpretability>
+			<Scalability>1</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>100</Value>
+				<Description>Iterations</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Type</Name>
+				<Value>L1</Value>
+				<Description>Reg_Type</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Reg_Parameter</Name>
+				<Value>0.001</Value>
+				<Description>Reg_Parameter</Description>
+			</Parameters>
+			<Parameters>
+				<Name>SGD_Data_Fraction</Name>
+				<Value>1</Value>
+				<Description>SGD_Data_Fraction</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>DECISION_TREE</Name>
+			<Type>Classification</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>4</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>3</Dimensionality>
+			<Parameters>
+				<Name>Num_Classes</Name>
+				<Value>2</Value>
+				<Description>Num_Classes</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Depth</Name>
+				<Value>5</Value>
+				<Description>Max_Depth</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Bins</Name>
+				<Value>100</Value>
+				<Description>Max_Bins</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Impurity</Name>
+				<Value>gini</Value>
+				<Description>Impurity</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>NAIVE_BAYES</Name>
+			<Type>Classification</Type>
+			<Interpretability>3</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Lambda</Name>
+				<Value>1</Value>
+				<Description>Lambda</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>K_MEANS</Name>
+			<Type>Clustering</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>2</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>2</Dimensionality>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>20</Value>
+				<Description>Iterations</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Num_Clusters</Name>
+				<Value>3</Value>
+				<Description>Num_Clusters</Description>
+			</Parameters>
+		</Algorithm>
+	</Algorithms>
 </MachineLearner>
