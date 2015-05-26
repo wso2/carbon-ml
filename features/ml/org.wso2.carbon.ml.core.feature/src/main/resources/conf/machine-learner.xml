@@ -84,7 +84,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
+				<Description>Fraction of the training dataset used per iteration in the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -112,7 +112,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
+				<Description>Fraction of the training dataset use per iteration in the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -140,7 +140,7 @@
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
+				<Description>Fraction of the training dataset use per iteration in the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
