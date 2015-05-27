@@ -138,8 +138,9 @@ public class SparkModelUtils {
      * @param predictionsAndLabels  Tuple2 containing predicted and actual values
      * @return                      Regression model summary
      */
-    public static ClassClassificationAndRegressionModelSummary generateRegressionModelSummary(
-            JavaRDD<Tuple2<Double, Double>> predictionsAndLabels) {
+    public static ClassClassificationAndRegressionModelSummary generateRegressionModelSummary(JavaSparkContext sparkContext,
+                                                                                              JavaRDD<LabeledPoint> testingData,
+                                                                                              JavaRDD<Tuple2<Double, Double>> predictionsAndLabels) {
         ClassClassificationAndRegressionModelSummary regressionModelSummary =
                 new ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
@@ -151,6 +152,31 @@ public class SparkModelUtils {
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
             predictedVsActuals.add(predictedVsActual);
         }
+        // create a list of feature values
+        List<double[]> features = new ArrayList<double[]>();
+        for (LabeledPoint labeledPoint : testingData.collect()) {
+            double[] rowFeatures = labeledPoint.features().toArray();
+            features.add(rowFeatures);
+        }
+        // create a list of feature values with predicted vs. actuals
+        List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
+        for(int i = 0; i < features.size(); i++) {
+            TestResultDataPoint testResultDataPoint = new TestResultDataPoint();
+            testResultDataPoint.setPredictedVsActual(predictedVsActuals.get(i));
+            testResultDataPoint.setFeatureValues(features.get(i));
+            testResultDataPoints.add(testResultDataPoint);
+        }
+        // covert List to JavaRDD
+        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints);
+        // collect RDD as a sampled list
+        List<TestResultDataPoint> testResultDataPointsSample;
+        if(testResultDataPointsJavaRDD.count() > MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize()) {
+            testResultDataPointsSample = testResultDataPointsJavaRDD.takeSample(true, MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize());
+        }
+        else {
+            testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
+        }
+        regressionModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
         regressionModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate mean squared error (MSE)
         double meanSquaredError = new JavaDoubleRDD(predictionsAndLabels.map(
@@ -172,8 +198,9 @@ public class SparkModelUtils {
      * @param predictionsAndLabels Predictions and actual labels
      * @return Class classification model summary
      */
-    public static ClassClassificationAndRegressionModelSummary getClassClassificationModelSummary(
-            JavaPairRDD<Double, Double> predictionsAndLabels) {
+    public static ClassClassificationAndRegressionModelSummary getClassClassificationModelSummary(JavaSparkContext sparkContext,
+                                                                                                  JavaRDD<LabeledPoint> testingData,
+                                                                                                  JavaPairRDD<Double, Double> predictionsAndLabels) {
         ClassClassificationAndRegressionModelSummary classClassificationModelSummary = new
                 ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
@@ -184,6 +211,31 @@ public class SparkModelUtils {
             predictedVsActual.setActual(scoreAndLabel._2());
             predictedVsActuals.add(predictedVsActual);
         }
+        // create a list of feature values
+        List<double[]> features = new ArrayList<double[]>();
+        for (LabeledPoint labeledPoint : testingData.collect()) {
+            double[] rowFeatures = labeledPoint.features().toArray();
+            features.add(rowFeatures);
+        }
+        // create a list of feature values with predicted vs. actuals
+        List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
+        for(int i = 0; i < features.size(); i++) {
+            TestResultDataPoint testResultDataPoint = new TestResultDataPoint();
+            testResultDataPoint.setPredictedVsActual(predictedVsActuals.get(i));
+            testResultDataPoint.setFeatureValues(features.get(i));
+            testResultDataPoints.add(testResultDataPoint);
+        }
+        // covert List to JavaRDD
+        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints);
+        // collect RDD as a sampled list
+        List<TestResultDataPoint> testResultDataPointsSample;
+        if(testResultDataPointsJavaRDD.count() > MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize()) {
+            testResultDataPointsSample = testResultDataPointsJavaRDD.takeSample(true, MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize());
+        }
+        else {
+            testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
+        }
+        classClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
         classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate test error
         double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
