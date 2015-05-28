@@ -775,23 +775,23 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.ml</groupId>
-                <artifactId>org.wso2.carbon.mediator.predict</artifactId>
+                <artifactId>org.wso2.carbon.ml.mediator.predict</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.ml</groupId>
-                <artifactId>org.wso2.carbon.mediator.predict.ui</artifactId>
+                <artifactId>org.wso2.carbon.ml.mediator.predict.ui</artifactId>
                 <version>${ml.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.ml</groupId>
-                <artifactId>org.wso2.carbon.mediator.predict.server.feature</artifactId>
+                <artifactId>org.wso2.carbon.ml.mediator.predict.server.feature</artifactId>
                 <version>${ml.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.ml</groupId>
-                <artifactId>org.wso2.carbon.mediator.predict.ui.feature</artifactId>
+                <artifactId>org.wso2.carbon.ml.mediator.predict.ui.feature</artifactId>
                 <version>${ml.version}</version>
                 <type>zip</type>
             </dependency>
