@@ -92,8 +92,13 @@ public class SparkModelUtils {
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
         for (LabeledPoint labeledPoint : testingData.collect()) {
-            double[] rowFeatures = labeledPoint.features().toArray();
-            features.add(rowFeatures);
+            if(labeledPoint != null && labeledPoint.features() != null) {
+                double[] rowFeatures = labeledPoint.features().toArray();
+                features.add(rowFeatures);
+            }
+            else {
+                continue;
+            }
         }
         // create a list of feature values with predicted vs. actuals
         List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
@@ -155,8 +160,13 @@ public class SparkModelUtils {
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
         for (LabeledPoint labeledPoint : testingData.collect()) {
-            double[] rowFeatures = labeledPoint.features().toArray();
-            features.add(rowFeatures);
+            if(labeledPoint != null && labeledPoint.features() != null) {
+                double[] rowFeatures = labeledPoint.features().toArray();
+                features.add(rowFeatures);
+            }
+            else {
+                continue;
+            }
         }
         // create a list of feature values with predicted vs. actuals
         List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
@@ -214,8 +224,13 @@ public class SparkModelUtils {
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
         for (LabeledPoint labeledPoint : testingData.collect()) {
-            double[] rowFeatures = labeledPoint.features().toArray();
-            features.add(rowFeatures);
+            if(labeledPoint != null && labeledPoint.features() != null) {
+                double[] rowFeatures = labeledPoint.features().toArray();
+                features.add(rowFeatures);
+            }
+            else {
+                continue;
+            }
         }
         // create a list of feature values with predicted vs. actuals
         List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
