@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -158,6 +159,7 @@ public class Predictor {
                     return predictions;
                 }
                 String decodedValue = decode(encodingMap, roundedValue);
+                log.info("Predicted value after decoding: " + decodedValue);
                 decodedPredictions.add(decodedValue);
             }
             return decodedPredictions;
@@ -165,12 +167,42 @@ public class Predictor {
     }
 
     private String decode(Map<String, Integer> encodingMap, int roundedValue) {
+        // first try to find the exact matching entry
+        String classVal = findClass(encodingMap, roundedValue);
+        if (classVal != null) {
+            return classVal;
+        }
+        // if it is not succeeded, try to find the closest entry
+        roundedValue = closest(roundedValue, encodingMap.values());
+        findClass(encodingMap, roundedValue);
+        return String.valueOf(roundedValue);
+    }
+
+    private String findClass(Map<String, Integer> encodingMap, int roundedValue) {
         for (Map.Entry<String, Integer> entry : encodingMap.entrySet()) {
             if (roundedValue == entry.getValue()) {
                 return entry.getKey();
             }
         }
-        return String.valueOf(roundedValue);
+        return null;
+    }
+    
+    
+    
+    public int closest(int of, Collection<Integer> in) {
+        int min = Integer.MAX_VALUE;
+        int closest = of;
+
+        for (int v : in) {
+            final int diff = Math.abs(v - of);
+
+            if (diff < min) {
+                min = diff;
+                closest = v;
+            }
+        }
+
+        return closest;
     }
 
 }
