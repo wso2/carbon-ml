@@ -125,17 +125,17 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
-				<Description>Iterations</Description>
+				<Description>Number of times optimizer runs before completing the optimization process</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Step size of the optimization algorithm</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Reg_Parameter</Description>
+				<Description>Regularization parameter controls the model complexity and hence, helps to control model overfitting.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
@@ -153,22 +153,22 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
-				<Description>Iterations</Description>
+				<Description>Number of times optimizer runs before completing the optimization process</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.1</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Step size of the optimization algorithm</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
-				<Description>Reg_Type</Description>
+				<Description>Type of the regularization, wso2 machine learner supports L2 and L1 regularizations. Therefore, this parameter should be either L1 or L2.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Reg_Parameter</Description>
+				<Description>Regularization parameter controls the model complexity and hence, helps to control model overfitting</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
@@ -186,27 +186,27 @@
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Step size of the optimization algorithm</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
-				<Description>Iterations</Description>
+				<Description>Number of times optimizer runs before completing the optimization process</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
-				<Description>Reg_Type</Description>
+				<Description>Type of the regularization, wso2 machine learner supports L2 and L1 regularizations. Therefore, this parameter should be either L1 or L2.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Reg_Parameter</Description>
+				<Description>Regularization parameter controls the model complexity and hence, helps to control model overfitting</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>SGD_Data_Fraction</Description>
+				<Description>Fraction of the training dataset use in a single iteration of the optimization algorithm</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
