@@ -37,8 +37,8 @@ public class OneHotEncoder implements Function<String[], String[]> {
 
     @Override
     public String[] call(String[] tokens) throws Exception {
-        try {
-            for (int i = 0; i < tokens.length; i++) {
+        for (int i = 0; i < tokens.length; i++) {
+            try {
                 if (encodings.size() <= i) {
                     continue;
                 }
@@ -48,12 +48,12 @@ public class OneHotEncoder implements Function<String[], String[]> {
                     // replace the value with the encoded value
                     tokens[i] = code;
                 }
+            } catch (Exception e) {
+                throw new MLModelBuilderException("An error occurred while encoding: " + tokens[i] + " : Cause:"
+                        + e.getMessage(), e);
             }
-            return tokens;
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while encoding: " + tokens + " : Cause:"
-                    + e.getMessage(), e);
         }
+        return tokens;
     }
 
 }

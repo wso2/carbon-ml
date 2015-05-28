@@ -125,7 +125,7 @@ public class Predictor {
             try {
                 encodedEntry = encoder.call(dataEntry);
             } catch (Exception e) {
-                log.warn("Data encoding failed for " + dataEntry + "; Cause: " + e.getMessage());
+                log.warn("Data encoding failed. Cause: " + e.getMessage());
                 encodedEntry = dataEntry;
             }
             double[] doubleValues = MLUtils.toDoubleArray(encodedEntry);

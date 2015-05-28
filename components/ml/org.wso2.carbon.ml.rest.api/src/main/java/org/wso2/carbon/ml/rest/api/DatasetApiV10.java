@@ -81,8 +81,8 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             // validate input parameters
             if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty() ||
-                sourceType == null || sourceType.isEmpty() || destination.isEmpty() || destination == null ||
-                dataFormat.isEmpty() || dataFormat == null) {
+                sourceType == null || sourceType.isEmpty() || destination == null || destination.isEmpty() ||
+                        dataFormat == null || dataFormat.isEmpty()) {
                 logger.error("Required parameters are missing.");
                 return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
             }
