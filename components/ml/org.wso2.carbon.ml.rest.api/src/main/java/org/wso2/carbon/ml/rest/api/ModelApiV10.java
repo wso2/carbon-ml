@@ -151,7 +151,7 @@ public class ModelApiV10 extends MLRestAPI {
     @Path("/{modelId}/predict")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response predict(@PathParam("modelId") long modelId, String[] data) {
+    public Response predict(@PathParam("modelId") long modelId, List<String[]> data) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
