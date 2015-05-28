@@ -232,7 +232,7 @@ public class SupervisedModel {
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
-                    .getClassClassificationModelSummary(predictionsAndLabels);
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
             mlModel.setModel(decisionTreeModel);
             
             classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
@@ -320,7 +320,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = linearRegression.test(linearRegressionModel,
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
-                    .generateRegressionModelSummary(predictionsAndLabels);
+                    .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
             mlModel.setModel(linearRegressionModel);
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, linearRegressionModel
@@ -367,7 +367,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = ridgeRegression.test(ridgeRegressionModel,
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
-                    .generateRegressionModelSummary(predictionsAndLabels);
+                    .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
             mlModel.setModel(ridgeRegressionModel);
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, ridgeRegressionModel
@@ -413,7 +413,7 @@ public class SupervisedModel {
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = lassoRegression.test(lassoModel, testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
-                    .generateRegressionModelSummary(predictionsAndLabels);
+                    .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
             mlModel.setModel(lassoModel);
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, lassoModel.weights()
@@ -456,7 +456,7 @@ public class SupervisedModel {
                     hyperParameters.get(MLConstants.LAMBDA)));
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
-                    .getClassClassificationModelSummary(predictionsAndLabels);
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
             mlModel.setModel(naiveBayesModel);
             
             classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
