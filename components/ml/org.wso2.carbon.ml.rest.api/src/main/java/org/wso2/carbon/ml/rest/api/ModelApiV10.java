@@ -241,8 +241,44 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * @deprecated      The same functionality is provided by another method
+     * @param modelName Name of the model
+     * @return
+     */
     @GET
     @Path("/{modelName}/import")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Deprecated
+    public Response importModel(@PathParam("modelName") String modelName) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLModelNew model = mlModelHandler.getModel(tenantId, userName, modelName);
+            if(model != null) {
+                final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
+                StreamingOutput stream = new StreamingOutput() {
+                    public void write(OutputStream outputStream) throws IOException {
+                        ObjectOutputStream out = new ObjectOutputStream(outputStream);
+                        out.writeObject(generatedModel);
+                    }
+                };
+                return Response.ok(stream).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            logger.error(String.format(
+                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelName, tenantId, userName, e.getMessage()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/{modelName}/export")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportModel(@PathParam("modelName") String modelName) {
 
