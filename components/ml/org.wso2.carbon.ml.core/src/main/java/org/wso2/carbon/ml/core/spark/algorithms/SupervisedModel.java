@@ -249,9 +249,7 @@ public class SupervisedModel {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
-            // Lochana: passing an empty map since we are not currently handling categorical Features
-            DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
-                    Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLASSES)),
+            DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData, getNoOfClasses(mlModel),
                     categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));

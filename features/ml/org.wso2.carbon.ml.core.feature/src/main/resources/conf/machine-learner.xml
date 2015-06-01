@@ -230,11 +230,6 @@
 			<Multicollinearity>5</Multicollinearity>
 			<Dimensionality>3</Dimensionality>
 			<Parameters>
-				<Name>Num_Classes</Name>
-				<Value>2</Value>
-				<Description>Num_Classes</Description>
-			</Parameters>
-			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
 				<Description>Max_Depth</Description>
