@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -80,8 +81,13 @@ public class MLModelConfigurationContext {
     public String[] getDataToBePredicted() {
         return dataToBePredicted;
     }
+
     public void setDataToBePredicted(String[] dataToBePredicted) {
-        this.dataToBePredicted = dataToBePredicted;
+        if (dataToBePredicted == null) {
+            this.dataToBePredicted = new String[0];
+        } else {
+            this.dataToBePredicted = Arrays.copyOf(dataToBePredicted, dataToBePredicted.length);
+        }
     }
     public MLModelNew getModel() {
         return model;

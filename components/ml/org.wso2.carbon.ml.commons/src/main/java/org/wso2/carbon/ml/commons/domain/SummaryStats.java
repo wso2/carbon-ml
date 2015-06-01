@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.commons.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -45,10 +46,23 @@ public class SummaryStats {
             int[] missing, int[] unique, List<DescriptiveStatistics> descriptiveStats) {
         super();
         this.headerMap = headerMap;
-        this.type = type;
+        if (type == null) {
+            this.type = new String[0];
+        } else {
+            this.type = Arrays.copyOf(type, type.length);
+        }
         this.graphFrequencies = graphFrequencies;
-        this.missing = missing;
-        this.unique = unique;
+        if (missing == null) {
+            this.missing = new int[0];
+        } else {
+            this.missing = Arrays.copyOf(missing, missing.length);
+        }
+
+        if (unique == null) {
+            this.unique = new int[0];
+        } else {
+            this.unique = Arrays.copyOf(unique, unique.length);
+        }
         this.descriptiveStats = descriptiveStats;
     }
 

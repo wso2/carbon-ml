@@ -22,10 +22,14 @@ package org.wso2.carbon.ml.commons.constants;
  */
 public class MLConstants {
 
+    private MLConstants() {
+        
+    }
+    
     public static final String ML_MODEL_TABLE_NAME = "ml_model_store";
-    
-public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";
-    
+
+    public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";
+
     // Data-set upload configurations    
     public static final String UPLOAD_SETTINGS = "dataUploadSettings";
     public static final String UPLOAD_LOCATION = "uploadLocation";
@@ -191,8 +195,9 @@ public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learne
 
         public static boolean contains(String s) {
             for (MISSING_VALUES val : values())
-                if (val.toString().equals(s))
+                if (val.toString().equals(s)) {
                     return true;
+                }
             return false;
         }
     }

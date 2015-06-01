@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
+import java.util.Arrays;
+
 /**
  * DTO class to store k-means cluster point
  */
@@ -50,6 +52,10 @@ public class ClusterPoint {
      * @param features Sets features of a cluster point
      */
     public void setFeatures(double[] features) {
-        this.features = features;
+        if (features == null) {
+            this.features = new double[0];
+        } else {
+            this.features = Arrays.copyOf(features, features.length);
+        }
     }
 }

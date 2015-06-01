@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.core.spark.summary;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * DTO class to store features, predicted and actual values of a single test dataset row
@@ -54,6 +55,10 @@ public class TestResultDataPoint implements Serializable {
      * @param featureValues Sets row features
      */
     public void setFeatureValues(double[] featureValues) {
-        this.featureValues = featureValues;
+        if (featureValues == null) {
+            this.featureValues = new double[0];
+        } else {
+            this.featureValues = Arrays.copyOf(featureValues, featureValues.length);
+        }
     }
 }

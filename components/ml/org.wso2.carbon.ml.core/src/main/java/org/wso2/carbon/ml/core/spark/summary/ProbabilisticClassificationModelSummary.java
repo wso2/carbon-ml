@@ -22,6 +22,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -128,7 +129,11 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      * @param features Array of names of the features
      */
     public void setFeatures(String[] features) {
-        this.features = features;
+        if (features == null) {
+            this.features = new String[0];
+        } else {
+            this.features = Arrays.copyOf(features, features.length);
+        }
     }
 
     /**

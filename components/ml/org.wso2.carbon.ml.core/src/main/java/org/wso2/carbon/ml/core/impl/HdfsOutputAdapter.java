@@ -72,13 +72,11 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
                             outPath), e);
                 }
             }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    throw new MLOutputAdapterException(String.format(
-                            "Failed to close the input stream after writing to file %s", outPath), e);
-                }
+            try {
+                in.close();
+            } catch (IOException e) {
+                throw new MLOutputAdapterException(String.format(
+                        "Failed to close the input stream after writing to file %s", outPath), e);
             }
         }
     }

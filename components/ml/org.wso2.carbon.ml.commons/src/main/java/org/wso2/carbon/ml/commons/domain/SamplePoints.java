@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.commons.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,11 @@ public class SamplePoints implements Serializable {
     }
 
     public void setMissing(int[] missing) {
-        this.missing = missing;
+        if (missing == null) {
+            this.missing = new int[0];
+        } else {
+            this.missing = Arrays.copyOf(missing, missing.length);
+        }
     }
 
     public int[] getStringCellCount() {
@@ -81,6 +86,10 @@ public class SamplePoints implements Serializable {
     }
 
     public void setStringCellCount(int[] stringCellCount) {
-        this.stringCellCount = stringCellCount;
+        if (stringCellCount == null) {
+            this.stringCellCount = new int[0];
+        } else {
+            this.stringCellCount = Arrays.copyOf(stringCellCount, stringCellCount.length);
+        }
     }
 }
