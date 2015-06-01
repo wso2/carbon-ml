@@ -145,6 +145,15 @@ public class MLDatabaseService implements DatabaseService {
 
         Connection connection = null;
         PreparedStatement createProjectStatement = null;
+        int tenantId = project.getTenantId();
+        String userName = project.getUserName();
+        String projectName = project.getName();
+
+        if (getProject(tenantId, userName, projectName) != null) {
+            throw new DatabaseHandlerException(String.format(
+                    "Project [name] %s already exists for tenant [id] %s and user [name] %s.", projectName, tenantId,
+                    userName));
+        }
         try {
             MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
