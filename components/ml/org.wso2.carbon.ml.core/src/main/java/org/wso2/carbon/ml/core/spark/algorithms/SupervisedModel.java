@@ -87,9 +87,10 @@ public class SupervisedModel {
             
             
             JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
-            JavaRDD<LabeledPoint> trainingData = labeledPoints.sample(false, workflow.getTrainDataFraction(), 
-                    MLConstants.RANDOM_SEED);
-            JavaRDD<LabeledPoint> testingData = labeledPoints.subtract(trainingData);
+            JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(new double[]{
+                    workflow.getTrainDataFraction(), 1-workflow.getTrainDataFraction()}, MLConstants.RANDOM_SEED);
+            JavaRDD<LabeledPoint> trainingData = dataSplit[0];
+            JavaRDD<LabeledPoint> testingData = dataSplit[1];
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -105,7 +106,11 @@ public class SupervisedModel {
             switch (supervisedAlgorithm) {
             case LOGISTIC_REGRESSION:
                 summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                   includedFeatures);
+                   includedFeatures, true);
+                break;
+            case LOGISTIC_REGRESSION_LBFGS:
+                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
+                   includedFeatures, false);
                 break;
             case DECISION_TREE:
                 Map<Integer,Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings(), responseIndex);
@@ -168,32 +173,47 @@ public class SupervisedModel {
      * @param headerRow         Header row of the dataset
      * @param responseIndex     Index of the response variable in the dataset
      * @param columnSeparator   Column separator of dataset
+     * @param isSGD             Whether the algorithm is Logistic regression with SGD
      * @throws                  MLModelBuilderException
      */
-    private ModelSummary buildLogisticRegressionModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
+    private ModelSummary buildLogisticRegressionModel(JavaSparkContext sparkContext, long modelID,
+            JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+            SortedMap<Integer, String> includedFeatures, boolean isSGD) throws MLModelBuilderException {
         try {
             LogisticRegression logisticRegression = new LogisticRegression();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
-            LogisticRegressionModel logisticRegressionModel = logisticRegression.trainWithSGD(trainingData,
-                    Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
-                    hyperParameters.get(MLConstants.REGULARIZATION_TYPE),
-                    Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
-                    Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            LogisticRegressionModel logisticRegressionModel;
+            String algorithmName;
+
+            if (isSGD) {
+                algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString();
+                logisticRegressionModel = logisticRegression.trainWithSGD(trainingData,
+                        Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
+                        Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
+                        hyperParameters.get(MLConstants.REGULARIZATION_TYPE),
+                        Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
+                        Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            } else {
+
+                algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION_LBFGS.toString();
+                int noOfClasses = getNoOfClasses(mlModel);
+                logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
+                        hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
+            }
+
             // clearing the threshold value to get a probability as the output of the prediction
             logisticRegressionModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(logisticRegressionModel,
                     testingData);
-            ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
-                    SparkModelUtils.generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
+            ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = SparkModelUtils
+                    .generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
             mlModel.setModel(logisticRegressionModel);
-            
+
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, logisticRegressionModel
                     .weights().toArray());
             probabilisticClassificationModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
-            probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString());
+            probabilisticClassificationModelSummary.setAlgorithm(algorithmName);
 
             Double modelAccuracy = getModelAccuracy(scoresAndLabels, MLConstants.DEFAULT_THRESHOLD, testingData);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
@@ -203,6 +223,11 @@ public class SupervisedModel {
             throw new MLModelBuilderException("An error occurred while building logistic regression model: "
                     + e.getMessage(), e);
         }
+    }
+
+    private int getNoOfClasses(MLModel mlModel) {
+        int responseIndex = mlModel.getResponseIndex();
+        return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size() : -1;
     }
 
     /**

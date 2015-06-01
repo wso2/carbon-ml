@@ -21,6 +21,7 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -77,25 +78,32 @@ public class LogisticRegression implements Serializable {
      * @param regularizationParameter   Regularization parameter
      * @return                          Logistic regression model
      */
-    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset, int noOfCorrections,
-            double convergenceTolerance, int noOfIterations, double regularizationParameter) {
-        int numFeatures = trainingDataset.take(1).get(0).features().size();
-        JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
-                new Function<LabeledPoint, Tuple2<Object, Vector>>() {
-                    private static final long serialVersionUID = 8486284563910067157L;
-
-                    public Tuple2<Object, Vector> call(LabeledPoint p) {
-                        return new Tuple2<Object, Vector>(p.label(), MLUtils.appendBias(p.features()));
-                    }
-                });
-        training.cache();
-        Vector initialWeightsWithIntercept = Vectors.dense(new double[numFeatures + 1]);
-        Tuple2<Vector, double[]> result = LBFGS.runLBFGS(training.rdd(), new LogisticGradient(),
-                new SquaredL2Updater(), noOfCorrections, convergenceTolerance, noOfIterations,
-                regularizationParameter, initialWeightsWithIntercept);
-        Vector weightsWithIntercept = result._1();
-        return new LogisticRegressionModel(Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(),
-                weightsWithIntercept.size() - 1)), (weightsWithIntercept.toArray())[weightsWithIntercept.size() - 1]);
+    public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset, String regularizationType, int noOfClasses) {
+        LogisticRegressionWithLBFGS lbfgs = new LogisticRegressionWithLBFGS();
+        if (MLConstants.L1.equals(regularizationType)) {
+            lbfgs.optimizer().setUpdater(new L1Updater());
+        } else if (MLConstants.L2.equals(regularizationType)) {
+            lbfgs.optimizer().setUpdater(new SquaredL2Updater());
+        }
+        lbfgs.setIntercept(true);
+        return lbfgs.setNumClasses(noOfClasses<2 ? 2: noOfClasses).run(trainingDataset.rdd());
+//        int numFeatures = trainingDataset.take(1).get(0).features().size();
+//        JavaRDD<Tuple2<Object, Vector>> training = trainingDataset.map(
+//                new Function<LabeledPoint, Tuple2<Object, Vector>>() {
+//                    private static final long serialVersionUID = 8486284563910067157L;
+//
+//                    public Tuple2<Object, Vector> call(LabeledPoint p) {
+//                        return new Tuple2<Object, Vector>(p.label(), MLUtils.appendBias(p.features()));
+//                    }
+//                });
+//        training.cache();
+//        Vector initialWeightsWithIntercept = Vectors.dense(new double[numFeatures + 1]);
+//        Tuple2<Vector, double[]> result = LBFGS.runLBFGS(training.rdd(), new LogisticGradient(),
+//                new SquaredL2Updater(), noOfCorrections, convergenceTolerance, noOfIterations,
+//                regularizationParameter, initialWeightsWithIntercept);
+//        Vector weightsWithIntercept = result._1();
+//        return new LogisticRegressionModel(Vectors.dense(Arrays.copyOf(weightsWithIntercept.toArray(),
+//                weightsWithIntercept.size() - 1)), (weightsWithIntercept.toArray())[weightsWithIntercept.size() - 1]);
     }
 
     /**

@@ -177,6 +177,19 @@
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
+                        <Name>LOGISTIC_REGRESSION_LBFGS</Name>
+                        <Type>Classification</Type>
+                        <Interpretability>3</Interpretability>
+                        <Scalability>5</Scalability>
+                        <Multicollinearity>1</Multicollinearity>
+                        <Dimensionality>5</Dimensionality>
+                        <Parameters>
+                                <Name>Reg_Type</Name>
+                                <Value>L2</Value>
+                                <Description>Type of the regularization, wso2 machine learner supports L2 and L1 regularizations. Therefore, this parameter should be either L1 or L2.</Description>
+                        </Parameters>
+                </Algorithm>
+		<Algorithm>
 			<Name>SVM</Name>
 			<Type>Classification</Type>
 			<Interpretability>1</Interpretability>
