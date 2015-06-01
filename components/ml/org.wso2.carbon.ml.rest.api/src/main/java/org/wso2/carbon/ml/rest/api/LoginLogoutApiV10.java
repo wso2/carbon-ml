@@ -26,18 +26,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 /**
- * WSO2 ML Analyses API. All the operations related to Analyses are delegated from this class.
+ * WSO2 ML Login logout API. This is responsible for managing user sessions.
  */
 public class LoginLogoutApiV10 extends MLRestAPI {
 
-    private static final Log logger = LogFactory.getLog(LoginLogoutApiV10.class);
-    
     @Context
     HttpServletRequest httpServletRequest;
 
