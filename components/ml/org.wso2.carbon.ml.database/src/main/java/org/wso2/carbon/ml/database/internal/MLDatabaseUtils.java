@@ -19,6 +19,8 @@
 package org.wso2.carbon.ml.database.internal;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.config.HyperParameter;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
@@ -37,6 +39,8 @@ import java.util.Map;
  * This class contains utility methods for database resources.
  */
 public class MLDatabaseUtils {
+    
+    private static final Log log = LogFactory.getLog(MLDatabaseUtils.class);
 
     /*
      * private Constructor to prevent any other class from instantiating.
@@ -58,15 +62,7 @@ public class MLDatabaseUtils {
             try {
                 resultSet.close();
             } catch (SQLException e) {
-                throw new DatabaseHandlerException("Could not close result set: " + e.getMessage(), e);
-            }
-        }
-        // Close the connection
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new DatabaseHandlerException("Database error. Could not close statement: " + e.getMessage(), e);
+                log.error("Could not close result set: " + e.getMessage(), e);
             }
         }
         // Close the statement
@@ -74,7 +70,15 @@ public class MLDatabaseUtils {
             try {
                 preparedStatement.close();
             } catch (SQLException e) {
-                throw new DatabaseHandlerException("Database error. Could not close statement: " + e.getMessage(), e);
+                log.error("Database error. Could not close statement: " + e.getMessage(), e);
+            }
+        }
+        // Close the connection
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                log.error("Database error. Could not close statement: " + e.getMessage(), e);
             }
         }
     }
@@ -132,6 +136,9 @@ public class MLDatabaseUtils {
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while rolling back transactions: " + e.getMessage(),
                     e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(dbConnection);
         }
     }
 
@@ -140,13 +147,13 @@ public class MLDatabaseUtils {
      *
      * @param dbConnection Connection of which the auto-commit should be enabled
      */
-    public static void enableAutoCommit(Connection dbConnection) throws DatabaseHandlerException {
+    public static void enableAutoCommit(Connection dbConnection) {
         try {
             if (dbConnection != null) {
                 dbConnection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while enabling autocommit: " + e.getMessage(), e);
+            log.warn("An error occurred while enabling autocommit: " + e.getMessage(), e);
         }
     }
 

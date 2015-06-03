@@ -49,24 +49,31 @@ public class PredictMediatorUtils {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private static MLModel retrieveModel(String modelStorageLocation)
-            throws ClassNotFoundException, URISyntaxException, MLInputAdapterException, IOException {
+    private static MLModel retrieveModel(String modelStorageLocation) throws ClassNotFoundException,
+            URISyntaxException, MLInputAdapterException, IOException {
 
-        String[] modelStorage = modelStorageLocation.split(SEPARATOR);
-        String storageType = modelStorage[0];
-        if(storageType.equals(REGISTRY_STORAGE_PREFIX)) {
-            if(modelStorage[1].startsWith(PATH_TO_GOVERNANCE_REGISTRY)) {
-                modelStorageLocation = modelStorage[1].substring(PATH_TO_GOVERNANCE_REGISTRY.length());
-            } else {
-                modelStorageLocation = modelStorage[1];
+        ObjectInputStream ois = null;
+        try {
+            String[] modelStorage = modelStorageLocation.split(SEPARATOR);
+            String storageType = modelStorage[0];
+            if (storageType.equals(REGISTRY_STORAGE_PREFIX)) {
+                if (modelStorage[1].startsWith(PATH_TO_GOVERNANCE_REGISTRY)) {
+                    modelStorageLocation = modelStorage[1].substring(PATH_TO_GOVERNANCE_REGISTRY.length());
+                } else {
+                    modelStorageLocation = modelStorage[1];
+                }
+            }
+            MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
+            MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+            InputStream in = inputAdapter.read(new URI(modelStorageLocation));
+            ois = new ObjectInputStream(in);
+            MLModel mlModel = (MLModel) ois.readObject();
+            return mlModel;
+        } finally {
+            if (ois != null) {
+                ois.close();
             }
         }
-        MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
-        MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-        InputStream in = inputAdapter.read(new URI(modelStorageLocation));
-        ObjectInputStream ois = new ObjectInputStream(in);
-        MLModel mlModel = (MLModel) ois.readObject();
-        return mlModel;
 
     }
 

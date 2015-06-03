@@ -2348,6 +2348,8 @@ public class MLDatabaseService implements DatabaseService {
             // Enable auto commit.
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(getStatement);
+            MLDatabaseUtils.closeDatabaseResources(deleteStatement);
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }
@@ -2727,7 +2729,6 @@ public class MLDatabaseService implements DatabaseService {
     public String getFeatureType(long modelId, String featureName) throws DatabaseHandlerException {
 
         Connection connection = null;
-        PreparedStatement insertStatement = null;
         PreparedStatement getDefaultFeatureSettings = null;
         ResultSet result = null;
         try {
@@ -2747,7 +2748,7 @@ public class MLDatabaseService implements DatabaseService {
                     + " of model Id: " + modelId + e.getMessage(), e);
         } finally {
             // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement, result);
+            MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatureSettings, result);
         }
     }
 
