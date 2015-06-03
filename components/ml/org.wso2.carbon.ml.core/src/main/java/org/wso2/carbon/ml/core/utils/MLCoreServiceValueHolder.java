@@ -80,14 +80,6 @@ public class MLCoreServiceValueHolder {
         this.mlProperties = mlProperties;
     }
 
-    public String getBamServerUrl() {
-        return bamServerUrl;
-    }
-
-    public void setBamServerUrl(String bamServerUrl) {
-        this.bamServerUrl = bamServerUrl;
-    }
-
     public List<MLAlgorithm> getAlgorithms() {
         return algorithms;
     }

@@ -65,7 +65,6 @@ public class MLCoreDS {
 
             valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
             valueHolder.setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
-            valueHolder.setBamServerUrl(mlConfig.getBamServerURL());
             valueHolder.setHdfsUrl(mlConfig.getHdfsUrl());
             valueHolder.setAlgorithms(mlConfig.getMlAlgorithms());
             valueHolder.setEmailNotificationEndpoint(mlConfig.getEmailNotificationEndpoint());

@@ -36,9 +36,6 @@ public class MLConfiguration {
     @XmlElement(name = "Database")
     private String databaseName;
     
-    @XmlElement(name = "BAMServerURL")
-    private String bamServerURL;
-    
     @XmlElement(name = "HdfsURL")
     private String hdfsUrl;
     
@@ -94,12 +91,6 @@ public class MLConfiguration {
     }
     public void setSummaryStatisticsSettings(SummaryStatisticsSettings summaryStatisticsSettings) {
         this.summaryStatisticsSettings = summaryStatisticsSettings;
-    }
-    public String getBamServerURL() {
-        return bamServerURL;
-    }
-    public void setBamServerURL(String bamServerURL) {
-        this.bamServerURL = bamServerURL;
     }
     public List<MLProperty> getProperties() {
         return properties;
