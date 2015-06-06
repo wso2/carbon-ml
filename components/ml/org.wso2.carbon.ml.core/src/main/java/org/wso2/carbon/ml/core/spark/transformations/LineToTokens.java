@@ -19,7 +19,6 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.regex.Pattern;
 
@@ -36,11 +35,7 @@ public class LineToTokens implements Function<String, String[]> {
     }
 
     @Override
-    public String[] call(String line) throws Exception {
-        try {
-            return tokenSeparator.split(line);
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while tranforming lines to tokens: " + e.getMessage(), e);
-        }
+    public String[] call(String line) {
+        return tokenSeparator.split(line);
     }
 }

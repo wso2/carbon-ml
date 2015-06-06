@@ -35,20 +35,15 @@ public class RowsToLines implements Function<Row, String> {
     }
 
     @Override
-    public String call(Row row) throws Exception {
-        try {
-            StringBuilder sb = new StringBuilder();
-            if (row.length() <= 0) {
-                return "";
-            }
-            for (int i = 0; i < row.length(); i++) {
-                sb.append(row.get(i) + columnSeparator);
-            }
-            return sb.substring(0, sb.length() - 1);
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while extracting a line from the row: "
-                    + row.toString() + " : Cause:" + e.getMessage(), e);
+    public String call(Row row) {
+        StringBuilder sb = new StringBuilder();
+        if (row.length() <= 0) {
+            return "";
         }
+        for (int i = 0; i < row.length(); i++) {
+            sb.append(row.get(i) + columnSeparator);
+        }
+        return sb.substring(0, sb.length() - 1);
     }
 
 }

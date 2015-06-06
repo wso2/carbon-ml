@@ -19,7 +19,6 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 /**
  * A filter to remove header row
@@ -34,15 +33,11 @@ public class HeaderFilter implements Function<String, Boolean> {
     }
 
     @Override
-    public Boolean call(String line) throws Exception {
-        try {
-            Boolean isRow = true;
-            if (line.equals(this.header)) {
-                isRow = false;
-            }
-            return isRow;
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while removing header row: " + e.getMessage(), e);
+    public Boolean call(String line) {
+        Boolean isRow = true;
+        if (line.equals(this.header)) {
+            isRow = false;
         }
+        return isRow;
     }
 }
