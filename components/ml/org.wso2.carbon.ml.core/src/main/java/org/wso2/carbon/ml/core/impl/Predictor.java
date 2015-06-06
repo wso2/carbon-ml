@@ -36,7 +36,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.spark.transformations.OneHotEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
@@ -119,7 +119,7 @@ public class Predictor {
     private List<Vector> getVectors(List<String[]> data) {
         List<Vector> vectors = new ArrayList<Vector>();
         List<Map<String, Integer>> encodings = model.getEncodings();
-        OneHotEncoder encoder = new OneHotEncoder(encodings);
+        BasicEncoder encoder = new BasicEncoder(encodings);
         for (String[] dataEntry : data) {
             String[] encodedEntry;
             try {
@@ -142,7 +142,8 @@ public class Predictor {
             return predictions;
         }
         List<Map<String, Integer>> encodings = model.getEncodings();
-        Map<String, Integer> encodingMap = encodings.get(index);
+        // last index is response variable encoding
+        Map<String, Integer> encodingMap = encodings.get(encodings.size()-1);
         if (encodingMap == null || encodingMap.isEmpty()) {
             // no change
             return predictions;

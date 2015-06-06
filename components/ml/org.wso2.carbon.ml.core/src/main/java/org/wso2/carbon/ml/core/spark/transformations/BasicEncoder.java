@@ -19,38 +19,35 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class performs one hot encoding on categorical features.
  */
-public class OneHotEncoder implements Function<String[], String[]> {
+public class BasicEncoder implements Function<String[], String[]> {
 
     private static final long serialVersionUID = -5025419727399292773L;
     private List<Map<String, Integer>> encodings;
 
-    public OneHotEncoder(List<Map<String, Integer>> encodings) {
+    public BasicEncoder(List<Map<String, Integer>> encodings) {
         this.encodings = encodings;
     }
 
     @Override
-    public String[] call(String[] tokens) throws Exception {
+    public String[] call(String[] tokens) {
+        if (encodings == null || encodings.isEmpty()) {
+            return tokens;
+        }
         for (int i = 0; i < tokens.length; i++) {
-            try {
-                if (encodings.size() <= i) {
-                    continue;
-                }
-                Map<String, Integer> encoding = encodings.get(i);
-                if (encoding != null && !encoding.isEmpty()) {
-                    String code = encoding.get(tokens[i]) == null ? tokens[i] : String.valueOf(encoding.get(tokens[i]));
-                    // replace the value with the encoded value
-                    tokens[i] = code;
-                }
-            } catch (Exception e) {
-                throw new MLModelBuilderException("An error occurred while encoding: " + tokens[i] + " : Cause:"
-                        + e.getMessage(), e);
+            if (encodings.size() <= i) {
+                continue;
+            }
+            Map<String, Integer> encoding = encodings.get(i);
+            if (encoding != null && !encoding.isEmpty()) {
+                String code = encoding.get(tokens[i]) == null ? tokens[i] : String.valueOf(encoding.get(tokens[i]));
+                // replace the value with the encoded value
+                tokens[i] = code;
             }
         }
         return tokens;

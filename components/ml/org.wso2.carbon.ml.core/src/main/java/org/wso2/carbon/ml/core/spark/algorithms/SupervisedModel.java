@@ -79,11 +79,11 @@ public class SupervisedModel {
             // apply pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
-            int responseIndex = MLUtils.getFeatureIndex(workflow.getResponseVariable(), headerRow, columnSeparator);
+            int responseIndex = context.getResponseIndex();
 
             SortedMap<Integer,String> includedFeatures = MLUtils.getIncludedFeatures(workflow, responseIndex);
             
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint(includedFeatures, responseIndex);
+            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
             
             
             JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
@@ -113,7 +113,7 @@ public class SupervisedModel {
                    includedFeatures, false);
                 break;
             case DECISION_TREE:
-                Map<Integer,Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings(), responseIndex);
+                Map<Integer,Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
                 summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case SVM:
@@ -152,10 +152,11 @@ public class SupervisedModel {
         }
     }
 
-    private Map<Integer, Integer> getCategoricalFeatureInfo(List<Map<String, Integer>> encodings, int responseIndex) {
+    private Map<Integer, Integer> getCategoricalFeatureInfo(List<Map<String, Integer>> encodings) {
         Map<Integer, Integer> info = new HashMap<Integer, Integer>();
-        for (int i = 0; i < encodings.size(); i++) {
-            if (encodings.get(i).size() > 0 && i != responseIndex) {
+        // skip the response variable which is at last
+        for (int i = 0; i < encodings.size() - 1; i++) {
+            if (encodings.get(i).size() > 0) {
                 info.put(i, encodings.get(i).size());
             }
         }
@@ -226,8 +227,12 @@ public class SupervisedModel {
     }
 
     private int getNoOfClasses(MLModel mlModel) {
-        int responseIndex = mlModel.getResponseIndex();
-        return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size() : -1;
+        if (mlModel.getEncodings() == null) {
+            return -1;
+        }
+        int responseIndex = mlModel.getEncodings().size() - 1;
+        return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size()
+                : -1;
     }
 
     /**

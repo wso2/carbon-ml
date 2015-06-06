@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 import java.util.List;
 
@@ -37,19 +36,14 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
     }
 
     @Override
-    public Boolean call(String[] tokens) throws Exception {
-        try {
-            Boolean keep = true;
-            for (Integer index : indices) {
-                if (index >= tokens.length || MLConstants.MISSING_VALUES.contains(tokens[index])) {
-                    keep = false;
-                    break;
-                }
+    public Boolean call(String[] tokens) {
+        Boolean keep = true;
+        for (Integer index : indices) {
+            if (index >= tokens.length || MLConstants.MISSING_VALUES.contains(tokens[index])) {
+                keep = false;
+                break;
             }
-            MLConstants.SUPERVISED_ALGORITHM.values();
-            return keep;
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while removing discarded rows: " + e.getMessage(), e);
         }
+        return keep;
     }
 }

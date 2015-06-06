@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.internal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -40,7 +41,23 @@ public class MLModelConfigurationContext {
     private String columnSeparator;
     private String[] dataToBePredicted;
     private Map<String,String> summaryStatsOfFeatures;
+    /**
+     * Encodings list.
+     * index - index of the feature. (last index is response variable)
+     * value - encodings.
+     */
     private List<Map<String, Integer>> encodings;
+    /**
+     * new to old index mapping for feature set (without response)
+     */
+    private List<Integer> newToOldIndicesList;
+    private int responseIndex;
+    
+    /**
+     * Key - feature index
+     * Value - feature name
+     */
+    private SortedMap<Integer,String> includedFeaturesMap;
     
     public long getModelId() {
         return modelId;
@@ -106,6 +123,24 @@ public class MLModelConfigurationContext {
     }
     public void setEncodings(List<Map<String, Integer>> encodings) {
         this.encodings = encodings;
+    }
+    public List<Integer> getNewToOldIndicesList() {
+        return newToOldIndicesList;
+    }
+    public void setNewToOldIndicesList(List<Integer> oldToNewIndicesList) {
+        this.newToOldIndicesList = oldToNewIndicesList;
+    }
+    public SortedMap<Integer,String> getIncludedFeaturesMap() {
+        return includedFeaturesMap;
+    }
+    public void setIncludedFeaturesMap(SortedMap<Integer,String> includedFeaturesMap) {
+        this.includedFeaturesMap = includedFeaturesMap;
+    }
+    public int getResponseIndex() {
+        return responseIndex;
+    }
+    public void setResponseIndex(int responseIndex) {
+        this.responseIndex = responseIndex;
     }
     
     

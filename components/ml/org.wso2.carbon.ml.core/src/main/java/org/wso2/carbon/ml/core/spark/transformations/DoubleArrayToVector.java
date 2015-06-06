@@ -21,7 +21,6 @@ package org.wso2.carbon.ml.core.spark.transformations;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 /**
  * This class transforms double array to labeled point
@@ -38,12 +37,8 @@ public class DoubleArrayToVector implements Function<double[], Vector> {
      * @throws          ModelServiceException
      */
     @Override
-    public Vector call(double[] features) throws MLModelBuilderException {
-        try {
-            return Vectors.dense(features);
-        } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while transforming double array to vector: "
-                    + e.getMessage(), e);
-        }
+    public Vector call(double[] features) {
+        return Vectors.dense(features);
+
     }
 }

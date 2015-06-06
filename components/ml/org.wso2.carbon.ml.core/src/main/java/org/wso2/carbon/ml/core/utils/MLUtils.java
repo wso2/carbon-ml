@@ -45,9 +45,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
-
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -331,11 +331,14 @@ public class MLUtils {
      * @param imputeOption Impute option
      * @return Returns indices of features where discard row imputaion is applied
      */
-    public static List<Integer> getImputeFeatureIndices(Workflow workflow, String imputeOption) {
+    public static List<Integer> getImputeFeatureIndices(Workflow workflow, List<Integer> newToOldIndicesList,
+            String imputeOption) {
         List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
         for (Feature feature : workflow.getFeatures()) {
             if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
-                imputeFeatureIndices.add(feature.getIndex());
+                int currentIndex = feature.getIndex();
+                int newIndex = newToOldIndicesList.indexOf(currentIndex) != -1 ? newToOldIndicesList.indexOf(currentIndex) : currentIndex;
+                imputeFeatureIndices.add(newIndex);
             }
         }
         return imputeFeatureIndices;
@@ -349,6 +352,7 @@ public class MLUtils {
      * @param columnSeparator Column separator character
      * @return Index of the response variable
      */
+    @Deprecated
     public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) {
         int featureIndex = 0;
         String[] headerItems = headerRow.split(columnSeparator);
@@ -362,6 +366,21 @@ public class MLUtils {
             }
         }
         return featureIndex;
+    }
+    
+    /**
+     * Retrieve the index of a feature in the dataset.
+     */
+    public static int getFeatureIndex(String featureName, List<Feature> features) {
+        if (featureName == null || features == null) {
+            return -1;
+        }
+        for (Feature feature : features) {
+            if (featureName.equals(feature.getName())) {
+                return feature.getIndex();
+            }
+        }
+        return -1;
     }
 
     /**

@@ -246,6 +246,10 @@ public class MLModelHandler {
             context.setFacts(facts);
             context.setModel(model);
             context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
+            int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
+            context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
+            context.setNewToOldIndicesList(getNewToOldIndicesList(context.getIncludedFeaturesMap()));
+            context.setResponseIndex(responseIndex);
 
             JavaSparkContext sparkContext = null;
             sparkConf.setAppName(String.valueOf(modelId));
@@ -345,6 +349,14 @@ public class MLModelHandler {
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);
         }
+    }
+    
+    private List<Integer> getNewToOldIndicesList(SortedMap<Integer, String> includedFeatures) {
+        List<Integer> indicesList = new ArrayList<Integer>();
+        for (int featureIdx : includedFeatures.keySet()) {
+            indicesList.add(featureIdx);
+        }
+        return indicesList;
     }
     
     public MLModel retrieveModel(long modelId) throws MLModelBuilderException {

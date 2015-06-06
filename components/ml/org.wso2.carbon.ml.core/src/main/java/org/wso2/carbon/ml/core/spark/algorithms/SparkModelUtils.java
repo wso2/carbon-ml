@@ -45,7 +45,8 @@ import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
-import org.wso2.carbon.ml.core.spark.transformations.OneHotEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -283,17 +284,20 @@ public class SparkModelUtils {
         String headerRow = context.getHeaderRow();
         String columnSeparator = context.getColumnSeparator();
         Map<String,String> summaryStatsOfFeatures = context.getSummaryStatsOfFeatures();
+        List<Integer> newToOldIndicesList = context.getNewToOldIndicesList();
+        int responseIndex = context.getResponseIndex();
         
-        List<Map<String, Integer>> encodings = buildEncodings(workflow.getFeatures(), summaryStatsOfFeatures);
+        List<Map<String, Integer>> encodings = buildEncodings(workflow.getFeatures(), summaryStatsOfFeatures, newToOldIndicesList, responseIndex);
         context.setEncodings(encodings);
 
             // Apply the filter to discard rows with missing values.
             JavaRDD<String[]> tokensDiscardedRemoved = MLUtils.filterRows(columnSeparator, headerRow, lines,
-                    MLUtils.getImputeFeatureIndices(workflow, MLConstants.DISCARD));
-            JavaRDD<String[]> encodedTokens = tokensDiscardedRemoved.map(new OneHotEncoder(encodings));
+                    MLUtils.getImputeFeatureIndices(workflow, new ArrayList<Integer>(), MLConstants.DISCARD));
+            JavaRDD<String[]> filteredTokens = tokensDiscardedRemoved.map(new RemoveDiscardedFeatures(newToOldIndicesList, responseIndex));
+            JavaRDD<String[]> encodedTokens = filteredTokens.map(new BasicEncoder(encodings));
             JavaRDD<double[]> features = null;
             // get feature indices for mean imputation
-            List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(workflow, MLConstants
+            List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(workflow, newToOldIndicesList, MLConstants
                     .MEAN_IMPUTATION);
             if (meanImputeIndices.size() > 0) {
                 // calculate means for the whole dataset (sampleFraction = 1.0) or a sample
@@ -343,33 +347,40 @@ public class SparkModelUtils {
         return imputeMeans;
     }
     
-    private static List<Map<String, Integer>> buildEncodings(List<Feature> features, Map<String,String> summaryStats) {
+    /**
+     * Build the encodings against each categorical feature.
+     * @return a list of encodings - last value of the list represent the encodings for the response variable.
+     * index - index of the feature
+     * value - Map<String, Integer> - map of unique values of this feature and there encoded values.
+     *      key - unique value
+     *      value - encoded value
+     * 
+     */
+    private static List<Map<String, Integer>> buildEncodings(List<Feature> features, Map<String, String> summaryStats,
+            List<Integer> newToOldIndicesList, int responseIndex) {
         List<Map<String, Integer>> encodings = new ArrayList<Map<String, Integer>>();
-        for (int i = 0; i <= findLargestIndex(features); i++) {
+        for (int i = 0; i < newToOldIndicesList.size()+1; i++) {
             encodings.add(new HashMap<String, Integer>());
         }
         for (Feature feature : features) {
             Map<String, Integer> encodingMap = new HashMap<String, Integer>();
             if (feature.getType().equals(FeatureType.CATEGORICAL)) {
                 List<String> uniqueVals = getUniqueValues(feature.getIndex(), summaryStats.get(feature.getName()));
+                Collections.sort(uniqueVals);
                 for (int i = 0; i < uniqueVals.size(); i++) {
                     encodingMap.put(uniqueVals.get(i), i);
                 }
-                encodings.set(feature.getIndex(), encodingMap);
+                int newIndex = newToOldIndicesList.indexOf(feature.getIndex());
+                if (newIndex != -1) {
+                    encodings.set(newIndex, encodingMap);
+                } else if (feature.getIndex() == responseIndex) {
+                    // response encoding at the end
+                    encodings.set(encodings.size()-1, encodingMap);
+                }
             }
         }
-        
+
         return encodings;
-    }
-    
-    private static int findLargestIndex(List<Feature> features) {
-        int idx = 0;
-        for (Feature feature : features) {
-            if (feature.getIndex() > idx) {
-                idx = feature.getIndex();
-            }
-        }
-        return idx;
     }
     
     private static List<String> getUniqueValues(int index, String statsAsJson) {
