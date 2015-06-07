@@ -13,7 +13,7 @@
 		and visualization. -->
 	<SummaryStatisticsSettings>
 		<HistogramBins>20</HistogramBins>
-		<CategoricalThreshold>20</CategoricalThreshold>
+		<CategoricalThreshold>10</CategoricalThreshold>
 		<SampleSize>10000</SampleSize>
 	</SummaryStatisticsSettings>
 
