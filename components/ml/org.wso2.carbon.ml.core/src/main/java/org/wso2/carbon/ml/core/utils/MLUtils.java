@@ -352,7 +352,6 @@ public class MLUtils {
      * @param columnSeparator Column separator character
      * @return Index of the response variable
      */
-    @Deprecated
     public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) {
         int featureIndex = 0;
         String[] headerItems = headerRow.split(columnSeparator);
@@ -383,6 +382,24 @@ public class MLUtils {
         return -1;
     }
 
+    /**
+     * @param workflow Workflow
+     * @return A list of indices of features to be included in the model
+     */
+    public static SortedMap<Integer, String> getIncludedFeaturesAfterReordering(Workflow workflow,
+            List<Integer> newToOldIndicesList, int responseIndex) {
+        SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
+        List<Feature> features = workflow.getFeatures();
+        for (Feature feature : features) {
+            if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
+                int currentIndex = feature.getIndex();
+                int newIndex = newToOldIndicesList.indexOf(currentIndex);
+                inlcudedFeatures.put(newIndex, feature.getName());
+            }
+        }
+        return inlcudedFeatures;
+    }
+    
     /**
      * @param workflow Workflow
      * @return A list of indices of features to be included in the model

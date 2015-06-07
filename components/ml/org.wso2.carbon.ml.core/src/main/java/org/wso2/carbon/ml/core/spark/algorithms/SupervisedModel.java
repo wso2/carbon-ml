@@ -65,30 +65,28 @@ public class SupervisedModel {
      * @throws              MLModelBuilderException
      */
     public MLModel buildModel(MLModelConfigurationContext context)
-            throws MLModelBuilderException {
+ throws MLModelBuilderException {
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         MLModel mlModel = new MLModel();
         try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
-            String headerRow = context.getHeaderRow();
-            String columnSeparator = context.getColumnSeparator();
             long modelId = context.getModelId();
-            
-            // apply pre-processing
+
+            // pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
+            SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
+                    context.getNewToOldIndicesList(), responseIndex);
 
-            SortedMap<Integer,String> includedFeatures = MLUtils.getIncludedFeatures(workflow, responseIndex);
-            
             DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
-            
-            
+
             JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
-            JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(new double[]{
-                    workflow.getTrainDataFraction(), 1-workflow.getTrainDataFraction()}, MLConstants.RANDOM_SEED);
+            JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
+                    new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
+                    MLConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> trainingData = dataSplit[0];
             JavaRDD<LabeledPoint> testingData = dataSplit[1];
             // create a deployable MLModel object
@@ -98,54 +96,56 @@ public class SupervisedModel {
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setEncodings(context.getEncodings());
             mlModel.setResponseIndex(responseIndex);
-            
+
             ModelSummary summaryModel = null;
-            
+
             // build a machine learning model according to user selected algorithm
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (supervisedAlgorithm) {
             case LOGISTIC_REGRESSION:
-                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                   includedFeatures, true);
+                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures, true);
                 break;
             case LOGISTIC_REGRESSION_LBFGS:
-                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                   includedFeatures, false);
+                summaryModel = buildLogisticRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures, false);
                 break;
             case DECISION_TREE:
-                Map<Integer,Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
-                summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures, categoricalFeatureInfo);
+                Map<Integer, Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case SVM:
-                summaryModel = buildSVMModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                summaryModel = buildSVMModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
+                        includedFeatures);
                 break;
             case NAIVE_BAYES:
-                summaryModel = buildNaiveBayesModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                summaryModel = buildNaiveBayesModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures);
                 break;
             case LINEAR_REGRESSION:
-                summaryModel = buildLinearRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                    includedFeatures);
+                summaryModel = buildLinearRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures);
                 break;
             case RIDGE_REGRESSION:
-                summaryModel = buildRidgeRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                    includedFeatures);
+                summaryModel = buildRidgeRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures);
                 break;
             case LASSO_REGRESSION:
-                summaryModel = buildLassoRegressionModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel,
-                    includedFeatures);
+                summaryModel = buildLassoRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
-            
+
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        }catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while building supervised machine learning model: " +
-                        e.getMessage(), e);
-        }
-        finally {
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
+                    + e.getMessage(), e);
+        } finally {
             if (sparkContext != null) {
                 sparkContext.stop();
             }
