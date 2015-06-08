@@ -107,6 +107,15 @@ public class MLDatasetProcessor {
         }
     }
     
+    public long getVersionset(int tenantId, String userName, long datasetId, String version)
+            throws MLDataProcessingException {
+        try {
+            return databaseService.getDatasetVersionId(datasetId, version, tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+    
     public List<MLDataset> getAllDatasets(int tenantId, String userName) throws MLDataProcessingException {
         try {
             return databaseService.getAllDatasets(tenantId, userName);

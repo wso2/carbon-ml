@@ -230,6 +230,28 @@ public class DatasetApiV10 extends MLRestAPI {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
+    
+    /**
+     * Get version set id of a version having a given version and of a given dataset id
+     */
+    @GET
+    @Path("/{datasetId}/versions/{version}")
+    @Produces("application/json")
+    public Response getVersionsets(@PathParam("datasetId") long datasetId, @PathParam("version") String version) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
+            return Response.ok(versionsets).build();
+        } catch (MLDataProcessingException e) {
+            logger.error(
+                    String.format(
+                            "Error occurred while retrieving all versions of a dataset with the [id] %s of tenant [id] %s [user] %s ",
+                            datasetId, tenantId, userName), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
 
     /**
      * Get a dataset version with a given id.

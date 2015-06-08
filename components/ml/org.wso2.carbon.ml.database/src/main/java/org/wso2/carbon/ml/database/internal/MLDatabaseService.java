@@ -666,7 +666,7 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
-
+    
     /**
      * Retrieve all datasets
      */
