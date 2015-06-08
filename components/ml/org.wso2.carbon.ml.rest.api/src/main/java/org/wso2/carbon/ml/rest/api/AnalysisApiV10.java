@@ -144,7 +144,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * get summarized features of an analysis.
      */
     @GET
-    @Path("/{analysisId}/features")
+    @Path("/{analysisId}/summarizedFeatures")
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummarizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
@@ -191,7 +191,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * get all feature names of an analysis.
      */
     @GET
-    @Path("/{analysisId}/allFeatures")
+    @Path("/{analysisId}/features")
     @Produces("application/json")
     public Response getAllFeatures(@PathParam("analysisId") String analysisId) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
