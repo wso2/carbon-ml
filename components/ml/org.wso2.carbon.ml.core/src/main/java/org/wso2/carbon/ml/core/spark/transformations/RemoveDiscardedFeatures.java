@@ -61,6 +61,7 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
                 features[features.length - 1] = tokens[i];
             } else {
                 // discarded feature
+                continue;
             }
         }
         return features;
