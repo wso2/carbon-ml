@@ -202,7 +202,7 @@ public class SQLQueries {
 
     public static final String GET_PROJECT_ID = "SELECT PROJECT_ID FROM ML_PROJECT WHERE NAME = ? AND TENANT_ID = ? AND USERNAME = ?";
 
-    public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE NAME = ? AND TENANT_ID = ? AND USERNAME = ? ";
+    public static final String DELETE_PROJECT = "DELETE FROM ML_PROJECT WHERE PROJECT_ID = ? AND TENANT_ID = ? AND USERNAME = ? ";
 
     public static final String DELETE_MODEL = "DELETE FROM ML_MODEL WHERE MODEL_ID = ? AND TENANT_ID = ? AND USERNAME = ? ";
 

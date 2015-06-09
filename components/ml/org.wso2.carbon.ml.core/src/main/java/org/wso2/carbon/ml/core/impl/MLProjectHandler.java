@@ -51,10 +51,10 @@ public class MLProjectHandler {
         }
     }
     
-    public void deleteProject(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
+    public void deleteProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
-            databaseService.deleteProject(tenantId, userName, projectName);
-            log.info(String.format("[Deleted] [project] %s of [user] %s of [tenant] %s", projectName, userName, tenantId));
+            databaseService.deleteProject(tenantId, userName, projectId);
+            log.info(String.format("[Deleted] [project] %s of [user] %s of [tenant] %s", projectId, userName, tenantId));
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }

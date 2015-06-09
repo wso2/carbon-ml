@@ -1709,7 +1709,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
+    public void deleteProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1718,17 +1718,17 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
-            preparedStatement.setString(1, projectName);
+            preparedStatement.setLong(1, projectId);
             preparedStatement.setInt(2, tenantId);
             preparedStatement.setString(3, userName);
             preparedStatement.execute();
             connection.commit();
             if (logger.isDebugEnabled()) {
-                logger.debug("Successfully deleted the project: " + projectName);
+                logger.debug("Successfully deleted the project: " + projectId);
             }
         } catch (SQLException e) {
             MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectName + ": "
+            throw new DatabaseHandlerException("Error occurred while deleting the project: " + projectId + ": "
                     + e.getMessage(), e);
         } finally {
             // enable auto commit

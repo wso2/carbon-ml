@@ -221,22 +221,21 @@ public class ProjectApiV10 extends MLRestAPI {
     }
     
     @DELETE
-    @Path("/{projectName}")
+    @Path("/{projectId}")
     @Produces("application/json")
-    public Response deleteProject(@PathParam("projectName") String projectName) {
+    public Response deleteProject(@PathParam("projectId") long projectId) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            mlProjectHandler.deleteProject(tenantId, userName, projectName);
+            mlProjectHandler.deleteProject(tenantId, userName, projectId);
             return Response.ok().build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
-                    "Error occurred while deleting a project [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    projectName, tenantId, userName, e.getMessage()));
+                    "Error occurred while deleting a project [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    projectId, tenantId, userName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
     
-    //TODO: Add a method to get analyses under a project
 }

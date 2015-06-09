@@ -318,7 +318,7 @@ public interface DatabaseService {
      * @param projectName
      * @throws DatabaseHandlerException
      */
-    public void deleteProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+    public void deleteProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
 
     /**
      * Get the analysis Id of a given tenant id, username, analysis combination
