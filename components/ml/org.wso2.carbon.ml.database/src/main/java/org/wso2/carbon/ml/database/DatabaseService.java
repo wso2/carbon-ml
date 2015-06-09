@@ -637,7 +637,7 @@ public interface DatabaseService {
      * @return
      * @throws DatabaseHandlerException
      */
-    public long getDatasetVersionId(long datasetId, String version, int tenantId, String userName)
+    public MLDatasetVersion getVersionSetWithVersion(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
 
     /**

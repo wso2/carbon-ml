@@ -398,7 +398,8 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public long getDatasetVersionId(long datasetId, String version, int tenantId, String userName) throws DatabaseHandlerException {
+    public MLDatasetVersion getVersionSetWithVersion(long datasetId, String version, int tenantId, String userName)
+            throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -410,15 +411,25 @@ public class MLDatabaseService implements DatabaseService {
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
             statement.setString(4, version);
-            
             result = statement.executeQuery();
             if (result.first()) {
-                return result.getLong(1);
+                MLDatasetVersion versionset = new MLDatasetVersion();
+                versionset.setId(result.getLong(1));
+                versionset.setName(result.getString(2));
+                versionset.setTargetPath(result.getString(3) == null ? null : new URI(result.getString(3)));
+                versionset.setSamplePoints((SamplePoints) result.getObject(4));
+                versionset.setTenantId(tenantId);
+                versionset.setUserName(userName);
+                versionset.setVersion(version);
+                return versionset;
             } else {
-                return -1;
+                return null;
             }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(String.format(" An error has occurred while extracting dataset version id of [dataset] %s [version] %s [tenant] %s [user] %s", datasetId, version, tenantId, userName), e);
+        } catch (Exception e) {
+            throw new DatabaseHandlerException(
+                    String.format(
+                            " An error has occurred while extracting dataset version id of [dataset] %s [version] %s [tenant] %s [user] %s",
+                            datasetId, version, tenantId, userName), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);

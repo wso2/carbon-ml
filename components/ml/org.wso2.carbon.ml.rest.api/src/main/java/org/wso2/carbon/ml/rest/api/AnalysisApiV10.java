@@ -433,31 +433,6 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Retrieving an analysis by a name.
-     * @deprecated
-     */
-    @GET
-    @Path("/{analysisName}")
-    @Produces("application/json")
-    public Response getAnalysis(@PathParam("analysisName") String analysisName) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            MLAnalysis analysis = mlAnalysisHandler.getAnalysis(tenantId, userName, analysisName);
-            if (analysis == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.ok(analysis).build();
-        } catch (MLAnalysisHandlerException e) {
-            logger.error(String
-                    .format("Error occurred while retrieving an analysis [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                            analysisName, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        }
-    }
-
-    /**
      * Retrieve all analyses.
      */
     @GET

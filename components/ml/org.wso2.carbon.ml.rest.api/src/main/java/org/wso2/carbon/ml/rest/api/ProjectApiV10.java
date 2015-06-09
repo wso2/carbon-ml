@@ -205,17 +205,21 @@ public class ProjectApiV10 extends MLRestAPI {
     @GET
     @Path("/{projectId}/analyses/{analysisName}")
     @Produces("application/json")
-    public Response getAnalysisOfProject(@PathParam("projectId") long projectId, @PathParam("analysisName") String analysisName) {
+    public Response getAnalysisOfProject(@PathParam("projectId") long projectId,
+            @PathParam("analysisName") String analysisName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
             MLAnalysis analysis = mlProjectHandler.getAnalysisOfProject(tenantId, userName, projectId, analysisName);
+            if (analysis == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             return Response.ok(analysis).build();
         } catch (MLProjectHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while retrieving analysis of tenant [id] %s [user] %s [project] %s [analysis] %s. Cause: %s",
-                    tenantId, userName, projectId, analysisName, e.getMessage()));
+            logger.error(String
+                    .format("Error occurred while retrieving analysis of tenant [id] %s [user] %s [project] %s [analysis] %s. Cause: %s",
+                            tenantId, userName, projectId, analysisName, e.getMessage()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

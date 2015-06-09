@@ -237,13 +237,13 @@ public class DatasetApiV10 extends MLRestAPI {
     @GET
     @Path("/{datasetId}/versions/{version}")
     @Produces("application/json")
-    public Response getVersionsets(@PathParam("datasetId") long datasetId, @PathParam("version") String version) {
+    public Response getVersionset(@PathParam("datasetId") long datasetId, @PathParam("version") String version) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLDatasetVersion> versionsets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
-            return Response.ok(versionsets).build();
+            MLDatasetVersion versionSet = datasetProcessor.getVersionSetWithVersion(tenantId, userName, datasetId, version);
+            return Response.ok(versionSet).build();
         } catch (MLDataProcessingException e) {
             logger.error(
                     String.format(
