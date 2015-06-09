@@ -30,6 +30,7 @@ import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 
 /**
+ * Responsible for writing a given input stream to a specified path in local file system.
  */
 public class FileOutputAdapter implements MLOutputAdapter {
 
@@ -42,9 +43,10 @@ public class FileOutputAdapter implements MLOutputAdapter {
         }
         OutputStream out = null;
         try {
-            out = new FileOutputStream(new File(outPath));
+            File file = new File(outPath);
+            out = new FileOutputStream(file);
             IOUtils.copy(in, out);
-            return URI.create(outPath);
+            return file.toURI();
         } catch (FileNotFoundException e) {
             throw new MLOutputAdapterException(e);
         } catch (IOException e) {
