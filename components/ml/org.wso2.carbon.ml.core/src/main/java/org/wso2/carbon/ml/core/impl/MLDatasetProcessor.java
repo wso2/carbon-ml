@@ -63,34 +63,6 @@ public class MLDatasetProcessor {
         threadExecutor = new ThreadExecutor(mlProperties);
     }
 
-    /**
-     * Checks whether a given name for a data-set is valid against a given tenant id.
-     * 
-     * @param tenantId tenant who's uploading the data-set.
-     * @param datasetName name of the data-set to be uploaded.
-     * @return if it is existed in a different tenant -> return false, if it is existed in the same tenant -> return
-     *         true
-     */
-    public boolean isValidName(int tenantId, String datasetName) {
-        // TODO call db and check whether the datasetName is existed in a different tenant
-        // if it is existed -> return false
-        // if it is existed in the same tenant -> return true
-        return false;
-    }
-
-    /**
-     * Checks whether a given version is valid against the given data-set.
-     * 
-     * @param tenantId tenant who's requesting the validation.
-     * @param datasetName name of the data-set to be uploaded.
-     * @param datasetVersion version of the data-set to be uploaded.
-     * @return if it is existed -> return false, if it is not -> return true
-     */
-    public boolean isValidVersion(int tenantId, String datasetName, String datasetVersion) {
-        // TODO call db and check whether the same version is existed for this dataset name in this tenant.
-        return false;
-    }
-    
     public List<MLDatasetVersion> getAllDatasetVersions(int tenantId, String userName, long datasetId) throws MLDataProcessingException {
         try {
             return databaseService.getAllVersionsetsOfDataset(tenantId, userName, datasetId);
@@ -140,20 +112,6 @@ public class MLDatasetProcessor {
         }
     }
     
-    /**
-     * FIXME Do we need tenant id and user name??
-     * @param datasetVersionId
-     * @return
-     * @throws MLDataProcessingException
-     */
-    public long getDatasetId(long datasetVersionId) throws MLDataProcessingException {
-        try {
-            return databaseService.getDatasetId(datasetVersionId);
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        }
-    }
-    
     public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
         try {
             return databaseService.getScatterPlotPoints(scatterPlotPoints);
@@ -190,18 +148,6 @@ public class MLDatasetProcessor {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
-    
-    public void deleteDataset(String datasetName) {
-        //TODO
-        
-    }
-    
-    public void deleteDatasetVersion(String datasetVersion) {
-        //TODO
-        
-    }
-    
-    
     
     /**
      * Process a given data-set; read the data-set as a stream, extract meta-data, persist the data-set in a target path

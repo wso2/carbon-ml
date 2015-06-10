@@ -310,16 +310,6 @@ public class MLModelHandler {
         return predictions;
     }
 
-    public List<?> predict(int tenantId, String userName, long modelId, String[] data) throws MLModelHandlerException,
-            MLModelBuilderException {
-
-        List<String[]> dataToBePredicted = new ArrayList<String[]>();
-        dataToBePredicted.add(data);
-        //predict
-        return predict(tenantId, userName, modelId, dataToBePredicted);
-
-    }
-
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
