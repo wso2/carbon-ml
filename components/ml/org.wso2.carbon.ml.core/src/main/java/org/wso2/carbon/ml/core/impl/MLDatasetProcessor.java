@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.FeatureSummary;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -158,11 +157,7 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset, InputStream inputStream) throws MLDataProcessingException {
         MLIOFactory ioFactory = new MLIOFactory(mlProperties);
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType() + MLConstants.IN_SUFFIX);
-        handleNull(inputAdapter, String.format("Invalid data source type: %s [data-set] %s", 
-                dataset.getDataSourceType(), dataset.getName()));
         MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() + MLConstants.OUT_SUFFIX);
-        handleNull(outputAdapter, String.format("Invalid data target type: %s [data-set] %s", 
-                dataset.getDataTargetType(), dataset.getName()));
         InputStream input = null;
         URI targetUri = null;
         SamplePoints samplePoints = null;
