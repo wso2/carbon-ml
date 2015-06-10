@@ -95,8 +95,9 @@ public class MLCoreDS {
             int httpsPort = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
             int httpsProxyPort = CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
                     mgtConsoleTransport);
-            log.info("WSO2 Machine Learner UI : https://" + hostName + ":"
-                    + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+            // set the ml.url property which will be used to print in the console by the ML jaggery app.
+            configContextService.getServerConfigContext().setProperty("ml.url",
+                    "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }
