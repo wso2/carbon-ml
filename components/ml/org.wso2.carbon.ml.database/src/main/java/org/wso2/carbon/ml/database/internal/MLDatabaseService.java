@@ -326,49 +326,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    /**
-     * @param name
-     * @param tenantID
-     * @param username
-     * @param comments
-     * @param sourceType
-     * @param targetType
-     * @param dataType
-     * @throws DatabaseHandlerException
-     */
-    public void insertDatasetDetails(String name, int tenantID, String username, String comments, String sourceType,
-            String targetType, String dataType) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the data-set details to the database.
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATASET_SCHEMA);
-            insertStatement.setString(1, name);
-            insertStatement.setInt(2, tenantID);
-            insertStatement.setString(3, username);
-            insertStatement.setString(4, comments);
-            insertStatement.setString(5, sourceType);
-            insertStatement.setString(6, targetType);
-            insertStatement.setString(7, dataType);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the details of data set");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting details of dataset "
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
 
     @Override
     public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException {
@@ -482,115 +439,6 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting dataset-version for model: "
                     + modelId, e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-
-    @Override
-    public void insertDataSource(long datasetVersionId, int tenantId, String username, String key, String value)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_DATA_SOURCE);
-            insertStatement.setLong(1, datasetVersionId);
-            insertStatement.setInt(2, tenantId);
-            insertStatement.setString(3, username);
-            insertStatement.setString(4, key);
-            insertStatement.setString(6, value);
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the data source");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting data source " + " to the database: "
-                    + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    @Override
-    public boolean isDatasetNameExist(int tenantId, String userName, String datasetName)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_DATASET_USING_NAME);
-            statement.setInt(1, tenantId);
-            statement.setString(2, userName);
-            statement.setString(3, datasetName);
-            result = statement.executeQuery();
-            return result.first();
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while searching for dataset of tenant id: "
-                    + tenantId + ", user: " + userName + " and dataset name:" + datasetName ,e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-
-    @Override
-    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION);
-            statement.setString(1, datasetName);
-            statement.setInt(2, tenantId);
-            statement.setString(3, datasetVersion);
-            result = statement.executeQuery();
-            return result.first();
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(
-                    " An error has occurred while searching for dataset version of tenant id: " + tenantId
-                            + ", dataset name:" + datasetName + " and dataset version:" + datasetVersion, e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-
-    @Override
-    public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_DATASET_VERSION_ID);
-            statement.setLong(1, datasetId);
-            statement.setString(2, datasetVersion);
-            result = statement.executeQuery();
-            if (result.first()) {
-                return result.getLong(1);
-            } else {
-                throw new DatabaseHandlerException("No dataset id associated with dataset id: " + datasetId
-                        + " and version:" + datasetVersion);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting dataset id: " + datasetId
-                    + " and version:" + datasetVersion, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -807,40 +655,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    /**
-     * Update the dataset version table with a sample points
-     *
-     * @param datasetVesionId       Unique Identifier of the dataset-version
-     * @param valueSetSample SamplePoints object of the dataset-version
-     * @throws DatabaseHandlerException
-     */
-    @Override
-    public void updateVersionsetSample(long datasetVesionId, SamplePoints valueSetSample) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement updateStatement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
-            updateStatement.setObject(1, valueSetSample);
-            updateStatement.setLong(2, datasetVesionId);
-            updateStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the sample of value set " + datasetVesionId);
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while updating the sample " + "points of value set "
-                    + datasetVesionId + ": " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
-        }
-    }
 
     /**
      * Update the model summary
@@ -1172,60 +986,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     /**
-     * This method extracts and returns default features available in a given dataset version
-     *
-     * @param datasetVersionId The dataset version id
-     * @return A list of FeatureSummary
-     * @throws DatabaseHandlerException
-     */
-    @Override
-    public List<FeatureSummary> getDefaultFeatures(long datasetVersionId, int startIndex, int numberOfFeatures)
-            throws DatabaseHandlerException {
-        List<FeatureSummary> features = new ArrayList<FeatureSummary>();
-        Connection connection = null;
-        PreparedStatement getDefaultFeatues = null;
-        ResultSet result = null;
-
-        try {
-            connection = dbh.getDataSource().getConnection();
-            getDefaultFeatues = connection.prepareStatement(SQLQueries.GET_DEFAULT_FEATURES);
-
-            getDefaultFeatues.setLong(1, datasetVersionId);
-            getDefaultFeatues.setInt(2, numberOfFeatures);
-            getDefaultFeatues.setInt(3, startIndex);
-
-            result = getDefaultFeatues.executeQuery();
-
-            while (result.next()) {
-                String featureType = FeatureType.NUMERICAL;
-                if (FeatureType.CATEGORICAL.equalsIgnoreCase(result.getString(3))) {
-                    featureType = FeatureType.CATEGORICAL;
-                }
-                // Set the impute option
-                String imputeOperation = ImputeOption.REPLACE_WTH_MEAN;
-
-                String featureName = result.getString(1);
-
-                // Setting up default include flag
-                boolean isImportantFeature = true;
-
-                String summaryStat = result.getString(2);
-                int index = result.getInt(4);
-
-                features.add(new FeatureSummary(featureName, isImportantFeature, featureType, imputeOperation,
-                        summaryStat, index));
-            }
-            return features;
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while retrieving features of "
-                    + "the data set version: " + datasetVersionId + ": " + e.getMessage(), e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatues, result);
-        }
-    }
-    
-    /**
      * Get feature names in order and separated by the given column separator.
      */
     @Override
@@ -1283,40 +1043,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    /**
-     * Returns the names of the features of the model
-     *
-     * @param modelId Unique identifier of the current model
-     * @return A list of feature names
-     * @throws DatabaseHandlerException
-     */
-    public List<String> getFeatureNames(long modelId) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement getFeatureNamesStatement = null;
-        ResultSet result = null;
-        List<String> featureNames = new ArrayList<String>();
-        try {
-            connection = dbh.getDataSource().getConnection();
-
-            // Create a prepared statement and retrieve model configurations
-            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES);
-            getFeatureNamesStatement.setLong(1, modelId);
-
-            result = getFeatureNamesStatement.executeQuery();
-            // Convert the result in to a string array to e returned.
-            while (result.next()) {
-                featureNames.add(result.getString(1));
-            }
-            return featureNames;
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while retrieving feature "
-                    + "names of the dataset for model: " + modelId + ": " + e.getMessage(), e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
-        }
-    }
 
     /**
      * Returns the names of the features, belongs to a particular type
@@ -1452,8 +1178,11 @@ public class MLDatabaseService implements DatabaseService {
             getSummaryStatement.setInt(3, tenantId);
             getSummaryStatement.setString(4, user);
             result = getSummaryStatement.executeQuery();
-            result.first();
-            return result.getString(1);
+            if (result.first()) {
+                return result.getString(1);
+            } else {
+                return "";
+            }
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving summary "
                     + "statistics for the feature \"" + featureName + "\" of the analysis " + analysisId
@@ -1563,34 +1292,6 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
-        }
-    }
-
-    @Override
-    public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_PROJECT_ID);
-            statement.setString(1, projectName);
-            statement.setInt(2, tenantId);
-            statement.setString(2, userName);
-            result = statement.executeQuery();
-            if (result.first()) {
-                return result.getLong(1);
-            } else {
-                throw new DatabaseHandlerException("No project id associated with project name: " + projectName
-                        + ", tenant Id:" + tenantId + " and username:" + userName);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting project id for project name:"
-                    + projectName + ", tenant Id:" + tenantId + " and username:" + userName, e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
     }
 
@@ -1780,69 +1481,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_ANALYSIS_ID);
-            statement.setString(1, analysisName);
-            statement.setInt(2, tenantId);
-            statement.setString(3, userName);
-            result = statement.executeQuery();
-            if (result.first()) {
-                return result.getLong(1);
-            } else {
-                throw new DatabaseHandlerException("No analysis id associated with analysis name: " + analysisName
-                        + ", tenant id:" + tenantId + " and username:" + userName);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(
-                    " An error has occurred while extracting analysis id for analysis name: " + analysisName
-                            + ", tenant id:" + tenantId + " and username:" + userName);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-
-    @Override
-    public MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_ANALYSIS);
-            statement.setString(1, analysisName);
-            statement.setInt(2, tenantId);
-            statement.setString(3, userName);
-            result = statement.executeQuery();
-            if (result.first()) {
-                MLAnalysis analysis = new MLAnalysis();
-                analysis.setId(result.getLong(1));
-                analysis.setProjectId(result.getLong(2));
-                analysis.setComments(MLDatabaseUtils.toString(result.getClob(3)));
-                analysis.setName(analysisName);
-                analysis.setTenantId(tenantId);
-                analysis.setUserName(userName);
-                return analysis;
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting analysis for analysis name: "
-                    + analysisName + ", tenant id:" + tenantId + " and username:" + userName, e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-    
-    @Override
     public MLAnalysis getAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
@@ -1936,34 +1574,6 @@ public class MLDatabaseService implements DatabaseService {
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting analyses for tenant id:"
                     + tenantId + " , username:" + userName+ " and project id: "+projectId, e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
-        }
-    }
-
-    @Override
-    public long getModelId(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        ResultSet result = null;
-        PreparedStatement statement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            statement = connection.prepareStatement(SQLQueries.GET_ML_MODEL_ID);
-            statement.setString(1, modelName);
-            statement.setInt(2, tenantId);
-            statement.setString(3, userName);
-            result = statement.executeQuery();
-            if (result.first()) {
-                return result.getLong(1);
-            } else {
-                throw new DatabaseHandlerException("No model id associated with model name: " + modelName
-                        + ", tenant id:" + tenantId + " and username:" + userName);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting model id for model name: "
-                    + modelName + ", tenant id:" + tenantId + " and username:" + userName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -2176,36 +1786,6 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            preparedStatement = connection.prepareStatement(SQLQueries.DELETE_ANALYSIS);
-            preparedStatement.setString(1, analysisName);
-            preparedStatement.setInt(2, tenantId);
-            preparedStatement.setString(3, userName);
-            preparedStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully deleted the analysis: " + analysisName);
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while deleting the analysis: " + analysisName + ": "
-                    + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, preparedStatement);
-        }
-    }
-    
-    @Override
     public void deleteAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
 
         Connection connection = null;
@@ -2270,43 +1850,6 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    /**
-     * retrieve a model configuration
-     *
-     * @param modelId Unique identifier of the current model
-     * @param name config name
-     * @return config value
-     * @throws DatabaseHandlerException
-     */
-    @Override
-    public String getModelConfigurationValue(long modelId, String name) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement getModelConfigurationValueStatement = null;
-        ResultSet result = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-
-            // Create a prepared statement and retrieve model configurations
-            getModelConfigurationValueStatement = connection.prepareStatement(SQLQueries.GET_A_MODEL_CONFIGURATION);
-            getModelConfigurationValueStatement.setLong(1, modelId);
-            getModelConfigurationValueStatement.setString(2, name);
-
-            result = getModelConfigurationValueStatement.executeQuery();
-            // Convert the result in to a string array to e returned.
-            while (result.next()) {
-                return result.getString(1);
-            }
-            return null;
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while retrieving a model "
-                    + " configuration for the model: " + modelId + ": " + e.getMessage(), e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getModelConfigurationValueStatement, result);
         }
     }
 
@@ -2537,86 +2080,6 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
-    @Override
-    public void insertFeatureCustomized(long analysisId, MLCustomizedFeature customizedFeature)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement insertStatement = null;
-        try {
-            // Insert the feature-customized to the database
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-
-            int tenantId = customizedFeature.getTenantId();
-            String featureName = customizedFeature.getName();
-            String type = customizedFeature.getType();
-            String imputeOption = customizedFeature.getImputeOption();
-            boolean inclusion = customizedFeature.isInclude();
-            String lastModifiedUser = customizedFeature.getLastModifiedUser();
-            String userName = customizedFeature.getUserName();
-
-            insertStatement = connection.prepareStatement(SQLQueries.INSERT_FEATURE_CUSTOMIZED);
-            insertStatement.setLong(1, analysisId);
-            insertStatement.setInt(2, tenantId);
-            insertStatement.setString(3, featureName);
-            insertStatement.setString(4, type);
-            insertStatement.setString(5, imputeOption);
-            insertStatement.setBoolean(6, inclusion);
-            insertStatement.setString(7, lastModifiedUser);
-            insertStatement.setString(8, userName);
-
-            insertStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully inserted the feature-customized");
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while inserting feature-customized "
-                    + " to the database: " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
-        }
-    }
-
-    /**
-     * Assign a tenant to a given project.
-     *
-     * @param tenantID Unique identifier for the current tenant.
-     * @param projectID Unique identifier for the project.
-     * @throws DatabaseHandlerException
-     */
-    public void addTenantToProject(int tenantID, String projectID) throws DatabaseHandlerException {
-        Connection connection = null;
-        PreparedStatement addTenantStatement = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            addTenantStatement = connection.prepareStatement(SQLQueries.ADD_TENANT_TO_PROJECT);
-            addTenantStatement.setInt(1, tenantID);
-            addTenantStatement.setString(2, projectID);
-            addTenantStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully added the tenant: " + tenantID + " to the project: " + projectID);
-            }
-        } catch (SQLException e) {
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("Error occurred while adding the tenant " + tenantID
-                    + " to the project " + projectID + ": " + e.getMessage(), e);
-        } finally {
-            // enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, addTenantStatement);
-        }
-    }
 
     @Override
     public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats)
@@ -2726,157 +2189,6 @@ public class MLDatabaseService implements DatabaseService {
         JSONArray summaryStatArray = new JSONArray();
         summaryStatArray.put(json);
         return summaryStatArray;
-    }
-
-    /**
-     * Retrieves the type of a feature.
-     *
-     * @param modelId Unique identifier of the model
-     * @param featureName Name of the feature
-     * @return Type of the feature (Categorical/Numerical)
-     * @throws DatabaseHandlerException
-     */
-    @Override
-    public String getFeatureType(long modelId, String featureName) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement getDefaultFeatureSettings = null;
-        ResultSet result = null;
-        try {
-            MLDataSource dbh = new MLDataSource();
-            connection = dbh.getDataSource().getConnection();
-            getDefaultFeatureSettings = connection.prepareStatement(SQLQueries.GET_FEATURE_TYPE);
-            getDefaultFeatureSettings.setLong(1, modelId);
-            getDefaultFeatureSettings.setString(2, featureName);
-            result = getDefaultFeatureSettings.executeQuery();
-            if (result.first()) {
-                return result.getString(1);
-            } else {
-                throw new DatabaseHandlerException("Invalid model Id: " + modelId);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error occurred while reading type of feature: " + featureName
-                    + " of model Id: " + modelId + e.getMessage(), e);
-        } finally {
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, getDefaultFeatureSettings, result);
-        }
-    }
-
-    /**
-     * Change whether a feature should be included as an input or not.
-     *
-     * @param featureName Name of the feature to be updated
-     * @param modelId Unique identifier of the current model
-     * @param isInput Boolean value indicating whether the feature is an input or not
-     * @throws DatabaseHandlerException
-     */
-    public void updateFeatureInclusion(String featureName, long modelId, boolean isInput)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement updateStatement = null;
-        try {
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_FEATURE_INCLUSION);
-            updateStatement.setBoolean(1, isInput);
-            updateStatement.setString(2, featureName);
-            updateStatement.setLong(3, modelId);
-            updateStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the include-option of feature" + featureName + "of model " + modelId);
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException(
-                    "An error occurred while updating the feature included option of feature \"" + featureName
-                            + "\" of model " + modelId + ": " + e, e);
-        } finally {
-            // Enable auto commit
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
-        }
-    }
-
-    /**
-     * Update the impute method option of a given feature.
-     *
-     * @param featureName Name of the feature to be updated
-     * @param modelId Unique identifier of the current model
-     * @param imputeOption Updated impute option of the feature
-     * @throws DatabaseHandlerException
-     */
-    public void updateImputeOption(String featureName, long modelId, String imputeOption)
-            throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement updateStatement = null;
-        try {
-            // Update the database.
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_IMPUTE_METHOD);
-            updateStatement.setString(1, imputeOption);
-            updateStatement.setString(2, featureName);
-            updateStatement.setLong(3, modelId);
-            updateStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the impute-option of feature" + featureName + " of model " + modelId);
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while updating the feature \"" + featureName
-                    + "\" of model " + modelId + ": " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
-        }
-    }
-
-    /**
-     * Update the data type of a given feature.
-     *
-     * @param featureName Name of the feature to be updated
-     * @param modelId Unique identifier of the current model
-     * @param featureType Updated type of the feature
-     * @throws DatabaseHandlerException
-     */
-    public void updateDataType(String featureName, long modelId, String featureType) throws DatabaseHandlerException {
-
-        Connection connection = null;
-        PreparedStatement updateStatement = null;
-        try {
-            // Update the database with data type.
-            connection = dbh.getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_DATA_TYPE);
-            updateStatement.setString(1, featureType);
-            updateStatement.setString(2, featureName);
-            updateStatement.setLong(3, modelId);
-            updateStatement.execute();
-            connection.commit();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Successfully updated the data-type of feature" + featureName + " of model " + modelId);
-            }
-        } catch (SQLException e) {
-            // Roll-back the changes.
-            MLDatabaseUtils.rollBack(connection);
-            throw new DatabaseHandlerException("An error occurred while updating the data type of feature \""
-                    + featureName + "\" of model " + modelId + ": " + e.getMessage(), e);
-        } finally {
-            // Enable auto commit.
-            MLDatabaseUtils.enableAutoCommit(connection);
-            // Close the database resources.
-            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
-        }
     }
 
     @Override

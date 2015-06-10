@@ -154,16 +154,6 @@ public class MLDatasetProcessor {
         }
     }
     
-    public List<FeatureSummary> getDefaultFeatures(int tenantId, String userName, long versionsetId, int startIndex, int numberOfFeatures) throws MLDataProcessingException {
-        
-        long datasetVersionId = getDatasetId(versionsetId);
-        try {
-            return databaseService.getDefaultFeatures(datasetVersionId, startIndex, numberOfFeatures);
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        }
-    }
-    
     public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws MLDataProcessingException {
         try {
             return databaseService.getScatterPlotPoints(scatterPlotPoints);

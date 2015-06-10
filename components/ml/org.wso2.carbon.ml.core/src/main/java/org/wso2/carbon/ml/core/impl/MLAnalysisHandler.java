@@ -75,15 +75,6 @@ public class MLAnalysisHandler {
         }
     }
 
-    public void addCustomizedFeature(long analysisId, MLCustomizedFeature customizedFeature)
-            throws MLAnalysisHandlerException {
-        try {
-            databaseService.insertFeatureCustomized(analysisId, customizedFeature);
-        } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e.getMessage(), e);
-        }
-    }
-    
     public List<FeatureSummary> getSummarizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
         try {
             return databaseService.getFeatures(tenantId, userName, analysisId, limit, offset);
@@ -198,15 +189,6 @@ public class MLAnalysisHandler {
         }
     }
     
-    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
-        try {
-            databaseService.deleteAnalysis(tenantId, userName, analysisName);
-            log.info(String.format("[Deleted] [analysis] %s of [user] %s of [tenant] %s", analysisName, userName, tenantId));
-        } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e.getMessage(), e);
-        }
-    }
-    
     public void deleteAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
         try {
             databaseService.deleteAnalysis(tenantId, userName, analysisId);
@@ -216,22 +198,6 @@ public class MLAnalysisHandler {
         }
     }
     
-    public long getAnalysisId(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
-        try {
-            return databaseService.getAnalysisId(tenantId, userName, analysisName);
-        } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e.getMessage(), e);
-        }
-    }
-    
-    public MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws MLAnalysisHandlerException {
-        try {
-            return databaseService.getAnalysis(tenantId, userName, analysisName);
-        } catch (DatabaseHandlerException e) {
-            throw new MLAnalysisHandlerException(e.getMessage(), e);
-        }
-    }
-
     public List<MLAnalysis> getAnalyses(int tenantId, String userName) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAllAnalyses(tenantId, userName);

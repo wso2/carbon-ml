@@ -97,42 +97,6 @@ public interface DatabaseService {
      */
     public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException;
 
-    /**
-     * Check whether the given database name exists in the given tenantId
-     * @param tenantId                 tenant Id
-     * @param datasetName              name of the data-set
-     * @return                         true if the name exists
-     * @throws DatabaseHandlerException
-     */
-    public boolean isDatasetNameExist(int tenantId, String userName, String datasetName) throws DatabaseHandlerException;
-
-    /**
-     * Check whether the given database version exists for the given data-set name and tenant ID
-     * @param tenantId                 tenantId
-     * @param datasetName              name of the data-set
-     * @param datasetVersion           version of the data-set
-     * @return                         true if the version of the data-set exists
-     * @throws DatabaseHandlerException
-     */
-    public boolean isDatasetVersionExist(int tenantId, String datasetName, String datasetVersion) throws DatabaseHandlerException;
-
-    /**
-     * @param datasetId
-     * @param datasetVersion
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getDatasetVersionId(long datasetId, String datasetVersion) throws DatabaseHandlerException;
-
-    /**
-     * Update the value-set table with a data-set sample.
-     *
-     * @param datasetVesionId   Unique Identifier of the value-set
-     * @param valueSetSample    SamplePoints object of the value-set
-     * @throws                  DatabaseHandlerException
-     */
-    public void updateVersionsetSample(long datasetVesionId, SamplePoints valueSetSample)
-            throws DatabaseHandlerException;
 
     /**
      * Returns data points of the selected sample as coordinates of three
@@ -167,26 +131,6 @@ public interface DatabaseService {
      */
     public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
                                             int numberOfFeatures) throws DatabaseHandlerException;
-
-
-    /**
-     * This method extracts and retures default features available in a given dataset version
-     * @param datasetVersionId The dataset varsion id associated with this dataset version
-     * @return                 A list of FeatureSummaries
-     * @throws                 DatabaseHandlerException
-     */
-    public List<FeatureSummary> getDefaultFeatures(long datasetVersionId, int startIndex, int numberOfFeatures)
-            throws DatabaseHandlerException;
-
-    /**
-     * Returns the names of the features, belongs to a particular data-type
-     * (Categorical/Numerical), of the work-flow.
-     *
-     * @param modelId       Unique identifier of the current model
-     * @return              A list of feature names
-     * @throws              DatabaseHandlerException
-     */
-    public List<String> getFeatureNames(long modelId) throws DatabaseHandlerException;
 
     /**
      * Returns the names of the features, belongs to a particular type
@@ -259,59 +203,6 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
-     * Retrieves the type of a feature.
-     *
-     * @param modelId       Unique identifier of the model
-     * @param featureName   Name of the feature
-     * @return              Type of the feature (Categorical/Numerical)
-     * @throws              DatabaseHandlerException
-     */
-    public String getFeatureType(long modelId, String featureName) throws DatabaseHandlerException;
-
-    /**
-     * Change whether a feature should be included as an input or not
-     *
-     * @param featureName   Name of the feature to be updated
-     * @param modelId       Unique identifier of the current model
-     * @param isInput       Boolean value indicating whether the feature is an input or not
-     * @throws              DatabaseHandlerException
-     */
-    public void updateFeatureInclusion(String featureName, long modelId, boolean isInput)
-            throws DatabaseHandlerException;
-
-    /**
-     * Update the impute method option of a given feature.
-     *
-     * @param featureName   Name of the feature to be updated
-     * @param modelId       Unique identifier of the current model
-     * @param imputeOption  Updated impute option of the feature
-     * @throws              DatabaseHandlerException
-     */
-    public void updateImputeOption(String featureName, long modelId, String imputeOption)
-            throws DatabaseHandlerException;
-
-    /**
-     * Update the data type of a given feature.
-     *
-     * @param featureName   Name of the feature to be updated
-     * @param modelId       Unique identifier of the current model
-     * @param featureType   Updated type of the feature
-     * @throws              DatabaseHandlerException
-     */
-    public void updateDataType(String featureName, long modelId, String featureType)
-            throws DatabaseHandlerException;
-
-    /**
-     * Get the unique Id of the project
-     * @param tenantId        tenant Id
-     * @param userName        username of the project
-     * @param projectName     name of the project
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getProjectId(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
-
-    /**
      * Delete the project
      * @param tenantId
      * @param userName
@@ -319,35 +210,6 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public void deleteProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
-
-    /**
-     * Get the analysis Id of a given tenant id, username, analysis combination
-     * @param tenantId
-     * @param userName
-     * @param analysisName
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getAnalysisId(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
-
-    /**
-     * Get the Id of the model
-     * @param tenantId  Tenant Id
-     * @param userName  Username
-     * @param modelName Model name
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public long getModelId(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
-
-    /**
-     * Delete the analysis
-     * @param tenantId
-     * @param userName
-     * @param analysisName
-     * @throws DatabaseHandlerException
-     */
-    public void deleteAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     /**
      * Insert a list of Customized-Features into the database
@@ -380,15 +242,6 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     /**
-     *
-     * @param modelId
-     * @param name
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public String getModelConfigurationValue(long modelId, String name) throws DatabaseHandlerException;
-
-    /**
      * Update the model summary of a given model
      * @param modelId             model id
      * @param modelSummary        ModelSummary
@@ -416,33 +269,12 @@ public interface DatabaseService {
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
-     * Insert cutomized feature to the database
-     * @param analysisId           analysis id
-     * @param customizedFeature    customized feature
-     * @throws DatabaseHandlerException
-     */
-    public void insertFeatureCustomized(long analysisId, MLCustomizedFeature customizedFeature) 
-            throws DatabaseHandlerException;
-
-    /**
      * Get the id of the dataset-version used to generate the model
      * @param modelId  unique id of the model
      * @return
      * @throws DatabaseHandlerException
      */
     public long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
-
-    /**
-     * Insert data source to the database
-     * @param datasetVersionId  unique id of the dataset-version
-     * @param tenantId          tenant id
-     * @param username          username
-     * @param key               key
-     * @param value             value
-     * @throws DatabaseHandlerException
-     */
-    public void insertDataSource(long datasetVersionId, int tenantId, String username, String key, String value)
-            throws DatabaseHandlerException;
 
     /**
      * Get the dataset-schema id of the dataset-version
@@ -539,16 +371,6 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
-
-    /**
-     * Get the Analysis having the given analysis name
-     * @param tenantId      tenant id
-     * @param userName      username
-     * @param analysisName  analysis name
-     * @return
-     * @throws DatabaseHandlerException
-     */
-    public MLAnalysis getAnalysis(int tenantId, String userName, String analysisName) throws DatabaseHandlerException;
 
     /**
      * Get all the analyses of the given tenant and username

@@ -136,14 +136,6 @@ public class MLModelHandler {
         }
     }
 
-    public long getModelId(int tenantId, String userName, String modelName) throws MLModelHandlerException {
-        try {
-            return databaseService.getModelId(tenantId, userName, modelName);
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e.getMessage(), e);
-        }
-    }
-
     public MLModelNew getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);

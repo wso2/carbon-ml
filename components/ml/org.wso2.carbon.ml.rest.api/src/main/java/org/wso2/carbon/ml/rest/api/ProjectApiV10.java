@@ -132,8 +132,8 @@ public class ProjectApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLModelNew> projects = mlProjectHandler.getProjectModels(tenantId, userName, projectId);
-            return Response.ok(projects).build();
+            List<MLModelNew> models = mlProjectHandler.getProjectModels(tenantId, userName, projectId);
+            return Response.ok(models).build();
         } catch (MLProjectHandlerException e) {
             logger.error(String.format(
                     "Error occurred while retrieving all models of project [id] %s tenant [id] %s [user] %s . Cause: %s",

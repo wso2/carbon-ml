@@ -412,7 +412,7 @@ public class DatasetApiV10 extends MLRestAPI {
     @GET
     @Path("/{datasetId}/filteredFeatures")
     @Produces("application/json")
-    public Response getfilteredFeatures(@PathParam("datasetId") long datasetId, @QueryParam("featureType") String featureType) {
+    public Response getFilteredFeatures(@PathParam("datasetId") long datasetId, @QueryParam("featureType") String featureType) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();

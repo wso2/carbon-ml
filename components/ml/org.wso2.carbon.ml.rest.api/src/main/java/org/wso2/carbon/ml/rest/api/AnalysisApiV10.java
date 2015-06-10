@@ -311,6 +311,10 @@ public class AnalysisApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
 
+            if (featureName == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("feature query param was not set.").build();
+            }
+
             String summary = mlAnalysisHandler.getSummaryStats(tenantId, userName, analysisId, featureName);
             return Response.ok(summary).build();
         } catch (MLAnalysisHandlerException e) {

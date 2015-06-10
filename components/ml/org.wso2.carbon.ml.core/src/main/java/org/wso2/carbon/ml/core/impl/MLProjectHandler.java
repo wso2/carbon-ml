@@ -60,14 +60,6 @@ public class MLProjectHandler {
         }
     }
     
-    public long getProjectId(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
-        try {
-            return databaseService.getProjectId(tenantId, userName, projectName);
-        } catch (DatabaseHandlerException e) {
-            throw new MLProjectHandlerException(e.getMessage(), e);
-        }
-    }
-
     public MLProject getProject(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
         try {
             return databaseService.getProject(tenantId, userName, projectName);
