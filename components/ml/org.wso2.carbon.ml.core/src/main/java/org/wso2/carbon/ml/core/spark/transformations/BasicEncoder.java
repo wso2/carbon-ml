@@ -45,7 +45,9 @@ public class BasicEncoder implements Function<String[], String[]> {
             }
             Map<String, Integer> encoding = encodings.get(i);
             if (encoding != null && !encoding.isEmpty()) {
-                String code = encoding.get(tokens[i]) == null ? tokens[i] : String.valueOf(encoding.get(tokens[i]));
+                // if we found an unknown string, we encode it from 0th mapping.
+                String code = encoding.get(tokens[i]) == null ? String.valueOf(encoding.values().iterator().next())
+                        : String.valueOf(encoding.get(tokens[i]));
                 // replace the value with the encoded value
                 tokens[i] = code;
             }
