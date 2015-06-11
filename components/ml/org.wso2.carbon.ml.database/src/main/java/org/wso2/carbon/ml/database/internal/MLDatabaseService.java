@@ -1736,18 +1736,18 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        MLStorage storage = new MLStorage();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_MODEL_STORAGE);
             statement.setLong(1, modelId);
             result = statement.executeQuery();
             if (result.first()) {
+                MLStorage storage = new MLStorage();
                 storage.setType(result.getString(1));
                 storage.setLocation(result.getString(2));
                 return storage;
             } else {
-                return storage;
+                return null;
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting model storage for model id: "

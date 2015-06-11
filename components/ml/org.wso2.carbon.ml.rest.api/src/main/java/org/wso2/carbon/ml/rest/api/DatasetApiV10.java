@@ -97,7 +97,7 @@ public class DatasetApiV10 extends MLRestAPI {
                 logger.error("Dataset Source is missing.");
                 return Response.status(Response.Status.BAD_REQUEST).entity("Dataset Source is missing").build();
             } else {
-                dataset.setSourcePath(new URI(sourcePath));
+                dataset.setSourcePath(sourcePath);
             }
 
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -115,12 +115,8 @@ public class DatasetApiV10 extends MLRestAPI {
             dataset.setContainsHeader(containsHeader);
             datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();
-        } catch (MLDataProcessingException e) {
+        } catch (Exception e) {
             logger.error("Error occurred while uploading a dataset : " + dataset, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (URISyntaxException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } catch (IOException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }

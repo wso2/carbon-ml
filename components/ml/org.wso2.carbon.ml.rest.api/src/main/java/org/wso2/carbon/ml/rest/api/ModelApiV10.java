@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 
 /**
@@ -139,6 +140,11 @@ public class ModelApiV10 extends MLRestAPI {
         try {
             mlModelHandler.publishModel(tenantId, userName, modelId);
             return Response.ok().build();
+        } catch (MLModelPublisherException e) {
+            logger.error(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (Exception e) {
             logger.error(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",

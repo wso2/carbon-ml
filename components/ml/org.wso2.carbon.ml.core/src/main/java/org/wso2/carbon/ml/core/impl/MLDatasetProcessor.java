@@ -181,7 +181,7 @@ public class MLDatasetProcessor {
                 handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
                         dataset.getSourcePath(), dataset.getName()));
                 // if the source is hdfs/bam read from the source path
-                input = inputAdapter.read(dataset.getSourcePath());
+                input = inputAdapter.read(new URI(dataset.getSourcePath()));
             }
             
             if (!MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
@@ -196,9 +196,10 @@ public class MLDatasetProcessor {
                         summaryStatsSettings.getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
                 
             } else {
-                targetUri = dataset.getSourcePath();
+                // in bam case target uri is useless. 
+                targetUri = null;
                 // extract sample points
-                samplePoints = MLUtils.getSample(dataset.getSourcePath().toString(), "csv",
+                samplePoints = MLUtils.getSample(dataset.getSourcePath(), "csv",
                         summaryStatsSettings.getSampleSize(), false, dataset.getDataSourceType(), dataset.getTenantId());
             }
 
@@ -230,13 +231,7 @@ public class MLDatasetProcessor {
             threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId,  summaryStatsSettings,
                     samplePoints));
             log.info(String.format("[Created] %s", dataset));
-        } catch (MLInputAdapterException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        } catch (MLOutputAdapterException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        } catch (MLMalformedDatasetException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        } catch (MLConfigurationParserException e) {
+        } catch (Exception e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
             if (input != null) {

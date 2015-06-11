@@ -40,7 +40,7 @@ public class MLDataset {
     /*
      * Originated path of the data-set.
      */
-    private URI sourcePath;
+    private String sourcePath;
     /*
      * Data type i.e. CSV, TSV
      */
@@ -86,11 +86,11 @@ public class MLDataset {
         this.dataSourceType = dataSourceType;
     }
 
-    public URI getSourcePath() {
+    public String getSourcePath() {
         return sourcePath;
     }
 
-    public void setSourcePath(URI sourcePath) {
+    public void setSourcePath(String sourcePath) {
         this.sourcePath = sourcePath;
     }
 

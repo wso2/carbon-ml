@@ -313,6 +313,9 @@ public class MLModelHandler {
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
+            if (storage == null) {
+                throw new MLModelBuilderException("Invalid model ID: "+modelId);
+            }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             
@@ -329,7 +332,7 @@ public class MLModelHandler {
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
         } catch (Exception e) {
-            throw new MLModelBuilderException("Failed to persist the model [id] " + modelId, e);
+            throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
     }
     
@@ -346,6 +349,9 @@ public class MLModelHandler {
         ObjectInputStream ois = null;
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
+            if (storage == null) {
+                throw new MLModelBuilderException("Invalid model ID: "+modelId);
+            }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
@@ -385,6 +391,9 @@ public class MLModelHandler {
         try {
             // read model
             MLStorage storage = databaseService.getModelStorage(modelId);
+            if (storage == null) {
+                throw new MLModelPublisherException("Invalid model ID: "+modelId);
+            }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
