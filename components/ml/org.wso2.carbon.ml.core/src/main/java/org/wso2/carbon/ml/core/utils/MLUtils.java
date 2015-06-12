@@ -420,5 +420,15 @@ public class MLUtils {
 
         return tokensDiscardedRemoved;
     }
+    
+    /**
+     * format an error message.
+     */
+    public static String getErrorMsg(String customMessage, Exception ex) {
+        if (ex != null) {
+            return customMessage + " Cause: " + ex.getClass().getName() + " - " + ex.getMessage();
+        }
+        return customMessage;
+    }
 
 }

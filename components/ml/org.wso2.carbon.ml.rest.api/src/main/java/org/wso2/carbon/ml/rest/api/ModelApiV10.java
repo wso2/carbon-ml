@@ -45,6 +45,7 @@ import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
@@ -58,12 +59,10 @@ public class ModelApiV10 extends MLRestAPI {
     public ModelApiV10() {
         mlModelHandler = new MLModelHandler();
     }
-    
+
     @OPTIONS
     public Response options() {
-        return Response.ok()
-                .header(HttpHeaders.ALLOW, "GET POST DELETE")
-                .build();
+        return Response.ok().header(HttpHeaders.ALLOW, "GET POST DELETE").build();
     }
 
     /**
@@ -86,13 +85,12 @@ public class ModelApiV10 extends MLRestAPI {
             MLModelNew insertedModel = mlModelHandler.createModel(model);
             return Response.ok(insertedModel).build();
         } catch (MLModelHandlerException e) {
-            logger.error("Error occurred while creating a model : " + model, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg("Error occurred while creating a model : " + model, e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
-    
-    
+
     @POST
     @Path("/{modelId}/storages")
     @Produces("application/json")
@@ -105,13 +103,14 @@ public class ModelApiV10 extends MLRestAPI {
             mlModelHandler.addStorage(modelId, storage);
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while adding storage for the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while adding storage for the model [id] %s of tenant [id] %s and [user] %s .",
+                    modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
+
     @POST
     @Path("/{modelId}")
     @Produces("application/json")
@@ -124,10 +123,11 @@ public class ModelApiV10 extends MLRestAPI {
             mlModelHandler.buildModel(tenantId, userName, modelId);
             return Response.ok().build();
         } catch (Exception e) {
-            logger.error(String.format(
-                    "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -143,18 +143,20 @@ public class ModelApiV10 extends MLRestAPI {
             mlModelHandler.publishModel(tenantId, userName, modelId);
             return Response.ok().build();
         } catch (MLModelPublisherException e) {
-            logger.error(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()), e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
         } catch (Exception e) {
-            logger.error(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
+
     /**
      * Predict using a file.
      */
@@ -177,13 +179,14 @@ public class ModelApiV10 extends MLRestAPI {
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
             return Response.ok(predictions).build();
         } catch (Exception e) {
-            logger.error(String.format(
-                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
+
     @POST
     @Path("/{modelId}/predict")
     @Produces("application/json")
@@ -196,10 +199,11 @@ public class ModelApiV10 extends MLRestAPI {
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data);
             return Response.ok(predictions).build();
         } catch (Exception e) {
-            logger.error(String.format(
-                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -217,13 +221,14 @@ public class ModelApiV10 extends MLRestAPI {
             }
             return Response.ok(model).build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while retrieving a model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelName, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while retrieving a model [name] %s of tenant [id] %s and [user] %s .", modelName,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
+
     @GET
     @Produces("application/json")
     public Response getAllModels() {
@@ -234,13 +239,14 @@ public class ModelApiV10 extends MLRestAPI {
             List<MLModelNew> models = mlModelHandler.getAllModels(tenantId, userName);
             return Response.ok(models).build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while retrieving all models of tenant [id] %s and [user] %s . Cause: %s",
-                    tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while retrieving all models of tenant [id] %s and [user] %s .",
+                            tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
+
     @DELETE
     @Path("/{modelId}")
     @Produces("application/json")
@@ -252,14 +258,14 @@ public class ModelApiV10 extends MLRestAPI {
             mlModelHandler.deleteModel(tenantId, userName, modelId);
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format(
-                    "Error occurred while deleting a model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while deleting a model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
-    
-    
+
     @GET
     @Path("/{modelId}/summary")
     @Produces("application/json")
@@ -269,12 +275,14 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            ModelSummary modelSummary =  mlModelHandler.getModelSummary(modelId);
+            ModelSummary modelSummary = mlModelHandler.getModelSummary(modelId);
             return Response.ok(modelSummary).build();
         } catch (MLModelHandlerException e) {
-            logger.error(String.format("Error occurred while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelId, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s .",
+                    modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
@@ -301,10 +309,11 @@ public class ModelApiV10 extends MLRestAPI {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (Exception e) {
-            logger.error(String.format(
-                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s . Cause: %s",
-                    modelName, tenantId, userName, e.getMessage()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .", modelName,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 }

@@ -65,7 +65,7 @@ public class LoginLogoutApiV10 extends MLRestAPI {
         httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
         httpSession.setAttribute("tenantId", carbonContext.getTenantId());
         //String sessionId = httpSession.getId();
-        return Response.status(Response.Status.OK).entity("User loged in: " + carbonContext.getUsername()).build();
+        return Response.status(Response.Status.OK).entity("User logged in: " + carbonContext.getUsername()).build();
     }
 
     /**
@@ -80,6 +80,6 @@ public class LoginLogoutApiV10 extends MLRestAPI {
         if(session != null){
             session.invalidate();
         }
-        return Response.status(Response.Status.OK).entity("User loged out.").build();
+        return Response.status(Response.Status.OK).entity("User logged out.").build();
     }
 }
