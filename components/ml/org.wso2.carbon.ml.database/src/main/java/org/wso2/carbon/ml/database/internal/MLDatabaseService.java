@@ -30,8 +30,6 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -119,7 +117,7 @@ public class MLDatabaseService implements DatabaseService {
             insertStatement.setString(3, datasetVersion.getVersion());
             insertStatement.setInt(4, datasetVersion.getTenantId());
             insertStatement.setString(5, datasetVersion.getUserName());
-            insertStatement.setString(6, datasetVersion.getTargetPath() == null ? null : datasetVersion.getTargetPath().toString());
+            insertStatement.setString(6, datasetVersion.getTargetPath());
             insertStatement.setObject(7, datasetVersion.getSamplePoints());
             insertStatement.execute();
             connection.commit();
@@ -373,7 +371,7 @@ public class MLDatabaseService implements DatabaseService {
                 MLDatasetVersion versionset = new MLDatasetVersion();
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
-                versionset.setTargetPath(result.getString(3) == null ? null : new URI(result.getString(3)));
+                versionset.setTargetPath(result.getString(3) == null ? null : result.getString(3));
                 versionset.setSamplePoints((SamplePoints) result.getObject(4));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -467,7 +465,7 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setVersion(result.getString(3));
-                versionset.setTargetPath(result.getString(4) == null ? null : new URI(result.getString(4)));
+                versionset.setTargetPath(result.getString(4));
                 versionset.setSamplePoints((SamplePoints)result.getObject(5));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -475,9 +473,6 @@ public class MLDatabaseService implements DatabaseService {
             }
             return versionsets;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
-                    + datasetId, e);
-        } catch (URISyntaxException e) {
             throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } finally {
@@ -506,7 +501,7 @@ public class MLDatabaseService implements DatabaseService {
                 MLDatasetVersion versionset = new MLDatasetVersion();
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
-                versionset.setTargetPath(result.getString(3) == null ? null : new URI(result.getString(3)));
+                versionset.setTargetPath(result.getString(3));
                 versionset.setSamplePoints((SamplePoints)result.getObject(4));
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -516,9 +511,6 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error has occurred while extracting dataset-version of id: "
-                    + datasetVersionId, e);
-        } catch (URISyntaxException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting dataset-version of id: "
                     + datasetVersionId, e);
         } finally {
             // Close the database resources.

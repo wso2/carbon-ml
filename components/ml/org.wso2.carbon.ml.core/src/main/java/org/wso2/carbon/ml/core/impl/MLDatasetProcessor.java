@@ -160,6 +160,7 @@ public class MLDatasetProcessor {
         MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() + MLConstants.OUT_SUFFIX);
         InputStream input = null;
         URI targetUri = null;
+        String targetPath = null;
         SamplePoints samplePoints = null;
         try {
             //TODO introduce proper inheritance.
@@ -188,7 +189,7 @@ public class MLDatasetProcessor {
                 
                 handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
                         dataset.getSourcePath(), dataset.getName()));
-                String targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
+                targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
                 handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
                 targetUri = outputAdapter.write(targetPath, input);
                 // extract sample points
@@ -196,8 +197,7 @@ public class MLDatasetProcessor {
                         summaryStatsSettings.getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
                 
             } else {
-                // in bam case target uri is useless. 
-                targetUri = null;
+                targetPath = dataset.getSourcePath();
                 // extract sample points
                 samplePoints = MLUtils.getSample(dataset.getSourcePath(), "csv",
                         summaryStatsSettings.getSampleSize(), false, dataset.getDataSourceType(), dataset.getTenantId());
@@ -214,11 +214,15 @@ public class MLDatasetProcessor {
             String versionsetName = dataset.getName()+"-"+dataset.getVersion();
 
             // build the MLDatasetVersion
-            MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId, dataset.getUserName(), versionsetName, dataset.getVersion(), targetUri, samplePoints);
+            MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId,
+                    dataset.getUserName(), versionsetName, dataset.getVersion(), targetPath, samplePoints);
+            
             long datasetVersionId = retrieveDatasetVersionId(datasetVersion);
             if (datasetVersionId != -1) {
                 // dataset version is already exist
-                throw new MLDataProcessingException(String.format("Dataset already exists; data set [name] %s [version] %s", dataset.getName(), dataset.getVersion()));
+                throw new MLDataProcessingException(String.format(
+                        "Dataset already exists; data set [name] %s [version] %s", dataset.getName(),
+                        dataset.getVersion()));
             }
             persistDatasetVersion(datasetVersion);
             datasetVersionId = retrieveDatasetVersionId(datasetVersion);

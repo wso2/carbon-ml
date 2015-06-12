@@ -426,7 +426,7 @@ public class MLUtils {
      * @return Dataset Version Object
      */
     public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,
-            String version, URI targetPath, SamplePoints samplePoints) {
+            String version, String targetPath, SamplePoints samplePoints) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);

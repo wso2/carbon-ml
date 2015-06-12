@@ -17,8 +17,6 @@
  */
 package org.wso2.carbon.ml.commons.domain;
 
-import java.net.URI;
-
 /**
  * Represent a version-set in ML.
  */
@@ -34,7 +32,7 @@ public class MLDatasetVersion {
     /*
      * Target server side path of the data-set.
      */
-    private URI targetPath;
+    private String targetPath;
     private SamplePoints samplePoints;
 
     public int getTenantId() {
@@ -45,11 +43,11 @@ public class MLDatasetVersion {
         this.tenantId = tenantId;
     }
 
-    public URI getTargetPath() {
+    public String getTargetPath() {
         return targetPath;
     }
 
-    public void setTargetPath(URI targetPath) {
+    public void setTargetPath(String targetPath) {
         this.targetPath = targetPath;
     }
 

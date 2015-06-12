@@ -239,6 +239,9 @@ public class DatasetApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             MLDatasetVersion versionSet = datasetProcessor.getVersionSetWithVersion(tenantId, userName, datasetId, version);
+            if (versionSet == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             return Response.ok(versionSet).build();
         } catch (MLDataProcessingException e) {
             logger.error(
