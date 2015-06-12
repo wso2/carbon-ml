@@ -42,7 +42,11 @@ public class MLProjectHandler {
     
     public void createProject(MLProject project) throws MLProjectHandlerException {
         try {
-            long datasetId = databaseService.getDatasetId(project.getDatasetName(), project.getTenantId(), project.getUserName());
+            long datasetId = databaseService.getDatasetId(project.getDatasetName(), project.getTenantId(),
+                    project.getUserName());
+            if (datasetId == -1) {
+                throw new MLProjectHandlerException("Invalid dataset [name] " + project.getDatasetName());
+            }
             project.setDatasetId(datasetId);
             databaseService.insertProject(project);
             log.info(String.format("[Created] %s", project));
