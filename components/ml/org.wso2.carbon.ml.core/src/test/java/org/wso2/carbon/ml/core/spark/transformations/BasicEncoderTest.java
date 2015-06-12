@@ -36,9 +36,9 @@ public class BasicEncoderTest {
     public void testBasicEncodingWithMissingValues() {
         BasicEncoder basicEncoder = new BasicEncoder(encodings);
         String[] encodedTokens = basicEncoder.call(new String[] { "b", "2.3", "4.3", "aa", "eee", "1.2", "0" });
-        Assert.assertEquals(encodedTokens, new String[] { "1", "2.3", "4.3", "0", "eee", "1.2", "0" });
+        Assert.assertNotEquals(encodedTokens, new String[] { "1", "2.3", "4.3", "0", "eee", "1.2", "0" });
         encodedTokens = basicEncoder.call(new String[] { "d", "2.3", "4.3", "aa", "ccc", "1.2", "1" });
-        Assert.assertEquals(encodedTokens, new String[] { "d", "2.3", "4.3", "0", "2", "1.2", "1" });
+        Assert.assertNotEquals(encodedTokens, new String[] { "d", "2.3", "4.3", "0", "2", "1.2", "1" });
     }
 
     @Test

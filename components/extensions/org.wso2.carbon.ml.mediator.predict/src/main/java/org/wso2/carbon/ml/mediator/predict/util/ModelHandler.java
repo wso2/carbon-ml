@@ -142,9 +142,9 @@ public class ModelHandler {
      * Predict the value using the feature values
      * @param data  feature values array
      * @return      predicted value as String
-     * @throws      MLModelBuilderException
+     * @throws MLModelHandlerException 
      */
-    private String predict(String[] data) throws MLModelBuilderException {
+    private String predict(String[] data) throws MLModelHandlerException {
 
         ArrayList<String[]> list = new ArrayList<String[]>();
         list.add(data);

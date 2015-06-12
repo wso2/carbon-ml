@@ -36,6 +36,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -55,7 +56,7 @@ public class Predictor {
         dataToBePredicted = getVectors(data);
     }
 
-    public List<?> predict() throws MLModelBuilderException {
+    public List<?> predict() throws MLModelHandlerException {
         String algorithmType = model.getAlgorithmClass();
 
         if (MLConstants.CLASSIFICATION.equals(algorithmType)) {
@@ -111,7 +112,7 @@ public class Predictor {
                         + " for model id: " + id);
             }
         } else {
-            throw new MLModelBuilderException(String.format(
+            throw new MLModelHandlerException(String.format(
                     "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
         }
     }

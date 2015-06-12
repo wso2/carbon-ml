@@ -16,6 +16,7 @@
 package org.wso2.carbon.ml.rest.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -34,8 +35,11 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelNew;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
@@ -148,6 +152,35 @@ public class ModelApiV10 extends MLRestAPI {
         } catch (Exception e) {
             logger.error(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
+                    modelId, tenantId, userName, e.getMessage()), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+    }
+    
+    /**
+     * Predict using a file.
+     */
+    @POST
+    @Path("/predict")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
+            @Multipart("file") InputStream inputStream) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            // validate input parameters
+            // if it is a file upload, check whether the file is sent
+            if (inputStream == null || inputStream.available() == 0) {
+                logger.error("Cannot read the file.");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
+            }
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
+            return Response.ok(predictions).build();
+        } catch (Exception e) {
+            logger.error(String.format(
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s . Cause: %s",
                     modelId, tenantId, userName, e.getMessage()), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

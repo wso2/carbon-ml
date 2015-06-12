@@ -17,11 +17,13 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
@@ -292,8 +294,33 @@ public class MLModelHandler {
         }
     }
     
-    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data) throws MLModelHandlerException,
-            MLModelBuilderException {
+    public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
+            throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                data.add(dataRow);
+            }
+            return predict(tenantId, userName, modelId, data);
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                dataStream.close();
+                br.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+    }
+    
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data) throws MLModelHandlerException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
             String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
@@ -344,13 +371,13 @@ public class MLModelHandler {
         return indicesList;
     }
     
-    public MLModel retrieveModel(long modelId) throws MLModelBuilderException {
+    public MLModel retrieveModel(long modelId) throws MLModelHandlerException {
         InputStream in = null;
         ObjectInputStream ois = null;
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelBuilderException("Invalid model ID: "+modelId);
+                throw new MLModelHandlerException("Invalid model ID: "+modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -361,7 +388,7 @@ public class MLModelHandler {
             return (MLModel) ois.readObject();
             
         } catch (Exception e) {
-            throw new MLModelBuilderException("Failed to retrieve the model [id] " + modelId, e);
+            throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
         } finally {
             if (in != null) {
                 try {
