@@ -17,17 +17,11 @@
  */
 package org.wso2.carbon.ml.core.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,8 +30,6 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -47,7 +39,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -58,14 +49,13 @@ import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
-
 public class MLUtils {
 
     /**
      * Generate a random sample of the dataset using Spark.
      */
-    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader, String sourceType, int tenantId)
-            throws MLMalformedDatasetException {
+    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
+            String sourceType, int tenantId) throws MLMalformedDatasetException {
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
          * needs to be switched temporarily.
@@ -111,7 +101,7 @@ public class MLUtils {
                 lines = sparkContext.textFile(path);
             }
             // take the first line
-             String firstLine = lines.first();
+            String firstLine = lines.first();
             // count the number of features
             featureSize = getFeatureSize(firstLine, dataFormat);
 
@@ -140,7 +130,6 @@ public class MLUtils {
 
             // take a random sample
             List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
-
 
             // iterate through sample lines
             for (String[] columnValues : sampleLines) {
@@ -190,7 +179,7 @@ public class MLUtils {
             return null;
         }
         String[] segments = path.split(":");
-        if (segments.length>1) {
+        if (segments.length > 1) {
             String schema = segments[1];
             schema = schema.replace(',', ' ');
             schema = schema.replace(';', ',');
@@ -204,106 +193,10 @@ public class MLUtils {
             return null;
         }
         String[] segments = path.split(":");
-        if (segments.length>0) {
+        if (segments.length > 0) {
             return segments[0];
         }
         return null;
-    }
-
-    /**
-     * Get sequentially picked {@link SamplePoints}
-     * 
-     * @param in data as an input stream.
-     * @param dataType type of data CSV, TSV
-     * @param sampleSize rows x columns
-     * @return sequentially picked {@link SamplePoints}
-     * @throws MLMalformedDatasetException
-     */
-    public static SamplePoints getSamplePoints(InputStream in, String dataType, int sampleSize, boolean containsHeader)
-            throws MLMalformedDatasetException {
-        if (in == null) {
-            throw new MLMalformedDatasetException("Failed to parse the given null input stream.");
-        }
-        Reader reader = new InputStreamReader(in);
-        CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-        CSVParser parser = null;
-        Map<String, Integer> headerMap = null;
-        int recordsCount = 0;
-        CSVRecord row;
-        int featureSize = 0;
-        int[] missing = null, stringCellCount = null;
-        // List containing actual data of the sample.
-        List<List<String>> columnData = new ArrayList<List<String>>();
-
-        try {
-            if (containsHeader) {
-                parser = new CSVParser(reader, dataFormat.withHeader().withAllowMissingColumnNames(true));
-                headerMap = parser.getHeaderMap();
-                featureSize = headerMap.size();
-            } else {
-                parser = new CSVParser(reader, dataFormat.withSkipHeaderRecord(true).withAllowMissingColumnNames(true));
-            }
-
-            boolean isInitialized = false;
-            Iterator<CSVRecord> datasetIterator = parser.iterator();
-            // Count the number of cells contain strings in each column.
-            while (datasetIterator.hasNext() && (recordsCount != sampleSize || sampleSize < 0)) {
-                row = datasetIterator.next();
-
-                if (!isInitialized) {
-                    if (!containsHeader) {
-                        featureSize = row.size();
-                        headerMap = generateHeaderMap(featureSize);
-                    }
-                    missing = new int[featureSize];
-                    stringCellCount = new int[featureSize];
-                    if (sampleSize >= 0 && featureSize > 0) {
-                        sampleSize = sampleSize / featureSize;
-                    }
-                    for (int i = 0; i < featureSize; i++) {
-                        columnData.add(new ArrayList<String>());
-                    }
-                    isInitialized = true;
-                }
-
-                for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                    // Check whether the row is complete.
-                    if (currentCol < row.size()) {
-                        // Append the cell to the respective column.
-                        columnData.get(currentCol).add(row.get(currentCol));
-
-                        if (row.get(currentCol).isEmpty()) {
-                            // If the cell is empty, increase the missing value count.
-                            missing[currentCol]++;
-                        } else {
-                            if (!NumberUtils.isNumber(row.get(currentCol))) {
-                                stringCellCount[currentCol]++;
-                            }
-                        }
-                    } else {
-                        columnData.get(currentCol).add(null);
-                        missing[currentCol]++;
-                    }
-                }
-                recordsCount++;
-            }
-            SamplePoints samplePoints = new SamplePoints();
-            samplePoints.setHeader(headerMap);
-            samplePoints.setSamplePoints(columnData);
-            samplePoints.setMissing(missing);
-            samplePoints.setStringCellCount(stringCellCount);
-            return samplePoints;
-        } catch (Exception e) {
-            throw new MLMalformedDatasetException("Failed to parse the given input stream. Cause: " + e, e);
-        } finally {
-            if (parser != null) {
-                try {
-                    parser.close();
-                } catch (IOException e) {
-                    throw new MLMalformedDatasetException("Failed to close the CSV parser.", e);
-                }
-            }
-        }
     }
 
     public static class DataTypeFactory {
@@ -317,10 +210,8 @@ public class MLUtils {
 
     public static class ColumnSeparatorFactory {
         public static String getColumnSeparator(String dataType) {
-            if ("TSV".equalsIgnoreCase(dataType)) {
-                return "\t";
-            }
-            return ",";
+            CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataType);
+            return csvFormat.getDelimiter() + "";
         }
     }
 
@@ -337,7 +228,8 @@ public class MLUtils {
         for (Feature feature : workflow.getFeatures()) {
             if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
                 int currentIndex = feature.getIndex();
-                int newIndex = newToOldIndicesList.indexOf(currentIndex) != -1 ? newToOldIndicesList.indexOf(currentIndex) : currentIndex;
+                int newIndex = newToOldIndicesList.indexOf(currentIndex) != -1 ? newToOldIndicesList
+                        .indexOf(currentIndex) : currentIndex;
                 imputeFeatureIndices.add(newIndex);
             }
         }
@@ -366,7 +258,7 @@ public class MLUtils {
         }
         return featureIndex;
     }
-    
+
     /**
      * Retrieve the index of a feature in the dataset.
      */
@@ -399,7 +291,7 @@ public class MLUtils {
         }
         return inlcudedFeatures;
     }
-    
+
     /**
      * @param workflow Workflow
      * @return A list of indices of features to be included in the model
@@ -479,18 +371,6 @@ public class MLUtils {
         return outArray;
     }
 
-    /**
-     * @param inList
-     * @return
-     */
-    public static List<Double> toDoubleList(List<Object> inList) {
-        List<Double> outList = new ArrayList<Double>();
-        for (Object inListObj : inList) {
-            outList.add(new Double(inListObj.toString()));
-        }
-        return outList;
-    }
-
     public static Map<String, Integer> generateHeaderMap(int numberOfFeatures) {
         Map<String, Integer> headerMap = new HashMap<String, Integer>();
         for (int i = 1; i <= numberOfFeatures; i++) {
@@ -515,19 +395,17 @@ public class MLUtils {
         return values.length;
     }
 
-    public static String[] getColumnValues(String line, CSVFormat format) {
-        return line.split("" + format.getDelimiter());
-    }
-
     /**
      * Applies the discard filter to a JavaRDD
-     * @param delimiter         Column separator of the dataset
-     * @param headerRow         Header row
-     * @param lines             JavaRDD which contains the dataset
-     * @param featureIndices    Indices of the features to apply filter
+     * 
+     * @param delimiter Column separator of the dataset
+     * @param headerRow Header row
+     * @param lines JavaRDD which contains the dataset
+     * @param featureIndices Indices of the features to apply filter
      * @return filtered JavaRDD
      */
-    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines, List<Integer> featureIndices){
+    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
+            List<Integer> featureIndices) {
         String columnSeparator = String.valueOf(delimiter);
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
         JavaRDD<String> data = lines.filter(headerFilter);
