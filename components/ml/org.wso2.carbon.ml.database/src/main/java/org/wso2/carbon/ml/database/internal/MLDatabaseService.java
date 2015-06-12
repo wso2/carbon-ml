@@ -1673,6 +1673,8 @@ public class MLDatabaseService implements DatabaseService {
                 model.setUserName(userName);
                 model.setStatus(result.getString(8));
                 model.setError(result.getString(9));
+                ModelSummary modelSummary = (ModelSummary) result.getObject(10);
+                model.setModelSummary(modelSummary);
                 models.add(model);
             }
             return models;
