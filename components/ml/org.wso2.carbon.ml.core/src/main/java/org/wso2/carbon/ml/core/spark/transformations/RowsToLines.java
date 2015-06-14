@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Row;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 
 /**
  * This class converts Spark SQL Rows into a CSV/TSV string.

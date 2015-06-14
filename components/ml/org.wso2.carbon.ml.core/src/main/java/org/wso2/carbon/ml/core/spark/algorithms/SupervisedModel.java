@@ -32,6 +32,7 @@ import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.evaluation.MulticlassMetrics;
 import org.apache.spark.mllib.evaluation.RegressionMetrics;
+import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.regression.LassoModel;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
@@ -201,6 +202,12 @@ public class SupervisedModel {
                 logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
                         hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
             }
+            
+            Vector weights = logisticRegressionModel.weights();
+            if (!isValidWeights(weights)) {
+                throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
+                        + vectorToString(weights));
+            }
 
             // clearing the threshold value to get a probability as the output of the prediction
             logisticRegressionModel.clearThreshold();
@@ -302,6 +309,11 @@ public class SupervisedModel {
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            Vector weights = svmModel.weights();
+            if (!isValidWeights(weights)) {
+                throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
+                        + vectorToString(weights));
+            }
             svmModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel, testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
@@ -345,6 +357,11 @@ public class SupervisedModel {
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            Vector weights = linearRegressionModel.weights();
+            if (!isValidWeights(weights)) {
+                throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
+                        + vectorToString(weights));
+            }
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = linearRegression.test(linearRegressionModel,
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
@@ -392,6 +409,11 @@ public class SupervisedModel {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            Vector weights = ridgeRegressionModel.weights();
+            if (!isValidWeights(weights)) {
+                throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
+                        + vectorToString(weights));
+            }
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = ridgeRegression.test(ridgeRegressionModel,
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
@@ -439,6 +461,11 @@ public class SupervisedModel {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            Vector weights = lassoModel.weights();
+            if (!isValidWeights(weights)) {
+                throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
+                        + vectorToString(weights));
+            }
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = lassoRegression.test(lassoModel, testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -619,5 +646,27 @@ public class SupervisedModel {
             label = 1.0;
         }
         return label;
+    }
+    
+    private boolean isValidWeights(Vector weights) {
+        for (int i = 0; i < weights.size(); i++) {
+            double d = weights.apply(i);
+            if (Double.isNaN(d) || Double.isInfinite(d)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String vectorToString(Vector weights) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= weights.size(); i++) {
+            double d = weights.apply(i - 1);
+            sb.append(d);
+            if (i != weights.size()) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 }
