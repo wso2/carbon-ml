@@ -98,6 +98,7 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+            log.info("ML core bundle activated successfully.");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }
