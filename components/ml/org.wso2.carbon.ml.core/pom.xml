@@ -228,7 +228,7 @@
 							org.apache.commons.logging,
 							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
 							org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
-							<!-- org.apache.http.*;version="[4.3.1, 4.5)", -->
+							org.apache.spark.mllib.*;version="${spark.imp.pkg.version}",
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>

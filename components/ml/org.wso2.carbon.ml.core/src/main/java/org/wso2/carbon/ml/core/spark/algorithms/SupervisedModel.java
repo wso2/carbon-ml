@@ -96,6 +96,7 @@ public class SupervisedModel {
             mlModel.setFeatures(workflow.getIncludedFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setEncodings(context.getEncodings());
+            mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(responseIndex);
 
             ModelSummary summaryModel = null;

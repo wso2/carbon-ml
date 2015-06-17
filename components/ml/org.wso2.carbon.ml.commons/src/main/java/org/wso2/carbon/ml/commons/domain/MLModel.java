@@ -33,6 +33,7 @@ public class MLModel implements Serializable {
     private String responseVariable;
     private int responseIndex;
     private List<Map<String, Integer>> encodings;
+    private List<Integer> newToOldIndicesList;
     private Serializable model;
 
     public String getAlgorithmName() {
@@ -90,5 +91,13 @@ public class MLModel implements Serializable {
 
     public void setResponseIndex(int responseIndex) {
         this.responseIndex = responseIndex;
+    }
+
+    public List<Integer> getNewToOldIndicesList() {
+        return newToOldIndicesList;
+    }
+
+    public void setNewToOldIndicesList(List<Integer> newToOldIndicesList) {
+        this.newToOldIndicesList = newToOldIndicesList;
     }
 }

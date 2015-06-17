@@ -71,6 +71,7 @@ public class UnsupervisedModel {
             mlModel.setFeatures(workflow.getFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setEncodings(context.getEncodings());
+            mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(-1);
 
             // build a machine learning model according to user selected algorithm

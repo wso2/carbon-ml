@@ -45,15 +45,11 @@ import org.wso2.carbon.utils.NetworkUtils;
  * @scr.reference name="outputEventAdapterService"
  *                interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService" cardinality="1..1"
  *                policy="dynamic" bind="setOutputEventAdapterService" unbind="unsetOutputEventAdapterService"
- * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic"
- *                bind="setHttpService" unbind="unsetHttpService"
  */
 public class MLCoreDS {
 
     private static final Log log = LogFactory.getLog(MLCoreDS.class);
     private OutputEventAdapterService emailAdapterService;
-    @SuppressWarnings("unused")
-    private static HttpService httpServiceInstance;
 
     protected void activate(ComponentContext context) {
 
@@ -133,14 +129,6 @@ public class MLCoreDS {
 
     protected void unsetOutputEventAdapterService(OutputEventAdapterService configurationContextService) {
         MLCoreServiceValueHolder.getInstance().registerConfigurationContextService(null);
-    }
-
-    protected void setHttpService(HttpService httpService) {
-        httpServiceInstance = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        httpServiceInstance = null;
     }
 
 }
