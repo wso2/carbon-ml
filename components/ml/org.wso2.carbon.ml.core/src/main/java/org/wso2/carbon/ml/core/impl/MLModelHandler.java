@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -383,7 +382,7 @@ public class MLModelHandler {
             String storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-            in = inputAdapter.read(new URI(storageLocation));
+            in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
             return (MLModel) ois.readObject();
             
@@ -425,14 +424,14 @@ public class MLModelHandler {
             String storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-            in = inputAdapter.read(new URI(storageLocation));
+            in = inputAdapter.read(storageLocation);
             if (in == null) {
                 throw new MLModelPublisherException("Invalid model [id] " + modelId);
             }
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String registryPath = File.separator + valueHolder.getModelRegistryLocation() + File.separator + modelName;
+            String registryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
             registryOutputAdapter.write(registryPath, in);

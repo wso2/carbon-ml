@@ -28,7 +28,6 @@ import org.wso2.carbon.registry.api.Resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * Implementation of {@link MLInputAdapter} for governance registry
@@ -36,20 +35,16 @@ import java.net.URI;
 public class RegistryInputAdapter implements MLInputAdapter {
 
     @Override
-    public InputStream read(URI uri) throws MLInputAdapterException {
+    public InputStream read(String path) throws MLInputAdapterException {
         try {
-            if (!uri.isAbsolute()) {
-                String registryResourcePath = uri.toString();
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                Registry registry = carbonContext.getRegistry(RegistryType.SYSTEM_GOVERNANCE);
-                Resource resource = registry.get(registryResourcePath);
-                byte[] readArray = (byte[]) resource.getContent();
-                ByteArrayInputStream bis = new ByteArrayInputStream(readArray);
-                return bis;
-            }
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            Registry registry = carbonContext.getRegistry(RegistryType.SYSTEM_GOVERNANCE);
+            Resource resource = registry.get(path);
+            byte[] readArray = (byte[]) resource.getContent();
+            ByteArrayInputStream bis = new ByteArrayInputStream(readArray);
+            return bis;
         } catch (RegistryException e) {
-            throw new MLInputAdapterException(String.format("Failed to read the model from uri %s: %s", uri,e), e);
+            throw new MLInputAdapterException(String.format("Failed to read the model from uri %s: %s", path, e), e);
         }
-        return null;
     }
 }

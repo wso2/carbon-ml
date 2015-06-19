@@ -18,21 +18,19 @@
 package org.wso2.carbon.ml.core.interfaces;
 
 import java.io.InputStream;
-import java.net.URI;
 
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 
 /**
- * This interface should be implemented, if you need to read data from a given data-set.
+ * This interface should be implemented, if you need to read content from a given path.
  */
 public interface MLInputAdapter {
 
     /**
-     * Read a given data-set.
-     * 
-     * @param uri {@link URI} to the data-set. eg: hdfs://localhost:9000/test.txt, file:///home/wso2/test.txt
-     * @return the given data-set as an {@link InputStream}
+     * Read from a given path of a selected data source.
+     * @param path a path that makes sense to the selected implementation.
+     * @return the read content as an {@link InputStream}
      * @throws MLInputAdapterException on a read failure.
      */
-    InputStream read(URI uri) throws MLInputAdapterException;
+    InputStream read(String path) throws MLInputAdapterException;
 }

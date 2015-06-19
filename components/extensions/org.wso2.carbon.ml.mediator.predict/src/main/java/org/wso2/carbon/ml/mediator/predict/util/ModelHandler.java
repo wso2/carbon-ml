@@ -35,7 +35,6 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -108,7 +107,7 @@ public class ModelHandler {
         }
         MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-        InputStream in = inputAdapter.read(new URI(modelStorageLocation));
+        InputStream in = inputAdapter.read(modelStorageLocation);
         ObjectInputStream ois = new ObjectInputStream(in);
         MLModel mlModel = (MLModel) ois.readObject();
         ois.close();

@@ -19,7 +19,6 @@ package org.wso2.carbon.ml.core.impl;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -34,33 +33,23 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
  */
 public class HdfsInputAdapter implements MLInputAdapter {
 
-    /**
-     * 
-     */
     @Override
-    public InputStream read(URI uri) throws MLInputAdapterException {
+    public InputStream read(String path) throws MLInputAdapterException {
         try {
-            if (!uri.isAbsolute()) {
-                String uriString = uri.toString();
-                if (!uriString.startsWith("hdfs://")) {
-                    if (MLCoreServiceValueHolder.getInstance().getHdfsUrl() != null) {
-                        uriString = MLCoreServiceValueHolder.getInstance().getHdfsUrl().concat(uriString);
-                    } else {
-                        uriString = "hdfs://localhost:9000".concat(uriString);
-                    }
-                    try {
-                        uri = new URI(uriString);
-                    } catch (URISyntaxException ignore) {
-                    }
+            if (!path.startsWith("hdfs://")) {
+                if (MLCoreServiceValueHolder.getInstance().getHdfsUrl() != null) {
+                    path = MLCoreServiceValueHolder.getInstance().getHdfsUrl().concat(path);
+                } else {
+                    path = "hdfs://localhost:9000".concat(path);
                 }
             }
             Configuration conf = new Configuration();
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            FileSystem file = FileSystem.get(uri, conf);
-            FSDataInputStream inputStream = file.open(new Path(uri));
+            FileSystem file = FileSystem.get(URI.create(path), conf);
+            FSDataInputStream inputStream = file.open(new Path(path));
             return inputStream;
         } catch (Exception e) {
-            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", uri, e), e);
+            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", path, e), e);
         }
     }
 

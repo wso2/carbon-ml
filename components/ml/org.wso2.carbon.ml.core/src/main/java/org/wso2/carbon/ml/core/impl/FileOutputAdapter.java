@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
@@ -35,7 +34,7 @@ import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 public class FileOutputAdapter implements MLOutputAdapter {
 
     @Override
-    public URI write(String outPath, InputStream in) throws MLOutputAdapterException {
+    public void write(String outPath, InputStream in) throws MLOutputAdapterException {
 
         if (in == null || outPath == null) {
             throw new MLOutputAdapterException(String.format(
@@ -46,7 +45,6 @@ public class FileOutputAdapter implements MLOutputAdapter {
             File file = new File(outPath);
             out = new FileOutputStream(file);
             IOUtils.copy(in, out);
-            return file.toURI();
         } catch (FileNotFoundException e) {
             throw new MLOutputAdapterException(e);
         } catch (IOException e) {

@@ -30,7 +30,6 @@ import org.wso2.carbon.registry.api.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * Registry adapter for ML. Responsible for writing a given input stream to a governance registry
@@ -39,7 +38,7 @@ import java.net.URI;
 public class RegistryOutputAdapter implements MLOutputAdapter {
 
     @Override
-    public URI write(String outPath, InputStream in) throws MLOutputAdapterException {
+    public void write(String outPath, InputStream in) throws MLOutputAdapterException {
 
         if (in == null || outPath == null) {
             throw new MLOutputAdapterException(String.format(
@@ -55,12 +54,13 @@ public class RegistryOutputAdapter implements MLOutputAdapter {
             Resource resource = registry.newResource();
             resource.setContent(array);
             registry.put(outPath, resource);
-            return URI.create(outPath);
 
         } catch (RegistryException e) {
-            throw new MLOutputAdapterException(String.format("Failed to save the model to registry %s: %s", outPath, e), e);
+            throw new MLOutputAdapterException(
+                    String.format("Failed to save the model to registry %s: %s", outPath, e), e);
         } catch (IOException e) {
-            throw new MLOutputAdapterException(String.format("Failed to read the model to registry %s: %s", outPath, e), e);
+            throw new MLOutputAdapterException(
+                    String.format("Failed to read the model to registry %s: %s", outPath, e), e);
         }
     }
 }

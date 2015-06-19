@@ -36,7 +36,6 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
@@ -155,7 +154,6 @@ public class MLDatasetProcessor {
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType() + MLConstants.IN_SUFFIX);
         MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() + MLConstants.OUT_SUFFIX);
         InputStream input = null;
-        URI targetUri = null;
         String targetPath = null;
         SamplePoints samplePoints = null;
         try {
@@ -178,7 +176,7 @@ public class MLDatasetProcessor {
                 handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
                         dataset.getSourcePath(), dataset.getName()));
                 // if the source is hdfs/bam read from the source path
-                input = inputAdapter.read(new URI(dataset.getSourcePath()));
+                input = inputAdapter.read(dataset.getSourcePath());
             }
             
             if (!MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
@@ -187,9 +185,9 @@ public class MLDatasetProcessor {
                         dataset.getSourcePath(), dataset.getName()));
                 targetPath = ioFactory.getTargetPath(dataset.getName()+"."+dataset.getTenantId()+"."+System.currentTimeMillis());
                 handleNull(targetPath, String.format("Null target path for the [data-set] %s ", dataset.getName()));
-                targetUri = outputAdapter.write(targetPath, input);
+                outputAdapter.write(targetPath, input);
                 // extract sample points
-                samplePoints = MLUtils.getSample(targetUri.toString(), dataset.getDataType(),
+                samplePoints = MLUtils.getSample(targetPath, dataset.getDataType(),
                         summaryStatsSettings.getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
                 
             } else {

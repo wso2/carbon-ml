@@ -18,23 +18,20 @@
 package org.wso2.carbon.ml.core.interfaces;
 
 import java.io.InputStream;
-import java.net.URI;
 
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 
 /**
- * This interface should be implemented, if you need to store a given data-set.
+ * This interface should be implemented, if you need to write an input stream to a given path of a specific data source.
  */
 public interface MLOutputAdapter {
 
     /**
-     * Write a given data-set in a given target path.
+     * Write a given input stream to a given target path.
      * 
-     * @param outPath targeted path. eg: /test.txt It's up to the implementation to determine the full
-     *            connection url.
+     * @param outPath targeted path. eg: /test.txt 
      * @param in {@link InputStream} to be written. This should be closed by this method.
-     * @return {@link URI} of the target path.
      * @throws MLOutputAdapterException on a write failure.
      */
-    URI write(String outPath, InputStream in) throws MLOutputAdapterException;
+    void write(String outPath, InputStream in) throws MLOutputAdapterException;
 }

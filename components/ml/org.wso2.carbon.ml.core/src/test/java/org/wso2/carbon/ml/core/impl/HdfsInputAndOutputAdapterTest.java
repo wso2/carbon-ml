@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.testng.Assert;
@@ -58,11 +57,11 @@ public class HdfsInputAndOutputAdapterTest {
         MLInputAdapter fileInAdapter = new FileInputAdapter();
         String filePrefix = "file://";
         String uriString = "src/test/resources/fcSample.csv";
-        URI uri;
+        String uri;
         InputStream in = null;
 
         // read a local file and get an input stream
-        uri = new URI(filePrefix + System.getProperty("user.dir") + File.separator + uriString);
+        uri = filePrefix + System.getProperty("user.dir") + File.separator + uriString;
         in = fileInAdapter.read(uri);
         Assert.assertNotNull(in);
 
@@ -78,7 +77,7 @@ public class HdfsInputAndOutputAdapterTest {
         // read back from hdfs
         MLInputAdapter hdfsInAdapter = new HdfsInputAdapter();
         try {
-            in = hdfsInAdapter.read(URI.create(outPath));
+            in = hdfsInAdapter.read(outPath);
             Assert.assertNotNull(in);
             Assert.assertEquals(in.available() != 0, true);
 

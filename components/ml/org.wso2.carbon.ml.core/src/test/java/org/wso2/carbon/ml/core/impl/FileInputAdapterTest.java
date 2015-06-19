@@ -19,7 +19,6 @@ package org.wso2.carbon.ml.core.impl;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.testng.Assert;
@@ -32,9 +31,9 @@ public class FileInputAdapterTest {
     @Test
     public void testReadDataset() throws URISyntaxException, MLInputAdapterException {
         MLInputAdapter inputAdapter = new FileInputAdapter();
-        String filePrefix = "file://";
+        String filePrefix = "";
         String uriString = "src/test/resources/fcSample.csv";
-        URI uri = new URI(filePrefix + uriString);
+        String uri = filePrefix + uriString;
         InputStream in = null;
         // test a relative path
         try {
@@ -44,17 +43,17 @@ public class FileInputAdapterTest {
         }
 
         // test a full path
-        uri = new URI(filePrefix + System.getProperty("user.dir") + File.separator + uriString);
+        uri = filePrefix + System.getProperty("user.dir") + File.separator + uriString;
         in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
-        
-        // test a uri without file:// prefix 
-        uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
+
+        // test a uri without file:// prefix
+        uri = System.getProperty("user.dir") + File.separator + uriString;
         in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
-        
+
         // file not found
-        uri = new URI(System.getProperty("user.dir") + File.separator + uriString+".csv");
+        uri = System.getProperty("user.dir") + File.separator + uriString + ".csv";
         try {
             in = inputAdapter.read(uri);
         } catch (Exception e) {

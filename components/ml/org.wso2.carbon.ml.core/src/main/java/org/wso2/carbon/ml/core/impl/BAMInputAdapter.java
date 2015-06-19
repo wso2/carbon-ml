@@ -18,7 +18,6 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.io.InputStream;
-import java.net.URI;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 
@@ -28,7 +27,7 @@ import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 public class BAMInputAdapter implements MLInputAdapter {
 
     @Override
-    public InputStream read(URI uri) throws MLInputAdapterException {
+    public InputStream read(String path) throws MLInputAdapterException {
         throw new UnsupportedOperationException();
     }
     

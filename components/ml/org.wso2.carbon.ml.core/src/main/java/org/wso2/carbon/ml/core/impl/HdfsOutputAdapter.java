@@ -37,7 +37,7 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 public class HdfsOutputAdapter implements MLOutputAdapter {
 
     @Override
-    public URI write(String outPath, InputStream in) throws MLOutputAdapterException {
+    public void write(String outPath, InputStream in) throws MLOutputAdapterException {
 
         if (in == null || outPath == null) {
             throw new MLOutputAdapterException(String.format(
@@ -58,7 +58,6 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
             FileSystem hdfs = FileSystem.get(uri, conf);
             out = hdfs.create(new Path(uri), true);
             IOUtils.copyBytes(in, out, conf);
-            return uri;
         } catch (FileNotFoundException e) {
             throw new MLOutputAdapterException(e);
         } catch (IOException e) {

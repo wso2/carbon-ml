@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.testng.Assert;
@@ -36,23 +35,23 @@ public class FileOutputAdapterTest {
     public void testWriteDataset() throws URISyntaxException, MLInputAdapterException {
         MLInputAdapter inputAdapter = new FileInputAdapter();
         String uriString = "src/test/resources/fcSample.csv";
-        URI uri;
+        String uri;
         String outPath;
         InputStream in = null;
 
         // test a full path
-        uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
+        uri = System.getProperty("user.dir") + File.separator + uriString;
         in = inputAdapter.read(uri);
         Assert.assertNotNull(in);
-        
+
         // test stream write
         try {
             File outFile = File.createTempFile("FileOutputAdapterTestOutput", ".csv");
             outPath = outFile.getAbsolutePath();
         } catch (IOException e) {
-            outPath = System.getProperty("user.dir") + File.separator + uriString+".out.csv";
+            outPath = System.getProperty("user.dir") + File.separator + uriString + ".out.csv";
         }
-        
+
         MLOutputAdapter outputAdapter = new FileOutputAdapter();
         try {
             outputAdapter.write(outPath, in);
@@ -60,13 +59,13 @@ public class FileOutputAdapterTest {
             // there shouldn't be any exception
             Assert.assertNull(e);
         }
-        
+
         in = null;
         try {
             outputAdapter.write(outPath, in);
         } catch (Exception e) {
             Assert.assertEquals(e instanceof MLOutputAdapterException, true);
         }
-        
+
     }
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,10 +58,10 @@ public class SummaryStatsGeneratorTest {
          * Dataset Columns: 55 Rows: 1000
          */
         String uriString = "src/test/resources/fcSample.csv";
-        URI uri;
+        String uri;
         SamplePoints samplePoints = null;
         InputStream in = null;
-        uri = new URI(System.getProperty("user.dir") + File.separator + uriString);
+        uri = System.getProperty("user.dir") + File.separator + uriString;
         in = inputAdapter.read(uri);
 
         try {
@@ -104,7 +103,7 @@ public class SummaryStatsGeneratorTest {
     public void identifyColumnDataType() {
         Assert.assertNotNull(summaryGen.identifyColumnDataType());
     }
-    
+
     /**
      * Get sequentially picked {@link SamplePoints}
      * 
