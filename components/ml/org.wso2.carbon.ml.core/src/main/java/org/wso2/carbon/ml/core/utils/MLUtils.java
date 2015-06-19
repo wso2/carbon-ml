@@ -82,6 +82,8 @@ public class MLUtils {
             if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(sourceType)) {
                 String tableName = extractTableName(path);
                 String tableSchema = extractTableSchema(path);
+                String headerLine = extractHeaderLine(path);
+                headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
                 SQLContext sqlCtx = new SQLContext(sparkContext);
                 sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
                         + "OPTIONS ("
@@ -121,11 +123,13 @@ public class MLUtils {
                 columnData.add(new ArrayList<String>());
             }
 
-            // generate the header map
-            if (containsHeader) {
-                headerMap = generateHeaderMap(lines.first(), dataFormat);
-            } else {
-                headerMap = generateHeaderMap(featureSize);
+            if (headerMap == null) {
+                // generate the header map
+                if (containsHeader) {
+                    headerMap = generateHeaderMap(lines.first(), dataFormat);
+                } else {
+                    headerMap = generateHeaderMap(featureSize);
+                }
             }
 
             // take a random sample
@@ -184,6 +188,24 @@ public class MLUtils {
             schema = schema.replace(',', ' ');
             schema = schema.replace(';', ',');
             return schema;
+        }
+        return null;
+    }
+    
+    public static String extractHeaderLine(String path) {
+        StringBuilder sb = new StringBuilder();
+        if (path == null) {
+            return null;
+        }
+        String[] segments = path.split(":");
+        if (segments.length > 1) {
+            String schema = segments[1];
+            String[] columnDefs = schema.split(";");
+            for (String columnDef : columnDefs) {
+                String columnName = columnDef.split(",")[0];
+                sb.append(columnName + ",");
+            }
+            return sb.substring(0, sb.length() - 1);
         }
         return null;
     }
