@@ -37,7 +37,7 @@ public class MLConstants {
     public static final String UPLOAD_LIMIT = "uploadLimit";
     
     public static final String DATASET_SOURCE_TYPE_FILE = "file";
-    public static final String DATASET_SOURCE_TYPE_BAM = "bam";
+    public static final String DATASET_SOURCE_TYPE_DAS = "das";
     public static final String DATASET_SOURCE_TYPE_HDFS = "hdfs";
     
     // Summary statistic calculation configurations  

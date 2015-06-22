@@ -249,7 +249,7 @@ public class MLModelHandler {
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
 
-            if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataSourceType)) {
+            if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
                 CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
                 String tableName = MLUtils.extractTableName(dataUrl);
                 String tableSchema = MLUtils.extractTableSchema(dataUrl);

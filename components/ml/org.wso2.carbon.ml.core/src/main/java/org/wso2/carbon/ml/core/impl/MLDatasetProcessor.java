@@ -162,7 +162,7 @@ public class MLDatasetProcessor {
             if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(dataset.getDataSourceType())) {
                 // if the source is a file, read the inputstream
                 input = inputStream;
-            } else if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
+            } else if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataset.getDataSourceType())) {
                 handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
                         dataset.getSourcePath(), dataset.getName()));
                 // in BAM case, we do not persist the data into a server side file.
@@ -179,7 +179,7 @@ public class MLDatasetProcessor {
                 input = inputAdapter.read(dataset.getSourcePath());
             }
             
-            if (!MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(dataset.getDataSourceType())) {
+            if (!MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataset.getDataSourceType())) {
                 
                 handleNull(input, String.format("Null input stream read from the source data-set path: %s [data-set] %s",
                         dataset.getSourcePath(), dataset.getName()));

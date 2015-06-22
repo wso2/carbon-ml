@@ -79,7 +79,7 @@ public class MLUtils {
             sparkContext = new JavaSparkContext(sparkConf);
             JavaRDD<String> lines;
 
-            if (MLConstants.DATASET_SOURCE_TYPE_BAM.equalsIgnoreCase(sourceType)) {
+            if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(sourceType)) {
                 String tableName = extractTableName(path);
                 String tableSchema = extractTableSchema(path);
                 String headerLine = extractHeaderLine(path);
