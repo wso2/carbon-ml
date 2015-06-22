@@ -62,10 +62,6 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict</bundleDef>
                             </bundles>
-                            <importFeatures>
-                                <importFeatureDef>org.apache.synapse.wso2:${carbon.mediation.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.mediation.initializer.server</importFeatureDef>
-                            </importFeatures>
                         </configuration>
                     </execution>
                 </executions>

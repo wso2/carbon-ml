@@ -59,9 +59,6 @@
                         <configuration>
                             <id>org.wso2.carbon.ml.mediator.predict</id>
                             <propertiesFile>../../ml/feature.properties</propertiesFile>
-                            <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.mediation.initializer</importFeatureDef>
-                            </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.server.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.ui.feature</includedFeatureDef>
