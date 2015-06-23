@@ -201,21 +201,21 @@
 			<artifactId>compress-lzf</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-graphite</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-jvm</artifactId>
-		</dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-graphite</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jvm</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.curator</groupId>
 			<artifactId>curator-recipes</artifactId>
@@ -340,88 +340,23 @@
 								</properties>
 							</adviceFile>
 							<bundles>
-								<bundleDef>org.wso2.orbit.org.apache.spark:spark-core_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.org.apache.spark:spark-sql_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.org.apache.spark:spark-mllib_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.org.apache.spark:spark-streaming_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.org.scalanlp:breeze_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
-								<bundleDef>org.wso2.uncommons.maths:uncommons-maths</bundleDef>
-								<bundleDef>org.wso2.orbit.org.apache.hadoop:hadoop-client</bundleDef>
-								<bundleDef>org.wso2.orbit.org.htrace:htrace-core</bundleDef>
-								<bundleDef>org.wso2.json4s:json4s-jackson_2.10</bundleDef>
-								<bundleDef>org.wso2.twitter:chill_2.10</bundleDef>
-								<bundleDef>org.wso2.clearspring.analytics:stream</bundleDef>
-								<bundleDef>org.slf4j:slf4j-api</bundleDef>
-								<bundleDef>org.ow2.asm:asm</bundleDef>
-								<bundleDef>com.esotericsoftware.kryo:kryo</bundleDef>
-								<bundleDef>org.wso2.orbit.com.esotericsoftware.minlog:minlog</bundleDef>
-								<bundleDef>org.objenesis:objenesis</bundleDef>
-								<bundleDef>org.wso2.orbit.org.apache.mesos:mesos</bundleDef>
-								<bundleDef>org.wso2.orbit.github.rwl:jtransforms</bundleDef>
 								<bundleDef>org.wso2.orbit.github.fommil.netlib:core</bundleDef>
 								<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
-								<bundleDef>org.spark-project.akka:akka-remote_2.10</bundleDef>
-								<bundleDef>org.spark-project.akka:akka-actor_2.10</bundleDef>
-								<bundleDef>com.typesafe:config</bundleDef>
-								<bundleDef>io.netty:netty</bundleDef>
-
-								<bundleDef>org.spark-project.protobuf:protobuf-java</bundleDef>
-								<bundleDef>com.google.protobuf:protobuf-java</bundleDef>
-
 								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.core</bundleDef>
-								<bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
-								<bundleDef>org.apache.commons:commons-lang3</bundleDef>
-								<bundleDef>org.apache.commons:commons-math3</bundleDef>
-								<bundleDef>org.apache.derby:derby</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-databind</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-core</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-annotations</bundleDef>
-								<bundleDef>org.xerial.snappy:snappy-java</bundleDef>
-								<bundleDef>commons-net:commons-net</bundleDef>
-								<bundleDef>com.google.guava:guava</bundleDef>
-								<bundleDef>org.json.wso2:json</bundleDef>
-								<bundleDef>io.netty.wso2:netty-all</bundleDef>
-								<bundleDef>org.scala-lang:scala-library</bundleDef>
-								<bundleDef>org.scala-lang:scala-reflect</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-plus</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-security</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-server</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-util</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-servlet</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-continuation</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-http</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-webapp</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-io</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-xml</bundleDef>
-								<bundleDef>org.eclipse.jetty:jetty-jndi</bundleDef>
-								<bundleDef>org.eclipse.jetty.orbit:javax.transaction</bundleDef>
-								<bundleDef>io.netty:netty</bundleDef>
-								<bundleDef>com.ning:compress-lzf</bundleDef>
-								<bundleDef>com.codahale.metrics:metrics-core</bundleDef>
-								<bundleDef>com.codahale.metrics:metrics-graphite</bundleDef>
-								<bundleDef>com.codahale.metrics:metrics-json</bundleDef>
-								<bundleDef>com.codahale.metrics:metrics-jvm</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-databind</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-core</bundleDef>
-								<bundleDef>com.fasterxml.jackson.core:jackson-annotations</bundleDef>
-								<bundleDef>org.xerial.snappy:snappy-java</bundleDef>
-								<bundleDef>commons-net:commons-net</bundleDef>
-								<bundleDef>com.google.guava:guava</bundleDef>
-								<bundleDef>org.apache.curator:curator-recipes</bundleDef>
-								<bundleDef>org.apache.curator:curator-framework</bundleDef>
-								<bundleDef>org.apache.curator:curator-client</bundleDef>
-								<bundleDef>org.apache.zookeeper:zookeeper</bundleDef>
-
-								<bundleDef>org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.core</bundleDef>
-								<bundleDef>org.wso2.carbon.analytics-common:org.wso2.carbon.event.output.adapter.email</bundleDef>
-								<bundleDef>org.apache.axis2:axis2-transport-mail</bundleDef>
-								<bundleDef>org.apache.axis2:axis2-transport-base</bundleDef>
-								
-								<bundleDef>org.wso2.apache.httpcomponents:httpclient</bundleDef>
-								<!-- <bundleDef>org.apache.httpcomponents.wso2:httpcore</bundleDef> -->
 							</bundles>
+							<importFeatures>
+                                <importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.version}
+                                </importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.event.output.adapter.server:${carbon.analytics.common.version}
+                                </importFeatureDef>
+                            </importFeatures>
 						</configuration>
 					</execution>
 				</executions>

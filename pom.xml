@@ -453,7 +453,7 @@
 				<artifactId>compress-lzf</artifactId>
 				<version>${compress.lzf.version}</version>
 			</dependency>
-			<dependency>
+			<!--dependency>
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-core</artifactId>
 				<version>${codahale.metrics.version}</version>
@@ -472,7 +472,27 @@
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-jvm</artifactId>
 				<version>${codahale.metrics.version}</version>
-			</dependency>
+			</dependency-->
+			<dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${codahale.metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-graphite</artifactId>
+                <version>${codahale.metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-json</artifactId>
+                <version>${codahale.metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-jvm</artifactId>
+                <version>${codahale.metrics.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
@@ -795,6 +815,24 @@
                 <version>${ml.version}</version>
                 <type>zip</type>
             </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.output.adapter.server.feature</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+                <type>zip</type>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.output.adapter.email.server.feature</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+                <type>zip</type>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.spark.commons.feature</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+                <type>zip</type>
+            </dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -890,7 +928,7 @@
 		<carbon.multitenancy.version>4.4.0</carbon.multitenancy.version>
 		<carbon.commons.version>4.4.0</carbon.commons.version>
 		<carbon.analytics.version>1.0.0</carbon.analytics.version>
-        <carbon.analytics.common.version>1.0.0</carbon.analytics.common.version>
+        <carbon.analytics.common.version>2.0.0-SNAPSHOT</carbon.analytics.common.version>
         <carbon.kernel.version>4.4.0</carbon.kernel.version>
 		<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
@@ -936,8 +974,8 @@
 		<curator.version>2.4.0</curator.version>
 		<derby.version>10.4.2.0</derby.version>
 		<compress.lzf.version>1.0.0</compress.lzf.version>
-		<codahale.metrics.version>3.0.0</codahale.metrics.version>
-		<jackson.version>2.3.1</jackson.version>
+		<codahale.metrics.version>3.1.0</codahale.metrics.version>
+		<jackson.version>2.4.4</jackson.version>
 		<jackson-annotations.version>2.3.0</jackson-annotations.version>
 		<snappy.version>1.0.5.3</snappy.version>
 		<commons-net.version>2.2</commons-net.version>
