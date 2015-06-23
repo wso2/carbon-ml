@@ -60,17 +60,6 @@ public class MLConfiguration {
     @XmlElement(name = "ModelStorage")
     private ModelStorage modelStorage;
 
-    @XmlElement(name = "DataStorage")
-    private DataStorage dataStorage;
-
-    public DataStorage getDataStorage() {
-        return dataStorage;
-    }
-
-    public void setDataStorage(DataStorage dataStorage) {
-        this.dataStorage = dataStorage;
-    }
-
     public ModelStorage getModelStorage() {
         if (modelStorage == null) {
             modelStorage = new ModelStorage();

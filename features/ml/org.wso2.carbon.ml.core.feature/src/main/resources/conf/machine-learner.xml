@@ -20,7 +20,8 @@
 	<!-- -->
 	<Properties>
 		<Property name="ml.thread.pool.size" value="100" />
-		<Property name="target.home" value="/tmp" />
+		<!-- default value of the target.home property is {carbon.home}/datasets -->
+		<!-- Property name="target.home" value="/tmp" / -->
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
@@ -47,20 +48,9 @@
 	<HdfsURL>hdfs://localhost:9000</HdfsURL>
 
 	<!-- Storage Details for built ML Models. StorageType can be either "file" 
-		or "hdfs" -->
-	<ModelStorage>
-		<StorageType>file</StorageType>
-		<StorageDirectory>/tmp</StorageDirectory>
-	</ModelStorage>
-
-	<!-- Storage Details for uploaded datasets. "fileLocation" refers to the 
-		directory in the file system to which the dataset should be uploaded. "hdfsLocation" 
-		refers to the directory in the hdfs to which the dataset should be uploaded, 
-		when using hdfs. -->
-	<DataStorage>
-		<FileLocation>/</FileLocation>
-		<HdfsLocation>/</HdfsLocation>
-	</DataStorage>
+		or "hdfs". Default storage type is file and location is {carbon.home}/models -->
+	<!-- ModelStorage> <StorageType>file</StorageType> <StorageDirectory>/tmp</StorageDirectory> 
+		</ModelStorage -->
 
 	<Algorithms>
 		<Algorithm>
@@ -74,7 +64,8 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process</Description>
+					optimization process
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
@@ -85,7 +76,8 @@
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
 				<Description>Fraction of the training dataset used per iteration in
-					the optimization algorithm</Description>
+					the optimization algorithm
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -99,7 +91,8 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process</Description>
+					optimization process
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
@@ -115,7 +108,8 @@
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
 				<Description>Fraction of the training dataset use per iteration in
-					the optimization algorithm</Description>
+					the optimization algorithm
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -129,7 +123,8 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process</Description>
+					optimization process
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
@@ -140,13 +135,15 @@
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
 				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting.</Description>
+					and hence, helps to control model overfitting.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
 				<Description>Fraction of the training dataset use per iteration in
-					the optimization algorithm</Description>
+					the optimization algorithm
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -160,7 +157,8 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process</Description>
+					optimization process
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
@@ -172,19 +170,22 @@
 				<Value>L2</Value>
 				<Description>Type of the regularization, wso2 machine learner
 					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.</Description>
+					should be either L1 or L2.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
 				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting</Description>
+					and hence, helps to control model overfitting
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
 				<Description>Fraction of the training dataset use in a single
-					iteration of the optimization algorithm</Description>
+					iteration of the optimization algorithm
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -199,7 +200,8 @@
 				<Value>L2</Value>
 				<Description>Type of the regularization, wso2 machine learner
 					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.</Description>
+					should be either L1 or L2.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -218,26 +220,30 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process</Description>
+					optimization process
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
 				<Description>Type of the regularization, wso2 machine learner
 					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.</Description>
+					should be either L1 or L2.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
 				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting</Description>
+					and hence, helps to control model overfitting
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
 				<Description>Fraction of the training dataset use in a single
-					iteration of the optimization algorithm</Description>
+					iteration of the optimization algorithm
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>

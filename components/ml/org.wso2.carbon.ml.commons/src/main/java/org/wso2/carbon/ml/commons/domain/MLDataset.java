@@ -17,8 +17,6 @@
  */
 package org.wso2.carbon.ml.commons.domain;
 
-import java.net.URI;
-
 /**
  * Represent a Data-set in ML.
  */
