@@ -71,10 +71,20 @@ public class MLIOFactory {
     public String getTargetPath(String fileName) {
         String targetHome = configuration.getProperty(MLConstants.TARGET_HOME_PROP);
         if (targetHome == null) {
-            return fileName;
-        } else {
-            return targetHome + File.separator + fileName;
+            File f = new File(System.getProperty("carbon.home") + File.separator + "datasets");
+            try {
+                if (f.mkdir()) {
+                    targetHome = f.getAbsolutePath();
+                } else {
+                    targetHome = System.getProperty("carbon.home") + File.separator + "tmp";
+                }
+            } catch (Exception e) {
+                // can't create the directory, use an existing one.
+                targetHome = System.getProperty("carbon.home") + File.separator + "tmp";
+            }
         }
+
+        return targetHome + File.separator + fileName;
 
     }
 

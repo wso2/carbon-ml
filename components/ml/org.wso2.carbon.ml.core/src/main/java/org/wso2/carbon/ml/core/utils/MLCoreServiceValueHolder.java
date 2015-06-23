@@ -34,7 +34,6 @@ public class MLCoreServiceValueHolder {
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
     private Properties mlProperties;
-    private String  bamServerUrl;
     private String  hdfsUrl;
     private String emailNotificationEndpoint;
     private String modelRegistryLocation;
