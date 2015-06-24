@@ -42,7 +42,12 @@ public class MulticlassConfusionMatrix implements Serializable {
      * @param matrix Matrix containing the values of confusion matrix
      */
     public void setMatrix(double[][] matrix) {
-        this.matrix = matrix;
+        if (matrix == null) {
+            this.matrix = new double[0][0];
+        }
+        else {
+            this.matrix = Arrays.copyOf(matrix, matrix.length);
+        }
     }
 
     /**
@@ -58,7 +63,12 @@ public class MulticlassConfusionMatrix implements Serializable {
      * @param labels Set labels
      */
     public void setLabels(double[] labels) {
-        this.labels = labels;
+        if (labels == null) {
+            this.labels = new double[0];
+        }
+        else {
+            this.labels = Arrays.copyOf(labels, labels.length);
+        }
     }
 
     /**
