@@ -58,10 +58,18 @@ public class PredictMediator extends AbstractMediator {
             throw new MediatorException("Invalid Predict mediator. Features required");
         }
         OMElement featuresElement = fac.createOMElement(FEATURES_QNAME);
-        for(MediatorProperty mediatorProperty : features) {
+        for (MediatorProperty mediatorProperty : features) {
             OMElement featureElement = fac.createOMElement(FEATURE_QNAME);
-            featureElement.addAttribute(fac.createOMAttribute(NAME_ATT. getLocalPart(), nullNS, mediatorProperty.getName()));
-            SynapseXPathSerializer.serializeXPath(mediatorProperty.getExpression(), featureElement, EXPRESSION_ATT.getLocalPart());
+            if (mediatorProperty.getName() == null) {
+                throw new MediatorException("Invalid Predict mediator. Feature names are required.");
+            }
+            featureElement.addAttribute(fac.createOMAttribute(NAME_ATT.getLocalPart(), nullNS,
+                    mediatorProperty.getName()));
+            if (mediatorProperty.getExpression() == null) {
+                throw new MediatorException("Invalid Predict mediator. Feature expressions are required.");
+            }
+            SynapseXPathSerializer.serializeXPath(mediatorProperty.getExpression(), featureElement,
+                    EXPRESSION_ATT.getLocalPart());
             featuresElement.addChild(featureElement);
         }
         mlElement.addChild(featuresElement);

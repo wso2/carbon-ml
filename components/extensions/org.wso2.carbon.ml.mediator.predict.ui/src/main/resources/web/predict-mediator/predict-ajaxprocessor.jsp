@@ -91,6 +91,8 @@
                                 if(expression == null) {
                                     expression = "";
                                 }
+            			NameSpacesRegistrar nameSpacesRegistrar = NameSpacesRegistrar.getInstance();
+                		nameSpacesRegistrar.registerNameSpaces(synapsePath, "featureXpath"+index, session);
                     %>
                     <tr>
                         <td style="vertical-align:top !important">

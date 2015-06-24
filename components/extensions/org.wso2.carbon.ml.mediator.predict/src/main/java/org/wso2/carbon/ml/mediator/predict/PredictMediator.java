@@ -38,9 +38,11 @@ public class PredictMediator extends AbstractMediator {
     private String resultPropertyName;
     private Map<String, SynapsePath> featureMappings;
     private String modelStorageLocation;
+    private boolean isUpdated;
 
     public PredictMediator() {
         featureMappings = new HashMap<String, SynapsePath>();
+        isUpdated = false;
     }
 
     @Override
@@ -59,6 +61,7 @@ public class PredictMediator extends AbstractMediator {
         messageContext.setProperty(resultPropertyName, prediction);
 
         synLog.traceOrDebug("End : predict mediator");
+        this.isUpdated = false;
         return true;
     }
 
@@ -71,7 +74,7 @@ public class PredictMediator extends AbstractMediator {
     private String getPredictionFromModel(MessageContext messageContext) {
 
         try {
-            String prediction = ModelHandler.getInstance(modelStorageLocation, featureMappings).getPrediction(messageContext);
+            String prediction = ModelHandler.getInstance(modelStorageLocation, featureMappings, isUpdated).getPrediction(messageContext);
             return prediction;
         } catch (JaxenException e) {
             handleException("Error while extracting feature values ", e, messageContext);
@@ -92,6 +95,7 @@ public class PredictMediator extends AbstractMediator {
     }
 
     public void setResultPropertyName(String propertyName) {
+        this.isUpdated = true;
         this.resultPropertyName = propertyName;
     }
 
@@ -101,6 +105,7 @@ public class PredictMediator extends AbstractMediator {
      * @param synapsePath synapse path to extract the feature value
      */
     public void addFeatureMapping(String featureName, SynapsePath synapsePath) {
+        this.isUpdated = true;
         featureMappings.put(featureName, synapsePath);
     }
 
@@ -125,6 +130,7 @@ public class PredictMediator extends AbstractMediator {
      * @param modelStorageLocation
      */
     public void setModelStorageLocation(String modelStorageLocation) {
+        this.isUpdated = true;
         this.modelStorageLocation = modelStorageLocation;
     }
 

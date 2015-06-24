@@ -61,6 +61,8 @@ public class PredictMediatorUtils {
                 } else {
                     modelStorageLocation = modelStorage[1];
                 }
+            } else {
+                storageType = MLConstants.DATASET_SOURCE_TYPE_FILE;
             }
             MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
