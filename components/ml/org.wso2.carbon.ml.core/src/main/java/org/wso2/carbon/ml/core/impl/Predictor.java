@@ -68,7 +68,10 @@ public class Predictor {
 
                     double predictedData = decisionTreeModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             default:
@@ -77,7 +80,11 @@ public class Predictor {
 
                     double predictedData = classificationModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             }
@@ -89,7 +96,10 @@ public class Predictor {
 
                 double predictedData = generalizedLinearModel.predict(vector);
                 predictions.add(predictedData);
-                log.info("Predicted value before decoding: " + predictedData);
+                if (log.isDebugEnabled()) {
+
+                    log.debug("Predicted value before decoding: " + predictedData);
+                }
             }
             return decodePredictedValues(predictions);
 
@@ -103,7 +113,10 @@ public class Predictor {
 
                     int predictedData = kMeansModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             default:
@@ -143,7 +156,7 @@ public class Predictor {
         }
         List<Map<String, Integer>> encodings = model.getEncodings();
         // last index is response variable encoding
-        Map<String, Integer> encodingMap = encodings.get(encodings.size()-1);
+        Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
         if (encodingMap == null || encodingMap.isEmpty()) {
             // no change
             return predictions;
@@ -160,7 +173,9 @@ public class Predictor {
                     return predictions;
                 }
                 String decodedValue = decode(encodingMap, roundedValue);
-                log.info("Predicted value after decoding: " + decodedValue);
+                if (log.isDebugEnabled()) {
+                    log.debug("Predicted value after decoding: " + decodedValue);
+                }
                 decodedPredictions.add(decodedValue);
             }
             return decodedPredictions;
@@ -187,9 +202,7 @@ public class Predictor {
         }
         return null;
     }
-    
-    
-    
+
     public int closest(int of, Collection<Integer> in) {
         int min = Integer.MAX_VALUE;
         int closest = of;
