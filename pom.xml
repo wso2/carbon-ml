@@ -834,6 +834,16 @@
                 <type>zip</type>
             </dependency>
 
+            <dependency>
+                <groupId>org.wso2.siddhi</groupId>
+                <artifactId>siddhi-core</artifactId>
+                <version>${siddhi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.siddhi</groupId>
+                <artifactId>siddhi-query-api</artifactId>
+                <version>${siddhi.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -1033,6 +1043,9 @@
         <carbon.mediation.version>4.4.0</carbon.mediation.version>
         <axiom.api.wso2.version>1.2.11-wso2v6</axiom.api.wso2.version>
         <org.apache.commons.logging.version>1.1.1</org.apache.commons.logging.version>
+
+        <!--Siddhi Extension Dependency versions-->
+        <siddhi.version>3.0.0-SNAPSHOT</siddhi.version>
 
     </properties>
 
