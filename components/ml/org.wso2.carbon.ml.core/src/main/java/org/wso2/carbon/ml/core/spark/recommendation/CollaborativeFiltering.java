@@ -57,4 +57,32 @@ public class CollaborativeFiltering {
 
         return ALS.trainImplicit(trainingDataset.rdd(), rank, noOfIterations, regularizationParameter, noOfBlocks, confidenceParameter);
     }
+
+    /**
+     * This method recommends products for a given user.
+     *
+     * @param model                 Matrix factorization model
+     * @param userId                The user to recommend products to
+     * @param numberOfProducts      Number of products to return
+     * @return                      Array of Rating objects sorted according to the predicted score
+     *
+     * @see org.apache.spark.mllib.recommendation.Rating
+     */
+    public Rating[] recommendProducts(final MatrixFactorizationModel model, int userId, int numberOfProducts) {
+        return model.recommendProducts(userId, numberOfProducts);
+    }
+
+    /**
+     * This method recommends users for a given product. (i.e. the users who are most likely to be interested in the given product.
+     *
+     * @param model             Matrix factorizaition model
+     * @param productId         The product to recommend users to
+     * @param numberOfUsers     Number of users to return
+     * @return                  Array of Rating objects sorted according to the predicted score
+     *
+     * @see org.apache.spark.mllib.recommendation.Rating
+     */
+    public Rating[] recommendUsers(final MatrixFactorizationModel model, int productId, int numberOfUsers) {
+        return model.recommendUsers(productId, numberOfUsers);
+    }
 }
