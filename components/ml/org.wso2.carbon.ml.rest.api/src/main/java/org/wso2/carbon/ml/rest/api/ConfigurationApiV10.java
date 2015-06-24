@@ -24,15 +24,23 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
+import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
  */
 @Path("/configs")
 public class ConfigurationApiV10 extends MLRestAPI {
+
+    private static final Log logger = LogFactory.getLog(ConfigurationApiV10.class);
 
     public ConfigurationApiV10() {
     }
@@ -64,8 +72,8 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 return Response.ok(mlAlgorithm).build();
             }
         }
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("No algorithm found with the name: " + algorithmName).build();
+        return Response.status(Response.Status.NOT_FOUND).entity("No algorithm found with the name: " + algorithmName)
+                .build();
     }
 
     @GET
@@ -82,8 +90,36 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 return Response.ok(mlAlgorithm.getParameters()).build();
             }
         }
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("No algorithm found with the name: " + algorithmName).build();
+        return Response.status(Response.Status.NOT_FOUND).entity("No algorithm found with the name: " + algorithmName)
+                .build();
+    }
+
+    @GET
+    @Path("/das/tables")
+    @Produces("application/json")
+    public Response getDASTables() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
+                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
+        if (analyticsDataService == null) {
+            String msg = String
+                    .format("Error occurred while retrieving DAS tables of tenant [id] %s . Cause: AnalyticsDataService is null.",
+                            tenantId);
+            logger.error(msg);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        List<String> tableNames;
+        try {
+            tableNames = analyticsDataService.listTables(tenantId);
+        } catch (AnalyticsException e) {
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while retrieving DAS tables of tenant [id] %s .", tenantId), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+
+        }
+        return Response.ok(tableNames).build();
     }
 
 }

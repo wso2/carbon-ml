@@ -204,6 +204,10 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 		</dependency>
+		<dependency>
+                   	<groupId>org.wso2.carbon.analytics</groupId>
+                    	<artifactId>org.wso2.carbon.analytics.dataservice</artifactId>
+           	</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -229,6 +233,7 @@
 							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
 							org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
 							org.apache.spark.mllib.*;version="${spark.imp.pkg.version}",
+							org.apache.commons.io;version="${commons.io.imp.pkg.version}",
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
