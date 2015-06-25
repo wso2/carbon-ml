@@ -30,7 +30,7 @@
 			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
 		<Property name="hdfs.out"
 			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
-		<Property name="bam.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+		<Property name="das.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
 		<Property name="registry.in"
 			value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
 		<Property name="registry.out"
