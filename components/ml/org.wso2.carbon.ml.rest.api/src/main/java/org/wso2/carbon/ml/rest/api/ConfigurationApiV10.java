@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
-import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
+import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
@@ -100,18 +100,18 @@ public class ConfigurationApiV10 extends MLRestAPI {
     public Response getDASTables() {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
-        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
-                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
-        if (analyticsDataService == null) {
+        AnalyticsDataAPI analyticsDataApi = (AnalyticsDataAPI) PrivilegedCarbonContext
+                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataAPI.class, null);
+        if (analyticsDataApi == null) {
             String msg = String
-                    .format("Error occurred while retrieving DAS tables of tenant [id] %s . Cause: AnalyticsDataService is null.",
+                    .format("Error occurred while retrieving DAS tables of tenant [id] %s . Cause: AnalyticsDataAPI is null.",
                             tenantId);
             logger.error(msg);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
         List<String> tableNames;
         try {
-            tableNames = analyticsDataService.listTables(tenantId);
+            tableNames = analyticsDataApi.listTables(tenantId);
         } catch (AnalyticsException e) {
             String msg = MLUtils.getErrorMsg(
                     String.format("Error occurred while retrieving DAS tables of tenant [id] %s .", tenantId), e);

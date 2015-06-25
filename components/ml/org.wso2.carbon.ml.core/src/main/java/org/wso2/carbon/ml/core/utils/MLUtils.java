@@ -38,7 +38,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
-import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
+import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
@@ -63,6 +63,7 @@ public class MLUtils {
      */
     public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
             String sourceType, int tenantId) throws MLMalformedDatasetException {
+        
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
          * needs to be switched temporarily.
@@ -191,11 +192,11 @@ public class MLUtils {
         if (path == null) {
             return null;
         }
+        AnalyticsDataAPI analyticsDataApi = (AnalyticsDataAPI) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getOSGiService(AnalyticsDataAPI.class, null);
         // table schema will be something like; <col1_name> <col1_type>,<col2_name> <col2_type>
         StringBuilder sb = new StringBuilder();
-        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
-                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
-        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, path);
+        AnalyticsSchema analyticsSchema = analyticsDataApi.getTableSchema(tenantId, path);
         Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
         for (Iterator<Map.Entry<String, ColumnDefinition>> iterator = columnsMap.entrySet().iterator(); iterator
                 .hasNext();) {
@@ -205,18 +206,18 @@ public class MLUtils {
 
         return sb.substring(0, sb.length() - 1);
     }
-    
+
     public static String extractHeaderLine(String path, int tenantId) throws AnalyticsTableNotAvailableException,
             AnalyticsException {
         if (path == null) {
             return null;
         }
 
+        AnalyticsDataAPI analyticsDataApi = (AnalyticsDataAPI) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getOSGiService(AnalyticsDataAPI.class, null);
         // header line will be something like; <col1_name>,<col2_name>
         StringBuilder sb = new StringBuilder();
-        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
-                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
-        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, path);
+        AnalyticsSchema analyticsSchema = analyticsDataApi.getTableSchema(tenantId, path);
         Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
         for (String columnName : columnsMap.keySet()) {
             sb.append(columnName + ",");

@@ -165,13 +165,6 @@ public class MLDatasetProcessor {
             } else if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataset.getDataSourceType())) {
                 handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
                         dataset.getSourcePath(), dataset.getName()));
-                // in BAM case, we do not persist the data into a server side file.
-                String sourcePath = dataset.getSourcePath().toString();
-                if (!sourcePath.contains(":")) {
-                    throw new MLDataProcessingException(String.format("Invalid data source path %s for [data set name] %s [version] %s", sourcePath, 
-                            dataset.getName(), dataset.getVersion()));
-                }
-                
             } else {
                 handleNull(dataset.getSourcePath(), String.format("Invalid data source path: %s [data-set] %s", 
                         dataset.getSourcePath(), dataset.getName()));
