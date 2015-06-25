@@ -417,7 +417,7 @@ public class DatasetApiV10 extends MLRestAPI {
             List<ClusterPoint> points = mlModelHandler.getClusterPoints(tenantId, userName, datasetId,
                     featureListString, noOfClusters);
             return Response.ok(points).build();
-        } catch (DatabaseHandlerException e) {
+        } catch (Exception e) {
             String msg = MLUtils
                     .getErrorMsg(
                             String.format(
