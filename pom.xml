@@ -849,6 +849,11 @@
                 <artifactId>siddhi-query-api</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.ml.siddhi.extension</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
