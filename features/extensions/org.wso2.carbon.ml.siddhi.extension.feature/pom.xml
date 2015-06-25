@@ -26,7 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.ml.siddhi.extension.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Siddhi Extension Feature</name>
+    <name>WSO2 Carbon - ML Siddhi Extension Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the bundles required for Siddhi Extension functionality</description>
 
