@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -37,6 +38,12 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import org.wso2.carbon.analytics.dataservice.AnalyticsDataService;
+import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
+import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -80,9 +87,10 @@ public class MLUtils {
             JavaRDD<String> lines;
 
             if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(sourceType)) {
-                String tableName = extractTableName(path);
-                String tableSchema = extractTableSchema(path);
-                String headerLine = extractHeaderLine(path);
+                // DAS case path = table name
+                String tableName = path;
+                String tableSchema = extractTableSchema(path, tenantId);
+                String headerLine = extractHeaderLine(path, tenantId);
                 headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
                 SQLContext sqlCtx = new SQLContext(sparkContext);
                 sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
@@ -178,47 +186,43 @@ public class MLUtils {
         }
     }
 
-    public static String extractTableSchema(String path) {
+    public static String extractTableSchema(String path, int tenantId) throws AnalyticsTableNotAvailableException,
+            AnalyticsException {
         if (path == null) {
             return null;
         }
-        String[] segments = path.split(":");
-        if (segments.length > 1) {
-            String schema = segments[1];
-            schema = schema.replace(',', ' ');
-            schema = schema.replace(';', ',');
-            return schema;
+        // table schema will be something like; <col1_name> <col1_type>,<col2_name> <col2_type>
+        StringBuilder sb = new StringBuilder();
+        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
+                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
+        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, path);
+        Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
+        for (Iterator<Map.Entry<String, ColumnDefinition>> iterator = columnsMap.entrySet().iterator(); iterator
+                .hasNext();) {
+            Map.Entry<String, ColumnDefinition> column = iterator.next();
+            sb.append(column.getKey() + " " + column.getValue().getType().name() + ",");
         }
-        return null;
+
+        return sb.substring(0, sb.length() - 1);
     }
     
-    public static String extractHeaderLine(String path) {
-        StringBuilder sb = new StringBuilder();
+    public static String extractHeaderLine(String path, int tenantId) throws AnalyticsTableNotAvailableException,
+            AnalyticsException {
         if (path == null) {
             return null;
         }
-        String[] segments = path.split(":");
-        if (segments.length > 1) {
-            String schema = segments[1];
-            String[] columnDefs = schema.split(";");
-            for (String columnDef : columnDefs) {
-                String columnName = columnDef.split(",")[0];
-                sb.append(columnName + ",");
-            }
-            return sb.substring(0, sb.length() - 1);
-        }
-        return null;
-    }
 
-    public static String extractTableName(String path) {
-        if (path == null) {
-            return null;
+        // header line will be something like; <col1_name>,<col2_name>
+        StringBuilder sb = new StringBuilder();
+        AnalyticsDataService analyticsDataService = (AnalyticsDataService) PrivilegedCarbonContext
+                .getThreadLocalCarbonContext().getOSGiService(AnalyticsDataService.class, null);
+        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, path);
+        Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
+        for (String columnName : columnsMap.keySet()) {
+            sb.append(columnName + ",");
         }
-        String[] segments = path.split(":");
-        if (segments.length > 0) {
-            return segments[0];
-        }
-        return null;
+
+        return sb.substring(0, sb.length() - 1);
     }
 
     public static class DataTypeFactory {

@@ -251,22 +251,28 @@ public class MLModelHandler {
 
             if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
                 CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-                String tableName = MLUtils.extractTableName(dataUrl);
-                String tableSchema = MLUtils.extractTableSchema(dataUrl);
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                        + "OPTIONS ("
-                        + "tenantId \""
-                        + tenantId
-                        + "\", "
-                        + "tableName \""
-                        + tableName
-                        + "\", "
-                        + "schema \"" + tableSchema + "\"" + ")");
+                String tableName = dataUrl;
+                String tableSchema;
+                try {
+                    tableSchema = MLUtils.extractTableSchema(dataUrl, tenantId);
+                    SQLContext sqlCtx = new SQLContext(sparkContext);
+                    sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                            + "OPTIONS ("
+                            + "tenantId \""
+                            + tenantId
+                            + "\", "
+                            + "tableName \""
+                            + tableName
+                            + "\", "
+                            + "schema \"" + tableSchema + "\"" + ")");
 
-                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+                    DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
+                    JavaRDD<Row> rows = dataFrame.javaRDD();
+                    lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+                } catch (Exception e) {
+                    throw new MLModelBuilderException("Failed to build the model [id] " + modelId
+                            + " - Unable to extract the table schema from table: " + dataUrl, e);
+                }
             } else {
                 // parse lines in the dataset
                 lines = sparkContext.textFile(dataUrl);
@@ -286,7 +292,8 @@ public class MLModelHandler {
 
             return facts;
         } catch (DatabaseHandlerException e) {
-            throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while saving model [id] " + modelId + " to database: "
+                    + e.getMessage(), e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
