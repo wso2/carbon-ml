@@ -85,7 +85,7 @@ public class SupervisedModel {
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
-            JavaRDD<LabeledPoint> trainingData = dataSplit[0];
+            JavaRDD<LabeledPoint> trainingData = dataSplit[0].cache();
             JavaRDD<LabeledPoint> testingData = dataSplit[1];
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
