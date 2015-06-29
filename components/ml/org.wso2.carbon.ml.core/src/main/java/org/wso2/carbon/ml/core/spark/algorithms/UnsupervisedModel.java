@@ -62,7 +62,7 @@ public class UnsupervisedModel {
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
             JavaRDD<Vector> data = features.map(doubleArrayToVector);
-            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED);
+            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED).cache();
             JavaRDD<Vector> testingData = data.subtract(trainingData);
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();

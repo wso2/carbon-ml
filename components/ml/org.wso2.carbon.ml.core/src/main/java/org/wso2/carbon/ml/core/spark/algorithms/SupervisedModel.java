@@ -18,11 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -47,6 +43,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
@@ -88,7 +85,7 @@ public class SupervisedModel {
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
-            JavaRDD<LabeledPoint> trainingData = dataSplit[0];
+            JavaRDD<LabeledPoint> trainingData = dataSplit[0].cache();
             JavaRDD<LabeledPoint> testingData = dataSplit[1];
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
@@ -210,6 +207,12 @@ public class SupervisedModel {
                         + vectorToString(weights));
             }
 
+            // getting scores and labels without clearing threshold to get confusion matrix
+            JavaRDD<Tuple2<Object, Object>> scoresAndLabelsThresholded = logisticRegression.test(logisticRegressionModel,
+                    testingData);
+            MulticlassMetrics multiclassMetrics = new MulticlassMetrics(JavaRDD.toRDD(scoresAndLabelsThresholded));
+            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics);
+
             // clearing the threshold value to get a probability as the output of the prediction
             logisticRegressionModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = logisticRegression.test(logisticRegressionModel,
@@ -224,7 +227,8 @@ public class SupervisedModel {
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             probabilisticClassificationModelSummary.setAlgorithm(algorithmName);
 
-            Double modelAccuracy = getModelAccuracy(scoresAndLabels, MLConstants.DEFAULT_THRESHOLD, testingData);
+            probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
 
             return probabilisticClassificationModelSummary;
@@ -275,7 +279,8 @@ public class SupervisedModel {
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.DECISION_TREE.toString());
 
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
-            Double modelAccuracy = getModelAccuracy(multiclassMetrics, testingData);
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
 
             return classClassificationAndRegressionModelSummary;
@@ -315,6 +320,12 @@ public class SupervisedModel {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
                         + vectorToString(weights));
             }
+
+            // getting scores and labels without clearing threshold to get confusion matrix
+            JavaRDD<Tuple2<Object, Object>> scoresAndLabelsThresholded = svm.test(svmModel, testingData);
+            MulticlassMetrics multiclassMetrics = new MulticlassMetrics(JavaRDD.toRDD(scoresAndLabelsThresholded));
+            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics);
+
             svmModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel, testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
@@ -326,7 +337,8 @@ public class SupervisedModel {
             probabilisticClassificationModelSummary.setFeatureImportance(featureWeights);
             probabilisticClassificationModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.SVM.toString());
 
-            Double modelAccuracy = getModelAccuracy(scoresAndLabels, MLConstants.DEFAULT_THRESHOLD, testingData);
+            probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
 
             return probabilisticClassificationModelSummary;
@@ -519,7 +531,8 @@ public class SupervisedModel {
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.NAIVE_BAYES.toString());
 
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
-            Double modelAccuracy = getModelAccuracy(multiclassMetrics, testingData);
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
 
             return classClassificationAndRegressionModelSummary;
@@ -569,6 +582,30 @@ public class SupervisedModel {
     }
 
     /**
+     * This method returns multiclass confusion matrix for a given multiclass metric object
+     *
+     * @param multiclassMetrics      Multiclass metric object
+     */
+    private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics) {
+        MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
+        if (multiclassMetrics != null) {
+            int size = multiclassMetrics.confusionMatrix().numCols();
+            double[] matrixArray = multiclassMetrics.confusionMatrix().toArray();
+            double[][] matrix = new double[size][size];
+
+            for(int i = 0; i < size; i++) {
+                for(int j = 0; j < size; j++) {
+                    matrix[i][j] = matrixArray[(j*size) + i];
+                }
+            }
+            multiclassConfusionMatrix.setMatrix(matrix);
+            multiclassConfusionMatrix.setLabels(multiclassMetrics.labels());
+            multiclassConfusionMatrix.setSize(size);
+        }
+        return multiclassConfusionMatrix;
+    }
+
+    /**
      * This method gets regression metrics for a given set of prediction and label values
      *
      * @param sparkContext           JavaSparkContext
@@ -590,41 +627,15 @@ public class SupervisedModel {
     }
 
     /**
-     * This method gets model accuracy for a given testing dataset
-     *
-     * @param scoresAndLabels   score and label values
-     * @param threshold         Threshold value
-     * @param testingData       Testing data RDD
-     */
-    private Double getModelAccuracy(JavaRDD<Tuple2<Object, Object>> scoresAndLabels, Double threshold, JavaRDD<LabeledPoint> testingData) {
-        Double modelAccuracy = 0.0;
-        long correctlyClassified = 0;
-        long totalPopulation = testingData.count();
-        List<Tuple2<Object,Object>> scoresAndLabelsList = scoresAndLabels.collect();
-        for (Tuple2<Object, Object> scoresAndLabel : scoresAndLabelsList) {
-            Double scores = (Double) scoresAndLabel._1;
-            Double label = (Double) scoresAndLabel._2;
-            if (getLabel(scores, threshold).equals(label)) {
-                correctlyClassified++;
-            }
-        }
-        if(totalPopulation > 0) {
-            modelAccuracy = (double) correctlyClassified/totalPopulation;
-        }
-        return modelAccuracy;
-    }
-
-    /**
      * This method gets model accuracy from given multi-class metrics
      *
      * @param multiclassMetrics     multi-class metrics object
-     * @param testingData           Testing data RDD
      */
-    private Double getModelAccuracy(MulticlassMetrics multiclassMetrics, JavaRDD<LabeledPoint> testingData) {
+    private Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
         Double modelAccuracy = 0.0;
         int confusionMatrixSize = multiclassMetrics.confusionMatrix().numCols();
         int confusionMatrixDiagonal = 0;
-        long totalPopulation = testingData.count();
+        long totalPopulation = arraySum(multiclassMetrics.confusionMatrix().toArray());
         for (int i = 0; i < confusionMatrixSize; i++) {
             int diagonalValueIndex = multiclassMetrics.confusionMatrix().index(i, i);
             confusionMatrixDiagonal += multiclassMetrics.confusionMatrix().toArray()[diagonalValueIndex];
@@ -636,19 +647,18 @@ public class SupervisedModel {
     }
 
     /**
-     * This method gets label of a given score
+     * This summation of a given double array
      *
-     * @param score        Predicted score
-     * @param threshold    Threshold value
+     * @param array     Double array
      */
-    private Double getLabel(Double score, Double threshold) {
-        Double label = 0.0;
-        if(score >= threshold) {
-            label = 1.0;
+    private long arraySum(double[] array) {
+        long sum = 0;
+        for (double i : array) {
+            sum += i;
         }
-        return label;
+        return sum;
     }
-    
+
     private boolean isValidWeights(Vector weights) {
         for (int i = 0; i < weights.size(); i++) {
             double d = weights.apply(i);

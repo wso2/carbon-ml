@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.spark.summary;
 
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private String algorithm;
     private String[] features;
     private double modelAccuracy;
+    private MulticlassConfusionMatrix multiclassConfusionMatrix;
 
     public String getAlgorithm() {
         return algorithm;
@@ -141,6 +143,20 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      */
     public double getModelAccuracy() {
         return modelAccuracy;
+    }
+
+    /**
+     * @return Returns multiclass confusion matrix
+     */
+    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
+        return multiclassConfusionMatrix;
+    }
+
+    /**
+     * @param multiclassConfusionMatrix multiclass confusion matrix
+     */
+    public void setMulticlassConfusionMatrix(MulticlassConfusionMatrix multiclassConfusionMatrix) {
+        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
     }
 
     /**

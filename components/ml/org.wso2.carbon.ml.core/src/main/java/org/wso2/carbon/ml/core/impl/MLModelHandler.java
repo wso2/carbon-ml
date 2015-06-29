@@ -49,6 +49,7 @@ import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
@@ -249,27 +250,10 @@ public class MLModelHandler {
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
 
-            if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
-                CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-                String tableName = MLUtils.extractTableName(dataUrl);
-                String tableSchema = MLUtils.extractTableSchema(dataUrl);
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                        + "OPTIONS ("
-                        + "tenantId \""
-                        + tenantId
-                        + "\", "
-                        + "tableName \""
-                        + tableName
-                        + "\", "
-                        + "schema \"" + tableSchema + "\"" + ")");
-
-                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
-            } else {
-                // parse lines in the dataset
-                lines = sparkContext.textFile(dataUrl);
+            try {
+                lines = extractLines(tenantId, datasetId, sparkContext, dataUrl, dataSourceType, dataType);
+            } catch (MLMalformedDatasetException e) {
+                throw new MLModelBuilderException("Failed to build the model [id] " + modelId, e);
             }
             
             // get header line
@@ -286,7 +270,8 @@ public class MLModelHandler {
 
             return facts;
         } catch (DatabaseHandlerException e) {
-            throw new MLModelBuilderException("An error occurred while saving model to database: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while saving model [id] " + modelId + " to database: "
+                    + e.getMessage(), e);
         } finally {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
@@ -449,7 +434,7 @@ public class MLModelHandler {
     }
 
     public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString, int noOfClusters)
-            throws DatabaseHandlerException {
+            throws DatabaseHandlerException, MLMalformedDatasetException {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
@@ -459,6 +444,9 @@ public class MLModelHandler {
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
 
             String datasetURL = databaseService.getDatasetUri(datasetId);
+            MLDataset dataset = databaseService.getDataset(tenantId, userName, datasetId);
+            String dataSourceType = dataset.getDataSourceType();
+            String dataType = dataset.getDataType();
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             // create a new spark configuration
@@ -467,8 +455,9 @@ public class MLModelHandler {
             sparkConf.setAppName(String.valueOf(datasetId));
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
+            JavaRDD<String> lines;
             // parse lines in the dataset
-            JavaRDD<String> lines = sparkContext.textFile(datasetURL);
+            lines = extractLines(tenantId, datasetId, sparkContext, datasetURL, dataSourceType, dataType);
             // get column separator
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
             // get header line
@@ -517,6 +506,40 @@ public class MLModelHandler {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    private JavaRDD<String> extractLines(int tenantId, long datasetId, JavaSparkContext sparkContext,
+            String datasetURL, String dataSourceType, String dataType) throws MLMalformedDatasetException {
+        JavaRDD<String> lines;
+        if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
+            CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
+            String tableName = datasetURL;
+            String tableSchema;
+            try {
+                tableSchema = MLUtils.extractTableSchema(datasetURL, tenantId);
+                SQLContext sqlCtx = new SQLContext(sparkContext);
+                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                        + "OPTIONS ("
+                        + "tenantId \""
+                        + tenantId
+                        + "\", "
+                        + "tableName \""
+                        + tableName
+                        + "\", "
+                        + "schema \"" + tableSchema + "\"" + ")");
+
+                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
+                JavaRDD<Row> rows = dataFrame.javaRDD();
+                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+            } catch (Exception e) {
+                throw new MLMalformedDatasetException("Failed to get cluster points for dataset [id] " + datasetId
+                        + " - Unable to extract the table schema from table: " + datasetURL, e);
+            }
+        } else {
+            // parse lines in the dataset
+            lines = sparkContext.textFile(datasetURL);
+        }
+        return lines;
     }
 
     class ModelBuilder implements Runnable {

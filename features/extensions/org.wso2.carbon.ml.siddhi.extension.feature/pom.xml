@@ -24,17 +24,17 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.ml.mediator.predict.ui.feature</artifactId>
+    <artifactId>org.wso2.carbon.ml.siddhi.extension.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Predict Management UI Feature</name>
+    <name>WSO2 Carbon - ML Siddhi Extension Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Predict Mediator UI functionality</description>
+    <description>This feature contains the bundles required for Siddhi Extension functionality</description>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.mediator.predict.ui</artifactId>
-        </dependency>
+            <artifactId>org.wso2.carbon.ml.siddhi.extension</artifactId>
+	    </dependency>
     </dependencies>
 
     <build>
@@ -45,22 +45,21 @@
                 <version>${carbon.p2.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>4-p2-feature-generation</id>
+                        <id>p2-feature-generation</id>
                         <phase>package</phase>
                         <goals>
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.ml.mediator.predict.ui</id>
+                            <id>org.wso2.carbon.ml.siddhi.extension</id>
                             <propertiesFile>../../ml/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.siddhi.extension</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

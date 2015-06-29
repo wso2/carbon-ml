@@ -65,7 +65,6 @@ public class MLCoreDS {
             valueHolder.setEmailNotificationEndpoint(mlConfig.getEmailNotificationEndpoint());
             valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
-            valueHolder.setDataStorage(mlConfig.getDataStorage());
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
             valueHolder.setSparkConf(sparkConf);

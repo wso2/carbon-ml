@@ -34,6 +34,7 @@
         <module>org.wso2.carbon.ml.mediator.predict.server.feature</module>
 	    <module>org.wso2.carbon.ml.mediator.predict.ui.feature</module>
         <module>org.wso2.carbon.ml.mediator.predict.feature</module>
+        <module>org.wso2.carbon.ml.siddhi.extension.feature</module>
     </modules>
 </project>
 
