@@ -606,7 +606,7 @@ public class SupervisedModel {
             List<String> decodedLabels = new ArrayList<String>();
             for(double label : multiclassMetrics.labels()) {
                 Integer labelInt = (int) label;
-                String decodedLabel = SparkModelUtils.getKeyByValue(encodingMap, labelInt);
+                String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
                 decodedLabels.add(decodedLabel);
             }
             multiclassConfusionMatrix.setLabels(decodedLabels);
