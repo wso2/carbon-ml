@@ -211,7 +211,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Object, Object>> scoresAndLabelsThresholded = logisticRegression.test(logisticRegressionModel,
                     testingData);
             MulticlassMetrics multiclassMetrics = new MulticlassMetrics(JavaRDD.toRDD(scoresAndLabelsThresholded));
-            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics);
+            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics, mlModel);
 
             // clearing the threshold value to get a probability as the output of the prediction
             logisticRegressionModel.clearThreshold();
@@ -279,7 +279,7 @@ public class SupervisedModel {
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.DECISION_TREE.toString());
 
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
-            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics));
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
 
@@ -324,7 +324,7 @@ public class SupervisedModel {
             // getting scores and labels without clearing threshold to get confusion matrix
             JavaRDD<Tuple2<Object, Object>> scoresAndLabelsThresholded = svm.test(svmModel, testingData);
             MulticlassMetrics multiclassMetrics = new MulticlassMetrics(JavaRDD.toRDD(scoresAndLabelsThresholded));
-            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics);
+            MulticlassConfusionMatrix multiclassConfusionMatrix = getMulticlassConfusionMatrix(multiclassMetrics, mlModel);
 
             svmModel.clearThreshold();
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel, testingData);
@@ -531,7 +531,7 @@ public class SupervisedModel {
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.NAIVE_BAYES.toString());
 
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
-            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics));
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
 
@@ -586,7 +586,7 @@ public class SupervisedModel {
      *
      * @param multiclassMetrics      Multiclass metric object
      */
-    private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics) {
+    private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics, MLModel mlModel) {
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
         if (multiclassMetrics != null) {
             int size = multiclassMetrics.confusionMatrix().numCols();
@@ -599,7 +599,17 @@ public class SupervisedModel {
                 }
             }
             multiclassConfusionMatrix.setMatrix(matrix);
-            multiclassConfusionMatrix.setLabels(multiclassMetrics.labels());
+
+            List<Map<String, Integer>> encodings = mlModel.getEncodings();
+            // last index is response variable encoding
+            Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
+            List<String> decodedLabels = new ArrayList<String>();
+            for(double label : multiclassMetrics.labels()) {
+                Integer labelInt = (int) label;
+                String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
+                decodedLabels.add(decodedLabel);
+            }
+            multiclassConfusionMatrix.setLabels(decodedLabels);
             multiclassConfusionMatrix.setSize(size);
         }
         return multiclassConfusionMatrix;

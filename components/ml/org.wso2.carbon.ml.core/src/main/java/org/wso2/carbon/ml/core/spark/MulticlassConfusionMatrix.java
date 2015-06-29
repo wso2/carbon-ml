@@ -20,13 +20,14 @@ package org.wso2.carbon.ml.core.spark;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * DTO class to store multiclass confusion matrix
  */
 public class MulticlassConfusionMatrix implements Serializable {
     private double[][] matrix;
-    private double[] labels;
+    List<String> labels;
     private int size;
 
     /**
@@ -54,7 +55,7 @@ public class MulticlassConfusionMatrix implements Serializable {
      *
      * @return Returns the sequence of labels in ascending order
      */
-    public double[] getLabels() {
+    public List<String> getLabels() {
         return labels;
     }
 
@@ -62,13 +63,8 @@ public class MulticlassConfusionMatrix implements Serializable {
      *
      * @param labels Set labels
      */
-    public void setLabels(double[] labels) {
-        if (labels == null) {
-            this.labels = new double[0];
-        }
-        else {
-            this.labels = Arrays.copyOf(labels, labels.length);
-        }
+    public void setLabels(List<String> labels) {
+        this.labels = labels;
     }
 
     /**

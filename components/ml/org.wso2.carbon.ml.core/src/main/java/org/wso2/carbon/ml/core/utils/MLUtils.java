@@ -19,15 +19,7 @@ package org.wso2.carbon.ml.core.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
@@ -456,6 +448,21 @@ public class MLUtils {
             return customMessage + " Cause: " + ex.getClass().getName() + " - " + ex.getMessage();
         }
         return customMessage;
+    }
+
+    /**
+     * Utility method to get key from value of a map
+     *
+     * @param map       Map to be searched for a key
+     * @param value     Value of the key
+     */
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
 }
