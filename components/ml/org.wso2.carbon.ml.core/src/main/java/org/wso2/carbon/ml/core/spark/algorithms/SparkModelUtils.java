@@ -421,4 +421,19 @@ public class SparkModelUtils {
         
         return uniqueValues;
     }
+
+    /**
+     * Utility method to get key from value of a map
+     *
+     * @param map       Map to be searched for a key
+     * @param value     Value of the key
+     */
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 }
