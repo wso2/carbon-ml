@@ -117,4 +117,41 @@ public class PredictStreamProcessorTestCase {
         junit.framework.Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
     }
+
+    @Test
+    public void predictFunctionWithSelectPredictionTest() throws InterruptedException, URISyntaxException {
+
+        URI resource = new URI("file://" + System.getProperty("user.dir") + "/src/test/resources/test-model");
+        String modelStorageLocation = new File(resource).getAbsolutePath();
+
+        SiddhiManager siddhiManager = new SiddhiManager();
+
+        String inputStream = "define stream InputStream "
+                + "(NumPregnancies double, PG2 double, DBP double, TSFT double, SI2 double, BMI double, DPF double, Age double);";
+
+        String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation
+                + "', NumPregnancies, PG2, DBP, TSFT, SI2, BMI, DPF, Age) " + "select prediction "
+                + "insert into outputStream ;";
+
+        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inputStream + query);
+
+        executionPlanRuntime.addCallback("query1", new QueryCallback() {
+            @Override
+            public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
+                EventPrinter.print(timeStamp, inEvents, removeEvents);
+                eventArrived = true;
+                if (inEvents != null) {
+                    Assert.assertEquals("1", inEvents[0].getData(0));
+                }
+            }
+
+        });
+
+        InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
+        executionPlanRuntime.start();
+        inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
+        Thread.sleep(1000);
+        junit.framework.Assert.assertTrue(eventArrived);
+        executionPlanRuntime.shutdown();
+    }
 }
