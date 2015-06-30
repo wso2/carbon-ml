@@ -230,6 +230,7 @@ public class MLModelHandler {
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
+            facts.setDatasetURL(dataUrl);
             Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
 
             JavaRDD<String> lines;
