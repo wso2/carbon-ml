@@ -117,6 +117,7 @@ public class MLConstants {
     public static final String CLASSIFICATION = "Classification";
     public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
     public static final String CLUSTERING = "Clustering";
+    public static final String DEEPLEARNING = "Deeplearning";
 
     // file formats
     public static final String CSV = ".csv";
@@ -138,6 +139,10 @@ public class MLConstants {
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String LAMBDA = "Lambda";
+    public static final String BATCH_SIZE = "Batch_Size";
+    public static final String LAYER_COUNT = "Layer_Count";
+    public static final String LAYER_SIZES = "Layer_Sizes";
+    public static final String EPOCHS = "Epochs";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -150,6 +155,7 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
+    public static final String DEEPLEARNING_MODEL_SUMMARY = "DeeplearningModelSummary";
     
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
     
@@ -178,6 +184,10 @@ public class MLConstants {
 
     public enum UNSUPERVISED_ALGORITHM {
         K_MEANS
+    }
+    
+    public enum DEEPLEARNING_ALGORITHM {
+        STACKED_AUTOENCODERS
     }
 
     public enum MISSING_VALUES {

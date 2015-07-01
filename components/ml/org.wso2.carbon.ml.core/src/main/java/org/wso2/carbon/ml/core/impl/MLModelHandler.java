@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import hex.Model;
+import hex.deeplearning.DeepLearningModel;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,7 +58,9 @@ import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModel;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.algorithms.StackedAutoencodersModel;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedModel;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
@@ -73,6 +77,9 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import scala.Tuple2;
+import water.Key;
+import water.serial.ObjectTreeBinarySerializer;
+import water.util.FileUtils;
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.
@@ -331,18 +338,50 @@ public class MLModelHandler {
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             
-            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-            MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(model);
-            oos.flush();
-            oos.close();
-            InputStream is = new ByteArrayInputStream(baos.toByteArray());
-            // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelName;
-            outputAdapter.write(outPath, is);
-            databaseService.updateModelStorage(modelId, storageType, outPath);
+            log.info("Algorithm Name: " + model.getAlgorithmName());
+            if(!model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
+                log.info("Not stacked autoencoder");
+                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject(model);
+                oos.flush();
+                oos.close();
+                InputStream is = new ByteArrayInputStream(baos.toByteArray());
+                // adapter will write the model and close the stream.
+                String outPath = storageLocation + File.separator + modelName;
+                outputAdapter.write(outPath, is);
+                databaseService.updateModelStorage(modelId, storageType, outPath);
+            } else {
+                log.info("Stacked autoencoder persisting....");
+                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject(model);
+                oos.flush();
+                oos.close();
+                InputStream is = new ByteArrayInputStream(baos.toByteArray());
+                // adapter will write the model and close the stream.
+                log.info("StorageLocation: " + storageLocation);
+                String outPath = storageLocation + File.separator + modelName;
+                outputAdapter.write(outPath, is);
+                
+                if(model.getModel()==null){
+                    log.info("Model is null");
+                } else {
+                    log.info("Model is not null");
+                }
+                if(model.getAlgorithmName().equals(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
+                    List<Key> keys = (List<Key>) ((StackedAutoencodersModel) model.getModel()).getDeepLearningModelKeys();
+                    String storageLocationChanged  = "file" + storageLocation.substring(1).replace("\\", "/");
+                    log.info(FileUtils.getURI(storageLocationChanged));
+                    new ObjectTreeBinarySerializer().save(keys,  FileUtils.getURI(storageLocationChanged)); 
+                }
+                databaseService.updateModelStorage(modelId, storageType, outPath);
+                log.info("Successfully saved keys");
+            }
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
@@ -359,21 +398,35 @@ public class MLModelHandler {
     public MLModel retrieveModel(long modelId) throws MLModelHandlerException {
         InputStream in = null;
         ObjectInputStream ois = null;
+        String storageLocation = null;
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
                 throw new MLModelHandlerException("Invalid model ID: "+modelId);
             }
             String storageType = storage.getType();
-            String storageLocation = storage.getLocation();
+            storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
-            return (MLModel) ois.readObject();
+            MLModel model = (MLModel) ois.readObject();
             
-        } catch (Exception e) {
+            if(model.getModel()==null){
+                String storageLocationChanged  = "file" + storageLocation.substring(1).replace("\\", "/");
+                List<Key> importedKeys = new ObjectTreeBinarySerializer().load(new File(storageLocationChanged).toURI());                
+                DeepLearningModel dlModel = (DeepLearningModel) importedKeys.get(0).get();
+                StackedAutoencodersModel saeModel = new StackedAutoencodersModel();
+                saeModel.setDeepLearningModelKeys(importedKeys);
+                saeModel.setDeepLearningModel(dlModel);
+                model.setModel(saeModel);
+                
+            }
+            log.info("Successfully retrieved model");
+            return model;
+        } catch (Exception e) {                       
             throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
+            
         } finally {
             if (in != null) {
                 try {
@@ -582,7 +635,11 @@ public class MLModelHandler {
                 } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
                     UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
                     model = unsupervisedModel.buildModel(ctxt);
-                } else {
+                } else if (MLConstants.DEEPLEARNING.equals((algorithmType))) {
+                    DeeplearningModel deeplearningModel = new DeeplearningModel();
+                    model = deeplearningModel.buildModel(ctxt);
+                }
+                else {
                     throw new MLModelBuilderException(String.format(
                             "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
                 }

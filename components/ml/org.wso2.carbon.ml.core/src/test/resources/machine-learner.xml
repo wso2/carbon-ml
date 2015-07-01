@@ -26,7 +26,7 @@
 	<!-- -->
 	<Properties>
 		<Property name="ml.thread.pool.size" value="100" />
-		<Property name="target.home" value="/tmp" />
+		<Property name="target.home" value="C:\tmp" />
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
@@ -216,6 +216,39 @@
 				<Name>Num_Clusters</Name>
 				<Value>3</Value>
 			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>STACKED_AUTOENCODERS</Name>
+			<Type>Deeplearning</Type>
+			<Interpretability>1</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Batch_Size</Name>
+				<Value>100</Value>
+				<Description>Batch_Size</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Layer_Count</Name>
+				<Value>3</Value>
+				<Description>Layer_Count</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Layer_Sizes</Name>
+				<Value>500,500,500</Value>
+				<Description>Layer_Sizes</Description>
+			</Parameters>			
+			<Parameters>
+				<Name>Epochs</Name>
+				<Value>10</Value>
+				<Description>Epochs</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.25</Value>
+				<Description>Learning_Rate</Description>
+			</Parameters>			
 		</Algorithm>
 	</Algorithms>
 
