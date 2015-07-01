@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
+import java.io.Externalizable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class MLModel implements Serializable {
     private int responseIndex;
     private List<Map<String, Integer>> encodings;
     private List<Integer> newToOldIndicesList;
-    private Serializable model;
+    private Externalizable model;
 
     public String getAlgorithmName() {
         return algorithmName;
@@ -69,11 +70,11 @@ public class MLModel implements Serializable {
         this.responseVariable = responseVariable;
     }
 
-    public Serializable getModel() {
+    public Externalizable getModel() {
         return model;
     }
 
-    public void setModel(Serializable model) {
+    public void setModel(Externalizable model) {
         this.model = model;
     }
 

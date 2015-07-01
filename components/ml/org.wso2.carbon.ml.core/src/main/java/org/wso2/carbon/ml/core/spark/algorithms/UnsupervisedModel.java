@@ -30,6 +30,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.models.MLKMeansModel;
 import org.wso2.carbon.ml.core.spark.summary.ClusterModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -119,7 +120,7 @@ public class UnsupervisedModel {
             double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
             clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
             clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
-            mlModel.setModel(kMeansModel);
+            mlModel.setModel(new MLKMeansModel(kMeansModel));
             clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
             return clusterModelSummary;
         } catch (Exception e) {

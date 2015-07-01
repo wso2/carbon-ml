@@ -36,6 +36,9 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
+import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -63,7 +66,7 @@ public class Predictor {
             List<Double> predictions = new ArrayList<Double>();
             switch (supervised_algorithm) {
             case DECISION_TREE:
-                DecisionTreeModel decisionTreeModel = (DecisionTreeModel) model.getModel();
+                DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = decisionTreeModel.predict(vector);
@@ -75,7 +78,7 @@ public class Predictor {
                 }
                 return decodePredictedValues(predictions);
             default:
-                ClassificationModel classificationModel = (ClassificationModel) model.getModel();
+                ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = classificationModel.predict(vector);
@@ -90,7 +93,7 @@ public class Predictor {
             }
 
         } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
-            GeneralizedLinearModel generalizedLinearModel = (GeneralizedLinearModel) model.getModel();
+            GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel()).getModel();
             List<Double> predictions = new ArrayList<Double>();
             for (Vector vector : dataToBePredicted) {
 

@@ -44,6 +44,9 @@ import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
+import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
@@ -219,7 +222,7 @@ public class SupervisedModel {
                     testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary = SparkModelUtils
                     .generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
-            mlModel.setModel(logisticRegressionModel);
+            mlModel.setModel(new MLClassificationModel(logisticRegressionModel));
 
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, logisticRegressionModel
                     .weights().toArray());
@@ -273,7 +276,7 @@ public class SupervisedModel {
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
-            mlModel.setModel(decisionTreeModel);
+            mlModel.setModel(new MLDecisionTreeModel(decisionTreeModel));
             
             classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.DECISION_TREE.toString());
@@ -330,7 +333,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Object, Object>> scoresAndLabels = svm.test(svmModel, testingData);
             ProbabilisticClassificationModelSummary probabilisticClassificationModelSummary =
                     SparkModelUtils.generateProbabilisticClassificationModelSummary(sparkContext, testingData, scoresAndLabels);
-            mlModel.setModel(svmModel);
+            mlModel.setModel(new MLClassificationModel(svmModel));
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, svmModel.weights().toArray());
             probabilisticClassificationModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
@@ -379,7 +382,7 @@ public class SupervisedModel {
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
-            mlModel.setModel(linearRegressionModel);
+            mlModel.setModel(new MLGeneralizedLinearModel(linearRegressionModel));
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, linearRegressionModel
                     .weights().toArray());
@@ -431,7 +434,7 @@ public class SupervisedModel {
                     testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
-            mlModel.setModel(ridgeRegressionModel);
+            mlModel.setModel(new MLGeneralizedLinearModel(ridgeRegressionModel));
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, ridgeRegressionModel
                     .weights().toArray());
@@ -482,7 +485,7 @@ public class SupervisedModel {
             JavaRDD<Tuple2<Double, Double>> predictionsAndLabels = lassoRegression.test(lassoModel, testingData);
             ClassClassificationAndRegressionModelSummary regressionModelSummary = SparkModelUtils
                     .generateRegressionModelSummary(sparkContext, testingData, predictionsAndLabels);
-            mlModel.setModel(lassoModel);
+            mlModel.setModel(new MLGeneralizedLinearModel(lassoModel));
             
             List<FeatureImportance> featureWeights = getFeatureWeights(includedFeatures, lassoModel.weights()
                     .toArray());
@@ -525,7 +528,7 @@ public class SupervisedModel {
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
-            mlModel.setModel(naiveBayesModel);
+            mlModel.setModel(new MLClassificationModel(naiveBayesModel));
             
             classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.NAIVE_BAYES.toString());
