@@ -39,7 +39,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
@@ -71,7 +71,7 @@ public class ModelApiV10 extends MLRestAPI {
     @POST
     @Produces("application/json")
     @Consumes("application/json")
-    public Response createModel(MLModelNew model) {
+    public Response createModel(MLModelData model) {
         if (model.getAnalysisId() == 0 || model.getVersionSetId() == 0) {
             logger.error("Required parameters missing");
             return Response.status(Response.Status.BAD_REQUEST).entity("Required parameters missing").build();
@@ -82,7 +82,7 @@ public class ModelApiV10 extends MLRestAPI {
             String userName = carbonContext.getUsername();
             model.setTenantId(tenantId);
             model.setUserName(userName);
-            MLModelNew insertedModel = mlModelHandler.createModel(model);
+            MLModelData insertedModel = mlModelHandler.createModel(model);
             return Response.ok(insertedModel).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg("Error occurred while creating a model : " + model, e);
@@ -215,7 +215,7 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            MLModelNew model = mlModelHandler.getModel(tenantId, userName, modelName);
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelName);
             if (model == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -236,7 +236,7 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLModelNew> models = mlModelHandler.getAllModels(tenantId, userName);
+            List<MLModelData> models = mlModelHandler.getAllModels(tenantId, userName);
             return Response.ok(models).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(
@@ -295,7 +295,7 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            MLModelNew model = mlModelHandler.getModel(tenantId, userName, modelName);
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelName);
             if (model != null) {
                 final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
                 StreamingOutput stream = new StreamingOutput() {

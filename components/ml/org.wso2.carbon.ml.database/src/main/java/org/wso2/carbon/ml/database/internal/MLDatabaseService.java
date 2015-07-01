@@ -223,7 +223,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModel(MLModelNew model) throws DatabaseHandlerException {
+    public void insertModel(MLModelData model) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -1372,12 +1372,12 @@ public class MLDatabaseService implements DatabaseService {
      * @throws DatabaseHandlerException
      */
     @Override
-    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_PROJECT_MODELS);
@@ -1386,7 +1386,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setName(result.getString(2));
                 model.setAnalysisId(result.getLong(3));
@@ -1573,7 +1573,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
+    public MLModelData getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -1585,7 +1585,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));
@@ -1610,7 +1610,7 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
+    public MLModelData getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -1622,7 +1622,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(modelId);
                 model.setName(result.getString(1));
                 model.setAnalysisId(result.getLong(2));
@@ -1647,12 +1647,12 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS_OF_ANALYSIS);
@@ -1661,7 +1661,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));
@@ -1688,12 +1688,12 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS);
@@ -1701,7 +1701,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(2, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));

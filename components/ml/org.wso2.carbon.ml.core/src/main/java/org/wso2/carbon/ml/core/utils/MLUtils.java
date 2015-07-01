@@ -109,7 +109,6 @@ public class MLUtils {
             Map<String, Integer> headerMap = null;
             // List containing actual data of the sample.
             List<List<String>> columnData = new ArrayList<List<String>>();
-            CSVFormat dataFormat = DataTypeFactory.getCSVFormat("csv");
 
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
@@ -118,28 +117,13 @@ public class MLUtils {
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
             JavaRDD<String> lines;
-
-            // DAS case path = table name
-            String tableName = path;
-            String tableSchema = extractTableSchema(path, tenantId);
             String headerLine = extractHeaderLine(path, tenantId);
             headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
-            SQLContext sqlCtx = new SQLContext(sparkContext);
-            sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                    + "OPTIONS ("
-                    + "tenantId \""
-                    + tenantId
-                    + "\", "
-                    + "tableName \""
-                    + tableName
-                    + "\", "
-                    + "schema \"" + tableSchema + "\"" + ")");
 
-            DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
-            JavaRDD<Row> rows = dataFrame.javaRDD();
-            lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+            // DAS case path = table name
+            lines = getLinesFromDASTable(path, tenantId, sparkContext);
 
-            return getSamplePoints(sampleSize, true, headerMap, columnData, dataFormat, lines);
+            return getSamplePoints(sampleSize, true, headerMap, columnData, CSVFormat.RFC4180, lines);
 
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
@@ -151,6 +135,28 @@ public class MLUtils {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    public static JavaRDD<String> getLinesFromDASTable(String tableName, int tenantId, JavaSparkContext sparkContext)
+            throws AnalyticsTableNotAvailableException, AnalyticsException {
+        JavaRDD<String> lines;
+        String tableSchema = extractTableSchema(tableName, tenantId);
+        SQLContext sqlCtx = new SQLContext(sparkContext);
+        sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                + "OPTIONS ("
+                + "tenantId \""
+                + tenantId
+                + "\", "
+                + "tableName \""
+                + tableName
+                + "\", "
+                + "schema \""
+                + tableSchema + "\"" + ")");
+
+        DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
+        JavaRDD<Row> rows = dataFrame.javaRDD();
+        lines = rows.map(new RowsToLines(CSVFormat.RFC4180.getDelimiter() + ""));
+        return lines;
     }
 
     private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,

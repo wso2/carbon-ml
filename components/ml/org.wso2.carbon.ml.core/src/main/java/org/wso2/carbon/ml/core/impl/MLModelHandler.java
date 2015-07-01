@@ -44,7 +44,7 @@ import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -53,6 +53,7 @@ import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
@@ -96,7 +97,7 @@ public class MLModelHandler {
      * @param model model to be created.
      * @throws MLModelHandlerException
      */
-    public MLModelNew createModel(MLModelNew model) throws MLModelHandlerException {
+    public MLModelData createModel(MLModelData model) throws MLModelHandlerException {
         try {
             // set the model storage configurations
             ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
@@ -138,7 +139,7 @@ public class MLModelHandler {
         }
     }
 
-    public MLModelNew getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
+    public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
         } catch (DatabaseHandlerException e) {
@@ -146,7 +147,7 @@ public class MLModelHandler {
         }
     }
 
-    public List<MLModelNew> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.getAllModels(tenantId, userName);
         } catch (DatabaseHandlerException e) {
@@ -163,9 +164,9 @@ public class MLModelHandler {
     }
 
     /**
-     * @param type      type of the storage file, hdfs etc.
-     * @param location  root directory of the file location.
-     * @throws          MLModelHandlerException
+     * @param type type of the storage file, hdfs etc.
+     * @param location root directory of the file location.
+     * @throws MLModelHandlerException
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
         try {
@@ -174,14 +175,13 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
-    
 
     /**
      * Get the summary of a model
      * 
-     * @param modelId   ID of the model
-     * @return          Model Summary
-     * @throws          MLModelHandlerException
+     * @param modelId ID of the model
+     * @return Model Summary
+     * @throws MLModelHandlerException
      */
     public ModelSummary getModelSummary(long modelId) throws MLModelHandlerException {
         try {
@@ -208,7 +208,6 @@ public class MLModelHandler {
                     modelId, tenantId, userName);
             throw new MLModelHandlerException(msg);
         }
-        
 
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
@@ -217,7 +216,7 @@ public class MLModelHandler {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            MLModelNew model = databaseService.getModel(tenantId, userName, modelId);
+            MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
@@ -256,9 +255,10 @@ public class MLModelHandler {
             } catch (MLMalformedDatasetException e) {
                 throw new MLModelBuilderException("Failed to build the model [id] " + modelId, e);
             }
-            
+
             // get header line
-            String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
+            String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId,
+                    columnSeparator);
             context.setSparkContext(sparkContext);
             context.setLines(lines);
             context.setHeaderRow(headerRow);
@@ -278,7 +278,7 @@ public class MLModelHandler {
             Thread.currentThread().setContextClassLoader(tccl);
         }
     }
-    
+
     public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
             throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
@@ -304,8 +304,9 @@ public class MLModelHandler {
         }
 
     }
-    
-    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data) throws MLModelHandlerException {
+
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data)
+            throws MLModelHandlerException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
             String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
@@ -326,11 +327,11 @@ public class MLModelHandler {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelBuilderException("Invalid model ID: "+modelId);
+                throw new MLModelBuilderException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
-            
+
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -347,7 +348,7 @@ public class MLModelHandler {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
     }
-    
+
     private List<Integer> getNewToOldIndicesList(SortedMap<Integer, String> includedFeatures) {
         List<Integer> indicesList = new ArrayList<Integer>();
         for (int featureIdx : includedFeatures.keySet()) {
@@ -355,14 +356,14 @@ public class MLModelHandler {
         }
         return indicesList;
     }
-    
+
     public MLModel retrieveModel(long modelId) throws MLModelHandlerException {
         InputStream in = null;
         ObjectInputStream ois = null;
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelHandlerException("Invalid model ID: "+modelId);
+                throw new MLModelHandlerException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -371,7 +372,7 @@ public class MLModelHandler {
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
             return (MLModel) ois.readObject();
-            
+
         } catch (Exception e) {
             throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
         } finally {
@@ -393,9 +394,9 @@ public class MLModelHandler {
     /**
      * Publish a ML model to registry.
      *
-     * @param tenantId    Unique ID of the tenant.
-     * @param userName    Username of the user.
-     * @param modelId     Unique ID of the built ML model.
+     * @param tenantId Unique ID of the tenant.
+     * @param userName Username of the user.
+     * @param modelId Unique ID of the built ML model.
      * @throws MLModelPublisherException
      */
     public void publishModel(int tenantId, String userName, long modelId) throws MLModelPublisherException {
@@ -404,7 +405,7 @@ public class MLModelHandler {
             // read model
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelPublisherException("Invalid model ID: "+modelId);
+                throw new MLModelPublisherException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -434,8 +435,8 @@ public class MLModelHandler {
         }
     }
 
-    public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString, int noOfClusters)
-            throws DatabaseHandlerException, MLMalformedDatasetException {
+    public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
+            int noOfClusters) throws DatabaseHandlerException, MLMalformedDatasetException {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
@@ -452,7 +453,7 @@ public class MLModelHandler {
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             // create a new spark configuration
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-			// set app name
+            // set app name
             sparkConf.setAppName(String.valueOf(datasetId));
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
@@ -471,26 +472,25 @@ public class MLModelHandler {
             }
             JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors = null;
 
-            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
+                    .getSampleSize();
             double sampleFraction = sampleSize / (lines.count() - 1);
             // Use entire dataset if number of records is less than or equal to sample fraction
             if (sampleFraction >= 1.0) {
                 featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter())
-                        .map(new TokensToVectors(featureIndices));
+                        .filter(new MissingValuesFilter()).map(new TokensToVectors(featureIndices));
             }
             // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
             else {
-                featureVectors = lines.filter(new HeaderFilter(headerRow))
-                        .sample(false, sampleFraction).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter())
+                featureVectors = lines.filter(new HeaderFilter(headerRow)).sample(false, sampleFraction)
+                        .map(new LineToTokens(pattern)).filter(new MissingValuesFilter())
                         .map(new TokensToVectors(featureIndices));
             }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
             // Populate cluster points list with predicted clusters and features
-            List<Tuple2<Integer, org.apache.spark.mllib.linalg.Vector>> kMeansPredictions = kMeansModel.predict(featureVectors).zip(featureVectors)
-                    .collect();
+            List<Tuple2<Integer, org.apache.spark.mllib.linalg.Vector>> kMeansPredictions = kMeansModel
+                    .predict(featureVectors).zip(featureVectors).collect();
             for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
                 ClusterPoint clusterPoint = new ClusterPoint();
                 clusterPoint.setCluster(kMeansPrediction._1());
@@ -499,7 +499,8 @@ public class MLModelHandler {
             }
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
-            throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
+            throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(),
+                    e);
         } finally {
             if (sparkContext != null) {
                 sparkContext.close();
@@ -512,29 +513,11 @@ public class MLModelHandler {
     private JavaRDD<String> extractLines(int tenantId, long datasetId, JavaSparkContext sparkContext,
             String datasetURL, String dataSourceType, String dataType) throws MLMalformedDatasetException {
         JavaRDD<String> lines;
-        if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
-            CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-            String tableName = datasetURL;
-            String tableSchema;
+        if (DatasetType.DAS == DatasetType.getDatasetType(dataSourceType)) {
             try {
-                tableSchema = MLUtils.extractTableSchema(datasetURL, tenantId);
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                        + "OPTIONS ("
-                        + "tenantId \""
-                        + tenantId
-                        + "\", "
-                        + "tableName \""
-                        + tableName
-                        + "\", "
-                        + "schema \"" + tableSchema + "\"" + ")");
-
-                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+                lines = MLUtils.getLinesFromDASTable(datasetURL, tenantId, sparkContext);
             } catch (Exception e) {
-                throw new MLMalformedDatasetException("Failed to get cluster points for dataset [id] " + datasetId
-                        + " - Unable to extract the table schema from table: " + datasetURL, e);
+                throw new MLMalformedDatasetException("Unable to extract the data from DAS table: " + datasetURL, e);
             }
         } else {
             // parse lines in the dataset
@@ -550,7 +533,8 @@ public class MLModelHandler {
         private int tenantId;
         private String tenantDomain;
         private String username;
-        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance().getEmailNotificationEndpoint();
+        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance()
+                .getEmailNotificationEndpoint();
 
         public ModelBuilder(long modelId, MLModelConfigurationContext context) {
             id = modelId;
@@ -558,18 +542,18 @@ public class MLModelHandler {
             CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             tenantId = carbonContext.getTenantId();
             tenantDomain = carbonContext.getTenantDomain();
-            username  = carbonContext.getUsername();
+            username = carbonContext.getUsername();
         }
 
         @Override
         public void run() {
-            String[] emailTemplateParameters = {username};
+            String[] emailTemplateParameters = { username };
             try {
-                //Set tenant info in the carbon context
+                // Set tenant info in the carbon context
                 PrivilegedCarbonContext.startTenantFlow();
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
-                
+
                 // class loader is switched to JavaSparkContext.class's class loader
                 Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
 
@@ -587,22 +571,24 @@ public class MLModelHandler {
                             "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
                 }
                 persistModel(id, ctxt.getModel().getName(), model);
-                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint, emailTemplateParameters);
+                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
+                        emailTemplateParameters);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
                     databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
-                    databaseService.updateModelError(id, e.getMessage()+"\n"+ctxt.getFacts().toString());
+                    databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e);
                 }
-                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint, emailTemplateParameters);
+                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
+                        emailTemplateParameters);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
     }
-    
+
     private void handleNull(Object obj, String msg) throws MLModelHandlerException {
         if (obj == null) {
             throw new MLModelHandlerException(msg);
