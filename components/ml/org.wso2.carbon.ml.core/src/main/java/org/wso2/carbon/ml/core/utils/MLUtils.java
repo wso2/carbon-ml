@@ -38,7 +38,6 @@ import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotA
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -55,7 +54,7 @@ public class MLUtils {
      */
     public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
             String sourceType, int tenantId) throws MLMalformedDatasetException {
-        
+
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
          * needs to be switched temporarily.
@@ -65,8 +64,6 @@ public class MLUtils {
         JavaSparkContext sparkContext = null;
         try {
             Map<String, Integer> headerMap = null;
-            int featureSize = 0;
-            int[] missing = null, stringCellCount = null;
             // List containing actual data of the sample.
             List<List<String>> columnData = new ArrayList<List<String>>();
             CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
@@ -79,93 +76,9 @@ public class MLUtils {
             sparkContext = new JavaSparkContext(sparkConf);
             JavaRDD<String> lines;
 
-            if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(sourceType)) {
-                // DAS case path = table name
-                String tableName = path;
-                String tableSchema = extractTableSchema(path, tenantId);
-                String headerLine = extractHeaderLine(path, tenantId);
-                headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                        + "OPTIONS ("
-                        + "tenantId \""
-                        + tenantId
-                        + "\", "
-                        + "tableName \""
-                        + tableName
-                        + "\", "
-                        + "schema \"" + tableSchema + "\"" + ")");
-
-                DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
-            } else {
-                // parse lines in the dataset
-                lines = sparkContext.textFile(path);
-            }
-            // take the first line
-            String firstLine = lines.first();
-            // count the number of features
-            featureSize = getFeatureSize(firstLine, dataFormat);
-
-            List<Integer> featureIndices = new ArrayList<Integer>();
-            for (int i = 0; i < featureSize; i++)
-                featureIndices.add(i);
-
-            JavaRDD<String[]> tokensDiscardedRemoved = filterRows(String.valueOf(dataFormat.getDelimiter()),
-                    lines.first(), lines, featureIndices);
-
-            missing = new int[featureSize];
-            stringCellCount = new int[featureSize];
-            if (sampleSize >= 0 && featureSize > 0) {
-                sampleSize = sampleSize / featureSize;
-            }
-            for (int i = 0; i < featureSize; i++) {
-                columnData.add(new ArrayList<String>());
-            }
-
-            if (headerMap == null) {
-                // generate the header map
-                if (containsHeader) {
-                    headerMap = generateHeaderMap(lines.first(), dataFormat);
-                } else {
-                    headerMap = generateHeaderMap(featureSize);
-                }
-            }
-
-            // take a random sample
-            List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
-
-            // iterate through sample lines
-            for (String[] columnValues : sampleLines) {
-                for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                    // Check whether the row is complete.
-                    if (currentCol < columnValues.length) {
-                        // Append the cell to the respective column.
-                        columnData.get(currentCol).add(columnValues[currentCol]);
-
-                        if (columnValues[currentCol].isEmpty()) {
-                            // If the cell is empty, increase the missing value count.
-                            missing[currentCol]++;
-                        } else {
-                            // check whether a column value is a string
-                            if (!NumberUtils.isNumber(columnValues[currentCol])) {
-                                stringCellCount[currentCol]++;
-                            }
-                        }
-                    } else {
-                        columnData.get(currentCol).add(null);
-                        missing[currentCol]++;
-                    }
-                }
-            }
-
-            SamplePoints samplePoints = new SamplePoints();
-            samplePoints.setHeader(headerMap);
-            samplePoints.setSamplePoints(columnData);
-            samplePoints.setMissing(missing);
-            samplePoints.setStringCellCount(stringCellCount);
-            return samplePoints;
+            // parse lines in the dataset
+            lines = sparkContext.textFile(path);
+            return getSamplePoints(sampleSize, containsHeader, headerMap, columnData, dataFormat, lines);
 
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
@@ -177,6 +90,137 @@ public class MLUtils {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    /**
+     * Generate a random sample of the dataset using Spark.
+     */
+    public static SamplePoints getSampleFromDAS(String path, int sampleSize, String sourceType, int tenantId)
+            throws MLMalformedDatasetException {
+
+        /**
+         * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
+         * needs to be switched temporarily.
+         */
+        // assign current thread context class loader to a variable
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        JavaSparkContext sparkContext = null;
+        try {
+            Map<String, Integer> headerMap = null;
+            // List containing actual data of the sample.
+            List<List<String>> columnData = new ArrayList<List<String>>();
+            CSVFormat dataFormat = DataTypeFactory.getCSVFormat("csv");
+
+            // class loader is switched to JavaSparkContext.class's class loader
+            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
+            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+            sparkConf.setAppName("sample-generator-" + Math.random());
+            // create a new java spark context
+            sparkContext = new JavaSparkContext(sparkConf);
+            JavaRDD<String> lines;
+
+            // DAS case path = table name
+            String tableName = path;
+            String tableSchema = extractTableSchema(path, tenantId);
+            String headerLine = extractHeaderLine(path, tenantId);
+            headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
+            SQLContext sqlCtx = new SQLContext(sparkContext);
+            sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+                    + "OPTIONS ("
+                    + "tenantId \""
+                    + tenantId
+                    + "\", "
+                    + "tableName \""
+                    + tableName
+                    + "\", "
+                    + "schema \"" + tableSchema + "\"" + ")");
+
+            DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
+            JavaRDD<Row> rows = dataFrame.javaRDD();
+            lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+
+            return getSamplePoints(sampleSize, true, headerMap, columnData, dataFormat, lines);
+
+        } catch (Exception e) {
+            throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
+                    + ". Cause: " + e, e);
+        } finally {
+            if (sparkContext != null) {
+                sparkContext.close();
+            }
+            // switch class loader back to thread context class loader
+            Thread.currentThread().setContextClassLoader(tccl);
+        }
+    }
+
+    private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,
+            List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
+        int featureSize;
+        int[] missing;
+        int[] stringCellCount;
+        // take the first line
+        String firstLine = lines.first();
+        // count the number of features
+        featureSize = getFeatureSize(firstLine, dataFormat);
+
+        List<Integer> featureIndices = new ArrayList<Integer>();
+        for (int i = 0; i < featureSize; i++)
+            featureIndices.add(i);
+
+        JavaRDD<String[]> tokensDiscardedRemoved = filterRows(String.valueOf(dataFormat.getDelimiter()), lines.first(),
+                lines, featureIndices);
+
+        missing = new int[featureSize];
+        stringCellCount = new int[featureSize];
+        if (sampleSize >= 0 && featureSize > 0) {
+            sampleSize = sampleSize / featureSize;
+        }
+        for (int i = 0; i < featureSize; i++) {
+            columnData.add(new ArrayList<String>());
+        }
+
+        if (headerMap == null) {
+            // generate the header map
+            if (containsHeader) {
+                headerMap = generateHeaderMap(lines.first(), dataFormat);
+            } else {
+                headerMap = generateHeaderMap(featureSize);
+            }
+        }
+
+        // take a random sample
+        List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
+
+        // iterate through sample lines
+        for (String[] columnValues : sampleLines) {
+            for (int currentCol = 0; currentCol < featureSize; currentCol++) {
+                // Check whether the row is complete.
+                if (currentCol < columnValues.length) {
+                    // Append the cell to the respective column.
+                    columnData.get(currentCol).add(columnValues[currentCol]);
+
+                    if (columnValues[currentCol].isEmpty()) {
+                        // If the cell is empty, increase the missing value count.
+                        missing[currentCol]++;
+                    } else {
+                        // check whether a column value is a string
+                        if (!NumberUtils.isNumber(columnValues[currentCol])) {
+                            stringCellCount[currentCol]++;
+                        }
+                    }
+                } else {
+                    columnData.get(currentCol).add(null);
+                    missing[currentCol]++;
+                }
+            }
+        }
+
+        SamplePoints samplePoints = new SamplePoints();
+        samplePoints.setHeader(headerMap);
+        samplePoints.setSamplePoints(columnData);
+        samplePoints.setMissing(missing);
+        samplePoints.setStringCellCount(stringCellCount);
+        return samplePoints;
     }
 
     public static String extractTableSchema(String path, int tenantId) throws AnalyticsTableNotAvailableException,
@@ -439,7 +483,7 @@ public class MLUtils {
 
         return tokensDiscardedRemoved;
     }
-    
+
     /**
      * format an error message.
      */
@@ -453,8 +497,8 @@ public class MLUtils {
     /**
      * Utility method to get key from value of a map
      *
-     * @param map       Map to be searched for a key
-     * @param value     Value of the key
+     * @param map Map to be searched for a key
+     * @param value Value of the key
      */
     public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
         for (Map.Entry<T, E> entry : map.entrySet()) {

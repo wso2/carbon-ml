@@ -34,8 +34,12 @@ import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
+import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+import org.wso2.carbon.ml.core.factories.DatasetProcessorFactory;
+import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
+import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
 import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
@@ -80,31 +84,32 @@ public class DatasetApiV10 extends MLRestAPI {
         MLDataset dataset = new MLDataset();
         try {
             // validate input parameters
-            if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty()
-                    || sourceType == null || sourceType.isEmpty() || destination == null || destination.isEmpty()
-                    || dataFormat == null || dataFormat.isEmpty()) {
+            if (sourceType == null || sourceType.isEmpty()) {
                 String msg = "Required parameters are missing.";
                 logger.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
-            if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
-                // if it is a file upload, check whether the file is sent
-                if (inputStream == null || inputStream.available() == 0) {
-                    String msg = "Cannot read the uploaded file.";
-                    logger.error(msg);
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-                }
-            } else if (sourcePath == null || sourcePath.isEmpty()) {
-                // if the source is hdfs/bam, and if source path is missing:
-                String msg = "Dataset source path is missing.";
-                logger.error(msg);
-                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
-            } else {
-                dataset.setSourcePath(sourcePath);
-            }
+            
+//            if (MLConstants.DATASET_SOURCE_TYPE_FILE.equalsIgnoreCase(sourceType)) {
+//                // if it is a file upload, check whether the file is sent
+//                if (inputStream == null || inputStream.available() == 0) {
+//                    String msg = "Cannot read the uploaded file.";
+//                    logger.error(msg);
+//                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+//                }
+//            } else if (sourcePath == null || sourcePath.isEmpty()) {
+//                // if the source is hdfs/bam, and if source path is missing:
+//                String msg = "Dataset source path is missing.";
+//                logger.error(msg);
+//                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+//            } else {
+//            }
+            
+            
 
             dataset.setName(datasetName);
             dataset.setVersion(version);
+            dataset.setSourcePath(sourcePath);
             dataset.setDataSourceType(sourceType);
             dataset.setComments(description);
             dataset.setDataTargetType(destination);
@@ -112,9 +117,17 @@ public class DatasetApiV10 extends MLRestAPI {
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
             dataset.setContainsHeader(containsHeader);
+            
             datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();
-        } catch (Exception e) {
+        } catch (MLInputValidationException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while uploading a [dataset] %s of tenant [id] %s and [user] %s .", dataset,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+        
+    } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while uploading a [dataset] %s of tenant [id] %s and [user] %s .", dataset,
                     tenantId, userName), e);
