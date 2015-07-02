@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.database.internal;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -829,9 +830,13 @@ public class MLDatabaseService implements DatabaseService {
                     && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
                 Map<Double, Object> map1 = new HashMap<Double, Object>();
                 Map<Double, Object> map2 = new HashMap<Double, Object>();
-                map2.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)), columnData.get(thirdFeatureColumn).get(row));
-                map1.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)), map2);
-                points.add(map1);
+                String val1 = columnData.get(secondFeatureColumn).get(row);
+                String val2 = columnData.get(firstFeatureColumn).get(row);
+                if (NumberUtils.isNumber(val1) && NumberUtils.isNumber(val2)) {
+                    map2.put(Double.parseDouble(val1), columnData.get(thirdFeatureColumn).get(row));
+                    map1.put(Double.parseDouble(val2), map2);
+                    points.add(map1);
+                }
             }
         }
 
