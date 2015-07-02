@@ -309,6 +309,38 @@ public class MLModelHandler {
 
     }
 
+    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
+            throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                data.add(dataRow);
+            }
+            List<String> predictions = (List<String>) predict(tenantId, userName, modelId, data);
+            String predictionsWithData = new String();
+            for(int i = 0; i < predictions.size(); i++) {
+                predictionsWithData += Arrays.toString(data.get(i)).replaceAll(MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
+                        + csvFormat.getDelimiter() + predictions.get(i) + MLConstants.NEW_LINE;
+            }
+            return predictionsWithData;
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                dataStream.close();
+                br.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+    }
+
     public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data)
             throws MLModelHandlerException {
 

@@ -171,6 +171,10 @@ public class MLConstants {
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
 
+    // to build predictions CSV
+    public static final String WHITE_SPACE_SQUARE_BRACKET_REGEX = "\\s|\\[|\\]";
+    public static final String NEW_LINE = "\n";
+
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, SVM, DECISION_TREE, NAIVE_BAYES
