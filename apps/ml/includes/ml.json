@@ -1,0 +1,17 @@
+{
+    "NO_OF_ROWS":10000,
+    "algoTypes" : {
+        "classification" : "Classification",
+        "numericalPrediction":"Numerical_Prediction",
+        "clustering":"Clustering"
+    },
+    "featureTypes" : {
+        "categorical" : "CATEGORICAL",
+        "numerical" : "NUMERICAL"
+    },
+    "imputeOptions" : {
+        "discard":"DISCARD",
+        "regressionImputation":"REGRESSION_IMPUTATION",
+        "replaceWithMean":"REPLACE_WTH_MEAN"
+    }
+}

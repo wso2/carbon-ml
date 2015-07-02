@@ -1,0 +1,167 @@
+{
+	"lgreg": {
+		"displayName": "Logistic Regression",
+		"description": "TODO",
+		"hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                  	"name": "Learning Rate",
+                  	"type": "double"
+                  },
+                  {
+                  	"name": "Regularization Type",
+                  	"type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+		]
+	},
+      "svm": {
+            "displayName": "Support Vector Machine",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization Type",
+                        "type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+            ]
+      },
+      "nb": {
+            "displayName": "Naive Bayes",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Lambda",
+                        "type": "double"
+                  }
+            ]
+      },
+      "dt": {
+            "displayName": "Decision Tree",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Classes",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Maximum Depth",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Maximum Bin Size",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Impurity",
+                        "type": [
+                                    {"name": "Gini"},
+                                    {"name": "Entropy"}
+                                ]
+                  }
+            ]
+      },
+      "lr": {
+            "displayName": "Linear Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
+      },
+      "rr": {
+            "displayName": "Ridge Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
+      },
+      "lsor": {
+            "displayName": "Lasso Regression",
+            "description": "TODO",
+            "hyperParameters": [
+                  {
+                        "name": "Number of Iterations",
+                        "type": "integer"
+                  },
+                  {
+                        "name": "Learning Rate",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Regularization Type",
+                        "type": [
+                                    {"name": "L1"},
+                                    {"name": "L2"}
+                                ]      
+                  },
+                  {
+                        "name": "Regularization",
+                        "type": "double"
+                  },
+                  {
+                        "name": "Mini-Batch Size",
+                        "type": "double"
+                  }
+
+            ]
+      }
+}
