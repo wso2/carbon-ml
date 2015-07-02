@@ -51,7 +51,9 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
+import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
@@ -560,18 +562,10 @@ public class MLModelHandler {
                 Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
 
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
-                MLModel model;
-                if (MLConstants.CLASSIFICATION.equals(algorithmType)
-                        || MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
-                    SupervisedModel supervisedModel = new SupervisedModel();
-                    model = supervisedModel.buildModel(ctxt);
-                } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
-                    UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
-                    model = unsupervisedModel.buildModel(ctxt);
-                } else {
-                    throw new MLModelBuilderException(String.format(
-                            "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
-                }
+                
+                MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
+                MLModel model = modelBuilder.build();
+                
                 persistModel(id, ctxt.getModel().getName(), model);
                 EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
