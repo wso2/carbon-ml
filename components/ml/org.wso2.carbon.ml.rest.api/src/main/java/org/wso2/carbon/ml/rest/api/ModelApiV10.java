@@ -15,10 +15,7 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -38,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
@@ -173,11 +171,56 @@ public class ModelApiV10 extends MLRestAPI {
             // validate input parameters
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
-                logger.error("Cannot read the file.");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
+                String msg = String.format(
+                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                        tenantId, userName);
+                logger.error(msg);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
             }
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
             return Response.ok(predictions).build();
+        } catch (Exception e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    /**
+     * Predict using a file and return predictions as a CSV.
+     */
+    @POST
+    @Path("/predictionStreams")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
+                            @Multipart("file") InputStream inputStream) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            // validate input parameters
+            // if it is a file upload, check whether the file is sent
+            if (inputStream == null || inputStream.available() == 0) {
+                String msg = String.format(
+                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                        tenantId, userName);
+                logger.error(msg);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            }
+            final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat, inputStream);
+            StreamingOutput stream = new StreamingOutput() {
+                @Override
+                public void write(OutputStream outputStream) throws IOException {
+                    Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+                    writer.write(predictions);
+                    writer.flush();
+                    writer.close();
+                }
+            };
+            return Response.ok(stream).header("Content-disposition", "attachment; filename=Predictions_" + modelId + "_" + MLUtils.getDate() + MLConstants.CSV).build();
         } catch (Exception e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
