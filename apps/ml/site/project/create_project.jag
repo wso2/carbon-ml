@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSO2 Machine Learner</title>
+    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script> 
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>
+    
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+	<div class="row wr-global-header">
+	    <div class="col-sm-8 app-logo">
+	        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+	    </div>
+		<div class="col-sm-4">
+			<div class="wr-auth pull-right">
+				<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+				<div class="dropdown-menu">
+					<div class="cu-arrow"></div>
+					<div class="dropdown-menu-content">
+						<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+					</div>
+				</div>			
+			</div>
+		</div>
+	</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+
+        <div class="wr-asset-type-switcher">
+            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+            <span class="btn-asset"></span>
+            </a>
+        </div>
+
+        <div class="wr-project">
+            <span class="title">PROJECTS \ </span>
+        </div>        
+
+		<div class="wr-action-btn-bar">
+			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<!--a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+	    </ul-->
+	    		
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+
+		<div class="container col-md-12 col-centered wr-content">
+
+			<div id="notification-area"></div>
+			<div class="wr-form col-lg-5 col-centered">
+
+				<h1 class="title">Create Project</h1>
+                <from id="dataImportForm" action="" method="post"
+                    enctype="multipart/form-data">
+
+				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<span class="fld-required">*</span>
+				<div class="input-control text">
+				    <input type="text" value="" placeholder="e.g. MyDataProject" id="project-name" name="project-name" />
+				    <span class="form-val-error" id="project-name-error"></span>
+				</div>
+
+				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<span class="fld-required">*</span>
+				<div class="input-control text">
+				    <textarea rows="3" id="project-description" name="project-description"></textarea>
+				    <span class="form-val-error" id="project-description-error"></span>
+				</div>
+
+				<label class="input-label">Dataset<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<span class="fld-required">*</span>
+				<div class="input-control text" data-role="input-control">
+					<select class="form-control" id="datasets">
+					  <option>Select.. </option>
+					</select>
+	            </div>
+
+	            <div class="btn-group-actions">
+	            	<button class="btn btn-main" id="save-project">Create Project</button>
+	            </div>	
+	            </from>
+			</div>
+
+		</div>
+		<!-- /content -->
+
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
+
+<script src="../../js/jquery-1.11.1.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+var serverUrl = window.location.origin;
+var isFileAlreadyPresent = false;
+
+var fromDatasets = getParameterByName('fromDatasets');
+
+$( document ).ready(function() {
+
+	loadDatasets();
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+            return $('#content-asset-types').html();
+        }
+    });
+
+    // set dataset name and disable input when navigating from datasets page
+    var datasetName = getParameterByName('datasetName');
+    if (datasetName !== "") {
+    	$("#datasets").replaceWith('<select class="form-control" id="datasets"><option  selected>' + datasetName + '</option></select>');
+    	$('#datasets').attr("disabled","disabled");
+    }
+
+	$('#project-name').on('click', function(){
+        $('#project-name-error').empty();
+	});
+
+	$('#project-name').on('keydown', function(e){
+        if(e.which == 9){ // tab key
+            $('#project-name-error').empty();     
+        }
+	});
+
+	$('#project-description').on('click', function(){
+		$('#project-description-error').empty();
+	});
+
+	$('#project-description').on('keypress',function(e){
+        if(e.which == 9){ // tab key
+            $('#project-description-error').empty();     
+        }
+	});	
+
+	$('#cancel-project').on('click', function(e){
+		e.preventDefault();
+		if(fromDatasets == 'true') {
+            window.location.href = '../data/datasets.jag';
+		} else {
+		    window.location.href = './projects.jag';
+		}
+	});
+
+	$('#save-project').on('click', function(e){
+		e.preventDefault();
+
+		var projectName = $('#project-name').val();
+        var projectDes = $('#project-description').val();
+        var datasetName = $( "#datasets option:selected" ).text();
+        
+        var projectNameValidation = isValidProjectName(projectName);
+        var descriptionValidation = isValidDescription(projectDes);
+
+        if(projectNameValidation && descriptionValidation){
+        	
+        	var jsonData = '{"name":"' + projectName + '","description":"' + projectDes + '","datasetName":"' + datasetName + '"}';
+
+			$.ajax({
+	            type: 'POST',
+	            url: serverUrl+"/api/projects",
+                contentType: "application/json",
+	            data : jsonData,
+	            success : function(res){	            	
+                    window.location.href = './projects.jag';    
+	            },
+	            error : function(res){
+	            	var errorText = res.responseText;
+                    handleNotification(errorText, '#notification-area', 'warning');
+	            }
+			});
+		}
+	});
+
+	function loadDatasets() {
+		$.ajax({
+			type: "GET",
+			url: serverUrl+"/api/datasets",
+			success: function(res) {
+				$.each(res, function (i, item) {
+				    $('#datasets').append($('<option>', { 
+				        value: sanitize(item.id),
+				        text : sanitize(item.name)
+				    }));
+				});
+			},
+			error: function(res) {
+                var errorText = res.responseText
+                handleNotification(errorText, '#notification-area', 'warning');
+			}
+		});
+	}
+
+	function isValidProjectName(text){
+		if(!text || text.length == 0){
+            $('#project-name-error').text("* Project name is required.");
+            return false;    
+		}
+		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
+            $('#project-name-error').text('* Special characters are not allowed');
+            $('#project-name').text('');
+            return false;
+	    }
+	    return true;
+	}
+
+	function isValidDescription(text){
+		if(text && text.length > 0){
+			return true;
+		}
+		$('#project-description-error').text('* Project description is required.');
+        return false;       
+	}
+
+});
+</script>
+
+</body>
+</html>
