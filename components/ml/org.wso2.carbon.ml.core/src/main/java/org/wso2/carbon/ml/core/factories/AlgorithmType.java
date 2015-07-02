@@ -29,16 +29,16 @@ public enum AlgorithmType {
         this.value = value;
     }
 
-    public String getValue(AlgorithmType type) {
-        return type.value;
+    public String getValue() {
+        return this.value;
     }
 
     /**
      * get {@link AlgorithmType} for a given value.
      */
-    public static AlgorithmType getDatasetType(String value) {
+    public static AlgorithmType getAlgorithmType(String value) {
         for (AlgorithmType type : AlgorithmType.values()) {
-            if (type.getValue(type).equalsIgnoreCase(value)) {
+            if (type.getValue().equalsIgnoreCase(value)) {
                 return type;
             }
         }

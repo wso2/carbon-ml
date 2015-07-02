@@ -20,8 +20,8 @@ package org.wso2.carbon.ml.core.factories;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.spark.algorithms.SupervisedModel;
-import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedModel;
+import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
+import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
 
 /**
  * This factory class is responsible for generating a {@link MLModelBuilder} for a given algorithm type.
@@ -30,17 +30,17 @@ public class ModelBuilderFactory {
 
     public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
-        AlgorithmType type = AlgorithmType.getDatasetType(algorithmType);
+        AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
         MLModelBuilder datasetProcessor = null;
         switch (type) {
         case CLASSIFICATION:
-            datasetProcessor = new SupervisedModel(context);
+            datasetProcessor = new SupervisedSparkModelBuilder(context);
             break;
         case NUMERICAL_PREDICTION:
-            datasetProcessor = new SupervisedModel(context);
+            datasetProcessor = new SupervisedSparkModelBuilder(context);
             break;
         case CLUSTERING:
-            datasetProcessor = new UnsupervisedModel(context);
+            datasetProcessor = new UnsupervisedSparkModelBuilder(context);
             break;
         default:
             throw new MLInputValidationException("Invalid algorithm type: " + type.name());

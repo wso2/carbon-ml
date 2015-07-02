@@ -40,11 +40,11 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import java.util.Map;
 
 /**
- * Building unsupervised models.
+ * Building unsupervised models supported by Spark.
  */
-public class UnsupervisedModel extends MLModelBuilder {
+public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
 
-    public UnsupervisedModel(MLModelConfigurationContext context) {
+    public UnsupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
 

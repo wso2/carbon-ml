@@ -29,8 +29,8 @@ public enum DatasetType {
         this.value = value;
     }
 
-    public String getValue(DatasetType type) {
-        return type.value;
+    public String getValue() {
+        return this.value;
     }
 
     /**
@@ -38,7 +38,7 @@ public enum DatasetType {
      */
     public static DatasetType getDatasetType(String value) {
         for (DatasetType type : DatasetType.values()) {
-            if (type.getValue(type).equalsIgnoreCase(value)) {
+            if (type.getValue().equalsIgnoreCase(value)) {
                 return type;
             }
         }
