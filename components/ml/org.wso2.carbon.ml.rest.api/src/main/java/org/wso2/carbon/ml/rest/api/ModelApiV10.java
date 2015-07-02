@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
@@ -170,8 +171,11 @@ public class ModelApiV10 extends MLRestAPI {
             // validate input parameters
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
-                logger.error("Cannot read the file.");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
+                String msg = String.format(
+                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                        tenantId, userName);
+                logger.error(msg);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
             }
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
             return Response.ok(predictions).build();
@@ -200,8 +204,11 @@ public class ModelApiV10 extends MLRestAPI {
             // validate input parameters
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
-                logger.error("Cannot read the file.");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Cannot read the file").build();
+                String msg = String.format(
+                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                        tenantId, userName);
+                logger.error(msg);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat, inputStream);
             StreamingOutput stream = new StreamingOutput() {
@@ -213,7 +220,7 @@ public class ModelApiV10 extends MLRestAPI {
                     writer.close();
                 }
             };
-            return Response.ok(stream).header("Content-disposition", "attachment; filename=predictions.csv").build();
+            return Response.ok(stream).header("Content-disposition", "attachment; filename=Predictions_" + modelId + "_" + MLUtils.getDate() + MLConstants.CSV).build();
         } catch (Exception e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
