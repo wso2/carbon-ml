@@ -58,9 +58,12 @@ import org.wso2.carbon.ml.database.DatabaseService;
 
 import scala.Tuple2;
 
-public class SupervisedModel extends MLModelBuilder {
+/**
+ * Build supervised models supported by Spark.
+ */
+public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
-    public SupervisedModel(MLModelConfigurationContext context) {
+    public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
 
