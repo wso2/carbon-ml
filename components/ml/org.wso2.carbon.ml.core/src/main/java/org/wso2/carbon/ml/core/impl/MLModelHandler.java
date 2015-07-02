@@ -36,9 +36,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
-import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
@@ -63,7 +60,6 @@ import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
-import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -216,7 +212,6 @@ public class MLModelHandler {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
@@ -228,22 +223,11 @@ public class MLModelHandler {
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+            MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
             facts.setDatasetURL(dataUrl);
-            Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
 
             JavaRDD<String> lines;
-
-            MLModelConfigurationContext context = new MLModelConfigurationContext();
-            context.setModelId(modelId);
-            context.setColumnSeparator(columnSeparator);
-            context.setFacts(facts);
-            context.setModel(model);
-            context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
-            int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
-            context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
-            context.setNewToOldIndicesList(getNewToOldIndicesList(context.getIncludedFeaturesMap()));
-            context.setResponseIndex(responseIndex);
 
             JavaSparkContext sparkContext = null;
             sparkConf.setAppName(String.valueOf(modelId));
@@ -256,12 +240,8 @@ public class MLModelHandler {
                 throw new MLModelBuilderException("Failed to build the model [id] " + modelId, e);
             }
 
-            // get header line
-            String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId,
-                    columnSeparator);
-            context.setSparkContext(sparkContext);
-            context.setLines(lines);
-            context.setHeaderRow(headerRow);
+            MLModelConfigurationContext context = buildMLModelConfigurationContext(modelId, datasetVersionId,
+                    columnSeparator, model, facts, lines, sparkContext);
 
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
@@ -277,6 +257,28 @@ public class MLModelHandler {
             // switch class loader back to thread context class loader
             Thread.currentThread().setContextClassLoader(tccl);
         }
+    }
+
+    private MLModelConfigurationContext buildMLModelConfigurationContext(long modelId, long datasetVersionId,
+            String columnSeparator, MLModelData model, Workflow facts, JavaRDD<String> lines,
+            JavaSparkContext sparkContext) throws DatabaseHandlerException {
+        MLModelConfigurationContext context = new MLModelConfigurationContext();
+        context.setModelId(modelId);
+        context.setColumnSeparator(columnSeparator);
+        context.setFacts(facts);
+        context.setModel(model);
+        Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
+        context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
+        int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
+        context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
+        context.setNewToOldIndicesList(getNewToOldIndicesList(context.getIncludedFeaturesMap()));
+        context.setResponseIndex(responseIndex);
+        context.setSparkContext(sparkContext);
+        context.setLines(lines);
+        // get header line
+        String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
+        context.setHeaderRow(headerRow);
+        return context;
     }
 
     public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
