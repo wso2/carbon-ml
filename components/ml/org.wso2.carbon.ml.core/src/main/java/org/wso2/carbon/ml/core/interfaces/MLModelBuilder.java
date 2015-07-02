@@ -35,6 +35,11 @@ public abstract class MLModelBuilder {
         this.setContext(context);
     }
     
+    /**
+     * Build a model using the context.
+     * @return build {@link MLModel}
+     * @throws MLModelBuilderException if failed to build the model.
+     */
     public abstract MLModel build() throws MLModelBuilderException;
     
     public void handleIgnoreException(String msg, Exception e) {

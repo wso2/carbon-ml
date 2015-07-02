@@ -68,10 +68,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     }
 
     /**
-     * @param modelID Model ID
-     * @param workflow Workflow ID
-     * @param sparkConf Spark configuration
-     * @throws MLModelBuilderException
+     * Build a supervised model.
      */
     public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
