@@ -22,6 +22,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.impl.MLIOFactory;
 import org.wso2.carbon.ml.core.impl.Predictor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -80,7 +81,7 @@ public class ModelHandler {
                 modelStorageLocation = modelStorage[1];
             }
         } else {
-            storageType = MLConstants.DATASET_SOURCE_TYPE_FILE;
+            storageType = DatasetType.FILE.getValue();
         }
 
         MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());

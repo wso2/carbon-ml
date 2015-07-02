@@ -36,6 +36,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
@@ -60,8 +61,9 @@ public class Predictor {
 
     public List<?> predict() throws MLModelHandlerException {
         String algorithmType = model.getAlgorithmClass();
+        AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
 
-        if (MLConstants.CLASSIFICATION.equals(algorithmType)) {
+        if (AlgorithmType.CLASSIFICATION == type) {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
             switch (supervised_algorithm) {
@@ -92,7 +94,7 @@ public class Predictor {
                 return decodePredictedValues(predictions);
             }
 
-        } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
+        } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {
             GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel()).getModel();
             List<Double> predictions = new ArrayList<Double>();
             for (Vector vector : dataToBePredicted) {
@@ -106,7 +108,7 @@ public class Predictor {
             }
             return decodePredictedValues(predictions);
 
-        } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
+        } else if (AlgorithmType.CLUSTERING == type) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:

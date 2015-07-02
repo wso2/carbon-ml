@@ -30,7 +30,7 @@ public class ModelBuilderFactory {
 
     public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
-        AlgorithmType type = AlgorithmType.getDatasetType(algorithmType);
+        AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
         MLModelBuilder datasetProcessor = null;
         switch (type) {
         case CLASSIFICATION:
