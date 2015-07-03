@@ -148,7 +148,7 @@ public class PredictMediatorTest extends TestCase{
         parent.addChild(features);
         messageContext.getEnvelope().getBody().addChild(parent);
         mediator.mediate(messageContext);
-        assertEquals("1", messageContext.getProperty("result"));
+        assertEquals("0", messageContext.getProperty("result"));
     }
 
     private static void addFeatureValues(OMElement features) {
