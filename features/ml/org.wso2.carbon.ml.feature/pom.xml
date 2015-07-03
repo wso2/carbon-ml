@@ -58,6 +58,12 @@
             <version>${ml.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.ml</groupId>
+            <artifactId>org.wso2.carbon.ml.jaggery.app.feature</artifactId>
+            <version>${ml.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,6 +92,7 @@
                                 <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.commons.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.database.feature</includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.rest.api.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.jaggery.app.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
