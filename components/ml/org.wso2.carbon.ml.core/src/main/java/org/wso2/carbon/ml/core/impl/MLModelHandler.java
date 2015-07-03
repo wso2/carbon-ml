@@ -472,7 +472,7 @@ public class MLModelHandler {
     }
 
     public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
-            int noOfClusters) throws DatabaseHandlerException, MLMalformedDatasetException {
+            int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
@@ -535,7 +535,7 @@ public class MLModelHandler {
             }
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
-            throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(),
+            throw new MLModelHandlerException("An error occurred while generating cluster points: " + e.getMessage(),
                     e);
         } finally {
             if (sparkContext != null) {
