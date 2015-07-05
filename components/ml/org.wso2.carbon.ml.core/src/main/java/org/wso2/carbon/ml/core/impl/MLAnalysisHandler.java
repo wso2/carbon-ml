@@ -77,7 +77,7 @@ public class MLAnalysisHandler {
 
     public List<FeatureSummary> getSummarizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getFeatures(tenantId, userName, analysisId, limit, offset);
+            return databaseService.getFeatures(tenantId, userName, analysisId, offset, limit);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
