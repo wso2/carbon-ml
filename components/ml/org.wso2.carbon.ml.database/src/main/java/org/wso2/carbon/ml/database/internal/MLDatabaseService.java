@@ -30,6 +30,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
+import org.wso2.carbon.ml.database.util.MLDBUtil;
 
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -373,7 +374,9 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setTargetPath(result.getString(3) == null ? null : result.getString(3));
-                versionset.setSamplePoints((SamplePoints) result.getObject(4));
+                if(result.getBinaryStream(4) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(4)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 versionset.setVersion(version);
@@ -467,13 +470,15 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setName(result.getString(2));
                 versionset.setVersion(result.getString(3));
                 versionset.setTargetPath(result.getString(4));
-                versionset.setSamplePoints((SamplePoints)result.getObject(5));
+                if(result.getBinaryStream(5) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 versionsets.add(versionset);
             }
             return versionsets;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } finally {
@@ -503,14 +508,16 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setTargetPath(result.getString(3));
-                versionset.setSamplePoints((SamplePoints)result.getObject(4));
+                if(result.getBinaryStream(4) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(4)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 return versionset;
             } else {
                 return null;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException("An error has occurred while extracting dataset-version of id: "
                     + datasetVersionId, e);
         } finally {
@@ -907,11 +914,11 @@ public class MLDatabaseService implements DatabaseService {
             updateStatement.setInt(2, tenantId);
             updateStatement.setString(3, user);
             result = updateStatement.executeQuery();
-            if (result.first()) {
-                samplePoints = (SamplePoints) result.getObject(1);
+            if (result.first() && result.getBinaryStream(1) != null) {
+                samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(1));
             }
             return samplePoints;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occurred while retrieving the sample of " + " dataset version "
@@ -949,8 +956,6 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
             getFeatues.setLong(4, datasetSchemaId);
-            getFeatues.setInt(5, numberOfFeatures);
-            getFeatues.setInt(6, startIndex);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
