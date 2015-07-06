@@ -557,7 +557,7 @@ public class MLUtils {
                 .getConfigurationContextService();
         String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
 
-        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "analysisName=" + analysisName + "&datasetId=" + datasetId;
+        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
         if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
             link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
                     "analysisName=" + analysisName + "&modelName=" + modelName +"&fromCompare=false";
