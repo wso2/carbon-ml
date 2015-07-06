@@ -71,6 +71,14 @@ public class MLProjectHandler {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
+
+    public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
+        try {
+            return databaseService.getProject(tenantId, userName, projectId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e.getMessage(), e);
+        }
+    }
     
     public List<MLProject> getAllProjects(int tenantId, String userName) throws MLProjectHandlerException {
         try {
@@ -94,11 +102,6 @@ public class MLProjectHandler {
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
-    }
-
-    public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws MLProjectHandlerException {

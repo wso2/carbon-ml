@@ -36,16 +36,21 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.*;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.ConfigurationContextService;
+import org.wso2.carbon.utils.NetworkUtils;
 
 public class MLUtils {
 
@@ -515,4 +520,48 @@ public class MLUtils {
         return null;
     }
 
+    /**
+     * Utility method to get the link to model build result page
+     *
+     * @param context ML model configuration context
+     * @return link to model build result page
+     * @throws DatabaseHandlerException
+     */
+    public static String getLink(MLModelConfigurationContext context, String status) throws DatabaseHandlerException {
+
+        MLModelData mlModelData = context.getModel();
+        long modelId = mlModelData.getId();
+        String modelName = mlModelData.getName();
+        long analysisId = mlModelData.getAnalysisId();
+        int tenantId = mlModelData.getTenantId();
+        String userName = mlModelData.getUserName();
+
+        MLAnalysis analysis = null;
+        String analysisName = null;
+        MLProject mlProject = null;
+        String projectName = null;
+        long datasetId;
+        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+        try {
+            analysis = databaseService.getAnalysis(tenantId, userName, analysisId);
+            analysisName = analysis.getName();
+            long projectId = analysis.getProjectId();
+
+            mlProject = databaseService.getProject(tenantId, userName, projectId);
+            projectName = mlProject.getName();
+            datasetId = mlProject.getDatasetId();
+        } catch (DatabaseHandlerException e) {
+            throw new DatabaseHandlerException("Failed to generate link for model ID: " + modelId + ". Cause: " + e, e);
+        }
+        ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
+                .getConfigurationContextService();
+        String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
+
+        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
+        if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
+            link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
+                    "analysisName=" + analysisName + "&modelName=" + modelName +"&fromCompare=false";
+        }
+        return link;
+    }
 }

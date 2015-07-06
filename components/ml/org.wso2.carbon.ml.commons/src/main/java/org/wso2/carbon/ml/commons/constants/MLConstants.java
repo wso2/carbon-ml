@@ -163,6 +163,7 @@ public class MLConstants {
     public static final String EMAIL_CONF_DIRECTORY = "email";
     public static final String ML_EMAIL_TEMPLATES_FILE = "ml-email-templates.xml";
     public static final String EMAIL_TEMPLATES = "emailTemplates";
+    public static final String TEXT_PLAIN = "text/plain";
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";

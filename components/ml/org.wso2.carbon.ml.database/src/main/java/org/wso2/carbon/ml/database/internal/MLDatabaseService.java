@@ -1335,6 +1335,53 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    /**
+     * Returns project object for a given project ID from the database.
+     *
+     * @param tenantId ID of the tenant
+     * @param userName Username of the tenant
+     * @param projectId ID of the project
+     * @return MLProject object
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_PROJECT_BY_ID);
+            statement.setLong(1, projectId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLProject project = new MLProject();
+                project.setId(result.getLong(1));
+                project.setName(result.getString(2));
+                project.setDescription(result.getString(3));
+                project.setDatasetId(result.getLong(4));
+                project.setCreatedTime(result.getString(5));
+                project.setTenantId(tenantId);
+                project.setUserName(userName);
+                if(project.getDatasetId() != 0) {
+                    MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                    project.setDatasetName(dataset.getName());
+                }
+                return project;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting project for project ID:"
+                    + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
     @Override
     public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException {
 

@@ -583,8 +583,9 @@ public class MLModelHandler {
 
         @Override
         public void run() {
-            String[] emailTemplateParameters = { username };
+            String[] emailTemplateParameters = new String[2];
             try {
+                emailTemplateParameters[0] = username;
                 // Set tenant info in the carbon context
                 PrivilegedCarbonContext.startTenantFlow();
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
@@ -599,6 +600,8 @@ public class MLModelHandler {
                 MLModel model = modelBuilder.build();
                 
                 persistModel(id, ctxt.getModel().getName(), model);
+
+                emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
                 EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
             } catch (Exception e) {
@@ -606,6 +609,7 @@ public class MLModelHandler {
                 try {
                     databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
                     databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
+                    emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_FAILED);
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e);
                 }
