@@ -23,6 +23,7 @@ import java.util.*;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
@@ -34,6 +35,7 @@ import org.apache.spark.mllib.regression.LassoModel;
 import org.apache.spark.mllib.regression.LinearRegressionModel;
 import org.apache.spark.mllib.regression.RidgeRegressionModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.apache.spark.mllib.tree.model.RandomForestModel;
 import org.apache.spark.rdd.RDD;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
@@ -48,6 +50,7 @@ import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
+import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
@@ -105,6 +108,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             mlModel.setResponseIndex(responseIndex);
 
             ModelSummary summaryModel = null;
+            Map<Integer, Integer> categoricalFeatureInfo;
 
             // build a machine learning model according to user selected algorithm
             SUPERVISED_ALGORITHM supervisedAlgorithm = SUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
@@ -118,8 +122,13 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         mlModel, includedFeatures, false);
                 break;
             case DECISION_TREE:
-                Map<Integer, Integer> categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
                 summaryModel = buildDecisionTreeModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures, categoricalFeatureInfo);
+                break;
+            case RANDOM_FOREST:
+                categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                summaryModel = buildRandomForestTreeModel(sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case SVM:
@@ -299,6 +308,42 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         } catch (Exception e) {
             throw new MLModelBuilderException(
                     "An error occurred while building decision tree model: " + e.getMessage(), e);
+        }
+
+    }
+    
+    private ModelSummary buildRandomForestTreeModel(JavaSparkContext sparkContext, long modelID,
+            JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+            SortedMap<Integer, String> includedFeatures, Map<Integer, Integer> categoricalFeatureInfo)
+            throws MLModelBuilderException {
+        try {
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            RandomForest randomForest = new RandomForest();
+            final RandomForestModel randomForestModel = randomForest.train(trainingData, getNoOfClasses(mlModel),
+                    categoricalFeatureInfo, Integer.parseInt(hyperParameters.get(MLConstants.NUM_TREES)),
+                    hyperParameters.get(MLConstants.FEATURE_SUBSET_STRATEGY),
+                    hyperParameters.get(MLConstants.IMPURITY),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+            JavaPairRDD<Double, Double> predictionsAndLabels = randomForest.test(randomForestModel, testingData);
+            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
+            mlModel.setModel(new MLRandomForestModel(randomForestModel));
+
+            classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.RANDOM_FOREST.toString());
+
+            MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
+                    multiclassMetrics, mlModel));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
+            classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+
+            return classClassificationAndRegressionModelSummary;
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building random forest classification model: "
+                    + e.getMessage(), e);
         }
 
     }
