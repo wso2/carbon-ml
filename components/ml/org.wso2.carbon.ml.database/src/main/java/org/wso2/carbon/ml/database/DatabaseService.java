@@ -354,6 +354,17 @@ public interface DatabaseService {
     public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
 
     /**
+     * Returns project object for a given project ID from the database.
+     *
+     * @param tenantId ID of the tenant
+     * @param userName Username of the tenant
+     * @param projectId ID of the project
+     * @return MLProject object
+     * @throws DatabaseHandlerException
+     */
+    public MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+
+    /**
      * Get all the projects of the given tenant and username
      * @param tenantId   tenant id
      * @param userName   username
