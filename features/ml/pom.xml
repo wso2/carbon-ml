@@ -33,7 +33,6 @@
         <module>org.wso2.carbon.ml.commons.feature</module>
         <module>org.wso2.carbon.ml.feature</module>
         <module>org.wso2.carbon.ml.database.feature</module>
-        <module>org.wso2.carbon.ml.decomposition.feature</module>
         <module>org.wso2.carbon.ml.rest.api.feature</module>
         <module>org.wso2.carbon.ml.jaggery.app.feature</module>
     </modules>

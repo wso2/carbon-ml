@@ -127,6 +127,9 @@ public class MLConstants {
     public static final String MAX_DEPTH = "Max_Depth";
     public static final String MAX_BINS = "Max_Bins";
     public static final String IMPURITY = "Impurity";
+    public static final String SEED = "Seed";
+    public static final String FEATURE_SUBSET_STRATEGY = "Feature_Subset_Strategy";
+    public static final String NUM_TREES = "Num_Trees";
     public static final String L1 = "L1";
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
@@ -171,7 +174,8 @@ public class MLConstants {
 
     // enums
     public enum SUPERVISED_ALGORITHM {
-        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, SVM, DECISION_TREE, NAIVE_BAYES
+        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, 
+        SVM, DECISION_TREE, RANDOM_FOREST, NAIVE_BAYES
     }
 
     public enum UNSUPERVISED_ALGORITHM {

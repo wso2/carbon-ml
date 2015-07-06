@@ -16,119 +16,120 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-  
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>ml-features</artifactId>
-        <groupId>org.wso2.carbon.ml</groupId>
-        <version>1.0.1-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.carbon.ml.database.feature</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 Carbon - Machine Learner Database Service Feature</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.database</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
-        </dependency>
-    </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>ml-features</artifactId>
+		<groupId>org.wso2.carbon.ml</groupId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
 
-    <build>
-        <plugins>
-	    <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-		    <execution>
-                        <id>clean-metrics-h2-database</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <delete file="src/main/resources/repository/database/WSO2ML_DB.h2.db" />
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-carbon-metrics-database</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath" />
-                                </path>
-                                <echo message="########### Creating Machine Learner Database ##############" />
-                                <sql driver="org.h2.Driver"
-                                    url="jdbc:h2:${basedir}/src/main/resources/repository/database/WSO2ML_DB;create=true"
-                                    userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue"
-                                >
-                                    <classpath>
-                                        <path refid="h2.classpath" />
-                                    </classpath>
-                                    <fileset file="${basedir}/src/main/resources/dbscripts/h2.sql" />
-                                </sql>
-                                <echo message="##################### END ########################" />
-                            </target>
-                        </configuration>
-                    </execution>
-	    	</executions>
-            </plugin>
-            <plugin>
-                <groupId>org.wso2.maven</groupId>
-                <artifactId>carbon-p2-plugin</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <id>p2-feature-generation</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>p2-feature-gen</goal>
-                        </goals>
-                        <configuration>
-                            <id>org.wso2.carbon.ml.database</id>
-                            <propertiesFile>../feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                </properties>
-                            </adviceFile>
-			    <importFeatures>
-			    </importFeatures>
-                            <bundles>
-                                <bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.database</bundleDef>
-                                <bundleDef>org.apache.commons:commons-math3</bundleDef>
-                                <bundleDef>org.apache.commons:commons-csv</bundleDef>
-                                <bundleDef>org.json.wso2:json</bundleDef>
-                                <bundleDef>com.h2database.wso2:h2-database-engine</bundleDef>
-                            </bundles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<artifactId>org.wso2.carbon.ml.database.feature</artifactId>
+	<packaging>pom</packaging>
+	<name>WSO2 Carbon - Machine Learner Database Service Feature</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.wso2.carbon.ml</groupId>
+			<artifactId>org.wso2.carbon.ml.database</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.json.wso2</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database.wso2</groupId>
+			<artifactId>h2-database-engine</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>clean-metrics-h2-database</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<delete file="src/main/resources/repository/database/WSO2ML_DB.h2.db" />
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>create-carbon-metrics-database</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<path id="h2.classpath">
+									<path refid="maven.compile.classpath" />
+								</path>
+								<echo
+									message="########### Creating Machine Learner Database ##############" />
+								<sql driver="org.h2.Driver"
+									url="jdbc:h2:${basedir}/src/main/resources/repository/database/WSO2ML_DB;create=true"
+									userid="wso2carbon" password="wso2carbon" autocommit="true"
+									onerror="continue">
+									<classpath>
+										<path refid="h2.classpath" />
+									</classpath>
+									<fileset file="${basedir}/src/main/resources/dbscripts/h2.sql" />
+								</sql>
+								<echo message="##################### END ########################" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.wso2.maven</groupId>
+				<artifactId>carbon-p2-plugin</artifactId>
+				<version>1.5.3</version>
+				<executions>
+					<execution>
+						<id>p2-feature-generation</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-feature-gen</goal>
+						</goals>
+						<configuration>
+							<id>org.wso2.carbon.ml.database</id>
+							<propertiesFile>../feature.properties</propertiesFile>
+							<adviceFile>
+								<properties>
+									<propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+								</properties>
+							</adviceFile>
+							<importFeatures>
+							</importFeatures>
+							<bundles>
+								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.database</bundleDef>
+								<bundleDef>org.apache.commons:commons-math3</bundleDef>
+								<bundleDef>org.apache.commons:commons-csv</bundleDef>
+								<bundleDef>org.json.wso2:json</bundleDef>
+							</bundles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>ml-features</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
@@ -33,59 +34,11 @@
 			<groupId>org.wso2.carbon.ml</groupId>
 			<artifactId>org.wso2.carbon.ml.core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.h2database.wso2</groupId>
-			<artifactId>h2-database-engine</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.xerial.snappy</groupId>
-			<artifactId>snappy-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-		</dependency>
 
 		<!-- Spark Dependencies -->
 		<dependency>
 			<groupId>org.wso2.orbit.org.apache.spark</groupId>
-			<artifactId>spark-core_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.apache.spark</groupId>
-			<artifactId>spark-sql_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.apache.spark</groupId>
 			<artifactId>spark-mllib_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.apache.spark</groupId>
-			<artifactId>spark-streaming_2.10</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.orbit.org.scalanlp</groupId>
@@ -100,187 +53,6 @@
 			<artifactId>spire_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
-			<artifactId>hadoop-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.htrace</groupId>
-                        <artifactId>htrace-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.uncommons.maths</groupId>
-			<artifactId>uncommons-maths</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.json4s</groupId>
-			<artifactId>json4s-jackson_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.twitter</groupId>
-			<artifactId>chill_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.clearspring.analytics</groupId>
-			<artifactId>stream</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.json.wso2</groupId>
-			<artifactId>json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty.wso2</groupId>
-			<artifactId>netty-all</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-		</dependency>
-		<dependency>
-                	<groupId>org.scala-lang</groupId>
-                	<artifactId>scala-reflect</artifactId>
-            	</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-plus</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-continuation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-http</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-xml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jndi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.orbit</groupId>
-			<artifactId>javax.transaction</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.ning</groupId>
-			<artifactId>compress-lzf</artifactId>
-		</dependency>
-		<dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-graphite</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-jvm</artifactId>
-        </dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-recipes</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-framework</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.zookeeper</groupId>
-			<artifactId>zookeeper</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.analytics-common</groupId>
-			<artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.analytics-common</groupId>
-			<artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-mail</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-base</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
-			<artifactId>minlog</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.objenesis</groupId>
-			<artifactId>objenesis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.apache.mesos</groupId>
-			<artifactId>mesos</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.github.rwl</groupId>
-			<artifactId>jtransforms</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.wso2.orbit.github.fommil.netlib</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
@@ -288,35 +60,6 @@
 			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
 			<artifactId>arpack_combined</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.spark-project.akka</groupId>
-			<artifactId>akka-remote_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.spark-project.akka</groupId>
-			<artifactId>akka-actor_2.10</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.spark-project.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.typesafe</groupId>
-			<artifactId>config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.httpcomponents.wso2</groupId>
-			<artifactId>httpcore</artifactId>
-		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -349,14 +92,14 @@
 								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.core</bundleDef>
 							</bundles>
 							<importFeatures>
-                                <importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.version}
-                                </importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.version}
-                                </importFeatureDef>
-                                <importFeatureDef>
-                                    org.wso2.carbon.event.output.adapter.server:${carbon.analytics.common.version}
-                                </importFeatureDef>
-                            </importFeatures>
+								<importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.version}
+								</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.version}
+								</importFeatureDef>
+								<importFeatureDef>
+									org.wso2.carbon.event.output.adapter.server:${carbon.analytics.common.version}
+								</importFeatureDef>
+							</importFeatures>
 						</configuration>
 					</execution>
 				</executions>
