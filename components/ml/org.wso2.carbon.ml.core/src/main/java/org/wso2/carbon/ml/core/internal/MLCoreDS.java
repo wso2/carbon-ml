@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
@@ -67,7 +68,17 @@ public class MLCoreDS {
             valueHolder.setModelStorage(mlConfig.getModelStorage());
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+            sparkConf.setAppName("sample-generator-" + Math.random());
             valueHolder.setSparkConf(sparkConf);
+            
+            // create a new java spark context
+            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+            sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
+                    org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+            sparkContext.hadoopConfiguration()
+                    .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+            valueHolder.setSparkContext(sparkContext);
 
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
@@ -103,6 +114,10 @@ public class MLCoreDS {
         if (emailAdapterService != null) {
             emailAdapterService.destroy("TestEmailAdapter");
         }
+        if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
+            MLCoreServiceValueHolder.getInstance().getSparkContext().close();
+        }
+        
     }
 
     protected void setDatabaseService(DatabaseService databaseService) {
