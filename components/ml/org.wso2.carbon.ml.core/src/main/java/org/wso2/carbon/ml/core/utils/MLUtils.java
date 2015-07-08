@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
@@ -36,7 +35,6 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.constants.*;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
@@ -48,9 +46,7 @@ import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
-import org.wso2.carbon.utils.NetworkUtils;
 
 public class MLUtils {
 
@@ -60,12 +56,6 @@ public class MLUtils {
     public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
             String sourceType, int tenantId) throws MLMalformedDatasetException {
 
-        /**
-         * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
-         * needs to be switched temporarily.
-         */
-        // assign current thread context class loader to a variable
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
         try {
             Map<String, Integer> headerMap = null;
@@ -73,12 +63,8 @@ public class MLUtils {
             List<List<String>> columnData = new ArrayList<List<String>>();
             CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
 
-            // class loader is switched to JavaSparkContext.class's class loader
-            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            sparkConf.setAppName("sample-generator-" + Math.random());
-            // create a new java spark context
-            sparkContext = new JavaSparkContext(sparkConf);
+            // java spark context
+            sparkContext = MLCoreServiceValueHolder.getInstance().getSparkContext();
             JavaRDD<String> lines;
 
             // parse lines in the dataset
@@ -88,12 +74,6 @@ public class MLUtils {
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
                     + ". Cause: " + e, e);
-        } finally {
-            if (sparkContext != null) {
-                sparkContext.close();
-            }
-            // switch class loader back to thread context class loader
-            Thread.currentThread().setContextClassLoader(tccl);
         }
     }
 
@@ -103,24 +83,14 @@ public class MLUtils {
     public static SamplePoints getSampleFromDAS(String path, int sampleSize, String sourceType, int tenantId)
             throws MLMalformedDatasetException {
 
-        /**
-         * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
-         * needs to be switched temporarily.
-         */
-        // assign current thread context class loader to a variable
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
         try {
             Map<String, Integer> headerMap = null;
             // List containing actual data of the sample.
             List<List<String>> columnData = new ArrayList<List<String>>();
 
-            // class loader is switched to JavaSparkContext.class's class loader
-            Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
-            SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-            sparkConf.setAppName("sample-generator-" + Math.random());
-            // create a new java spark context
-            sparkContext = new JavaSparkContext(sparkConf);
+            // java spark context
+            sparkContext = MLCoreServiceValueHolder.getInstance().getSparkContext();
             JavaRDD<String> lines;
             String headerLine = extractHeaderLine(path, tenantId);
             headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
@@ -133,12 +103,6 @@ public class MLUtils {
         } catch (Exception e) {
             throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
                     + ". Cause: " + e, e);
-        } finally {
-            if (sparkContext != null) {
-                sparkContext.close();
-            }
-            // switch class loader back to thread context class loader
-            Thread.currentThread().setContextClassLoader(tccl);
         }
     }
 

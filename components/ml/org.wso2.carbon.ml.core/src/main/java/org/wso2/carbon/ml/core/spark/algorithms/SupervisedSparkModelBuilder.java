@@ -20,10 +20,11 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 
 import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.classification.SVMModel;
@@ -65,6 +66,7 @@ import scala.Tuple2;
  * Build supervised models supported by Spark.
  */
 public class SupervisedSparkModelBuilder extends MLModelBuilder {
+    private static final Log log = LogFactory.getLog(SupervisedSparkModelBuilder.class);
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
@@ -161,10 +163,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
                     + e.getMessage(), e);
-        } finally {
-            if (sparkContext != null) {
-                sparkContext.stop();
-            }
         }
     }
 

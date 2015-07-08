@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
@@ -37,6 +38,7 @@ public class MLCoreServiceValueHolder {
     private String emailNotificationEndpoint;
     private String modelRegistryLocation;
     private List<MLAlgorithm> algorithms;
+    private JavaSparkContext sparkContext;
     private SparkConf sparkConf;
     private ConfigurationContextService configurationContextService;
     private OutputEventAdapterService outputEventAdapterService;
@@ -139,6 +141,14 @@ public class MLCoreServiceValueHolder {
 
     public void setModelStorage(ModelStorage modelStorage) {
         this.modelStorage = modelStorage;
+    }
+
+    public JavaSparkContext getSparkContext() {
+        return sparkContext;
+    }
+
+    public void setSparkContext(JavaSparkContext sparkContext) {
+        this.sparkContext = sparkContext;
     }
 
 }
