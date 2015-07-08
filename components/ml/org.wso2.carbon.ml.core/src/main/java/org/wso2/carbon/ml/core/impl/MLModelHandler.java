@@ -304,11 +304,16 @@ public class MLModelHandler {
                 String[] dataRow = line.split(csvFormat.getDelimiter() + "");
                 data.add(dataRow);
             }
-            List<String> predictions = (List<String>) predict(tenantId, userName, modelId, data);
+            // cloning unencoded data to append with predictions
+            List<String[]> unencodedData = new ArrayList<String[]>(data.size());
+            for(String[] item: data) {
+                unencodedData.add(item.clone());
+            }
+            List<?> predictions = predict(tenantId, userName, modelId, data);
             String predictionsWithData = new String();
             for(int i = 0; i < predictions.size(); i++) {
-                predictionsWithData += Arrays.toString(data.get(i)).replaceAll(MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
-                        + csvFormat.getDelimiter() + predictions.get(i) + MLConstants.NEW_LINE;
+                predictionsWithData += Arrays.toString(unencodedData.get(i)).replaceAll(MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
+                        + csvFormat.getDelimiter() + String.valueOf(predictions.get(i)) + MLConstants.NEW_LINE;
             }
             return predictionsWithData;
         } catch (IOException e) {
