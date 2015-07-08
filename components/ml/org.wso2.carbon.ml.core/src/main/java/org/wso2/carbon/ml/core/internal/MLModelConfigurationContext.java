@@ -24,7 +24,7 @@ import java.util.SortedMap;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 
 /**
@@ -33,7 +33,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 public class MLModelConfigurationContext {
 
     private long modelId;
-    private MLModelNew model;
+    private MLModelData model;
     private Workflow facts;
     private JavaSparkContext sparkContext;
     private JavaRDD<String> lines;
@@ -106,10 +106,10 @@ public class MLModelConfigurationContext {
             this.dataToBePredicted = Arrays.copyOf(dataToBePredicted, dataToBePredicted.length);
         }
     }
-    public MLModelNew getModel() {
+    public MLModelData getModel() {
         return model;
     }
-    public void setModel(MLModelNew model) {
+    public void setModel(MLModelData model) {
         this.model = model;
     }
     public Map<String,String> getSummaryStatsOfFeatures() {

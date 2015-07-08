@@ -26,6 +26,7 @@ import java.util.List;
  * DTO class to store multiclass confusion matrix
  */
 public class MulticlassConfusionMatrix implements Serializable {
+    private static final long serialVersionUID = -3812754594966583187L;
     private double[][] matrix;
     List<String> labels;
     private int size;

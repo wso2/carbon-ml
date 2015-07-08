@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.transformations;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -43,13 +44,15 @@ public class TokensToVectors implements Function<String[], Vector> {
             double[] features = new double[indices.size()];
             int i = 0;
             for (int j : indices) {
-                features[i] = Double.parseDouble(tokens[j]);
+                if (NumberUtils.isNumber(tokens[j])) {
+                    features[i] = Double.parseDouble(tokens[j]);
+                }
                 i++;
             }
             return Vectors.dense(features);
         } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while converting tokens to vectors: " + e.getMessage(),
-                    e);
+            throw new MLModelBuilderException(
+                    "An error occurred while converting tokens to vectors: " + e.getMessage(), e);
         }
     }
 }

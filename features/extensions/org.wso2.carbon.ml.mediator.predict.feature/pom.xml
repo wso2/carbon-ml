@@ -15,59 +15,60 @@
  ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.wso2.carbon.ml</groupId>
-        <artifactId>ml-extension-features</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.wso2.carbon.ml</groupId>
+		<artifactId>ml-extension-features</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.ml.mediator.predict.feature</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 Carbon - Predict Mediator Aggregate Feature</name>
-    <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Predict Mediator functionality</description>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.ml.mediator.predict.feature</artifactId>
+	<packaging>pom</packaging>
+	<name>WSO2 Carbon - Predict Mediator Aggregate Feature</name>
+	<url>http://wso2.org</url>
+	<description>This feature contains the bundles required for Predict Mediator functionality</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.mediator.predict.server.feature</artifactId>
-            <type>zip</type>
-	    </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.mediator.predict.ui.feature</artifactId>
-            <type>zip</type>
-	    </dependency>
-    </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.wso2.maven</groupId>
-                <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>4-p2-feature-generation</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>p2-feature-gen</goal>
-                        </goals>
-                        <configuration>
-                            <id>org.wso2.carbon.ml.mediator.predict</id>
-                            <propertiesFile>../../ml/feature.properties</propertiesFile>
-                            <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.ui.feature</includedFeatureDef>
-                            </includedFeatures>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<dependencies>
+		<dependency>
+			<groupId>org.wso2.carbon.ml</groupId>
+			<artifactId>org.wso2.carbon.ml.mediator.predict.server.feature</artifactId>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.ml</groupId>
+			<artifactId>org.wso2.carbon.ml.mediator.predict.ui.feature</artifactId>
+			<type>zip</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.wso2.maven</groupId>
+				<artifactId>carbon-p2-plugin</artifactId>
+				<version>${carbon.p2.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>4-p2-feature-generation</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-feature-gen</goal>
+						</goals>
+						<configuration>
+							<id>org.wso2.carbon.ml.mediator.predict</id>
+							<propertiesFile>../../ml/feature.properties</propertiesFile>
+							<includedFeatures>
+								<includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.server.feature</includedFeatureDef>
+								<includedFeatureDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict.ui.feature</includedFeatureDef>
+							</includedFeatures>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

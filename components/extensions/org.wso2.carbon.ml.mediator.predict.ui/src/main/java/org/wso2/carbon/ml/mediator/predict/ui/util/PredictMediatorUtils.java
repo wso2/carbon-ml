@@ -24,6 +24,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.impl.MLIOFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -62,7 +63,7 @@ public class PredictMediatorUtils {
                     modelStorageLocation = modelStorage[1];
                 }
             } else {
-                storageType = MLConstants.DATASET_SOURCE_TYPE_FILE;
+                storageType = DatasetType.FILE.getValue();
             }
             MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);

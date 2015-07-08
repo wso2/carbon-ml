@@ -1,0 +1,10 @@
+<div class="page-header">
+    <img src="../../images/wso2_logo.png" id="logo" alt="ML logo">
+    <!--<h2 id="hader-name">Machine Learner</h2> -->
+    <div style="clear:both"></div>
+
+    <% if(jagg.getUser()){ %>
+        <p id="loggedUser"> Signed-in as: <%=jagg.getUser()%>&ensp;|&ensp;<a href="../logout/logout.jag">logout</a></p>
+    <% } %>
+</div>
+<div id="page-header-line"> </div>

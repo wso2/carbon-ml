@@ -1,0 +1,91 @@
+.graphtitle{
+	text-align:center;
+	margin-top: 4em;
+}
+
+.graphSummary{
+	text-align:left;
+	margin-left: 10%;
+	margin-top: -15px;
+	margin-bottom: 30px;
+}
+
+.graph{
+	margin-bottom: 2em;
+}
+
+#scatterPlotFeatures{
+	margin-left: 30px;
+}
+
+#scatterPlot{
+	float: center;
+	width: 50em;
+	margin: auto;
+}
+
+#histograms{
+	float: center;
+	width: 45em;
+	margin-top: -2em;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.half-width-column{
+	float: left;
+	width: 50%;	
+}
+
+#histogram1 svg, #histogram2 svg{
+	height: 18em;
+}
+
+/* Parallel Sets */
+#categoricalFeatureSelect{
+	width: 300px;
+    height: 400px;
+    overflow: auto;
+}
+
+/* Trellis Chart */
+#trellisChart svg {
+	font: 10px sans-serif;
+} 
+
+#trellisChart .axis,.frame {
+	shape-rendering: crispEdges;
+}
+
+#trellisChart .axis line {
+	stroke: #ddd;
+}
+
+#trellisChart .axis path {
+	display: none;
+}
+
+#trellisChart .frame {
+	fill: none;
+	stroke: #aaa;
+}
+
+#trellisChart circle {
+	fill-opacity: 0.5; /* 0.7 */
+}
+
+#trellisChart circle.hidden {
+	fill: #ccc !important;
+}
+
+#trellisChart .extent {
+	fill: #000;
+	fill-opacity: .125;
+	stroke: #fff;
+}
+
+#numericalFeatureSelect{
+    width: 300px;
+    height: 400px;
+    overflow: auto;
+}

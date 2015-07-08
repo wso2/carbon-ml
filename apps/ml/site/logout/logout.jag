@@ -1,0 +1,6 @@
+<%
+	include("/jagg/jagg.jag");
+	jagg.setUser(null);
+	session.remove("tenantId");
+	response.sendRedirect("../home/login.jag");
+%>

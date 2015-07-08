@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.database.internal;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -29,6 +30,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
+import org.wso2.carbon.ml.database.util.MLDBUtil;
 
 import java.sql.*;
 import java.text.DecimalFormat;
@@ -223,7 +225,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public void insertModel(MLModelNew model) throws DatabaseHandlerException {
+    public void insertModel(MLModelData model) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
@@ -372,7 +374,9 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setTargetPath(result.getString(3) == null ? null : result.getString(3));
-                versionset.setSamplePoints((SamplePoints) result.getObject(4));
+                if(result.getBinaryStream(4) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(4)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 versionset.setVersion(version);
@@ -466,13 +470,15 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setName(result.getString(2));
                 versionset.setVersion(result.getString(3));
                 versionset.setTargetPath(result.getString(4));
-                versionset.setSamplePoints((SamplePoints)result.getObject(5));
+                if(result.getBinaryStream(5) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 versionsets.add(versionset);
             }
             return versionsets;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException("An error has occurred while extracting version sets for dataset id: "
                     + datasetId, e);
         } finally {
@@ -502,14 +508,16 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setId(result.getLong(1));
                 versionset.setName(result.getString(2));
                 versionset.setTargetPath(result.getString(3));
-                versionset.setSamplePoints((SamplePoints)result.getObject(4));
+                if(result.getBinaryStream(4) != null) {
+                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(4)));
+                }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
                 return versionset;
             } else {
                 return null;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException("An error has occurred while extracting dataset-version of id: "
                     + datasetVersionId, e);
         } finally {
@@ -829,9 +837,13 @@ public class MLDatabaseService implements DatabaseService {
                     && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
                 Map<Double, Object> map1 = new HashMap<Double, Object>();
                 Map<Double, Object> map2 = new HashMap<Double, Object>();
-                map2.put(Double.parseDouble(columnData.get(secondFeatureColumn).get(row)), columnData.get(thirdFeatureColumn).get(row));
-                map1.put(Double.parseDouble(columnData.get(firstFeatureColumn).get(row)), map2);
-                points.add(map1);
+                String val1 = columnData.get(secondFeatureColumn).get(row);
+                String val2 = columnData.get(firstFeatureColumn).get(row);
+                if (NumberUtils.isNumber(val1) && NumberUtils.isNumber(val2)) {
+                    map2.put(Double.parseDouble(val1), columnData.get(thirdFeatureColumn).get(row));
+                    map1.put(Double.parseDouble(val2), map2);
+                    points.add(map1);
+                }
             }
         }
 
@@ -902,11 +914,11 @@ public class MLDatabaseService implements DatabaseService {
             updateStatement.setInt(2, tenantId);
             updateStatement.setString(3, user);
             result = updateStatement.executeQuery();
-            if (result.first()) {
-                samplePoints = (SamplePoints) result.getObject(1);
+            if (result.first() && result.getBinaryStream(1) != null) {
+                samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(1));
             }
             return samplePoints;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             // Roll-back the changes.
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException("An error occurred while retrieving the sample of " + " dataset version "
@@ -944,8 +956,6 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
             getFeatues.setLong(4, datasetSchemaId);
-            getFeatues.setInt(5, numberOfFeatures);
-            getFeatues.setInt(6, startIndex);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
@@ -1372,12 +1382,12 @@ public class MLDatabaseService implements DatabaseService {
      * @throws DatabaseHandlerException
      */
     @Override
-    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_PROJECT_MODELS);
@@ -1386,7 +1396,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setName(result.getString(2));
                 model.setAnalysisId(result.getLong(3));
@@ -1573,7 +1583,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
+    public MLModelData getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -1585,7 +1595,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));
@@ -1610,7 +1620,7 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
+    public MLModelData getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
@@ -1622,7 +1632,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(modelId);
                 model.setName(result.getString(1));
                 model.setAnalysisId(result.getLong(2));
@@ -1647,12 +1657,12 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-    public List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS_OF_ANALYSIS);
@@ -1661,7 +1671,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));
@@ -1688,12 +1698,12 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement statement = null;
-        List<MLModelNew> models = new ArrayList<MLModelNew>();
+        List<MLModelData> models = new ArrayList<MLModelData>();
         try {
             connection = dbh.getDataSource().getConnection();
             statement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS);
@@ -1701,7 +1711,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(2, userName);
             result = statement.executeQuery();
             while (result.next()) {
-                MLModelNew model = new MLModelNew();
+                MLModelData model = new MLModelData();
                 model.setId(result.getLong(1));
                 model.setAnalysisId(result.getLong(2));
                 model.setVersionSetId(result.getLong(3));

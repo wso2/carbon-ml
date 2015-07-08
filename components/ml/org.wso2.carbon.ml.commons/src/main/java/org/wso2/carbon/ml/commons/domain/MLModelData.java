@@ -20,7 +20,7 @@ package org.wso2.carbon.ml.commons.domain;
 /**
  * Represent a Model in ML.
  */
-public class MLModelNew {
+public class MLModelData {
 
     private long id;
     private String name;
