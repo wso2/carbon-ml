@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -80,7 +80,7 @@ public class MLProjectHandler {
         }
     }
 
-    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
+    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
             return databaseService.getProjectModels(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {

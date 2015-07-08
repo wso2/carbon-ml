@@ -44,8 +44,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private ModelHandler modelHandler;
     private String modelStorageLocation;
     private boolean attributeSelectionAvailable;
-    private Map<Integer, Integer> attributeIndexMap;           // <feature-index, attribute-index> pairs
-    private int selectedAttributesSize;
+    private Map<Integer, int[]> attributeIndexMap;           // <feature-index, [event-array-type][attribute-index]> pairs
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
@@ -54,20 +53,21 @@ public class PredictStreamProcessor extends StreamProcessor {
         while (streamEventChunk.hasNext()) {
 
             StreamEvent event = streamEventChunk.next();
+            String[] featureValues = new String[attributeIndexMap.size()];
 
-            Object[] data;
-            String[] featureValues;
-            data = event.getOutputData();
-            if (attributeSelectionAvailable) {
-                featureValues = new String[selectedAttributesSize];
-            } else {
-                featureValues = new String[data.length - 1];
-            }
-
-            for (Map.Entry<Integer, Integer> entry : attributeIndexMap.entrySet()) {
+            for (Map.Entry<Integer, int[]> entry : attributeIndexMap.entrySet()) {
                 int featureIndex = entry.getKey();
-                int attributeIndex = entry.getValue();
-                featureValues[featureIndex] = String.valueOf(data[attributeIndex]);
+                int[] attributeIndexArray = entry.getValue();
+                Object dataValue = null;
+                switch (attributeIndexArray[2]) {
+                    case 0 :
+                        dataValue = event.getBeforeWindowData()[attributeIndexArray[3]];
+                        break;
+                    case 2 :
+                        dataValue = event.getOutputData()[attributeIndexArray[3]];
+                        break;
+                }
+                featureValues[featureIndex] = String.valueOf(dataValue);
             }
 
             if (featureValues != null) {
@@ -93,7 +93,6 @@ public class PredictStreamProcessor extends StreamProcessor {
             attributeSelectionAvailable = false;    // model-storage-location
         } else {
             attributeSelectionAvailable = true;  // model-storage-location, stream-attributes list
-            selectedAttributesSize = attributeExpressionExecutors.length - 1;
         }
 
         if(attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor)  {
@@ -122,7 +121,7 @@ public class PredictStreamProcessor extends StreamProcessor {
      * @throws Exception
      */
     private void populateFeatureAttributeMapping() throws Exception {
-        attributeIndexMap = new HashMap<Integer, Integer>();
+        attributeIndexMap = new HashMap<Integer, int[]>();
         Map<String, Integer> featureIndexMap = modelHandler.getFeatures();
         List<Integer> newToOldIndicesList = modelHandler.getNewToOldIndicesList();
 
@@ -134,8 +133,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                     if (featureIndexMap.get(variableName) != null) {
                         int featureIndex = featureIndexMap.get(variableName);
                         int newFeatureIndex = newToOldIndicesList.indexOf(featureIndex);
-                        int attributeIndex = inputDefinition.getAttributePosition(variableName);
-                        attributeIndexMap.put(newFeatureIndex, attributeIndex);
+                        attributeIndexMap.put(newFeatureIndex, variable.getPosition());
                     } else {
                         throw new ExecutionPlanCreationException("No matching feature name found in the model " +
                                 "for the attribute : " + variableName);
@@ -148,8 +146,10 @@ public class PredictStreamProcessor extends StreamProcessor {
                 if (featureIndexMap.get(attributeName) != null) {
                     int featureIndex = featureIndexMap.get(attributeName);
                     int newFeatureIndex = newToOldIndicesList.indexOf(featureIndex);
-                    int attributeIndex = inputDefinition.getAttributePosition(attributeName);
-                    attributeIndexMap.put(newFeatureIndex, attributeIndex);
+                    int[] attributeIndexArray = new int[4];
+                    attributeIndexArray[2] = 2; // get values from output data
+                    attributeIndexArray[3] = inputDefinition.getAttributePosition(attributeName);
+                    attributeIndexMap.put(newFeatureIndex, attributeIndexArray);
                 } else {
                     throw new ExecutionPlanCreationException("No matching feature name found in the model " +
                             "for the attribute : " + attributeName);

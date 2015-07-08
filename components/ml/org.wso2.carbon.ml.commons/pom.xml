@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>ml</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
@@ -30,20 +31,8 @@
 	<name>WSO2 Carbon - Machine Learner Commons Component</name>
 	<dependencies>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
-			<artifactId>hadoop-client</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -64,7 +53,6 @@
 							org.wso2.carbon.ml.commons.*;version="${ml.exp.pkg.version}",
 						</Export-Package>
 						<Import-Package>
-							org.apache.commons.logging,
 							*;resolution:=optional
 						</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>

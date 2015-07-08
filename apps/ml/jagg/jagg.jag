@@ -1,0 +1,55 @@
+<%
+//TODO : remove this when log configs are implemented
+Log.prototype.isDebugEnabled = function () {
+    return false;
+};
+
+//TODO : remove this when Context HO is implemented.
+var context = context || {
+    put:function (key, value) {
+        session.put(key, value);
+    },
+    get:function (key) {
+        return session.get(key);
+    },
+    remove:function (key) {
+        session.remove(key);
+    }
+};
+
+var site = require("/site/conf/site.json");
+
+var jagg = jagg || (function () {
+
+    var data;
+
+    var setData = function (d) {
+        data = d;
+    };
+
+    var getData = function () {
+        return data;
+    };
+
+    var getUser = function () {
+        return session.get("logged.user");
+    };
+
+    var setUser = function (user) {
+        session.put("logged.user", user);
+    };
+    
+    var getAbsoluteUrl = function (path) {
+        return site.context + path;
+    };
+
+
+    return {
+        setUser:setUser,
+        getUser:getUser,
+        data:getData,
+	getAbsoluteUrl:getAbsoluteUrl
+        };
+
+}());
+%>

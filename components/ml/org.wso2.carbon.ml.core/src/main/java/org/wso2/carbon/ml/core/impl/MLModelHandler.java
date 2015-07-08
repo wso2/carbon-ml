@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import hex.Model;
 import hex.deeplearning.DeepLearningModel;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -38,15 +37,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
-import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SQLContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -55,18 +51,17 @@ import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
+import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModel;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.core.spark.algorithms.StackedAutoencodersModel;
-import org.wso2.carbon.ml.core.spark.algorithms.SupervisedModel;
-import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
-import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -103,7 +98,7 @@ public class MLModelHandler {
      * @param model model to be created.
      * @throws MLModelHandlerException
      */
-    public MLModelNew createModel(MLModelNew model) throws MLModelHandlerException {
+    public MLModelData createModel(MLModelData model) throws MLModelHandlerException {
         try {
             // set the model storage configurations
             ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
@@ -145,7 +140,7 @@ public class MLModelHandler {
         }
     }
 
-    public MLModelNew getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
+    public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
         } catch (DatabaseHandlerException e) {
@@ -153,7 +148,7 @@ public class MLModelHandler {
         }
     }
 
-    public List<MLModelNew> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
+    public List<MLModelData> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.getAllModels(tenantId, userName);
         } catch (DatabaseHandlerException e) {
@@ -170,9 +165,9 @@ public class MLModelHandler {
     }
 
     /**
-     * @param type      type of the storage file, hdfs etc.
-     * @param location  root directory of the file location.
-     * @throws          MLModelHandlerException
+     * @param type type of the storage file, hdfs etc.
+     * @param location root directory of the file location.
+     * @throws MLModelHandlerException
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
         try {
@@ -181,14 +176,13 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
-    
 
     /**
      * Get the summary of a model
      * 
-     * @param modelId   ID of the model
-     * @return          Model Summary
-     * @throws          MLModelHandlerException
+     * @param modelId ID of the model
+     * @return Model Summary
+     * @throws MLModelHandlerException
      */
     public ModelSummary getModelSummary(long modelId) throws MLModelHandlerException {
         try {
@@ -215,7 +209,6 @@ public class MLModelHandler {
                     modelId, tenantId, userName);
             throw new MLModelHandlerException(msg);
         }
-        
 
         /**
          * Spark looks for various configuration files using thread context class loader. Therefore, the class loader
@@ -224,7 +217,6 @@ public class MLModelHandler {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try {
-            MLModelNew model = databaseService.getModel(tenantId, userName, modelId);
             // class loader is switched to JavaSparkContext.class's class loader
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
@@ -236,22 +228,11 @@ public class MLModelHandler {
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
+            MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
             facts.setDatasetURL(dataUrl);
-            Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
 
             JavaRDD<String> lines;
-
-            MLModelConfigurationContext context = new MLModelConfigurationContext();
-            context.setModelId(modelId);
-            context.setColumnSeparator(columnSeparator);
-            context.setFacts(facts);
-            context.setModel(model);
-            context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
-            int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
-            context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
-            context.setNewToOldIndicesList(getNewToOldIndicesList(context.getIncludedFeaturesMap()));
-            context.setResponseIndex(responseIndex);
 
             JavaSparkContext sparkContext = null;
             sparkConf.setAppName(String.valueOf(modelId));
@@ -263,12 +244,9 @@ public class MLModelHandler {
             } catch (MLMalformedDatasetException e) {
                 throw new MLModelBuilderException("Failed to build the model [id] " + modelId, e);
             }
-            
-            // get header line
-            String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
-            context.setSparkContext(sparkContext);
-            context.setLines(lines);
-            context.setHeaderRow(headerRow);
+
+            MLModelConfigurationContext context = buildMLModelConfigurationContext(modelId, datasetVersionId,
+                    columnSeparator, model, facts, lines, sparkContext);
 
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
@@ -285,7 +263,29 @@ public class MLModelHandler {
             Thread.currentThread().setContextClassLoader(tccl);
         }
     }
-    
+
+    private MLModelConfigurationContext buildMLModelConfigurationContext(long modelId, long datasetVersionId,
+            String columnSeparator, MLModelData model, Workflow facts, JavaRDD<String> lines,
+            JavaSparkContext sparkContext) throws DatabaseHandlerException {
+        MLModelConfigurationContext context = new MLModelConfigurationContext();
+        context.setModelId(modelId);
+        context.setColumnSeparator(columnSeparator);
+        context.setFacts(facts);
+        context.setModel(model);
+        Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
+        context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
+        int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
+        context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
+        context.setNewToOldIndicesList(getNewToOldIndicesList(context.getIncludedFeaturesMap()));
+        context.setResponseIndex(responseIndex);
+        context.setSparkContext(sparkContext);
+        context.setLines(lines);
+        // get header line
+        String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
+        context.setHeaderRow(headerRow);
+        return context;
+    }
+
     public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
             throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
@@ -311,8 +311,41 @@ public class MLModelHandler {
         }
 
     }
-    
-    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data) throws MLModelHandlerException {
+
+    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
+            throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                data.add(dataRow);
+            }
+            List<String> predictions = (List<String>) predict(tenantId, userName, modelId, data);
+            String predictionsWithData = new String();
+            for(int i = 0; i < predictions.size(); i++) {
+                predictionsWithData += Arrays.toString(data.get(i)).replaceAll(MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
+                        + csvFormat.getDelimiter() + predictions.get(i) + MLConstants.NEW_LINE;
+            }
+            return predictionsWithData;
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                dataStream.close();
+                br.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+    }
+
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data)
+            throws MLModelHandlerException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
             String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
@@ -333,14 +366,13 @@ public class MLModelHandler {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelBuilderException("Invalid model ID: "+modelId);
+                throw new MLModelBuilderException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             
             log.info("Algorithm Name: " + model.getAlgorithmName());
             if(!model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
-                log.info("Not stacked autoencoder");
                 MLIOFactory ioFactory = new MLIOFactory(mlProperties);
                 MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -352,9 +384,13 @@ public class MLModelHandler {
                 // adapter will write the model and close the stream.
                 String outPath = storageLocation + File.separator + modelName;
                 outputAdapter.write(outPath, is);
-                databaseService.updateModelStorage(modelId, storageType, outPath);
+            databaseService.updateModelStorage(modelId, storageType, outPath);
             } else {
                 log.info("Stacked autoencoder persisting....");
+                StackedAutoencodersModel sam = (StackedAutoencodersModel) model.getModel();
+                sam.setStorageLocation(storageLocation);
+                model.setModel(sam);
+                
                 MLIOFactory ioFactory = new MLIOFactory(mlProperties);
                 MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -366,27 +402,16 @@ public class MLModelHandler {
                 // adapter will write the model and close the stream.
                 log.info("StorageLocation: " + storageLocation);
                 String outPath = storageLocation + File.separator + modelName;
-                outputAdapter.write(outPath, is);
+                outputAdapter.write(outPath, is);                
                 
-                if(model.getModel()==null){
-                    log.info("Model is null");
-                } else {
-                    log.info("Model is not null");
-                }
-                if(model.getAlgorithmName().equals(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
-                    List<Key> keys = (List<Key>) ((StackedAutoencodersModel) model.getModel()).getDeepLearningModelKeys();
-                    String storageLocationChanged  = "file" + storageLocation.substring(1).replace("\\", "/");
-                    log.info(FileUtils.getURI(storageLocationChanged));
-                    new ObjectTreeBinarySerializer().save(keys,  FileUtils.getURI(storageLocationChanged)); 
-                }
                 databaseService.updateModelStorage(modelId, storageType, outPath);
-                log.info("Successfully saved keys");
+                log.info("Successfully saved SAE");
             }
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
     }
-    
+
     private List<Integer> getNewToOldIndicesList(SortedMap<Integer, String> includedFeatures) {
         List<Integer> indicesList = new ArrayList<Integer>();
         for (int featureIdx : includedFeatures.keySet()) {
@@ -394,7 +419,7 @@ public class MLModelHandler {
         }
         return indicesList;
     }
-    
+
     public MLModel retrieveModel(long modelId) throws MLModelHandlerException {
         InputStream in = null;
         ObjectInputStream ois = null;
@@ -402,7 +427,7 @@ public class MLModelHandler {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelHandlerException("Invalid model ID: "+modelId);
+                throw new MLModelHandlerException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             storageLocation = storage.getLocation();
@@ -410,23 +435,16 @@ public class MLModelHandler {
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
+
             MLModel model = (MLModel) ois.readObject();
             
-            if(model.getModel()==null){
-                String storageLocationChanged  = "file" + storageLocation.substring(1).replace("\\", "/");
-                List<Key> importedKeys = new ObjectTreeBinarySerializer().load(new File(storageLocationChanged).toURI());                
-                DeepLearningModel dlModel = (DeepLearningModel) importedKeys.get(0).get();
-                StackedAutoencodersModel saeModel = new StackedAutoencodersModel();
-                saeModel.setDeepLearningModelKeys(importedKeys);
-                saeModel.setDeepLearningModel(dlModel);
-                model.setModel(saeModel);
-                
+            if(model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){                                                
             }
+            
             log.info("Successfully retrieved model");
             return model;
         } catch (Exception e) {                       
-            throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
-            
+            throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);            
         } finally {
             if (in != null) {
                 try {
@@ -446,9 +464,9 @@ public class MLModelHandler {
     /**
      * Publish a ML model to registry.
      *
-     * @param tenantId    Unique ID of the tenant.
-     * @param userName    Username of the user.
-     * @param modelId     Unique ID of the built ML model.
+     * @param tenantId Unique ID of the tenant.
+     * @param userName Username of the user.
+     * @param modelId Unique ID of the built ML model.
      * @throws MLModelPublisherException
      */
     public void publishModel(int tenantId, String userName, long modelId) throws MLModelPublisherException {
@@ -457,7 +475,7 @@ public class MLModelHandler {
             // read model
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelPublisherException("Invalid model ID: "+modelId);
+                throw new MLModelPublisherException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -487,8 +505,8 @@ public class MLModelHandler {
         }
     }
 
-    public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString, int noOfClusters)
-            throws DatabaseHandlerException, MLMalformedDatasetException {
+    public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
+            int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
         // assign current thread context class loader to a variable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         JavaSparkContext sparkContext = null;
@@ -505,7 +523,7 @@ public class MLModelHandler {
             Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
             // create a new spark configuration
             SparkConf sparkConf = MLCoreServiceValueHolder.getInstance().getSparkConf();
-			// set app name
+            // set app name
             sparkConf.setAppName(String.valueOf(datasetId));
             // create a new java spark context
             sparkContext = new JavaSparkContext(sparkConf);
@@ -524,26 +542,25 @@ public class MLModelHandler {
             }
             JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors = null;
 
-            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings().getSampleSize();
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
+                    .getSampleSize();
             double sampleFraction = sampleSize / (lines.count() - 1);
             // Use entire dataset if number of records is less than or equal to sample fraction
             if (sampleFraction >= 1.0) {
                 featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter())
-                        .map(new TokensToVectors(featureIndices));
+                        .filter(new MissingValuesFilter()).map(new TokensToVectors(featureIndices));
             }
             // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
             else {
-                featureVectors = lines.filter(new HeaderFilter(headerRow))
-                        .sample(false, sampleFraction).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter())
+                featureVectors = lines.filter(new HeaderFilter(headerRow)).sample(false, sampleFraction)
+                        .map(new LineToTokens(pattern)).filter(new MissingValuesFilter())
                         .map(new TokensToVectors(featureIndices));
             }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
             // Populate cluster points list with predicted clusters and features
-            List<Tuple2<Integer, org.apache.spark.mllib.linalg.Vector>> kMeansPredictions = kMeansModel.predict(featureVectors).zip(featureVectors)
-                    .collect();
+            List<Tuple2<Integer, org.apache.spark.mllib.linalg.Vector>> kMeansPredictions = kMeansModel
+                    .predict(featureVectors).zip(featureVectors).collect();
             for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
                 ClusterPoint clusterPoint = new ClusterPoint();
                 clusterPoint.setCluster(kMeansPrediction._1());
@@ -552,7 +569,8 @@ public class MLModelHandler {
             }
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
-            throw new DatabaseHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
+            throw new MLModelHandlerException("An error occurred while generating cluster points: " + e.getMessage(),
+                    e);
         } finally {
             if (sparkContext != null) {
                 sparkContext.close();
@@ -565,29 +583,11 @@ public class MLModelHandler {
     private JavaRDD<String> extractLines(int tenantId, long datasetId, JavaSparkContext sparkContext,
             String datasetURL, String dataSourceType, String dataType) throws MLMalformedDatasetException {
         JavaRDD<String> lines;
-        if (MLConstants.DATASET_SOURCE_TYPE_DAS.equalsIgnoreCase(dataSourceType)) {
-            CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-            String tableName = datasetURL;
-            String tableSchema;
+        if (DatasetType.DAS == DatasetType.getDatasetType(dataSourceType)) {
             try {
-                tableSchema = MLUtils.extractTableSchema(datasetURL, tenantId);
-                SQLContext sqlCtx = new SQLContext(sparkContext);
-                sqlCtx.sql("CREATE TEMPORARY TABLE ML_MODEL_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
-                        + "OPTIONS ("
-                        + "tenantId \""
-                        + tenantId
-                        + "\", "
-                        + "tableName \""
-                        + tableName
-                        + "\", "
-                        + "schema \"" + tableSchema + "\"" + ")");
-
-                DataFrame dataFrame = sqlCtx.sql("select * from ML_MODEL_REF");
-                JavaRDD<Row> rows = dataFrame.javaRDD();
-                lines = rows.map(new RowsToLines(dataFormat.getDelimiter() + ""));
+                lines = MLUtils.getLinesFromDASTable(datasetURL, tenantId, sparkContext);
             } catch (Exception e) {
-                throw new MLMalformedDatasetException("Failed to get cluster points for dataset [id] " + datasetId
-                        + " - Unable to extract the table schema from table: " + datasetURL, e);
+                throw new MLMalformedDatasetException("Unable to extract the data from DAS table: " + datasetURL, e);
             }
         } else {
             // parse lines in the dataset
@@ -603,7 +603,8 @@ public class MLModelHandler {
         private int tenantId;
         private String tenantDomain;
         private String username;
-        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance().getEmailNotificationEndpoint();
+        private String emailNotificationEndpoint = MLCoreServiceValueHolder.getInstance()
+                .getEmailNotificationEndpoint();
 
         public ModelBuilder(long modelId, MLModelConfigurationContext context) {
             id = modelId;
@@ -611,55 +612,45 @@ public class MLModelHandler {
             CarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             tenantId = carbonContext.getTenantId();
             tenantDomain = carbonContext.getTenantDomain();
-            username  = carbonContext.getUsername();
+            username = carbonContext.getUsername();
         }
 
         @Override
         public void run() {
-            String[] emailTemplateParameters = {username};
+            String[] emailTemplateParameters = { username };
             try {
-                //Set tenant info in the carbon context
+                // Set tenant info in the carbon context
                 PrivilegedCarbonContext.startTenantFlow();
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
-                
+
                 // class loader is switched to JavaSparkContext.class's class loader
                 Thread.currentThread().setContextClassLoader(JavaSparkContext.class.getClassLoader());
 
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
-                MLModel model;
-                if (MLConstants.CLASSIFICATION.equals(algorithmType)
-                        || MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
-                    SupervisedModel supervisedModel = new SupervisedModel();
-                    model = supervisedModel.buildModel(ctxt);
-                } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
-                    UnsupervisedModel unsupervisedModel = new UnsupervisedModel();
-                    model = unsupervisedModel.buildModel(ctxt);
-                } else if (MLConstants.DEEPLEARNING.equals((algorithmType))) {
-                    DeeplearningModel deeplearningModel = new DeeplearningModel();
-                    model = deeplearningModel.buildModel(ctxt);
-                }
-                else {
-                    throw new MLModelBuilderException(String.format(
-                            "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
-                }
+              
+                MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
+                MLModel model = modelBuilder.build();
+                
                 persistModel(id, ctxt.getModel().getName(), model);
-                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint, emailTemplateParameters);
+                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
+                        emailTemplateParameters);
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
                     databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
-                    databaseService.updateModelError(id, e.getMessage()+"\n"+ctxt.getFacts().toString());
+                    databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e);
                 }
-                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint, emailTemplateParameters);
+                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
+                        emailTemplateParameters);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
     }
-    
+
     private void handleNull(Object obj, String msg) throws MLModelHandlerException {
         if (obj == null) {
             throw new MLModelHandlerException(msg);

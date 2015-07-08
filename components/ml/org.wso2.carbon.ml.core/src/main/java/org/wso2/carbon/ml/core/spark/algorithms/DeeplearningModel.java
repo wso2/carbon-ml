@@ -25,6 +25,7 @@ import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.impl.H2OServer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 import org.wso2.carbon.ml.core.spark.summary.DeeplearningModelSummary;
@@ -109,41 +110,32 @@ public class DeeplearningModel {
     private ModelSummary buildDeepLearningModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
         try {
+            H2OServer.startH2O();
             StackedAutoencodersClassifier saeClassifier = new StackedAutoencodersClassifier();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             
             File trainFile = new File(workflow.getDatasetURL());
+            //train the stacked autoencoder
             StackedAutoencodersModel saeModel = saeClassifier.train(trainFile,
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     Integer.parseInt(hyperParameters.get(MLConstants.LAYER_COUNT)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
-                    workflow.getTrainDataFraction(),workflow.getResponseVariable(),modelID);
-            
-            if (saeModel.getDeepLearningModel() != null){
-                log.info("SaeModel DeepLearningModel is not null");
-                }
-            else {
-                log.info("SaeModel DeepLearningModel is null");
-            }
+                    workflow.getTrainDataFraction(),workflow.getResponseVariable(),modelID);            
 
+            //make predictions with the trained model
             JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext,saeModel, testingData);
             
+            //get model summary
             DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils
                     .getDeeplearningModelSummary(sparkContext, testingData, predictionsAndLabels);
             
             mlModel.setModel(saeModel);
-            if (deeplearningModelSummary != null){
-                log.info("DeepLearningModelSummary is not null ...");
-            } else {
-                log.info("DeepLearningModelSummary is null ...");
-            }
-            
-            //mlModel.setModel(saeModel);
             
             deeplearningModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             deeplearningModelSummary.setAlgorithm(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString());
            
+            //set accuracy values
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             deeplearningModelSummary.setModelAccuracy(modelAccuracy);            

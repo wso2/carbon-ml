@@ -37,7 +37,7 @@ import org.wso2.carbon.ml.commons.domain.MLAnalysis;
 import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
 import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
 import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -496,7 +496,7 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLModelNew> models = mlAnalysisHandler.getAllModelsOfAnalysis(tenantId, userName, analysisId);
+            List<MLModelData> models = mlAnalysisHandler.getAllModelsOfAnalysis(tenantId, userName, analysisId);
             return Response.ok(models).build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(

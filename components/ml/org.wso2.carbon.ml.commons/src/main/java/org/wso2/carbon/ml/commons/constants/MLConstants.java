@@ -36,10 +36,6 @@ public class MLConstants {
     public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
     public static final String UPLOAD_LIMIT = "uploadLimit";
     
-    public static final String DATASET_SOURCE_TYPE_FILE = "file";
-    public static final String DATASET_SOURCE_TYPE_DAS = "das";
-    public static final String DATASET_SOURCE_TYPE_HDFS = "hdfs";
-    
     // Summary statistic calculation configurations  
     public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
     public static final String HISTOGRAM_BINS = "histogramBins";
@@ -114,6 +110,7 @@ public class MLConstants {
     public static final String PARAMETERS = "parameters";
     public static final String PARAMETER = "parameter";
     public static final String PROPERTY = "property";
+
     public static final String CLASSIFICATION = "Classification";
     public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
     public static final String CLUSTERING = "Clustering";
@@ -176,6 +173,10 @@ public class MLConstants {
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
+
+    // to build predictions CSV
+    public static final String WHITE_SPACE_SQUARE_BRACKET_REGEX = "\\s|\\[|\\]";
+    public static final String NEW_LINE = "\n";
 
     // enums
     public enum SUPERVISED_ALGORITHM {

@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>ml</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
@@ -38,8 +39,16 @@
 			<artifactId>hadoop-client</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
+			<artifactId>commons-math3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -48,14 +57,6 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.osgi</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.osgi</groupId>
@@ -70,20 +71,8 @@
 			<artifactId>org.wso2.carbon.ml.commons</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents.wso2</groupId>
-			<artifactId>httpcore</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.wso2.carbon.analytics-common</groupId>
 			<artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.analytics-common</groupId>
-			<artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
 		</dependency>
 
 		<!-- Spark Dependencies -->
@@ -100,109 +89,37 @@
 			<artifactId>spark-mllib_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.org.apache.spark</groupId>
-			<artifactId>spark-streaming_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.org.scalanlp</groupId>
-			<artifactId>breeze_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.jblas</groupId>
-			<artifactId>jblas</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.spire-math</groupId>
-			<artifactId>spire_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.uncommons.maths</groupId>
-			<artifactId>uncommons-maths</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.json4s</groupId>
-			<artifactId>json4s-jackson_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.twitter</groupId>
-			<artifactId>chill_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.clearspring.analytics</groupId>
-			<artifactId>stream</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty.wso2</groupId>
-			<artifactId>netty-all</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
 		</dependency>
 		<dependency>
-                	<groupId>org.scala-lang</groupId>
-                	<artifactId>scala-reflect</artifactId>
-            	</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.utils</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
+			<groupId>org.apache.axis2.wso2</groupId>
+			<artifactId>axis2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.output.adapter.email</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.com.esotericsoftware.minlog</groupId>
-			<artifactId>minlog</artifactId>
+			<groupId>org.wso2.orbit.org.scalanlp</groupId>
+			<artifactId>breeze_2.10</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.objenesis</groupId>
-			<artifactId>objenesis</artifactId>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.registry.api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.org.apache.mesos</groupId>
-			<artifactId>mesos</artifactId>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.spark-project.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.github.rwl</groupId>
-			<artifactId>jtransforms</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.github.fommil.netlib</groupId>
-			<artifactId>core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
-			<artifactId>arpack_combined</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.spark-project.akka</groupId>
-			<artifactId>akka-remote_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.spark-project.akka</groupId>
-			<artifactId>akka-actor_2.10</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.typesafe</groupId>
-			<artifactId>config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty</artifactId>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 		</dependency>
 		<dependency>
                    	<groupId>org.wso2.carbon.analytics</groupId>
@@ -223,9 +140,7 @@
 			<groupId>ai.h2o</groupId>
 			<artifactId>h2o-algos</artifactId>
 			<version>3.0.0.25</version>
-		</dependency>
-
-			
+		</dependency>			
 	</dependencies>
 	<build>
 		<plugins>

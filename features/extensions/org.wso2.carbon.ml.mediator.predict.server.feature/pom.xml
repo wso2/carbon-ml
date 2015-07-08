@@ -15,58 +15,59 @@
  ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.wso2.carbon.ml</groupId>
-        <artifactId>ml-extension-features</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.wso2.carbon.ml</groupId>
+		<artifactId>ml-extension-features</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.ml.mediator.predict.server.feature</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 Carbon - Predict Mediator Feature</name>
-    <url>http://wso2.org</url>
-    <description>This feature contains the Predict Mediator</description>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.ml.mediator.predict.server.feature</artifactId>
+	<packaging>pom</packaging>
+	<name>WSO2 Carbon - Predict Mediator Feature</name>
+	<url>http://wso2.org</url>
+	<description>This feature contains the Predict Mediator</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.mediator.predict</artifactId>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.wso2.carbon.ml</groupId>
+			<artifactId>org.wso2.carbon.ml.mediator.predict</artifactId>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.wso2.maven</groupId>
-                <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>4-p2-feature-generation</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>p2-feature-gen</goal>
-                        </goals>
-                        <configuration>
-                            <id>org.wso2.carbon.ml.mediator.predict.server</id>
-                            <propertiesFile>../../ml/feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
-                                </properties>
-                            </adviceFile>
-                            <bundles>
-                                <bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict</bundleDef>
-                            </bundles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.wso2.maven</groupId>
+				<artifactId>carbon-p2-plugin</artifactId>
+				<version>${carbon.p2.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>4-p2-feature-generation</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-feature-gen</goal>
+						</goals>
+						<configuration>
+							<id>org.wso2.carbon.ml.mediator.predict.server</id>
+							<propertiesFile>../../ml/feature.properties</propertiesFile>
+							<adviceFile>
+								<properties>
+									<propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
+									<propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+								</properties>
+							</adviceFile>
+							<bundles>
+								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.mediator.predict</bundleDef>
+							</bundles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
