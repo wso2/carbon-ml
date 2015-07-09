@@ -293,8 +293,8 @@ public class MLModelHandler {
 
     }
 
-    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
-            throws MLModelHandlerException {
+    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
+            InputStream dataStream) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
@@ -306,13 +306,14 @@ public class MLModelHandler {
             }
             // cloning unencoded data to append with predictions
             List<String[]> unencodedData = new ArrayList<String[]>(data.size());
-            for(String[] item: data) {
+            for (String[] item : data) {
                 unencodedData.add(item.clone());
             }
             List<?> predictions = predict(tenantId, userName, modelId, data);
             String predictionsWithData = new String();
-            for(int i = 0; i < predictions.size(); i++) {
-                predictionsWithData += Arrays.toString(unencodedData.get(i)).replaceAll(MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
+            for (int i = 0; i < predictions.size(); i++) {
+                predictionsWithData += Arrays.toString(unencodedData.get(i)).replaceAll(
+                        MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
                         + csvFormat.getDelimiter() + String.valueOf(predictions.get(i)) + MLConstants.NEW_LINE;
             }
             return predictionsWithData;
@@ -369,6 +370,7 @@ public class MLModelHandler {
             String outPath = storageLocation + File.separator + modelName;
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
+            log.info(String.format("Successfully persisted the model [id] %s", modelId));
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
@@ -516,8 +518,7 @@ public class MLModelHandler {
             }
             return clusterPoints;
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException("An error occurred while generating cluster points: " + e.getMessage(),
-                    e);
+            throw new MLModelHandlerException("An error occurred while generating cluster points: " + e.getMessage(), e);
         }
     }
 
@@ -560,6 +561,7 @@ public class MLModelHandler {
         public void run() {
             String[] emailTemplateParameters = new String[2];
             try {
+                long t1 = System.currentTimeMillis();
                 emailTemplateParameters[0] = username;
                 // Set tenant info in the carbon context
                 PrivilegedCarbonContext.startTenantFlow();
@@ -567,15 +569,19 @@ public class MLModelHandler {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
 
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
-                
+
                 MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
                 MLModel model = modelBuilder.build();
-                
+                log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
+                        (double) (System.currentTimeMillis() - t1)/1000));
+
                 persistModel(id, ctxt.getModel().getName(), model);
 
-                emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
-                EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
-                        emailTemplateParameters);
+                if (emailNotificationEndpoint != null) {
+                    emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
+                    EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
+                            emailTemplateParameters);
+                }
             } catch (Exception e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
