@@ -139,18 +139,25 @@
                                 </div>
                             </div>
 
-                            <div class="filter-md">
-                                <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                <div class="input-control text">
-                                    <select class="form-control" id="predicted-actual-x-features"></select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="filter-md">
+                                        <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                        <div class="input-control text">
+                                            <select class="form-control" id="predicted-actual-x-features"></select>
+                                        </div>
+                                    </div>                              
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="filter-md">
+                                        <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                        <div class="input-control text">
+                                            <select class="form-control" id="predicted-actual-y-features"></select>
+                                        </div>
+                                    </div>                              
+                                </div>                              
                             </div>
-                            <div class="filter-md">
-                                <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                <div class="input-control text">
-                                    <select class="form-control" id="predicted-actual-y-features"></select>
-                                </div>
-                            </div>                    
+
                         </div>
 
                         <div id="residual">
@@ -173,7 +180,8 @@
                                     <select class="form-control" id="residual-features"></select>
                                 </div>
                             </div>
-                        </div>                
+                        </div>   
+
                     </div>
                 </div>                          
             
@@ -226,6 +234,8 @@ var predictedVsActuals;
 var numericalFeatureNames;
 var responseVariable;
 
+var algorithm;
+var numOfClasses;
 var testResultDataPointsSample;
 var features;
 // variables for chart marker sizes
@@ -241,7 +251,7 @@ var featureName;
 
 // redraw charts upon changes in selections
 $(document).on('change','select[id="predicted-actual-x-features"], select[id="predicted-actual-y-features"]',function() {
-    drawPredictedVsActualChart(testResultDataPointsSample);
+    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
 });
 $(document).on('change','select[id="residual-features"]',function() {
     drawResidualPlot(testResultDataPointsSample);
@@ -306,9 +316,9 @@ $( document ).ready(function() {
         type: 'GET',
         url: serverUrl + "/api/models/" + modelId + "/summary",
         async : false,
-        success: function(res){
+        success: function(res) {
 
-            var algorithm = sanitize(res.algorithm);
+            algorithm = sanitize(res.algorithm);
 
             if (algorithm == 'LOGISTIC_REGRESSION' || algorithm == 'LOGISTIC_REGRESSION_LBFGS' || algorithm == 'SVM') {
                 if(res.modelAccuracy) {
@@ -333,6 +343,7 @@ $( document ).ready(function() {
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
+                numOfClasses = res.multiclassConfusionMatrix.size;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
                 if(features.length > 0) {
 	                $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
@@ -344,7 +355,7 @@ $( document ).ready(function() {
 	                });                    
                     $('#predicted-actual-y-features option')[1].selected = true;
 	                // draw predicted vs. actual chart
-	                drawPredictedVsActualChart(testResultDataPointsSample);
+	                drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
                 }
                 else {
                 	var chartType = 'predicted vs. actual chart';
@@ -374,7 +385,7 @@ $( document ).ready(function() {
                     });                    
                     $('#predicted-actual-y-features option')[1].selected = true;
 	                // draw predicted vs. actual chart
-	                drawPredictedVsActualChart(testResultDataPointsSample);
+	                drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
                 }
                 else {
                     var chartType = 'predicted vs. actual chart';
@@ -502,8 +513,8 @@ function drawWeightsChart (data) {
                         .color(["#1395ba", "#117899", "#0f5b78", "#0d3c55", "#c02e1d", "#d94e1f", "#f16c20", "#ef8b2c", "#ecaa38", "#ebc844", "a2b86c", "5ca793"]);
 
         chart.yAxis.tickFormat(d3.format(".2e")).showMaxMin(false);
-
-        chart.xAxis.axisLabel('Features')
+        chart.xAxis.axisLabel('Features');
+        chart.margin({ bottom: 60 });
 
         d3.select('#weights-chart svg')
             .datum(data)
@@ -515,7 +526,7 @@ function drawWeightsChart (data) {
 }
 
 // function to draw predicted vs. actual chart
-function drawPredictedVsActualChart(testResultDataPointsSample) {
+function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses) {
 
     var xAxisFeatureIndex = $("#predicted-actual-x-features").val();
     var yAxisFeatureIndex = $("#predicted-actual-y-features").val();
@@ -533,8 +544,17 @@ function drawPredictedVsActualChart(testResultDataPointsSample) {
 
         var actual = testResultDataPointsSample[i].predictedVsActual.actual;
         var predicted = testResultDataPointsSample[i].predictedVsActual.predicted;
-        var labeledPredicted = labelPredicted(predicted, 0.5);
 
+        // set predicted class label according to algorithm type
+        if((algorithm == 'LOGISTIC_REGRESSION') || (algorithm == 'LOGISTIC_REGRESSION_LBFGS' && numOfClasses == 2)) {
+            labeledPredicted = labelPredicted(predicted, 0.5);
+        }
+        else if(algorithm == 'SVM') {
+            labeledPredicted = labelPredictedSvm(predicted);            
+        }
+        else {
+            labeledPredicted = predicted;
+        }
         if(actual == labeledPredicted) {
             predictedVsActualPoint[2] = 'Correct';
         }
@@ -655,13 +675,22 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
     $(cssSelector).html(multiclassConfusionMatrixHtml);   
 }
 
-// function to get the binary value of a predicted value for given threshold
+// function to get the binary class label of a predicted value for given threshold
 function labelPredicted(actualValue, threshold) {
 	var actual = 0;
 	if (actualValue >= threshold) {
 		actual = 1;
 	}
 	return actual;
+}
+
+// function to get the binary class label of a predicted value
+function labelPredictedSvm(actualValue) {
+    var actual = 0;
+    if (actualValue >= 0) {
+        actual = 1;
+    }
+    return actual;
 }
 
 </script>
