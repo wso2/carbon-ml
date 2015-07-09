@@ -41,6 +41,10 @@ public abstract class DatasetProcessor {
         this.setDataset(dataset);
     }
     
+    /**
+     * Perform basic validation required by all dataset processors.
+     * @throws MLInputValidationException
+     */
     public void validate() throws MLInputValidationException {
         String datasetName = dataset.getName();
         String version = dataset.getVersion();
@@ -54,6 +58,12 @@ public abstract class DatasetProcessor {
         }
     }
     
+    /**
+     * Process a given dataset and use {@link DatasetProcessor#setDataset(MLDataset)} and
+     * {@link DatasetProcessor#setSamplePoints(SamplePoints))} to set expected data.
+     * 
+     * @throws MLDataProcessingException
+     */
     public abstract void process() throws MLDataProcessingException;
     
     public void handleValidationException(String msg) throws MLInputValidationException {
