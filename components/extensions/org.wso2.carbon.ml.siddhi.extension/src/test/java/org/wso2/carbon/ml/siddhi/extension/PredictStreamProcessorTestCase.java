@@ -74,7 +74,7 @@ public class PredictStreamProcessorTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
         inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
-        Thread.sleep(1000);
+        sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
         siddhiManager.shutdown();
@@ -112,7 +112,7 @@ public class PredictStreamProcessorTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
         inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
-        Thread.sleep(1000);
+        sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
     }
@@ -149,8 +149,20 @@ public class PredictStreamProcessorTestCase {
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
         inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
-        Thread.sleep(1000);
+        sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
+    }
+
+    private void sleepTillArrive(int milliseconds) {
+        int totalTime = 0;
+        while (!eventArrived && totalTime < milliseconds) {
+            int t = 1000;
+            try {
+                Thread.sleep(t);
+            } catch (InterruptedException ignore) {
+            }
+            totalTime += t;
+        }
     }
 }
