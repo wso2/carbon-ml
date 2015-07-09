@@ -322,7 +322,7 @@ $( document ).ready(function() {
 
             if (algorithm == 'LOGISTIC_REGRESSION' || algorithm == 'LOGISTIC_REGRESSION_LBFGS' || algorithm == 'SVM') {
                 if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(4)*100 + "%]");    
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
                 }                
                 $("#residual").remove();
                 // format data and draw ROC graph
@@ -364,7 +364,7 @@ $( document ).ready(function() {
             }
             else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST' || algorithm == 'NAIVE_BAYES') {
                 if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(4)*100 + "%]");    
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
                 }                
                 // remove not applicable charts/tables
                 $("#roc-graph, #weights-chart").closest("div.wr-graph-element").remove();

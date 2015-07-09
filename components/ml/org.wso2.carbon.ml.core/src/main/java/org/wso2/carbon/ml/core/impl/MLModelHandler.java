@@ -310,21 +310,22 @@ public class MLModelHandler {
                 unencodedData.add(item.clone());
             }
             List<?> predictions = predict(tenantId, userName, modelId, data);
-            String predictionsWithData = new String();
+            StringBuilder predictionsWithData = new StringBuilder();
             for (int i = 0; i < predictions.size(); i++) {
-                predictionsWithData += Arrays.toString(unencodedData.get(i)).replaceAll(
-                        MLConstants.WHITE_SPACE_SQUARE_BRACKET_REGEX, "")
-                        + csvFormat.getDelimiter() + String.valueOf(predictions.get(i)) + MLConstants.NEW_LINE;
+                predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter())
+                        + String.valueOf(predictions.get(i)) + MLConstants.NEW_LINE);
             }
-            return predictionsWithData;
+            return predictionsWithData.toString();
         } catch (IOException e) {
             String msg = "Failed to read the data points for prediction for model [id] " + modelId;
             log.error(msg, e);
             throw new MLModelHandlerException(msg, e);
         } finally {
             try {
-                dataStream.close();
-                br.close();
+                if (dataStream != null && br != null) {
+                    dataStream.close();
+                    br.close();
+                }
             } catch (IOException ignore) {
             }
         }

@@ -528,4 +528,20 @@ public class MLUtils {
         }
         return link;
     }
+
+    /**
+     * Utility method to convert a String array to CSV/TSV row string
+     *
+     * @param array String array to be converted
+     * @param delimiter Delimiter to be used (comma for CSV tab for TSV)
+     * @return CSV/TSV row string
+     */
+    public static String arrayToCsvString(String[] array, char delimiter) {
+        StringBuilder arrayString = new StringBuilder();
+        for(String arrayElement : array) {
+            arrayString.append(arrayElement);
+            arrayString.append(delimiter);
+        }
+        return arrayString.toString();
+    }
 }
