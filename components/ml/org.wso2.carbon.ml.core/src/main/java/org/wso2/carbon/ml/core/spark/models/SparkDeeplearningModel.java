@@ -76,13 +76,13 @@ public class SparkDeeplearningModel implements Externalizable{
         List<Key> keys = new LinkedList<Key>();
         //cannot add published keys, gives nullpointer 
         keys.add(dlModel._key);
-        new ObjectTreeBinarySerializer().save(keys, FileUtils.getURI(getURIStringForLocation(storageLocation)));
+        new ObjectTreeBinarySerializer().save(keys, FileUtils.getURI(storageLocation));
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         storageLocation = (String) in.readObject();
-        List<Key> keys = new ObjectTreeBinarySerializer().load(FileUtils.getURI(getURIStringForLocation(storageLocation)));
+        List<Key> keys = new ObjectTreeBinarySerializer().load(FileUtils.getURI(storageLocation));
         this.dlModel = (DeepLearningModel) keys.get(0).get();
     }
 }
