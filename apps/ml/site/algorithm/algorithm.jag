@@ -112,6 +112,9 @@
                         <optgroup label="Clustering">
                         	<option value="K_MEANS">K-MEANS</option>
                         </optgroup>
+                        <optgroup label="Deep Learning">
+                        	<option value="STACKED_AUTOENCODERS">STACKED AUTOENCODERS</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -269,6 +272,9 @@ $( document ).ready(function() {
         }
         else if (algorithmName == 'K_MEANS') {
             algorithmType = 'Clustering';            
+        }
+        else if (algorithmName == 'STACKED_AUTOENCODERS') {
+            algorithmType = 'Deeplearning';            
         }
 
         // set model configurations for this analysis        

@@ -412,6 +412,36 @@ $( document ).ready(function() {
                     $('#residual').html(getInfo(chartType));
                 }                    
             }
+            else if (algorithm == 'STACKED_AUTOENCODERS') {
+                if(res.modelAccuracy) {
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(4)*100 + "%]");    
+                }                
+                // remove not applicable charts/tables
+                $("#roc-graph, #weights-chart").closest("div.wr-graph-element").remove();
+                $("#residual").remove();
+                // draw confusion matrix                
+                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
+                // draw feature select
+                testResultDataPointsSample = res.testResultDataPointsSample;
+                features = res.features;
+                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
+                if(features.length > 0) {
+                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                    $.each(features,function(index, feature){
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                            value: index,
+                            text : sanitize(feature)
+                        }));
+                    });                    
+                    $('#predicted-actual-y-features option')[1].selected = true;
+	                // draw predicted vs. actual chart
+	                drawPredictedVsActualChart(testResultDataPointsSample);
+                }
+                else {
+                    var chartType = 'predicted vs. actual chart';
+                    $('#predicted-vs-actual').html(getInfo(chartType));
+                }                    
+            }          
         },
         error: function(res){
             var errorText = res.responseText
