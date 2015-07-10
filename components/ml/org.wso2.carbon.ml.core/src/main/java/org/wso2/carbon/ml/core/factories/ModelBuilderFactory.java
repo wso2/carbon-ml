@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.factories;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
 
@@ -32,6 +33,9 @@ public class ModelBuilderFactory {
             throws MLInputValidationException {
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
         MLModelBuilder datasetProcessor = null;
+        
+        System.out.println(algorithmType);
+        
         switch (type) {
         case CLASSIFICATION:
             datasetProcessor = new SupervisedSparkModelBuilder(context);
@@ -41,6 +45,10 @@ public class ModelBuilderFactory {
             break;
         case CLUSTERING:
             datasetProcessor = new UnsupervisedSparkModelBuilder(context);
+            break;
+        case DEEPLEARNING:
+            System.out.println("Getting deeplearning model builder");
+            datasetProcessor = new DeeplearningModelBuilder(context);
             break;
         default:
             throw new MLInputValidationException("Invalid algorithm type: " + type.name());

@@ -392,7 +392,7 @@
                     var clusteringModels = [];
 
                     for (var i = 0; i < projectModels.length; i++) {
-                        if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
+                        if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
                             classificationModels.push(projectModels[i]);
                         }
                         else if(projectModels[i].modelSummary.algorithm == 'LINEAR_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RIDGE_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LASSO_REGRESSION') {

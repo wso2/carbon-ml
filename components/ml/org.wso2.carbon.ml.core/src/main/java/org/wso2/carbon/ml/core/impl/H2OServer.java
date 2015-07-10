@@ -7,8 +7,9 @@ package org.wso2.carbon.ml.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import water.H2O;
 import water.H2OApp;
+import water.H2O;
+
 
 /**
  *

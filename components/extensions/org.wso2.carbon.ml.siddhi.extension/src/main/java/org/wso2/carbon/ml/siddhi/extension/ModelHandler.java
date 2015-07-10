@@ -39,6 +39,7 @@ import java.util.Map;
 
 public class ModelHandler {
 
+    public static final String FILE_STORAGE_PREFIX = "file";
     public static final String REGISTRY_STORAGE_PREFIX = "registry";
     public static final String PATH_TO_GOVERNANCE_REGISTRY = "/_system/governance";
 
@@ -80,6 +81,9 @@ public class ModelHandler {
             } else {
                 modelStorageLocation = modelStorage[1];
             }
+        } else if(storageType.equals(FILE_STORAGE_PREFIX)) {
+            modelStorageLocation = modelStorage[1];
+            storageType = DatasetType.FILE.getValue();
         } else {
             storageType = DatasetType.FILE.getValue();
         }

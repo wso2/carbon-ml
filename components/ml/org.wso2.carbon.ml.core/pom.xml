@@ -93,6 +93,10 @@
 			<artifactId>scala-library</artifactId>
 		</dependency>
 		<dependency>
+                        <groupId>org.scala-lang</groupId>
+                        <artifactId>scala-reflect</artifactId>
+                </dependency>
+		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.utils</artifactId>
 		</dependency>
@@ -140,7 +144,12 @@
 			<groupId>ai.h2o</groupId>
 			<artifactId>h2o-algos</artifactId>
 			<version>3.0.0.25</version>
-		</dependency>			
+		</dependency>
+		<dependency>
+			<groupId>ai.h2o</groupId>
+			<artifactId>h2o-genmodel</artifactId>
+			<version>3.0.0.25</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

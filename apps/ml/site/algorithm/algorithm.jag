@@ -106,6 +106,7 @@
                         <optgroup label="Multiclass Classification">
 	                    <option value="LOGISTIC_REGRESSION_LBFGS">LOGISTIC REGRESSION L-BFGS</option>
                             <option value="DECISION_TREE">DECISION TREE</option>
+                            <option value="RANDOM_FOREST">RANDOM FOREST</option>
                             <option value="NAIVE_BAYES">NAIVE BAYES</option>
                         </optgroup>                        
                         <optgroup label="Clustering">
@@ -263,7 +264,7 @@ $( document ).ready(function() {
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
             algorithmType = 'Numerical_Prediction';
         }
-        else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'NAIVE_BAYES') {
+        else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'RANDOM_FOREST' || algorithmName == 'NAIVE_BAYES') {
             algorithmType = 'Classification';
         }
         else if (algorithmName == 'K_MEANS') {
