@@ -21,6 +21,8 @@ import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import scala.Tuple2;
+import water.fvec.Frame;
+import water.fvec.Vec;
 
 /**
  *
@@ -89,5 +91,42 @@ public class DeeplearningModelUtils {
         }).count() / predictionsAndLabels.count();
         deeplearningModelSummary.setError(error);
         return deeplearningModelSummary;
+    }
+    
+    public static Frame JavaRDDtoFrame(JavaRDD<LabeledPoint> trainingData) {
+        List<LabeledPoint> list = trainingData.collect();
+        Vec[] allVecs = new Vec[list.get(0).features().size() + 1];
+        
+        for (int i = 0; i < list.get(0).features().size() + 1; i++) {            
+            if (i < list.get(0).features().size()) {
+                Vec v = Vec.makeZero(list.size());
+                for (int j = 0; j < list.size(); j++) {                    
+                    v.set(j, list.get(j).features().toArray()[i]);                    
+                }
+                allVecs[i] = v;
+            } else {
+                Vec v = Vec.makeZero(list.size());
+                for (int j = 0; j < list.size(); j++) {
+                    v.set(j, (int)list.get(j).label());
+                }
+                allVecs[i] = v;
+            }
+        }
+
+        return new Frame(allVecs);
+    }
+    
+    public static Frame DoubleArrayListtoFrame(List<double[]> tobePredictedData) {        
+        Vec[] allVecs = new Vec[tobePredictedData.get(0).length];
+        
+        for (int i = 0; i < tobePredictedData.get(0).length; i++) {            
+                Vec v = Vec.makeZero(tobePredictedData.size());
+                for (int j = 0; j < tobePredictedData.size(); j++) {                    
+                    v.set(j, tobePredictedData.get(j)[i]);                    
+                }
+                allVecs[i] = v;            
+        }
+
+        return new Frame(allVecs);
     }
 }

@@ -84,7 +84,7 @@ public class StackedAutoencodersClassifier implements Serializable {
 
                 //NFSFileVec trainfv = NFSFileVec.make(trainFile);
                 //Frame frame = ParseDataset.parse(Key.make(), trainfv._key);
-                Frame frame = JavaRDDtoFrame(trainData);
+                Frame frame = DeeplearningModelUtils.JavaRDDtoFrame(trainData);
                 Frame shufFrame = MRUtils.shuffleFramePerChunk(frame, 2335325);
 
                 //H2O uses default C<x> for column header
@@ -158,29 +158,7 @@ public class StackedAutoencodersClassifier implements Serializable {
         return saeModel;
     }
 
-    private Frame JavaRDDtoFrame(JavaRDD<LabeledPoint> trainingData) {
-        log.info("Start transformation");
-        List<LabeledPoint> list = trainingData.collect();
-        Vec[] allVecs = new Vec[list.get(0).features().size() + 1];
-        
-        for (int i = 0; i < list.get(0).features().size() + 1; i++) {            
-            if (i < list.get(0).features().size()) {
-                Vec v = Vec.makeZero(list.size());
-                for (int j = 0; j < list.size(); j++) {                    
-                    v.set(j, list.get(j).features().toArray()[i]);                    
-                }
-                allVecs[i] = v;
-            } else {
-                Vec v = Vec.makeZero(list.size());
-                for (int j = 0; j < list.size(); j++) {
-                    v.set(j, (int)list.get(j).label());
-                }
-                allVecs[i] = v;
-            }
-        }
-
-        return new Frame(allVecs);
-    }
+    
 
     /**
      * This method applies a stacked autoencoders model to a given dataset and
@@ -204,7 +182,7 @@ public class StackedAutoencodersClassifier implements Serializable {
             tupleList.add(new Tuple2<Double, Double>(pred, lp.label()));
             System.out.println(String.format("Features: %f,%f,%f,%f,  Label: %f,  Predicted: %f", arr[0], arr[1], arr[2], arr[3], lp.label(), pred));
         }*/
-        Frame testData = JavaRDDtoFrame(test);
+        Frame testData = DeeplearningModelUtils.JavaRDDtoFrame(test);
         Frame testDataWithoutLabels = testData.subframe(0,4);
         double[] predVales = saeModel.predict(testDataWithoutLabels);
         double[] labels = testData.vec(testData.numCols()-1).toDoubleArray();

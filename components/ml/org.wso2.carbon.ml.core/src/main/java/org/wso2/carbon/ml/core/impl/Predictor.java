@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +39,15 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
+import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelUtils;
+import org.wso2.carbon.ml.core.spark.algorithms.StackedAutoencodersModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import water.fvec.Frame;
 
 /**
  * Predict using input data rows.
@@ -69,43 +73,43 @@ public class Predictor {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
             switch (supervised_algorithm) {
-            case DECISION_TREE:
-                DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
-                for (Vector vector : dataToBePredicted) {
+                case DECISION_TREE:
+                    DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
+                    for (Vector vector : dataToBePredicted) {
 
-                    double predictedData = decisionTreeModel.predict(vector);
-                    predictions.add(predictedData);
-                    if (log.isDebugEnabled()) {
+                        double predictedData = decisionTreeModel.predict(vector);
+                        predictions.add(predictedData);
+                        if (log.isDebugEnabled()) {
 
-                        log.debug("Predicted value before decoding: " + predictedData);
+                            log.debug("Predicted value before decoding: " + predictedData);
+                        }
                     }
-                }
-                return decodePredictedValues(predictions);
-            case RANDOM_FOREST:
-                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
-                for (Vector vector : dataToBePredicted) {
+                    return decodePredictedValues(predictions);
+                case RANDOM_FOREST:
+                    RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                    for (Vector vector : dataToBePredicted) {
 
-                    double predictedData = randomForestModel.predict(vector);
-                    predictions.add(predictedData);
-                    if (log.isDebugEnabled()) {
+                        double predictedData = randomForestModel.predict(vector);
+                        predictions.add(predictedData);
+                        if (log.isDebugEnabled()) {
 
-                        log.debug("Predicted value before decoding: " + predictedData);
+                            log.debug("Predicted value before decoding: " + predictedData);
+                        }
                     }
-                }
-                return decodePredictedValues(predictions);
-            default:
-                ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
-                for (Vector vector : dataToBePredicted) {
+                    return decodePredictedValues(predictions);
+                default:
+                    ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
+                    for (Vector vector : dataToBePredicted) {
 
-                    double predictedData = classificationModel.predict(vector);
-                    predictions.add(predictedData);
+                        double predictedData = classificationModel.predict(vector);
+                        predictions.add(predictedData);
 
-                    if (log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
 
-                        log.debug("Predicted value before decoding: " + predictedData);
+                            log.debug("Predicted value before decoding: " + predictedData);
+                        }
                     }
-                }
-                return decodePredictedValues(predictions);
+                    return decodePredictedValues(predictions);
             }
 
         } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {
@@ -125,23 +129,51 @@ public class Predictor {
         } else if (AlgorithmType.CLUSTERING == type) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
-            case K_MEANS:
-                List<Integer> predictions = new ArrayList<Integer>();
-                KMeansModel kMeansModel = (KMeansModel) model.getModel();
-                for (Vector vector : dataToBePredicted) {
+                case K_MEANS:
+                    List<Integer> predictions = new ArrayList<Integer>();
+                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                    for (Vector vector : dataToBePredicted) {
 
-                    int predictedData = kMeansModel.predict(vector);
-                    predictions.add(predictedData);
+                        int predictedData = kMeansModel.predict(vector);
+                        predictions.add(predictedData);
+                        if (log.isDebugEnabled()) {
+
+                            log.debug("Predicted value before decoding: " + predictedData);
+                        }
+                    }
+                    return decodePredictedValues(predictions);
+                default:
+                    throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
+                            + " for model id: " + id);
+            }
+        } else if (AlgorithmType.DEEPLEARNING == type) {
+            MLConstants.DEEPLEARNING_ALGORITHM deeplearning_algorithm = MLConstants.DEEPLEARNING_ALGORITHM.valueOf(model.getAlgorithmName());
+            switch (deeplearning_algorithm) {
+                case STACKED_AUTOENCODERS:
+                    List<Double> predictions = new ArrayList<Double>();
+                    StackedAutoencodersModel saeModel = ((StackedAutoencodersModel) model.getModel());
+                    List<double[]> tobePredictedList = new ArrayList<double[]>();
+                    for (Vector vector : dataToBePredicted) {
+                        tobePredictedList.add(vector.toArray());
+                    }
+                    Frame predFrame = DeeplearningModelUtils.DoubleArrayListtoFrame(tobePredictedList);
+                    double[] predictedData = saeModel.predict(predFrame);
+
+                    for (double pVal : predictedData) {
+                        predictions.add((Double) pVal);
+                    }
+
                     if (log.isDebugEnabled()) {
 
                         log.debug("Predicted value before decoding: " + predictedData);
                     }
-                }
-                return decodePredictedValues(predictions);
-            default:
-                throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
-                        + " for model id: " + id);
+                    return decodePredictedValues(predictions);
+                default:
+                    throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
+                            + " for model id: " + id);
+
             }
+
         } else {
             throw new MLModelHandlerException(String.format(
                     "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));

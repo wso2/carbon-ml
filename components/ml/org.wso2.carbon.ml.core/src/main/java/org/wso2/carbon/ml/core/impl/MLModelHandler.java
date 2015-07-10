@@ -362,7 +362,6 @@ public class MLModelHandler {
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             
-            log.info("Algorithm Name: " + model.getAlgorithmName());
             if(!model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
                 MLIOFactory ioFactory = new MLIOFactory(mlProperties);
                 MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
@@ -375,7 +374,7 @@ public class MLModelHandler {
                 // adapter will write the model and close the stream.
                 String outPath = storageLocation + File.separator + modelName;
                 outputAdapter.write(outPath, is);
-            databaseService.updateModelStorage(modelId, storageType, outPath);
+                databaseService.updateModelStorage(modelId, storageType, outPath);
             } else {
                 log.info("Stacked autoencoder persisting....");
                 StackedAutoencodersModel sam = (StackedAutoencodersModel) model.getModel();
@@ -427,10 +426,7 @@ public class MLModelHandler {
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
 
-            MLModel model = (MLModel) ois.readObject();
-            
-            if(model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){                                                
-            }
+            MLModel model = (MLModel) ois.readObject();                        
             
             log.info("Successfully retrieved model");
             return model;
