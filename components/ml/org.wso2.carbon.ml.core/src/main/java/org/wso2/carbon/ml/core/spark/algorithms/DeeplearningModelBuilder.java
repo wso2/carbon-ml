@@ -5,6 +5,7 @@
  */
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.wso2.carbon.ml.core.impl.H2OServer;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.summary.DeeplearningModelSummary;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -126,26 +128,24 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             H2OServer.startH2O();
             StackedAutoencodersClassifier saeClassifier = new StackedAutoencodersClassifier();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
-            
-            File trainFile = new File(workflow.getDatasetURL());
+                        
             //train the stacked autoencoder
-            StackedAutoencodersModel saeModel = saeClassifier.train(trainingData,
+            SparkDeeplearningModel sparkDeeplearningModel = saeClassifier.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     Integer.parseInt(hyperParameters.get(MLConstants.LAYER_COUNT)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
                     workflow.getTrainDataFraction(),workflow.getResponseVariable(),modelID);            
-
+            
+            mlModel.setModel(new MLDeeplearningModel(sparkDeeplearningModel));
             //make predictions with the trained model
-            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext,saeModel, testingData);
-            
-            
+            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext,sparkDeeplearningModel, testingData);                       
             
             //get model summary
             DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils
                     .getDeeplearningModelSummary(sparkContext, testingData, predictionsAndLabels);
             
-            mlModel.setModel(saeModel);
+            mlModel.setModel(sparkDeeplearningModel);
             
             deeplearningModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             deeplearningModelSummary.setAlgorithm(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString());

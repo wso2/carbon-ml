@@ -57,7 +57,8 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
-import org.wso2.carbon.ml.core.spark.algorithms.StackedAutoencodersModel;
+import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
+import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -362,7 +363,13 @@ public class MLModelHandler {
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             
-            if(!model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
+            //if this is a deeplearning model, need to set the storage location for writing
+            if(model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
+                log.info(storageLocation);                
+                SparkDeeplearningModel sparkDeeplearningModel = (SparkDeeplearningModel) model.getModel();
+                sparkDeeplearningModel.setStorageLocation(storageLocation);
+                model.setModel(sparkDeeplearningModel);                
+            }
                 MLIOFactory ioFactory = new MLIOFactory(mlProperties);
                 MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -375,28 +382,7 @@ public class MLModelHandler {
                 String outPath = storageLocation + File.separator + modelName;
                 outputAdapter.write(outPath, is);
                 databaseService.updateModelStorage(modelId, storageType, outPath);
-            } else {
-                log.info("Stacked autoencoder persisting....");
-                StackedAutoencodersModel sam = (StackedAutoencodersModel) model.getModel();
-                sam.setStorageLocation(storageLocation);
-                model.setModel(sam);
-                
-                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-                MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(model);
-                oos.flush();
-                oos.close();
-                InputStream is = new ByteArrayInputStream(baos.toByteArray());
-                // adapter will write the model and close the stream.
-                log.info("StorageLocation: " + storageLocation);
-                String outPath = storageLocation + File.separator + modelName;
-                outputAdapter.write(outPath, is);                
-                
-                databaseService.updateModelStorage(modelId, storageType, outPath);
-                log.info("Successfully saved SAE");
-            }
+            
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }

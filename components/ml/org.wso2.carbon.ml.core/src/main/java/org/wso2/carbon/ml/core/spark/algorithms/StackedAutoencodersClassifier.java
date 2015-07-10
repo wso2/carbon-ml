@@ -5,6 +5,7 @@
  */
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import hex.FrameSplitter;
 import hex.deeplearning.DeepLearning;
 import hex.deeplearning.DeepLearningModel;
@@ -72,11 +73,11 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @param modelID Id of the model
      * @return
      */
-    public StackedAutoencodersModel train(JavaRDD<LabeledPoint> trainData, int batchSize,
+    public SparkDeeplearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize,
             int layerCount, int[] layerSizes, int epochs, double trainFraction, String responseColumn, long modelID) {
         //build stacked autoencoder by training the model with training data                               
 
-        StackedAutoencodersModel saeModel = new StackedAutoencodersModel();
+        SparkDeeplearningModel sparkDeeplearningModel = new SparkDeeplearningModel();
 
         try {
             Scope.enter();
@@ -139,7 +140,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 log.info("Start training deeplearning model ....");
                 try {
                     model = dl.trainModel().get();
-                    saeModel.setDeepLearningModel(model);
+                    sparkDeeplearningModel.setDeepLearningModel(model);
 
                     log.info("Successfully finished Training deeplearning model ....");
                 } catch (RuntimeException ex) {
@@ -155,7 +156,7 @@ public class StackedAutoencodersClassifier implements Serializable {
             Scope.exit();
         }
 
-        return saeModel;
+        return sparkDeeplearningModel;
     }
 
     
@@ -169,7 +170,7 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @param test Testing dataset as a JavaRDD of labeled points
      * @return
      */
-    public JavaPairRDD<Double, Double> test(JavaSparkContext ctxt, final StackedAutoencodersModel saeModel, JavaRDD<LabeledPoint> test) {
+    public JavaPairRDD<Double, Double> test(JavaSparkContext ctxt, final SparkDeeplearningModel saeModel, JavaRDD<LabeledPoint> test) {
         log.info("Start testing");
 
         Scope.enter();

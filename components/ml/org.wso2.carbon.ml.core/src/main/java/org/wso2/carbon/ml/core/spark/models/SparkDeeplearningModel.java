@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.wso2.carbon.ml.core.spark.algorithms;
+package org.wso2.carbon.ml.core.spark.models;
 
 import hex.deeplearning.DeepLearningModel;
 import java.io.Externalizable;
@@ -26,9 +26,8 @@ import water.util.FileUtils;
  *
  * @author Thush
  */
-public class StackedAutoencodersModel implements Externalizable{
-    
-    private static final Log log = LogFactory.getLog(StackedAutoencodersModel.class);
+public class SparkDeeplearningModel implements Externalizable{
+        
     private DeepLearningModel dlModel;
     private String storageLocation;
     
@@ -83,9 +82,7 @@ public class StackedAutoencodersModel implements Externalizable{
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         storageLocation = (String) in.readObject();
-        log.info("Storage Location read successfully.");
         List<Key> keys = new ObjectTreeBinarySerializer().load(FileUtils.getURI(getURIStringForLocation(storageLocation)));
         this.dlModel = (DeepLearningModel) keys.get(0).get();
-        log.info("DLModel read successfully...");
     }
 }

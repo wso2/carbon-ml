@@ -40,7 +40,7 @@ import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelUtils;
-import org.wso2.carbon.ml.core.spark.algorithms.StackedAutoencodersModel;
+import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
@@ -151,7 +151,7 @@ public class Predictor {
             switch (deeplearning_algorithm) {
                 case STACKED_AUTOENCODERS:
                     List<Double> predictions = new ArrayList<Double>();
-                    StackedAutoencodersModel saeModel = ((StackedAutoencodersModel) model.getModel());
+                    SparkDeeplearningModel saeModel = ((SparkDeeplearningModel) model.getModel());
                     List<double[]> tobePredictedList = new ArrayList<double[]>();
                     for (Vector vector : dataToBePredicted) {
                         tobePredictedList.add(vector.toArray());
