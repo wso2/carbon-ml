@@ -190,7 +190,7 @@ $( document ).ready(function() {
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[2].value);
                     hyperParametersArray[4] = sanitize(hyperParametersResponse[4].value);
                 }
-		else if (algorithmName == 'LOGISTIC_REGRESSION_LBFGS') {
+                else if (algorithmName == 'LOGISTIC_REGRESSION_LBFGS') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                 }
                 else if (algorithmName == 'DECISION_TREE') {
@@ -198,6 +198,14 @@ $( document ).ready(function() {
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
                 }    
+                else if (algorithmName == 'RANDOM_FOREST') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[4].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[4] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
+                }                
                 else if (algorithmName == 'NAIVE_BAYES') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                 }
@@ -245,10 +253,10 @@ $( document ).ready(function() {
     // build input HTML for hyper-parameters
 	for (var i = 0; i < hyperParameterInputValues.length; i++) {
 		if (fromNext) {
-	    	inputString += buildInput(hyperParameterInputValues[i][0],hyperParameterInputValues[i][1],hyperParametersArray[i],hyperParameterInputValues[i][3]);	
+	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParametersArray[i], hyperParameterInputValues[i][3]);	
     	}
     	else {
-	    	inputString += buildInput(hyperParameterInputValues[i][0],hyperParameterInputValues[i][1],hyperParameterInputValues[i][2],hyperParameterInputValues[i][3]);	
+	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParameterInputValues[i][2], hyperParameterInputValues[i][3]);	
     	}
 	}
 
