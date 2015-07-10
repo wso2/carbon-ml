@@ -32,7 +32,7 @@ var BasePlot = function(data) {
     this.margin = {
         top: 10,
         right: 50,
-        bottom: 50,
+        bottom: 57,
         left: 55
     };
 
