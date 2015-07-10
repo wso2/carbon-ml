@@ -312,8 +312,9 @@ public class MLModelHandler {
             List<?> predictions = predict(tenantId, userName, modelId, data);
             StringBuilder predictionsWithData = new StringBuilder();
             for (int i = 0; i < predictions.size(); i++) {
-                predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter())
-                        + String.valueOf(predictions.get(i)) + MLConstants.NEW_LINE);
+                predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
+                        .append(String.valueOf(predictions.get(i)))
+                        .append(MLConstants.NEW_LINE);
             }
             return predictionsWithData.toString();
         } catch (IOException e) {
