@@ -53,10 +53,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
      */
     public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
-        JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         try {
-            sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
@@ -95,11 +93,6 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building unsupervised machine learning model: "
                     + e.getMessage(), e);
-        } finally {
-            // stop spark context
-            if (sparkContext != null) {
-                sparkContext.stop();
-            }
         }
     }
 

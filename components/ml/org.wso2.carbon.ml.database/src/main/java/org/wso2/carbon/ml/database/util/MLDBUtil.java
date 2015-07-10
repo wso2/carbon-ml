@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.database.util;
 
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.io.ObjectInputStream;
 public class MLDBUtil {
 
     /**
-     * Deserialize SamplePoints object InputStream
+     * Deserialize SamplePoints object from InputStream
      *
      * @param data
      * @return
@@ -39,5 +40,19 @@ public class MLDBUtil {
         SamplePoints samplePoints = (SamplePoints) is.readObject();
         is.close();
         return samplePoints;
+    }
+
+    /**
+     * Deserialize ModelSummary from InputStream
+     * @param data
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public static ModelSummary getModelSummaryFromInputStream(InputStream data) throws IOException, ClassNotFoundException {
+        ObjectInputStream is = new ObjectInputStream(data);
+        ModelSummary modelSummary = (ModelSummary) is.readObject();
+        is.close();
+        return modelSummary;
     }
 }

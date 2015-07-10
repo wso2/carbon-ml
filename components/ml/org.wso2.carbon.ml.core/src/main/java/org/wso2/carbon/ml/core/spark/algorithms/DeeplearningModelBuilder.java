@@ -26,6 +26,7 @@ import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.impl.H2OServer;
+import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 import org.wso2.carbon.ml.core.spark.summary.DeeplearningModelSummary;
@@ -39,12 +40,18 @@ import scala.Tuple2;
  *
  * @author Thush
  */
-public class DeeplearningModel {
-    private static final Log log = LogFactory.getLog(DeeplearningModel.class);
+public class DeeplearningModelBuilder extends MLModelBuilder{
+    private static final Log log = LogFactory.getLog(DeeplearningModelBuilder.class);        
+
+    public DeeplearningModelBuilder(MLModelConfigurationContext context) {
+        super(context);
+    }
     
-    public MLModel buildModel(MLModelConfigurationContext context)
- throws MLModelBuilderException {
+    @Override
+    public MLModel build() throws MLModelBuilderException {
         
+        log.info("Start building the SAE");
+        MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         MLModel mlModel = new MLModel();
@@ -67,7 +74,9 @@ public class DeeplearningModel {
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> trainingData = dataSplit[0];
-            JavaRDD<LabeledPoint> testingData = dataSplit[1];            
+            JavaRDD<LabeledPoint> testingData = dataSplit[1];  
+            
+            
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -77,12 +86,15 @@ public class DeeplearningModel {
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(responseIndex);
             
+            log.info("Set mlModel info for SAE");
             ModelSummary summaryModel = null;
             
             DEEPLEARNING_ALGORITHM deeplearningAlgorithm = DEEPLEARNING_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (deeplearningAlgorithm) {
             case STACKED_AUTOENCODERS:
-                summaryModel = buildDeepLearningModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                log.info("Building summary model for SAE");
+                summaryModel = buildStackedAutoencodersModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                log.info("Successful building summary model for SAE");
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
@@ -107,16 +119,17 @@ public class DeeplearningModel {
         return arr;
     }
     
-    private ModelSummary buildDeepLearningModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
+    private ModelSummary buildStackedAutoencodersModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
         try {
+            log.info("Starting H2O Server");
             H2OServer.startH2O();
             StackedAutoencodersClassifier saeClassifier = new StackedAutoencodersClassifier();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             
             File trainFile = new File(workflow.getDatasetURL());
             //train the stacked autoencoder
-            StackedAutoencodersModel saeModel = saeClassifier.train(trainFile,
+            StackedAutoencodersModel saeModel = saeClassifier.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     Integer.parseInt(hyperParameters.get(MLConstants.LAYER_COUNT)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
@@ -125,6 +138,8 @@ public class DeeplearningModel {
 
             //make predictions with the trained model
             JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext,saeModel, testingData);
+            
+            
             
             //get model summary
             DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils
@@ -137,9 +152,11 @@ public class DeeplearningModel {
            
             //set accuracy values
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
+            deeplearningModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
+                    multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             deeplearningModelSummary.setModelAccuracy(modelAccuracy);            
-
+            
             return deeplearningModelSummary;
             
         } catch (Exception e) {
@@ -236,4 +253,6 @@ public class DeeplearningModel {
         }
         return sum;
     }
+
+    
 }

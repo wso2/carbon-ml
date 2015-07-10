@@ -700,12 +700,12 @@ public class MLDatabaseService implements DatabaseService {
             getStatement = connection.prepareStatement(SQLQueries.GET_MODEL_SUMMARY);
             getStatement.setLong(1, modelId);
             result = getStatement.executeQuery();
-            if (result.first()) {
-                return (ModelSummary) result.getObject(1);
+            if (result.first() && result.getBinaryStream(1) != null) {
+                return MLDBUtil.getModelSummaryFromInputStream(result.getBinaryStream(1));
             } else {
                 throw new DatabaseHandlerException("Summary not available for model: " + modelId);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException("An error occurred while retrieving the summary " + "of model " + 
                     modelId + ": " + e.getMessage(), e);
         } finally {
@@ -1335,6 +1335,53 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    /**
+     * Returns project object for a given project ID from the database.
+     *
+     * @param tenantId ID of the tenant
+     * @param userName Username of the tenant
+     * @param projectId ID of the project
+     * @return MLProject object
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_PROJECT_BY_ID);
+            statement.setLong(1, projectId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                MLProject project = new MLProject();
+                project.setId(result.getLong(1));
+                project.setName(result.getString(2));
+                project.setDescription(result.getString(3));
+                project.setDatasetId(result.getLong(4));
+                project.setCreatedTime(result.getString(5));
+                project.setTenantId(tenantId);
+                project.setUserName(userName);
+                if(project.getDatasetId() != 0) {
+                    MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
+                    project.setDatasetName(dataset.getName());
+                }
+                return project;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(" An error has occurred while extracting project for project ID:"
+                    + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
     @Override
     public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException {
 
@@ -1402,7 +1449,10 @@ public class MLDatabaseService implements DatabaseService {
                 model.setAnalysisId(result.getLong(3));
                 model.setVersionSetId(result.getLong(4));
                 model.setCreatedTime(result.getString(5));
-                ModelSummary modelSummary = (ModelSummary) result.getObject(6);
+                ModelSummary modelSummary = null;
+                if(result.getBinaryStream(6) != null) {
+                    modelSummary = MLDBUtil.getModelSummaryFromInputStream(result.getBinaryStream(6));
+                }
                 model.setModelSummary(modelSummary);
                 model.setStorageType(result.getString(7));
                 model.setStorageDirectory(result.getString(8));
@@ -1413,7 +1463,7 @@ public class MLDatabaseService implements DatabaseService {
                 models.add(model);
             }
             return models;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting all models of"
                     + "project ID:" + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
         } finally {
@@ -1683,12 +1733,15 @@ public class MLDatabaseService implements DatabaseService {
                 model.setUserName(userName);
                 model.setStatus(result.getString(8));
                 model.setError(result.getString(9));
-                ModelSummary modelSummary = (ModelSummary) result.getObject(10);
+                ModelSummary modelSummary = null;
+                if(result.getBinaryStream(10) != null) {
+                    modelSummary = MLDBUtil.getModelSummaryFromInputStream(result.getBinaryStream(10));
+                }
                 model.setModelSummary(modelSummary);
                 models.add(model);
             }
             return models;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting all the models of analysis id: "+analysisId+", tenant id:"
                     + tenantId + " and username:" + userName, e);
         } finally {
@@ -1825,6 +1878,8 @@ public class MLDatabaseService implements DatabaseService {
 
         Connection connection = null;
         PreparedStatement insertStatement = null;
+        PreparedStatement searchStatement = null;
+        ResultSet result;
         try {
             // Insert the model configuration to the database.
             connection = dbh.getDataSource().getConnection();
@@ -1833,11 +1888,21 @@ public class MLDatabaseService implements DatabaseService {
             for (MLModelConfiguration mlModelConfiguration : modelConfigs) {
                 String key = mlModelConfiguration.getKey();
                 String value = mlModelConfiguration.getValue();
-
-                insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL_CONFIGURATION);
-                insertStatement.setLong(1, analysisId);
-                insertStatement.setString(2, key);
-                insertStatement.setString(3, value);
+                searchStatement = connection.prepareStatement(SQLQueries.GET_A_MODEL_CONFIGURATION);
+                searchStatement.setLong(1, analysisId);
+                searchStatement.setString(2, key);
+                result = searchStatement.executeQuery();
+                if (result.first()) {
+                    insertStatement = connection.prepareStatement(SQLQueries.UPDATE_MODEL_CONFIGURATION);
+                    insertStatement.setString(1, value);
+                    insertStatement.setLong(2, analysisId);
+                    insertStatement.setString(3, key);
+                } else {
+                    insertStatement = connection.prepareStatement(SQLQueries.INSERT_MODEL_CONFIGURATION);
+                    insertStatement.setLong(1, analysisId);
+                    insertStatement.setString(2, key);
+                    insertStatement.setString(3, value);
+                }
                 insertStatement.execute();
             }
             connection.commit();
@@ -1884,12 +1949,23 @@ public class MLDatabaseService implements DatabaseService {
             for (MLHyperParameter mlHyperParameter : hyperParameters) {
                 String name = mlHyperParameter.getKey();
                 String value = mlHyperParameter.getValue();
-
-                insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
-                insertStatement.setLong(1, analysisId);
-                insertStatement.setString(2, algorithmName);
-                insertStatement.setString(3, name);
-                insertStatement.setString(4, value);
+                getStatement = connection.prepareStatement(SQLQueries.GET_EXISTING_HYPER_PARAMETER);
+                getStatement.setLong(1, analysisId);
+                getStatement.setString(2, name);
+                result = getStatement.executeQuery();
+                if (result.first()) {
+                    insertStatement = connection.prepareStatement(SQLQueries.UPDATE_HYPER_PARAMETER);
+                    insertStatement.setString(1, algorithmName);
+                    insertStatement.setString(2, value);
+                    insertStatement.setLong(3, analysisId);
+                    insertStatement.setString(4, name);
+                } else {
+                    insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
+                    insertStatement.setLong(1, analysisId);
+                    insertStatement.setString(2, algorithmName);
+                    insertStatement.setString(3, name);
+                    insertStatement.setString(4, value);
+                }
                 insertStatement.execute();
             }
 

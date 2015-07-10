@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.mllib.linalg.Vector;
 import water.Key;
+import water.fvec.Frame;
 import water.serial.ObjectTreeBinarySerializer;
 import water.util.FileUtils;
 
@@ -57,7 +58,13 @@ public class StackedAutoencodersModel implements Externalizable{
      */
     public double predict(Vector input) {      
         double predVal = dlModel.score(input.toArray());
+        System.out.println(predVal);
         return predVal;
+    }
+    
+    public double[] predict(Frame inputs) {      
+        Frame predVals = dlModel.score(inputs);        
+        return predVals.vec(0).toDoubleArray();
     }
 
     public String getURIStringForLocation(String loc){

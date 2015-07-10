@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
 /**
  *
@@ -24,6 +25,7 @@ public class DeeplearningModelSummary implements ModelSummary, Serializable{
     private String algorithm;
     private String[] features;
     private double modelAccuracy;
+    private MulticlassConfusionMatrix multiclassConfusionMatrix;
     private double meanSquaredError;
 
         public String getAlgorithm() {
@@ -138,6 +140,20 @@ public class DeeplearningModelSummary implements ModelSummary, Serializable{
     @Override
     public String[] getFeatures() {
         return features;
+    }
+    
+    /**
+     * @return Returns multiclass confusion matrix
+     */
+    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
+        return multiclassConfusionMatrix;
+    }
+
+    /**
+     * @param multiclassConfusionMatrix multiclass confusion matrix
+     */
+    public void setMulticlassConfusionMatrix(MulticlassConfusionMatrix multiclassConfusionMatrix) {
+        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
     }
 
 }

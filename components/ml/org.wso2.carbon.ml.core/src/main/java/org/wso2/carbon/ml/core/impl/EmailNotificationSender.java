@@ -100,6 +100,7 @@ public class EmailNotificationSender {
                 Map<String,String> dynamicProperties = new HashMap<String,String>();
                 dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_ADDRESS, emailAddress);
                 dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_SUBJECT, emailTemplate.getSubject());
+                dynamicProperties.put(EmailEventAdapterConstants.APAPTER_MESSAGE_EMAIL_TYPE, MLConstants.TEXT_PLAIN);
                 emailAdapterService.publish(MLConstants.ML_EMAIL_ADAPTER, dynamicProperties, message);
                 logger.info("Model building status email sent to: " + emailAddress);
             }

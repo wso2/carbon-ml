@@ -270,6 +270,44 @@
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
+			<Name>RANDOM_FOREST</Name>
+			<Type>Classification</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>4</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>3</Dimensionality>
+			<Parameters>
+				<Name>Num_Trees</Name>
+				<Value>5</Value>
+				<Description>Num_Trees</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Depth</Name>
+				<Value>5</Value>
+				<Description>Max_Depth</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Bins</Name>
+				<Value>100</Value>
+				<Description>Max_Bins</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Impurity</Name>
+				<Value>gini</Value>
+				<Description>Impurity</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Feature_Subset_Strategy</Name>
+				<Value>auto</Value>
+				<Description>Feature_Subset_Strategy</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Seed</Name>
+				<Value>12345</Value>
+				<Description>Seed</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
 			<Name>NAIVE_BAYES</Name>
 			<Type>Classification</Type>
 			<Interpretability>3</Interpretability>

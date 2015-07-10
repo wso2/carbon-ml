@@ -30,6 +30,7 @@ import org.apache.spark.mllib.linalg.DenseVector;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.apache.spark.mllib.tree.model.RandomForestModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
@@ -40,6 +41,7 @@ import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
+import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -72,6 +74,18 @@ public class Predictor {
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = decisionTreeModel.predict(vector);
+                    predictions.add(predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
+                }
+                return decodePredictedValues(predictions);
+            case RANDOM_FOREST:
+                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+
+                    double predictedData = randomForestModel.predict(vector);
                     predictions.add(predictedData);
                     if (log.isDebugEnabled()) {
 
