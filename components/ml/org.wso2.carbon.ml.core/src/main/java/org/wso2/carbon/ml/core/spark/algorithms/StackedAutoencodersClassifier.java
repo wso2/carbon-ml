@@ -171,30 +171,20 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @return
      */
     public JavaPairRDD<Double, Double> test(JavaSparkContext ctxt, final SparkDeeplearningModel saeModel, JavaRDD<LabeledPoint> test) {
-        log.info("Start testing");
 
         Scope.enter();
-        /*
-        List<LabeledPoint> labeledPointList = test.collect();
-        ArrayList<Tuple2<Double, Double>> tupleList = new ArrayList<Tuple2<Double, Double>>();
-        for (LabeledPoint lp : labeledPointList) {
-            double pred = saeModel.predict(lp.features());
-            double[] arr = lp.features().toArray();
-            tupleList.add(new Tuple2<Double, Double>(pred, lp.label()));
-            System.out.println(String.format("Features: %f,%f,%f,%f,  Label: %f,  Predicted: %f", arr[0], arr[1], arr[2], arr[3], lp.label(), pred));
-        }*/
+        
         Frame testData = DeeplearningModelUtils.JavaRDDtoFrame(test);
-        Frame testDataWithoutLabels = testData.subframe(0,4);
+        Frame testDataWithoutLabels = testData.subframe(0,testData.numCols()-1);
         double[] predVales = saeModel.predict(testDataWithoutLabels);
         double[] labels = testData.vec(testData.numCols()-1).toDoubleArray();
+        
         Scope.exit();
 
         ArrayList<Tuple2<Double, Double>> tupleList = new ArrayList<Tuple2<Double, Double>>();
         for (int i=0; i<labels.length;i++) {            
-            tupleList.add(new Tuple2<Double, Double>(predVales[i], labels[i]));
-            System.out.println(String.format("Label: %f,  Predicted: %f", labels[i], predVales[i]));
-        }
-        log.info("Done Testing");
+            tupleList.add(new Tuple2<Double, Double>(predVales[i], labels[i]));            
+        }        
 
         return ctxt.parallelizePairs(tupleList);
 

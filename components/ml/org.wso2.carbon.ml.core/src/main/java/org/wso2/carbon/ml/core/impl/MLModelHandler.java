@@ -364,6 +364,8 @@ public class MLModelHandler {
             String storageLocation = storage.getLocation();
             
             //if this is a deeplearning model, need to set the storage location for writing
+            //then the sparkdeeplearning model will use ObjectTreeBinarySerializer to write it to the given directory
+            //the DeeplearningModel will be saved as a .bin file
             if(model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
                 log.info(storageLocation);                
                 SparkDeeplearningModel sparkDeeplearningModel = (SparkDeeplearningModel) model.getModel();
@@ -412,6 +414,8 @@ public class MLModelHandler {
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
 
+            //for the DeeplearningModel since the storageLocation is serialized
+            //so the ObjectTreeBinarySerializer will get the storageLocation and deserialize
             MLModel model = (MLModel) ois.readObject();                        
             
             log.info("Successfully retrieved model");

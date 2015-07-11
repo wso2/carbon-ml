@@ -52,7 +52,7 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
     @Override
     public MLModel build() throws MLModelBuilderException {
         
-        log.info("Start building the SAE");
+        log.info("Start building the Stacked Autoencoders...");
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -88,7 +88,6 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(responseIndex);
             
-            log.info("Set mlModel info for SAE");
             ModelSummary summaryModel = null;
             
             DEEPLEARNING_ALGORITHM deeplearningAlgorithm = DEEPLEARNING_ALGORITHM.valueOf(workflow.getAlgorithmName());
@@ -121,6 +120,18 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
         return arr;
     }
     
+    /**
+     * Build the stacked autoencoder model
+     * @param sparkContext
+     * @param modelID       model ID
+     * @param trainingData  training data to train the classifier
+     * @param testingData   testing data to test the classifier and get metrics
+     * @param workflow      workflow
+     * @param mlModel       MLModel to be updated with calcualted values
+     * @param includedFeatures  Included features
+     * @return
+     * @throws MLModelBuilderException 
+     */
     private ModelSummary buildStackedAutoencodersModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
         try {
