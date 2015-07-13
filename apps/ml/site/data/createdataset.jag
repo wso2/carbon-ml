@@ -228,11 +228,8 @@ function displayDataSource() {
 	} else if (dataSourceType == 'DAS') {
 		$('#source-file, #size-limit, #source-hdfs, #not-das, #source-das-table').hide();
 		var dasInput = '<div id="source-das">' +
-							'<div id="source-das-input" class="input-control text">' +
-								'<input type="text" value="" placeholder="" id="selected-table" name="sourcePath" readonly/>' +
-							'</div>' +
-							'<div class="input-control lookup">' +
-							    '<div><a id="select-table" class="cu-level2-btn btn-add-new-dark" href="#">Select Table</a></div>' +
+							'<div id="source-das-input" class="input-control text" style="position:relative">' +
+								'<input type="text" value="" placeholder="" id="selected-table" name="sourcePath" readonly/><a style="position:absolute; right:0px" id="select-table" class="cu-level3-btn btn-set-dt" href="#"></a>' +
 							'</div>' +
 						'</div>';
 		$('#source-hdfs-das').html(dasInput);

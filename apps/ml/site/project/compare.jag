@@ -111,6 +111,9 @@
                                  <li role="presentation" class="disabled" id="clustering-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any clustering models created at the moment">
                                     <a href="#clustering-tab" id="clustering-link" aria-controls="clustering" role="tab" data-toggle="">Clustering</a>
                                  </li>
+								 <li role="presentation" class="disabled" id="deeplearning-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any deeplearning models created at the moment">
+                                    <a href="#deeplearning-tab" id="deeplearning-link" aria-controls="deeplearning" role="tab" data-toggle="">Deeplearning</a>
+                                 </li>
                             </ul>
                         </div>
 
@@ -200,6 +203,34 @@
                                 </div>
                                 <!-- /pagination -->
                             </div>
+							<div role="tabpanel" class="tab-pane fade in" id="deeplearning-tab">
+                                <div class="panel-group" id="deeplearning-accordion" role="tablist" aria-multiselectable="true">
+                                    <div id="no-deeplearning" class="ctrl-info-panel col-md-12 col-centered">
+                                        <h4>You do not have any deeplearning models created at the moment.</h4>
+                                    </div>
+                                </div>
+                                <!-- pagination -->
+                                <div class="col-md-6 text-left">
+                                    <table>
+                                    <tr>
+                                        <td class="">Show&nbsp;&nbsp;</td>
+                                        <td class="">
+                                            <select class="form-control" id="no-of-panels-deeplearning">
+                                                <option value='10'>10</option>
+                                                <option value='25'>25</option>
+                                                <option value='50'>50</option>
+                                                <option value='100'>100</option>                                
+                                            </select>                           
+                                        </td>
+                                    </tr>
+                                    </table>            
+                                </div>
+                                
+                                <div class="col-md-6 text-right">
+                                    <ul id="pagination-list-deeplearning" class="pagination"></ul>
+                                </div>
+                                <!-- /pagination -->
+                            </div>
                         </div>
                     </div>
                 <!-- /content -->
@@ -240,6 +271,7 @@
     var classificationPanelsPerPage;
     var numPredictionPanelsPerPage;
     var clusteringPanelsPerPage;
+	var deeplearningPanelsPerPage;
 
     // update pagination
     $(document).on('change','select[id="no-of-panels-classification"]',function() {
@@ -257,7 +289,12 @@
         clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
         $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
     });              
-
+	$(document).on('change','select[id="no-of-panels-deeplearning"]',function() {
+        $('#pagination-list-deeplearning').empty();
+        classificationPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
+        $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
+    });
+	
     $(document).ready(function() {
 
         $('#nav').affix({
@@ -290,6 +327,9 @@
         clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
         $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
 
+		deeplearningPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
+        $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
+		
         // disabling tabs
         $("#wr-tabs-grphs > li").click(function(){
             if($(this).hasClass("disabled")) {
@@ -327,7 +367,7 @@
             var modelId = sanitize(models[i].id);
             var modelName = sanitize(models[i].name);
             var algorithm = sanitize(models[i].modelSummary.algorithm.replace("_", " "));
-            var modelAccuracy = parseFloat(sanitize(models[i].modelSummary.modelAccuracy)).toFixed(4)*100;
+            var modelAccuracy = parseFloat(sanitize(models[i].modelSummary.modelAccuracy)).toFixed(2);
             var meanSquaredError = parseFloat(sanitize(models[i].modelSummary.meanSquaredError)).toExponential(2);
 
             accordionPanels += '' + 
@@ -349,7 +389,10 @@
                                             }
                                             else if(modelType == 'clustering') {
                                                 accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
-                                            }                                                                                        
+                                            }
+											else if(modelType == 'deeplearning') {
+                                                accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
+                                            }
                                     accordionPanels += '</a>' +
                                     '</td>';
                                     if(modelType != 'clustering') {
@@ -390,6 +433,7 @@
                     var classificationModels = [];
                     var numPredictionModels = [];
                     var clusteringModels = [];
+					var deeplearningModels = [];
 
                     for (var i = 0; i < projectModels.length; i++) {
                         if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
@@ -400,7 +444,10 @@
                         }
                         else if(projectModels[i].modelSummary.algorithm == 'K_MEANS') {
                             clusteringModels.push(projectModels[i]);
-                        }                        
+                        }
+						else if(projectModels[i].modelSummary.algorithm == 'STACKED_AUTOENCODERS') {
+                            deeplearningModels.push(projectModels[i]);
+                        }
                     }
 
                     if (classificationModels.length > 0) {
@@ -432,6 +479,16 @@
                         $('#clustering-link').attr('data-toggle', 'tab');
                     }
 
+					if (deeplearningModels.length > 0) {
+                        var deeplearningModelsSorted = deeplearningModels.sort(sortByAccuracy);
+                        var deeplearningAccordionPanels = createAccordionPanels(deeplearningModelsSorted, 'deeplearning');
+                        $('#no-deeplearning').remove();                              
+                        $("#deeplearning-accordion").append(deeplearningAccordionPanels);
+                        $('#deeplearning-tab-li').removeClass('disabled');
+                        $('#deeplearning-tab-li').attr('title', '');
+                        $('#deeplearning-link').attr('data-toggle', 'tab');
+                    }
+					
                     // set active tab
                     if(classificationModels.length > 0) {
                         $('#classification-link').click();
@@ -439,6 +496,8 @@
                         $('#numerical-prediction-link').click();
                     } else if (clusteringModels.length > 0) {
                         $('#clustering-link').click();
+                    } else if (deeplearningModels.length > 0) {
+                        $('#deeplearning-link').click();
                     } else {
                         $('#classification-link').click();
                     }

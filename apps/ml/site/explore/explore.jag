@@ -645,13 +645,13 @@ function selectActiveTab() {
     if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
         drawScatterPlotBase();
         $('#scatter-plot-link').click();
-	} else if (categoricalFeatureNames > 1) {
+	} else if (categoricalFeatureNames.length > 1) {
 	    drawParallelSetsBase();
 	    $('#parallel-sets-link').click();
-	} else if (categoricalFeatureNames.length > 0){
+	} else if (categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0){
 	    drawTrellisChartBase();
 	    $('#trellis-chart-link').click();
-	} else {
+	} else if(numericalFeatureNames.length > 1) {
 	    drawClusterDiagramBase();
 	    $('#cluster-diagram-link').click();
 	}
@@ -669,10 +669,15 @@ function disableTabs() {
         $('#parallel-sets-li').attr('title', 'Minimum of two categorical features required for parallel sets');
         $('#parallel-sets-link').attr('data-toggle', '');
 	}
-	if(categoricalFeatureNames.length < 1) {
+	if(!(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0)) {
 	    $('#trellis-chart-li').attr('class', 'disabled');
         $('#trellis-chart-li').attr('title', 'Minimum of one categorical feature required to draw trellis charts');
         $('#trellis-chart-link').attr('data-toggle', '');
+	}
+	if(numericalFeatureNames.length < 2) {
+		$('#cluster-diagram-li').attr('class', 'disabled');
+        $('#cluster-diagram-li').attr('title', 'Minimum of two numerical features required for cluster diagrams');
+        $('#cluster-diagram-link').attr('data-toggle', '');
 	}
 }
 
@@ -898,7 +903,7 @@ function drawParallelSets() {
 
 function drawTrellisChartBase() {
 
-    if(categoricalFeatureNames.length > 0) {
+    if(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0) {
         $('#trellis-cat-features').empty();
         $.each(categoricalFeatureNames,function(index, feature){
             $('#trellis-cat-features').append($('<option>', {
@@ -1088,17 +1093,19 @@ function drawTrellisChart() {
 
 function drawClusterDiagramBase() {
 
-    $('#cluster-independent, #cluster-dependent').empty();
-    $.each(numericalFeatureNames,function(index, feature){
-        $('#cluster-independent, #cluster-dependent').append($('<option>', { 
-            value: sanitize(feature),
-            text : sanitize(feature)
-        }));
-    });
-    // make second option selected by default
-    $('#cluster-dependent option')[1].selected = true;
+    if(numericalFeatureNames.length > 1) {
+        $('#cluster-independent, #cluster-dependent').empty();
+        $.each(numericalFeatureNames,function(index, feature){
+            $('#cluster-independent, #cluster-dependent').append($('<option>', {
+                value: sanitize(feature),
+                text : sanitize(feature)
+            }));
+        });
+        // make second option selected by default
+        $('#cluster-dependent option')[1].selected = true;
 
-    drawClusterDiagram();
+        drawClusterDiagram();
+    }
 }
 
 // keeps cluster data to redraw chart on marker size change

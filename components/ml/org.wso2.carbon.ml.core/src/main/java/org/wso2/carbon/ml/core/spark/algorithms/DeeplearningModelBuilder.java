@@ -7,6 +7,7 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -201,7 +202,7 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
     /**
      * This method returns multiclass confusion matrix for a given multiclass metric object
      *
-     * @param multiclassMetrics      Multiclass metric object
+     * @param multiclassMetrics Multiclass metric object
      */
     private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics, MLModel mlModel) {
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
@@ -209,24 +210,37 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             int size = multiclassMetrics.confusionMatrix().numCols();
             double[] matrixArray = multiclassMetrics.confusionMatrix().toArray();
             double[][] matrix = new double[size][size];
-
-            for(int i = 0; i < size; i++) {
-                for(int j = 0; j < size; j++) {
-                    matrix[i][j] = matrixArray[(j*size) + i];
+            // set values of matrix into a 2D array
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    matrix[i][j] = matrixArray[(j * size) + i];
                 }
             }
             multiclassConfusionMatrix.setMatrix(matrix);
 
             List<Map<String, Integer>> encodings = mlModel.getEncodings();
-            // last index is response variable encoding
-            Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
-            List<String> decodedLabels = new ArrayList<String>();
-            for(double label : multiclassMetrics.labels()) {
-                Integer labelInt = (int) label;
-                String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
-                decodedLabels.add(decodedLabel);
+            // decode only if encodings are available
+            if(encodings != null) {
+                // last index is response variable encoding
+                Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
+                List<String> decodedLabels = new ArrayList<String>();
+                for (double label : multiclassMetrics.labels()) {
+                    Integer labelInt = (int) label;
+                    String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
+                    if(decodedLabel != null) {
+                        decodedLabels.add(decodedLabel);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                multiclassConfusionMatrix.setLabels(decodedLabels);
             }
-            multiclassConfusionMatrix.setLabels(decodedLabels);
+            else {
+                List<String> labelList = toStringList(multiclassMetrics.labels());
+                multiclassConfusionMatrix.setLabels(labelList);
+            }
+
             multiclassConfusionMatrix.setSize(size);
         }
         return multiclassConfusionMatrix;
@@ -235,9 +249,11 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
     /**
      * This method gets model accuracy from given multi-class metrics
      *
-     * @param multiclassMetrics     multi-class metrics object
+     * @param multiclassMetrics multi-class metrics object
      */
     private Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
+        DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
+
         Double modelAccuracy = 0.0;
         int confusionMatrixSize = multiclassMetrics.confusionMatrix().numCols();
         int confusionMatrixDiagonal = 0;
@@ -246,10 +262,10 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             int diagonalValueIndex = multiclassMetrics.confusionMatrix().index(i, i);
             confusionMatrixDiagonal += multiclassMetrics.confusionMatrix().toArray()[diagonalValueIndex];
         }
-        if(totalPopulation > 0) {
-            modelAccuracy = (double) confusionMatrixDiagonal/totalPopulation;
+        if (totalPopulation > 0) {
+            modelAccuracy = (double) confusionMatrixDiagonal / totalPopulation;
         }
-        return modelAccuracy;
+        return Double.parseDouble(decimalFormat.format(modelAccuracy*100));
     }
     
         /**
@@ -265,5 +281,11 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
         return sum;
     }
 
-    
+    private List<String> toStringList(double[] doubleArray) {
+        List<String> stringList = new ArrayList<String>(doubleArray.length);
+        for (int i = 0; i < doubleArray.length; i++) {
+            stringList.add(String.valueOf(doubleArray[i]));
+        }
+        return stringList;
+    }    
 }

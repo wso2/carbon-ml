@@ -54,7 +54,6 @@ public class MLCoreDS {
     protected void activate(ComponentContext context) {
 
         try {
-            // TODO: Keep. Following is the one-time parsing of ml configurations.
             MLConfigurationParser mlConfigParser = new MLConfigurationParser();
             MLConfiguration mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
@@ -68,7 +67,8 @@ public class MLCoreDS {
             valueHolder.setModelStorage(mlConfig.getModelStorage());
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-            sparkConf.setAppName("sample-generator-" + Math.random());
+            sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+
             valueHolder.setSparkConf(sparkConf);
             
             // create a new java spark context

@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
@@ -654,7 +655,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             int size = multiclassMetrics.confusionMatrix().numCols();
             double[] matrixArray = multiclassMetrics.confusionMatrix().toArray();
             double[][] matrix = new double[size][size];
-
+            // set values of matrix into a 2D array
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
                     matrix[i][j] = matrixArray[(j * size) + i];
@@ -663,15 +664,28 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             multiclassConfusionMatrix.setMatrix(matrix);
 
             List<Map<String, Integer>> encodings = mlModel.getEncodings();
-            // last index is response variable encoding
-            Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
-            List<String> decodedLabels = new ArrayList<String>();
-            for (double label : multiclassMetrics.labels()) {
-                Integer labelInt = (int) label;
-                String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
-                decodedLabels.add(decodedLabel);
+            // decode only if encodings are available
+            if(encodings != null) {
+                // last index is response variable encoding
+                Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
+                List<String> decodedLabels = new ArrayList<String>();
+                for (double label : multiclassMetrics.labels()) {
+                    Integer labelInt = (int) label;
+                    String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
+                    if(decodedLabel != null) {
+                        decodedLabels.add(decodedLabel);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                multiclassConfusionMatrix.setLabels(decodedLabels);
             }
-            multiclassConfusionMatrix.setLabels(decodedLabels);
+            else {
+                List<String> labelList = toStringList(multiclassMetrics.labels());
+                multiclassConfusionMatrix.setLabels(labelList);
+            }
+
             multiclassConfusionMatrix.setSize(size);
         }
         return multiclassConfusionMatrix;
@@ -706,6 +720,8 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      * @param multiclassMetrics multi-class metrics object
      */
     private Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
+        DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
+
         Double modelAccuracy = 0.0;
         int confusionMatrixSize = multiclassMetrics.confusionMatrix().numCols();
         int confusionMatrixDiagonal = 0;
@@ -717,7 +733,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         if (totalPopulation > 0) {
             modelAccuracy = (double) confusionMatrixDiagonal / totalPopulation;
         }
-        return modelAccuracy;
+        return Double.parseDouble(decimalFormat.format(modelAccuracy*100));
     }
 
     /**
@@ -753,6 +769,14 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             }
         }
         return sb.toString();
+    }
+
+    private List<String> toStringList(double[] doubleArray) {
+        List<String> stringList = new ArrayList<String>(doubleArray.length);
+        for (int i = 0; i < doubleArray.length; i++) {
+            stringList.add(String.valueOf(doubleArray[i]));
+        }
+        return stringList;
     }
 
 }
