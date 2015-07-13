@@ -84,32 +84,34 @@ public class Predictor {
                             log.debug("Predicted value before decoding: " + predictedData);
                         }
                     }
-                    return decodePredictedValues(predictions);
-                case RANDOM_FOREST:
-                    RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
-                    for (Vector vector : dataToBePredicted) {
 
-                        double predictedData = randomForestModel.predict(vector);
-                        predictions.add(predictedData);
-                        if (log.isDebugEnabled()) {
+                return decodePredictedValues(predictions);
+            case RANDOM_FOREST:
+                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
 
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                    double predictedData = randomForestModel.predict(vector);
+                    predictions.add(predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
-                    return decodePredictedValues(predictions);
-                default:
-                    ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
-                    for (Vector vector : dataToBePredicted) {
+                }
+                return decodePredictedValues(predictions);
+            
+            default:
+                ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
 
-                        double predictedData = classificationModel.predict(vector);
-                        predictions.add(predictedData);
+                    double predictedData = classificationModel.predict(vector);
+                    predictions.add(predictedData);
 
-                        if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
 
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
-                    return decodePredictedValues(predictions);
+                }
+                return decodePredictedValues(predictions);
             }
 
         } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {

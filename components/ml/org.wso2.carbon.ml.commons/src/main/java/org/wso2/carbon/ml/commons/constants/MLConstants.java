@@ -163,8 +163,6 @@ public class MLConstants {
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
 
-    public static final double DEFAULT_THRESHOLD = 0.5;
-    
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
     
@@ -179,7 +177,6 @@ public class MLConstants {
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
 
     // to build predictions CSV
-    public static final String WHITE_SPACE_SQUARE_BRACKET_REGEX = "\\s|\\[|\\]";
     public static final String NEW_LINE = "\n";
 
     // enums

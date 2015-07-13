@@ -1216,8 +1216,37 @@ a.cu-input-inline-btn {
   background-position: 0.2em 0.3em;
 }
 
+a.cu-level3-btn {
+  color: #333;
+  text-decoration: none;
+  border: 0px solid #ff0000;
+  padding: 16px 20px 17px 20px;
+  font-size: 14px;
+  margin: 0 0 0 0px;
+  font-weight: 200;
+  display: inline-block;
+  text-transform: uppercase;
+  background-size: 26px 26px;
+  background-position: 0.5em 0.3em;
+  margin-top: 1px;
+  margin-right: 1px;
+}
+
+a.cu-level3-btn:hover {
+	background-color:#e4e4e4;
+}
+
+.btn-set-dt {
+	background:url('../images/icons/ico-datatable.png') 0.8em 1em no-repeat;
+}
+
 #selected-table {
 	padding-top:7px;
 	padding-left:10px;
 	display:inline-block;
 }
+
+
+.wr-graph-img .filter-md {
+	text-align: left;
+} 

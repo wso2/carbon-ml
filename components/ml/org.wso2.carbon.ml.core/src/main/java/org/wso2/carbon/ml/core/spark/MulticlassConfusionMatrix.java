@@ -27,8 +27,17 @@ import java.util.List;
  */
 public class MulticlassConfusionMatrix implements Serializable {
     private static final long serialVersionUID = -3812754594966583187L;
+    /**
+     * 2D array containing values of the matrix.
+     */
     private double[][] matrix;
+    /**
+     * Labels of the confusion matrix.
+     */
     List<String> labels;
+    /**
+     * Size of the matrix (for a 3x3 matrix this value will be 3 since the confusion matrix is always a square matrix).
+     */
     private int size;
 
     /**
