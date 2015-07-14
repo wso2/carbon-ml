@@ -115,10 +115,10 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
-            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
-            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
-            clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
-            clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
+//            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
+//            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
+//            clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
+//            clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(new MLKMeansModel(kMeansModel));
             clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
             return clusterModelSummary;
