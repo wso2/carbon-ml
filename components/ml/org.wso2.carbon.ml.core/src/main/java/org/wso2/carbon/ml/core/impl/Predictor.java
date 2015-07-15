@@ -30,12 +30,18 @@ import org.apache.spark.mllib.linalg.DenseVector;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.apache.spark.mllib.tree.model.RandomForestModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
+import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
+import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
+import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -57,43 +63,66 @@ public class Predictor {
 
     public List<?> predict() throws MLModelHandlerException {
         String algorithmType = model.getAlgorithmClass();
+        AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
 
-        if (MLConstants.CLASSIFICATION.equals(algorithmType)) {
+        if (AlgorithmType.CLASSIFICATION == type) {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
             switch (supervised_algorithm) {
             case DECISION_TREE:
-                DecisionTreeModel decisionTreeModel = (DecisionTreeModel) model.getModel();
+                DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = decisionTreeModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
+                }
+                return decodePredictedValues(predictions);
+            case RANDOM_FOREST:
+                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+
+                    double predictedData = randomForestModel.predict(vector);
+                    predictions.add(predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             default:
-                ClassificationModel classificationModel = (ClassificationModel) model.getModel();
+                ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
 
                     double predictedData = classificationModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             }
 
-        } else if (MLConstants.NUMERICAL_PREDICTION.equals(algorithmType)) {
-            GeneralizedLinearModel generalizedLinearModel = (GeneralizedLinearModel) model.getModel();
+        } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {
+            GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel()).getModel();
             List<Double> predictions = new ArrayList<Double>();
             for (Vector vector : dataToBePredicted) {
 
                 double predictedData = generalizedLinearModel.predict(vector);
                 predictions.add(predictedData);
-                log.info("Predicted value before decoding: " + predictedData);
+                if (log.isDebugEnabled()) {
+
+                    log.debug("Predicted value before decoding: " + predictedData);
+                }
             }
             return decodePredictedValues(predictions);
 
-        } else if (MLConstants.CLUSTERING.equals((algorithmType))) {
+        } else if (AlgorithmType.CLUSTERING == type) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
@@ -103,7 +132,10 @@ public class Predictor {
 
                     int predictedData = kMeansModel.predict(vector);
                     predictions.add(predictedData);
-                    log.info("Predicted value before decoding: " + predictedData);
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
                 return decodePredictedValues(predictions);
             default:
@@ -143,7 +175,7 @@ public class Predictor {
         }
         List<Map<String, Integer>> encodings = model.getEncodings();
         // last index is response variable encoding
-        Map<String, Integer> encodingMap = encodings.get(encodings.size()-1);
+        Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
         if (encodingMap == null || encodingMap.isEmpty()) {
             // no change
             return predictions;
@@ -160,7 +192,9 @@ public class Predictor {
                     return predictions;
                 }
                 String decodedValue = decode(encodingMap, roundedValue);
-                log.info("Predicted value after decoding: " + decodedValue);
+                if (log.isDebugEnabled()) {
+                    log.debug("Predicted value after decoding: " + decodedValue);
+                }
                 decodedPredictions.add(decodedValue);
             }
             return decodedPredictions;
@@ -187,9 +221,7 @@ public class Predictor {
         }
         return null;
     }
-    
-    
-    
+
     public int closest(int of, Collection<Integer> in) {
         int min = Integer.MAX_VALUE;
         int closest = of;

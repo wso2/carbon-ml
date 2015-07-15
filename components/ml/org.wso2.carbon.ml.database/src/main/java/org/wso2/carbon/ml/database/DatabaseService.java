@@ -58,7 +58,7 @@ public interface DatabaseService {
      * @param model MLModelNew to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertModel(MLModelNew model) throws DatabaseHandlerException;
+    public void insertModel(MLModelData model) throws DatabaseHandlerException;
 
     /**
      * Retrieves the path of the value-set having the given ID, from the
@@ -354,6 +354,17 @@ public interface DatabaseService {
     public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
 
     /**
+     * Returns project object for a given project ID from the database.
+     *
+     * @param tenantId ID of the tenant
+     * @param userName Username of the tenant
+     * @param projectId ID of the project
+     * @return MLProject object
+     * @throws DatabaseHandlerException
+     */
+    public MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+
+    /**
      * Get all the projects of the given tenant and username
      * @param tenantId   tenant id
      * @param userName   username
@@ -370,7 +381,7 @@ public interface DatabaseService {
      * @return
      * @throws DatabaseHandlerException
      */
-    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
 
     /**
      * Get all the analyses of the given tenant and username
@@ -389,7 +400,7 @@ public interface DatabaseService {
      * @return
      * @throws DatabaseHandlerException
      */
-    public MLModelNew getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
+    public MLModelData getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
 
     /**
      * Get the model name identified by the given model id
@@ -399,7 +410,7 @@ public interface DatabaseService {
      * @return
      * @throws DatabaseHandlerException
      */
-    public MLModelNew getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+    public MLModelData getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
      * Get all models of the given tenant and username
@@ -408,7 +419,7 @@ public interface DatabaseService {
      * @return
      * @throws DatabaseHandlerException
      */
-    public List<MLModelNew> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
+    public List<MLModelData> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get all the dataset-versions of the given dataset schema
@@ -507,7 +518,7 @@ public interface DatabaseService {
      * @return              list of models
      * @throws              DatabaseHandlerException
      */
-    public List<MLModelNew> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+    public List<MLModelData> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
     /**
      * Retrieve summary of the model

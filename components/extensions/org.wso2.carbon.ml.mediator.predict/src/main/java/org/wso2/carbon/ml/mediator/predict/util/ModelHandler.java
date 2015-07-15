@@ -27,6 +27,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.impl.MLIOFactory;
 import org.wso2.carbon.ml.core.impl.Predictor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -61,9 +62,9 @@ public class ModelHandler {
      * @param featureMappings   Map containing pairs <feature-name, synapse-path>
      * @return
      */
-    public static ModelHandler getInstance(String storageLocation, Map<String, SynapsePath> featureMappings)
+    public static ModelHandler getInstance(String storageLocation, Map<String, SynapsePath> featureMappings, boolean isUpdated)
             throws ClassNotFoundException, IOException, URISyntaxException, MLInputAdapterException {
-        if(instance == null) {
+        if(instance == null || isUpdated) {
             instance = new ModelHandler(storageLocation, featureMappings);
         }
         return instance;
@@ -80,9 +81,11 @@ public class ModelHandler {
 
         featureIndexMap = new HashMap<SynapsePath, Integer>();
         List<Feature> features = mlModel.getFeatures();
+        List<Integer> newToOldIndicesList = mlModel.getNewToOldIndicesList();
         for(Feature feature : features) {
             if(inputVariables.get(feature.getName()) != null) {
-                featureIndexMap.put(inputVariables.get(feature.getName()), feature.getIndex());
+                int newFeatureIndex = newToOldIndicesList.indexOf(feature.getIndex());
+                featureIndexMap.put(inputVariables.get(feature.getName()), newFeatureIndex);
             }
         }
    }
@@ -104,6 +107,8 @@ public class ModelHandler {
             } else {
                 modelStorageLocation = modelStorage[1];
             }
+        } else {
+            storageType = DatasetType.FILE.getValue();
         }
         MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
         MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);

@@ -1,0 +1,152 @@
+/*
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/*This css class defines few properties which are
+commond to all type of graphs.*/ 
+
+.basegraph
+{
+	font: 12px sans-serif;
+}
+
+.axis .text
+{
+	font: 12px sans-serif;
+}
+
+.axis path,.axis line
+{
+	fill: none;	
+	stroke: #000;
+}
+
+
+/*model summery weights chart styles*/
+#weights-chart svg {
+	height: 426px;
+	width: 650px;
+}
+
+#weights-chart .tick line {
+	display: none;
+}
+
+/*confusion matrix table styles*/
+#confusion-matrix table {
+	text-align: center;
+	width: 100%;
+	height:200px;
+	table-layout: fixed;
+	border-color: #999999;
+}
+#confusion-matrix .header-level-1 {
+	font-weight:bold;
+}
+#confusion-matrix .header-level-2 {
+	font-style: italic;
+}
+#confusion-matrix .rotate {
+	/* Safari */
+	-webkit-transform: rotate(-90deg);
+
+	/* Firefox */
+	-moz-transform: rotate(-90deg);
+
+	/* IE */
+	-ms-transform: rotate(-90deg);
+
+	/* Opera */
+	-o-transform: rotate(-90deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+#confusion-matrix .correct {
+	background-color: #ECFFEC;
+}
+#confusion-matrix .incorrect {
+	background-color: #FFF0F0;
+} 
+.ui-slider-horizontal {
+    width: 100%;
+}
+.threshold-value {
+    border: 0;
+}
+
+/* stepper */
+.sp-quantity {
+    width:124px;
+    height:42px;
+    font-family:"ProximaNova Bold", Helvetica, Arial;
+}
+.sp-minus {
+    width:27px;
+    height:27px;
+    border:0px solid #e4e4e4;
+    float:left;
+    text-align:center;
+	background:#fff;
+	font-size:12px;
+	color:#555;
+}
+.sp-input {
+    width:27px;
+    height:27px;
+    border:0px solid #e4e4e4;
+    border-left:0px solid black;
+    float:left;
+}
+.sp-plus {
+    width:27px;
+    height:27px;
+    border:0px solid #e1e1e1;
+    border-left:0px solid #e1e1e1;
+    float:left;
+    text-align:center;
+	margin-left:4px;
+	font-size:12px;
+	background:#fff;	
+	color:#555;	
+	font-weight:normal !important;
+}
+.sp-input input {
+    width:30px;
+    height:27px;
+    text-align:center;
+    font-family:"ProximaNova Bold", Helvetica, Arial;
+    border: none;
+	background:#fff;
+	color:#888;
+	border:1px solid #e4e4e4;
+}
+.sp-input input:focus {
+    border:0px solid #e1e1e1;
+    border: none;
+}
+.sp-minus a, .sp-plus a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding-top: 5px;
+}
+
+.sp-plus a, .sp-minus a {
+	color:#666;
+	font-weight:normal !important;
+}

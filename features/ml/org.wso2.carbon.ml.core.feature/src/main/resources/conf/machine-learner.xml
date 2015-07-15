@@ -30,7 +30,7 @@
 			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
 		<Property name="hdfs.out"
 			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
-		<Property name="bam.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+		<Property name="das.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
 		<Property name="registry.in"
 			value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
 		<Property name="registry.out"
@@ -102,7 +102,11 @@
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Reg_Parameter</Description>
+				<Description>The regularization parameter reduces overfitting, which
+					reduces the variance of your estimated regression parameters;
+					however, it does this at the expense of adding bias to your
+					estimate. Increasing lambda results in less overfitting but also
+					greater bias.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
@@ -256,17 +260,80 @@
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
-				<Description>Max_Depth</Description>
+				<Description>Maximum depth of the tree. This helps you to control
+					the size of the tree to prevent overfitting.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Max_Bins</Name>
 				<Value>100</Value>
-				<Description>Max_Bins</Description>
+				<Description>Number of bins used when discretizing continuous
+					features. This must be at least the maximum number of categories M
+					for any categorical feature. Increasing this allows the algorithm
+					to consider more split candidates and make fine-grained split
+					decisions. However, it also increases computation and
+					communication.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Impurity</Name>
 				<Value>gini</Value>
-				<Description>Impurity</Description>
+				<Description>The node impurity is a measure of the homogeneity of
+					the labels at the node. The current implementation provides two
+					impurity measures for classification (gini impurity and entropy)
+					and one impurity measure for regression (variance).</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>RANDOM_FOREST</Name>
+			<Type>Classification</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>4</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>3</Dimensionality>
+			<Parameters>
+				<Name>Num_Trees</Name>
+				<Value>5</Value>
+				<Description>Number of trees in the random forest. Increasing the
+					number of trees will decrease the variance in predictions,
+					improving the model’s test-time accuracy. Also training time
+					increases roughly linearly in the number of trees.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Depth</Name>
+				<Value>5</Value>
+				<Description>Maximum depth of the tree. This helps you to control
+					the size of the tree to prevent overfitting.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Bins</Name>
+				<Value>100</Value>
+				<Description>Number of bins used when discretizing continuous
+					features. This must be at least the maximum number of categories M
+					for any categorical feature. Increasing this allows the algorithm
+					to consider more split candidates and make fine-grained split
+					decisions. However, it also increases computation and
+					communication.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Impurity</Name>
+				<Value>gini</Value>
+				<Description>The node impurity is a measure of the homogeneity of
+					the labels at the node. The current implementation provides two
+					impurity measures for classification (gini impurity and entropy)
+					and one impurity measure for regression (variance).</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Feature_Subset_Strategy</Name>
+				<Value>auto</Value>
+				<Description>Number of features to use as candidates for splitting
+					at each tree node. The number is specified as a fraction or
+					function of the total number of features. Decreasing this number
+					will speed up training, but can sometimes impact performance if too
+					low.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Seed</Name>
+				<Value>12345</Value>
+				<Description>Seed for the random number generator.</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -279,7 +346,8 @@
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
-				<Description>Lambda</Description>
+				<Description>Additive smoothing can be used by setting this
+					parameter.</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -292,12 +360,12 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>20</Value>
-				<Description>Iterations</Description>
+				<Description>The maximum number of iterations to run.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Num_Clusters</Name>
 				<Value>3</Value>
-				<Description>Num_Clusters</Description>
+				<Description>The number of desired clusters.</Description>
 			</Parameters>
 		</Algorithm>
 	</Algorithms>

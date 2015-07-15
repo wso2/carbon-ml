@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -71,6 +71,14 @@ public class MLProjectHandler {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
     }
+
+    public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
+        try {
+            return databaseService.getProject(tenantId, userName, projectId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLProjectHandlerException(e.getMessage(), e);
+        }
+    }
     
     public List<MLProject> getAllProjects(int tenantId, String userName) throws MLProjectHandlerException {
         try {
@@ -80,7 +88,7 @@ public class MLProjectHandler {
         }
     }
 
-    public List<MLModelNew> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
+    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
             return databaseService.getProjectModels(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
@@ -94,11 +102,6 @@ public class MLProjectHandler {
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
-    }
-
-    public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws MLProjectHandlerException {

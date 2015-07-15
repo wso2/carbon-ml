@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLModelNew;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLProjectHandler;
@@ -136,7 +136,7 @@ public class ProjectApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLModelNew> models = mlProjectHandler.getProjectModels(tenantId, userName, projectId);
+            List<MLModelData> models = mlProjectHandler.getProjectModels(tenantId, userName, projectId);
             return Response.ok(models).build();
         } catch (MLProjectHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(

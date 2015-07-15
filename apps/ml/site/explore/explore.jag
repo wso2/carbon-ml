@@ -1,0 +1,1178 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSO2 Machine Learner</title>
+    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
+    <link rel="stylesheet" type="text/css" href="../../css/data.css">
+    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+
+    <script src="../../js/respond.min.js"></script>
+    
+    <script src="../../js/d3.v3.min.js"></script>
+    <script src="../../js/d3.js"></script>
+    <script src="../../js/nv.d3.js"></script>    
+    <script src="../../js/wso2.ml.graphs.js"></script>
+    
+    <script src="../../js/jquery-1.11.1.min.js"></script>    
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %> 
+
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+        <div class="wr-project">
+            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+        </div>
+
+		<div class="wr-action-btn-bar">
+			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3 wr-wiz-nav">
+		<div class="wr-secondary-links pull-right">
+			<div class="ctrl-wiz-nav">
+				<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+				<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+		
+		<!-- Wizard -->
+	    <ul class="nav nav-pills nav-wizard">
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
+	    </ul>
+
+		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+            <!-- <h1 class="title">Explore Data</h1> -->
+            <div id="notification-area"></div>
+            <div role="tabpanel" class="wr-tabbed-container">
+
+				<!-- Nav tabs/graphs -->
+				<div class="wr-tabs-grphs">
+					<ul class="nav nav-pills">
+						 <li role="presentation" id="scatter-plot-li" data-toggle="tooltip"><a href="#scatter-plot" id="scatter-plot-link" aria-controls="scatter-plot" role="tab" data-toggle="tab">Scatter Plot</a></li>
+						 <li role="presentation" id="parallel-sets-li" data-toggle="tooltip"><a href="#parallel-sets" id="parallel-sets-link" aria-controls="parallel-sets" role="tab" data-toggle="tab">Parallel Sets</a></li>
+						 <li role="presentation" id="trellis-chart-li" data-toggle="tooltip"><a href="#trellis-chart" id="trellis-chart-link" aria-controls="trellis-chart" role="tab" data-toggle="tab">Trellis Chart</a></li>
+						 <li role="presentation" id="cluster-diagram-li" data-toggle="tooltip"><a href="#cluster-diagram" id="cluster-diagram-link" aria-controls="cluster-diagram" role="tab" data-toggle="tab">Cluster Diagram</a></li>
+					</ul>
+				</div>
+
+
+				<!-- Tab panes -->
+				<div class="tab-content">
+
+					<div role="tabpanel" class="tab-pane fade in" id="scatter-plot">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-x"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-y"></select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Group By<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="scatter-group"></select>
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+
+							<!-- graph description -->
+							<div class="wr-desc-chart">
+								<h5><span class="glyphicon glyphicon-info-sign"></span> Scatter plot & histograms</h5>
+								<p>Scatter plot visualizes the relationship between the two selected features of the dataset. Moreover, histograms provide the user a graphical representation of the data distribution for the same two features you select. The scatter plot user interface allows you to select two numerical features from the dataset to be visualized through a scatter plot and histograms.</p>
+							</div>
+							<!-- /graph description -->					        
+
+					    </div>
+
+						<div class="col-md-10 wr-graph-content">
+							<div class="wr-graph-element gr01">
+								<h5 id='scatterPlotTitle'></h5>
+								<div class="wr-graph-img">
+									<div id='scatter'>Loading chart...</div>
+									
+									<div class="sp-quantity">
+									    <div class="sp-minus"> <a class="scatter-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+									    </div>
+									    <div class="sp-input">
+									        <input type="text" id="scatter-marker-size-input" class="quntity-input" value="2" disabled/>
+									    </div>
+									    <div class="sp-plus"> <a class="scatter-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+									    </div>
+									</div>																		
+
+								</div>
+							</div>
+				    	
+							<div id='histogramIndependent' class="wr-graph-element gr02">
+								<h5 id='histogramIndependentTitle'></h5>
+								<div class="wr-graph-img">
+									<svg></svg>
+								</div>
+								<div id='numFeatureIndependentSummary' class='graphSummary'></div>
+							</div>
+							
+							<div id='histogramDependent' class="wr-graph-element gr02">
+								<h5 id='histogramDependentTitle'></h5>
+								<div class="wr-graph-img">
+									<svg></svg>									
+								</div>
+								<div id='numFeatureDependentSummary' class='graphSummary'></div>
+							</div>						
+				    	</div>
+
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="parallel-sets">
+					    <div class="col-md-2 wr-left-nav">
+
+					        <div class="wr-filters">
+
+					            <div>
+					                <label class="input-label-sm">Categorical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="parallel-sets-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>
+					            
+					            <br class="c-both" />
+
+					        </div>
+					        <!-- /filters -->   
+
+							<!-- graph description -->
+							<div class="wr-desc-chart">
+								<h5><span class="glyphicon glyphicon-info-sign"></span> Parallel sets</h5>
+								<p>Parallel sets is a visualization method used for categorical data. It adopts the layout of parallel coordinates, but substitutes the individual data points by a frequency-based representation. This abstract view is combined with a set of interactions. It supports visual data analysis of large and complex data sets. Using the parallel sets user interface, you can specify which categorical features to draw the diagram.</p>
+							</div>
+							<!-- /graph description -->					        					        
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div class="wr-graph-element gr04">
+								<div class="wr-graph-img">
+									<div id='parallelSets'>Loading chart...</div>
+								</div>
+							</div>					      
+
+					    </div>
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="trellis-chart">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="trellis-cat-features">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div>
+					                <label class="input-label-sm">Numerical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div id="trellis-num-features" class="wr-filter-radio-group">
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />			            
+
+					        </div>
+
+							<!-- graph description -->
+							<div class="wr-desc-chart">
+								<h5><span class="glyphicon glyphicon-info-sign"></span> Trellis chart</h5>
+								<p>Trellis chart is a series of graphs or charts based on the same scale and axes, allowing them to be easily compared. It uses multiple views to show different partitions of a dataset, and is useful for finding the structure and patterns in complex data. Trellis chart user interface allows you to select one categorical feature and multiple numerical features (bound to a maximum) to draw the diagram.</p>
+							</div>
+							<!-- /graph description -->					        					        					        
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div class="wr-graph-element gr05">
+								<div class="wr-graph-img">
+									<div id='trellisChart'>Loading chart...</div>
+
+									<div class="sp-quantity">
+									    <div class="sp-minus"> <a class="trellis-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+									    </div>
+									    <div class="sp-input">
+									        <input type="text" id="trellis-marker-size-input" class="quntity-input" value="2" disabled/>
+									    </div>
+									    <div class="sp-plus"> <a class="trellis-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+									    </div>
+									</div>																											
+
+								</div>
+							</div>					      					        
+
+					    </div>
+
+					</div>
+
+
+					<div role="tabpanel" class="tab-pane fade in" id="cluster-diagram">
+					    
+					    <div class="col-md-2 wr-left-nav">
+
+					        <!-- filters -->
+					        <div class="wr-filters">
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">First Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-independent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Second Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-dependent">
+					                    </select>
+					                </div>
+					            </div>
+
+					            <div class="filter-md">
+					                <label class="input-label-sm">Number of Clusters<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <div class="input-control text">
+					                    <select class="form-control" id="cluster-num-clusters">
+										    <option value='2'>2</option>
+										    <option value='3' selected>3</option>
+										    <option value='4'>4</option>
+										    <option value='5'>5</option>
+										    <option value='6'>6</option>
+										    <option value='7'>7</option>
+										    <option value='8'>8</option>
+										    <option value='9'>9</option>
+										    <option value='10'>10</option>
+										    <option value='11'>11</option>
+										    <option value='12'>12</option>
+										    <option value='13'>13</option>
+										    <option value='14'>14</option>
+										    <option value='15'>15</option>                                    
+					                    </select>
+					                </div>
+					            </div>      
+
+					            <br class="c-both" />				            
+
+					        </div>
+
+							<!-- graph description -->
+							<div class="wr-desc-chart">
+								<h5><span class="glyphicon glyphicon-info-sign"></span> Cluster diagram</h5>
+								<p>Cluster diagram is a general type of diagram, which depicts one or more clusters in a dataset. A cluster in general is a group or collection of discrete points that are close to each other. In explore view, a cluster diagram provides a perspective on data clusters for two selected numerical features. A popular clustering algorithm is applied on the data sample to derive data clusters. You can select two numerical features and the number of clusters required through the cluster diagram user interface.</p>
+							</div>
+							<!-- /graph description -->					        					        					        					        
+
+					    </div>
+
+					    <div class="col-md-10 wr-graph-content">
+
+					        <div class="wr-graph-element gr04">
+								<div class="wr-graph-img">
+									<div id='clusterDiagram'>Loading chart...</div>
+
+									<div class="sp-quantity">
+									    <div class="sp-minus"> <a class="cluster-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+									    </div>
+									    <div class="sp-input">
+									        <input type="text" id="cluster-marker-size-input" class="quntity-input" value="2" disabled/>
+									    </div>
+									    <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+									    </div>
+									</div>																																											
+
+								</div>
+							</div>					      					        
+
+					    </div>
+
+					</div>
+
+				</div>
+
+            </div>
+		</div>
+		<!-- /content -->
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+
+<script src="../../js/d3.v3.min.js" charset="utf-8"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
+    
+<script src="../../js/d3.parsets.js"></script>
+<script src="../../js/figue.js"></script>
+
+<script type="text/javascript">
+
+var serverUrl = window.location.origin;
+var datasetId = getParameterByName('datasetId');
+var fromAnalysis = getParameterByName('fromAnalysis');
+var analysisId;
+var tenantId;
+var userName;
+
+var categoricalFeatureNames;
+var numericalFeatureNames;
+
+var scatterMarkerSize;
+var trellisMarkerSize;
+var clusterMarkerSize;
+
+// redraw charts upon changes in selections
+$(document).on('change','select[id="scatter-x"], select[id="scatter-y"], select[id="scatter-group"]',function() {
+    $("#scatter").html("Loading chart...");
+    drawPlotsAjax();
+});
+$(document).on('change','input[class="categoricalFeatureNames"]',function() {
+	$("#parallelSets").html("Loading chart...");
+	drawParallelSets();
+});
+$(document).on('change','input[class="numericalFeatureNames"], select[id="trellis-cat-features"]',function() {
+    $("#trellisChart").html("Loading chart...");
+    drawTrellisChart();
+});
+$(document).on('change','select[id="cluster-independent"], select[id="cluster-dependent"], select[id="cluster-num-clusters"]',function() {
+    $("#clusterDiagram").html("Loading chart...");
+    drawClusterDiagram();
+});
+
+$( document ).ready(function() {
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+	scatterMarkerSize = $('#scatter-marker-size-input').val();
+	trellisMarkerSize = $('#trellis-marker-size-input').val();
+	clusterMarkerSize = $('#cluster-marker-size-input').val();
+
+    var projectName = getParameterByName('projectName');
+    var projectId;
+    $.ajax({
+        type: 'GET',
+        url: serverUrl + "/api/projects/" + projectName,
+        async : false,
+        success: function(res){
+            projectId = res['id'];
+        },
+        error: function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    // set commonly used variables
+    var analysisName = getParameterByName('analysisName');
+    $.ajax({
+        type: 'GET',
+        url: serverUrl + "/api/projects/" + projectId + "/analyses/" + analysisName,        
+        async : false,
+        success: function(res){
+            analysisId = res['id'];
+            tenantId = res['tenantId'];
+            userName = res['userName'];            
+        },
+        error: function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    // get categorical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/filteredFeatures?featureType=CATEGORICAL",
+        async: false,
+        success : function(res){
+            categoricalFeatureNames = res;
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });    
+    // get numerical feature names
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/filteredFeatures?featureType=NUMERICAL",
+        async: false,
+        success : function(res){
+            numericalFeatureNames = res;
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    // put path in application navigator
+    $('#nav-project').text(projectName);
+    $('#nav-analysis').text(" \\ "+analysisName);    
+
+    // binding events to chart links
+    $('#scatter-plot-link').on('click', function(e){
+        e.preventDefault();
+        drawScatterPlotBase();
+    });
+    $('#parallel-sets-link').on('click', function(e){
+        e.preventDefault();
+        drawParallelSetsBase();
+    });
+    $('#trellis-chart-link').on('click', function(e){
+        e.preventDefault();
+        drawTrellisChartBase();
+    });
+    $('#cluster-diagram-link').on('click', function(e){
+        e.preventDefault();
+        drawClusterDiagramBase();
+    });
+
+    // disable tabs based on the features
+    disableTabs();
+
+    // select the active tab on page load
+    selectActiveTab();
+
+    // disabling tabs
+    $("#wr-tabs-grphs > li").click(function(){
+        if($(this).hasClass("disabled")) {
+            return false;
+        }
+    });
+
+    $('#prev-btn').on('click', function(e){
+        e.preventDefault();
+
+        var fromAnalysis = getParameterByName('fromAnalysis');
+        window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
+    });
+
+    $('#next-btn').on('click', function(e){
+        e.preventDefault(); 
+
+	    var fromAnalysis = getParameterByName('fromAnalysis');
+        window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
+    });
+
+    // function that cancels an analysis
+    $('#cancel-analysis').on('click', function(e){
+        e.preventDefault();
+        // if navigation is from analysis page do not delete the analysis
+        if (fromAnalysis == 'true') {
+            window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
+        }
+        else {
+            $.ajax({
+	            type: 'DELETE',
+	            url: serverUrl + "/api/analyses/" + analysisId,
+	            success: function(res){
+	                window.location.href = '../project/projects.jag';
+	            },
+	            error: function(res){
+	                var errorText = res.responseText
+		        	handleNotification(errorText, '#notification-area', 'warning');
+	            }
+	        });    	
+        }
+    });
+
+	// functions for chart marker size changes
+	$(".scatter-marker-size").on("click", function (e) {
+		e.preventDefault();
+
+	    var $button = $(this);
+	    var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+	    if ($button.data('operator') == "+") {
+	        var newValue = parseFloat(oldValue) + 1;
+	    } else {
+	        // Don't allow decrementing below 1
+	        if (oldValue > 1) {
+	            var newValue = parseFloat(oldValue) - 1;
+	        } else {
+	            newValue = 1;
+	        }
+	    }
+	    scatterMarkerSize = newValue;
+	    $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+	    $("#scatter").html("Loading chart...");
+	    drawPlotsAjax();
+	});
+
+	$(".trellis-marker-size").on("click", function (e) {
+		e.preventDefault();
+
+	    var $button = $(this);
+	    var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+	    if ($button.data('operator') == "+") {
+	        var newValue = parseFloat(oldValue) + 1;
+	    } else {
+	        // Don't allow decrementing below 1
+	        if (oldValue > 1) {
+	            var newValue = parseFloat(oldValue) - 1;
+	        } else {
+	            newValue = 1;
+	        }
+	    }
+		trellisMarkerSize = newValue;
+	    $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+	    $("#trellisChart").html("Loading chart...");
+	    drawTrellisChart();
+	});
+
+	$(".cluster-marker-size").on("click", function (e) {
+		e.preventDefault();
+
+	    var $button = $(this);
+	    var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+	    if ($button.data('operator') == "+") {
+	        var newValue = parseFloat(oldValue) + 1;
+	    } else {
+	        // Don't allow decrementing below 1
+	        if (oldValue > 1) {
+	            var newValue = parseFloat(oldValue) - 1;
+	        } else {
+	            newValue = 1;
+	        }
+	    }
+		clusterMarkerSize = newValue;
+	    $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+	    $("#clusterDiagram").html("Loading chart...");
+	    redrawClusterDiagram();
+	});
+
+});
+
+// select the active tab based on the feature types
+function selectActiveTab() {
+    if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
+        drawScatterPlotBase();
+        $('#scatter-plot-link').click();
+	} else if (categoricalFeatureNames.length > 1) {
+	    drawParallelSetsBase();
+	    $('#parallel-sets-link').click();
+	} else if (categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0){
+	    drawTrellisChartBase();
+	    $('#trellis-chart-link').click();
+	} else if(numericalFeatureNames.length > 1) {
+	    drawClusterDiagramBase();
+	    $('#cluster-diagram-link').click();
+	}
+}
+
+// disable tabs based on the features and show tooltips
+function disableTabs() {
+    if (!(numericalFeatureNames.length >1 & categoricalFeatureNames.length >0)) {
+        $('#scatter-plot-li').attr('class', 'disabled');
+        $('#scatter-plot-li').attr('title', 'Minimum of two numerical features and one categorical feature required to draw a scatter plot');
+        $('#scatter-plot-link').attr('data-toggle', '');
+	}
+	if(categoricalFeatureNames.length < 2) {
+	    $('#parallel-sets-li').attr('class', 'disabled');
+        $('#parallel-sets-li').attr('title', 'Minimum of two categorical features required for parallel sets');
+        $('#parallel-sets-link').attr('data-toggle', '');
+	}
+	if(!(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0)) {
+	    $('#trellis-chart-li').attr('class', 'disabled');
+        $('#trellis-chart-li').attr('title', 'Minimum of one categorical feature required to draw trellis charts');
+        $('#trellis-chart-link').attr('data-toggle', '');
+	}
+	if(numericalFeatureNames.length < 2) {
+		$('#cluster-diagram-li').attr('class', 'disabled');
+        $('#cluster-diagram-li').attr('title', 'Minimum of two numerical features required for cluster diagrams');
+        $('#cluster-diagram-link').attr('data-toggle', '');
+	}
+}
+
+function drawScatterPlotBase() {
+
+	if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
+	 
+	    $('#scatter-x, #scatter-y, #scatter-group').empty();
+	    $.each(numericalFeatureNames,function(index, feature){
+	        $('#scatter-x, #scatter-y').append($('<option>', { 
+	            value: sanitize(feature),
+	            text : sanitize(feature)
+	        }));
+	    });
+	    $('#scatter-y option')[1].selected = true;
+	    $.each(categoricalFeatureNames,function(index, feature){
+	        $('#scatter-group').append($('<option>', { 
+	            value: sanitize(feature),
+	            text : sanitize(feature)
+	        }));
+	    });
+
+	    drawPlotsAjax();
+
+	} else {
+	    var infoText = "Minimum of two numerical features and one categorical feature required to draw a scatter plot.";
+        $("#scatter").html(buildNotification(infoText, 'info'));
+	}
+}
+
+function drawPlotsAjax() {
+
+	//TODO: put regex as global var
+	var numFeatureIndependent = $("#scatter-x").val().replace(/^\s+|\s+$/g, '');
+    var numFeatureDependent = $("#scatter-y").val().replace(/^\s+|\s+$/g, '');
+    var catFeature = $("#scatter-group").val().replace(/^\s+|\s+$/g, '');
+
+    var numFeatureIndependentEscaped = $("#scatter-x").val().replace(/^\s+|\s+$/g, '').replace(/"/g,"\\\"");
+    var numFeatureDependentEscaped = $("#scatter-y").val().replace(/^\s+|\s+$/g, '').replace(/"/g,"\\\"");
+    var catFeatureEscaped = $("#scatter-group").val().replace(/^\s+|\s+$/g, '').replace(/"/g,"\\\"");
+
+    // get scatter plot data
+    var jsonData = '{"xAxisFeature" : "'+numFeatureIndependentEscaped+'","yAxisFeature" : "'+numFeatureDependentEscaped+'","groupByFeature" : "'+catFeatureEscaped+'"}';
+    $.ajax({
+        type: "POST",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl + "/api/datasets/" + datasetId + "/scatter",
+		data: jsonData,
+        async: false,
+        success : function(res) {
+
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var scatterData = [];
+            for (var i = 0; i < res.length; i++) {
+                
+                var parentObject = res[i];
+                var parentObjectKey = Object.keys(parentObject)[0];
+                var childObject = parentObject[parentObjectKey];
+                var childObjectKey = Object.keys(childObject)[0];
+                var childObjectValue = childObject[childObjectKey];
+
+                var dataRow = [];
+                dataRow[0] = parseFloat(parentObjectKey);
+                dataRow[1] = parseFloat(childObjectKey);
+                dataRow[2] = childObjectValue;
+                scatterData.push(dataRow);
+            }
+
+        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent, scatterMarkerSize);
+		   	$("#scatterPlotTitle").html(numFeatureIndependent + " vs. " + numFeatureDependent);            
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    // get summary data for independent variable
+	$.ajax({
+        type: "GET",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl + "/api/analyses/" + analysisId + "/stats?feature=" + numFeatureIndependent,
+        async: false,
+        success : function(res){
+        	var jsonObj = res;
+		   	var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp;  Median: " + jsonObj[0].median + "<br><br>Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   	$("#histogramIndependentTitle").html(numFeatureIndependent);
+		   	$("#numFeatureIndependentSummary").html(summary);
+		   	drawHistogram(jsonObj, "#histogramIndependent");
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    // get summary data for dependent variable
+    $.ajax({
+        type: "GET",
+        headers: {
+        		"Accept" : "application/json",         
+                "Content-Type": "application/json"   
+  		},
+        url: serverUrl + "/api/analyses/" + analysisId + "/stats?feature=" + numFeatureDependent,
+        async: false,
+        success : function(res){
+        	var jsonObj = res;
+		   	var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp; Median: " + jsonObj[0].median + "<br><br>Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
+		   	$("#histogramDependentTitle").html(numFeatureDependent);
+		   	$("#numFeatureDependentSummary").html(summary);
+		   	drawHistogram(jsonObj, "#histogramDependent");
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+}
+
+function drawHistogram(data, divID) {
+	$(divID + ' svg').empty();
+
+    nv.addGraph(function () {
+
+        var chart = nv.models.linePlusBarChart()
+                .margin({top: 30, right: 60, bottom: 50, left: 70})
+                .x(function (d, i) {
+                       return i
+                   })
+                .y(function (d) {
+                       return d[1]
+                   })
+                .color(["#f16c20"])
+            ;
+
+        chart.xAxis
+            .showMaxMin(false)
+            .tickFormat(function (d) {
+                            return data[0].values[d][0];
+                        });
+
+        chart.y1Axis
+            .tickFormat(d3.format(',f'));
+
+        chart.y2Axis
+            .tickFormat(function (d) {
+                            return '$' + d3.format(',f')(d)
+                        });
+
+        chart.bars.forceY([0]);
+
+        d3.select(divID + ' svg')
+            .datum(data)
+            .transition().duration(500)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+}
+
+function drawParallelSetsBase() {    
+
+    $('#parallel-sets-features').empty();
+    $.each(categoricalFeatureNames,function(index, feature){
+        if (index < 4){
+            $('#parallel-sets-features').append("<label class='checkbox'><input type='checkbox' class='categoricalFeatureNames' id='inlineCheckbox1' value='" + categoricalFeatureNames[index].trim().replace(/"/g,"\\\"") + "' checked>" + categoricalFeatureNames[index] + "</label>");
+        }
+        else {
+            $('#parallel-sets-features').append("<label class='checkbox'><input type='checkbox' class='categoricalFeatureNames' id='inlineCheckbox1' value='" + categoricalFeatureNames[index].trim().replace(/"/g,"\\\"") + "'>" + categoricalFeatureNames[index] + "</label>");
+        }        
+    });
+
+    drawParallelSets();
+}
+
+function drawParallelSets() {
+
+    // get categorical feature list from checkbox selection
+    var catFeaturesDropdownValues = [];
+    $('.categoricalFeatureNames:checked').each(function() {
+        catFeaturesDropdownValues.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g,'"'));
+    });
+
+    var noOfCategoricalFeatures = catFeaturesDropdownValues.length;
+
+    if (noOfCategoricalFeatures > 1) {
+
+        $.ajax({
+            type: "GET",
+            url: serverUrl + "/api/datasets/" + datasetId + "/charts?features=" + catFeaturesDropdownValues.toString(),
+            async: false,
+            success : function(res){
+
+            	var categoricalFeatureArray = [catFeaturesDropdownValues.length];
+                for (i = 0; i < noOfCategoricalFeatures; i++) {
+                    categoricalFeatureArray[i] = catFeaturesDropdownValues[i];
+                }
+                // clear the div contains parallel sets chart
+                $("#parallelSets").html("");
+                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(800).height(670);
+                var vis = d3.select("#parallelSets").append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
+
+                vis.datum(res).call(chart);
+            },
+            error : function(res){
+                var errorText = res.responseText
+	        	handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });
+    } else {
+        var infoText = "Minimum of two categorical features required for parallel sets.";
+        $("#parallelSets").html(buildNotification(infoText, 'info'));
+    }
+}
+
+function drawTrellisChartBase() {
+
+    if(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0) {
+        $('#trellis-cat-features').empty();
+        $.each(categoricalFeatureNames,function(index, feature){
+            $('#trellis-cat-features').append($('<option>', {
+                value: sanitize(feature).trim().replace(/"/g,"\\\""),
+                text : sanitize(feature)
+            }));
+        });
+
+        $('#trellis-num-features').empty();
+        $.each(numericalFeatureNames,function(index, feature){
+            // first 4 categorical features are plotted by default
+            if (index < 4){
+                $('#trellis-num-features').append("<label class='checkbox'><input type='checkbox' class='numericalFeatureNames' value='" + numericalFeatureNames[index].trim().replace(/"/g,"\\\"") + "' checked>" + numericalFeatureNames[index] + "</label>");
+            }
+            else {
+                $('#trellis-num-features').append("<label class='checkbox'><input type='checkbox' class='numericalFeatureNames' value='" + numericalFeatureNames[index].trim().replace(/"/g,"\\\"") + "'>" + numericalFeatureNames[index] + "</label>");
+            }
+        });
+
+        drawTrellisChart();
+    }
+}
+
+function drawTrellisChart() {
+
+    var featureNames = [];
+    // get selected categorical feature
+    var categoricalHeader = $("#trellis-cat-features").val().replace(/^\s+|\s+$/g, '');
+    featureNames[0] = categoricalHeader.replace(/\\"/g,'"');
+    // get numerical feature list from checkbox selection
+    $('.numericalFeatureNames:checked').each(function() {
+        featureNames.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g,'"'));
+    });
+
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/datasets/" + datasetId + "/charts?features=" + featureNames.toString(),
+        async: false,
+        success : function(res){
+        	/* D3.js Trellis Chart code */
+            var width = 960,
+                size = 155,
+                padding = 19.5;
+            var x = d3.scale.linear().range([padding / 2, size - padding / 2]);
+            var y = d3.scale.linear().range([size - padding / 2, padding / 2]);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+            var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+            var color = d3.scale.category10();
+            
+            var data = res;
+
+            var domainByTrait = {},
+                traits = d3.keys(data[0]).filter(
+                    function(d) {
+                        return d !== categoricalHeader;
+                    }),
+                n = traits.length;
+
+            traits.forEach(function(trait) {
+                domainByTrait[trait] = d3.extent(data, function(d) {
+                    return d[trait];
+                });
+            });
+
+            xAxis.tickSize(size * n);
+            yAxis.tickSize(-size * n);
+
+            var brush = d3.svg.brush().x(x).y(y).on("brushstart", brushstart)
+                .on("brush", brushmove).on("brushend", brushend);
+
+            $("#trellisChart").html("");
+            var svg = d3.select("#trellisChart").append("svg").attr("width",
+                    size * n + padding).attr("height", size * n + padding)
+                .append("g").attr("transform",
+                    "translate(" + padding + "," + padding / 2 + ")");
+
+            svg.selectAll(".x.axis").data(traits).enter().append("g").attr(
+                "class", "x axis").attr("transform", function(d, i) {
+                return "translate(" + (n - i - 1) * size + ",0)";
+            }).each(function(d) {
+                x.domain(domainByTrait[d]);
+                d3.select(this).call(xAxis);
+            });
+
+            svg.selectAll(".y.axis").data(traits).enter().append("g").attr(
+                "class", "y axis").attr("transform", function(d, i) {
+                return "translate(0," + i * size + ")";
+            }).each(function(d) {
+                y.domain(domainByTrait[d]);
+                d3.select(this).call(yAxis);
+            });
+
+            var cell = svg.selectAll(".cell").data(cross(traits, traits))
+                .enter().append("g").attr("class", "cell").attr(
+                    "transform",
+                    function(d) {
+                        return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")";
+                    }).each(plot);
+
+            // Titles for the diagonal
+            cell.filter(function(d) {
+                return d.i === d.j;
+            }).append("text").attr("x", padding).attr("y", padding).attr("dy",
+                ".71em").text(function(d) {
+                return d.x;
+            });
+
+            cell.call(brush);
+
+            function plot(p) {
+                var cell = d3.select(this);
+
+                x.domain(domainByTrait[p.x]);
+                y.domain(domainByTrait[p.y]);
+
+                cell.append("rect").attr("class", "frame").attr("x",
+                    padding / 2).attr("y", padding / 2).attr("width",
+                    size - padding).attr("height", size - padding);
+
+                cell.selectAll("circle").data(data).enter().append("circle")
+                    .attr("cx", function(d) {
+                        return x(d[p.x]);
+                    }).attr("cy", function(d) {
+                        return y(d[p.y]);
+                    }).attr("r", trellisMarkerSize).style("fill", function(d) {
+                        // replace current header of categorical feature header with common header
+                        // can be accessed by color
+                        var dString = JSON.stringify(d);
+                        dString = dString.replace(categoricalHeader, "categoricalFeature");
+                        var dNew = JSON.parse(dString);
+                        return color(dNew.categoricalFeature);
+                    });
+            }
+            var brushCell;
+
+            // Clear the previously-active brush, if any.
+            function brushstart(p) {
+                if (brushCell !== this) {
+                    d3.select(brushCell).call(brush.clear());
+                    x.domain(domainByTrait[p.x]);
+                    y.domain(domainByTrait[p.y]);
+                    brushCell = this;
+                }
+            }
+
+            // Highlight the selected circles.
+            function brushmove(p) {
+                var e = brush.extent();
+                svg.selectAll("circle").classed(
+                    "hidden",
+                    function(d) {
+                        return e[0][0] > d[p.x] || d[p.x] > e[1][0] || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+                    });
+            }
+
+            // If the brush is empty, select all circles.
+            function brushend() {
+                if (brush.empty())
+                    svg.selectAll(".hidden").classed("hidden", false);
+            }
+
+            function cross(a, b) {
+                var c = [],
+                    n = a.length,
+                    m = b.length,
+                    i, j;
+                for (i = -1; ++i < n;)
+                    for (j = -1; ++j < m;)
+                        c.push({
+                            x: a[i],
+                            i: i,
+                            y: b[j],
+                            j: j
+                        });
+                return c;
+            }
+
+            d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");	        
+            // array for parsets dimensions with categorical feature names
+        },
+        error : function(res){
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+}
+
+function drawClusterDiagramBase() {
+
+    if(numericalFeatureNames.length > 1) {
+        $('#cluster-independent, #cluster-dependent').empty();
+        $.each(numericalFeatureNames,function(index, feature){
+            $('#cluster-independent, #cluster-dependent').append($('<option>', {
+                value: sanitize(feature),
+                text : sanitize(feature)
+            }));
+        });
+        // make second option selected by default
+        $('#cluster-dependent option')[1].selected = true;
+
+        drawClusterDiagram();
+    }
+}
+
+// keeps cluster data to redraw chart on marker size change
+var redrawClusterData = [];
+
+function drawClusterDiagram() {
+	// get categorical feature list from checkbox selection
+    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+    var noOfClusters = $("#cluster-num-clusters").val().replace(/^\s+|\s+$/g, '');
+    
+    // make ajax call
+    $.ajax({        
+        type: "GET",
+        url: serverUrl + "/api/datasets/" + datasetId + "/cluster?features=" + numericalFeatureIndependent + "," + numericalFeatureDependent + "&noOfClusters=" + noOfClusters,
+        success: function(response) {
+            var dataArray = response;
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var clusterData = [];
+            for (var i = 0; i < dataArray.length; i++) {                
+                var dataRow = [];
+                dataRow[0] = parseFloat(dataArray[i]['features']['0']);
+                dataRow[1] = parseFloat(dataArray[i]['features']['1']);
+                dataRow[2] = dataArray[i]['cluster'];
+                clusterData.push(dataRow);
+            }
+            redrawClusterData = clusterData;
+            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize);
+        },
+        error: function(response) {
+        	var errorText = 'Error occurred while retrieving data for cluster diagram. '+response.status+' '+response.statusText;
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+}
+
+// redraw cluster diagram with existing cluster data
+function redrawClusterDiagram() {
+	// get categorical feature list from checkbox selection
+    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+
+    $("#clusterDiagram").empty();
+    var scatter = new ScatterPlot(redrawClusterData);
+
+    scatter.setPlotingAreaWidth(720);
+    scatter.setPlotingAreaHeight(560);
+    scatter.setMarkerSize(clusterMarkerSize);
+    scatter.setXAxisText(numericalFeatureIndependent);
+    scatter.setYAxisText(numericalFeatureDependent);
+    scatter.plot(d3.select("#clusterDiagram"));
+};
+
+// drawing a simple scatter graph
+function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize) {
+    $(cssClass).empty();
+    var scatter = new ScatterPlot(data);
+
+    scatter.setPlotingAreaWidth(720);
+    scatter.setPlotingAreaHeight(560);
+    scatter.setMarkerSize(markerSize);
+    scatter.setXAxisText(xLabel);
+    scatter.setYAxisText(yLabel);
+    scatter.plot(d3.select(cssClass));
+};
+
+</script>
+
+</body>
+</html>

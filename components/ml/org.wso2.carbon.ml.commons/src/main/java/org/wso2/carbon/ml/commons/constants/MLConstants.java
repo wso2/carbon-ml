@@ -36,10 +36,6 @@ public class MLConstants {
     public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
     public static final String UPLOAD_LIMIT = "uploadLimit";
     
-    public static final String DATASET_SOURCE_TYPE_FILE = "file";
-    public static final String DATASET_SOURCE_TYPE_DAS = "das";
-    public static final String DATASET_SOURCE_TYPE_HDFS = "hdfs";
-    
     // Summary statistic calculation configurations  
     public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
     public static final String HISTOGRAM_BINS = "histogramBins";
@@ -114,9 +110,6 @@ public class MLConstants {
     public static final String PARAMETERS = "parameters";
     public static final String PARAMETER = "parameter";
     public static final String PROPERTY = "property";
-    public static final String CLASSIFICATION = "Classification";
-    public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
-    public static final String CLUSTERING = "Clustering";
 
     // file formats
     public static final String CSV = ".csv";
@@ -134,6 +127,9 @@ public class MLConstants {
     public static final String MAX_DEPTH = "Max_Depth";
     public static final String MAX_BINS = "Max_Bins";
     public static final String IMPURITY = "Impurity";
+    public static final String SEED = "Seed";
+    public static final String FEATURE_SUBSET_STRATEGY = "Feature_Subset_Strategy";
+    public static final String NUM_TREES = "Num_Trees";
     public static final String L1 = "L1";
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
@@ -157,8 +153,6 @@ public class MLConstants {
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
 
-    public static final double DEFAULT_THRESHOLD = 0.5;
-    
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
     
@@ -167,13 +161,18 @@ public class MLConstants {
     public static final String EMAIL_CONF_DIRECTORY = "email";
     public static final String ML_EMAIL_TEMPLATES_FILE = "ml-email-templates.xml";
     public static final String EMAIL_TEMPLATES = "emailTemplates";
+    public static final String TEXT_PLAIN = "text/plain";
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
 
+    // to build predictions CSV
+    public static final String NEW_LINE = "\n";
+
     // enums
     public enum SUPERVISED_ALGORITHM {
-        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, SVM, DECISION_TREE, NAIVE_BAYES
+        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, 
+        SVM, DECISION_TREE, RANDOM_FOREST, NAIVE_BAYES
     }
 
     public enum UNSUPERVISED_ALGORITHM {

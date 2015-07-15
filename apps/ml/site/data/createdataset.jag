@@ -1,0 +1,330 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSO2 Machine Learner</title>
+    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />    
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="../../js/respond.min.js"></script>
+
+    <%
+        include("../../includes/tenantAware.jag");
+    %>    
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+	<div class="row wr-global-header">
+		<div class="col-sm-8 app-logo">
+		    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+		</div>
+		<div class="col-sm-4">
+			<div class="wr-auth pull-right">
+				<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+				<div class="dropdown-menu">
+					<div class="cu-arrow"></div>
+					<div class="dropdown-menu-content">
+						<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+					</div>
+				</div>			
+			</div>
+		</div>
+	</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+        <div class="wr-asset-type-switcher">
+            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+            <span class="btn-asset"></span>
+            </a>
+        </div>	
+
+        <div class="wr-project">
+			<span class="title">DATASETS \ </span>
+		</div>
+
+		<div class="wr-action-btn-bar">
+			<!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+			<!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
+			<a href="#" class="cu-btn btn-cancel" id="cancel-dataset">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3">
+		<div class="wr-secondary-links pull-right">
+			<!-- empty -->
+			<!--a href="#" class="cu-btn btn-prev">Previous</a>
+			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		</div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<!--div class="col-lg-12 wr-secondary-bar"-->		
+		<!-- Wizard -->
+	    <!--ul class="nav nav-pills nav-wizard">
+	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>XXXX</a><div class="nav-arrow"></div></li>
+	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Build</a><div class="nav-arrow"></div></li>
+	    </ul-->		
+	<!--/div-->
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+		
+
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
+
+			<div id="notification-area"></div>
+			<div class="wr-form col-lg-5 col-centered">
+
+				<h1 class="title">Create Dataset</h1>
+
+			   	<form id="create-dataset-form" method="POST" enctype="multipart/form-data">
+					<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<span class="fld-required">*</span>
+					<div class="input-control text">
+					    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name" name="datasetName"/>
+					    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
+					</div>
+
+					<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<span class="fld-required">*</span>
+					<div class="input-control text">
+					    <input type="text" value="1.0.0" placeholder="" id="dataset-version" name="version"/>
+					</div>				
+
+					<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+					    <textarea rows="3" id="dataset-desc" name="description"></textarea>
+					</div>
+
+					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<div class="input-control text">
+						<select class="form-control" id="src-type" name="sourceType">
+						  <option value="file">File</option>
+						  <option value="hdfs">HDFS</option>
+						  <option value="das">DAS</option>
+						</select>				
+					</div>	
+
+					<label class="input-label">Data Source<span class="File Location"></span>  <span><label class="input-label" id="size-limit">(max size: 100MB)</label></span></label>
+					<span class="fld-required">*</span>
+					<!-- input for 'File' selection -->
+					<div id="source-file" class="input-control file info-state" data-role="input-control">
+			       		<input type="file" id="fileInput" name="file"/>
+			    	</div>
+			    	<!-- dynamically loads inputs for HDFS and DAS -->
+			    	<div id="source-hdfs-das"></div>
+
+					<div id="source-das-table" class="wr-datalookup">
+						<p class="p-note">* Select a table from the below list</p>
+						<table id="datasetTable">
+			                <thead>
+			                    <tr>
+			                        <th style="width:40px"></th>
+			                        <th>Table name</th>
+			                    </tr>
+			                </thead>							
+			                <tbody></tbody>
+			            </table>	                    										
+					</div>					
+
+					<div id="not-das">
+					
+						<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<div class="input-control text">
+							<select class="form-control" id="data-format" name="dataFormat">
+								<option value="csv">CSV</option>
+								<option value="tsv">TSV</option>					  
+							</select>				
+						</div>
+						
+						<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<div class="input-control text">
+							<select class="form-control" id="column-header" name="containsHeader">
+	                     		<option value="true">Yes</option>
+						  		<option value="false">No</option>					  
+							</select>				
+						</div>	
+
+						<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<div class="input-control text">
+							<select class="form-control" id="dest-type" name="destination">
+			              		<option value="file">File</option>
+							  	<option value="hdfs">HDFS</option>					  
+							</select>				
+						</div>
+
+					</div>
+					
+					<div class="btn-group-actions">
+			    		<button class="btn btn-main" type="submit" id="submit-dataset">Create Dataset</button>
+			    	</div>
+				</form>
+			</div>
+
+		</div>
+		<!-- /content -->
+	</div>
+</div>
+<!-- /content/body -->
+
+</div>
+    
+
+
+<!--footer class="footer">
+        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+<div id="content-asset-types" style="display: none">
+    <div>
+        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+    </div>
+</div> 
+
+<script src="../../js/jquery-1.11.1.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/jquery.form.min.js"></script> 
+<script src="../../js/jquery.dataTables.js"></script>
+
+<script type="text/javascript">
+
+var baseUrl = getBaseUrl(window.location.href);
+
+function displayDataSource() {
+	var dataSourceType = $('#src-type option:selected').text();
+	if (dataSourceType == 'HDFS') {
+		$('#source-file, #size-limit, #source-das, #source-das-table').hide();
+		$('#not-das').show();
+		var hdfsInput = '<div id="source-hdfs" class="input-control text">' +
+							'<input type="text" value="" placeholder="e.g. hdfs://localhost:9000/home/datasets/iris.csv" id="src-path" name="sourcePath" />' +
+						'</div>';
+		$('#source-hdfs-das').html(hdfsInput);
+
+	} else if (dataSourceType == 'DAS') {
+		$('#source-file, #size-limit, #source-hdfs, #not-das, #source-das-table').hide();
+		var dasInput = '<div id="source-das">' +
+							'<div id="source-das-input" class="input-control text" style="position:relative">' +
+								'<input type="text" value="" placeholder="" id="selected-table" name="sourcePath" readonly/><a style="position:absolute; right:0px" id="select-table" class="cu-level3-btn btn-set-dt" href="#"></a>' +
+							'</div>' +
+						'</div>';
+		$('#source-hdfs-das').html(dasInput);
+		loadDataTables();
+	}
+	else { // File
+		$('#source-hdfs-das').html("");
+		$('#source-das-table').hide();
+		$('#source-file, #size-limit, #not-das').show();
+	}
+}
+
+$( document ).ready(function() {
+	// Display only the correct dataSource input 
+	displayDataSource();
+
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    $("[data-toggle=popover]").popover();
+
+    $(".ctrl-asset-type-switcher").popover({
+        html : true, 
+        content: function() {
+            return $('#content-asset-types').html();
+        }
+    });
+
+	$('#create-dataset-form').ajaxForm({
+	    url: baseUrl + '/api/datasets',
+        success : function(res){
+    	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
+        },
+        error :  function(res){
+			var errorText = res.responseText
+            handleNotification(errorText, '#notification-area', 'warning');
+        }                               
+    });
+
+	$('#cancel-dataset').on('click', function(e){
+		window.location.href = './datasets.jag';
+	});
+
+	// change data source input according to data source type input
+	$('#src-type').on('change', function(e){
+		displayDataSource();
+	});
+
+	// show/hide DAS tables
+	$(document).on('click', '#select-table, #selected-table', function(e){
+		$('#source-das-table').toggle();
+	});	
+
+	// hide DAS tables when a table is selected
+	$(document).on('click', '.source-das-table-radio', function(e){
+		$('#selected-table').val($('input[name=das-tables]:checked').val());
+		$('#source-das-table').hide();
+	});
+}); 
+
+function loadDataTables() {
+	$.ajax({
+        type : 'GET',
+        url: baseUrl + '/api/configs/das/tables',
+        success : function(res) {
+        	var tableNames = res;
+			var tableData = "";
+		    for (var i=0; i < tableNames.length; i++) {        
+		        tableData += '<tr class="dataRow">' +
+		        				'<td><input class="source-das-table-radio" type="radio" name="das-tables" value="' + tableNames[i] + '"></td>' +
+		        				'<td>' + tableNames[i] + '</td>' +
+		        			 '</tr>';
+		    }
+		    $('#datasetTable tbody').html(tableData);
+
+		    // creating and destroying table to avoid reinitialize error
+		    var oTable = $('#datasetTable').dataTable();
+			oTable.fnDestroy();
+			// draw table with DataTables
+		    var oTable = $('#datasetTable').DataTable({
+		        "aLengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+		        "iDisplayLength": 5
+		    });
+        },
+        error :  function(res){
+			var errorText = res.responseText
+	        handleNotification(errorText, '#notification-area', 'warning');
+        }
+	});
+}
+
+</script>
+
+</body>
+</html>

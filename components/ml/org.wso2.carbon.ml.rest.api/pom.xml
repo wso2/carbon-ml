@@ -14,7 +14,9 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>ml</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
@@ -52,18 +54,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-                        <groupId>org.wso2.carbon.ml</groupId>
-                        <artifactId>org.wso2.carbon.ml.database</artifactId>
-                        <scope>provided</scope>
-                </dependency>
-		<dependency>
 			<groupId>org.wso2.carbon.ml</groupId>
 			<artifactId>org.wso2.carbon.ml.commons</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -71,25 +73,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-jaxrs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>javax.servlet</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
@@ -104,6 +92,11 @@
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.registry.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
