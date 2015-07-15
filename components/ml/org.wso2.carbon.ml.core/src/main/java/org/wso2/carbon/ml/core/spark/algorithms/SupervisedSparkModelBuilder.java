@@ -201,8 +201,15 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             LogisticRegressionModel logisticRegressionModel;
             String algorithmName;
 
+            int noOfClasses = getNoOfClasses(mlModel);
+
             if (isSGD) {
                 algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString();
+
+                if (noOfClasses > 2)
+                    throw new MLModelBuilderException("A binary classification algorithm cannot have more than " +
+                            "two distinct values in response variable.");
+
                 logisticRegressionModel = logisticRegression.trainWithSGD(trainingData,
                         Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                         Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
@@ -212,7 +219,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             } else {
 
                 algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION_LBFGS.toString();
-                int noOfClasses = getNoOfClasses(mlModel);
                 logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
                         hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
             }
@@ -363,6 +369,10 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     private ModelSummary buildSVMModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
+
+        if (getNoOfClasses(mlModel) > 2)
+            throw new MLModelBuilderException("A binary classification algorithm cannot have more than " +
+                    "two distinct values in response variable.");
         try {
             SVM svm = new SVM();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
