@@ -344,7 +344,7 @@
         var analysis = 
             '<div class="wr-analysis">' +
                 '<div id="inline-new-notification-area"></div>' +
-                '<label class="input-label">Analysis name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+                '<label class="input-label">Analysis name<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Name of the new analysis. An Analysis holds a pre-processed feature set, a selected machine learning algorithm and its calibrated set of hyper-parameters. Each analysis belongs to a project and a project can have multiple analyses. Once you create an analysis, you cannot edit it but you can view it and also delete it."></span></label>' +
                 '<div class="input-control text">' +
                     '<table>' +
                         '<tr>' +

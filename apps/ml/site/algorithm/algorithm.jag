@@ -90,7 +90,7 @@
 
                 <h1 class="title">Algorithm</h1>
 
-                <label class="input-label">Algorithm name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <label class="input-label">Algorithm name<span class="glyphicon"></span></label>
 		<span class="fld-required">*</span>
                 <div class="input-control text">
                     <select id="algorithm-name" class="form-control">
@@ -118,7 +118,7 @@
                 <div class="spcr-2"></div>
 
                 <div id="response-variable-field">
-                    <label class="input-label">Response variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <label class="input-label">Response variable<span class="glyphicon"></span></label>
     		<span class="fld-required">*</span>
                     <div class="input-control text">
                         <select id="response-variable" class="form-control">
@@ -127,7 +127,7 @@
                     <div class="spcr-2"></div>                
                 </div>                
 
-                <label class="input-label">Train data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
                 <div class="input-control text">
                     <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
                 </div>                              
