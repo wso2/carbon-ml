@@ -18,8 +18,12 @@
 
 package org.wso2.carbon.ml.core.spark.recommendation;
 
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
+import org.apache.spark.mllib.recommendation.Rating;
 import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -35,7 +39,19 @@ public class RecommendationModel {
 		sparkContext = context.getSparkContext();
 
 		//pre-processing dataset
+		JavaRDD<Rating> trainingData = null;
+		try {
+			trainingData = RecommendationUtils.preProcess(context);
+		} catch (DatasetPreProcessingException e) {
+			e.printStackTrace();
+		}
 
+		CollaborativeFiltering collaborativeFiltering = new CollaborativeFiltering();
+		MatrixFactorizationModel model = collaborativeFiltering.trainExplicit(trainingData, 10, 20,RecommendationConstants.DEFAULT_LAMBDA, 10);
+		Rating[] recommendedProducts = collaborativeFiltering.recommendProducts(model,1,RecommendationConstants.DEFAULT_NUMBER_OF_ITEMS);
+		for (Rating recommendedProduct : recommendedProducts) {
+			System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
+		}
 		return null;
 	}
 }
