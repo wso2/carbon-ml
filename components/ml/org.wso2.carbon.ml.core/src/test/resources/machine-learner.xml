@@ -217,6 +217,30 @@
 				<Value>3</Value>
 			</Parameters>
 		</Algorithm>
+		<Algorithm>
+			<Name>COLLABORATIVE_FILTERING</Name>
+			<Type>Recommendation</Type>
+			<Parameters>
+				<Name>Rank</Name>
+				<Value>8</Value>
+				<Description>The number of features to use.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>20</Value>
+				<Description>Number of iterations of ALS.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Lambda</Name>
+				<Value>0.01</Value>
+				<Description>Regularization factor.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Blocks</Name>
+				<Value>3</Value>
+				<Description>Level of Parallelism to split computation in to.</Description>
+			</Parameters>
+		</Algorithm>
 	</Algorithms>
 
 </MachineLearner>
