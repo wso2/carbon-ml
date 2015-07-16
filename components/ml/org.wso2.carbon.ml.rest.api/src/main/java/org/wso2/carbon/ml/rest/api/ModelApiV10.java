@@ -85,7 +85,7 @@ public class ModelApiV10 extends MLRestAPI {
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg("Error occurred while creating a model : " + model, e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -105,7 +105,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while adding storage for the model [id] %s of tenant [id] %s and [user] %s .",
                     modelId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -125,7 +125,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -145,13 +145,13 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (Exception e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -184,7 +184,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -226,7 +226,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -246,7 +246,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -268,7 +268,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while retrieving a model [name] %s of tenant [id] %s and [user] %s .", modelName,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -286,7 +286,7 @@ public class ModelApiV10 extends MLRestAPI {
                     String.format("Error occurred while retrieving all models of tenant [id] %s and [user] %s .",
                             tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -305,7 +305,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while deleting a model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -325,7 +325,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while retrieving summary of the model [id] %s of tenant [id] %s and [user] %s .",
                     modelId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -356,7 +356,7 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .", modelName,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 }

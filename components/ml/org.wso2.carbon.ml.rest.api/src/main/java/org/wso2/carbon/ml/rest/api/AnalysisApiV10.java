@@ -92,7 +92,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                     "Error occurred while creating an [analysis] %s of tenant [id] %s and [user] %s .", analysis,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -118,7 +118,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -147,7 +147,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while adding default features into customized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -175,7 +175,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving summarized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -201,7 +201,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving filtered feature names for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -226,7 +226,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving all feature names for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -251,7 +251,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving response variable for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -276,7 +276,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving algorithm name for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -301,7 +301,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving algorithm type for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -326,7 +326,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving train data fraction for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -357,7 +357,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving summarized stats of feature [name] %s for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     featureName, analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -383,7 +383,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while adding model configurations for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -409,7 +409,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while adding hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -435,7 +435,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving hyper parameters of algorithm [name] %s for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     algorithmName, analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -460,7 +460,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                                     "Error occurred while loading default hyper parameters for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -481,7 +481,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all analyses of tenant [id] %s and [user] %s .", tenantId,
                     userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -503,7 +503,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all models of analysis [id] %s of tenant [id] %s and [user] %s .",
                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
@@ -525,7 +525,7 @@ public class AnalysisApiV10 extends MLRestAPI {
                     "Error occurred while deleting an analysis [id] %s of tenant [id] %s and [user] %s .", analysisId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 }

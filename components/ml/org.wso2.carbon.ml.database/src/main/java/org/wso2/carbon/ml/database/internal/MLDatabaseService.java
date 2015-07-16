@@ -150,9 +150,7 @@ public class MLDatabaseService implements DatabaseService {
         String projectName = project.getName();
 
         if (getProject(tenantId, userName, projectName) != null) {
-            throw new DatabaseHandlerException(String.format(
-                    "Project [name] %s already exists for tenant [id] %s and user [name] %s.", projectName, tenantId,
-                    userName));
+            throw new DatabaseHandlerException(String.format("Project [name] %s already exists.", projectName));
         }
         try {
             MLDataSource dbh = new MLDataSource();
@@ -193,8 +191,8 @@ public class MLDatabaseService implements DatabaseService {
         
         if (getAnalysisOfProject(tenantId, userName, projectId, analysisName) != null) {
             throw new DatabaseHandlerException(String.format(
-                    "Analysis [name] %s already exists in project [id] %s of tenant [id] %s and user [name] %s.",
-                    analysisName, projectId, tenantId, userName));
+                    "Analysis [name] %s already exists in project [id] %s.",
+                    analysisName, projectId));
         }
         try {
             // Insert the analysis to the database.
@@ -346,8 +344,7 @@ public class MLDatabaseService implements DatabaseService {
                 return -1;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting dataset name: " + datasetName
-                    + " and tenant id:" + tenantId, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting dataset name: " + datasetName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -387,8 +384,8 @@ public class MLDatabaseService implements DatabaseService {
         } catch (Exception e) {
             throw new DatabaseHandlerException(
                     String.format(
-                            " An error has occurred while extracting dataset version id of [dataset] %s [version] %s [tenant] %s [user] %s",
-                            datasetId, version, tenantId, userName), e);
+                            " An error has occurred while extracting dataset version id of [dataset] %s [version] %s",
+                            datasetId, version), e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -410,12 +407,11 @@ public class MLDatabaseService implements DatabaseService {
             if (result.first()) {
                 return result.getLong(1);
             } else {
-                throw new DatabaseHandlerException("No value-set id associated with dataset-version name: " + datasetVersionName
-                        + " and tenant id:" + tenantId);
+                throw new DatabaseHandlerException("No value-set id associated with dataset-version name: " + datasetVersionName);
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting dataset-version name: "
-                    + datasetVersionName + " and tenant id:" + tenantId, e);
+                    + datasetVersionName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -555,8 +551,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return datasets;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting datasets of tenant: "
-                    + tenantId + " , user: " + userName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting datasets.", e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -593,8 +588,7 @@ public class MLDatabaseService implements DatabaseService {
                 return null;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting datasets of tenant: "
-                    + tenantId + " , user: " + userName, e);
+            throw new DatabaseHandlerException("An error has occurred while extracting a dataset with [id] "+datasetId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1328,7 +1322,7 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting project for project name:"
-                    + projectName + ", tenant Id:" + tenantId + " and username:" + userName, e);
+                    + projectName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1374,8 +1368,8 @@ public class MLDatabaseService implements DatabaseService {
                 return null;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting project for project ID:"
-                    + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
+            throw new DatabaseHandlerException("An error has occurred while extracting project for project ID:"
+                    + projectId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1412,8 +1406,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return projects;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting all projects of"
-                    + " tenant Id:" + tenantId + " and username:" + userName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting all projects.", e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1465,7 +1458,7 @@ public class MLDatabaseService implements DatabaseService {
             return models;
         } catch (Exception e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting all models of"
-                    + "project ID:" + projectId + ", tenant Id:" + tenantId + " and username:" + userName, e);
+                    + "project ID:" + projectId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1558,7 +1551,7 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while retrieving analysis with Id: "
-                    + analysisId + ", tenant id:" + tenantId + " and username:" + userName, e);
+                    + analysisId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1590,8 +1583,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return analyses;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting analyses for tenant id:"
-                    + tenantId + " and username:" + userName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting analyses.", e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1624,8 +1616,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return analyses;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting analyses for tenant id:"
-                    + tenantId + " , username:" + userName+ " and project id: "+projectId, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting analyses for project id: "+projectId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1662,7 +1653,7 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting the model with model name: "
-                    + modelName + ", tenant id:" + tenantId + " and username:" + userName ,e);
+                    + modelName ,e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1699,7 +1690,7 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting the model with model id: "
-                    + modelId + ", tenant id:" + tenantId + " and username:" + userName, e);
+                    + modelId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1742,8 +1733,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return models;
         } catch (Exception e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting all the models of analysis id: "+analysisId+", tenant id:"
-                    + tenantId + " and username:" + userName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting all the models of analysis id: "+analysisId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1779,8 +1769,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             return models;
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting all the models of tenant id:"
-                    + tenantId + " and username:" + userName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting all the models.", e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -1835,7 +1824,7 @@ public class MLDatabaseService implements DatabaseService {
             }
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting model name for model id: "
-                    + modelId + ", tenant id:" + tenantId + " and username:" + userName, e);
+                    + modelId, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
@@ -2465,8 +2454,8 @@ public class MLDatabaseService implements DatabaseService {
                 return null;
             }
         } catch (SQLException e) {
-            throw new DatabaseHandlerException(" An error has occurred while extracting analysis for tenant id:"
-                    + tenantId + " , username:" + userName+ ", project id: "+projectId+" and analysis name: "+analysisName, e);
+            throw new DatabaseHandlerException(" An error has occurred while extracting analysis for project id: "
+                    + projectId + " and analysis name: " + analysisName, e);
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);

@@ -116,7 +116,7 @@ public class ConfigurationApiV10 extends MLRestAPI {
             String msg = MLUtils.getErrorMsg(
                     String.format("Error occurred while retrieving DAS tables of tenant [id] %s .", tenantId), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 
         }
         return Response.ok(tableNames).build();
