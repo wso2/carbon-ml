@@ -1918,6 +1918,7 @@ public class MLDatabaseService implements DatabaseService {
             // Enable auto commit.
             MLDatabaseUtils.enableAutoCommit(connection);
             // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, searchStatement);
             MLDatabaseUtils.closeDatabaseResources(connection, insertStatement);
         }
     }

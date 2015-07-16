@@ -101,25 +101,25 @@
 				<h1 class="title">Create Dataset</h1>
 
 			   	<form id="create-dataset-form" method="POST" enctype="multipart/form-data">
-					<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<label class="input-label">Dataset Name<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Name of the dataset to be uploaded."></span></label>
 					<span class="fld-required">*</span>
 					<div class="input-control text">
 					    <input type="text" value="" placeholder="e.g. Iris" id="dataset-name" name="datasetName"/>
 					    <!--span class="form-val-error">* Name for this Dataset is required.</span-->
 					</div>
 
-					<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Version of the dataset to be uploaded."></span></label>
 					<span class="fld-required">*</span>
 					<div class="input-control text">
 					    <input type="text" value="1.0.0" placeholder="" id="dataset-version" name="version"/>
 					</div>				
 
-					<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Description on the dataset to be uploaded."></span></label>
 					<div class="input-control text">
 					    <textarea rows="3" id="dataset-desc" name="description"></textarea>
 					</div>
 
-					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Type of your source of data. Type can only be one of 'File', 'HDFS' or 'DAS'."></span></label>
 					<div class="input-control text">
 						<select class="form-control" id="src-type" name="sourceType">
 						  <option value="file">File</option>
@@ -152,7 +152,7 @@
 
 					<div id="not-das">
 					
-						<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Format of the data to be uploaded. Data can only be in CSV (comma separated values) or TSV (tab separated values) format."></span></label>
 						<div class="input-control text">
 							<select class="form-control" id="data-format" name="dataFormat">
 								<option value="csv">CSV</option>
@@ -160,7 +160,7 @@
 							</select>				
 						</div>
 						
-						<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Whether you have the header row as the first row of the dataset or not. If your dataset does not have a header row, WSO2 ML will generate a header row similar to V1, V2 .. Vn"></span></label>
 						<div class="input-control text">
 							<select class="form-control" id="column-header" name="containsHeader">
 	                     		<option value="true">Yes</option>
