@@ -378,22 +378,29 @@
 			<Parameters>
 				<Name>Batch_Size</Name>
 				<Value>100</Value>
-				<Description>Batch_Size</Description>
+				<Description>Batch Size determines the number of training cases considered 
+				for each epoch.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Layer_Sizes</Name>
 				<Value>500,500,500</Value>
-				<Description>Layer_Sizes</Description>
+				<Description>Layer Sizes determines the number of neurons of each layer.
+				The first layer is the closest to the inputs and the last is the furthest 
+				from inputs.</Description>
 			</Parameters>			
 			<Parameters>
 				<Name>Epochs</Name>
 				<Value>10</Value>
-				<Description>Epochs</Description>
+				<Description>Epochs define the number of iterations the network is trained for.
+				It is important to have a suitable number of epochs, as a high number can lead
+				to over-fitting.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.25</Value>
-				<Description>Learning_Rate</Description>
+				<Description>Learning Rate is the rate which the gradient descent takes place.
+				A higher learning rate can cause the gradient to fluctuate too much where a lower
+				learning rate can cause a slower learning.</Description>
 			</Parameters>			
 		</Algorithm>
 	</Algorithms>
