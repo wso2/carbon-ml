@@ -351,11 +351,6 @@
 				<Description>Batch_Size</Description>
 			</Parameters>
 			<Parameters>
-				<Name>Layer_Count</Name>
-				<Value>3</Value>
-				<Description>Layer_Count</Description>
-			</Parameters>
-			<Parameters>
 				<Name>Layer_Sizes</Name>
 				<Value>500,500,500</Value>
 				<Description>Layer_Sizes</Description>

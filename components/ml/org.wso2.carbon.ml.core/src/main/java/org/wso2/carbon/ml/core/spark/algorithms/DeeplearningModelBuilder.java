@@ -144,7 +144,6 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             //train the stacked autoencoder
             SparkDeeplearningModel sparkDeeplearningModel = saeClassifier.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.LAYER_COUNT)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
                     workflow.getTrainDataFraction(),workflow.getResponseVariable(),modelID);            

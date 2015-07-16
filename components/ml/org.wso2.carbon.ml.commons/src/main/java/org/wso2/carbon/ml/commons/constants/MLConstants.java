@@ -140,7 +140,6 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String LAMBDA = "Lambda";
     public static final String BATCH_SIZE = "Batch_Size";
-    public static final String LAYER_COUNT = "Layer_Count";
     public static final String LAYER_SIZES = "Layer_Sizes";
     public static final String EPOCHS = "Epochs";
 

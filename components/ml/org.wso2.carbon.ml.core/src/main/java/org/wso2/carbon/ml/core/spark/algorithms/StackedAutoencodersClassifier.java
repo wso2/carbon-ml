@@ -74,7 +74,7 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @return
      */
     public SparkDeeplearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize,
-            int layerCount, int[] layerSizes, int epochs, double trainFraction, String responseColumn, long modelID) {
+            int[] layerSizes, int epochs, double trainFraction, String responseColumn, long modelID) {
         //build stacked autoencoder by training the model with training data                               
 
         SparkDeeplearningModel sparkDeeplearningModel = new SparkDeeplearningModel();
@@ -94,7 +94,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 //splitting train file to train, validation and test
                 //anything other than 0.5f gives a wierd exception
                 //barrier onExCompletion for hex.deeplearning.DeepLearning$DeepLearningDriver@78ec854
-                double[] ratios = new double[]{0.5f};
+                double[] ratios = new double[]{trainFraction};
                 FrameSplitter fs = new FrameSplitter(shufFrame, ratios, generateNumKeys(shufFrame._key, ratios.length + 1), null);
                 H2O.submitTask(fs).join();
                 Frame[] splits = fs.getResult();
