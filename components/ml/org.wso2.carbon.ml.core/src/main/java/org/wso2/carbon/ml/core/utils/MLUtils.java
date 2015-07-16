@@ -69,6 +69,13 @@ public class MLUtils {
 
             // parse lines in the dataset
             lines = sparkContext.textFile(path);
+            // validates the data format of the file
+            String firstLine = lines.first();
+            if (!firstLine.contains("" + dataFormat.getDelimiter())) {
+                throw new MLMalformedDatasetException(String.format(
+                        "File content does not match the data format. [First Line] %s [Data Format] %s", firstLine,
+                        dataType));
+            }
             return getSamplePoints(sampleSize, containsHeader, headerMap, columnData, dataFormat, lines);
 
         } catch (Exception e) {
