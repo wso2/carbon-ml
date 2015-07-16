@@ -134,6 +134,10 @@ public class MLConstants {
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String LAMBDA = "Lambda";
+    public static final String RANK = "Rank";
+    public static final String NUM_ITERATIONS = "Num_Iterations";
+    public static final String NUM_BLOCKS = "Num_Blocks";
+    public static final String CONFIDENCE = "Conf_Parameter";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -177,6 +181,10 @@ public class MLConstants {
 
     public enum UNSUPERVISED_ALGORITHM {
         K_MEANS
+    }
+
+    public enum RECOMMENDATION_ALGORITHM {
+        COLLABORATIVE_FILTERING
     }
 
     public enum MISSING_VALUES {
