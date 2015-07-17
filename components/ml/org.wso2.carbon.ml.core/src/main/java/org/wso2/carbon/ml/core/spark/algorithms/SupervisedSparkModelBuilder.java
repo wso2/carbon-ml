@@ -98,7 +98,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         "algorithms.");
 
             // Stops model building if a categorical attribute is used with numerical prediction
-            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION) &&
+            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue()) &&
                     typeOfResponseVariable.equals(FeatureType.CATEGORICAL))
                 throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable() +
                         " cannot be used as the response variable of the Numerical Prediction algorithm: " +
