@@ -343,6 +343,15 @@ public class MLModelHandler {
         }
 
         MLModel builtModel = retrieveModel(modelId);
+
+        // Validate number of features in predict dataset
+        if (builtModel.getFeatures().size() != data.get(0).length) {
+            String msg = String.format("Failed to predict from model. ML model with model id: %s has %s features " +
+                    "but predict dataset has %s features. Incompatible number of features.", modelId,
+                    builtModel.getFeatures().size(), data.get(0).length);
+            throw new MLModelHandlerException(msg);
+        }
+
         // predict
         Predictor predictor = new Predictor(modelId, builtModel, data);
         List<?> predictions = predictor.predict();
