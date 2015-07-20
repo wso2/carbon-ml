@@ -1101,6 +1101,10 @@ a.btn-opr-cancel {
 	-webkit-filter: opacity(50%)    
 }
 
+.tab-link-disabled {
+	pointer-events: none;
+}
+
 /* graphs */
 .wr-graph-content {
 	padding:10px 10px;
