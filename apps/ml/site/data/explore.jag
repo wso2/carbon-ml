@@ -679,7 +679,7 @@ function drawPlotsAjax() {
                 scatterData.push(dataRow);
             }
 
-        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent, scatterMarkerSize);
+        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent, scatterMarkerSize, true);
 		   	$("#scatterPlotTitle").html(numFeatureIndependent + " vs. " + numFeatureDependent);            
         },
         error : function(res){
@@ -1063,7 +1063,7 @@ function drawClusterDiagram() {
                 clusterData.push(dataRow);
             }
             redrawClusterData = clusterData;
-            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize);
+            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize, false);
         },
         error: function(response) {
         	var errorText = 'Error occurred while retrieving data for cluster diagram. '+response.status+' '+response.statusText;
@@ -1084,19 +1084,21 @@ function redrawClusterDiagram() {
     scatter.setPlotingAreaWidth(720);
     scatter.setPlotingAreaHeight(560);
     scatter.setMarkerSize(clusterMarkerSize);
+    scatter.setLegend(false);
     scatter.setXAxisText(numericalFeatureIndependent);
     scatter.setYAxisText(numericalFeatureDependent);
     scatter.plot(d3.select("#clusterDiagram"));
 };
 
 // drawing a simple scatter graph
-function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize) {
+function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
     $(cssClass).empty();
     var scatter = new ScatterPlot(data);
 
     scatter.setPlotingAreaWidth(720);
     scatter.setPlotingAreaHeight(560);
     scatter.setMarkerSize(markerSize);
+    scatter.setLegend(legendEnabled);
     scatter.setXAxisText(xLabel);
     scatter.setYAxisText(yLabel);
     scatter.plot(d3.select(cssClass));
