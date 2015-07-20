@@ -346,9 +346,9 @@ public class MLModelHandler {
 
         // Validate number of features in predict dataset
         if (builtModel.getFeatures().size() != data.get(0).length) {
-            String msg = String.format("Failed to predict from model. ML model with model id: %s has %s features " +
-                    "but predict dataset has %s features. Incompatible number of features.", modelId,
-                    builtModel.getFeatures().size(), data.get(0).length);
+            String msg = String.format("Prediction failed from model [id] %s since the number of features of model" +
+                            " [%s] doesn't match the number of features in the input data [%s]",
+                    modelId, builtModel.getFeatures().size(), data.get(0).length);
             throw new MLModelHandlerException(msg);
         }
 
