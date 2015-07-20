@@ -1104,6 +1104,10 @@ a.btn-opr-cancel {
 .tab-link-disabled {
 	pointer-events: none;
 }
+/* remove dotted link borders on Firefox */
+a:focus { 
+    outline: none; 
+}
 
 /* graphs */
 .wr-graph-content {
