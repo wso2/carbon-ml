@@ -22,6 +22,7 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
+import org.wso2.carbon.ml.core.spark.recommendation.RecommendationModelBuilder;
 
 /**
  * This factory class is responsible for generating a {@link MLModelBuilder} for a given algorithm type.
@@ -41,6 +42,9 @@ public class ModelBuilderFactory {
             break;
         case CLUSTERING:
             datasetProcessor = new UnsupervisedSparkModelBuilder(context);
+            break;
+        case RECOMMENDATION:
+            datasetProcessor = new RecommendationModelBuilder(context);
             break;
         default:
             throw new MLInputValidationException("Invalid algorithm type: " + type.name());

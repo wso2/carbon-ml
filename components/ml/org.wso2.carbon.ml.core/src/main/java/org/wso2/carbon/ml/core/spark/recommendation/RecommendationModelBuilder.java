@@ -35,6 +35,7 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -46,30 +47,6 @@ public class RecommendationModelBuilder extends MLModelBuilder{
 
 	public RecommendationModelBuilder(MLModelConfigurationContext context) {
 		super(context);
-	}
-
-	public MLModel build(MLModelConfigurationContext context) throws MLModelBuilderException {
-		JavaSparkContext sparkContext = null;
-		DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-		MLModel mlModel = new MLModel();
-
-		sparkContext = context.getSparkContext();
-
-		//pre-processing dataset
-		JavaRDD<Rating> trainingData = null;
-		try {
-			trainingData = RecommendationUtils.preProcess(context);
-		} catch (DatasetPreProcessingException e) {
-			e.printStackTrace();
-		}
-
-		CollaborativeFiltering collaborativeFiltering = new CollaborativeFiltering();
-		MatrixFactorizationModel model = collaborativeFiltering.trainExplicit(trainingData, 10, 20,RecommendationConstants.DEFAULT_LAMBDA, 10);
-		Rating[] recommendedProducts = collaborativeFiltering.recommendProducts(model,1,RecommendationConstants.DEFAULT_NUMBER_OF_ITEMS);
-		for (Rating recommendedProduct : recommendedProducts) {
-			System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
-		}
-		return null;
 	}
 
 	@Override
@@ -105,6 +82,10 @@ public class RecommendationModelBuilder extends MLModelBuilder{
 					throw new AlgorithmNameException("Incorrect algorithm name: " + workflow.getAlgorithmName()
 					                                 + " for model id: " + modelId);
 			}
+			Rating[] recommendedProducts = new CollaborativeFiltering().recommendProducts(model,1,RecommendationConstants.DEFAULT_NUMBER_OF_ITEMS);
+			for (Rating recommendedProduct : recommendedProducts) {
+				System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
+			}
 			return mlModel;
 		} catch (Exception e) {
 			throw new MLModelBuilderException("An error occurred while building unsupervised machine learning model: "
@@ -121,14 +102,13 @@ public class RecommendationModelBuilder extends MLModelBuilder{
 			MatrixFactorizationModel model = collaborativeFiltering
 					.trainExplicit(trainingData, Integer.parseInt(parameters.get(MLConstants.RANK)),
 					               Integer.parseInt(parameters.get(MLConstants.NUM_ITERATIONS)),
-					               Double.parseDouble(MLConstants.LAMBDA),
+					               Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
 					               Integer.parseInt(parameters.get(MLConstants.NUM_BLOCKS)));
 
-			//TODO: mlModel.setModel(Externalizable model)
-
+			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			return model;
 		} catch(Exception e) {
-			throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);
+			throw new MLModelBuilderException("An error occurred while building recommendation model: " + e.getMessage(), e);
 		}
 	}
 }
