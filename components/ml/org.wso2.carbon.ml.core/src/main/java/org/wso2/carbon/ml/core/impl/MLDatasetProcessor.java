@@ -166,8 +166,24 @@ public class MLDatasetProcessor {
             datasetProcessor.process();
             String targetPath = datasetProcessor.getTargetPath();
             SamplePoints samplePoints = datasetProcessor.getSamplePoints();
-            // persist data-set and data-set version in DB
+            // persist dataset
             persistDataset(dataset);
+
+            List<String> featureNames = retreiveFeatureNames(retreiveDatasetId(dataset));
+
+            // If size is zero, then it is the first version of the dataset
+            if(featureNames.size() != 0){
+                if(samplePoints.getHeader().size() != featureNames.size()){
+                    String msg = String.format("Uploading dataset version failed because number of features[%s] in" +
+                            " the dataset version does not match the number of features[%s] in the original" +
+                            " dataset.", samplePoints.getHeader().size(), featureNames.size());
+                    throw new MLDataProcessingException(msg);
+                }
+
+                // Replace headers of dataset version with original headers
+                HashMap<String, Integer> headerMap = createHeaderMap(featureNames);
+                samplePoints.setHeader(headerMap);
+            }
 
             long datasetSchemaId = dataset.getId();
             if (log.isDebugEnabled()) {
@@ -186,29 +202,13 @@ public class MLDatasetProcessor {
                         "Dataset already exists; data set [name] %s [version] %s", dataset.getName(),
                         dataset.getVersion()));
             }
+            // Persist dataset version
             persistDatasetVersion(datasetVersion);
             datasetVersionId = retrieveDatasetVersionId(datasetVersion);
 
             if (log.isDebugEnabled()) {
                 log.debug("datasetVersionId: " + datasetVersionId);
             }
-
-            List<String> featureNames = retreiveFeatureNames(retreiveDatasetId(dataset));
-
-            // If size is zero, then it is the first version of the dataset
-            if(featureNames.size() != 0){
-                if(samplePoints.getHeader().size() != featureNames.size()){
-                    String msg = String.format("Uploading dataset version failed because number of features[%s] in" +
-                                    " the dataset version does not match the number of features[%s] in the original" +
-                                    " dataset.", samplePoints.getHeader().size(), featureNames.size());
-                    throw new MLDataProcessingException(msg);
-                }
-
-                // Replace headers of dataset version with original headers
-                HashMap<String, Integer> headerMap = createHeaderMap(featureNames);
-                samplePoints.setHeader(headerMap);
-            }
-
 
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
