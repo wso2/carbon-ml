@@ -169,7 +169,9 @@ public class MLDatasetProcessor {
             // persist dataset
             persistDataset(dataset);
 
-            List<String> featureNames = retreiveFeatureNames(retreiveDatasetId(dataset));
+            long datasetSchemaId = dataset.getId();
+
+            List<String> featureNames = retreiveFeatureNames(datasetSchemaId);
 
             // If size is zero, then it is the first version of the dataset
             if(featureNames.size() != 0){
@@ -185,7 +187,6 @@ public class MLDatasetProcessor {
                 samplePoints.setHeader(headerMap);
             }
 
-            long datasetSchemaId = dataset.getId();
             if (log.isDebugEnabled()) {
                 log.debug("datasetSchemaId: " + datasetSchemaId);
             }
@@ -202,6 +203,7 @@ public class MLDatasetProcessor {
                         "Dataset already exists; data set [name] %s [version] %s", dataset.getName(),
                         dataset.getVersion()));
             }
+
             // Persist dataset version
             persistDatasetVersion(datasetVersion);
             datasetVersionId = retrieveDatasetVersionId(datasetVersion);
@@ -231,16 +233,6 @@ public class MLDatasetProcessor {
         try {
             featureNames = databaseService.getFeaturenames(datasetId);
             return featureNames;
-        } catch (DatabaseHandlerException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
-        }
-    }
-
-    private long retreiveDatasetId(MLDataset dataset) throws MLDataProcessingException {
-        long datasetId;
-        try {
-            datasetId = databaseService.getDatasetId(dataset.getName(), dataset.getTenantId(), dataset.getUserName());
-            return datasetId;
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
