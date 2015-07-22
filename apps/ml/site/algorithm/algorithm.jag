@@ -112,6 +112,9 @@
                         <optgroup label="Clustering">
                         	<option value="K_MEANS">K-MEANS</option>
                         </optgroup>
+                        <optgroup label="Recommendation">
+                            <option value="COLLABORATIVE_FILTERING">COLLABORATIVE FILTERING</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -269,6 +272,9 @@ $( document ).ready(function() {
         }
         else if (algorithmName == 'K_MEANS') {
             algorithmType = 'Clustering';            
+        }
+        else if (algorithmName == 'COLLABORATIVE_FILTERING') {
+            algorithmType = 'Recommendation';
         }
 
         // set model configurations for this analysis        
