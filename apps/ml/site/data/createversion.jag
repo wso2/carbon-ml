@@ -150,14 +150,6 @@
 							</select>				
 						</div>	
 
-						<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-						<div class="input-control text">
-							<select class="form-control" id="dest-type" name="destination">
-			              		<option value="file">File</option>
-							  	<option value="hdfs">HDFS</option>					  
-							</select>				
-						</div>
-
 					</div>
 
             		<div class="btn-group-actions">

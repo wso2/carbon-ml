@@ -54,7 +54,8 @@ public class HdfsDatasetProcessor extends DatasetProcessor {
         InputStream inputStream = null;
         try {
             MLDataset dataset = getDataset();
-            MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(dataset.getDataSourceType() + MLConstants.IN_SUFFIX);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType() + MLConstants.OUT_SUFFIX);
             inputStream = inputAdapter.read(dataset.getSourcePath());
@@ -62,8 +63,7 @@ public class HdfsDatasetProcessor extends DatasetProcessor {
                     + System.currentTimeMillis()));
             outputAdapter.write(getTargetPath(), inputStream);
             // extract sample points
-            setSamplePoints(MLUtils.getSample(getTargetPath(), dataset.getDataType(), MLCoreServiceValueHolder
-                    .getInstance().getSummaryStatSettings().getSampleSize(), dataset.isContainsHeader(),
+            setSamplePoints(MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings().getSampleSize(), dataset.isContainsHeader(),
                     dataset.getDataSourceType(), dataset.getTenantId()));
         } catch (Exception e) {
             throw new MLDataProcessingException(e.getMessage(), e);

@@ -161,6 +161,7 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset, InputStream inputStream) throws MLDataProcessingException,
             MLInputValidationException {
         try {
+            dataset.setDataTargetType(MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageType());
             DatasetProcessor datasetProcessor = DatasetProcessorFactory.buildDatasetProcessor(dataset, inputStream);
             datasetProcessor.process();
             String targetPath = datasetProcessor.getTargetPath();

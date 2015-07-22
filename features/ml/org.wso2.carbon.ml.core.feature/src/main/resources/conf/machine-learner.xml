@@ -20,8 +20,6 @@
 	<!-- -->
 	<Properties>
 		<Property name="ml.thread.pool.size" value="100" />
-		<!-- default value of the target.home property is {carbon.home}/datasets -->
-		<!-- Property name="target.home" value="/tmp" / -->
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
@@ -46,11 +44,20 @@
 	<!-- Optional element. This element should point to a HDFS location where 
 		ML is allowed to store files. -->
 	<HdfsURL>hdfs://localhost:9000</HdfsURL>
+	
+	<!-- Storage Details for uploaded datasets. StorageType can be either "file" 
+		or "hdfs". Default storage type is file and location is {carbon.home}/datasets -->
+	<!-- DatasetStorage> 
+		<StorageType>file</StorageType> 
+		<StorageDirectory>/tmp</StorageDirectory> 
+	</DatasetStorage -->
 
 	<!-- Storage Details for built ML Models. StorageType can be either "file" 
 		or "hdfs". Default storage type is file and location is {carbon.home}/models -->
-	<!-- ModelStorage> <StorageType>file</StorageType> <StorageDirectory>/tmp</StorageDirectory> 
-		</ModelStorage -->
+	<!-- ModelStorage> 
+		<StorageType>file</StorageType> 
+		<StorageDirectory>/tmp</StorageDirectory> 
+	</ModelStorage -->
 
 	<Algorithms>
 		<Algorithm>
