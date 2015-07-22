@@ -82,7 +82,6 @@ public class SparkModelUtils {
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
         for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.collect()) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
-            //TODO: handle NaN
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
             predictedVsActuals.add(predictedVsActual);
@@ -96,9 +95,6 @@ public class SparkModelUtils {
             if(labeledPoint != null && labeledPoint.features() != null) {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
-            }
-            else {
-                continue;
             }
         }
         // create a list of feature values with predicted vs. actuals
@@ -165,9 +161,6 @@ public class SparkModelUtils {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
             }
-            else {
-                continue;
-            }
         }
         // create a list of feature values with predicted vs. actuals
         List<TestResultDataPoint> testResultDataPoints = new ArrayList<TestResultDataPoint>();
@@ -228,9 +221,6 @@ public class SparkModelUtils {
             if(labeledPoint != null && labeledPoint.features() != null) {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
-            }
-            else {
-                continue;
             }
         }
         // create a list of feature values with predicted vs. actuals
