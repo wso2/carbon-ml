@@ -23,9 +23,9 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * DTO class for JAXB binding of ModelStorage
+ * DTO class for JAXB binding of a Storage
  */
-public class ModelStorage implements Serializable {
+public class Storage implements Serializable {
 
     private static final long serialVersionUID = 1320087479354297195L;
     private String storageType;

@@ -48,10 +48,8 @@ public abstract class DatasetProcessor {
     public void validate() throws MLInputValidationException {
         String datasetName = dataset.getName();
         String version = dataset.getVersion();
-        String destination = dataset.getDataTargetType();
         String dataFormat = dataset.getDataType();
         if (datasetName == null || datasetName.isEmpty() || version == null || version.isEmpty()
-                || destination == null || destination.isEmpty()
                 || dataFormat == null || dataFormat.isEmpty()) {
             String msg = "Required parameters are missing.";
             handleValidationException(msg);
