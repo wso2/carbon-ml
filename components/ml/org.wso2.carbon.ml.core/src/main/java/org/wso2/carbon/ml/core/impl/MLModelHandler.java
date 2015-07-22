@@ -44,7 +44,7 @@ import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.commons.domain.config.ModelStorage;
+import org.wso2.carbon.ml.commons.domain.config.Storage;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
@@ -95,7 +95,7 @@ public class MLModelHandler {
     public MLModelData createModel(MLModelData model) throws MLModelHandlerException {
         try {
             // set the model storage configurations
-            ModelStorage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
+            Storage modelStorage = MLCoreServiceValueHolder.getInstance().getModelStorage();
             model.setStorageType(modelStorage.getStorageType());
             model.setStorageDirectory(modelStorage.getStorageDirectory());
 
