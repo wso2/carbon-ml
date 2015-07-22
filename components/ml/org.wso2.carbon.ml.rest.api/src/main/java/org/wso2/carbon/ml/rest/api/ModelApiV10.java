@@ -145,12 +145,6 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
-            logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
@@ -241,7 +235,7 @@ public class ModelApiV10 extends MLRestAPI {
         try {
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data);
             return Response.ok(predictions).build();
-        } catch (Exception e) {
+        } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
