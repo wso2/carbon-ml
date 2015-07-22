@@ -37,6 +37,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -192,11 +193,55 @@ public class MLDatasetProcessor {
                 log.debug("datasetVersionId: " + datasetVersionId);
             }
 
+            List<String> featureNames = retreiveFeatureNames(retreiveDatasetId(dataset));
+
+            // If size is zero, then it is the first version of the dataset
+            if(featureNames.size() != 0){
+                if(samplePoints.getHeader().size() != featureNames.size()){
+                    String msg = String.format("Uploading dataset version failed because number of features[%s] in" +
+                                    " the dataset version does not match the number of features[%s] in the original" +
+                                    " dataset.", samplePoints.getHeader().size(), featureNames.size());
+                    throw new MLDataProcessingException(msg);
+                }
+
+                // Replace headers of dataset version with original headers
+                HashMap<String, Integer> headerMap = createHeaderMap(featureNames);
+                samplePoints.setHeader(headerMap);
+            }
+
+
             // start summary stats generation in a new thread, pass data set version id
             threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
                     samplePoints));
             log.info(String.format("[Created] %s", dataset));
         } catch (MLConfigurationParserException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
+    private HashMap<String, Integer> createHeaderMap(List<String> featureNames) throws MLDataProcessingException {
+        HashMap<String, Integer> headerMap = new HashMap<String, Integer>();
+        for(int i=0; i<featureNames.size(); i++)
+            headerMap.put(featureNames.get(i), i);
+        return headerMap;
+    }
+
+    private List<String> retreiveFeatureNames(long datasetId) throws MLDataProcessingException {
+        List<String> featureNames;
+        try {
+            featureNames = databaseService.getFeaturenames(datasetId);
+            return featureNames;
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
+    private long retreiveDatasetId(MLDataset dataset) throws MLDataProcessingException {
+        long datasetId;
+        try {
+            datasetId = databaseService.getDatasetId(dataset.getName(), dataset.getTenantId(), dataset.getUserName());
+            return datasetId;
+        } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
