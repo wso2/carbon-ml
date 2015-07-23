@@ -132,4 +132,12 @@ public class ModelHandler {
     public List<Integer> getNewToOldIndicesList() {
         return mlModel.getNewToOldIndicesList();
     }
+
+    /**
+     * Return the response variable of the model
+     * @return
+     */
+    public String getResponseVariable() {
+        return mlModel.getResponseVariable();
+    }
 }

@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.ml.siddhi.extension;
 
+import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -32,6 +33,8 @@ import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +42,10 @@ import java.util.Map;
 
 public class PredictStreamProcessor extends StreamProcessor {
 
-    private static final String PREDICTION = "prediction";
-
     private ModelHandler modelHandler;
     private String modelStorageLocation;
+    private String responseVariable;
+    private Attribute.Type outputDatatype;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap;           // <feature-index, [event-array-type][attribute-index]> pairs
 
@@ -87,28 +90,44 @@ public class PredictStreamProcessor extends StreamProcessor {
     @Override
     protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
 
-        if(attributeExpressionExecutors.length == 0) {
-            throw new ExecutionPlanValidationException("ML model storage location has not been defined as the first parameter");
-        } else if(attributeExpressionExecutors.length == 1) {
-            attributeSelectionAvailable = false;    // model-storage-location
+        if(attributeExpressionExecutors.length < 2) {
+            throw new ExecutionPlanValidationException("ML model storage location and response variable type have not " +
+                    "been defined as the first two parameters");
+        } else if(attributeExpressionExecutors.length == 2) {
+            attributeSelectionAvailable = false;    // model-storage-location, data-type
         } else {
-            attributeSelectionAvailable = true;  // model-storage-location, stream-attributes list
+            attributeSelectionAvailable = true;  // model-storage-location, data-type, stream-attributes list
         }
 
-        if(attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor)  {
+        // model-storage-location
+        if(attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
             Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[0]).getValue();
             modelStorageLocation = (String) constantObj;
         } else {
             throw new ExecutionPlanValidationException("ML model storage-location has not been defined as the first parameter");
         }
 
-        return Arrays.asList(new Attribute(PREDICTION, Attribute.Type.DOUBLE));
+        // data-type
+        if(attributeExpressionExecutors[1] instanceof ConstantExpressionExecutor) {
+            Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[1]).getValue();
+            outputDatatype = getOutputAttributeType((String) constantObj);
+        } else {
+            throw new ExecutionPlanValidationException("Response variable type has not been defined as the second parameter");
+        }
+
+        try {
+            modelHandler = new ModelHandler(modelStorageLocation);
+            responseVariable = modelHandler.getResponseVariable();
+        } catch (Exception e) {
+            log.error("Error while retrieving ML-model : " + modelStorageLocation, e);
+            throw new ExecutionPlanCreationException("Error while retrieving ML-model : " + modelStorageLocation + "\n" + e.getMessage());
+        }
+        return Arrays.asList(new Attribute(responseVariable, outputDatatype));
     }
 
     @Override
     public void start() {
         try {
-            modelHandler = new ModelHandler(modelStorageLocation);
             populateFeatureAttributeMapping();
         } catch (Exception e) {
             log.error("Error while retrieving ML-model : " + modelStorageLocation, e);
@@ -156,6 +175,30 @@ public class PredictStreamProcessor extends StreamProcessor {
                 }
             }
         }
+    }
+
+    /**
+     * Return the Attribute.Type defined by the data-type argument
+     * @param dataType
+     * @return
+     */
+    private Attribute.Type getOutputAttributeType(String dataType) {
+
+        Attribute.Type attributeType = null;
+        if (dataType.equalsIgnoreCase("double")) {
+            attributeType = Attribute.Type.DOUBLE;
+        } else if (dataType.equalsIgnoreCase("float")) {
+            attributeType = Attribute.Type.FLOAT;
+        } else if (dataType.equalsIgnoreCase("integer") || dataType.equalsIgnoreCase("int")) {
+            attributeType = Attribute.Type.INT;
+        } else if (dataType.equalsIgnoreCase("long")) {
+            attributeType = Attribute.Type.LONG;
+        } else if (dataType.equalsIgnoreCase("string")) {
+            attributeType = Attribute.Type.STRING;
+        } else if (dataType.equalsIgnoreCase("boolean") || dataType.equalsIgnoreCase("bool")) {
+            attributeType = Attribute.Type.BOOL;
+        }
+        return attributeType;
     }
 
     @Override
