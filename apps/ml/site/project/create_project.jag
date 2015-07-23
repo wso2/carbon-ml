@@ -276,6 +276,10 @@ $( document ).ready(function() {
             $('#project-name').text('');
             return false;
 	    }
+	    if(text.length > 100) {
+	        $('#project-name-error').text('* Project name is too long. Max 100 characters allowed.');
+            return false;
+	    }
 	    return true;
 	}
 
