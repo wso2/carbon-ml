@@ -255,13 +255,17 @@ $( document ).ready(function() {
 
 	$('#create-dataset-form').ajaxForm({
 	    url: baseUrl + '/api/datasets',
+
+        beforeSubmit: function(arr, $form, options) {
+           return isValidDatasetName($('#dataset-name').val());
+        },
         success : function(res){
-    	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
+    	     window.location = baseUrl + '/ml/site/data/datasets.jag';
         },
         error :  function(res){
 			var errorText = res.responseText
             handleNotification(errorText, '#notification-area', 'warning');
-        }                               
+        }
     });
 
 	$('#cancel-dataset').on('click', function(e){
@@ -283,7 +287,7 @@ $( document ).ready(function() {
 		$('#selected-table').val($('input[name=das-tables]:checked').val());
 		$('#source-das-table').hide();
 	});
-}); 
+});
 
 function loadDataTables() {
 	$.ajax({
@@ -314,6 +318,15 @@ function loadDataTables() {
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});
+}
+
+// Dataset name input validation
+function isValidDatasetName(text){
+    if(text.length > 100) {
+        handleNotification("Dataset name is too long. Maximum 100 characters allowed.", '#notification-area', 'warning');
+        return false;
+    }
+    return true;
 }
 
 </script>
