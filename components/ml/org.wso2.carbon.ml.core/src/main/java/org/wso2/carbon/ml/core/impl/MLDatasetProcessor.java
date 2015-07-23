@@ -37,9 +37,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This object is responsible for reading a data-set using a {@link MLInputAdapter}, extracting meta-data, persist in ML
@@ -175,16 +173,27 @@ public class MLDatasetProcessor {
 
             // If size is zero, then it is the first version of the dataset
             if(featureNames.size() != 0){
+                // Validate number of features
                 if(samplePoints.getHeader().size() != featureNames.size()){
-                    String msg = String.format("Uploading dataset version failed because number of features[%s] in" +
+                    String msg = String.format("Creating dataset version failed because number of features[%s] in" +
                             " the dataset version does not match the number of features[%s] in the original" +
                             " dataset.", samplePoints.getHeader().size(), featureNames.size());
                     throw new MLDataProcessingException(msg);
                 }
 
-                // Replace headers of dataset version with original headers
-                HashMap<String, Integer> headerMap = createHeaderMap(featureNames);
-                samplePoints.setHeader(headerMap);
+                // Validate feature names
+                Iterator<String> featureNamesIterator = featureNames.iterator();
+                for(int i=0; i<featureNames.size(); i++){
+                    String featureName = featureNamesIterator.next();
+                    // Since header is a HashMap and it is not ordered, need to get keys by values(ordered)
+                    String headerEntry = getKeyByValue(samplePoints.getHeader(), i);
+                    if(!featureName.equals(headerEntry)){
+                        String msg = String.format("Creating dataset version failed because Feature name: %s in" +
+                                " the dataset version does not match the feature name: %s in the original" +
+                                " dataset.", headerEntry, featureName);
+                        throw new MLDataProcessingException(msg);
+                    }
+                }
             }
 
             if (log.isDebugEnabled()) {
@@ -221,11 +230,13 @@ public class MLDatasetProcessor {
         }
     }
 
-    private HashMap<String, Integer> createHeaderMap(List<String> featureNames) throws MLDataProcessingException {
-        HashMap<String, Integer> headerMap = new HashMap<String, Integer>();
-        for(int i=0; i<featureNames.size(); i++)
-            headerMap.put(featureNames.get(i), i);
-        return headerMap;
+    private String getKeyByValue(Map<String, Integer> hashMap, int value) {
+        for (Map.Entry<String, Integer> entry : hashMap.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     private List<String> retreiveFeatureNames(long datasetId) throws MLDataProcessingException {
