@@ -182,15 +182,13 @@ public class MLDatasetProcessor {
                 }
 
                 // Validate feature names
-                Iterator<String> featureNamesIterator = featureNames.iterator();
                 for(int i=0; i<featureNames.size(); i++){
-                    String featureName = featureNamesIterator.next();
                     // Since header is a HashMap and it is not ordered, need to get keys by values(ordered)
                     String headerEntry = getKeyByValue(samplePoints.getHeader(), i);
-                    if(!featureName.equals(headerEntry)){
+                    if(!featureNames.get(i).equals(headerEntry)){
                         String msg = String.format("Creating dataset version failed because Feature name: %s in" +
                                 " the dataset version does not match the feature name: %s in the original" +
-                                " dataset.", headerEntry, featureName);
+                                " dataset.", headerEntry, featureNames.get(i));
                         throw new MLDataProcessingException(msg);
                     }
                 }
