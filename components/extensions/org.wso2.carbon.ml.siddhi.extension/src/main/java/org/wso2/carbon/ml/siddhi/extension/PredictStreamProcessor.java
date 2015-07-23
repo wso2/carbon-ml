@@ -182,23 +182,23 @@ public class PredictStreamProcessor extends StreamProcessor {
      * @param dataType
      * @return
      */
-    private Attribute.Type getOutputAttributeType(String dataType) {
+    private Attribute.Type getOutputAttributeType(String dataType) throws ExecutionPlanValidationException {
 
-        Attribute.Type attributeType = null;
         if (dataType.equalsIgnoreCase("double")) {
-            attributeType = Attribute.Type.DOUBLE;
+            return Attribute.Type.DOUBLE;
         } else if (dataType.equalsIgnoreCase("float")) {
-            attributeType = Attribute.Type.FLOAT;
+            return Attribute.Type.FLOAT;
         } else if (dataType.equalsIgnoreCase("integer") || dataType.equalsIgnoreCase("int")) {
-            attributeType = Attribute.Type.INT;
+            return Attribute.Type.INT;
         } else if (dataType.equalsIgnoreCase("long")) {
-            attributeType = Attribute.Type.LONG;
+            return Attribute.Type.LONG;
         } else if (dataType.equalsIgnoreCase("string")) {
-            attributeType = Attribute.Type.STRING;
+            return Attribute.Type.STRING;
         } else if (dataType.equalsIgnoreCase("boolean") || dataType.equalsIgnoreCase("bool")) {
-            attributeType = Attribute.Type.BOOL;
+            return Attribute.Type.BOOL;
+        } else {
+            throw new ExecutionPlanValidationException("Invalid data-type defined for response variable.");
         }
-        return attributeType;
     }
 
     @Override
