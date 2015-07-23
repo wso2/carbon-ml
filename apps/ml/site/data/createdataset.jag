@@ -320,6 +320,7 @@ function loadDataTables() {
 	});
 }
 
+// Dataset name input validation
 function isValidDatasetName(text){
     if(text.length > 100) {
         handleNotification("Dataset name is too long. Maximum 100 characters allowed.", '#notification-area', 'warning');

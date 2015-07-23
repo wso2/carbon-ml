@@ -317,6 +317,7 @@
         /********** event binding **********/
     });
 
+    // Analysis name input validation
     function isValidAnalysisName(text, notificationArea) {
         if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
             var errorText = 'Empty names, special and space characters are not allowed.';

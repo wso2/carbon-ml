@@ -266,6 +266,7 @@ $( document ).ready(function() {
 		});
 	}
 
+    // Project name input validation
 	function isValidProjectName(text){
 		if(!text || text.length == 0){
             $('#project-name-error').text("* Project name is required.");
