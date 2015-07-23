@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
@@ -45,10 +46,7 @@ import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
-import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
-import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.exceptions.*;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -437,13 +435,14 @@ public class MLModelHandler {
      * @param modelId Unique ID of the built ML model.
      * @throws MLModelPublisherException
      */
-    public void publishModel(int tenantId, String userName, long modelId) throws MLModelPublisherException {
+    public void publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
         InputStream in = null;
+        String errorMsg = "Failed to publish the model [id] ";
         try {
             // read model
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new MLModelPublisherException("Invalid model ID: " + modelId);
+                throw new InvalidRequestException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -451,7 +450,7 @@ public class MLModelHandler {
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(storageLocation);
             if (in == null) {
-                throw new MLModelPublisherException("Invalid model [id] " + modelId);
+                throw new InvalidRequestException("Invalid model [id] " + modelId);
             }
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
@@ -461,8 +460,12 @@ public class MLModelHandler {
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
             registryOutputAdapter.write(registryPath, in);
 
-        } catch (Exception e) {
-            throw new MLModelPublisherException("Failed to publish the model [id] " + modelId, e);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelPublisherException(errorMsg + modelId, e);
+        } catch (MLInputAdapterException e) {
+            throw new MLModelPublisherException(errorMsg + modelId, e);
+        } catch (MLOutputAdapterException e) {
+            throw new MLModelPublisherException(errorMsg + modelId, e);
         } finally {
             if (in != null) {
                 try {
