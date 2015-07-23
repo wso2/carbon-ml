@@ -1039,6 +1039,40 @@ public class MLDatabaseService implements DatabaseService {
         }
     }
 
+    /**
+     * Get feature names of a given dataset using the dataset ID
+     */
+    @Override
+    public List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException{
+
+        List<String> featureNames = new ArrayList<String>();
+
+        Connection connection = null;
+        PreparedStatement getFeatureNamesStatement = null;
+        ResultSet result = null;
+
+        try {
+            connection = dbh.getDataSource().getConnection();
+
+            // Create a prepared statement and retrieve model configurations
+            getFeatureNamesStatement = connection.prepareStatement(SQLQueries.GET_FEATURE_NAMES_IN_ORDER);
+            getFeatureNamesStatement.setLong(1, datasetId);
+
+            result = getFeatureNamesStatement.executeQuery();
+            // Convert the result in to a string array to e returned.
+            while (result.next()) {
+                featureNames.add(result.getString(1));
+            }
+            return featureNames;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving feature "
+                    + "names of the dataset : " + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatureNamesStatement, result);
+        }
+    }
+
 
     /**
      * Returns the names of the features, belongs to a particular type
