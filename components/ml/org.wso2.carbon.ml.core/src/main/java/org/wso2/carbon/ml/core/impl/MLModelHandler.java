@@ -437,12 +437,12 @@ public class MLModelHandler {
      */
     public void publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
         InputStream in = null;
-        String errorMsg = "Failed to publish the model [id] ";
+        String errorMsg = "Failed to publish the model [id] " + modelId;
         try {
             // read model
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
-                throw new InvalidRequestException("Invalid model ID: " + modelId);
+                throw new InvalidRequestException("Invalid model [id] " + modelId);
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
@@ -461,11 +461,11 @@ public class MLModelHandler {
             registryOutputAdapter.write(registryPath, in);
 
         } catch (DatabaseHandlerException e) {
-            throw new MLModelPublisherException(errorMsg + modelId, e);
+            throw new MLModelPublisherException(errorMsg, e);
         } catch (MLInputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg + modelId, e);
+            throw new MLModelPublisherException(errorMsg, e);
         } catch (MLOutputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg + modelId, e);
+            throw new MLModelPublisherException(errorMsg, e);
         } finally {
             if (in != null) {
                 try {
