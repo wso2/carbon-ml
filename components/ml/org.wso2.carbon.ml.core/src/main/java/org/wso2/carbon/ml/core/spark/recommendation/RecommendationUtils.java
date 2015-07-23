@@ -19,53 +19,28 @@
 package org.wso2.carbon.ml.core.spark.recommendation;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.recommendation.Rating;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.utils.MLConstants;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToRating;
+import org.wso2.carbon.ml.core.utils.MLUtils;
+
+import java.util.ArrayList;
 
 public class RecommendationUtils {
-	
-	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context)
-			throws DatasetPreProcessingException {
-		if(context == null) {
-			throw new DatasetPreProcessingException("ML Configuration Context is empty.");
-		}
 
+	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context) throws DatasetPreProcessingException {
+		Workflow workflow = context.getFacts();
 		JavaRDD<String> lines = context.getLines();
-		final String columnSeparator = context.getColumnSeparator();
+		String headerRow = context.getHeaderRow();
+		String columnSeparator = context.getColumnSeparator();
 
-		JavaRDD<Rating> trainingData = lines.map(new Function<String, Rating>() {
-			@Override public Rating call(String line) throws Exception {
-				String[] fields = line.split(columnSeparator);
-				Rating rating;
-				try{
-					int userId = Integer.parseInt(fields[0]);
-					int productId = Integer.parseInt(fields[1]);
-					double ratingValue = getInferredRating(fields[3], fields[4], RecommendationConstants.DEFAULT_WEIGHT);
+		JavaRDD<String[]> tokens = MLUtils.filterRows(columnSeparator, headerRow, lines,
+		                                              MLUtils.getImputeFeatureIndices(workflow,
+		                                              new ArrayList<Integer>(), MLConstants.DISCARD));
 
-					rating =  new Rating(userId, productId, ratingValue);
-				}catch (ArrayIndexOutOfBoundsException e) {
-					throw new DatasetPreProcessingException("Error in parsing the dataset");
-				} catch (NumberFormatException e) {
-					throw new DatasetPreProcessingException("Error in parsing the dataset");
-				}
-
-				return rating;
-			}
-		});
-
-
-		return trainingData;
-	}
-
-	private static double getInferredRating(String pageViews, String purchases, double weight)
-			throws NumberFormatException {
-
-		return (Double.parseDouble(pageViews) * (100 - weight) + Double.parseDouble(purchases) * weight) / 100;
-
+		return tokens.map(new StringArrayToRating());
 	}
 }

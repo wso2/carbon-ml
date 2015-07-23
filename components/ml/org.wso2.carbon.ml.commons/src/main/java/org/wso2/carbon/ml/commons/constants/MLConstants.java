@@ -135,8 +135,7 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String LAMBDA = "Lambda";
     public static final String RANK = "Rank";
-    public static final String NUM_ITERATIONS = "Num_Iterations";
-    public static final String NUM_BLOCKS = "Num_Blocks";
+    public static final String BLOCKS = "Blocks";
     public static final String CONFIDENCE = "Conf_Parameter";
 
     // configuration file names

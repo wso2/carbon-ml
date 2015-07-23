@@ -52,7 +52,7 @@ public class RecommendationModelBuilder extends MLModelBuilder{
 	@Override
 	public MLModel build() throws MLModelBuilderException {
 		MLModelConfigurationContext context = getContext();
-		DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+		//DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
 		try {
 			Workflow workflow = context.getFacts();
 			long modelId = context.getModelId();
@@ -101,9 +101,9 @@ public class RecommendationModelBuilder extends MLModelBuilder{
 			CollaborativeFiltering collaborativeFiltering = new CollaborativeFiltering();
 			MatrixFactorizationModel model = collaborativeFiltering
 					.trainExplicit(trainingData, Integer.parseInt(parameters.get(MLConstants.RANK)),
-					               Integer.parseInt(parameters.get(MLConstants.NUM_ITERATIONS)),
+					               Integer.parseInt(parameters.get(MLConstants.ITERATIONS)),
 					               Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
-					               Integer.parseInt(parameters.get(MLConstants.NUM_BLOCKS)));
+					               Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
 
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			return model;
