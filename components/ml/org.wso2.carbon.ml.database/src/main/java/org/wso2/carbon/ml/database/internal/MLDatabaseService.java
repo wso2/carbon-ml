@@ -1043,7 +1043,7 @@ public class MLDatabaseService implements DatabaseService {
      * Get feature names of a given dataset using the dataset ID
      */
     @Override
-    public List<String> getFeaturenames(long datasetId) throws DatabaseHandlerException{
+    public List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException{
 
         List<String> featureNames = new ArrayList<String>();
 

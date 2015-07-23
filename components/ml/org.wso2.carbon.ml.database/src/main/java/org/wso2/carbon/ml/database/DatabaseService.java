@@ -563,6 +563,6 @@ public interface DatabaseService {
 
     Map<String, String> getSummaryStats(long datasetVersionId) throws DatabaseHandlerException;
 
-    List<String> getFeaturenames(long datasetId) throws DatabaseHandlerException;
+    List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException;
 
 }

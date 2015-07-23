@@ -240,7 +240,7 @@ public class MLDatasetProcessor {
     private List<String> retreiveFeatureNames(long datasetId) throws MLDataProcessingException {
         List<String> featureNames;
         try {
-            featureNames = databaseService.getFeaturenames(datasetId);
+            featureNames = databaseService.getFeatureNames(datasetId);
             return featureNames;
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
