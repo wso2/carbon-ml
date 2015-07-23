@@ -22,6 +22,9 @@ import org.apache.spark.mllib.recommendation.Rating;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.apache.spark.api.java.function.Function;
 
+/**
+ * This class converts string array of tokens to {@link org.apache.spark.mllib.recommendation.Rating} object
+ */
 public class StringArrayToRating implements Function<String[], Rating> {
 	@Override
 	public Rating call(String[] tokens) throws MLModelBuilderException {

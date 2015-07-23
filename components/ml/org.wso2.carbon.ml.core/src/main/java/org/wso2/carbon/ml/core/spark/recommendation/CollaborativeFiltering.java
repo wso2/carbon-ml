@@ -78,7 +78,7 @@ public class CollaborativeFiltering {
 	/**
 	 * This method recommends users for a given product. (i.e. the users who are most likely to be interested in the given product.
 	 *
-	 * @param model         Matrix factorizaition model
+	 * @param model         Matrix factorization model
 	 * @param productId     The product to recommend users to
 	 * @param numberOfUsers Number of users to return
 	 * @return Array of Rating objects sorted according to the predicted score
