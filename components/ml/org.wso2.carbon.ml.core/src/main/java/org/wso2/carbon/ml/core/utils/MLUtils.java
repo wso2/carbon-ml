@@ -118,7 +118,7 @@ public class MLUtils {
         JavaRDD<String> lines;
         String tableSchema = extractTableSchema(tableName, tenantId);
         SQLContext sqlCtx = new SQLContext(sparkContext);
-        sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+        sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.sources.AnalyticsRelationProvider "
                 + "OPTIONS ("
                 + "tenantId \""
                 + tenantId
