@@ -86,7 +86,7 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 //			for (Rating recommendedProduct : recommendedProducts) {
 //				System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
 //			}
-mlModel.setModel(new MLMatrixFactorizationModel(model));
+			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			return mlModel;
 		} catch (Exception e) {
 			throw new MLModelBuilderException(
