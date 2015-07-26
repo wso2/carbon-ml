@@ -130,7 +130,8 @@ public class MLUtils {
                 + tableSchema + "\"" + ")");
 
         DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
-        JavaRDD<Row> rows = dataFrame.javaRDD();
+        // Additional auto-generated column "_timestamp" needs to be dropped because it is not in the schema.
+        JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
         lines = rows.map(new RowsToLines(CSVFormat.RFC4180.getDelimiter() + ""));
         return lines;
     }
