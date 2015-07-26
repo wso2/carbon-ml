@@ -24,14 +24,25 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.transformations.ImplicitDataToRating;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToRating;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class RecommendationUtils {
 
-	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context) throws DatasetPreProcessingException {
+	/**
+	 * Pre processes the data set.
+	 *
+	 * @param context                           {@link MLModelConfigurationContext}
+	 * @param containsImplicitData              the data set contains implicit feedback data.
+	 * @return                                  Processed RDD of the data set.
+	 * @throws DatasetPreProcessingException    If error occurred when pre processing the data set.
+	 */
+	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context, boolean containsImplicitData) throws DatasetPreProcessingException {
 		Workflow workflow = context.getFacts();
 		JavaRDD<String> lines = context.getLines();
 		String headerRow = context.getHeaderRow();
@@ -40,6 +51,14 @@ public class RecommendationUtils {
 		JavaRDD<String[]> tokens = MLUtils.filterRows(columnSeparator, headerRow, lines,
 		                                              MLUtils.getImputeFeatureIndices(workflow,
 		                                              new ArrayList<Integer>(), MLConstants.DISCARD));
+
+		if(containsImplicitData) {
+			Map<String, String> parameters = workflow.getHyperParameters();
+			List<Double> weights = new ArrayList<Double>();
+			weights.add(Double.parseDouble(parameters.get(MLConstants.WEIGHT_VIEWS)));
+			weights.add(Double.parseDouble(parameters.get(MLConstants.WEIGHT_PURCHASES)));
+			tokens = tokens.map(new ImplicitDataToRating(weights));
+		}
 
 		return tokens.map(new StringArrayToRating());
 	}

@@ -136,7 +136,9 @@ public class MLConstants {
     public static final String LAMBDA = "Lambda";
     public static final String RANK = "Rank";
     public static final String BLOCKS = "Blocks";
-    public static final String CONFIDENCE = "Conf_Parameter";
+    public static final String ALPHA = "Alpha";
+    public static final String WEIGHT_VIEWS = "Weight_Views";
+    public static final String WEIGHT_PURCHASES = "Weight_Purchases";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -183,7 +185,7 @@ public class MLConstants {
     }
 
     public enum RECOMMENDATION_ALGORITHM {
-        COLLABORATIVE_FILTERING
+        COLLABORATIVE_FILTERING, COLLABORATIVE_FILTERING_IMPLICIT
     }
 
     public enum MISSING_VALUES {

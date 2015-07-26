@@ -55,10 +55,6 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 		try {
 			Workflow workflow = context.getFacts();
 			long modelId = context.getModelId();
-
-			// apply pre processing
-			JavaRDD<Rating> trainingData = RecommendationUtils.preProcess(context);
-
 			MLModel mlModel = new MLModel();
 			mlModel.setAlgorithmName(workflow.getAlgorithmName());
 			mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -69,23 +65,29 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 			mlModel.setResponseIndex(-1);
 
 			MatrixFactorizationModel model;
+			JavaRDD<Rating> trainingData;
 
 			// build a recommendation model according to user selected algorithm
 			MLConstants.RECOMMENDATION_ALGORITHM recommendation_algorithm =
 					MLConstants.RECOMMENDATION_ALGORITHM.valueOf(workflow.getAlgorithmName());
 			switch (recommendation_algorithm) {
 				case COLLABORATIVE_FILTERING:
-					model = buildCollaborativeFilteringModel(trainingData, workflow, mlModel);
+					trainingData = RecommendationUtils.preProcess(context, false);
+					model = buildCollaborativeFilteringModel(trainingData, workflow, mlModel, false);
+					break;
+				case COLLABORATIVE_FILTERING_IMPLICIT:
+					trainingData = RecommendationUtils.preProcess(context, true);
+					model = buildCollaborativeFilteringModel(trainingData, workflow, mlModel, true);
 					break;
 				default:
 					throw new AlgorithmNameException(
 							"Incorrect algorithm name: " + workflow.getAlgorithmName() + " for model id: " + modelId);
 			}
 //			Recommendations printing in console
-//			Rating[] recommendedProducts = new CollaborativeFiltering().recommendProducts(model,1,RecommendationConstants.DEFAULT_NUMBER_OF_ITEMS);
-//			for (Rating recommendedProduct : recommendedProducts) {
-//				System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
-//			}
+			Rating[] recommendedProducts = new CollaborativeFiltering().recommendProducts(model,1,50);
+			for (Rating recommendedProduct : recommendedProducts) {
+				System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
+			}
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			return mlModel;
 		} catch (Exception e) {
@@ -99,20 +101,31 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 	 * @param trainingData              training data
 	 * @param workflow                  {@link Workflow}
 	 * @param mlModel                   {@link MLModel}
+	 * @param trainImplicit             train using implicit data
 	 * @return                          {@link MatrixFactorizationModel}
 	 * @throws MLModelBuilderException  If failed to build the model
 	 */
 	private MatrixFactorizationModel buildCollaborativeFilteringModel(JavaRDD<Rating> trainingData, Workflow workflow,
-	                                                                  MLModel mlModel) throws MLModelBuilderException {
+	                                                                  MLModel mlModel, boolean trainImplicit) throws MLModelBuilderException {
 
 		try {
 			Map<String, String> parameters = workflow.getHyperParameters();
 			CollaborativeFiltering collaborativeFiltering = new CollaborativeFiltering();
-			MatrixFactorizationModel model = collaborativeFiltering
-					.trainExplicit(trainingData, Integer.parseInt(parameters.get(MLConstants.RANK)),
-					               Integer.parseInt(parameters.get(MLConstants.ITERATIONS)),
-					               Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
-					               Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
+			MatrixFactorizationModel model;
+			if (trainImplicit) {
+				model = collaborativeFiltering.trainImplicit(trainingData,
+				                                             Integer.parseInt(parameters.get(MLConstants.RANK)),
+				                                             Integer.parseInt(parameters.get(MLConstants.ITERATIONS)),
+				                                             Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
+				                                             Double.parseDouble(parameters.get(MLConstants.ALPHA)),
+				                                             Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
+			} else {
+				model = collaborativeFiltering.trainExplicit(trainingData,
+				                                             Integer.parseInt(parameters.get(MLConstants.RANK)),
+				                                             Integer.parseInt(parameters.get(MLConstants.ITERATIONS)),
+				                                             Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
+				                                             Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
+			}
 
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			return model;
