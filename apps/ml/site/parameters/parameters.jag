@@ -212,7 +212,21 @@ $( document ).ready(function() {
                 else if (algorithmName == 'K_MEANS') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
-                }                
+                }
+                else if (algorithmName == 'COLLABORATIVE_FILTERING') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                }
+                else if (algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[4] = sanitize(hyperParametersResponse[4].value);
+                    hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
+                }
             }
         },
         error: function(res) {

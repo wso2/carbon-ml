@@ -113,7 +113,8 @@
                         	<option value="K_MEANS">K-MEANS</option>
                         </optgroup>
                         <optgroup label="Recommendation">
-                            <option value="COLLABORATIVE_FILTERING">COLLABORATIVE FILTERING</option>
+                            <option value="COLLABORATIVE_FILTERING">COLLABORATIVE FILTERING (Explicit Data)</option>
+                            <option value="COLLABORATIVE_FILTERING_IMPLICIT">COLLABORATIVE FILTERING (Implicit Feedback Data)</option>
                         </optgroup>
                     </select>
                 </div>
@@ -240,14 +241,17 @@ $( document ).ready(function() {
         $('#response-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
 	}
-    // hides response variable field for K-Means algorithm
+    /*
+     hides response variable field for K-Means algorithm
+     hides response variable and data fraction field for recommendation algorithms
+     */
     $(document).on('change','#algorithm-name',function() {
-        var algorithm_name = $('#algorithm-name').val();
-        if(algorithm_name == 'K_MEANS') {
+        var algorithmName = $('#algorithm-name').val();
+        if(algorithmName == 'K_MEANS') {
             $('#response-variable-field').hide();
             $('#data-fraction-field').show();
         }
-        else if(algorithm_name == 'COLLABORATIVE_FILTERING') {
+        else if(algorithmName == 'COLLABORATIVE_FILTERING' || algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
             $('#response-variable-field').hide();
             $('#data-fraction-field').hide();
         }
@@ -281,7 +285,7 @@ $( document ).ready(function() {
         else if (algorithmName == 'K_MEANS') {
             algorithmType = 'Clustering';            
         }
-        else if (algorithmName == 'COLLABORATIVE_FILTERING') {
+        else if (algorithmName == 'COLLABORATIVE_FILTERING' || algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
             algorithmType = 'Recommendation';
         }
 
