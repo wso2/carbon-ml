@@ -129,11 +129,12 @@
                     </div>
                     <div class="spcr-2"></div>                
                 </div>                
-
-                <label class="input-label">Train data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
-                </div>                              
+                <div id="data-fraction-field">
+                    <label class="input-label">Train data fraction<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <div class="input-control text">
+                        <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+                    </div>
+                </div>
 
 			</div>
 			
@@ -241,11 +242,18 @@ $( document ).ready(function() {
 	}
     // hides response variable field for K-Means algorithm
     $(document).on('change','#algorithm-name',function() {
-        if($('#algorithm-name').val() == 'K_MEANS') {
+        var algorithm_name = $('#algorithm-name').val();
+        if(algorithm_name == 'K_MEANS') {
             $('#response-variable-field').hide();
+            $('#data-fraction-field').show();
+        }
+        else if(algorithm_name == 'COLLABORATIVE_FILTERING') {
+            $('#response-variable-field').hide();
+            $('#data-fraction-field').hide();
         }
         else {
             $('#response-variable-field').show();
+            $('#data-fraction-field').show();
         }
     });    
 	
