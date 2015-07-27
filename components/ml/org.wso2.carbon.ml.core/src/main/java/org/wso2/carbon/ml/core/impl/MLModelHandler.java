@@ -609,7 +609,7 @@ public class MLModelHandler {
                     databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                     emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
                 } catch (DatabaseHandlerException e1) {
-                    log.error(String.format("Failed to update the status of model [id] %s ", id), e);
+                    log.error(String.format("Failed to update the status of model [id] %s ", id), e1);
                 }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
@@ -620,7 +620,7 @@ public class MLModelHandler {
                     databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                     emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
                 } catch (DatabaseHandlerException e1) {
-                    log.error(String.format("Failed to update the status of model [id] %s ", id), e);
+                    log.error(String.format("Failed to update the status of model [id] %s ", id), e1);
                 }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
