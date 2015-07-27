@@ -66,6 +66,7 @@ import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
+import org.wso2.carbon.utils.ConfigurationContextService;
 import scala.Tuple2;
 
 /**
@@ -325,7 +326,11 @@ public class MLModelHandler {
                     dataStream.close();
                     br.close();
                 }
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                String msg = MLUtils.getErrorMsg(String.format(
+                        "Error occurred while closing the streams for model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                        tenantId, userName), e);
+                log.warn(msg, e);
             }
         }
 
@@ -592,22 +597,35 @@ public class MLModelHandler {
                 persistModel(id, ctxt.getModel().getName(), model);
 
                 if (emailNotificationEndpoint != null) {
-                    emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
+
+                    emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
                     EmailNotificationSender.sendModelBuildingCompleteNotification(emailNotificationEndpoint,
                             emailTemplateParameters);
                 }
-            } catch (Exception e) {
+            } catch (MLInputValidationException e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
                     databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
                     databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
-                    emailTemplateParameters[1] = MLUtils.getLink(ctxt, MLConstants.MODEL_STATUS_FAILED);
+                    emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e);
                 }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
-            } finally {
+            } catch (MLModelBuilderException e) {
+                log.error(String.format("Failed to build the model [id] %s ", id), e);
+                try {
+                    databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
+                    databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
+                    emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_COMPLETE);
+                } catch (DatabaseHandlerException e1) {
+                    log.error(String.format("Failed to update the status of model [id] %s ", id), e);
+                }
+                EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
+                        emailTemplateParameters);
+            }
+            finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
@@ -617,5 +635,52 @@ public class MLModelHandler {
         if (obj == null) {
             throw new MLModelHandlerException(msg);
         }
+    }
+
+    /**
+     * Method to get the link to model build result page
+     *
+     * @param context ML model configuration context
+     * @param status Model building status
+     * @return link to model build result page
+     */
+    private String getLink(MLModelConfigurationContext context, String status) {
+
+        MLModelData mlModelData = context.getModel();
+        long modelId = mlModelData.getId();
+        String modelName = mlModelData.getName();
+        long analysisId = mlModelData.getAnalysisId();
+        int tenantId = mlModelData.getTenantId();
+        String userName = mlModelData.getUserName();
+
+        MLAnalysis analysis;
+        String analysisName;
+        MLProject mlProject;
+        String projectName;
+        long datasetId;
+        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+
+        try {
+            analysis = databaseService.getAnalysis(tenantId, userName, analysisId);
+            analysisName = analysis.getName();
+            long projectId = analysis.getProjectId();
+
+            mlProject = databaseService.getProject(tenantId, userName, projectId);
+            projectName = mlProject.getName();
+            datasetId = mlProject.getDatasetId();
+        } catch (DatabaseHandlerException e) {
+            log.warn(String.format("Failed to generate link for model [id] %s ", modelId), e);
+            return "[Failed to generate link for model ID: " + modelId + "]";
+        }
+
+        ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
+                .getConfigurationContextService();
+        String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
+        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
+        if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
+            link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
+                    "analysisName=" + analysisName + "&modelName=" + modelName +"&fromCompare=false";
+        }
+        return link;
     }
 }

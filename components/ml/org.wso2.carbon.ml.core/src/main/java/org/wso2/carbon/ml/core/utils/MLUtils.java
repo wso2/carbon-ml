@@ -493,51 +493,6 @@ public class MLUtils {
     }
 
     /**
-     * Utility method to get the link to model build result page
-     *
-     * @param context ML model configuration context
-     * @return link to model build result page
-     * @throws DatabaseHandlerException
-     */
-    public static String getLink(MLModelConfigurationContext context, String status) throws DatabaseHandlerException {
-
-        MLModelData mlModelData = context.getModel();
-        long modelId = mlModelData.getId();
-        String modelName = mlModelData.getName();
-        long analysisId = mlModelData.getAnalysisId();
-        int tenantId = mlModelData.getTenantId();
-        String userName = mlModelData.getUserName();
-
-        MLAnalysis analysis = null;
-        String analysisName = null;
-        MLProject mlProject = null;
-        String projectName = null;
-        long datasetId;
-        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        try {
-            analysis = databaseService.getAnalysis(tenantId, userName, analysisId);
-            analysisName = analysis.getName();
-            long projectId = analysis.getProjectId();
-
-            mlProject = databaseService.getProject(tenantId, userName, projectId);
-            projectName = mlProject.getName();
-            datasetId = mlProject.getDatasetId();
-        } catch (DatabaseHandlerException e) {
-            throw new DatabaseHandlerException("Failed to generate link for model ID: " + modelId + ". Cause: " + e, e);
-        }
-        ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
-                .getConfigurationContextService();
-        String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
-
-        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
-        if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
-            link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
-                    "analysisName=" + analysisName + "&modelName=" + modelName +"&fromCompare=false";
-        }
-        return link;
-    }
-
-    /**
      * Utility method to convert a String array to CSV/TSV row string
      *
      * @param array String array to be converted

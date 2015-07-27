@@ -210,7 +210,7 @@ public class ModelApiV10 extends MLRestAPI {
                         "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
                         tenantId, userName);
                 logger.error(msg);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat, inputStream);
             StreamingOutput stream = new StreamingOutput() {
@@ -223,7 +223,13 @@ public class ModelApiV10 extends MLRestAPI {
                 }
             };
             return Response.ok(stream).header("Content-disposition", "attachment; filename=Predictions_" + modelId + "_" + MLUtils.getDate() + MLConstants.CSV).build();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
