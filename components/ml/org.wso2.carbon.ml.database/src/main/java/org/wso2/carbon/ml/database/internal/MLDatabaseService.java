@@ -871,10 +871,11 @@ public class MLDatabaseService implements DatabaseService {
         String[] featureList = featureListString.split(",");
 
         // Check whether features exists
-        for(int i=0; i<featureList.length; i++){
-            if(!dataHeaders.containsKey(featureList[i]))
+        for (String feature: featureList) {
+            if (!dataHeaders.containsKey(feature)) {
                 throw new DatabaseHandlerException(String.format("%s is not a feature of version set Id: %s",
-                        featureList[i], versionsetId));
+                        feature, versionsetId));
+            }
         }
 
         // for each row in a selected categorical feature, iterate through all features
