@@ -59,15 +59,15 @@ public class FileDatasetProcessor extends DatasetProcessor {
     public void process() throws MLDataProcessingException {
         try {
             MLDataset dataset = getDataset();
-            MLIOFactory ioFactory = new MLIOFactory(MLCoreServiceValueHolder.getInstance().getMlProperties());
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType()
                     + MLConstants.OUT_SUFFIX);
             setTargetPath(ioFactory.getTargetPath(dataset.getName() + "." + dataset.getTenantId() + "."
                     + System.currentTimeMillis()));
             outputAdapter.write(getTargetPath(), inputStream);
             // extract sample points
-            setSamplePoints(MLUtils.getSample(getTargetPath(), dataset.getDataType(), MLCoreServiceValueHolder
-                    .getInstance().getSummaryStatSettings().getSampleSize(), dataset.isContainsHeader(),
+            setSamplePoints(MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings().getSampleSize(), dataset.isContainsHeader(),
                     dataset.getDataSourceType(), dataset.getTenantId()));
         } catch (Exception e) {
             throw new MLDataProcessingException(e.getMessage(), e);

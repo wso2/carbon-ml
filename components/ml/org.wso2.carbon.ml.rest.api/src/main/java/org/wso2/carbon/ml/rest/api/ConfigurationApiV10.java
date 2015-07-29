@@ -31,6 +31,7 @@ import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -116,10 +117,27 @@ public class ConfigurationApiV10 extends MLRestAPI {
             String msg = MLUtils.getErrorMsg(
                     String.format("Error occurred while retrieving DAS tables of tenant [id] %s .", tenantId), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 
         }
         return Response.ok(tableNames).build();
+    }
+
+    @GET
+    @Path("/summaryStatSettings")
+    @Produces("application/json")
+    public Response getSummaryStatSettings() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        SummaryStatisticsSettings summaryStatisticsSettings = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings();
+        if (summaryStatisticsSettings == null) {
+            String msg = String
+                    .format("Error occurred while retrieving summary statistics settings of tenant [id] %s.",
+                            tenantId);
+            logger.error(msg);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+        return Response.ok(summaryStatisticsSettings).build();
     }
 
 }

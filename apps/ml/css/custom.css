@@ -1101,6 +1101,14 @@ a.btn-opr-cancel {
 	-webkit-filter: opacity(50%)    
 }
 
+.tab-link-disabled {
+	pointer-events: none;
+}
+/* remove dotted link borders on Firefox */
+a:focus { 
+    outline: none; 
+}
+
 /* graphs */
 .wr-graph-content {
 	padding:10px 10px;

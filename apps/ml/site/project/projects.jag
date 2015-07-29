@@ -227,11 +227,8 @@
             var analysisName = $(this).closest("tr").find('.analysis-name').val();
             // get inline notification area element
             var notificationArea = $(this).parents().find('#inline-new-notification-area');
-            
-            if (!isValidAnalysisName(analysisName)) {                
-                var errorText = 'Empty names, special and space characters are not allowed.';
-                handleNotification(errorText, notificationArea, 'warning');
-                return; 
+            if (!isValidAnalysisName(analysisName, notificationArea)) {
+                return;
             }
 
             var projectId = $(this).data('projectid');
@@ -320,10 +317,18 @@
         /********** event binding **********/
     });
 
-    function isValidAnalysisName(text) {
+    // Analysis name input validation
+    function isValidAnalysisName(text, notificationArea) {
         if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
-            return false;    
+            var errorText = 'Empty names, special and space characters are not allowed.';
+            handleNotification(errorText, notificationArea, 'warning');
+            return false;
         }
+        if(text.length > 100) {
+	        var errorText = 'Analysis name is too long. Max 100 characters allowed.';
+            handleNotification(errorText, notificationArea, 'warning');
+            return false;
+	    }
         return true;
     }
     
@@ -344,7 +349,7 @@
         var analysis = 
             '<div class="wr-analysis">' +
                 '<div id="inline-new-notification-area"></div>' +
-                '<label class="input-label">Analysis name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+                '<label class="input-label">Analysis name<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Name of the new analysis. An Analysis holds a pre-processed feature set, a selected machine learning algorithm and its calibrated set of hyper-parameters. Each analysis belongs to a project and a project can have multiple analyses. Once you create an analysis, you cannot edit it but you can view it and also delete it."></span></label>' +
                 '<div class="input-control text">' +
                     '<table>' +
                         '<tr>' +

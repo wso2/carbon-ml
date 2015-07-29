@@ -149,6 +149,8 @@ var ScatterPlot = function(data) {
     // properties related to ScatterPlot
     this.markerSize = 3;
     this.colors = d3.scale.category10();
+    this.legendEnabled = true;
+    this.groupByValues = [];
     this.legendBoxWidth = 10;
     this.legendBoxHeight = 10; 
     this.legendTextXLoc = 20;
@@ -162,7 +164,7 @@ ScatterPlot.prototype.constructor = ScatterPlot;
     point in the scatter plot*/
 ScatterPlot.prototype.setMarkerSize = function(markerSize){
 
-    if( markerSize <= 0){
+    if(markerSize <= 0){
         throw new PlottingError("markerSize should be positive");
     }
     this.markerSize = markerSize;    
@@ -172,11 +174,26 @@ ScatterPlot.prototype.setMarkerSize = function(markerSize){
     in the scatter plot*/
 ScatterPlot.prototype.setColors = function(colors){
 
-    if( colors.length < 1){
+    if(colors.length < 1){
         throw new PlottingError("At least one color should be defined");
     }
-    //this.colors = colors;    
     this.colors = d3.scale.ordinal().range(colors);
+};
+
+/** Following method is used to set legend used
+    in the scatter plot*/
+ScatterPlot.prototype.setLegend = function(legendEnabled){
+
+    if(legendEnabled == false){
+        this.legendEnabled = legendEnabled;
+    }
+};
+
+/** Following method is used to set group by values (values of the categorical 
+    feature e.g. 'Correct', 'Incorrect') in the scatter plot*/
+ScatterPlot.prototype.setGroupByValues = function(groupByValues){
+    
+    this.groupByValues = groupByValues;
 };
 
 /**Main function of the ScatterPlot class.
@@ -186,7 +203,7 @@ ScatterPlot.prototype.plot = function(selection) {
        throw new PlottingError("DOM element can't be null or empty"); 
     }
 
-    //setting up the SVG container
+    // setting up the SVG container
     this.initializeSVGContainer(selection);
 
     //setting up X and Y scales appropriate to Scatter Plots 
@@ -206,7 +223,7 @@ ScatterPlot.prototype.plot = function(selection) {
         })])
         .range([this.height, 0]);
 
-    //setting up X and Y axis, appropriate to Scatter Plots
+    // setting up X and Y axis, appropriate to Scatter Plots
     var xAxis = d3.svg.axis()
         .ticks(10)
         .tickFormat(function(d) {
@@ -227,8 +244,12 @@ ScatterPlot.prototype.plot = function(selection) {
     this.attachYAxis(yAxis);
 
     var color = this.colors;
+    var groupByValues = this.groupByValues;
 
-    //drawing dots, each dot represents a single data point
+    // get color values from D3 color scale e.g. ['#286c4f', '#c02e1d']
+    var colorValues = color.range();
+
+    // drawing dots, each dot represents a single data point
     this.svg.selectAll("circle")
         .data(this.data)
         .enter().append("circle")
@@ -240,33 +261,51 @@ ScatterPlot.prototype.plot = function(selection) {
             return yScale(d[1]);
         })
         .style("fill", function(d) {
-            return color(d[d.length - 1]); // color code               
+            // group by values set (when both group by values and colors are set, those will be mapped in passed order)
+            // e.g. 'Correct' -> '#286c4f', 'Incorrect' -> '#c02e1d'
+            if(groupByValues.length > 0) {
+                var groupByValuesIndex = groupByValues.indexOf(d[2]);
+                return colorValues[groupByValuesIndex];
+            }
+            return color(d[d.length - 1]); // color code
         })
         .style("opacity", 0.8);
 
-    //setting the legend at top left corner of the graph 
-    var legend = this.svg.selectAll(".basegraph")
-        .data(color.domain())
-        .enter().append("g")
-        .attr("class", "basegraph")
-        .attr("transform", function(d, i) {
-            return "translate(0," + i * 20 + ")";
-        });
+    // setting the legend at top left corner of the graph if legend is enabled
+    if(this.legendEnabled == true) {
 
-    legend.append("rect")
-        .attr("x", this.width - this.legendBoxWidth)
-        .attr("width", this.legendBoxWidth)
-        .attr("height", this.legendBoxHeight)
-        .style("fill", color);
+        var colorDomain;
+        // if group by values are set, use those values explicitly for legend e.g. ['Correct', 'Incorrect']
+        if(groupByValues.length > 0) {
+            colorDomain = groupByValues;
+        }
+        else {
+            colorDomain = color.domain();   
+        }
 
-    legend.append("text")
-        .attr("x", this.width - this.legendTextXLoc)
-        .attr("y", this.legendTextYLoc)
-        .attr("dy", ".35em")
-        .style("text-anchor", "end")
-        .text(function(d) {
-            return d;
-        });
+        var legend = this.svg.selectAll(".basegraph")
+            .data(colorDomain)
+            .enter().append("g")
+            .attr("class", "basegraph")
+            .attr("transform", function(d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+        legend.append("rect")
+            .attr("x", this.width - this.legendBoxWidth)
+            .attr("width", this.legendBoxWidth)
+            .attr("height", this.legendBoxHeight)
+            .style("fill", color);
+
+        legend.append("text")
+            .attr("x", this.width - this.legendTextXLoc)
+            .attr("y", this.legendTextYLoc)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) {
+                return d;
+            });        
+    }
 };
 /*******************end of ScatterPlot class*************/
 /********************************************************/

@@ -69,11 +69,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
         </ul>
 	</div>
 </div>
@@ -91,7 +91,7 @@
 
 				<h1 class="title">Model</h1>
 
-				<label class="input-label">Dataset version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<label class="input-label">Dataset version<span class="glyphicon"></span></label>
                 <div class="input-control text">
                     <select id="dataset-version" class="form-control">
                         <!-- <option>Select..</option> -->

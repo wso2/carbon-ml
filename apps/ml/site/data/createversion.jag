@@ -101,7 +101,7 @@
 
 			<form id="create-dataset-version-form" method="POST" enctype="multipart/form-data">
 
-					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					<label class="input-label">Source Type<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Type of your source of data. Type can only be one of 'File', 'HDFS' or 'DAS'."></span></label>
 					<div class="input-control text">
 						<select class="form-control" id="src-type" name="sourceType">
 						  <option value="file">File</option>
@@ -134,7 +134,7 @@
 
 					<div id="not-das">
 					
-						<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Format of the data to be uploaded. Data can only be in CSV (comma separated values) or TSV (tab separated values) format."></span></label>
 						<div class="input-control text">
 							<select class="form-control" id="data-format" name="dataFormat">
 								<option value="csv">CSV</option>
@@ -142,21 +142,13 @@
 							</select>				
 						</div>
 						
-						<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+						<label class="input-label">Column header available<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Whether you have the header row as the first row of the dataset or not. If your dataset does not have a header row, WSO2 ML will generate a header row similar to V1, V2 .. Vn"></span></label>
 						<div class="input-control text">
 							<select class="form-control" id="column-header" name="containsHeader">
 	                     		<option value="true">Yes</option>
 						  		<option value="false">No</option>					  
 							</select>				
 						</div>	
-
-						<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-						<div class="input-control text">
-							<select class="form-control" id="dest-type" name="destination">
-			              		<option value="file">File</option>
-							  	<option value="hdfs">HDFS</option>					  
-							</select>				
-						</div>
 
 					</div>
 

@@ -100,21 +100,21 @@
                 <from id="dataImportForm" action="" method="post"
                     enctype="multipart/form-data">
 
-				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<label class="input-label">Project Name<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Name of the project. A project is a logical grouping of set of machine learning analyses you would perform on a selected dataset."></span></label>
 				<span class="fld-required">*</span>
 				<div class="input-control text">
 				    <input type="text" value="" placeholder="e.g. MyDataProject" id="project-name" name="project-name" />
 				    <span class="form-val-error" id="project-name-error"></span>
 				</div>
 
-				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Description on this project."></span></label>
 				<span class="fld-required">*</span>
 				<div class="input-control text">
 				    <textarea rows="3" id="project-description" name="project-description"></textarea>
 				    <span class="form-val-error" id="project-description-error"></span>
 				</div>
 
-				<label class="input-label">Dataset<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+				<label class="input-label">Dataset<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Dataset to be used in this project."></span></label>
 				<span class="fld-required">*</span>
 				<div class="input-control text" data-role="input-control">
 					<select class="form-control" id="datasets">
@@ -266,6 +266,7 @@ $( document ).ready(function() {
 		});
 	}
 
+    // Project name input validation
 	function isValidProjectName(text){
 		if(!text || text.length == 0){
             $('#project-name-error').text("* Project name is required.");
@@ -274,6 +275,10 @@ $( document ).ready(function() {
 		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
             $('#project-name-error').text('* Special characters are not allowed');
             $('#project-name').text('');
+            return false;
+	    }
+	    if(text.length > 100) {
+	        $('#project-name-error').text('* Project name is too long. Max 100 characters allowed.');
             return false;
 	    }
 	    return true;

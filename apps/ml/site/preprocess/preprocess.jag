@@ -82,11 +82,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
+            <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
 	    </ul>
 
 		
@@ -222,7 +222,14 @@ $( document ).ready(function() {
 
     // redraw summary stats charts when feature type is changed
     $(document).on('change', '.fieldType', function(e){ 
+        
         drawSummaryStatistics();
+
+        var changedValue = this.value;
+        var closestTr = $(this).closest('tr').find('.imputeMethod');
+        
+        changeImputeOptions(changedValue,closestTr);
+
     });    
 
     $.ajax({
@@ -240,7 +247,7 @@ $( document ).ready(function() {
                 				'<td>'+listSelectionRenderer({"categorical" : "CATEGORICAL","numerical" : "NUMERICAL"}, features[i]['type'].toString(), "fieldType")+'</td>' +
                 				// quote type change to avoid conflict with summaryStats object quotes
                                 "<td><div class='summaryStatistics' data-summarystatistics='" + features[i]["summaryStats"] + "'>" + features[i]["summaryStats"] + "</div></td>" +
-                				'<td>'+listSelectionRenderer({"discard":"DISCARD", "replaceWithMean":"REPLACE_WTH_MEAN"}, features[i]['imputeOperation'].toString(),"imputeMethod")+'</td>' +
+                				'<td>'+listSelectionImputeOption({"discard":"DISCARD", "replaceWithMean":"REPLACE_WTH_MEAN"}, features[i]['imputeOperation'].toString(),features[i]['type'].toString(),"imputeMethod")+'</td>' +
                 			 '</tr>';
             }
             $('#datasetTable tbody').append(tableData);
@@ -393,6 +400,47 @@ function drawSummaryStatistics() {
                 .attr("fill", '#f16c20');
         }
     });
+}
+
+// generate dropdown inputs for Impute Option
+function listSelectionImputeOption(list, selectedOption, selectedFeatureType, cssClass) {
+
+    var selection = "<select class=" + cssClass + ">";
+
+    if(selectedFeatureType.toUpperCase() == 'NUMERICAL'){
+    
+    for (var item in list){
+        if (selectedOption.toUpperCase() == list[item].toUpperCase()) {
+            selection = selection + "<option selected value=\"" + list[item] + "\">" + list[item] + "</option>";
+        } else {
+            selection = selection + "<option value=\"" + list[item] + "\">" + list[item] + "</option>";
+        }
+    }
+    }
+    else {
+        selection = selection + "<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>";
+    }
+
+    selection = selection + "</select>";
+    return selection;
+}
+
+//change mpute Options acording to selected Field Type
+function changeImputeOptions(fieldTypeValue, imputeMethodElement){
+
+    imputeMethodElement.empty();
+
+    if (fieldTypeValue == 'NUMERICAL'){       
+           
+        imputeMethodElement.append("<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>"); 
+        imputeMethodElement.append("<option value=\"" + "REPLACE_WTH_MEAN" + "\">" + "REPLACE_WTH_MEAN" + "</option>");
+            
+    }
+    else {
+           
+        imputeMethodElement.append("<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>"); 
+    }
+
 }
 
 </script>

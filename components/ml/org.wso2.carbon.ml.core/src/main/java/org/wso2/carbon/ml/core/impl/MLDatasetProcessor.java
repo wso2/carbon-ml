@@ -37,8 +37,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This object is responsible for reading a data-set using a {@link MLInputAdapter}, extracting meta-data, persist in ML
@@ -161,14 +160,41 @@ public class MLDatasetProcessor {
     public void process(MLDataset dataset, InputStream inputStream) throws MLDataProcessingException,
             MLInputValidationException {
         try {
+            dataset.setDataTargetType(MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageType());
             DatasetProcessor datasetProcessor = DatasetProcessorFactory.buildDatasetProcessor(dataset, inputStream);
             datasetProcessor.process();
             String targetPath = datasetProcessor.getTargetPath();
             SamplePoints samplePoints = datasetProcessor.getSamplePoints();
-            // persist data-set and data-set version in DB
+            // persist dataset
             persistDataset(dataset);
 
             long datasetSchemaId = dataset.getId();
+
+            List<String> featureNames = retreiveFeatureNames(datasetSchemaId);
+
+            // If size is zero, then it is the first version of the dataset
+            if(featureNames.size() != 0){
+                // Validate number of features
+                if(samplePoints.getHeader().size() != featureNames.size()){
+                    String msg = String.format("Creating dataset version failed because number of features[%s] in" +
+                            " the dataset version does not match the number of features[%s] in the original" +
+                            " dataset.", samplePoints.getHeader().size(), featureNames.size());
+                    throw new MLDataProcessingException(msg);
+                }
+
+                // Validate feature names
+                for(int i=0; i<featureNames.size(); i++){
+                    // Since header is a HashMap and it is not ordered, need to get keys by values(ordered)
+                    String headerEntry = getKeyByValue(samplePoints.getHeader(), i);
+                    if(!featureNames.get(i).equals(headerEntry)){
+                        String msg = String.format("Creating dataset version failed because Feature name: %s in" +
+                                " the dataset version does not match the feature name: %s in the original" +
+                                " dataset.", headerEntry, featureNames.get(i));
+                        throw new MLDataProcessingException(msg);
+                    }
+                }
+            }
+
             if (log.isDebugEnabled()) {
                 log.debug("datasetSchemaId: " + datasetSchemaId);
             }
@@ -185,6 +211,8 @@ public class MLDatasetProcessor {
                         "Dataset already exists; data set [name] %s [version] %s", dataset.getName(),
                         dataset.getVersion()));
             }
+
+            // Persist dataset version
             persistDatasetVersion(datasetVersion);
             datasetVersionId = retrieveDatasetVersionId(datasetVersion);
 
@@ -197,6 +225,25 @@ public class MLDatasetProcessor {
                     samplePoints));
             log.info(String.format("[Created] %s", dataset));
         } catch (MLConfigurationParserException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
+    private String getKeyByValue(Map<String, Integer> hashMap, int value) {
+        for (Map.Entry<String, Integer> entry : hashMap.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private List<String> retreiveFeatureNames(long datasetId) throws MLDataProcessingException {
+        List<String> featureNames;
+        try {
+            featureNames = databaseService.getFeatureNames(datasetId);
+            return featureNames;
+        } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
     }

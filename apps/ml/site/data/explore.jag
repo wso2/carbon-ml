@@ -138,6 +138,8 @@
 							<div class="wr-desc-chart">
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Scatter plot & histograms</h5>
 								<p>Scatter plot visualizes the relationship between the two selected features of the dataset. Moreover, histograms provide the user a graphical representation of the data distribution for the same two features you select. The scatter plot user interface allows you to select two numerical features from the dataset to be visualized through a scatter plot and histograms.</p>
+								
+								<p id="scatter-desc-note"></p>								
 							</div>
 							<!-- /graph description -->					        
 
@@ -202,6 +204,8 @@
 							<div class="wr-desc-chart">
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Parallel sets</h5>
 								<p>Parallel sets is a visualization method used for categorical data. It adopts the layout of parallel coordinates, but substitutes the individual data points by a frequency-based representation. This abstract view is combined with a set of interactions. It supports visual data analysis of large and complex data sets. Using the parallel sets user interface, you can specify which categorical features to draw the diagram.</p>
+
+								<p id="parallel-sets-desc-note"></p>								
 							</div>
 							<!-- /graph description -->					        					        
 
@@ -248,6 +252,8 @@
 							<div class="wr-desc-chart">
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Trellis chart</h5>
 								<p>Trellis chart is a series of graphs or charts based on the same scale and axes, allowing them to be easily compared. It uses multiple views to show different partitions of a dataset, and is useful for finding the structure and patterns in complex data. Trellis chart user interface allows you to select one categorical feature and multiple numerical features (bound to a maximum) to draw the diagram.</p>
+
+								<p id="trellis-desc-note"></p>								
 							</div>
 							<!-- /graph description -->					        					        					        
 
@@ -330,6 +336,8 @@
 							<div class="wr-desc-chart">
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Cluster diagram</h5>
 								<p>Cluster diagram is a general type of diagram, which depicts one or more clusters in a dataset. A cluster in general is a group or collection of discrete points that are close to each other. In explore view, a cluster diagram provides a perspective on data clusters for two selected numerical features. A popular clustering algorithm is applied on the data sample to derive data clusters. You can select two numerical features and the number of clusters required through the cluster diagram user interface.</p>
+
+								<p id="cluster-desc-note"></p>								
 							</div>
 							<!-- /graph description -->					        					        					        					        
 
@@ -467,6 +475,18 @@ $( document ).ready(function() {
         	handleNotification(errorText, '#notification-area', 'warning');
         }
     });
+    // get summary stat settings and set the description about dataset version and sample size
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/configs/summaryStatSettings",
+        success : function(res) {
+            $('#scatter-desc-note, #parallel-sets-desc-note, #trellis-desc-note, #cluster-desc-note').html('<b>*</b> Random ' + res.sampleSize + ' data points from latest dataset version are used for visualizations.');            
+        },
+        error : function(res) {
+			var errorText = res.responseText
+        	handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });    
 
     // put path in application navigator
     $('#nav-dataset').text(datasetName);
@@ -679,7 +699,7 @@ function drawPlotsAjax() {
                 scatterData.push(dataRow);
             }
 
-        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent, scatterMarkerSize);
+        	drawScatterPlot(scatterData, "#scatter", numFeatureIndependent, numFeatureDependent, scatterMarkerSize, true);
 		   	$("#scatterPlotTitle").html(numFeatureIndependent + " vs. " + numFeatureDependent);            
         },
         error : function(res){
@@ -1063,7 +1083,7 @@ function drawClusterDiagram() {
                 clusterData.push(dataRow);
             }
             redrawClusterData = clusterData;
-            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize);
+            drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize, false);
         },
         error: function(response) {
         	var errorText = 'Error occurred while retrieving data for cluster diagram. '+response.status+' '+response.statusText;
@@ -1084,19 +1104,21 @@ function redrawClusterDiagram() {
     scatter.setPlotingAreaWidth(720);
     scatter.setPlotingAreaHeight(560);
     scatter.setMarkerSize(clusterMarkerSize);
+    scatter.setLegend(false);
     scatter.setXAxisText(numericalFeatureIndependent);
     scatter.setYAxisText(numericalFeatureDependent);
     scatter.plot(d3.select("#clusterDiagram"));
 };
 
 // drawing a simple scatter graph
-function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize) {
+function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
     $(cssClass).empty();
     var scatter = new ScatterPlot(data);
 
     scatter.setPlotingAreaWidth(720);
     scatter.setPlotingAreaHeight(560);
     scatter.setMarkerSize(markerSize);
+    scatter.setLegend(legendEnabled);
     scatter.setXAxisText(xLabel);
     scatter.setYAxisText(yLabel);
     scatter.plot(d3.select(cssClass));
