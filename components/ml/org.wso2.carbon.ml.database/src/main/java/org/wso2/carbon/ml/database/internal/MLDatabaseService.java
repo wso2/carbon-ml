@@ -870,6 +870,13 @@ public class MLDatabaseService implements DatabaseService {
         // split categoricalFeatureListString String into a String array
         String[] featureList = featureListString.split(",");
 
+        // Check whether features exists
+        for(int i=0; i<featureList.length; i++){
+            if(!dataHeaders.containsKey(featureList[i]))
+                throw new DatabaseHandlerException(String.format("%s is not a feature of version set Id: %s",
+                        featureList[i], versionsetId));
+        }
+
         // for each row in a selected categorical feature, iterate through all features
         for (int row = 0; row < columnData.get(dataHeaders.get(featureList[0])).size(); row++) {
 
