@@ -1,8 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import java.text.DecimalFormat;
@@ -24,10 +37,6 @@ import scala.Tuple2;
 import water.fvec.Frame;
 import water.fvec.Vec;
 
-/**
- *
- * @author Thush
- */
 public class DeeplearningModelUtils {
     
     /**
@@ -93,8 +102,13 @@ public class DeeplearningModelUtils {
         return deeplearningModelSummary;
     }
     
-    public static Frame JavaRDDtoFrame(JavaRDD<LabeledPoint> trainingData) {
-        List<LabeledPoint> list = trainingData.collect();
+    /**
+     * Convert a JavaRDD to a H2O Frame
+     * @param data Data to be converted to a Frame
+     * @return Frame with training data
+     */
+    public static Frame JavaRDDtoFrame(JavaRDD<LabeledPoint> data) {
+        List<LabeledPoint> list = data.collect();
         Vec[] allVecs = new Vec[list.get(0).features().size() + 1];
         
         for (int i = 0; i < list.get(0).features().size() + 1; i++) {            
@@ -116,13 +130,18 @@ public class DeeplearningModelUtils {
         return new Frame(allVecs);
     }
     
-    public static Frame DoubleArrayListtoFrame(List<double[]> tobePredictedData) {        
-        Vec[] allVecs = new Vec[tobePredictedData.get(0).length];
+    /**
+     * Convert a Double List to a H2O Frame
+     * @param data Data to be converted to a Frame
+     * @return Frame with training data
+     */
+    public static Frame DoubleArrayListtoFrame(List<double[]> data) {        
+        Vec[] allVecs = new Vec[data.get(0).length];
         
-        for (int i = 0; i < tobePredictedData.get(0).length; i++) {            
-                Vec v = Vec.makeZero(tobePredictedData.size());
-                for (int j = 0; j < tobePredictedData.size(); j++) {                    
-                    v.set(j, tobePredictedData.get(j)[i]);                    
+        for (int i = 0; i < data.get(0).length; i++) {            
+                Vec v = Vec.makeZero(data.size());
+                for (int j = 0; j < data.size(); j++) {                    
+                    v.set(j, data.get(j)[i]);                    
                 }
                 allVecs[i] = v;            
         }

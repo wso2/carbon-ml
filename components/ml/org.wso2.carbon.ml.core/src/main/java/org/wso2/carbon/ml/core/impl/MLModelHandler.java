@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import hex.deeplearning.DeepLearningModel;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,7 +56,6 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
-import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
@@ -72,9 +70,7 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import scala.Tuple2;
-import water.Key;
-import water.serial.ObjectTreeBinarySerializer;
-import water.util.FileUtils;
+
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.

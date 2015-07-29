@@ -1,8 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
@@ -10,37 +23,23 @@ import hex.FrameSplitter;
 import hex.deeplearning.DeepLearning;
 import hex.deeplearning.DeepLearningModel;
 import hex.deeplearning.DeepLearningParameters;
-import java.io.File;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import scala.Tuple2;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaSparkContext;
 import water.DKV;
 import water.H2O;
-import water.H2OApp;
 import water.Key;
 import water.Scope;
-import water.api.ShutdownHandler;
-import water.fvec.AppendableVec;
 import water.fvec.Frame;
-import water.fvec.NFSFileVec;
-import water.fvec.Vec;
-import water.parser.ParseDataset;
 import static water.util.FrameUtils.generateNumKeys;
 import water.util.MRUtils;
 
-/**
- *
- * @author Thush
- */
 public class StackedAutoencodersClassifier implements Serializable {
 
     private static final Log log = LogFactory.getLog(StackedAutoencodersClassifier.class);
@@ -48,10 +47,6 @@ public class StackedAutoencodersClassifier implements Serializable {
     private transient DeepLearning dl;
     private transient DeepLearningModel model;
 
-    //Start the H2O server and enter the H2O Scope
-    public StackedAutoencodersClassifier() {
-
-    }
 
     /**
      *
@@ -63,9 +58,8 @@ public class StackedAutoencodersClassifier implements Serializable {
     /**
      * This method trains a stacked autoencoder
      *
-     * @param trainFile Training dataset as a File
+     * @param trainData Training dataset as a JavaRDD
      * @param batchSize Size of a training mini-batch
-     * @param layerCount Number of layers
      * @param layerSizes Number of neurons for each layer
      * @param epochs Number of epochs to train
      * @param trainFraction The fraction considered for training
@@ -82,11 +76,9 @@ public class StackedAutoencodersClassifier implements Serializable {
         try {
             Scope.enter();
             if (trainData != null) {
-
-                //NFSFileVec trainfv = NFSFileVec.make(trainFile);
-                //Frame frame = ParseDataset.parse(Key.make(), trainfv._key);
+                
                 Frame frame = DeeplearningModelUtils.JavaRDDtoFrame(trainData);
-                Frame shufFrame = MRUtils.shuffleFramePerChunk(frame, 2335325);
+                Frame shufFrame = MRUtils.shuffleFramePerChunk(frame, 999999999);
 
                 //H2O uses default C<x> for column header
                 String classifColName = "C" + frame.numCols();
@@ -134,7 +126,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 p._diagnostics = false; //no need to compute statistics during training
                 p._classification_stop = -1;
                 p._score_interval = 60; //score and print progress report (only) every 20 seconds
-                p._score_training_samples = batchSize * 10; //only score on a small sample of the training set -> don't want to spend too much time scoring (note: there will be at least 1 row per chunk)
+                p._score_training_samples = batchSize; //only score on a small sample of the training set -> don't want to spend too much time scoring (note: there will be at least 1 row per chunk)
 
                 dl = new DeepLearning(p);
                 log.info("Start training deeplearning model ....");
