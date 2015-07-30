@@ -1,8 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.wso2.carbon.ml.core.spark.models;
 
 import hex.deeplearning.DeepLearningModel;
@@ -10,12 +23,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
-import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.mllib.linalg.Vector;
 import water.Key;
 import water.fvec.Frame;
@@ -23,13 +32,13 @@ import water.serial.ObjectTreeBinarySerializer;
 import water.util.FileUtils;
 
 /**
- *
- * @author Thush
+ * Wraps the H2O DeeplearningModel
  */
 public class SparkDeeplearningModel implements Externalizable{
         
     private DeepLearningModel dlModel;
-    private String storageLocation;
+    //string location is required because custom deserialization doesn't work
+    private String storageLocation; 
     
     public void setStorageLocation(String location){
         storageLocation = location;
