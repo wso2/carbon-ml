@@ -502,7 +502,7 @@ public class MLModelHandler {
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
             // get header line
             String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
-            Pattern pattern = Pattern.compile(columnSeparator);
+            Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
             // get selected feature indices
             List<Integer> featureIndices = new ArrayList<Integer>();
             for (String feature : features) {

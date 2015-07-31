@@ -455,7 +455,7 @@ public class MLUtils {
         String columnSeparator = String.valueOf(delimiter);
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
         JavaRDD<String> data = lines.filter(headerFilter);
-        Pattern pattern = Pattern.compile(columnSeparator);
+        Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
 
@@ -506,5 +506,15 @@ public class MLUtils {
             arrayString.append(delimiter);
         }
         return arrayString.toString();
+    }
+    
+    /**
+     * Generates a pattern to represent CSV or TSV format.
+     * 
+     * @param delimiter "," or "\t"
+     * @return Pattern
+     */
+    public static Pattern getPatternFromDelimiter(String delimiter) {
+        return Pattern.compile(delimiter + "(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
     }
 }
