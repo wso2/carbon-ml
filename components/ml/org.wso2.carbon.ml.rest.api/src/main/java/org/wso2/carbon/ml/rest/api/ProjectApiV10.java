@@ -26,8 +26,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
@@ -150,7 +152,7 @@ public class ProjectApiV10 extends MLRestAPI {
     @GET
     @Path("/analyses")
     @Produces("application/json")
-    public Response getAllAnalyses() {
+    public Response getAllProjectsWithAnalyses(@QueryParam("datasetName") String datasetName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -158,6 +160,9 @@ public class ProjectApiV10 extends MLRestAPI {
             List<MLProject> projects = mlProjectHandler.getAllProjects(tenantId, userName);
             List<MLProjectBean> projectBeans = new ArrayList<MLProjectBean>();
             for (MLProject mlProject : projects) {
+                if (!StringUtils.isEmpty(datasetName) && !datasetName.equals(mlProject.getDatasetName())) {
+                    continue;
+                }
                 MLProjectBean projectBean = new MLProjectBean();
                 long projectId = mlProject.getId();
                 projectBean.setId(projectId);
