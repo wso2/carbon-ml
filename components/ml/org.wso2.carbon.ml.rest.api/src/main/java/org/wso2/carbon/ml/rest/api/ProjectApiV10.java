@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.impl.MLProjectHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLAnalysisBean;
+import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 import org.wso2.carbon.ml.rest.api.model.MLProjectBean;
 
 /**
@@ -86,7 +87,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while creating a [project] %s of tenant [id] %s and [user] %s .", project,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -108,7 +110,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while retrieving a project [name] %s of tenant [id] %s and [user] %s .",
                     projectName, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -126,7 +129,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all projects of tenant [id] %s and [user] %s .", tenantId,
                     userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -145,7 +149,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all models of project [id]  %s of tenant [id] %s and [user] %s .",
                     projectId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -191,7 +196,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all analyses of tenant [id] %s and [user] %s .", tenantId,
                     userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -212,7 +218,8 @@ public class ProjectApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving all analyses of project [id]  %s of tenant [id] %s and [user] %s .",
                                     projectId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -237,7 +244,8 @@ public class ProjectApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving analysis with [name] %s of project [id]  %s of tenant [id] %s and [user] %s .",
                                     analysisName, projectId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -256,7 +264,8 @@ public class ProjectApiV10 extends MLRestAPI {
                     "Error occurred while deleting a project [id]  %s of tenant [id] %s and [user] %s .", projectId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
