@@ -34,6 +34,8 @@ import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -408,7 +410,15 @@ public class DatasetApiV10 extends MLRestAPI {
             List<ClusterPoint> points = mlModelHandler.getClusterPoints(tenantId, userName, datasetId,
                     featureListString, noOfClusters);
             return Response.ok(points).build();
-        } catch (Exception e) {
+        } catch (MLMalformedDatasetException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving cluster points with [features] %s and [number of clusters] %s of dataset [id] %s of tenant [id] %s and [user] %s .",
+                                    featureListString, noOfClusters, datasetId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (MLModelHandlerException e) {
             String msg = MLUtils
                     .getErrorMsg(
                             String.format(

@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLStorage;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
@@ -121,7 +122,13 @@ public class ModelApiV10 extends MLRestAPI {
         try {
             mlModelHandler.buildModel(tenantId, userName, modelId);
             return Response.ok().build();
-        } catch (Exception e) {
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (MLModelBuilderException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while building the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
@@ -174,14 +181,20 @@ public class ModelApiV10 extends MLRestAPI {
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
                 String msg = String.format(
-                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                        tenantId, userName);
+                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .",
+                        modelId, tenantId, userName);
                 logger.error(msg);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
             }
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
             return Response.ok(predictions).build();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s.",
+                    modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
@@ -359,7 +372,7 @@ public class ModelApiV10 extends MLRestAPI {
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-        } catch (Exception e) {
+        } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .", modelName,
                     tenantId, userName), e);
