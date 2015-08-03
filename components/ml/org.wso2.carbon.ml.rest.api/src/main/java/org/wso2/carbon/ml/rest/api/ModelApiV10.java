@@ -151,8 +151,8 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            mlModelHandler.publishModel(tenantId, userName, modelId);
-            return Response.ok().build();
+            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId);
+            return Response.ok(registryPath).build();
         } catch (InvalidRequestException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,

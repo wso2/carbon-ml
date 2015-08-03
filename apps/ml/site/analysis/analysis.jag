@@ -397,8 +397,9 @@
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish",
+                dataType: 'text',
                 success : function(res){
-                    var successText = 'Model successfully published to registry.';
+                    var successText = 'Model successfully published to registry location at: ' + sanitize(res);
                     handleNotification(successText, '#notification-area', 'success');
                 },
                 error : function(res){

@@ -440,7 +440,7 @@ public class MLModelHandler {
      * @param modelId Unique ID of the built ML model.
      * @throws MLModelPublisherException
      */
-    public void publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
+    public String publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
         InputStream in = null;
         String errorMsg = "Failed to publish the model [id] " + modelId;
         try {
@@ -464,6 +464,8 @@ public class MLModelHandler {
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
             registryOutputAdapter.write(registryPath, in);
+
+            return registryPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
