@@ -267,7 +267,7 @@ public class MLDatasetProcessor {
     private long retrieveDatasetVersionId(MLDatasetVersion versionset) {
         long datasetVersionId;
         try {
-            datasetVersionId = databaseService.getVersionsetId(versionset.getName(), versionset.getTenantId());
+            datasetVersionId = databaseService.getVersionsetId(versionset.getName(), versionset.getTenantId(), versionset.getUserName());
             return datasetVersionId;
         } catch (DatabaseHandlerException e) {
             return -1;

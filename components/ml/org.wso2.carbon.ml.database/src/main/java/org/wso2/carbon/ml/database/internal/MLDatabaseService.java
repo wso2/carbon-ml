@@ -393,7 +393,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException {
+    public long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -403,6 +403,7 @@ public class MLDatabaseService implements DatabaseService {
             statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_ID);
             statement.setString(1, datasetVersionName);
             statement.setInt(2, tenantId);
+            statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
