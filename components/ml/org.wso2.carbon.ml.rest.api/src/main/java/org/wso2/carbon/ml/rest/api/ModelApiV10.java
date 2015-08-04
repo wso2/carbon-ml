@@ -47,6 +47,7 @@ import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
+import org.wso2.carbon.ml.rest.api.model.MLResponseBean;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
@@ -151,8 +152,8 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            mlModelHandler.publishModel(tenantId, userName, modelId);
-            return Response.ok().build();
+            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId);
+            return Response.ok(new MLResponseBean(registryPath)).build();
         } catch (InvalidRequestException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
