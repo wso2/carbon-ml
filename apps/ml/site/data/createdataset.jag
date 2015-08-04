@@ -263,7 +263,7 @@ $( document ).ready(function() {
     	     window.location = baseUrl + '/ml/site/data/datasets.jag';
         },
         error :  function(res){
-			var errorText = res.responseText
+			var errorText = JSON.parse(res.responseText)["exception"];
             handleNotification(errorText, '#notification-area', 'warning');
         }
     });

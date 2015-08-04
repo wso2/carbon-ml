@@ -249,11 +249,12 @@ $( document ).ready(function() {
 	$('#create-dataset-version-form').ajaxForm({
 	    data: { 'datasetName': name, 'version' : getParameterByName('datasetVersion') },
 	    url: baseUrl + '/api/datasets',
+	    dataType: 'json',
         success : function(res){
     	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
         },
         error :  function(res){
-			var errorText = res.responseText
+			var errorText = JSON.parse(res.responseText)["exception"];
             handleNotification(errorText, '#notification-area', 'warning');
         }                               
 	});
@@ -304,7 +305,7 @@ function loadDataTables() {
 		    });
         },
         error :  function(res){
-			var errorText = res.responseText
+			var errorText = res.responseText;
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});
