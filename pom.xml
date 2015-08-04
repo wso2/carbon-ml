@@ -526,6 +526,11 @@
 				<artifactId>org.wso2.carbon.ml.siddhi.extension</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xercesImpl.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -711,6 +716,7 @@
 		<axis2.transport.mail.version>1.0.0</axis2.transport.mail.version>
 		<axis2.transport.base.version>1.0.0</axis2.transport.base.version>
 		<axis2.version>1.6.2</axis2.version>
+        <xercesImpl.version>2.8.1</xercesImpl.version>
 
 		<!--Rest API Dependency versions -->
 		<codehaus.jackson.version>1.8.6</codehaus.jackson.version>
