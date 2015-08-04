@@ -352,7 +352,7 @@ function loadDatasets() {
         	}
         },
         error :  function(res){
-                var errorText = res.responseText
+            var errorText = JSON.parse(res.responseText)["exception"];
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});	
@@ -368,7 +368,7 @@ function deleteDataset(datasetId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });		
@@ -385,7 +385,7 @@ function deleteDatasetVersion(versionId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });
