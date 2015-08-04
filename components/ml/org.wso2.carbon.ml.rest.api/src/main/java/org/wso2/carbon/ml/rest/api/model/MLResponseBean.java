@@ -24,8 +24,8 @@ public class MLResponseBean {
 
     private Object response;
 
-    public MLResponseBean(Object res) {
-        response = res;
+    public MLResponseBean(Object response) {
+        this.response = response;
     }
 
     public Object getResponse() {
