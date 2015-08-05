@@ -310,7 +310,7 @@ $( document ).ready(function() {
         }        
     });
 }); 
-
+// function that load dataset features
 function loadDatasetFeatures(setResponseVariable) {
     $.ajax({
         type: "GET",
