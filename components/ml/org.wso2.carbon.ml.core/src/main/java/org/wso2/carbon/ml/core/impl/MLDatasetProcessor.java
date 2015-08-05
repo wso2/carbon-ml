@@ -122,6 +122,10 @@ public class MLDatasetProcessor {
         try {
             List<MLDatasetVersion> versions = databaseService.getAllVersionsetsOfDataset(
                     scatterPlotPoints.getTenantId(), scatterPlotPoints.getUser(), datasetId);
+            // Check whether versions are available for the dataset ID, if not it's not a valid ID
+            if (versions.size() == 0) {
+                throw new MLDataProcessingException(String.format("%s is not a valid dataset Id", datasetId));
+            }
             long versionsetId = versions.get(versions.size() - 1).getId();
             scatterPlotPoints.setVersionsetId(versionsetId);
             return databaseService.getScatterPlotPoints(scatterPlotPoints);
@@ -143,6 +147,10 @@ public class MLDatasetProcessor {
             String featureListString) throws MLDataProcessingException {
         try {
             List<MLDatasetVersion> versions = databaseService.getAllVersionsetsOfDataset(tenantId, user, datasetId);
+            // Check whether versions are available for the dataset ID, if not it's not a valid ID
+            if (versions.size() == 0) {
+                throw new MLDataProcessingException(String.format("%s is not a valid dataset Id", datasetId));
+            }
             long versionsetId = versions.get(versions.size() - 1).getId();
             return databaseService.getChartSamplePoints(tenantId, user, versionsetId, featureListString);
         } catch (DatabaseHandlerException e) {
@@ -259,7 +267,7 @@ public class MLDatasetProcessor {
     private long retrieveDatasetVersionId(MLDatasetVersion versionset) {
         long datasetVersionId;
         try {
-            datasetVersionId = databaseService.getVersionsetId(versionset.getName(), versionset.getTenantId());
+            datasetVersionId = databaseService.getVersionsetId(versionset.getName(), versionset.getTenantId(), versionset.getUserName());
             return datasetVersionId;
         } catch (DatabaseHandlerException e) {
             return -1;

@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
-import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 /**

@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -355,6 +356,20 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
+        // Validate numerical feature type in predict dataset
+        for (Feature feature: builtModel.getFeatures()) {
+            if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
+                for (String[] dataPoint: data) {
+                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                                dataPoint[actualIndex], feature.getName(), actualIndex);
+                        throw new MLModelHandlerException(msg);
+                    }
+                }
+            }
+        }
+
         // predict
         Predictor predictor = new Predictor(modelId, builtModel, data);
         List<?> predictions = predictor.predict();
@@ -440,7 +455,7 @@ public class MLModelHandler {
      * @param modelId Unique ID of the built ML model.
      * @throws MLModelPublisherException
      */
-    public void publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
+    public String publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
         InputStream in = null;
         String errorMsg = "Failed to publish the model [id] " + modelId;
         try {
@@ -464,6 +479,8 @@ public class MLModelHandler {
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
             registryOutputAdapter.write(registryPath, in);
+
+            return registryPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
@@ -502,7 +519,7 @@ public class MLModelHandler {
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
             // get header line
             String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
-            Pattern pattern = Pattern.compile(columnSeparator);
+            Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
             // get selected feature indices
             List<Integer> featureIndices = new ArrayList<Integer>();
             for (String feature : features) {

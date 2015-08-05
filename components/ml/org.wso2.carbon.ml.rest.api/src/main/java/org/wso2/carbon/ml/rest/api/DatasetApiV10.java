@@ -34,10 +34,13 @@ import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.MLDatasetProcessor;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLDatasetBean;
+import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 
 /**
@@ -83,7 +86,7 @@ public class DatasetApiV10 extends MLRestAPI {
             if (sourceType == null || sourceType.isEmpty()) {
                 String msg = "Required parameters are missing.";
                 logger.error(msg);
-                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
             }
 
             dataset.setName(datasetName);
@@ -104,14 +107,16 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while uploading a [dataset] %s of tenant [id] %s and [user] %s .", dataset,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON)
+                    .entity(new MLErrorBean(e.getMessage())).build();
 
         } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while uploading a [dataset] %s of tenant [id] %s and [user] %s .", dataset,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -132,7 +137,8 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all datasets of tenant [id] %s and [user] %s .", tenantId,
                     userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -173,7 +179,8 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while retrieving all dataset versions of tenant [id] %s and [user] %s .", tenantId,
                     userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -198,7 +205,8 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while retrieving the dataset with the [id] %s of tenant [id] %s and [user] %s .",
                     datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -222,7 +230,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving all versions of a dataset with the [id] %s of tenant [id] %s and [user] %s .",
                                     datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -250,7 +259,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving the version set with [version] %s of a dataset with the [id] %s of tenant [id] %s and [user] %s .",
                                     version, datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -277,7 +287,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving the version set with the [id] %s of tenant [id] %s and [user] %s .",
                                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -305,7 +316,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving scatter plot points for latest version of dataset [id] %s of tenant [id] %s and [user] %s .",
                                     datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -334,7 +346,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving scatter plot points of dataset version [id] %s of tenant [id] %s and [user] %s .",
                                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -361,7 +374,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving chart sample points for latest version of dataset [id] %s of tenant [id] %s and [user] %s .",
                                     datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -388,7 +402,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving chart sample points of dataset version [id] %s of tenant [id] %s and [user] %s .",
                                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -408,14 +423,23 @@ public class DatasetApiV10 extends MLRestAPI {
             List<ClusterPoint> points = mlModelHandler.getClusterPoints(tenantId, userName, datasetId,
                     featureListString, noOfClusters);
             return Response.ok(points).build();
-        } catch (Exception e) {
+        } catch (MLMalformedDatasetException e) {
             String msg = MLUtils
                     .getErrorMsg(
                             String.format(
                                     "Error occurred while retrieving cluster points with [features] %s and [number of clusters] %s of dataset [id] %s of tenant [id] %s and [user] %s .",
                                     featureListString, noOfClusters, datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving cluster points with [features] %s and [number of clusters] %s of dataset [id] %s of tenant [id] %s and [user] %s .",
+                                    featureListString, noOfClusters, datasetId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -441,7 +465,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving feature names with [type] %s for the dataset [id] %s of tenant [id] %s and [user] %s .",
                                     featureType, datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -468,7 +493,8 @@ public class DatasetApiV10 extends MLRestAPI {
                                     "Error occurred while retrieving summarized stats of feature [name] %s for the dataset [id] %s of tenant [id] %s and [user] %s .",
                                     featureName, datasetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -490,7 +516,8 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while deleting dataset [id] %s of tenant [id] %s and [user] %s .", datasetId,
                     tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 
@@ -512,7 +539,8 @@ public class DatasetApiV10 extends MLRestAPI {
                     "Error occurred while deleting dataset version [id] %s of tenant [id] %s and [user] %s .",
                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
         }
     }
 }

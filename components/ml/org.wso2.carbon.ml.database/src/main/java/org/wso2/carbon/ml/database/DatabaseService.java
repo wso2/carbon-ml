@@ -92,10 +92,11 @@ public interface DatabaseService {
      * Get the dataset-version id
      * @param datasetVersionName name of the dataset-version
      * @param tenantId           tenant id
+     * @param userName           username
      * @return
      * @throws DatabaseHandlerException
      */
-    public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException;
+    public long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException;
 
 
     /**

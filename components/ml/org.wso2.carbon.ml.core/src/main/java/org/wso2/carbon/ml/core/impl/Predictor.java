@@ -31,7 +31,6 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.apache.spark.mllib.tree.model.RandomForestModel;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;

@@ -393,7 +393,7 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException {
+    public long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException {
 
         Connection connection = null;
         ResultSet result = null;
@@ -403,6 +403,7 @@ public class MLDatabaseService implements DatabaseService {
             statement = connection.prepareStatement(SQLQueries.GET_VERSIONSET_ID);
             statement.setString(1, datasetVersionName);
             statement.setInt(2, tenantId);
+            statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
                 return result.getLong(1);
@@ -869,6 +870,14 @@ public class MLDatabaseService implements DatabaseService {
 
         // split categoricalFeatureListString String into a String array
         String[] featureList = featureListString.split(",");
+
+        // Check whether features exists
+        for (String feature: featureList) {
+            if (!dataHeaders.containsKey(feature)) {
+                throw new DatabaseHandlerException(String.format("%s is not a feature of version set Id: %s",
+                        feature, versionsetId));
+            }
+        }
 
         // for each row in a selected categorical feature, iterate through all features
         for (int row = 0; row < columnData.get(dataHeaders.get(featureList[0])).size(); row++) {

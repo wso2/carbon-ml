@@ -167,8 +167,8 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions, dataset
 						    '</td>'+
 						    '<td class="c-right">' +			        
 						        '<div>' +
-						        	'<a href="#" id="create-project" class="cu-reg-btn btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
-						        	'<a href="#" id="explore-dataset" class="cu-reg-btn btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
+						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
+						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
 									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
 								'</div>' +
 							'</td>'+
@@ -352,7 +352,7 @@ function loadDatasets() {
         	}
         },
         error :  function(res){
-                var errorText = res.responseText
+            var errorText = JSON.parse(res.responseText)["exception"];
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});	
@@ -368,7 +368,7 @@ function deleteDataset(datasetId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });		
@@ -385,11 +385,20 @@ function deleteDatasetVersion(versionId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });
 	}    
+}
+
+// function to append button disabled CSS class when there are no dataset-versions
+function appendClass(noOfVersions) {
+    var classAppend = '';
+    if(noOfVersions == '0') {
+        classAppend = 'btn-disabled';
+    }
+    return classAppend;
 }
 
 </script>
