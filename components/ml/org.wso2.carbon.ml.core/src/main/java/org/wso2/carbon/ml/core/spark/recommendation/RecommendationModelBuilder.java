@@ -51,18 +51,13 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 	 */
 	@Override public MLModel build() throws MLModelBuilderException {
 		MLModelConfigurationContext context = getContext();
-		//		DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+
 		try {
 			Workflow workflow = context.getFacts();
 			long modelId = context.getModelId();
 			MLModel mlModel = new MLModel();
 			mlModel.setAlgorithmName(workflow.getAlgorithmName());
 			mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
-			mlModel.setFeatures(workflow.getFeatures());
-			mlModel.setResponseVariable(workflow.getResponseVariable());
-			mlModel.setEncodings(context.getEncodings());
-			mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
-			mlModel.setResponseIndex(-1);
 
 			MatrixFactorizationModel model;
 			JavaRDD<Rating> trainingData;

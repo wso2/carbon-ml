@@ -34,6 +34,8 @@ import java.util.Map;
 
 public class RecommendationUtils {
 
+	private static final String SEPERATOR = ",";
+
 	/**
 	 * Pre processes the data set.
 	 *
@@ -54,12 +56,27 @@ public class RecommendationUtils {
 
 		if(containsImplicitData) {
 			Map<String, String> parameters = workflow.getHyperParameters();
-			List<Double> weights = new ArrayList<Double>();
-			weights.add(Double.parseDouble(parameters.get(MLConstants.WEIGHT_VIEWS)));
-			weights.add(Double.parseDouble(parameters.get(MLConstants.WEIGHT_PURCHASES)));
+			List<Double> weights = getWeightList(parameters.get(MLConstants.WEIGHTS));
 			tokens = tokens.map(new ImplicitDataToRating(weights));
 		}
 
 		return tokens.map(new StringArrayToRating());
+	}
+
+	/**
+	 * Converts the comma separated string value to double list.
+	 *
+	 * @param weights   comma separated weights
+	 * @return          List of doubles containing weights.
+	 */
+	private static List<Double> getWeightList(String weights) {
+		List<Double> weightList = new ArrayList<Double>();
+		String[] weightArray = weights.split(SEPERATOR);
+
+		for(String weight : weightArray) {
+			weightList.add(Double.parseDouble(weight));
+		}
+
+		return weightList;
 	}
 }

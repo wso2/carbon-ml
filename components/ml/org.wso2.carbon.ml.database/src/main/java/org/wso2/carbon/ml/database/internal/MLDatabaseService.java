@@ -2327,7 +2327,11 @@ public class MLDatabaseService implements DatabaseService {
             // set model configs
             mlWorkflow.setAlgorithmName(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME));
             mlWorkflow.setAlgorithmClass(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_TYPE));
-            mlWorkflow.setResponseVariable(getAStringModelConfiguration(analysisId, MLConstants.RESPONSE));
+            mlWorkflow.setResponseVariable(getAStringModelConfiguration(analysisId, MLConstants.RESPONSE_VARIABLE));
+            mlWorkflow.setUserVariable(getAStringModelConfiguration(analysisId, MLConstants.USER_VARIABLE));
+            mlWorkflow.setProductVariable(getAStringModelConfiguration(analysisId, MLConstants.PRODUCT_VARIABLE));
+            mlWorkflow.setRatingVariable(getAStringModelConfiguration(analysisId, MLConstants.RATING_VARIABLE));
+            mlWorkflow.setObservations(getAStringModelConfiguration(analysisId, MLConstants.OBSERVATIONS));
             mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION)));
 
             // set hyper parameters

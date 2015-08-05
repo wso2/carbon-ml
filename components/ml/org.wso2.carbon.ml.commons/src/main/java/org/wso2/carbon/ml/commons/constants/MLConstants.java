@@ -80,7 +80,11 @@ public class MLConstants {
     public static final String WORKFLOW_ID = "workflowID";
     public static final String DATASET_URL = "datasetURL";
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
-    public static final String RESPONSE = "responseVariable";
+    public static final String RESPONSE_VARIABLE = "responseVariable";
+    public static final String USER_VARIABLE = "userVariable";
+    public static final String PRODUCT_VARIABLE = "productVariable";
+    public static final String RATING_VARIABLE = "ratingVariable";
+    public static final String OBSERVATIONS = "observations";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
     public static final String HYPER_PARAMETERS = "hyperParameters";
@@ -137,8 +141,7 @@ public class MLConstants {
     public static final String RANK = "Rank";
     public static final String BLOCKS = "Blocks";
     public static final String ALPHA = "Alpha";
-    public static final String WEIGHT_VIEWS = "Weight_Views";
-    public static final String WEIGHT_PURCHASES = "Weight_Purchases";
+    public static final String WEIGHTS = "Weights";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
