@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -360,9 +361,9 @@ public class MLModelHandler {
             if (feature.getType().equals(FeatureType.NUMERICAL)) {
                 int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
                 for (String[] dataPoint: data) {
-                    if(!isNumeric(dataPoint[actualIndex])) {
-                        String msg = String.format("Invalid value: %s for the feature: %s",
-                                dataPoint[actualIndex], feature.getName());
+                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                                dataPoint[actualIndex], feature.getName(), actualIndex);
                         throw new MLModelHandlerException(msg);
                     }
                 }
@@ -375,15 +376,6 @@ public class MLModelHandler {
 
         log.info(String.format("Prediction from model [id] %s was successful.", modelId));
         return predictions;
-    }
-
-    private boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-        } catch(NumberFormatException nfe) {
-            return false;
-        }
-        return true;
     }
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
