@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -353,6 +354,20 @@ public class MLModelHandler {
                             " [%s] doesn't match the number of features in the input data [%s]",
                     modelId, builtModel.getFeatures().size(), data.get(0).length);
             throw new MLModelHandlerException(msg);
+        }
+
+        // Validate numerical feature type in predict dataset
+        for (Feature feature: builtModel.getFeatures()) {
+            if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
+                for (String[] dataPoint: data) {
+                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                                dataPoint[actualIndex], feature.getName(), actualIndex);
+                        throw new MLModelHandlerException(msg);
+                    }
+                }
+            }
         }
 
         // predict
