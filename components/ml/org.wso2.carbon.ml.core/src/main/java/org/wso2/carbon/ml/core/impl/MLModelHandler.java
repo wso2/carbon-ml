@@ -355,12 +355,35 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
+        // Validate numerical feature type in predict dataset
+        for (int i = 0; i < builtModel.getFeatures().size(); i++) {
+            Feature feature = builtModel.getFeatures().get(i);
+            if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                for (String[] dataPoint: data) {
+                    if(!isNumeric(dataPoint[i])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s", dataPoint[i],
+                                feature.getName());
+                        throw new MLModelHandlerException(msg);
+                    }
+                }
+            }
+        }
+
         // predict
         Predictor predictor = new Predictor(modelId, builtModel, data);
         List<?> predictions = predictor.predict();
 
         log.info(String.format("Prediction from model [id] %s was successful.", modelId));
         return predictions;
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+        } catch(NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
