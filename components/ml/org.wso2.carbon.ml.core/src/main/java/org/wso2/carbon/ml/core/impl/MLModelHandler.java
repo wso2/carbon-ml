@@ -356,13 +356,13 @@ public class MLModelHandler {
         }
 
         // Validate numerical feature type in predict dataset
-        for (int i = 0; i < builtModel.getFeatures().size(); i++) {
-            Feature feature = builtModel.getFeatures().get(i);
+        for (Feature feature: builtModel.getFeatures()) {
             if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
                 for (String[] dataPoint: data) {
-                    if(!isNumeric(dataPoint[i])) {
-                        String msg = String.format("Invalid value: %s for the feature: %s", dataPoint[i],
-                                feature.getName());
+                    if(!isNumeric(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s",
+                                dataPoint[actualIndex], feature.getName());
                         throw new MLModelHandlerException(msg);
                     }
                 }
