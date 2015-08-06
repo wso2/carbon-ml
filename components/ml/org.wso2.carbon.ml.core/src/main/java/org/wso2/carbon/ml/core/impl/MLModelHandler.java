@@ -66,6 +66,7 @@ import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.registry.core.RegistryConstants;
 
 import org.wso2.carbon.utils.ConfigurationContextService;
 import scala.Tuple2;
@@ -475,12 +476,12 @@ public class MLModelHandler {
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String registryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+            String relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
-            registryOutputAdapter.write(registryPath, in);
+            registryOutputAdapter.write(relativeRegistryPath, in);
 
-            return registryPath;
+            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
