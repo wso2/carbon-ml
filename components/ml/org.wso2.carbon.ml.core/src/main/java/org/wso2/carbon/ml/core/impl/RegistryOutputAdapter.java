@@ -37,6 +37,8 @@ import java.io.InputStream;
 
 public class RegistryOutputAdapter implements MLOutputAdapter {
 
+    private Resource resource;
+
     @Override
     public void write(String outPath, InputStream in) throws MLOutputAdapterException {
 
@@ -51,7 +53,7 @@ public class RegistryOutputAdapter implements MLOutputAdapter {
 
             PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
             Registry registry = carbonContext.getRegistry(RegistryType.SYSTEM_GOVERNANCE);
-            Resource resource = registry.newResource();
+            resource = registry.newResource();
             resource.setContent(array);
             registry.put(outPath, resource);
 
@@ -62,5 +64,9 @@ public class RegistryOutputAdapter implements MLOutputAdapter {
             throw new MLOutputAdapterException(
                     String.format("Failed to read the model to registry %s: %s", outPath, e), e);
         }
+    }
+
+    public String getResourcePath() {
+        return resource.getPath();
     }
 }

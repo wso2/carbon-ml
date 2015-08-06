@@ -480,7 +480,14 @@ public class MLModelHandler {
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
             registryOutputAdapter.write(registryPath, in);
 
-            return registryPath;
+            // get the absolute path in registry of published model
+            String publishedPath = registryOutputAdapter.getResourcePath();
+
+            if (publishedPath == null) {
+                throw new MLModelPublisherException("Published path is not available for model [id] " + modelId);
+            }
+
+            return publishedPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
