@@ -476,12 +476,12 @@ public class MLModelHandler {
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String registryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+            String relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
-            registryOutputAdapter.write(registryPath, in);
+            registryOutputAdapter.write(relativeRegistryPath, in);
 
-            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + registryPath;
+            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
