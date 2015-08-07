@@ -1162,6 +1162,10 @@ a:focus {
 	min-width:750px;
 	min-height:750px;
 }
+/* analysis configurations tables */
+.analysis-conf td {
+	text-align: left;
+}
 
 .wr-desc-chart {
 	border-top:1px solid #f0f0f0;
