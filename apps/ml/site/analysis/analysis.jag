@@ -403,8 +403,8 @@
                     handleNotification(successText, '#notification-area', 'success');
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });            
         });        
@@ -431,8 +431,8 @@
                     algorithmName = sanitize(res);
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
 
@@ -445,8 +445,8 @@
                     algorithmType = sanitize(res);
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
 
@@ -468,7 +468,7 @@
                     $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});                
                 },
                 error : function(res){
-                    var errorText = res.responseText
+                    var errorText = JSON.parse(res.responseText)["exception"];
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
             });        

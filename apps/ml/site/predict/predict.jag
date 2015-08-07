@@ -267,7 +267,7 @@
             	responseVariable = sanitize(data);
             },
             error: function(res) {
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
@@ -304,7 +304,7 @@
                 };
             },
             error: function(res) {
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
