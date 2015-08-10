@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
@@ -24,7 +25,6 @@ import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
-import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.factories.DatasetProcessorFactory;
@@ -33,6 +33,7 @@ import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.ThreadExecutor;
+import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
@@ -70,6 +71,15 @@ public class MLDatasetProcessor {
             throws MLDataProcessingException {
         try {
             return databaseService.getVersionset(tenantId, userName, versionsetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+    
+    public SamplePoints getSamplePoints(int tenantId, String userName, long versionsetId)
+            throws MLDataProcessingException {
+        try {
+            return databaseService.getVersionsetSample(tenantId, userName, versionsetId);
         } catch (DatabaseHandlerException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
@@ -167,83 +177,75 @@ public class MLDatasetProcessor {
      */
     public void process(MLDataset dataset, InputStream inputStream) throws MLDataProcessingException,
             MLInputValidationException {
-        try {
-            dataset.setDataTargetType(MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageType());
-            DatasetProcessor datasetProcessor = DatasetProcessorFactory.buildDatasetProcessor(dataset, inputStream);
-            datasetProcessor.process();
-            String targetPath = datasetProcessor.getTargetPath();
-            SamplePoints samplePoints = datasetProcessor.getSamplePoints();
-            // persist dataset
-            persistDataset(dataset);
+        dataset.setDataTargetType(MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageType());
+        DatasetProcessor datasetProcessor = DatasetProcessorFactory.buildDatasetProcessor(dataset, inputStream);
+        datasetProcessor.process();
+        String targetPath = datasetProcessor.getTargetPath();
+        String firstLine = datasetProcessor.getFirstLine();
+        CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataset.getDataType());
+        String[] features = MLUtils.getFeatures(firstLine, dataFormat);
+        int featureSize = features.length;
+        // SamplePoints samplePoints = datasetProcessor.getSamplePoints();
+        // persist dataset
+        persistDataset(dataset);
 
-            long datasetSchemaId = dataset.getId();
+        long datasetSchemaId = dataset.getId();
 
-            List<String> featureNames = retreiveFeatureNames(datasetSchemaId);
+        List<String> featureNames = retreiveFeatureNames(datasetSchemaId);
 
-            // If size is zero, then it is the first version of the dataset
-            if(featureNames.size() != 0){
-                // Validate number of features
-                if(samplePoints.getHeader().size() != featureNames.size()){
-                    String msg = String.format("Creating dataset version failed because number of features[%s] in" +
-                            " the dataset version does not match the number of features[%s] in the original" +
-                            " dataset.", samplePoints.getHeader().size(), featureNames.size());
-                    throw new MLDataProcessingException(msg);
-                }
+        // If size is zero, then it is the first version of the dataset
+        if (featureNames.size() != 0) {
+            // Validate number of features
+            if (featureSize != featureNames.size()) {
+                String msg = String.format("Creating a dataset version failed because number of features[%s] in"
+                        + " the dataset version does not match the number of features[%s] in the original"
+                        + " dataset.", featureSize, featureNames.size());
+                throw new MLDataProcessingException(msg);
+            }
 
+            if (dataset.isContainsHeader()) {
                 // Validate feature names
-                for(int i=0; i<featureNames.size(); i++){
-                    // Since header is a HashMap and it is not ordered, need to get keys by values(ordered)
-                    String headerEntry = getKeyByValue(samplePoints.getHeader(), i);
-                    if(!featureNames.get(i).equals(headerEntry)){
-                        String msg = String.format("Creating dataset version failed because Feature name: %s in" +
-                                " the dataset version does not match the feature name: %s in the original" +
-                                " dataset.", headerEntry, featureNames.get(i));
+                for (int i = 0; i < featureNames.size(); i++) {
+                    String headerEntry = features[i];
+                    if (!featureNames.get(i).equals(headerEntry)) {
+                        String msg = String.format("Creating dataset version failed because Feature name: %s in"
+                                + " the dataset version does not match the feature name: %s in the original"
+                                + " dataset.", headerEntry, featureNames.get(i));
                         throw new MLDataProcessingException(msg);
                     }
                 }
             }
-
-            if (log.isDebugEnabled()) {
-                log.debug("datasetSchemaId: " + datasetSchemaId);
-            }
-            String versionsetName = dataset.getName() + "-" + dataset.getVersion();
-
-            // build the MLDatasetVersion
-            MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId,
-                    dataset.getUserName(), versionsetName, dataset.getVersion(), targetPath, samplePoints);
-
-            long datasetVersionId = retrieveDatasetVersionId(datasetVersion);
-            if (datasetVersionId != -1) {
-                // dataset version is already exist
-                throw new MLDataProcessingException(String.format(
-                        "Dataset already exists; data set [name] %s [version] %s", dataset.getName(),
-                        dataset.getVersion()));
-            }
-
-            // Persist dataset version
-            persistDatasetVersion(datasetVersion);
-            datasetVersionId = retrieveDatasetVersionId(datasetVersion);
-
-            if (log.isDebugEnabled()) {
-                log.debug("datasetVersionId: " + datasetVersionId);
-            }
-
-            // start summary stats generation in a new thread, pass data set version id
-            threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
-                    samplePoints));
-            log.info(String.format("[Created] %s", dataset));
-        } catch (MLConfigurationParserException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
         }
-    }
 
-    private String getKeyByValue(Map<String, Integer> hashMap, int value) {
-        for (Map.Entry<String, Integer> entry : hashMap.entrySet()) {
-            if (Objects.equals(value, entry.getValue())) {
-                return entry.getKey();
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("datasetSchemaId: " + datasetSchemaId);
         }
-        return null;
+        String versionsetName = dataset.getName() + "-" + dataset.getVersion();
+
+        // build the MLDatasetVersion
+        MLDatasetVersion datasetVersion = MLUtils.getMLDatsetVersion(dataset.getTenantId(), datasetSchemaId,
+                dataset.getUserName(), versionsetName, dataset.getVersion(), targetPath);
+
+        long datasetVersionId = retrieveDatasetVersionId(datasetVersion);
+        if (datasetVersionId != -1) {
+            // dataset version is already exist
+            throw new MLDataProcessingException(String.format(
+                    "Dataset already exists; data set [name] %s [version] %s", dataset.getName(), dataset.getVersion()));
+        }
+
+        // Persist dataset version
+        persistDatasetVersion(datasetVersion);
+        datasetVersionId = retrieveDatasetVersionId(datasetVersion);
+
+        if (log.isDebugEnabled()) {
+            log.debug("datasetVersionId: " + datasetVersionId);
+        }
+
+        // start summary stats generation in a new thread, pass data set version id
+        threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
+                datasetProcessor));
+        log.info(String.format("[Created] %s", dataset));
+
     }
 
     private List<String> retreiveFeatureNames(long datasetId) throws MLDataProcessingException {

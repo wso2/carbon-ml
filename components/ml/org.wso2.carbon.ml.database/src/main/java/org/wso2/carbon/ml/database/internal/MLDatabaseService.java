@@ -860,6 +860,9 @@ public class MLDatabaseService implements DatabaseService {
         // Get the sample from the database.
         SamplePoints sample = getVersionsetSample(tenantId, user, versionsetId);
 
+        if (sample == null) {
+            return points;
+        }
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
@@ -903,7 +906,7 @@ public class MLDatabaseService implements DatabaseService {
      * @return SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
-    private SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException {
+    public SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement updateStatement = null;
@@ -2502,6 +2505,36 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
+            updateStatement.setObject(1, samplePoints);
+            updateStatement.setLong(2, datasetVersionId);
+            updateStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the sample points of dataset version: " + datasetVersionId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException(
+                    "An error occurred while updating the sample points of dataset version: " + datasetVersionId + ": "
+                            + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 }

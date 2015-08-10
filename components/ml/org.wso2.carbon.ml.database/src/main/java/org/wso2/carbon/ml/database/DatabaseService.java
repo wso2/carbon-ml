@@ -184,6 +184,15 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException;
+    
+    /**
+     * Retrieve the SamplePoints object for a given version-set.
+     *
+     * @param versionsetId Unique Identifier of the version-set
+     * @return SamplePoints object of the value-set
+     * @throws DatabaseHandlerException
+     */
+    public SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version
@@ -202,6 +211,14 @@ public interface DatabaseService {
      */
     public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats) 
             throws DatabaseHandlerException;
+    
+    /**
+     * Update the database with the sample points of data-set-version
+     * @param datasetVersionId  Unique Id of the data-set-version
+     * @param samplePoints sample points of this dataset version
+     * @throws DatabaseHandlerException
+     */
+    public void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException;
 
     /**
      * Delete the project

@@ -35,18 +35,13 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class MLUtils {
 
@@ -84,6 +79,11 @@ public class MLUtils {
         }
     }
 
+    public static String getFirstLine(String filePath) {
+        JavaSparkContext sparkContext = MLCoreServiceValueHolder.getInstance().getSparkContext();
+        return sparkContext.textFile(filePath).first();
+    }
+    
     /**
      * Generate a random sample of the dataset using Spark.
      */
@@ -364,14 +364,13 @@ public class MLUtils {
      * @return Dataset Version Object
      */
     public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,
-            String version, String targetPath, SamplePoints samplePoints) {
+            String version, String targetPath) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);
         valueSet.setName(name);
         valueSet.setVersion(version);
         valueSet.setTargetPath(targetPath);
-        valueSet.setSamplePoints(samplePoints);
         valueSet.setUserName(userName);
         return valueSet;
     }
@@ -439,6 +438,11 @@ public class MLUtils {
     public static int getFeatureSize(String line, CSVFormat format) {
         String[] values = line.split("" + format.getDelimiter());
         return values.length;
+    }
+    
+    public static String[] getFeatures(String line, CSVFormat format) {
+        String[] values = line.split("" + format.getDelimiter());
+        return values;
     }
 
     /**
