@@ -3,7 +3,7 @@
 	<!-- JNDI name of the data source to be used by the Machine Learner. This 
 		data source should be defined in the master-datasources.xml file in conf/datasources 
 		directory. -->
-	<Database>jdbc/WSO2ML_DB</Database>
+	<DataSourceName>jdbc/WSO2ML_DB</DataSourceName>
 
 	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
 		: Number of intervals in a histogram. categoricalThreshold : The maximum 

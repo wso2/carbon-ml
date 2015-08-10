@@ -31,6 +31,10 @@
 	<name>WSO2 Carbon - Machine Learner Database Component</name>
 
 	<dependencies>
+	    <dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

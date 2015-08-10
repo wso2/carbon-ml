@@ -26,8 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 import org.wso2.carbon.ml.database.util.MLDBUtil;
@@ -44,11 +46,22 @@ public class MLDatabaseService implements DatabaseService {
 
     private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
     private MLDataSource dbh;
+    private MLConfiguration mlConfig;
     private static final String DB_CHECK_SQL = "SELECT * FROM ML_PROJECT";
 
     public MLDatabaseService() {
+        
+        MLConfigurationParser mlConfigParser = new MLConfigurationParser();
         try {
-            dbh = new MLDataSource();
+            mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
+        } catch (MLConfigurationParserException e) {
+            String msg = "Failed to parse machine-learner.xml file.";
+            logger.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+        
+        try {
+            dbh = new MLDataSource(mlConfig.getDatasourceName());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
@@ -68,9 +81,14 @@ public class MLDatabaseService implements DatabaseService {
                 throw new RuntimeException(msg, e);
             }
         }
+        
 
     }
-
+    
+    public MLConfiguration getMlConfiguration() {
+        return mlConfig != null ? mlConfig : new MLConfiguration();
+    }
+    
     @Override
     public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException {
         Connection connection = null;
@@ -153,7 +171,6 @@ public class MLDatabaseService implements DatabaseService {
             throw new DatabaseHandlerException(String.format("Project [name] %s already exists.", projectName));
         }
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
@@ -1517,7 +1534,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
@@ -1547,7 +1563,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_MODEL);
@@ -1883,7 +1898,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_ANALYSIS_BY_ID);
@@ -2424,7 +2438,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_SCHEMA);
@@ -2452,7 +2465,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_VERSION);

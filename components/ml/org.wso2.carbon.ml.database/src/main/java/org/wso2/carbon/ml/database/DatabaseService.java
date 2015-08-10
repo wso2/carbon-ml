@@ -18,12 +18,18 @@
 package org.wso2.carbon.ml.database;
 
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.util.List;
 import java.util.Map;
 
 public interface DatabaseService {
+    
+    /**
+     * Returns ML Configuration.
+     */
+    public MLConfiguration getMlConfiguration();
 
     /**
      * Insert a new dataset-schema into the database

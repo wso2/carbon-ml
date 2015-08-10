@@ -25,8 +25,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.spark.SparkConf;
-import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
-import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.core.exceptions.SparkConfigurationParserException;
 import org.wso2.carbon.ml.core.spark.SparkProperty;
 import org.wso2.carbon.ml.core.spark.SparkSettings;
@@ -34,21 +32,9 @@ import org.wso2.carbon.ml.core.spark.SparkSettings;
 /**
  * Class contains methods for parsing configurations from machine-learner.xml XML file.
  */
-public class MLConfigurationParser {
+public class SparkConfigurationParser {
 
-    public MLConfigurationParser() {
-    }
-    
-    public MLConfiguration getMLConfiguration(String mlConfigPath) throws MLConfigurationParserException {
-        try {
-            File file = new File(mlConfigPath);
-            JAXBContext jaxbContext = JAXBContext.newInstance(MLConfiguration.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return (MLConfiguration) jaxbUnmarshaller.unmarshal(file);
-        } catch (JAXBException e) {
-            throw new MLConfigurationParserException(
-                    "An error occurred while parsing: " + mlConfigPath + ": " + e.getMessage(), e);
-        }
+    public SparkConfigurationParser() {
     }
     
     /**
