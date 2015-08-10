@@ -34,11 +34,11 @@ public class MLConfigurationParserTest {
         
         Assert.assertNotNull(mlConfig.getMlAlgorithms());
         Assert.assertNotNull(mlConfig.getMlAlgorithms().get(0));
-        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 8);
+        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 10);
         Assert.assertEquals(mlConfig.getMlAlgorithms().get(0).getName(), "LINEAR_REGRESSION");
         
         Assert.assertNotNull(mlConfig.getProperties());
-        Assert.assertEquals(mlConfig.getProperties().size(), 4);
+        Assert.assertEquals(mlConfig.getProperties().size(), 8);
         Assert.assertEquals(mlConfig.getProperties().get(0).getName(), "ml.thread.pool.size");
 
     }

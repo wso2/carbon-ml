@@ -5,12 +5,6 @@
 		directory. -->
 	<Database>jdbc/WSO2ML_DB</Database>
 
-	<!-- Configurations to control data set file uploading. -->
-	<DataUploadSettings>
-		<InMemoryThreshold>1024</InMemoryThreshold>
-		<UploadLimit>20971520</UploadLimit>
-	</DataUploadSettings>
-
 	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
 		: Number of intervals in a histogram. categoricalThreshold : The maximum 
 		number of categories that can have in a non-string categorical feature. If 
@@ -19,26 +13,51 @@
 		and visualization. -->
 	<SummaryStatisticsSettings>
 		<HistogramBins>20</HistogramBins>
-		<CategoricalThreshold>20</CategoricalThreshold>
+		<CategoricalThreshold>10</CategoricalThreshold>
 		<SampleSize>10000</SampleSize>
 	</SummaryStatisticsSettings>
 
 	<!-- -->
 	<Properties>
 		<Property name="ml.thread.pool.size" value="100" />
-		<Property name="target.home" value="/tmp" />
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
 			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+		<Property name="hdfs.in"
+			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
+		<Property name="hdfs.out"
+			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
+		<Property name="das.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
+		<Property name="registry.in"
+			value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
+		<Property name="registry.out"
+			value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter" />
 	</Properties>
+
+	<!-- Email address to which the model building status mails are sent. -->
+	<EmailNotificationEndpoint></EmailNotificationEndpoint>
 
 	<!-- Registry location where ML models are published. -->
 	<ModelRegistryLocation>ml</ModelRegistryLocation>
 
-	<!-- Server URL of the remote BAM server used to get data. Must be specified 
-		in protocol://hostname:port format. -->
-	<BAMServerURL>http://localhost:9763</BAMServerURL>
+	<!-- Optional element. This element should point to a HDFS location where 
+		ML is allowed to store files. -->
+	<HdfsURL>hdfs://localhost:9000</HdfsURL>
+	
+	<!-- Storage Details for uploaded datasets. StorageType can be either "file" 
+		or "hdfs". Default storage type is file and location is {carbon.home}/datasets -->
+	<!-- DatasetStorage> 
+		<StorageType>file</StorageType> 
+		<StorageDirectory>/tmp</StorageDirectory> 
+	</DatasetStorage -->
+
+	<!-- Storage Details for built ML Models. StorageType can be either "file" 
+		or "hdfs". Default storage type is file and location is {carbon.home}/models -->
+	<!-- ModelStorage> 
+		<StorageType>file</StorageType> 
+		<StorageDirectory>/tmp</StorageDirectory> 
+	</ModelStorage -->
 
 	<Algorithms>
 		<Algorithm>
@@ -51,14 +70,25 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -71,18 +101,35 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -95,18 +142,35 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -119,22 +183,57 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
-				<Value>0.001</Value>
+				<Value>0.1</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
-				<Value>L1</Value>
+				<Value>L2</Value>
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
+				</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>LOGISTIC_REGRESSION_LBFGS</Name>
+			<Type>Classification</Type>
+			<Interpretability>3</Interpretability>
+			<Scalability>5</Scalability>
+			<Multicollinearity>1</Multicollinearity>
+			<Dimensionality>5</Dimensionality>
+			<Parameters>
+				<Name>Reg_Type</Name>
+				<Value>L2</Value>
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -147,22 +246,42 @@
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -173,20 +292,94 @@
 			<Multicollinearity>5</Multicollinearity>
 			<Dimensionality>3</Dimensionality>
 			<Parameters>
-				<Name>Num_Classes</Name>
-				<Value>2</Value>
-			</Parameters>
-			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
+				<Description>Maximum depth of the tree. This helps you to control
+					the size of the tree to prevent overfitting. This parameter
+					value should be an integer greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Max_Bins</Name>
 				<Value>100</Value>
+				<Description>Number of bins used when discretizing continuous
+					features. This must be at least the maximum number of categories M
+					for any categorical feature. Increasing this allows the algorithm
+					to consider more split candidates and make fine-grained split
+					decisions. However, it also increases computation and
+					communication. This parameter value should be an integer greater
+					than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Impurity</Name>
 				<Value>gini</Value>
+				<Description>Impurity is a measure of the homogeneity of
+					the labels at the node. This parameter value should be either 'gini'
+					or 'entropy' (without quotes).
+				</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>RANDOM_FOREST</Name>
+			<Type>Classification</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>4</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>3</Dimensionality>
+			<Parameters>
+				<Name>Num_Trees</Name>
+				<Value>5</Value>
+				<Description>Number of trees in the random forest. Increasing the
+					number of trees will decrease the variance in predictions,
+					improving the model’s test-time accuracy. Also training time
+					increases roughly linearly in the number of trees. This parameter
+					value should be an integer greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Depth</Name>
+				<Value>5</Value>
+				<Description>Maximum depth of the tree. This helps you to control
+					the size of the tree to prevent overfitting. This parameter
+					value should be an integer greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Bins</Name>
+				<Value>100</Value>
+				<Description>Number of bins used when discretizing continuous
+					features. This must be at least the maximum number of categories M
+					for any categorical feature. Increasing this allows the algorithm
+					to consider more split candidates and make fine-grained split
+					decisions. However, it also increases computation and
+					communication. This parameter value should be an integer greater
+					than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Impurity</Name>
+				<Value>gini</Value>
+				<Description>Impurity is a measure of the homogeneity of
+					the labels at the node. This parameter value should be either 'gini'
+					or 'entropy' (without quotes).
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Feature_Subset_Strategy</Name>
+				<Value>auto</Value>
+				<Description>Number of features to use as candidates for splitting
+					at each tree node. The number is specified as a fraction or
+					function of the total number of features. Decreasing this number
+					will speed up training, but can sometimes impact performance if too
+					low. This parameter value can take values 'auto', 'all', 'sqrt',
+					'log2' and 'onethird' (without quotes).
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Seed</Name>
+				<Value>12345</Value>
+				<Description>Seed for the random number generator.</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -199,6 +392,10 @@
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
+				<Description>Additive smoothing can be used by setting this
+					parameter. This parameter value should be an integer greater
+					than 0.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -211,12 +408,18 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>20</Value>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Num_Clusters</Name>
 				<Value>3</Value>
+				<Description>The number of desired clusters. This value should be
+					an integer greater than 0.
+				</Description>
 			</Parameters>
 		</Algorithm>
 	</Algorithms>
-
 </MachineLearner>
