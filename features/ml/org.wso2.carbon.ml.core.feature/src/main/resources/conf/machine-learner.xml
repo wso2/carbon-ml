@@ -71,19 +71,23 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process
+					optimization process. This parameter value should be an integer
+					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm</Description>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset used per iteration in
-					the optimization algorithm
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -98,28 +102,33 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process
+					optimization process. This parameter value should be an integer
+					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm</Description>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>The regularization parameter reduces overfitting, which
-					reduces the variance of your estimated regression parameters;
-					however, it does this at the expense of adding bias to your
-					estimate. Increasing lambda results in less overfitting but also
-					greater bias.</Description>
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use per iteration in
-					the optimization algorithm
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -134,26 +143,33 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process
+					optimization process. This parameter value should be an integer
+					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm</Description>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting.
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use per iteration in
-					the optimization algorithm
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -168,34 +184,40 @@
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process
+					optimization process. This parameter value should be an integer
+					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.1</Value>
-				<Description>Step size of the optimization algorithm</Description>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
-				<Description>Type of the regularization, wso2 machine learner
-					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use in a single
-					iteration of the optimization algorithm
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -209,9 +231,8 @@
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
-				<Description>Type of the regularization, wso2 machine learner
-					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -225,35 +246,41 @@
 			<Parameters>
 				<Name>Learning_Rate</Name>
 				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm</Description>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
-					optimization process
+					optimization process. This parameter value should be an integer
+					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
-				<Description>Type of the regularization, wso2 machine learner
-					supports L2 and L1 regularizations. Therefore, this parameter
-					should be either L1 or L2.
+				<Description>Type of the regularization. This parameter value
+					should be either 'L1' or 'L2' (without quotes).
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Reg_Parameter</Name>
 				<Value>0.001</Value>
-				<Description>Regularization parameter controls the model complexity
-					and hence, helps to control model overfitting
+				<Description>The regularization parameter (also lambda) reduces overfitting
+					which reduces the variance of your estimated regression parameters. It
+					does this at the expense of adding bias to your estimate. Increasing
+					this value results less overfitting but also greater bias. This parameter
+					value should be a non-negative real number (0 inclusive).
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>SGD_Data_Fraction</Name>
 				<Value>1</Value>
-				<Description>Fraction of the training dataset use in a single
-					iteration of the optimization algorithm
+				<Description>Fraction of the training dataset used per iteration
+					in the optimization algorithm. This parameter value should be
+					between 0 and 1, 1 inclusive.
 				</Description>
 			</Parameters>
 		</Algorithm>
@@ -268,7 +295,9 @@
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
 				<Description>Maximum depth of the tree. This helps you to control
-					the size of the tree to prevent overfitting.</Description>
+					the size of the tree to prevent overfitting. This parameter
+					value should be an integer greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Max_Bins</Name>
@@ -278,15 +307,17 @@
 					for any categorical feature. Increasing this allows the algorithm
 					to consider more split candidates and make fine-grained split
 					decisions. However, it also increases computation and
-					communication.</Description>
+					communication. This parameter value should be an integer greater
+					than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Impurity</Name>
 				<Value>gini</Value>
-				<Description>The node impurity is a measure of the homogeneity of
-					the labels at the node. The current implementation provides two
-					impurity measures for classification (gini impurity and entropy)
-					and one impurity measure for regression (variance).</Description>
+				<Description>Impurity is a measure of the homogeneity of
+					the labels at the node. This parameter value should be either 'gini'
+					or 'entropy' (without quotes).
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -302,13 +333,17 @@
 				<Description>Number of trees in the random forest. Increasing the
 					number of trees will decrease the variance in predictions,
 					improving the model’s test-time accuracy. Also training time
-					increases roughly linearly in the number of trees.</Description>
+					increases roughly linearly in the number of trees. This parameter
+					value should be an integer greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
 				<Description>Maximum depth of the tree. This helps you to control
-					the size of the tree to prevent overfitting.</Description>
+					the size of the tree to prevent overfitting. This parameter
+					value should be an integer greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Max_Bins</Name>
@@ -318,15 +353,17 @@
 					for any categorical feature. Increasing this allows the algorithm
 					to consider more split candidates and make fine-grained split
 					decisions. However, it also increases computation and
-					communication.</Description>
+					communication. This parameter value should be an integer greater
+					than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Impurity</Name>
 				<Value>gini</Value>
-				<Description>The node impurity is a measure of the homogeneity of
-					the labels at the node. The current implementation provides two
-					impurity measures for classification (gini impurity and entropy)
-					and one impurity measure for regression (variance).</Description>
+				<Description>Impurity is a measure of the homogeneity of
+					the labels at the node. This parameter value should be either 'gini'
+					or 'entropy' (without quotes).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Feature_Subset_Strategy</Name>
@@ -335,7 +372,9 @@
 					at each tree node. The number is specified as a fraction or
 					function of the total number of features. Decreasing this number
 					will speed up training, but can sometimes impact performance if too
-					low.</Description>
+					low. This parameter value can take values 'auto', 'all', 'sqrt',
+					'log2' and 'onethird' (without quotes).
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Seed</Name>
@@ -354,7 +393,9 @@
 				<Name>Lambda</Name>
 				<Value>1</Value>
 				<Description>Additive smoothing can be used by setting this
-					parameter.</Description>
+					parameter. This parameter value should be an integer greater
+					than 0.
+				</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -367,12 +408,17 @@
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>20</Value>
-				<Description>The maximum number of iterations to run.</Description>
+				<Description>Number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Num_Clusters</Name>
 				<Value>3</Value>
-				<Description>The number of desired clusters.</Description>
+				<Description>The number of desired clusters. This value should be
+					an integer greater than 0.
+				</Description>
 			</Parameters>
 		</Algorithm>
 	</Algorithms>
