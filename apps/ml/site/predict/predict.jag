@@ -130,8 +130,8 @@
                             <div id="parameter-inputs"></div>
                             
                             <div class="btn-group-actions">
+                                <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>
                                 <button id="file-predict" class="btn btn-main" type="submit">Predict</button>
-                                <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>                                
                             </div>
 
                         </form>
