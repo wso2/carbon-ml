@@ -26,13 +26,31 @@ import org.apache.spark.api.java.function.Function;
  * This class converts string array of tokens to {@link org.apache.spark.mllib.recommendation.Rating} object
  */
 public class StringArrayToRating implements Function<String[], Rating> {
+
+	private int userIndex;
+	private int productIndex;
+	private int ratingIndex;
+
+	/**
+	 * Constructs a StringArrayToRating transformer object
+	 *
+	 * @param userIndex     column index containing user_id
+	 * @param productIndex  column index containing product_id
+	 * @param ratingIndex   column index containing rating value
+	 */
+	public StringArrayToRating(int userIndex, int productIndex, int ratingIndex) {
+		this.userIndex = userIndex;
+		this.productIndex = productIndex;
+		this.ratingIndex = ratingIndex;
+	}
+
 	@Override
 	public Rating call(String[] tokens) throws MLModelBuilderException {
 		try {
 			return new Rating(
-				Integer.parseInt(tokens[0]),
-			    Integer.parseInt(tokens[1]),
-			    Double.parseDouble(tokens[2])
+				Integer.parseInt(tokens[userIndex]),
+			    Integer.parseInt(tokens[productIndex]),
+			    Double.parseDouble(tokens[ratingIndex])
 			);
 
 		} catch (Exception e) {

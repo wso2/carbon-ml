@@ -27,14 +27,23 @@ import java.util.List;
  * This class infers a rating score using the given array of data and given weights.
  */
 public class ImplicitDataToRating implements Function<String[], String[]> {
+	private int userIndex;
+	private int productIndex;
+	private List<Integer> observations;
 	private List<Double> weights;
 
 	/**
 	 * Constructs the ImplicitDataToRating transformation object.
 	 *
-	 * @param weights   list of weights to calculate rating score.
+	 * @param userIndex     column index containing user_id
+	 * @param productIndex  column index containing product_id
+	 * @param observations  list of observation columns
+	 * @param weights       list of weights to calculate rating score
 	 */
-	public ImplicitDataToRating(List<Double> weights) {
+	public ImplicitDataToRating(int userIndex, int productIndex, List<Integer> observations, List<Double> weights) {
+		this.userIndex = userIndex;
+		this.productIndex = productIndex;
+		this.observations = observations;
 		this.weights = weights;
 	}
 
@@ -46,19 +55,19 @@ public class ImplicitDataToRating implements Function<String[], String[]> {
 			throw new DatasetPreProcessingException("There is no, required number of fields to infer rating score");
 		}
 		//each implicit data field should have exactly one weight value.
-		if (tokens.length - 2 != weights.size()) {
+		if (observations.size() != weights.size()) {
 			throw new DatasetPreProcessingException("Number of implicit fields and number of weights does not match");
 		}
 
 		double rating = 0.0d;
 		double weightSum = 0.0d;
 
-		for (int i = 2; i < tokens.length; ++i) {
-			rating += Double.parseDouble(tokens[i]) * weights.get(i - 2);
-			weightSum += weights.get(i - 2);
+		for(int i = 0; i < observations.size(); ++i) {
+			rating += Double.parseDouble(tokens[observations.get(i)]) * weights.get(i);
+			weightSum += weights.get(observations.get(i));
 		}
 
 		rating = rating / weightSum;
-		return new String[] { tokens[0], tokens[1], Double.toString(rating) };
+		return new String[] { tokens[userIndex], tokens[productIndex], Double.toString(rating) };
 	}
 }

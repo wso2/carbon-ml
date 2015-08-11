@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class RecommendationUtils {
 
-	private static final String SEPERATOR = ",";
+	private static final String SEPARATOR = ",";
 
 	/**
 	 * Pre processes the data set.
@@ -44,39 +44,64 @@ public class RecommendationUtils {
 	 * @return                                  Processed RDD of the data set.
 	 * @throws DatasetPreProcessingException    If error occurred when pre processing the data set.
 	 */
-	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context, boolean containsImplicitData) throws DatasetPreProcessingException {
+	public static JavaRDD<Rating> preProcess(MLModelConfigurationContext context, boolean containsImplicitData)
+			throws DatasetPreProcessingException {
 		Workflow workflow = context.getFacts();
 		JavaRDD<String> lines = context.getLines();
 		String headerRow = context.getHeaderRow();
 		String columnSeparator = context.getColumnSeparator();
 
+		int userIndex = MLUtils.getFeatureIndex(workflow.getUserVariable(), headerRow, columnSeparator);
+		int productIndex = MLUtils.getFeatureIndex(workflow.getProductVariable(), headerRow, columnSeparator);
+		int ratingIndex = MLUtils.getFeatureIndex(workflow.getRatingVariable(), headerRow, columnSeparator);
+
+		List<Integer> observationList = getObservationList(workflow.getObservations());
+
 		JavaRDD<String[]> tokens = MLUtils.filterRows(columnSeparator, headerRow, lines,
 		                                              MLUtils.getImputeFeatureIndices(workflow,
-		                                              new ArrayList<Integer>(), MLConstants.DISCARD));
+		                                                                              new ArrayList<Integer>(),
+		                                                                              MLConstants.DISCARD));
 
-		if(containsImplicitData) {
+		if (containsImplicitData) {
 			Map<String, String> parameters = workflow.getHyperParameters();
-			List<Double> weights = getWeightList(parameters.get(MLConstants.WEIGHTS));
-			tokens = tokens.map(new ImplicitDataToRating(weights));
+			List<Double> weightList = getWeightList(parameters.get(MLConstants.WEIGHTS));
+			tokens = tokens.map(new ImplicitDataToRating(userIndex, productIndex, observationList, weightList));
 		}
 
-		return tokens.map(new StringArrayToRating());
+		return tokens.map(new StringArrayToRating(userIndex, productIndex, ratingIndex));
 	}
 
 	/**
-	 * Converts the comma separated string value to double list.
+	 * Converts the comma separated weights to double list.
 	 *
 	 * @param weights   comma separated weights
-	 * @return          List of doubles containing weights.
+	 * @return          List of doubles containing weights
 	 */
 	private static List<Double> getWeightList(String weights) {
 		List<Double> weightList = new ArrayList<Double>();
-		String[] weightArray = weights.split(SEPERATOR);
+		String[] weightArray = weights.trim().split(SEPARATOR);
 
 		for(String weight : weightArray) {
 			weightList.add(Double.parseDouble(weight));
 		}
 
 		return weightList;
+	}
+
+	/**
+	 * Converts the comma separated observations to integer list.
+	 *
+	 * @param observations  comma separated observations
+	 * @return              List of integer containing observation indexes
+	 */
+	private static List<Integer> getObservationList(String observations) {
+		List<Integer> observationList = new ArrayList<Integer>();
+		String[] observationArray = observations.trim().split(SEPARATOR);
+
+		for (String observation : observationArray) {
+			observationList.add(Integer.parseInt(observation));
+		}
+
+		return  observationList;
 	}
 }
