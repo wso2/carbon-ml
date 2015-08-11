@@ -517,7 +517,7 @@ public class MLModelHandler {
             // parse lines in the dataset
             lines = extractLines(tenantId, datasetId, sparkContext, datasetURL, dataSourceType, dataType);
             // get column separator
-            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
+            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             // get header line
             String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
             Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
