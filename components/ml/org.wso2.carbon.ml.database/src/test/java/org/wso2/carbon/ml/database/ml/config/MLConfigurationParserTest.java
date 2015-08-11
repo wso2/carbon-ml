@@ -1,3 +1,4 @@
+package org.wso2.carbon.ml.database.ml.config;
 /*
  * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,12 +17,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.core.impl;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
-import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.database.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.database.internal.MLConfigurationParser;
 
 public class MLConfigurationParserTest {
 
@@ -30,15 +30,15 @@ public class MLConfigurationParserTest {
         MLConfigurationParser configParser = new MLConfigurationParser();
         MLConfiguration mlConfig = configParser.getMLConfiguration("src/test/resources/machine-learner.xml");
         Assert.assertNotNull(mlConfig);
-        Assert.assertEquals(mlConfig.getDatabaseName(), "jdbc/WSO2ML_DB");
+        Assert.assertEquals(mlConfig.getDatasourceName(), "jdbc/WSO2ML_DB");
         
         Assert.assertNotNull(mlConfig.getMlAlgorithms());
         Assert.assertNotNull(mlConfig.getMlAlgorithms().get(0));
-        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 8);
+        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 10);
         Assert.assertEquals(mlConfig.getMlAlgorithms().get(0).getName(), "LINEAR_REGRESSION");
         
         Assert.assertNotNull(mlConfig.getProperties());
-        Assert.assertEquals(mlConfig.getProperties().size(), 4);
+        Assert.assertEquals(mlConfig.getProperties().size(), 8);
         Assert.assertEquals(mlConfig.getProperties().get(0).getName(), "ml.thread.pool.size");
 
     }

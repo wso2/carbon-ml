@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.core.exceptions;
+package org.wso2.carbon.ml.database.exceptions;
 
 public class MLConfigurationParserException extends Exception {
 	

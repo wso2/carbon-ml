@@ -26,8 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.ml.database.exceptions.MLConfigurationParserException;
 import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 import org.wso2.carbon.ml.database.util.MLDBUtil;
@@ -44,11 +46,22 @@ public class MLDatabaseService implements DatabaseService {
 
     private static final Log logger = LogFactory.getLog(MLDatabaseService.class);
     private MLDataSource dbh;
+    private MLConfiguration mlConfig;
     private static final String DB_CHECK_SQL = "SELECT * FROM ML_PROJECT";
 
     public MLDatabaseService() {
+        
+        MLConfigurationParser mlConfigParser = new MLConfigurationParser();
         try {
-            dbh = new MLDataSource();
+            mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
+        } catch (MLConfigurationParserException e) {
+            String msg = "Failed to parse machine-learner.xml file.";
+            logger.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+        
+        try {
+            dbh = new MLDataSource(mlConfig.getDatasourceName());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
@@ -68,9 +81,14 @@ public class MLDatabaseService implements DatabaseService {
                 throw new RuntimeException(msg, e);
             }
         }
+        
 
     }
-
+    
+    public MLConfiguration getMlConfiguration() {
+        return mlConfig != null ? mlConfig : new MLConfiguration();
+    }
+    
     @Override
     public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException {
         Connection connection = null;
@@ -153,7 +171,6 @@ public class MLDatabaseService implements DatabaseService {
             throw new DatabaseHandlerException(String.format("Project [name] %s already exists.", projectName));
         }
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             createProjectStatement = connection.prepareStatement(SQLQueries.INSERT_PROJECT);
@@ -860,6 +877,9 @@ public class MLDatabaseService implements DatabaseService {
         // Get the sample from the database.
         SamplePoints sample = getVersionsetSample(tenantId, user, versionsetId);
 
+        if (sample == null) {
+            return points;
+        }
         // Converts the sample to a JSON array.
         List<List<String>> columnData = sample.getSamplePoints();
         Map<String, Integer> dataHeaders = sample.getHeader();
@@ -903,7 +923,7 @@ public class MLDatabaseService implements DatabaseService {
      * @return SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
-    private SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException {
+    public SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException {
 
         Connection connection = null;
         PreparedStatement updateStatement = null;
@@ -1514,7 +1534,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_PROJECT);
@@ -1544,7 +1563,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_MODEL);
@@ -1880,7 +1898,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_ANALYSIS_BY_ID);
@@ -2425,7 +2442,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_SCHEMA);
@@ -2453,7 +2469,6 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            MLDataSource dbh = new MLDataSource();
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(SQLQueries.DELETE_DATASET_VERSION);
@@ -2506,6 +2521,36 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+    }
+
+    @Override
+    public void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_SAMPLE_POINTS);
+            updateStatement.setObject(1, samplePoints);
+            updateStatement.setLong(2, datasetVersionId);
+            updateStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the sample points of dataset version: " + datasetVersionId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException(
+                    "An error occurred while updating the sample points of dataset version: " + datasetVersionId + ": "
+                            + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
 }

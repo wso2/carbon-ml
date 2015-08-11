@@ -34,8 +34,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MLConfiguration {
 
-    @XmlElement(name = "Database")
-    private String databaseName;
+    @XmlElement(name = "DataSourceName")
+    private String datasourceName;
 
     @XmlElement(name = "HdfsURL")
     private String hdfsUrl;
@@ -109,12 +109,12 @@ public class MLConfiguration {
         this.datasetStorage = datasetStorage;
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    public String getDatasourceName() {
+        return datasourceName;
     }
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
+    public void setDatasourceName(String datasourceName) {
+        this.datasourceName = datasourceName;
     }
 
     public List<MLAlgorithm> getMlAlgorithms() {

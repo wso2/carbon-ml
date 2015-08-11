@@ -17,34 +17,28 @@
 		<SampleSize>10000</SampleSize>
 	</SummaryStatisticsSettings>
 
-	<!-- Properties used by WSO2 ML -->
+	<!-- -->
 	<Properties>
-		<!-- Defines the size of the thread pool used in WSO2 ML. -->
 		<Property name="ml.thread.pool.size" value="100" />
-		<!-- Fully qualified name of the file input adapter to be used. -->
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
-		<!-- Fully qualified name of the file output adapter to be used. -->
 		<Property name="file.out"
 			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
-		<!-- Fully qualified name of the HDFS input adapter to be used. -->
 		<Property name="hdfs.in"
 			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
-		<!-- Fully qualified name of the HDFS output adapter to be used. -->
 		<Property name="hdfs.out"
 			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
-		<!-- Fully qualified name of the Registry input adapter to be used. -->
+		<Property name="das.in" value="org.wso2.carbon.ml.core.impl.BAMInputAdapter" />
 		<Property name="registry.in"
 			value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
-		<!-- Fully qualified name of the Registry output adapter to be used. -->
 		<Property name="registry.out"
 			value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter" />
 	</Properties>
 
-	<!-- Comma separated set of email addresses to which the model building status mails are sent. -->
+	<!-- Email address to which the model building status mails are sent. -->
 	<EmailNotificationEndpoint></EmailNotificationEndpoint>
 
-	<!-- Governance Registry location where ML models are published. -->
+	<!-- Registry location where ML models are published. -->
 	<ModelRegistryLocation>ml</ModelRegistryLocation>
 
 	<!-- Optional element. This element should point to a HDFS location where 
@@ -65,7 +59,6 @@
 		<StorageDirectory>/tmp</StorageDirectory> 
 	</ModelStorage -->
 
-	<!-- Lists all supported machine learning algorithms. -->
 	<Algorithms>
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>

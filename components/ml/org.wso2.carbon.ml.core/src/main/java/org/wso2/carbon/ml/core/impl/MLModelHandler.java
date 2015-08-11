@@ -66,6 +66,7 @@ import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import org.wso2.carbon.registry.core.RegistryConstants;
 
 import org.wso2.carbon.utils.ConfigurationContextService;
 import scala.Tuple2;
@@ -475,12 +476,12 @@ public class MLModelHandler {
             // create registry path
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String registryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+            String relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
             // publish to registry
             RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
-            registryOutputAdapter.write(registryPath, in);
+            registryOutputAdapter.write(relativeRegistryPath, in);
 
-            return registryPath;
+            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
 
         } catch (DatabaseHandlerException e) {
             throw new MLModelPublisherException(errorMsg, e);
@@ -516,7 +517,7 @@ public class MLModelHandler {
             // parse lines in the dataset
             lines = extractLines(tenantId, datasetId, sparkContext, datasetURL, dataSourceType, dataType);
             // get column separator
-            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(datasetURL);
+            String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             // get header line
             String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
             Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);

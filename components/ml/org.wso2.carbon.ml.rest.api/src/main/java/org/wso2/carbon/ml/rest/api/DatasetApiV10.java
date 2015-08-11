@@ -31,6 +31,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.ScatterPlotPoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
@@ -285,6 +286,34 @@ public class DatasetApiV10 extends MLRestAPI {
                     .getErrorMsg(
                             String.format(
                                     "Error occurred while retrieving the version set with the [id] %s of tenant [id] %s and [user] %s .",
+                                    versionsetId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+    
+    /**
+     * Get sample points of a dataset version.
+     */
+    @GET
+    @Path("/versions/{versionsetId}/sample")
+    @Produces("application/json")
+    public Response getSamplePoints(@PathParam("versionsetId") long versionsetId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            SamplePoints samplePoints = datasetProcessor.getSamplePoints(tenantId, userName, versionsetId);
+            if (samplePoints == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(samplePoints).build();
+        } catch (MLDataProcessingException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving the sample set for the version set [id] %s of tenant [id] %s and [user] %s .",
                                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))

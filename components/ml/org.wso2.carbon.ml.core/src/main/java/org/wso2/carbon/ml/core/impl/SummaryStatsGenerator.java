@@ -36,7 +36,7 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
-import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
 
@@ -66,28 +66,18 @@ public class SummaryStatsGenerator implements Runnable {
     private String[] type;
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
+    private SamplePoints samplePoints;
+    private DatasetProcessor datasetProcessor;
 
     private long datasetSchemaId;
     private long datasetVersionId;
 
-    public SummaryStatsGenerator(long datasetSchemaId, long datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
-            SamplePoints samplePoints) throws MLConfigurationParserException {
+    public SummaryStatsGenerator(long datasetSchemaId, long datasetVersionId,
+            SummaryStatisticsSettings summaryStatsSettings, DatasetProcessor processor) {
         this.datasetSchemaId = datasetSchemaId;
         this.datasetVersionId = datasetVersionId;
         this.summarySettings = summaryStatsSettings;
-        this.headerMap = samplePoints.getHeader();
-        this.columnData = samplePoints.getSamplePoints();
-        this.missing = samplePoints.getMissing();
-        this.stringCellCount = samplePoints.getStringCellCount();
-        int noOfFeatures = this.headerMap.size();
-        // Initialize the lists.
-        this.unique = new int[noOfFeatures];
-        this.type = new String[noOfFeatures];
-        this.histogram = new EmpiricalDistribution[noOfFeatures];
-        for (int i = 0; i < noOfFeatures; i++) {
-            this.descriptiveStats.add(new DescriptiveStatistics());
-            this.graphFrequencies.add(new TreeMap<String, Integer>());
-        }
+        this.datasetProcessor = processor;
     }
 
     /**
@@ -97,9 +87,22 @@ public class SummaryStatsGenerator implements Runnable {
     @Override
     public void run() {
 
-        // process the sample points and generate summary stats
-
+        // extract the sample points and generate summary stats
         try {
+            this.samplePoints = datasetProcessor.takeSample();
+            this.headerMap = samplePoints.getHeader();
+            this.columnData = samplePoints.getSamplePoints();
+            this.missing = samplePoints.getMissing();
+            this.stringCellCount = samplePoints.getStringCellCount();
+            int noOfFeatures = this.headerMap.size();
+            // Initialize the lists.
+            this.unique = new int[noOfFeatures];
+            this.type = new String[noOfFeatures];
+            this.histogram = new EmpiricalDistribution[noOfFeatures];
+            for (int i = 0; i < noOfFeatures; i++) {
+                this.descriptiveStats.add(new DescriptiveStatistics());
+                this.graphFrequencies.add(new TreeMap<String, Integer>());
+            }
             // Find the columns containing String and Numeric data.
             identifyColumnDataType();
             // Calculate descriptive statistics.
@@ -109,14 +112,15 @@ public class SummaryStatsGenerator implements Runnable {
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies();
             SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
-            // TODO Update the database with calculated summary statistics.
+            // Update the database with calculated summary statistics.
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+            dbService.updateSamplePoints(datasetVersionId, samplePoints);
             dbService.updateSummaryStatistics(datasetSchemaId, datasetVersionId, stats);
             if (logger.isDebugEnabled()) {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while Calculating summary statistics " + "for dataset version "
+            logger.error("Error occurred while calculating summary statistics " + "for dataset version "
                     + this.datasetVersionId + ": " + e.getMessage(), e);
         }
     }
@@ -156,7 +160,8 @@ public class SummaryStatsGenerator implements Runnable {
                 // Convert each cell value to double and append to the
                 // Descriptive-statistics object.
                 for (int row = 0; row < this.columnData.get(currentCol).size(); row++) {
-                    if (this.columnData.get(currentCol).get(row) != null && !this.columnData.get(currentCol).get(row).isEmpty()) {
+                    if (this.columnData.get(currentCol).get(row) != null
+                            && !this.columnData.get(currentCol).get(row).isEmpty()) {
                         cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
                         this.descriptiveStats.get(currentCol).addValue(cellValue);
                     }
@@ -186,8 +191,9 @@ public class SummaryStatsGenerator implements Runnable {
             // Count the frequencies in each unique value.
             this.unique[currentCol] = uniqueSet.size();
             for (String uniqueValue : uniqueSet) {
-                if (uniqueValue != null){
-                    frequencies.put(uniqueValue.toString(), Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                if (uniqueValue != null) {
+                    frequencies.put(uniqueValue.toString(),
+                            Collections.frequency(this.columnData.get(currentCol), uniqueValue));
                 }
             }
             graphFrequencies.set(currentCol, frequencies);
@@ -263,4 +269,5 @@ public class SummaryStatsGenerator implements Runnable {
 
         return graphFrequencies;
     }
+
 }

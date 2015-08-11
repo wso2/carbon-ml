@@ -305,8 +305,20 @@
             var projectName = $(this).data('projectname');
             var datasetId = $(this).data('datasetid');
             
-            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
+            window.location.href = '../analysis/view-analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName;
         });        
+
+        // redirects to analysis page with built models under that analysis
+        $(document).on('click', '#view-models', function(e){ 
+            e.preventDefault();
+
+            var analysisId = $(this).data('analysisid');
+            var analysisName = $(this).data('analysisname');
+            var projectName = $(this).data('projectname');
+            var datasetId = $(this).data('datasetid');
+            
+            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
+        });                
 
         // compares models
         $(document).on('click', '#compare-models', function(e){ 
@@ -520,6 +532,7 @@
                                                                 '</td>' +
                                                                 '<td>' +
                                                                     '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>View</span></a>' +
+                                                                    '<a href="#" id="view-models" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>Models</span></a>' +
                                                                     '<a href="#" id="delete-analysis" class="del-wf cu-level2-btn btn-delete-dark" data-analysisid="' + analysisId + '">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       

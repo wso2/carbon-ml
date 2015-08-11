@@ -154,7 +154,7 @@ var baseUrl = getBaseUrl(window.location.href);
 var deleteDatasetId;
 var deleteVersionId;
 
-function buildAccordingHeader(collapseSection, datasetName, numVersions, datasetId){
+function buildAccordingHeader(collapseSection, datasetName, numVersions, datasetId) {
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
@@ -178,7 +178,7 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions, dataset
 	return accordingHeader;
 }
 
-function version(versionNumbers){
+function version(versionNumbers) {
 	var versionHtml = "";
     for(var i = 0; i < versionNumbers.length; i++){
         var version = sanitize(versionNumbers[i].version);    	
@@ -191,13 +191,14 @@ function version(versionNumbers){
     return versionHtml;
 }
 
-function accordingBody(datasetDescription, versions, datasetName){
+function accordingBody(datasetDescription, versions, datasetName) {
 
 	var accordingBodyHtml = '<table>' +
 							    '<tr>' +
 								  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
 								  	'<td>' +
 								  		'<div class="wr-analysis">' +
+								  			'<div id="inline-new-notification-area"></div>' +
 								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
 											'<div class="input-control text">' +
 												'<table>' +
@@ -222,7 +223,7 @@ function accordingBody(datasetDescription, versions, datasetName){
 	return accordingBodyHtml;
 }
 
-function accordiang(datasets){
+function accordiang(datasets) {
     var allDatasetsHtml = '';
 	for(var i=0; i<datasets.length; i++){
         var dataset = datasets[i];
@@ -273,7 +274,10 @@ $( document ).ready(function() {
 		e.preventDefault();
 
 		var datasetVersion = $(this).closest("tr").find('.dataset-version').val();
-        var description = $(this).data('datasetdescription');
+        var notificationArea = $(this).parents().find('#inline-new-notification-area');
+        if (!isValidDatasetVersion(datasetVersion, notificationArea)) {
+            return;
+        }
         var datasetName = $(this).data('datasetname');
         window.location = baseUrl + '/ml/site/data/createversion.jag?datasetName=' + datasetName + '&datasetVersion=' + datasetVersion;
 	});
@@ -399,6 +403,21 @@ function appendClass(noOfVersions) {
         classAppend = 'btn-disabled';
     }
     return classAppend;
+}
+
+// Dataset version input validation
+function isValidDatasetVersion(text, notificationArea) {
+    if (!text || /^(?:(\d+)\.)?(?:(\d+)\.)?(\d+)$/.test(text) == false) {
+        var errorText = 'Not a valid version number.';
+        handleNotification(errorText, notificationArea, 'warning');
+        return false;
+    }
+    if(text.length > 100) {
+        var errorText = 'Version number is too long. Max 100 characters allowed.';
+        handleNotification(errorText, notificationArea, 'warning');
+        return false;
+    }
+    return true;
 }
 
 </script>

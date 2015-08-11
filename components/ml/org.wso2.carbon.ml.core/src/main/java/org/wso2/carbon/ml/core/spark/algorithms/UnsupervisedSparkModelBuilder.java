@@ -60,6 +60,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
 
             // apply pre processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
+
             // generate train and test datasets by converting double arrays to vectors
             DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
             JavaRDD<Vector> data = features.map(doubleArrayToVector);
@@ -75,6 +76,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             mlModel.setEncodings(context.getEncodings());
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(-1);
+
 
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
