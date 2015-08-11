@@ -344,7 +344,7 @@
                         $("#prediction").html(predictionNotification);
                     },
                     error : function(res){
-                        var errorText = res.responseText
+                        var errorText = JSON.parse(res.responseText)["exception"];
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
                 });
