@@ -557,14 +557,16 @@ $( document ).ready(function() {
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
-
+        // hide notifications appear when navigating due to incomplete AJAX calls
+        $("#notification-area").hide();
         var fromAnalysis = getParameterByName('fromAnalysis');
         window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
     });
 
     $('#next-btn').on('click', function(e){
         e.preventDefault(); 
-
+        // hide notifications appear when navigating due to incomplete AJAX calls
+        $("#notification-area").hide();
 	    var fromAnalysis = getParameterByName('fromAnalysis');
         window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
     });
@@ -663,16 +665,12 @@ $( document ).ready(function() {
 // select the active tab based on the feature types
 function selectActiveTab() {
     if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
-        drawScatterPlotBase();
         $('#scatter-plot-link').click();
 	} else if (categoricalFeatureNames.length > 1) {
-	    drawParallelSetsBase();
 	    $('#parallel-sets-link').click();
 	} else if (categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0){
-	    drawTrellisChartBase();
 	    $('#trellis-chart-link').click();
 	} else if(numericalFeatureNames.length > 1) {
-	    drawClusterDiagramBase();
 	    $('#cluster-diagram-link').click();
 	}
 }
@@ -703,7 +701,7 @@ function disableTabs() {
 
 function drawScatterPlotBase() {
 
-	if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
+	if (numericalFeatureNames.length > 1 & categoricalFeatureNames.length > 0) {
 	 
 	    $('#scatter-x, #scatter-y, #scatter-group').empty();
 	    $.each(numericalFeatureNames,function(index, feature){
