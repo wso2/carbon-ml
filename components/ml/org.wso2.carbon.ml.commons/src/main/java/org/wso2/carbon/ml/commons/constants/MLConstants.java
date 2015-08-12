@@ -154,6 +154,7 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
+    public static final String RECOMMENDATION_MODEL_SUMMARY = "RecommendationModelSummary";
     
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
     

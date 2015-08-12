@@ -23,7 +23,11 @@ import org.apache.spark.mllib.recommendation.ALS;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
 
-public class CollaborativeFiltering {
+import java.io.Serializable;
+
+public class CollaborativeFiltering implements Serializable{
+
+	private static final long serialVersionUID = 5273514743795162923L;
 
 	/**
 	 * This method uses alternating least squares (ALS) algorithm to train a matrix factorization model given an JavaRDD

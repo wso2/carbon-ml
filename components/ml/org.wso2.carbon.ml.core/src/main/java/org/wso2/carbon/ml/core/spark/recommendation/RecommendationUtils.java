@@ -66,9 +66,10 @@ public class RecommendationUtils {
 			Map<String, String> parameters = workflow.getHyperParameters();
 			List<Double> weightList = getWeightList(parameters.get(MLConstants.WEIGHTS));
 			tokens = tokens.map(new ImplicitDataToRating(userIndex, productIndex, observationList, weightList));
+			return tokens.map(new StringArrayToRating(0,1,2));
+		} else {
+			return tokens.map(new StringArrayToRating(userIndex, productIndex, ratingIndex));
 		}
-
-		return tokens.map(new StringArrayToRating(userIndex, productIndex, ratingIndex));
 	}
 
 	/**
