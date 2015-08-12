@@ -169,6 +169,7 @@ public class DatasetApiV10 extends MLRestAPI {
                     MLVersionBean versionBean = new MLVersionBean();
                     versionBean.setId(mlDatasetVersion.getId());
                     versionBean.setVersion(mlDatasetVersion.getVersion());
+                    versionBean.setStatus(mlDatasetVersion.getStatus());
                     versionBeans.add(versionBean);
                 }
                 datasetBean.setVersions(versionBeans);

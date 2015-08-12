@@ -485,7 +485,17 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setVersion(result.getString(3));
                 versionset.setTargetPath(result.getString(4));
                 if(result.getBinaryStream(5) != null) {
-                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                    SamplePoints samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5));
+                    if(samplePoints.getIsGenerated() == true) {
+                        versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_COMPLETE);
+                    }
+                    else {
+                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_FAILED);
+                    }
+                }
+                else {
+                    versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_IN_PROGRESS);
                 }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);

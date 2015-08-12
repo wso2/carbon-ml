@@ -32,6 +32,7 @@ public class SamplePoints implements Serializable {
 	// Array containing number of missing values of each feature in the data-set.
     private int[] missing;
     private int[] stringCellCount;
+    private boolean isGenerated;
 
 	/**
 	 * Returns the raw-data of the sample.
@@ -91,5 +92,23 @@ public class SamplePoints implements Serializable {
         } else {
             this.stringCellCount = Arrays.copyOf(stringCellCount, stringCellCount.length);
         }
+    }
+
+    /**
+     * Returns whether the sample points are generated.
+     *
+     * @return A boolean representing sample points generation status
+     */
+    public boolean getIsGenerated() {
+        return isGenerated;
+    }
+
+    /**
+     * Set the sample points generation status.
+     *
+     * @param isGenerated sample points generation status
+     */
+    public void setIsGenerated(boolean isGenerated) {
+        this.isGenerated = isGenerated;
     }
 }
