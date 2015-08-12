@@ -39,6 +39,7 @@ import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
  * Responsible for generating summary stats for a given set of sample points.
@@ -90,6 +91,7 @@ public class SummaryStatsGenerator implements Runnable {
         // extract the sample points and generate summary stats
         try {
             this.samplePoints = datasetProcessor.takeSample();
+            this.samplePoints.setIsGenerated(true);
             this.headerMap = samplePoints.getHeader();
             this.columnData = samplePoints.getSamplePoints();
             this.missing = samplePoints.getMissing();
@@ -120,8 +122,17 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while calculating summary statistics " + "for dataset version "
-                    + this.datasetVersionId + ": " + e.getMessage(), e);
+            this.samplePoints.setIsGenerated(false);
+            DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+            try {
+                dbService.updateSamplePoints(datasetVersionId, samplePoints);
+            } catch (DatabaseHandlerException e1) {
+                logger.error("Error occurred while updating sample point generation status for dataset version "
+                        + this.datasetVersionId + ": " + e1.getMessage(), e1);
+            } finally {
+                logger.error("Error occurred while calculating summary statistics " + "for dataset version "
+                        + this.datasetVersionId + ": " + e.getMessage(), e);
+            }
         }
     }
 

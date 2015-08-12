@@ -23,6 +23,7 @@ public class MLVersionBean {
 
     private long id;
     private String version;
+    private String status;
     
     public long getId() {
         return id;
@@ -35,5 +36,11 @@ public class MLVersionBean {
     }
     public void setVersion(String version) {
         this.version = version;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

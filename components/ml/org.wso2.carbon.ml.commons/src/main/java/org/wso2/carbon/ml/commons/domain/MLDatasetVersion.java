@@ -34,6 +34,7 @@ public class MLDatasetVersion {
      */
     private String targetPath;
     private SamplePoints samplePoints;
+    private String status;
 
     public int getTenantId() {
         return tenantId;
@@ -89,6 +90,14 @@ public class MLDatasetVersion {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
