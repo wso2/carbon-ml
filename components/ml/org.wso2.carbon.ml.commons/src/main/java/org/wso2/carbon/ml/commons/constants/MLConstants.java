@@ -84,7 +84,7 @@ public class MLConstants {
     public static final String USER_VARIABLE = "userVariable";
     public static final String PRODUCT_VARIABLE = "productVariable";
     public static final String RATING_VARIABLE = "ratingVariable";
-    public static final String OBSERVATIONS = "observations";
+    public static final String OBSERVATIONS = "observationList";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
     public static final String HYPER_PARAMETERS = "hyperParameters";
