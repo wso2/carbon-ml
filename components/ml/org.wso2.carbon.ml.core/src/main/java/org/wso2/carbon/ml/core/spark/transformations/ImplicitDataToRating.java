@@ -64,7 +64,7 @@ public class ImplicitDataToRating implements Function<String[], String[]> {
 
 		for(int i = 0; i < observations.size(); ++i) {
 			rating += Double.parseDouble(tokens[observations.get(i)]) * weights.get(i);
-			weightSum += weights.get(observations.get(i));
+			weightSum += weights.get(i);
 		}
 
 		rating = rating / weightSum;
