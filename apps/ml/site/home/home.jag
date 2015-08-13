@@ -13,6 +13,11 @@
 
     <%
         include("../../includes/tenantAware.jag");
+        if (session.get("requestedPage")) {
+            var requestedPage = session.get("requestedPage");
+            session.remove("requestedPage");
+            print('<script> var requestedPage = "' + requestedPage + '"; </script>');
+        }
         print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
     %>
     
@@ -132,6 +137,11 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+
+    // redirect if a redirect link is available
+    if(typeof requestedPage !== 'undefined') {
+        window.location.href = requestedPage;
+    }
 
 	$.ajax({
         type : 'GET',
