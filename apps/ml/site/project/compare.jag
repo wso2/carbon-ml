@@ -358,6 +358,8 @@
                                         '<div>' +
                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>' +
                                             '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>' +
+                                            '<a href="' + serverUrl + '/api/models/' + modelName + '/export" id="download-model" class="cu-reg-btn btn-download" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
+                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '"><span>Publish</span></a>' +
                                         '</div>' +
                                     '</td>';                                        
                                     }
@@ -474,6 +476,26 @@
             var analysisName = modelName.split(".")[0];
             window.location.href = '../analysis/view-model.jag?projectId='+projectId+'&analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName+'&fromCompare=true';
         });
+
+        $(document).on('click', '#publish', function(e){ 
+            e.preventDefault();
+            
+            var modelId = $(this).data('modelid');
+
+            $.ajax({
+                type: "POST",
+                url: serverUrl + "/api/models/" + modelId + "/publish",
+                dataType: 'json',
+                success : function(res){
+                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
+                    handleNotification(successText, '#notification-area', 'success');
+                },
+                error : function(res){
+                    var errorText = JSON.parse(res.responseText)["exception"];
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });            
+        });             
     }
 
 </script>
