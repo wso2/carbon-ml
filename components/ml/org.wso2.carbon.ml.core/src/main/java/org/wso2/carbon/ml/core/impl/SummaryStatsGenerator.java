@@ -144,7 +144,7 @@ public class SummaryStatsGenerator implements Runnable {
      * @throws DatasetSummaryException
      */
     protected String[] identifyColumnDataType() {
-        // If atleast one cell contains strings, then the column is considered to has string data.
+        // If at least one cell contains strings, then the column is considered to has string data.
         for (int col = 0; col < headerMap.size(); col++) {
             if (stringCellCount[col] > 0) {
                 this.stringDataColumnPositions.add(col);
@@ -153,6 +153,33 @@ public class SummaryStatsGenerator implements Runnable {
                 this.numericDataColumnPositions.add(col);
                 this.type[col] = FeatureType.NUMERICAL;
             }
+        }
+        
+        double categoricalThreshold = summarySettings.getCategoricalThreshold();
+        double cellValue;
+        // Iterate through each column.
+        for (int currentCol = 0; currentCol < this.headerMap.size(); currentCol++) {
+            if (this.numericDataColumnPositions.contains(currentCol)) {
+
+                // Create a unique set from the column.
+                Set<String> uniqueSet = new HashSet<String>(this.columnData.get(currentCol));
+                DescriptiveStatistics stats = new DescriptiveStatistics();
+
+                for (String string : uniqueSet) {
+                    cellValue = Double.parseDouble(string);
+                    stats.addValue(cellValue);
+                }
+
+                // skewness is a measure of asymmetry of a dataset. If skewness is low, dataset is concentrated around mean.
+                if (Double.isNaN(stats.getSkewness()) || Math.abs(stats.getSkewness()) < categoricalThreshold) {
+                    // Change the data type to categorical.
+                    this.type[currentCol] = FeatureType.CATEGORICAL;
+                    this.numericDataColumnPositions.remove(new Integer(currentCol));
+                    this.stringDataColumnPositions.add(currentCol);
+                }
+
+            }
+
         }
 
         return type;
@@ -220,7 +247,7 @@ public class SummaryStatsGenerator implements Runnable {
      * @param noOfIntervals Number of intervals to be calculated for continuous data
      */
     protected List<SortedMap<?, Integer>> calculateNumericColumnFrequencies() {
-        int categoricalThreshold = summarySettings.getCategoricalThreshold();
+        double categoricalThreshold = summarySettings.getCategoricalThreshold();
         int noOfIntervals = summarySettings.getHistogramBins();
         Iterator<Integer> numericColumns = this.numericDataColumnPositions.iterator();
         int currentCol;

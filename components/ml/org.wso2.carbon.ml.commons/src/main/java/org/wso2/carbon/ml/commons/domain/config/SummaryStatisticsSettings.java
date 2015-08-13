@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class SummaryStatisticsSettings {
 	private int histogramBins = 20;
-	private int categoricalThreshold = 20;
+	private double categoricalThreshold = 0.01;
 	private int sampleSize = 10000;
 
 	/**
@@ -50,7 +50,7 @@ public class SummaryStatisticsSettings {
 	 * @return Threshold of unique values for selecting categorical data
 	 */
 	@XmlElement(name = "CategoricalThreshold")
-	public int getCategoricalThreshold() {
+	public double getCategoricalThreshold() {
 		return categoricalThreshold;
 	}
 
