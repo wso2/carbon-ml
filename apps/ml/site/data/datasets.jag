@@ -162,14 +162,24 @@ var deleteVersionId;
 function buildAccordingHeader(collapseSection, datasetName, datasetVersions, datasetId) {
 	var numVersions = datasetVersions.length;
 
+    var versionsString = '';
+    if (numVersions == 0) {
+        versionsString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No versions available';
+    }
+    else if (numVersions == 1) {
+        versionsString = '<strong>1</strong> version available';
+    }
+    else {
+        versionsString = '<strong>'+numVersions+'</strong> versions available';
+    }	
+
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
 				      		'<td>' +
 						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
 						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
-						          	/*'<span class="cu-acc-head-created">[ created:  ]</span>'+*/
-						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) available</span>'+
+						          	'<span class="cu-acc-head-workflow">' + versionsString + '</span>'+
 						        '</a>' +	
 						    '</td>'+
 						    '<td class="c-right">' +			        
