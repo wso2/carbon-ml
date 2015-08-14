@@ -428,8 +428,8 @@
                             '</div>';
         		    } else {
         			    accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                                '<h2>You do not have any projects created for dataset ['+datasetName+'] at the moment.</h2>'+
-                                '<p><a href="create_project.jag?datasetName='+datasetName+'" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                             '</div>';
         		    } 
                     $('#accordion').empty();
@@ -446,7 +446,7 @@
         		    } else {
         			createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                                '<p><a href="create_project.jag?datasetName='+datasetName+'" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                             '</div>';	
         		    }
 
@@ -458,13 +458,13 @@
                         var workflowString = '';
                         var noOfAnalyses = tenantProjects[i]['analyses'].length;
                         if (noOfAnalyses == 0) {
-                            workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No Analysis Available';
+                            workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No analyses available';
                         }
                         else if (noOfAnalyses == 1) {
-                            workflowString = '<strong>1</strong> Analysis available';
+                            workflowString = '<strong>1</strong> analysis available';
                         }
                         else {
-                            workflowString = '<strong>'+noOfAnalyses+'</strong> Analyses available';
+                            workflowString = '<strong>'+noOfAnalyses+'</strong> analyses available';
                         }
                         
                         var projectId = sanitize(tenantProjects[i]['id']);
