@@ -128,15 +128,7 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 				recommendationModelSummary.setAlgorithm(RECOMMENDATION_ALGORITHM.COLLABORATIVE_FILTERING.toString());
 			}
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
-			recommendationModelSummary.setUserFeatures(model.userFeatures());
-			recommendationModelSummary.setProductFeatures(model.productFeatures());
 			recommendationModelSummary.setRank(model.rank());
-
-			//Recommendations printing in console
-			Rating[] recommendedProducts = new CollaborativeFiltering().recommendProducts(model, 1, 50);
-			for (Rating recommendedProduct : recommendedProducts) {
-				System.out.println(recommendedProduct.user() + " " + recommendedProduct.product());
-			}
 
 			return recommendationModelSummary;
 		} catch (Exception e) {

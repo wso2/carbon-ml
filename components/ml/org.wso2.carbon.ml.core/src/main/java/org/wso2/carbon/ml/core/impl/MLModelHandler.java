@@ -37,6 +37,7 @@ import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
@@ -55,6 +56,8 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
+import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -377,6 +380,31 @@ public class MLModelHandler {
 
         log.info(String.format("Prediction from model [id] %s was successful.", modelId));
         return predictions;
+    }
+
+    public List<?> getRecommendations(int tenantId, String userName, long modelId, int userId,
+                                      int noOfProducts) throws MLModelHandlerException {
+
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                                       modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        MLModel builtModel = retrieveModel(modelId);
+
+        //validate if retrieved model is a MatrixFactorizationModel
+        if (!(builtModel.getModel() instanceof MLMatrixFactorizationModel)) {
+            String msg =
+                    String.format("Prediction failed from model [id] %s is not a MatrixFactorizationModel", modelId);
+            throw new MLModelHandlerException(msg);
+        }
+        //get recommendations
+        MatrixFactorizationModel model = ((MLMatrixFactorizationModel) builtModel.getModel()).getModel();
+        List<?> recommendations = CollaborativeFiltering.recommendProducts(model, userId, noOfProducts);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
     }
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {

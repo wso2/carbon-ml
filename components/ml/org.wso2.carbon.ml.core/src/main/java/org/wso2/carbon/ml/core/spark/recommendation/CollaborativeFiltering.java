@@ -24,6 +24,8 @@ import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CollaborativeFiltering implements Serializable{
 
@@ -69,14 +71,20 @@ public class CollaborativeFiltering implements Serializable{
 	/**
 	 * This method recommends products for a given user.
 	 *
-	 * @param model            Matrix factorization model
-	 * @param userId           The user to recommend products to
-	 * @param numberOfProducts Number of products to return
-	 * @return Array of Rating objects sorted according to the predicted score
-	 * @see org.apache.spark.mllib.recommendation.Rating
+	 * @param model             Matrix factorization model
+	 * @param userId            The user to recommend products to
+	 * @param numberOfProducts  Number of products to return
+	 * @return                  List of productIds recommended to a given user
 	 */
-	public Rating[] recommendProducts(final MatrixFactorizationModel model, int userId, int numberOfProducts) {
-		return model.recommendProducts(userId, numberOfProducts);
+	public static List<Integer> recommendProducts(final MatrixFactorizationModel model, int userId, int numberOfProducts) {
+		Rating[] recommendations = model.recommendProducts(userId, numberOfProducts);
+		List<Integer> productList = new ArrayList<Integer>();
+
+		for(Rating rating : recommendations) {
+			productList.add(rating.product());
+		}
+
+		return productList;
 	}
 
 	/**
@@ -85,10 +93,16 @@ public class CollaborativeFiltering implements Serializable{
 	 * @param model         Matrix factorization model
 	 * @param productId     The product to recommend users to
 	 * @param numberOfUsers Number of users to return
-	 * @return Array of Rating objects sorted according to the predicted score
-	 * @see org.apache.spark.mllib.recommendation.Rating
+	 * @return              List of userIds recommended to a given product
 	 */
-	public Rating[] recommendUsers(final MatrixFactorizationModel model, int productId, int numberOfUsers) {
-		return model.recommendUsers(productId, numberOfUsers);
+	public static List<Integer> recommendUsers(final MatrixFactorizationModel model, int productId, int numberOfUsers) {
+		Rating[] recommendations = model.recommendUsers(productId, numberOfUsers);
+		List<Integer> userList = new ArrayList<Integer>();
+
+		for(Rating rating : recommendations) {
+			userList.add(rating.user());
+		}
+
+		return userList;
 	}
 }
