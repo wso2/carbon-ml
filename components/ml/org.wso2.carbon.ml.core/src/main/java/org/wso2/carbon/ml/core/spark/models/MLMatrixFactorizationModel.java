@@ -30,6 +30,7 @@ import java.io.ObjectOutput;
  */
 public class MLMatrixFactorizationModel implements Externalizable {
 
+	private static final long serialVersionUID = 186767859324000308L;
 	private MatrixFactorizationModel model;
 
 	public MLMatrixFactorizationModel() {

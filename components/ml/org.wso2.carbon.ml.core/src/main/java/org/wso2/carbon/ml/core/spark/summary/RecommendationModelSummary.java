@@ -32,8 +32,6 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 	private String algorithm;
 	private String[] features;
 	private int rank;
-	private RDD<Tuple2<Object, double[]>> userFeatures;
-	private RDD<Tuple2<Object, double[]>> productFeatures;
 
 	@Override
 	public String getModelSummaryType() {
@@ -54,22 +52,6 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 
 	public void setRank(int rank) {
 		this.rank = rank;
-	}
-
-	public RDD<Tuple2<Object, double[]>> getUserFeatures() {
-		return userFeatures;
-	}
-
-	public void setUserFeatures(RDD<Tuple2<Object, double[]>> userFeatures) {
-		this.userFeatures = userFeatures;
-	}
-
-	public RDD<Tuple2<Object, double[]>> getProductFeatures() {
-		return productFeatures;
-	}
-
-	public void setProductFeatures(RDD<Tuple2<Object, double[]>> productFeatures) {
-		this.productFeatures = productFeatures;
 	}
 
 	/**
