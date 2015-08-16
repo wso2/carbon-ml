@@ -386,21 +386,23 @@
 				<Value>500,500,500</Value>
 				<Description>Layer Sizes determines the number of neurons of each layer.
 				The first layer is the closest to the inputs and the last is the furthest 
-				from inputs.</Description>
-			</Parameters>			
+				from inputs.This is a comma-separated value.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Activation_Type</Name>
+				<Value>RectifierWithDropout</Value>
+				<Description>Activation type is the function used to activate neurons
+				when inputs given (i.e. f(W.x + b) where W,b and x are weights and bias and inputs
+				respectively). The possible values are, Rectifier, RectifierWithDropout, Tanh, TanhWithDropout,
+				Maxout, MaxoutWithDropout (case sensitive)
+				</Description>
+			</Parameters>
 			<Parameters>
 				<Name>Epochs</Name>
 				<Value>10</Value>
 				<Description>Epochs define the number of iterations the network is trained for.
 				It is important to have a suitable number of epochs, as a high number can lead
 				to over-fitting.</Description>
-			</Parameters>
-			<Parameters>
-				<Name>Learning_Rate</Name>
-				<Value>0.25</Value>
-				<Description>Learning Rate is the rate which the gradient descent takes place.
-				A higher learning rate can cause the gradient to fluctuate too much where a lower
-				learning rate can cause a slower learning.</Description>
 			</Parameters>			
 		</Algorithm>
 	</Algorithms>

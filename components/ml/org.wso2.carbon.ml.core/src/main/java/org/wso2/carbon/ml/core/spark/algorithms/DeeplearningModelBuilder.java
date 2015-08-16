@@ -18,12 +18,14 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
+import hex.deeplearning.DeepLearningModel;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -49,30 +51,34 @@ import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+
 import scala.Tuple2;
 
-public class DeeplearningModelBuilder extends MLModelBuilder{
-    private static final Log log = LogFactory.getLog(DeeplearningModelBuilder.class);        
+public class DeeplearningModelBuilder extends MLModelBuilder {
+    private static final Log log = LogFactory.getLog(DeeplearningModelBuilder.class);
 
     public DeeplearningModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
-    
+
     @Override
     public MLModel build() throws MLModelBuilderException {
-        
+
         log.info("Start building the Stacked Autoencoders...");
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         MLModel mlModel = new MLModel();
-        try {            
+        try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
-            
+
             // pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
+
+            List<double[]> featureList = features.collect();
+
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
@@ -81,13 +87,16 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
 
             JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
+
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
             JavaRDD<LabeledPoint> trainingData = dataSplit[0];
-            JavaRDD<LabeledPoint> testingData = dataSplit[1];  
-            
-            
+            JavaRDD<LabeledPoint> testingData = dataSplit[1];
+
+            List<LabeledPoint> trpoints = trainingData.collect();
+            List<LabeledPoint> tepoints = testingData.collect();
+
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -96,119 +105,128 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             mlModel.setEncodings(context.getEncodings());
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(responseIndex);
-            
+
             ModelSummary summaryModel = null;
-            
+
             DEEPLEARNING_ALGORITHM deeplearningAlgorithm = DEEPLEARNING_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (deeplearningAlgorithm) {
             case STACKED_AUTOENCODERS:
                 log.info("Building summary model for SAE");
-                summaryModel = buildStackedAutoencodersModel(sparkContext, modelId, trainingData, testingData, workflow, mlModel, includedFeatures);
+                summaryModel = buildStackedAutoencodersModel(sparkContext, modelId, trainingData, testingData,
+                        workflow, mlModel, includedFeatures);
                 log.info("Successful building summary model for SAE");
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
-            
+
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
                     + e.getMessage(), e);
         } finally {
-            //do something finally
+            // do something finally
         }
     }
-    
-    private int[] stringArrToIntArr(String str){
+
+    private int[] stringArrToIntArr(String str) {
         String[] tokens = str.split(",");
         int[] arr = new int[tokens.length];
-        for (int i=0;i<tokens.length;i++){
+        for (int i = 0; i < tokens.length; i++) {
             arr[i] = Integer.parseInt(tokens[i]);
         }
         return arr;
     }
-    
+
     /**
      * Build the stacked autoencoder model
+     * 
      * @param sparkContext
-     * @param modelID       model ID
-     * @param trainingData  training data to train the classifier
-     * @param testingData   testing data to test the classifier and get metrics
-     * @param workflow      workflow
-     * @param mlModel       MLModel to be updated with calcualted values
-     * @param includedFeatures  Included features
+     * @param modelID model ID
+     * @param trainingData training data to train the classifier
+     * @param testingData testing data to test the classifier and get metrics
+     * @param workflow workflow
+     * @param mlModel MLModel to be updated with calcualted values
+     * @param includedFeatures Included features
      * @return
-     * @throws MLModelBuilderException 
+     * @throws MLModelBuilderException
      */
-    private ModelSummary buildStackedAutoencodersModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
-            JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel, SortedMap<Integer,String> includedFeatures) throws MLModelBuilderException {
+    private ModelSummary buildStackedAutoencodersModel(JavaSparkContext sparkContext, long modelID,
+            JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+            SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
         try {
             log.info("Starting H2O Server");
             H2OServer.startH2O();
             StackedAutoencodersClassifier saeClassifier = new StackedAutoencodersClassifier();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
-                        
-            //train the stacked autoencoder
-            SparkDeeplearningModel sparkDeeplearningModel = saeClassifier.train(trainingData,
+
+            // train the stacked autoencoder
+            DeepLearningModel deeplearningModel = saeClassifier.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
-                    workflow.getTrainDataFraction(),workflow.getResponseVariable(),modelID);            
-            
-            mlModel.setModel(new MLDeeplearningModel(sparkDeeplearningModel));
-            //make predictions with the trained model
-            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext,sparkDeeplearningModel, testingData);                       
-            
-            //get model summary
-            DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils
-                    .getDeeplearningModelSummary(sparkContext, testingData, predictionsAndLabels);
-            
-            mlModel.setModel(sparkDeeplearningModel);
-            
+                    hyperParameters.get(MLConstants.ACTIVATION_TYPE),
+                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getTrainDataFraction(),
+                    workflow.getResponseVariable(), modelID);
+
+            if (deeplearningModel == null) {
+                log.info("DeeplearningModel is Null");
+            }
+            // make predictions with the trained model
+            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext, deeplearningModel,
+                    testingData);
+
+            // get model summary
+            DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils.getDeeplearningModelSummary(
+                    sparkContext, testingData, predictionsAndLabels);
+
+            mlModel.setModel(new MLDeeplearningModel(deeplearningModel));
+
             deeplearningModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             deeplearningModelSummary.setAlgorithm(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString());
-           
-            //set accuracy values
+
+            // set accuracy values
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
-            deeplearningModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
-                    multiclassMetrics, mlModel));
+            deeplearningModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics,
+                    mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
-            deeplearningModelSummary.setModelAccuracy(modelAccuracy);            
-            
+            deeplearningModelSummary.setModelAccuracy(modelAccuracy);
+
             return deeplearningModelSummary;
-            
+
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building stacked autoencoders model: "
                     + e.getMessage(), e);
         }
-        
+
     }
 
-        /**
+    /**
      * This method gets multi class metrics for a given set of prediction and label values
-     *
-     * @param sparkContext           JavaSparkContext
-     * @param predictionsAndLabels   Prediction and label values RDD
+     * 
+     * @param sparkContext JavaSparkContext
+     * @param predictionsAndLabels Prediction and label values RDD
      */
-    private MulticlassMetrics getMulticlassMetrics(JavaSparkContext sparkContext, JavaPairRDD<Double, Double> predictionsAndLabels) {
-        List<Tuple2<Double,Double>> predictionsAndLabelsDoubleList = predictionsAndLabels.collect();
+    private MulticlassMetrics getMulticlassMetrics(JavaSparkContext sparkContext,
+            JavaPairRDD<Double, Double> predictionsAndLabels) {
+        List<Tuple2<Double, Double>> predictionsAndLabelsDoubleList = predictionsAndLabels.collect();
         List<Tuple2<Object, Object>> predictionsAndLabelsObjectList = new ArrayList<Tuple2<Object, Object>>();
-        for (Tuple2<Double,Double> predictionsAndLabel : predictionsAndLabelsDoubleList) {
+        for (Tuple2<Double, Double> predictionsAndLabel : predictionsAndLabelsDoubleList) {
             Object prediction = predictionsAndLabel._1;
             Object label = predictionsAndLabel._2;
             Tuple2<Object, Object> tupleElement = new Tuple2<Object, Object>(prediction, label);
             predictionsAndLabelsObjectList.add(tupleElement);
         }
-        JavaRDD<Tuple2<Object, Object>> predictionsAndLabelsJavaRDD = sparkContext.parallelize(predictionsAndLabelsObjectList);
-        RDD<Tuple2<Object,Object>> scoresAndLabelsRDD = JavaRDD.toRDD(predictionsAndLabelsJavaRDD);
+        JavaRDD<Tuple2<Object, Object>> predictionsAndLabelsJavaRDD = sparkContext
+                .parallelize(predictionsAndLabelsObjectList);
+        RDD<Tuple2<Object, Object>> scoresAndLabelsRDD = JavaRDD.toRDD(predictionsAndLabelsJavaRDD);
         MulticlassMetrics multiclassMetrics = new MulticlassMetrics(scoresAndLabelsRDD);
-        return  multiclassMetrics;
+        return multiclassMetrics;
     }
-    
+
     /**
      * This method returns multiclass confusion matrix for a given multiclass metric object
-     *
+     * 
      * @param multiclassMetrics Multiclass metric object
      */
     private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics, MLModel mlModel) {
@@ -227,23 +245,21 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
 
             List<Map<String, Integer>> encodings = mlModel.getEncodings();
             // decode only if encodings are available
-            if(encodings != null) {
+            if (encodings != null) {
                 // last index is response variable encoding
                 Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
                 List<String> decodedLabels = new ArrayList<String>();
                 for (double label : multiclassMetrics.labels()) {
                     Integer labelInt = (int) label;
                     String decodedLabel = MLUtils.getKeyByValue(encodingMap, labelInt);
-                    if(decodedLabel != null) {
+                    if (decodedLabel != null) {
                         decodedLabels.add(decodedLabel);
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }
                 multiclassConfusionMatrix.setLabels(decodedLabels);
-            }
-            else {
+            } else {
                 List<String> labelList = toStringList(multiclassMetrics.labels());
                 multiclassConfusionMatrix.setLabels(labelList);
             }
@@ -252,10 +268,10 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
         }
         return multiclassConfusionMatrix;
     }
-    
+
     /**
      * This method gets model accuracy from given multi-class metrics
-     *
+     * 
      * @param multiclassMetrics multi-class metrics object
      */
     private Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
@@ -272,13 +288,13 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
         if (totalPopulation > 0) {
             modelAccuracy = (double) confusionMatrixDiagonal / totalPopulation;
         }
-        return Double.parseDouble(decimalFormat.format(modelAccuracy*100));
+        return Double.parseDouble(decimalFormat.format(modelAccuracy * 100));
     }
-    
-        /**
+
+    /**
      * This summation of a given double array
-     *
-     * @param array     Double array
+     * 
+     * @param array Double array
      */
     private long arraySum(double[] array) {
         long sum = 0;
@@ -294,5 +310,5 @@ public class DeeplearningModelBuilder extends MLModelBuilder{
             stringList.add(String.valueOf(doubleArray[i]));
         }
         return stringList;
-    }    
+    }
 }

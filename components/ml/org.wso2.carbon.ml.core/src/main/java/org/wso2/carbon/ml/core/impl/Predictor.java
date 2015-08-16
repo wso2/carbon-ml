@@ -18,7 +18,6 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +39,14 @@ import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelUtils;
-import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
+import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+
 import water.fvec.Frame;
 
 /**
@@ -153,7 +153,7 @@ public class Predictor {
             switch (deeplearning_algorithm) {
                 case STACKED_AUTOENCODERS:
                     List<Double> predictions = new ArrayList<Double>();
-                    SparkDeeplearningModel saeModel = ((SparkDeeplearningModel) model.getModel());
+                    MLDeeplearningModel saeModel = ((MLDeeplearningModel) model.getModel());
                     List<double[]> tobePredictedList = new ArrayList<double[]>();
                     for (Vector vector : dataToBePredicted) {
                         tobePredictedList.add(vector.toArray());

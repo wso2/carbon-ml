@@ -212,7 +212,13 @@ $( document ).ready(function() {
                 else if (algorithmName == 'K_MEANS') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
-                }                
+                } 
+                else if (algorithmName == 'STACKED_AUTOENCODERS') {
+                	hyperParametersArray[0] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[2].value);
+                }               
             }
         },
         error: function(res) {

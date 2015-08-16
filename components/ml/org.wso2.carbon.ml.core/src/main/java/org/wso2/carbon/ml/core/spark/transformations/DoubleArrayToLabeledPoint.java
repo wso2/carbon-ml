@@ -40,6 +40,7 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
     public LabeledPoint call(double[] tokens) {
         // last index is the response value after the upstream transformations
         double response = tokens[tokens.length - 1];
+        //System.out.print(response + "\t");
         // new feature vector does not contain response variable value
         double[] features = new double[tokens.length - 1];
         for (int i = 0; i < tokens.length - 1; i++) {

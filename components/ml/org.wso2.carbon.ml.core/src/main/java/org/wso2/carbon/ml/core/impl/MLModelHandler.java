@@ -56,7 +56,7 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
-import org.wso2.carbon.ml.core.spark.models.SparkDeeplearningModel;
+import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -70,7 +70,6 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import scala.Tuple2;
-
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.
@@ -316,8 +315,7 @@ public class MLModelHandler {
             StringBuilder predictionsWithData = new StringBuilder();
             for (int i = 0; i < predictions.size(); i++) {
                 predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
-                        .append(String.valueOf(predictions.get(i)))
-                        .append(MLConstants.NEW_LINE);
+                        .append(String.valueOf(predictions.get(i))).append(MLConstants.NEW_LINE);
             }
             return predictionsWithData.toString();
         } catch (IOException e) {
@@ -362,29 +360,28 @@ public class MLModelHandler {
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
-            
-            //if this is a deeplearning model, need to set the storage location for writing
-            //then the sparkdeeplearning model will use ObjectTreeBinarySerializer to write it to the given directory
-            //the DeeplearningModel will be saved as a .bin file
-            if(model.getAlgorithmName().equalsIgnoreCase(MLConstants.DEEPLEARNING_ALGORITHM.STACKED_AUTOENCODERS.toString())){
-                log.info(storageLocation);                
-                SparkDeeplearningModel sparkDeeplearningModel = (SparkDeeplearningModel) model.getModel();
-                sparkDeeplearningModel.setStorageLocation(storageLocation);
-                model.setModel(sparkDeeplearningModel);                
+
+            // if this is a deeplearning model, need to set the storage location for writing
+            // then the sparkdeeplearning model will use ObjectTreeBinarySerializer to write it to the given directory
+            // the DeeplearningModel will be saved as a .bin file
+            if (model.getAlgorithmClass().equalsIgnoreCase(MLConstants.DEEPLEARNING)) {
+                MLDeeplearningModel mlDeeplearningModel = (MLDeeplearningModel) model.getModel();
+                mlDeeplearningModel.setStorageLocation(storageLocation);
+                model.setModel(mlDeeplearningModel);
             }
-                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-                MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(model);
-                oos.flush();
-                oos.close();
-                InputStream is = new ByteArrayInputStream(baos.toByteArray());
-                // adapter will write the model and close the stream.
-                String outPath = storageLocation + File.separator + modelName;
-                outputAdapter.write(outPath, is);
-                databaseService.updateModelStorage(modelId, storageType, outPath);
-                log.info(String.format("Successfully persisted the model [id] %s", modelId));
+            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+            MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(model);
+            oos.flush();
+            oos.close();
+            InputStream is = new ByteArrayInputStream(baos.toByteArray());
+            // adapter will write the model and close the stream.
+            String outPath = storageLocation + File.separator + modelName;
+            outputAdapter.write(outPath, is);
+            databaseService.updateModelStorage(modelId, storageType, outPath);
+            log.info(String.format("Successfully persisted the model [id] %s", modelId));
 
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
@@ -415,14 +412,14 @@ public class MLModelHandler {
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
 
-            //for the DeeplearningModel since the storageLocation is serialized
-            //so the ObjectTreeBinarySerializer will get the storageLocation and deserialize
-            MLModel model = (MLModel) ois.readObject();                        
-            
+            // for the DeeplearningModel since the storageLocation is serialized
+            // so the ObjectTreeBinarySerializer will get the storageLocation and deserialize
+            MLModel model = (MLModel) ois.readObject();
+
             log.info("Successfully retrieved model");
             return model;
-        } catch (Exception e) {                       
-            throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);            
+        } catch (Exception e) {
+            throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
         } finally {
             if (in != null) {
                 try {
@@ -441,7 +438,7 @@ public class MLModelHandler {
 
     /**
      * Publish a ML model to registry.
-     *
+     * 
      * @param tenantId Unique ID of the tenant.
      * @param userName Username of the user.
      * @param modelId Unique ID of the built ML model.
@@ -594,7 +591,7 @@ public class MLModelHandler {
                 MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
                 MLModel model = modelBuilder.build();
                 log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
-                        (double) (System.currentTimeMillis() - t1)/1000));
+                        (double) (System.currentTimeMillis() - t1) / 1000));
 
                 persistModel(id, ctxt.getModel().getName(), model);
 

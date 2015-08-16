@@ -142,6 +142,7 @@ public class MLConstants {
     public static final String BATCH_SIZE = "Batch_Size";
     public static final String LAYER_SIZES = "Layer_Sizes";
     public static final String EPOCHS = "Epochs";
+    public static final String ACTIVATION_TYPE = "Activation_Type";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
