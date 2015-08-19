@@ -140,6 +140,21 @@ public interface DatabaseService {
                                             int numberOfFeatures) throws DatabaseHandlerException;
 
     /**
+     * Returns the customized set of features of an analysis in a given range, from the alphabetically ordered set
+     * of features, of a dataset.
+     *
+     * @param tenantId          ID of the tenant
+     * @param userName          Username of the tenant
+     * @param analysisId        Unique ID of the analysis
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatabaseHandlerException
+     */
+    public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int startIndex,
+                                            int numberOfFeatures) throws DatabaseHandlerException;
+
+    /**
      * Returns the names of the features, belongs to a particular type
      * (Categorical/Numerical), of the analysis.
      *

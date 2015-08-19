@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import org.wso2.carbon.ml.rest.api.model.MLAnalysisConfigsBean;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 
 /**
@@ -185,6 +186,68 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
+     * get customized features of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/customizedFeatures")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getCustomizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
+                                          @QueryParam("offset") int offset) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<MLCustomizedFeature> customizedFeatures = mlAnalysisHandler.getCustomizedFeatures(tenantId, userName, analysisId,
+                    limit, offset);
+            return Response.ok(customizedFeatures).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving customized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * get configurations of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/configs")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getConfigs(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
+                               @QueryParam("offset") int offset) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLAnalysisConfigsBean mlAnalysisConfigsBean = new MLAnalysisConfigsBean();
+            mlAnalysisConfigsBean.setId(analysisId);
+            mlAnalysisConfigsBean.setCustomizedFeatures(mlAnalysisHandler.getCustomizedFeatures(tenantId, userName, analysisId,
+                    limit, offset));
+            mlAnalysisConfigsBean.setAlgorithmName(mlAnalysisHandler.getAlgorithmName(analysisId));
+            mlAnalysisConfigsBean.setResponseVariable(mlAnalysisHandler.getResponseVariable(analysisId));
+            mlAnalysisConfigsBean.setTrainDataFraction(mlAnalysisHandler.getTrainDataFraction(analysisId));
+            mlAnalysisConfigsBean.setHyperParameters(mlAnalysisHandler.getHyperParameters(analysisId, mlAnalysisHandler.getAlgorithmName(analysisId)));
+            return Response.ok(mlAnalysisConfigsBean).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving configurations for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * get filtered feature names of an analysis.
      */
     @GET
@@ -275,8 +338,8 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            String responseVariable = mlAnalysisHandler.getAlgorithmName(analysisId);
-            return Response.ok(responseVariable).build();
+            String algorithmName = mlAnalysisHandler.getAlgorithmName(analysisId);
+            return Response.ok(algorithmName).build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils
                     .getErrorMsg(
@@ -327,8 +390,8 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            double responseVariable = mlAnalysisHandler.getTrainDataFraction(analysisId);
-            return Response.ok(responseVariable).build();
+            double trainDataFraction = mlAnalysisHandler.getTrainDataFraction(analysisId);
+            return Response.ok(trainDataFraction).build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils
                     .getErrorMsg(
@@ -441,8 +504,8 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLHyperParameter> responseVariable = mlAnalysisHandler.getHyperParameters(analysisId, algorithmName);
-            return Response.ok(responseVariable).build();
+            List<MLHyperParameter> hyperParameters = mlAnalysisHandler.getHyperParameters(analysisId, algorithmName);
+            return Response.ok(hyperParameters).build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils
                     .getErrorMsg(

@@ -223,93 +223,45 @@ $( document ).ready(function() {
     // get and set preprocess configurations
     $.ajax({
         type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",        
+        url: serverUrl + "/api/analyses/" + analysisId + "/configs",        
         async: false,
         success : function(res) {
-            var features = res;
-            var tableData = "";
-            for (var i=0; i<features.length; i++) {
+            // set preprocess configurations
+            var features = res.customizedFeatures;
+            var featuresTableData = "";
+            for (var i=0; i < features.length; i++) {
                 
-                tableData += '<tr class="dataRow">' +
-                                '<td>' + sanitize(features[i].fieldName) + '</td>' +
-                                '<td>' + checkboxRenderer(features[i].input) + '</td>' +
-                                '<td>' + features[i].type.toString() + '</td>' +
-                                '<td>' + features[i].imputeOperation.toString() + '</td>' +
-                             '</tr>';
+                featuresTableData += '<tr class="dataRow">' +
+		                                '<td>' + sanitize(features[i].name) + '</td>' +
+		                                '<td>' + checkboxRenderer(features[i].include) + '</td>' +
+		                                '<td>' + features[i].type.toString() + '</td>' +
+		                                '<td>' + features[i].imputeOption.toString() + '</td>' +
+		                             '</tr>';
             }
-            $('#preprocess-table tbody').append(tableData);
+            $('#preprocess-table tbody').append(featuresTableData);
+            // set response variable
+            $('#responseVariable').html(sanitize(res.responseVariable));
+            // set algorithm name
+            $('#algorithm').html(sanitize(res.algorithmName));
+            // set train data fraction
+            $('#trainDataFraction').html(sanitize(res.trainDataFraction));
+            // set hyper-parameters
+            var hyperParameters = res.hyperParameters;
+            var hyperParametersTableData = "";
+            for (var i = 0; i < hyperParameters.length; i++) {
+                
+                hyperParametersTableData += '<tr class="dataRow">' +
+				                                '<td>' + sanitize(hyperParameters[i].key) + '</td>' +
+				                                '<td>' + sanitize(hyperParameters[i].value) + '</td>' +
+				                             '</tr>';
+            }
+            $('#parameters-table tbody').append(hyperParametersTableData);            
         },
         error : function(res){
             var errorText = res.responseText
             handleNotification(errorText, '#notification-area', 'warning');
         }
     });
-    // get and set response variable
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
-        dataType: 'text',
-        success: function(res) {
-            $('#responseVariable').html(sanitize(res));
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-    // get and set algorithm name
-    var algorithmName;
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
-        async : false,
-        dataType: 'text',
-        success: function(res) {
-            algorithmName = sanitize(res);
-            $('#algorithm').html(algorithmName);
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-    // get and set train data fraction
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/trainDataFraction",
-        dataType: 'text',
-        success: function(res) {
-            $('#trainDataFraction').html(sanitize(res));
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });    
-    // get and set hyper-parameters
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/hyperParameters?algorithmName=" + algorithmName,
-        async : false,
-        dataType: 'json',
-        success: function(res) {
-
-            var hyperParameters = res;
-            var tableData = "";
-            for (var i = 0; i < hyperParameters.length; i++) {
-                
-                tableData += '<tr class="dataRow">' +
-                                '<td>' + sanitize(hyperParameters[i].key) + '</td>' +
-                                '<td>' + sanitize(hyperParameters[i].value) + '</td>' +
-                             '</tr>';
-            }
-            $('#parameters-table tbody').append(tableData);
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
-    });    
 
     // draw tables with DataTables
     $('#preprocess-table').dataTable( {
