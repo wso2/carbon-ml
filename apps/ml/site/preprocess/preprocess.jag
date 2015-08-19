@@ -151,6 +151,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    
+
     // put path in application navigator
     var projectName = getParameterByName('projectName');
     $('#nav-project').text(projectName);

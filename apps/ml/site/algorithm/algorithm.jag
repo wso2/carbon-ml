@@ -172,6 +172,12 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+    
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    
 
     // set previously selected values when navigating from next page
     var setResponseVariable = "";    
