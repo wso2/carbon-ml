@@ -54,6 +54,11 @@
                 <div class="wr-project">
                     <span class="title">PROJECTS \ </span>
                 </div>
+
+                <div class="wr-select-ds">
+                    <div id="search" style="width:190px"></div>                                        
+                </div>
+
             </div>
 
             <div class="col-md-3">
@@ -87,7 +92,6 @@
                 <div class="container col-md-12 col-centered wr-content">
 
                     <div id="notification-area"></div>
-		    <div id="search"></div>
                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
 
                     <!-- delete project popup -->
@@ -392,17 +396,17 @@
     function loadDatasetsIntoSearchBox() {
     	$.ajax({
                 type: "GET",
-                url: serverUrl+"/api/datasets",
+                url: serverUrl + "/api/datasets",
                 success: function(data) {
                     var options = '<option></option>';
-                    for (var i=0; i<data.length; i++) {
+                    for (var i = 0; i < data.length; i++) {
                     	var datasetName = data[i]['name'];
-                    	options += '<option value="'+datasetName+'">'+datasetName+'</option>';
+                    	options += '<option value="' + datasetName + '">' + datasetName + '</option>';
                     }
     		        $('#search').empty();
-                    $('#search').append('<select class="search-projects col-md-2">'+options+'</select>');
+                    $('#search').append('<select class="search-projects col-md-2">' + options + '</select>');
                     $(".search-projects").select2({
-                        placeholder: "Select a Dataset",
+                        placeholder: "Select a dataset",
     			        allowClear: true
             	    });
     		        $(".search-projects").on("change", function(e) {loadProjectsOfDataset($(".search-projects").val());});

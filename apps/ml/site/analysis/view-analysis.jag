@@ -30,7 +30,7 @@
 
 <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container-fluid">
 
 <!-- header -->
 <header>
@@ -81,42 +81,45 @@
 
 
 <!-- content/body -->
-<div class="row">
-	<div class="col-lg-12 wr-secondary-bar"></div>
+<div  class="row wr-content" style="margin:0">
+        <div class="col-md-12">
+                <div id="notification-area"></div>
+                <h1 id="model-summary-title" class="title">Analysis Configurations</h1>
+        </div>
 </div>
-<div class="row">
-	<div class="col-md-12">
-		
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+<div class="row" style="margin:0;">
+    <div class="col-md-12" style="background:#f9f9f9; padding-bottom:20px">
+        <div style="background:#fff; margin-top:20px; margin-left:5px; margin-right:5px; padding:15px">
 
-            <div id="notification-area"></div>
-			<h1 id="model-summary-title" class="title">Analysis Configurations</h1>
+            <h5>Preprocess</h5>
+            <div class="wr-graph-img">
+                <table id="preprocess-table" class="analysis-conf">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Include</th>
+                            <th>Type</th>
+                            <th>Impute</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-            <div class="col-md-12 wr-graph-content">
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin:0; background:#f9f9f9">
+
+        <div style="background:#f9f9f9 ">
+        <div class="col-md-6 " style="background:#f9f9f9; padding-bottom:20px ">
+            <div style="background:#fff; margin-left:5px; padding:10px; ">
             
-                <div class="col-md-10 wr-graph-element">
-                    <h5>Preprocess</h5>
-                    <div class="wr-graph-img">
-                        <table id="preprocess-table" class="analysis-conf">
-                            <thead>
-                                <tr>
-                                    <th>Feature</th>
-                                    <th>Include</th>
-                                    <th>Type</th>
-                                    <th>Impute</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>     
-                    </div>
-                </div>
-
-                <div class="col-md-5 wr-graph-element">
                     <h5>Algorithm</h5>
-                    <div class="wr-graph-img">
-                        <table id="algorithm-table" class="analysis-conf">
+                    <div>
+                        <table id="algorithm-table" class="analysis-conf ">
                             <thead>
                                 <tr>
                                     <th>Configuration</th>
@@ -126,22 +129,28 @@
                             <tbody>
                                 <tr>
                                     <td>Algorithm</td>
-                                    <td id="algorithm"></td>
+                                    <td id="algorithm">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>Response variable</td>
-                                    <td id="responseVariable"></td>
+                                    <td id="responseVariable">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>Train data fraction</td>
-                                    <td id="trainDataFraction"></td>
+                                    <td id="trainDataFraction">&nbsp;</td>
                                 </tr>                                
                             </tbody>
                         </table>                   
                     </div>
-                </div>  
-                
-                <div class="col-md-5 wr-graph-element">
+            
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6" style="background:#f9f9f9; padding-bottom:20px ">
+            <div style="background:#fff; margin-right:5px; padding:10px; ">
+            
                     <h5>Parameters</h5>
                     <div class="wr-graph-img">
                         <table id="parameters-table" class="analysis-conf">
@@ -154,14 +163,13 @@
                             <tbody></tbody>
                         </table>                   
                     </div>
-                </div>
             
             </div>
-		</div>
-		<!-- /content -->
+        </div>
+        </div>
+        
+        <br style="clear:both " />
 
-
-	</div>
 </div>
 <!-- /content/body -->
 
