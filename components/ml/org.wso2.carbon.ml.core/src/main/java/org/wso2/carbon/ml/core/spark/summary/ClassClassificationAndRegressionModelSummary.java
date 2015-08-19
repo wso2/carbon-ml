@@ -33,7 +33,6 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
 
     private static final long serialVersionUID = 5035275752959356840L;
     private double error;
-    private List<PredictedVsActual> predictedVsActuals;
     private List<TestResultDataPoint> testResultDataPointsSample;
     private List<FeatureImportance> featureImportance;
     private String algorithm;
@@ -62,20 +61,6 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
      */
     public void setError(double error) {
         this.error = error;
-    }
-
-    /**
-     * @return Returns predicted vs. actual labels
-     */
-    public List<PredictedVsActual> getPredictedVsActuals() {
-        return predictedVsActuals;
-    }
-
-    /**
-     * @param predictedVsActuals Sets predicted vs. actual labels
-     */
-    public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
-        this.predictedVsActuals = predictedVsActuals;
     }
 
     /**

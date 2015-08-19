@@ -36,7 +36,6 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private String roc;
     private double auc;
     private  List<FeatureImportance> featureImportance;
-    private List<PredictedVsActual> predictedVsActuals;
     private List<TestResultDataPoint> testResultDataPointsSample;
     private String algorithm;
     private String[] features;
@@ -64,20 +63,6 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      */
     public void setAuc(double auc) {
         this.auc = auc;
-    }
-
-    /**
-     * @return Returns a list of predicted vs. actual values
-     */
-    public List<PredictedVsActual> getPredictedVsActuals() {
-        return predictedVsActuals;
-    }
-
-    /**
-     * @param predictedVsActuals Sets predicted vs. actual values
-     */
-    public void setPredictedVsActuals(List<PredictedVsActual> predictedVsActuals) {
-        this.predictedVsActuals = predictedVsActuals;
     }
 
     /**

@@ -81,7 +81,7 @@ public class SparkModelUtils {
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
-        for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.takeOrdered(sampleSize)) {
+        for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.take(sampleSize)) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
@@ -92,7 +92,7 @@ public class SparkModelUtils {
         }
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
-        for (LabeledPoint labeledPoint : testingData.takeOrdered(sampleSize)) {
+        for (LabeledPoint labeledPoint : testingData.take(sampleSize)) {
             if(labeledPoint != null && labeledPoint.features() != null) {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
@@ -117,7 +117,6 @@ public class SparkModelUtils {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
         probabilisticClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
-        probabilisticClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // generate binary classification metrics
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoresAndLabels));
         // store AUC
@@ -150,7 +149,7 @@ public class SparkModelUtils {
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
-        for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.takeOrdered(sampleSize)) {
+        for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.take(sampleSize)) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
@@ -158,7 +157,7 @@ public class SparkModelUtils {
         }
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
-        for (LabeledPoint labeledPoint : testingData.takeOrdered(sampleSize)) {
+        for (LabeledPoint labeledPoint : testingData.take(sampleSize)) {
             if(labeledPoint != null && labeledPoint.features() != null) {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
@@ -183,7 +182,6 @@ public class SparkModelUtils {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
         regressionModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
-        regressionModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate mean squared error (MSE)
         double meanSquaredError = new JavaDoubleRDD(predictionsAndLabels.map(
                 new Function<Tuple2<Double, Double>, Object>() {
@@ -212,7 +210,7 @@ public class SparkModelUtils {
                 ClassClassificationAndRegressionModelSummary();
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
-        for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.takeOrdered(sampleSize)) {
+        for (Tuple2<Double, Double> scoreAndLabel : predictionsAndLabels.take(sampleSize)) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(scoreAndLabel._1());
             predictedVsActual.setActual(scoreAndLabel._2());
@@ -220,7 +218,7 @@ public class SparkModelUtils {
         }
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
-        for (LabeledPoint labeledPoint : testingData.takeOrdered(sampleSize)) {
+        for (LabeledPoint labeledPoint : testingData.take(sampleSize)) {
             if(labeledPoint != null && labeledPoint.features() != null) {
                 double[] rowFeatures = labeledPoint.features().toArray();
                 features.add(rowFeatures);
@@ -245,7 +243,6 @@ public class SparkModelUtils {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
         classClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
-        classClassificationModelSummary.setPredictedVsActuals(predictedVsActuals);
         // calculate test error
         double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
             private static final long serialVersionUID = -3063364114286182333L;
