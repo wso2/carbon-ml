@@ -117,6 +117,12 @@ $( document ).ready(function() {
 	      }
 	});	
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
 	$('.wr-validation-summary').hide();
 	$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
 	

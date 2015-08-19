@@ -138,6 +138,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    
+
     // put path in application navigator    
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);    

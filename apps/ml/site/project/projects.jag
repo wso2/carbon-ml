@@ -163,6 +163,12 @@
             }
         });
 
+        scrollVibrateFix();
+        
+        $(window).resize(function() {
+            scrollVibrateFix();
+        });        
+
         $("[data-toggle=popover]").popover();
 
         $(".ctrl-asset-type-switcher").popover({
