@@ -12,7 +12,7 @@
 		will be used for summary statistics calculation and visualization. -->
 	<SummaryStatisticsSettings>
 		<HistogramBins>20</HistogramBins>
-		<CategoricalThreshold>0.01</CategoricalThreshold>
+		<CategoricalThreshold>80</CategoricalThreshold>
 		<SampleSize>10000</SampleSize>
 	</SummaryStatisticsSettings>
 

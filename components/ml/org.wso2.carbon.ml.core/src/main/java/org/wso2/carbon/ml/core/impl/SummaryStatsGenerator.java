@@ -63,6 +63,7 @@ public class SummaryStatsGenerator implements Runnable {
     private int[] unique;
     private int[] missing;
     private int[] stringCellCount;
+    private int[] decimalCellCount;
     // Array containing data-type of each feature in the data-set.
     private String[] type;
     // Map containing indices and names of features of the data-set.
@@ -96,6 +97,7 @@ public class SummaryStatsGenerator implements Runnable {
             this.columnData = samplePoints.getSamplePoints();
             this.missing = samplePoints.getMissing();
             this.stringCellCount = samplePoints.getStringCellCount();
+            this.decimalCellCount = samplePoints.getDecimalCellCount();
             int noOfFeatures = this.headerMap.size();
             // Initialize the lists.
             this.unique = new int[noOfFeatures];
@@ -156,26 +158,28 @@ public class SummaryStatsGenerator implements Runnable {
         }
         
         double categoricalThreshold = summarySettings.getCategoricalThreshold();
-        double cellValue;
         // Iterate through each column.
         for (int currentCol = 0; currentCol < this.headerMap.size(); currentCol++) {
             if (this.numericDataColumnPositions.contains(currentCol)) {
 
                 // Create a unique set from the column.
-                Set<String> uniqueSet = new HashSet<String>(this.columnData.get(currentCol));
-                DescriptiveStatistics stats = new DescriptiveStatistics();
-
-                for (String string : uniqueSet) {
-                    cellValue = Double.parseDouble(string);
-                    stats.addValue(cellValue);
+                List<String> data = this.columnData.get(currentCol);
+                Set<String> uniqueSet = new HashSet<String>(data);
+                int multipleOccurences = 0;
+                
+                for (String uniqueValue : uniqueSet) {
+                    int frequency = Collections.frequency(data, uniqueValue);
+                    if (frequency > 1) {
+                        multipleOccurences++;
+                    }
                 }
-
-                // skewness is a measure of asymmetry of a dataset. If skewness is low, dataset is concentrated around mean.
-                if (Double.isNaN(stats.getSkewness()) || Math.abs(stats.getSkewness()) < categoricalThreshold) {
-                    // Change the data type to categorical.
+                
+                // if a column has at least one decimal value, then it can't be categorical.
+                // if a feature has more than X% of repetitive distinct values, then that feature can be a categorical
+                // one. X = categoricalThreshold
+                if (decimalCellCount[currentCol] == 0
+                        && (multipleOccurences / uniqueSet.size()) * 100 >= categoricalThreshold) {
                     this.type[currentCol] = FeatureType.CATEGORICAL;
-                    this.numericDataColumnPositions.remove(new Integer(currentCol));
-                    this.stringDataColumnPositions.add(currentCol);
                 }
 
             }
@@ -247,7 +251,6 @@ public class SummaryStatsGenerator implements Runnable {
      * @param noOfIntervals Number of intervals to be calculated for continuous data
      */
     protected List<SortedMap<?, Integer>> calculateNumericColumnFrequencies() {
-        double categoricalThreshold = summarySettings.getCategoricalThreshold();
         int noOfIntervals = summarySettings.getHistogramBins();
         Iterator<Integer> numericColumns = this.numericDataColumnPositions.iterator();
         int currentCol;
@@ -258,9 +261,7 @@ public class SummaryStatsGenerator implements Runnable {
             Set<String> uniqueSet = new HashSet<String>(this.columnData.get(currentCol));
             // If the unique values are less than or equal to maximum-category-limit.
             this.unique[currentCol] = uniqueSet.size();
-            if (this.unique[currentCol] <= categoricalThreshold) {
-                // Change the data type to categorical.
-                this.type[currentCol] = FeatureType.CATEGORICAL;
+            if (FeatureType.CATEGORICAL.equals(this.type[currentCol])) {
                 // Calculate the category frequencies.
                 SortedMap<String, Integer> frequencies = new TreeMap<String, Integer>();
                 for (String uniqueValue : uniqueSet) {
