@@ -1262,3 +1262,17 @@ a.cu-level3-btn:hover {
 .wr-graph-img .filter-md {
 	text-align: left;
 } 
+
+.wr-select-ds {
+	float:left;
+	padding:13px 0px 15px 15px;
+}
+
+#search .select2  {
+	width:250px !important;
+	font-weight:100 !important;
+}
+
+.select2-container--default .select2-selection--single {
+	border-radius:0px !important;	
+}
