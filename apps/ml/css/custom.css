@@ -1276,3 +1276,11 @@ a.cu-level3-btn:hover {
 .select2-container--default .select2-selection--single {
 	border-radius:0px !important;	
 }
+
+.wr-graph-element-title  h5 {
+	font-size:18px;
+	font-weight:100;
+	margin-bottom:25px;
+	padding-bottom:10px;
+	border-bottom:1px solid #e4e4e4;
+}

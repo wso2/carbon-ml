@@ -90,7 +90,7 @@
 
 <div class="row" style="margin:0;">
     <div class="col-md-12" style="background:#f9f9f9; padding-bottom:20px">
-        <div style="background:#fff; margin-top:20px; margin-left:5px; margin-right:5px; padding:15px">
+        <div style="background:#fff; margin-top:20px; margin-left:5px; margin-right:5px; padding:15px" class="wr-graph-element-title">
 
             <h5>Preprocess</h5>
             <div class="wr-graph-img">
@@ -114,8 +114,8 @@
 <div class="row" style="margin:0; background:#f9f9f9">
 
         <div style="background:#f9f9f9 ">
-        <div class="col-md-6 " style="background:#f9f9f9; padding-bottom:20px ">
-            <div style="background:#fff; margin-left:5px; padding:10px; ">
+        <div class="col-md-6 " style="background:#f9f9f9; padding-bottom:20px">
+            <div style="background:#fff; margin-left:5px; padding:10px;" class="wr-graph-element-title">
             
                     <h5>Algorithm</h5>
                     <div>
@@ -148,8 +148,8 @@
 
 
 
-        <div class="col-md-6" style="background:#f9f9f9; padding-bottom:20px ">
-            <div style="background:#fff; margin-right:5px; padding:10px; ">
+        <div class="col-md-6" style="background:#f9f9f9; padding-bottom:20px">
+            <div style="background:#fff; margin-right:5px; padding:10px;" class="wr-graph-element-title">
             
                     <h5>Parameters</h5>
                     <div class="wr-graph-img">
