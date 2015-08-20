@@ -297,7 +297,7 @@ $( document ).ready(function() {
 	if (algorithmName == 'STACKED_AUTOENCODERS') {
 		loadInputFeaturesCountAndCreateDeepNetwork();
     } else {    	
-		$("#dl-network").closest("div.wr-graph-element").remove();
+		$("#dl-network").closest("div.wr-content").remove();
 		//$("#col-md-12 col-centered wr-graph-content").children().remove();
     }
 	
@@ -408,7 +408,13 @@ $( document ).ready(function() {
 		var responseVariable = "";
 		var classCount = -1;
 		var hidLayerArr = [];
-		
+
+		var hidLayerText = document.getElementById('Layer_Sizes').value;
+		var hidLayerTokens = hidLayerText.split(",");	    		
+		for(var i=0; i<hidLayerTokens.length; i++){
+			hidLayerArr[i] = parseInt(hidLayerTokens[i]);
+    	}
+    	
     	$.ajax({
         	type: "GET",
         	url: serverUrl+"/api/analyses/"+analysisId+"/features",
@@ -416,16 +422,7 @@ $( document ).ready(function() {
         	dataType: 'json',
         	success: function(res) {
 	        	var featuresSet = res;
-            	featuresCount = featuresSet.length;
-	    		//set up deeplearning visualization
-	    		//$("#col-md-12 wr-graph-content").css({margin: 0});
-	    		var hidLayerText = document.getElementById('Layer_Sizes').value;
-	    		var hidLayerTokens = hidLayerText.split(",");	    		
-	    		for(var i=0; i<hidLayerTokens.length; i++){
-					hidLayerArr[i] = parseInt(hidLayerTokens[i]);
-		    	}
-		    	
-	    		    		 	            
+            	featuresCount = featuresSet.length;	    				    		    		    		 	            
         	},
         	error: function(res) {
             	var errorText = res.responseText;
