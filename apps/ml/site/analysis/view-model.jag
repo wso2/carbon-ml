@@ -185,6 +185,15 @@
                     </div>
                 </div>                          
             
+            <div class="row">
+				<div class="col-md-12">
+            		<div class="wr-graph-element gr03">				                          
+                    	<h5>Deep Network Visualization</h5>                                        
+                    	<div class="wr-graph-img">
+                        	<div id="dl-network"></div>
+                    	</div>
+            		</div>
+            	</div>
             </div>
 		</div>
 		<!-- /content -->
@@ -460,6 +469,14 @@ $( document ).ready(function() {
         }
     });
 
+    if (algorithm == 'STACKED_AUTOENCODERS') {
+		loadInputFeaturesCountAndCreateDeepNetwork();
+    } else {    	
+		$("#dl-network").closest("div.wr-content").remove();
+		//$("#col-md-12 col-centered wr-graph-content").children().remove();
+    }
+
+    
     $('#back-link').on('click', function(e){
         e.preventDefault();
 
@@ -721,6 +738,259 @@ function labelPredictedSvm(actualValue) {
         actual = 1;
     }
     return actual;
+}
+
+function loadInputFeaturesCountAndCreateDeepNetwork() {
+	var featuresCount = features.length;
+	var responseVariable = "";
+	var classCount = -1;
+	var hidLayerArr = [];
+
+	
+	/*
+	$.ajax({
+    	type: "GET",
+    	url: serverUrl+"/api/analyses/"+analysisId+"/features",
+    	async : false,
+    	dataType: 'json',
+    	success: function(res) {
+        	var featuresSet = res;
+        	featuresCount = featuresSet.length;	    				    		    		    		 	            
+    	},
+    	error: function(res) {
+        	var errorText = res.responseText;
+        	handleNotification(errorText, '#notification-area', 'warning');
+    	}
+	});*/	
+
+	$.ajax({
+    	type: "GET",
+    	url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters",
+    	async : false,
+    	dataType: 'json',
+    	success: function(res) {        	
+    		var hidLayerText = "";
+        	for(var i = 0; i < res.length; i++){
+				if(res[i]["key"]=="Layer_Sizes"){
+					hidLayerText = res[i]["value"];
+					break;
+				}
+            }
+        	
+        	var hidLayerTokens = hidLayerText.split(",");	    		
+        	for(var i=0; i<hidLayerTokens.length; i++){
+        		hidLayerArr[i] = parseInt(hidLayerTokens[i]);
+        	}				    		    		    		 	            
+    	},
+    	error: function(res) {
+        	var errorText = res.responseText;
+        	handleNotification(errorText, '#notification-area', 'warning');
+    	}
+	});	
+
+	
+	$.ajax({
+    	type: "GET",
+    	url: serverUrl+"/api/analyses/"+analysisId+"/responseVariables",
+    	async : false,
+    	dataType: 'text',
+    	success: function(res) {
+    		responseVariable = res;  			    	        		           
+    	},
+    	error: function(res) {
+        	var errorText = res.responseText;
+        	handleNotification(errorText, '#notification-area', 'warning');	                	
+    	}
+	});
+	
+	$.ajax({
+    	type: "GET",
+    	url: serverUrl+"/api/datasets/"+datasetId+"/stats?feature="+responseVariable,
+    	async : false,
+    	dataType: 'json',
+    	success: function(res3) {
+        	classCount = res3[0]["unique"];	        	
+			drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount); 	            
+    	},
+    	error: function(res3) {
+        	var errorText = res3.responseText;
+        	handleNotification(errorText, '#notification-area', 'warning');	                	
+    	}
+	});
+	drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount);
+		  
+		    
+}
+
+function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
+	d3.select(cssClass).attr("align","center");
+	$(cssClass).empty();
+	//allCounts keep the node counts of all layers
+	var allCounts = [inCount];
+	var allCounts = allCounts.concat(hiddenCounts);
+	allCounts.push(outCount);
+
+	// if the height of an element is more than this,
+	// set height to this value
+	var maxHeightThreshold = 750;
+	var minHeightThreshold = 50; 
+	//to get min and max values of arrays
+	Array.prototype.min = function() {
+		  return Math.min.apply(null, this);
+	};
+	Array.prototype.max = function() {
+		  return Math.max.apply(null, this);
+	};
+
+	var rectHeights = [];
+	var rectColors = [];
+	var minCount = allCounts.slice(1,allCounts.length-1).min();
+	for(var i=0; i<allCounts.length; i++){
+		rectHeights[i] = parseInt(allCounts[i]*100/minCount);
+		if(rectHeights[i] > maxHeightThreshold){
+			rectHeights[i] = maxHeightThreshold;
+		}
+		if(rectHeights[i] < minHeightThreshold){
+			rectHeights[i] = minHeightThreshold;
+		}
+		if(i==0 || i == allCounts.length-1){
+			rectColors[i] = "red";
+		} else {
+			rectColors[i] = "green";
+		}
+	}	
+
+	var canvasWidth = 500;
+	var spacingY = 10;
+
+	//set the canvas size accordingly
+	var canvasHeight;
+	if(rectHeights.max()<maxHeightThreshold){
+		canvasHeight = rectHeights.max() + (spacingY * 2);
+	} else {
+		canvasHeight = maxHeightThreshold;
+	}
+
+	//create the canvas
+	var canvas = d3.select(cssClass)
+					.append("svg")
+					.attr("width", canvasWidth)
+					.attr("height", canvasHeight);
+
+	//creating shape elements (rectangles) to represent different layers
+	var startX = 10;
+	var widthRect = 50;
+	var widthSpacing = 50;
+	var currX = startX;
+	for(var i=0; i<allCounts.length; i++){
+		var posY = (canvasHeight - rectHeights[i])/2;
+		var rect = canvas.append("rect")
+				.attr("x", currX)
+				.attr("y", posY)
+				.attr("width", 50)
+				.attr("height", rectHeights[i])
+				.attr("fill", rectColors[i]);
+
+		canvas.append("text")
+		  .style("fill", "white")
+		  .style("font-size", "25px")
+		  .attr("dy", ".35em")
+		  .attr("text-anchor", "middle")
+		  .attr("transform", "translate(" + (currX + widthRect/2).toString() 
+				  + "," + (posY + rectHeights[i]/2).toString() +") rotate(90)")
+		  .text(allCounts[i].toString());
+		currX = currX + widthRect + widthSpacing;
+	}
+
+	//to move background elements to the background
+	d3.selection.prototype.moveToBack = function() { 
+	    return this.each(function() { 
+	        var firstChild = this.parentNode.firstChild; 
+	        if (firstChild) { 
+	            this.parentNode.insertBefore(this, firstChild); 
+	        } 
+	    }); 
+	};
+	
+	//drawing the arrow which goes from inputs to outputs
+	var arrowHeadWidth = 20;
+	var arrowHeadHeight = 20;
+	
+	var line = canvas.append("line")
+    			.attr("x1", startX + widthRect)
+    			.attr("y1", canvasHeight/2)
+    			.attr("x2", currX - widthRect - widthSpacing - arrowHeadWidth)
+    			.attr("y2", canvasHeight/2)
+    			.attr("stroke-width", 6)
+    			.attr("stroke", "green");
+
+	var arrowStartX = currX - widthRect - widthSpacing;
+	var arrowStartY = canvasHeight/2;
+	var pathString = "M " + arrowStartX.toString() + " " + arrowStartY.toString() + " "
+	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight/2)).toString() + " "
+	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight/2)).toString() + " "
+	+ "L " + arrowStartX.toString() + " " + arrowStartY.toString();
+	
+	var arrowHead = canvas.append("svg:path")
+    .attr("d",pathString)
+    .style("stroke-width", 1)
+    .style("stroke", "green")
+    .style("fill", "green");
+
+	line.moveToBack();
+	arrowHead.moveToBack();
+	
+	//add header text
+	var textPosY = rectHeights.max() + spacingY + 50;
+	var fontSize = "15px";
+	data = ["Inputs", "Hidden Layers", "Outputs"];
+
+	//added Input text as two text elements because 
+	//<br/> doesn't render in SVG
+	var in1Text = canvas.append("text")
+	  .attr("x", startX + widthRect/2)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[0]);
+
+	var in2Text = canvas.append("text")
+	  .attr("x", startX + widthRect/2)
+	  .attr("y", textPosY + 20)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text("(Features)");
+
+	//added Output text as two text elements because 
+	//<br/> doesn't render in SVG
+	var out1Text = canvas.append("text")
+	  .attr("x", currX - widthSpacing - widthRect/2)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[2]);
+
+	var out2Text = canvas.append("text")
+	  .attr("x", currX - widthSpacing - widthRect/2)
+	  .attr("y", textPosY + 20)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text("(Classes)");
+
+	//hidden layer text  
+	var hiddenTextPosX = (startX + widthRect/2 + (currX - widthSpacing - widthRect/2 - (startX + widthRect/2)))/2;
+	var hiddenText = canvas.append("text")
+	  .attr("x", hiddenTextPosX)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[1]);
+
 }
 
 </script>
