@@ -212,17 +212,37 @@ $( document ).ready(function() {
             window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
         }
         else {
+            var noOfModels;
+            // get number of models of this analysis
             $.ajax({
-                type: 'DELETE',
-                url: serverUrl + "/api/analyses/" + analysisId,
-                success: function(res){
-                    window.location.href = '../project/projects.jag';
+                type: 'GET',
+                url: serverUrl + "/api/analyses/" + analysisId + "/models",
+                async: false,
+                success: function(res) {
+                    noOfModels = res.length;
                 },
                 error: function(res){
                     var errorText = res.responseText
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
-            });            
+            });
+            // delete analysis on CANCEL only if there are no models in this analysis
+            if(noOfModels == 0) {                
+                $.ajax({
+                    type: 'DELETE',
+                    url: serverUrl + "/api/analyses/" + analysisId,
+                    success: function(res){
+                        window.location.href = '../project/projects.jag';
+                    },
+                    error: function(res){
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });                            
+            }
+            else {
+                window.location.href = '../project/projects.jag';
+            }
         }
     });
 
