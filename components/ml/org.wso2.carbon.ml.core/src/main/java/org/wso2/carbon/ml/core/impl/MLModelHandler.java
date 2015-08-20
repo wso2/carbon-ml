@@ -49,6 +49,7 @@ import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
 import org.wso2.carbon.ml.core.exceptions.*;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -415,6 +416,11 @@ public class MLModelHandler {
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
+            String outPath = storageLocation + File.separator + modelName;
+
+            if(AlgorithmType.RECOMMENDATION.getValue().equals(model.getAlgorithmClass())) {
+                ((MLMatrixFactorizationModel) model.getModel()).setOutPath(outPath);
+            }
 
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
@@ -425,7 +431,6 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelName;
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));
