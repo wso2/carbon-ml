@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.core.utils;
 
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -42,13 +43,13 @@ public class ThreadExecutor {
     }
 
     public void execute(Runnable job) {
-        executor.execute(job);
+        executor.submit(job);
     }
-
+    
     public void executeAll(Runnable[] jobs) {
         for (Runnable job : jobs) {
 
-            executor.execute(job);
+            executor.submit(job);
         }
     }
 

@@ -35,7 +35,7 @@
         var errorMessage = "An error occured while authenticating user: " + username+ " error message: "+e.message;        
         log.error(errorMessage);
 
-        message = errorMessage;
+        message = "An error occured while authenticating user " + username + ".";
         statusCode = 500;
         
     } finally{

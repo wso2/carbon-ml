@@ -22,8 +22,10 @@ import java.util.Properties;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
+import org.wso2.carbon.ml.commons.domain.config.Storage;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 public class MLIOFactoryTest {
     private MLIOFactory ioFactory;
@@ -33,7 +35,6 @@ public class MLIOFactoryTest {
         Properties configuration = new Properties();
         configuration.put("hdfs.input", "org.wso2.carbon.ml.core.impl.HdfsInputAdapter");
         configuration.put("hdfs.output", "org.wso2.carbon.ml.core.impl.HdfsOutputAdapter");
-        configuration.put("target.home", "/tmp");
         ioFactory = new MLIOFactory(configuration);
     }
 
@@ -60,6 +61,10 @@ public class MLIOFactoryTest {
 
     @Test
     public void getTargetPath() {
+        Storage storage = new Storage();
+        storage.setStorageDirectory("/tmp");
+        storage.setStorageType("file");
+        MLCoreServiceValueHolder.getInstance().setDatasetStorage(storage);
         String path = ioFactory.getTargetPath("test-ml.csv");
         Assert.assertEquals(path, "/tmp/test-ml.csv");
     }

@@ -1101,6 +1101,14 @@ a.btn-opr-cancel {
 	-webkit-filter: opacity(50%)    
 }
 
+.tab-link-disabled {
+	pointer-events: none;
+}
+/* remove dotted link borders on Firefox */
+a:focus { 
+    outline: none; 
+}
+
 /* graphs */
 .wr-graph-content {
 	padding:10px 10px;
@@ -1153,6 +1161,10 @@ a.btn-opr-cancel {
 .gr05 {
 	min-width:750px;
 	min-height:750px;
+}
+/* analysis configurations tables */
+.analysis-conf td {
+	text-align: left;
 }
 
 .wr-desc-chart {
@@ -1250,3 +1262,25 @@ a.cu-level3-btn:hover {
 .wr-graph-img .filter-md {
 	text-align: left;
 } 
+
+.wr-select-ds {
+	float:left;
+	padding:13px 0px 15px 15px;
+}
+
+#search .select2  {
+	width:250px !important;
+	font-weight:100 !important;
+}
+
+.select2-container--default .select2-selection--single {
+	border-radius:0px !important;	
+}
+
+.wr-graph-element-title  h5 {
+	font-size:18px;
+	font-weight:100;
+	margin-bottom:25px;
+	padding-bottom:10px;
+	border-bottom:1px solid #e4e4e4;
+}

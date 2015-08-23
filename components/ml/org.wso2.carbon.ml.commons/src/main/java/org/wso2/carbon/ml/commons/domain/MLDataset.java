@@ -117,7 +117,7 @@ public class MLDataset {
     }
 
     public String getDataTargetType() {
-        return dataTargetType == null ? dataSourceType : dataTargetType;
+        return dataTargetType;
     }
 
     public void setDataTargetType(String dataTargetType) {

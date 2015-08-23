@@ -69,11 +69,11 @@
 		
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
-            <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li class="active"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
         </ul>
 	</div>
 </div>
@@ -137,6 +137,12 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
+
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    
 
     // put path in application navigator    
     $('#nav-project').text(projectName);
@@ -213,17 +219,37 @@ $( document ).ready(function() {
             window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
         }
         else {
+            var noOfModels;
+            // get number of models of this analysis
             $.ajax({
-                type: 'DELETE',
-                url: serverUrl + "/api/analyses/" + analysisId,
-                success: function(res){
-                    window.location.href = '../project/projects.jag';
+                type: 'GET',
+                url: serverUrl + "/api/analyses/" + analysisId + "/models",
+                async: false,
+                success: function(res) {
+                    noOfModels = res.length;
                 },
                 error: function(res){
-                var errorText = res.responseText
+                    var errorText = res.responseText
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
+            // delete analysis on CANCEL only if there are no models in this analysis
+            if(noOfModels == 0) {                
+                $.ajax({
+                    type: 'DELETE',
+                    url: serverUrl + "/api/analyses/" + analysisId,
+                    success: function(res){
+                        window.location.href = '../project/projects.jag';
+                    },
+                    error: function(res){
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });                            
+            }
+            else {
+                window.location.href = '../project/projects.jag';
+            }
         }
     });
 });

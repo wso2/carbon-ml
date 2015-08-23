@@ -35,18 +35,13 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
 
 public class MLUtils {
@@ -69,6 +64,13 @@ public class MLUtils {
             JavaRDD<String> lines;
             // parse lines in the dataset
             lines = sparkContext.textFile(path);
+            // validates the data format of the file
+            String firstLine = lines.first();
+            if (!firstLine.contains("" + dataFormat.getDelimiter())) {
+                throw new MLMalformedDatasetException(String.format(
+                        "File content does not match the data format. [First Line] %s [Data Format] %s", firstLine,
+                        dataType));
+            }
             return getSamplePoints(sampleSize, containsHeader, headerMap, columnData, dataFormat, lines);
 
         } catch (Exception e) {
@@ -77,6 +79,11 @@ public class MLUtils {
         }
     }
 
+    public static String getFirstLine(String filePath) {
+        JavaSparkContext sparkContext = MLCoreServiceValueHolder.getInstance().getSparkContext();
+        return sparkContext.textFile(filePath).first();
+    }
+    
     /**
      * Generate a random sample of the dataset using Spark.
      */
@@ -111,7 +118,7 @@ public class MLUtils {
         JavaRDD<String> lines;
         String tableSchema = extractTableSchema(tableName, tenantId);
         SQLContext sqlCtx = new SQLContext(sparkContext);
-        sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.util.AnalyticsRelationProvider "
+        sqlCtx.sql("CREATE TEMPORARY TABLE ML_REF USING org.wso2.carbon.analytics.spark.core.sources.AnalyticsRelationProvider "
                 + "OPTIONS ("
                 + "tenantId \""
                 + tenantId
@@ -123,7 +130,8 @@ public class MLUtils {
                 + tableSchema + "\"" + ")");
 
         DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
-        JavaRDD<Row> rows = dataFrame.javaRDD();
+        // Additional auto-generated column "_timestamp" needs to be dropped because it is not in the schema.
+        JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
         lines = rows.map(new RowsToLines(CSVFormat.RFC4180.getDelimiter() + ""));
         return lines;
     }
@@ -133,6 +141,7 @@ public class MLUtils {
         int featureSize;
         int[] missing;
         int[] stringCellCount;
+        int[] decimalCellCount;
         // take the first line
         String firstLine = lines.first();
         // count the number of features
@@ -147,6 +156,7 @@ public class MLUtils {
 
         missing = new int[featureSize];
         stringCellCount = new int[featureSize];
+        decimalCellCount = new int[featureSize];
         if (sampleSize >= 0 && featureSize > 0) {
             sampleSize = sampleSize / featureSize;
         }
@@ -181,6 +191,9 @@ public class MLUtils {
                         // check whether a column value is a string
                         if (!NumberUtils.isNumber(columnValues[currentCol])) {
                             stringCellCount[currentCol]++;
+                        } else if (columnValues[currentCol].indexOf('.') != -1) {
+                            // if it is a number and has the decimal point
+                            decimalCellCount[currentCol]++;
                         }
                     }
                 } else {
@@ -195,6 +208,7 @@ public class MLUtils {
         samplePoints.setSamplePoints(columnData);
         samplePoints.setMissing(missing);
         samplePoints.setStringCellCount(stringCellCount);
+        samplePoints.setDecimalCellCount(decimalCellCount);
         return samplePoints;
     }
 
@@ -356,14 +370,13 @@ public class MLUtils {
      * @return Dataset Version Object
      */
     public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,
-            String version, String targetPath, SamplePoints samplePoints) {
+            String version, String targetPath) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);
         valueSet.setName(name);
         valueSet.setVersion(version);
         valueSet.setTargetPath(targetPath);
-        valueSet.setSamplePoints(samplePoints);
         valueSet.setUserName(userName);
         return valueSet;
     }
@@ -432,6 +445,11 @@ public class MLUtils {
         String[] values = line.split("" + format.getDelimiter());
         return values.length;
     }
+    
+    public static String[] getFeatures(String line, CSVFormat format) {
+        String[] values = line.split("" + format.getDelimiter());
+        return values;
+    }
 
     /**
      * Applies the discard filter to a JavaRDD
@@ -447,7 +465,7 @@ public class MLUtils {
         String columnSeparator = String.valueOf(delimiter);
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
         JavaRDD<String> data = lines.filter(headerFilter);
-        Pattern pattern = Pattern.compile(columnSeparator);
+        Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens(pattern);
         JavaRDD<String[]> tokens = data.map(lineToTokens);
 
@@ -485,51 +503,6 @@ public class MLUtils {
     }
 
     /**
-     * Utility method to get the link to model build result page
-     *
-     * @param context ML model configuration context
-     * @return link to model build result page
-     * @throws DatabaseHandlerException
-     */
-    public static String getLink(MLModelConfigurationContext context, String status) throws DatabaseHandlerException {
-
-        MLModelData mlModelData = context.getModel();
-        long modelId = mlModelData.getId();
-        String modelName = mlModelData.getName();
-        long analysisId = mlModelData.getAnalysisId();
-        int tenantId = mlModelData.getTenantId();
-        String userName = mlModelData.getUserName();
-
-        MLAnalysis analysis = null;
-        String analysisName = null;
-        MLProject mlProject = null;
-        String projectName = null;
-        long datasetId;
-        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        try {
-            analysis = databaseService.getAnalysis(tenantId, userName, analysisId);
-            analysisName = analysis.getName();
-            long projectId = analysis.getProjectId();
-
-            mlProject = databaseService.getProject(tenantId, userName, projectId);
-            projectName = mlProject.getName();
-            datasetId = mlProject.getDatasetId();
-        } catch (DatabaseHandlerException e) {
-            throw new DatabaseHandlerException("Failed to generate link for model ID: " + modelId + ". Cause: " + e, e);
-        }
-        ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
-                .getConfigurationContextService();
-        String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
-
-        String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
-        if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
-            link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
-                    "analysisName=" + analysisName + "&modelName=" + modelName +"&fromCompare=false";
-        }
-        return link;
-    }
-    
-    /**
      * Utility method to convert a String array to CSV/TSV row string
      *
      * @param array String array to be converted
@@ -543,5 +516,15 @@ public class MLUtils {
             arrayString.append(delimiter);
         }
         return arrayString.toString();
+    }
+    
+    /**
+     * Generates a pattern to represent CSV or TSV format.
+     * 
+     * @param delimiter "," or "\t"
+     * @return Pattern
+     */
+    public static Pattern getPatternFromDelimiter(String delimiter) {
+        return Pattern.compile(delimiter + "(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
     }
 }

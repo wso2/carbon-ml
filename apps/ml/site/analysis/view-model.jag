@@ -274,6 +274,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    
+
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-asset-type-switcher").popover({
@@ -506,7 +512,7 @@ $( document ).ready(function() {
         }
         predictedActualMarkerSize = newValue;
         $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-        drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"]);
+        drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
     });
 
     $(".residual-marker-size").on("click", function (e) {
@@ -527,7 +533,7 @@ $( document ).ready(function() {
         }
         residualMarkerSize = newValue;
         $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-        drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"]);
+        drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
     });	
 });
 
@@ -610,7 +616,7 @@ function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOf
         }
         predictedVsActualData.push(predictedVsActualPoint);
     }
-    drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"]);
+    drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
 }
 
 // function to draw residual plot
@@ -630,11 +636,11 @@ function drawResidualPlot(testResultDataPointsSample) {
         residualRow[2] = 'Residual';
         residualData.push(residualRow);
     }
-    drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"]);
+    drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
 }
 
 // drawing a simple scatter graph
-function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, colors) {
+function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, colors, groupByValues) {
     $(cssClass).empty();
     var scatter = new ScatterPlot(data);
 
@@ -642,6 +648,7 @@ function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, colors) {
     scatter.setPlotingAreaHeight(400);
     scatter.setMarkerSize(markerSize);
     scatter.setColors(colors);
+    scatter.setGroupByValues(groupByValues);
     scatter.setXAxisText(xLabel);
     scatter.setYAxisText(yLabel);
     scatter.plot(d3.select(cssClass));
@@ -690,7 +697,7 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
 
     var multiclassConfusionMatrixHtml = "<table border='1'>";
     multiclassConfusionMatrixHtml += "<tr>" +
-                                        "<td class='header-level-1' colspan='2' rowspan='2'>Total</td><td class='header-level-1' colspan="+labels.length+">Predicted</td>" +
+                                        "<td class='header-level-1' colspan='2' rowspan='2'>Total</td><td class='header-level-1' colspan=" + labels.length + ">Predicted</td>" +
                                      "</tr>";
     multiclassConfusionMatrixHtml += "<tr>";
     
