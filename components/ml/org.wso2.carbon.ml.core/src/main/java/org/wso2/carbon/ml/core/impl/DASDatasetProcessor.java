@@ -17,9 +17,13 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -45,13 +49,24 @@ public class DASDatasetProcessor extends DatasetProcessor {
     }
 
     public void process() throws MLDataProcessingException {
+        MLDataset dataset = getDataset();
+        setTargetPath(dataset.getSourcePath());
         try {
-            MLDataset dataset = getDataset();
-            setTargetPath(dataset.getSourcePath());
-            // extract sample points
-            setSamplePoints(MLUtils.getSampleFromDAS(dataset.getSourcePath(), MLCoreServiceValueHolder.getInstance()
-                    .getSummaryStatSettings().getSampleSize(), dataset.getDataSourceType(), dataset.getTenantId()));
-        } catch (Exception e) {
+            setFirstLine(MLUtils.extractHeaderLine(dataset.getSourcePath(), dataset.getTenantId()));
+        } catch (AnalyticsTableNotAvailableException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        } catch (AnalyticsException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public SamplePoints takeSample() throws MLDataProcessingException {
+        MLDataset dataset = getDataset();
+        try {
+            return MLUtils.getSampleFromDAS(dataset.getSourcePath(), MLCoreServiceValueHolder.getInstance()
+                    .getSummaryStatSettings().getSampleSize(), dataset.getDataSourceType(), dataset.getTenantId());
+        } catch (MLMalformedDatasetException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
     }

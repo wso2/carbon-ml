@@ -54,7 +54,7 @@ public class PredictStreamProcessorTestCase {
         String inputStream = "define stream InputStream "
                 + "(NumPregnancies double, PG2 double, DBP double, TSFT double, SI2 double, BMI double, DPF double, Age double);";
 
-        String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation + "') "
+        String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation + "','double') "
                 + "select * " + "insert into outputStream ;";
 
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inputStream + query);
@@ -92,7 +92,7 @@ public class PredictStreamProcessorTestCase {
                 + "(NumPregnancies double, PG2 double, DBP double, TSFT double, SI2 double, BMI double, DPF double, Age double);";
 
         String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation
-                + "', NumPregnancies, PG2, DBP, TSFT, SI2, BMI, DPF, Age) " + "select * "
+                + "', 'double', NumPregnancies, PG2, DBP, TSFT, SI2, BMI, DPF, Age) " + "select * "
                 + "insert into outputStream ;";
 
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inputStream + query);
@@ -129,7 +129,7 @@ public class PredictStreamProcessorTestCase {
                 + "(NumPregnancies double, PG2 double, DBP double, TSFT double, SI2 double, BMI double, DPF double, Age double);";
 
         String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation
-                + "', NumPregnancies, PG2, DBP, TSFT, SI2, BMI, DPF, Age) " + "select prediction "
+                + "', 'double', NumPregnancies, PG2, DBP, TSFT, SI2, BMI, DPF, Age) " + "select Class "
                 + "insert into outputStream ;";
 
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inputStream + query);

@@ -54,6 +54,11 @@
 		        <div class="wr-project">
 					<span class="title">DATASETS \ </span>
 				</div>
+
+	            <div class="wr-action-btn-bar">
+	                <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
+	            </div>  
+
             </div>
 
             <div class="col-md-3">
@@ -154,21 +159,33 @@ var baseUrl = getBaseUrl(window.location.href);
 var deleteDatasetId;
 var deleteVersionId;
 
-function buildAccordingHeader(collapseSection, datasetName, numVersions, datasetId){
+function buildAccordingHeader(collapseSection, datasetName, datasetVersions, datasetId) {
+	var numVersions = datasetVersions.length;
+
+    var versionsString = '';
+    if (numVersions == 0) {
+        versionsString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No versions available';
+    }
+    else if (numVersions == 1) {
+        versionsString = '<strong>1</strong> version available';
+    }
+    else {
+        versionsString = '<strong>'+numVersions+'</strong> versions available';
+    }	
+
     var accordingHeader = '<h4 class="panel-title">' +
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
 				      		'<td>' +
 						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
 						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
-						          	/*'<span class="cu-acc-head-created">[ created:  ]</span>'+*/
-						          	'<span class="cu-acc-head-workflow"><strong>' + numVersions + '</strong> Version(s) available</span>'+
+						          	'<span class="cu-acc-head-workflow">' + versionsString + '</span>'+
 						        '</a>' +	
 						    '</td>'+
 						    '<td class="c-right">' +			        
 						        '<div>' +
-						        	'<a href="#" id="create-project" class="cu-reg-btn btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
-						        	'<a href="#" id="explore-dataset" class="cu-reg-btn btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
+						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
+						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
 									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
 								'</div>' +
 							'</td>'+
@@ -178,26 +195,31 @@ function buildAccordingHeader(collapseSection, datasetName, numVersions, dataset
 	return accordingHeader;
 }
 
-function version(versionNumbers){
+function version(versionNumbers) {
 	var versionHtml = "";
-    for(var i = 0; i < versionNumbers.length; i++){
-        var version = sanitize(versionNumbers[i].version);    	
+    for(var i = 0; i < versionNumbers.length; i++) {
+        var version = sanitize(versionNumbers[i].version);
+        var status = sanitize(versionNumbers[i].status);    	
 
     	versionHtml +=  '<tr>' +
-			 				'<td class="c-padd"><span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span></td>' +
+			 				'<td class="c-padd">' +
+			 					'<span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span>' +
+			 					'<span class="t-proj-workflow"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
+			 				'</td>' +
 			 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a></td>' +
 			 			'</tr>';
     }
     return versionHtml;
 }
 
-function accordingBody(datasetDescription, versions, datasetName){
+function accordingBody(datasetDescription, versions, datasetName) {
 
 	var accordingBodyHtml = '<table>' +
 							    '<tr>' +
 								  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
 								  	'<td>' +
 								  		'<div class="wr-analysis">' +
+								  			'<div id="inline-new-notification-area"></div>' +
 								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
 											'<div class="input-control text">' +
 												'<table>' +
@@ -222,7 +244,7 @@ function accordingBody(datasetDescription, versions, datasetName){
 	return accordingBodyHtml;
 }
 
-function accordiang(datasets){
+function accordiang(datasets) {
     var allDatasetsHtml = '';
 	for(var i=0; i<datasets.length; i++){
         var dataset = datasets[i];
@@ -234,7 +256,7 @@ function accordiang(datasets){
         var datasetHtml = '<div class="panel panel-default">' +
 			    '<div class="panel-heading" role="tab" id="heading_' + i + '">' +
 			      
-			      buildAccordingHeader('collapse_' + i, datasetName, datasetVersions.length, datasetId) +
+			      buildAccordingHeader('collapse_' + i, datasetName, datasetVersions, datasetId) +
 			     
 			    '</div>' +
 			    '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
@@ -258,6 +280,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-asset-type-switcher").popover({
@@ -273,7 +301,10 @@ $( document ).ready(function() {
 		e.preventDefault();
 
 		var datasetVersion = $(this).closest("tr").find('.dataset-version').val();
-        var description = $(this).data('datasetdescription');
+        var notificationArea = $(this).parents().find('#inline-new-notification-area');
+        if (!isValidDatasetVersion(datasetVersion, notificationArea)) {
+            return;
+        }
         var datasetName = $(this).data('datasetname');
         window.location = baseUrl + '/ml/site/data/createversion.jag?datasetName=' + datasetName + '&datasetVersion=' + datasetVersion;
 	});
@@ -317,6 +348,11 @@ $( document ).ready(function() {
         deleteVersionId = null;
         hidePopup();
     });      
+    $(document).on('click', '#btn-refresh', function(e){
+        e.preventDefault();
+        // true: reload from the server
+        location.reload(true);
+    });    
 
 	bindEvents();
 });
@@ -352,7 +388,7 @@ function loadDatasets() {
         	}
         },
         error :  function(res){
-                var errorText = res.responseText
+            var errorText = JSON.parse(res.responseText)["exception"];
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});	
@@ -368,7 +404,7 @@ function deleteDataset(datasetId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });		
@@ -385,11 +421,51 @@ function deleteDatasetVersion(versionId) {
 	            loadDatasets();
 	        },
 	        error : function(res){
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
 	            handleNotification(errorText, '#notification-area', 'warning');
 	        }
 	    });
 	}    
+}
+
+// function to append button disabled CSS class when there are no dataset-versions
+function appendClass(noOfVersions, datasetVersions) {
+    var classAppend = '';
+	// if there are no dataset versions or if the only (one) dataset version is not processed, disable action buttons
+	if( (noOfVersions == '0') || (noOfVersions == '1' && datasetVersions[0].status != 'Processed') ) {
+        classAppend = 'btn-disabled';
+    }
+    return classAppend;
+}
+
+// Dataset version input validation
+function isValidDatasetVersion(text, notificationArea) {
+    if (!text || /^(?:(\d+)\.)?(?:(\d+)\.)?(\d+)$/.test(text) == false) {
+        var errorText = 'Not a valid version number.';
+        handleNotification(errorText, notificationArea, 'warning');
+        return false;
+    }
+    if(text.length > 100) {
+        var errorText = 'Version number is too long. Max 100 characters allowed.';
+        handleNotification(errorText, notificationArea, 'warning');
+        return false;
+    }
+    return true;
+}
+
+// function to append status icon link
+function appendStatusIcon(modelStatus) {
+    var statusIconAppend = '';
+    if(modelStatus == 'Processing') {
+        statusIconAppend = 'progressing';  
+    }
+    else if(modelStatus == 'Processed') {
+        statusIconAppend = 'completed';  
+    }
+    else if(modelStatus == 'Failed') {
+        statusIconAppend = 'error';  
+    }
+    return statusIconAppend;
 }
 
 </script>

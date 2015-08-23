@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
-import org.wso2.carbon.ml.core.utils.MLConstants;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 /**
  * MLIOFactory is responsible for generating the concrete classes of the IO Adapter interfaces based on the user
@@ -69,22 +69,9 @@ public class MLIOFactory {
     }
 
     public String getTargetPath(String fileName) {
-        String targetHome = configuration.getProperty(MLConstants.TARGET_HOME_PROP);
-        if (targetHome == null) {
-            File f = new File(System.getProperty("carbon.home") + File.separator + "datasets");
-            try {
-                if (f.mkdir()) {
-                    targetHome = f.getAbsolutePath();
-                } else {
-                    targetHome = System.getProperty("carbon.home") + File.separator + "tmp";
-                }
-            } catch (Exception e) {
-                // can't create the directory, use an existing one.
-                targetHome = System.getProperty("carbon.home") + File.separator + "tmp";
-            }
-        }
+        String targetDir = MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageDirectory();
 
-        return targetHome + File.separator + fileName;
+        return targetDir + File.separator + fileName;
 
     }
 

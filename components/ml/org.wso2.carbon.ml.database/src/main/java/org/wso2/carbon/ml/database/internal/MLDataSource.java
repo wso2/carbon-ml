@@ -26,12 +26,11 @@ import java.sql.SQLException;
 
 public class MLDataSource {
     private DataSource dataSource;
-    private static final String ML_DATA_SOURCE_URL = "jdbc/WSO2ML_DB";
 
-    public MLDataSource() throws SQLException {
+    public MLDataSource(String mlDatasourceUrl) throws SQLException {
         try {
             Context initContext = new InitialContext();
-            dataSource = (DataSource) initContext.lookup(ML_DATA_SOURCE_URL);
+            dataSource = (DataSource) initContext.lookup(mlDatasourceUrl);
 
         } catch (NamingException e) {
             throw new SQLException(

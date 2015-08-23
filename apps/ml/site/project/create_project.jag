@@ -172,6 +172,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-asset-type-switcher").popover({
@@ -266,6 +272,7 @@ $( document ).ready(function() {
 		});
 	}
 
+    // Project name input validation
 	function isValidProjectName(text){
 		if(!text || text.length == 0){
             $('#project-name-error').text("* Project name is required.");
@@ -274,6 +281,10 @@ $( document ).ready(function() {
 		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
             $('#project-name-error').text('* Special characters are not allowed');
             $('#project-name').text('');
+            return false;
+	    }
+	    if(text.length > 100) {
+	        $('#project-name-error').text('* Project name is too long. Max 100 characters allowed.');
             return false;
 	    }
 	    return true;

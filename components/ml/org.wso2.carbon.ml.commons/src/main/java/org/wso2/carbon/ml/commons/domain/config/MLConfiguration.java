@@ -34,8 +34,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MLConfiguration {
 
-    @XmlElement(name = "Database")
-    private String databaseName;
+    @XmlElement(name = "DataSourceName")
+    private String datasourceName;
 
     @XmlElement(name = "HdfsURL")
     private String hdfsUrl;
@@ -58,11 +58,14 @@ public class MLConfiguration {
     private SummaryStatisticsSettings summaryStatisticsSettings;
 
     @XmlElement(name = "ModelStorage")
-    private ModelStorage modelStorage;
+    private Storage modelStorage;
+    
+    @XmlElement(name = "DatasetStorage")
+    private Storage datasetStorage;
 
-    public ModelStorage getModelStorage() {
+    public Storage getModelStorage() {
         if (modelStorage == null) {
-            modelStorage = new ModelStorage();
+            modelStorage = new Storage();
             modelStorage.setStorageType("file");
             File f = new File(System.getProperty("carbon.home") + File.separator + "models");
             try {
@@ -79,16 +82,39 @@ public class MLConfiguration {
         return modelStorage;
     }
 
-    public void setModelStorage(ModelStorage modelStorage) {
+    public void setModelStorage(Storage modelStorage) {
         this.modelStorage = modelStorage;
     }
-
-    public String getDatabaseName() {
-        return databaseName;
+    
+    public Storage getDatasetStorage() {
+        if (datasetStorage == null) {
+            datasetStorage = new Storage();
+            datasetStorage.setStorageType("file");
+            File f = new File(System.getProperty("carbon.home") + File.separator + "datasets");
+            try {
+                if (f.mkdir()) {
+                    datasetStorage.setStorageDirectory(f.getAbsolutePath());
+                } else {
+                    datasetStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
+                }
+            } catch (Exception e) {
+                // can't create the directory, use an existing one.
+                datasetStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
+            }
+        }
+        return datasetStorage;
+    }
+    
+    public void setDatasetStorage(Storage datasetStorage) {
+        this.datasetStorage = datasetStorage;
     }
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
+    public String getDatasourceName() {
+        return datasourceName;
+    }
+
+    public void setDatasourceName(String datasourceName) {
+        this.datasourceName = datasourceName;
     }
 
     public List<MLAlgorithm> getMlAlgorithms() {

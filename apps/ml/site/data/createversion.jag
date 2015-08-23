@@ -150,14 +150,6 @@
 							</select>				
 						</div>	
 
-						<label class="input-label">Destination<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-						<div class="input-control text">
-							<select class="form-control" id="dest-type" name="destination">
-			              		<option value="file">File</option>
-							  	<option value="hdfs">HDFS</option>					  
-							</select>				
-						</div>
-
 					</div>
 
             		<div class="btn-group-actions">
@@ -241,6 +233,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
 	$("[data-toggle=popover]").popover();
 
 	$(".ctrl-asset-type-switcher").popover({
@@ -257,11 +255,12 @@ $( document ).ready(function() {
 	$('#create-dataset-version-form').ajaxForm({
 	    data: { 'datasetName': name, 'version' : getParameterByName('datasetVersion') },
 	    url: baseUrl + '/api/datasets',
+	    dataType: 'json',
         success : function(res){
     	     window.location = baseUrl + '/ml/site/data/datasets.jag';   
         },
         error :  function(res){
-			var errorText = res.responseText
+			var errorText = JSON.parse(res.responseText)["exception"];
             handleNotification(errorText, '#notification-area', 'warning');
         }                               
 	});
@@ -312,7 +311,7 @@ function loadDataTables() {
 		    });
         },
         error :  function(res){
-			var errorText = res.responseText
+			var errorText = JSON.parse(res.responseText)["exception"];
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});

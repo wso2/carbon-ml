@@ -44,8 +44,11 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.FeatureType;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
@@ -85,6 +88,21 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
+
+            // Verify validity of response variable
+            String typeOfResponseVariable = getTypeOfResponseVariable(workflow.getResponseVariable(),
+                    workflow.getFeatures());
+
+            if(typeOfResponseVariable == null)
+                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning" +
+                        "algorithms.");
+
+            // Stops model building if a categorical attribute is used with numerical prediction
+            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue()) &&
+                    typeOfResponseVariable.equals(FeatureType.CATEGORICAL))
+                throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable() +
+                        " cannot be used as the response variable of the Numerical Prediction algorithm: " +
+                        workflow.getAlgorithmName());
 
             // pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
@@ -165,6 +183,15 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
                     + e.getMessage(), e);
         }
+    }
+
+    private String getTypeOfResponseVariable(String responseVariable, List<Feature> features){
+        String type = null;
+        for(Feature feature: features){
+            if(feature.getName().equals(responseVariable))
+                type = feature.getType();
+        }
+        return type;
     }
 
     private Map<Integer, Integer> getCategoricalFeatureInfo(List<Map<String, Integer>> encodings) {

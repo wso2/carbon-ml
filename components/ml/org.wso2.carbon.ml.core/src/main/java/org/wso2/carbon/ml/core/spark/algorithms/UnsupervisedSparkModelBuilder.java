@@ -19,7 +19,6 @@
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.constants.MLConstants;

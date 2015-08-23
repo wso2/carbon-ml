@@ -18,12 +18,18 @@
 package org.wso2.carbon.ml.database;
 
 import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.util.List;
 import java.util.Map;
 
 public interface DatabaseService {
+    
+    /**
+     * Returns ML Configuration.
+     */
+    public MLConfiguration getMlConfiguration();
 
     /**
      * Insert a new dataset-schema into the database
@@ -92,10 +98,11 @@ public interface DatabaseService {
      * Get the dataset-version id
      * @param datasetVersionName name of the dataset-version
      * @param tenantId           tenant id
+     * @param userName           username
      * @return
      * @throws DatabaseHandlerException
      */
-    public long getVersionsetId(String datasetVersionName, int tenantId) throws DatabaseHandlerException;
+    public long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException;
 
 
     /**
@@ -130,6 +137,21 @@ public interface DatabaseService {
      * @throws                  DatabaseHandlerException
      */
     public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
+                                            int numberOfFeatures) throws DatabaseHandlerException;
+
+    /**
+     * Returns the customized set of features of an analysis in a given range, from the alphabetically ordered set
+     * of features, of a dataset.
+     *
+     * @param tenantId          ID of the tenant
+     * @param userName          Username of the tenant
+     * @param analysisId        Unique ID of the analysis
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of Feature objects
+     * @throws                  DatabaseHandlerException
+     */
+    public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int startIndex,
                                             int numberOfFeatures) throws DatabaseHandlerException;
 
     /**
@@ -183,6 +205,15 @@ public interface DatabaseService {
      * @throws DatabaseHandlerException
      */
     public String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException;
+    
+    /**
+     * Retrieve the SamplePoints object for a given version-set.
+     *
+     * @param versionsetId Unique Identifier of the version-set
+     * @return SamplePoints object of the value-set
+     * @throws DatabaseHandlerException
+     */
+    public SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version
@@ -201,6 +232,14 @@ public interface DatabaseService {
      */
     public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats) 
             throws DatabaseHandlerException;
+    
+    /**
+     * Update the database with the sample points of data-set-version
+     * @param datasetVersionId  Unique Id of the data-set-version
+     * @param samplePoints sample points of this dataset version
+     * @throws DatabaseHandlerException
+     */
+    public void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException;
 
     /**
      * Delete the project
@@ -562,5 +601,7 @@ public interface DatabaseService {
             throws DatabaseHandlerException;
 
     Map<String, String> getSummaryStats(long datasetVersionId) throws DatabaseHandlerException;
+
+    List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException;
 
 }

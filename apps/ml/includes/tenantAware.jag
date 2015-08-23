@@ -5,6 +5,25 @@
 
     (function () {
         if (!user) {
+			// create redirect link with query parameters if exist
+			var requestedPage = request.getRequestURI().replace("/ml/site", "..");
+			var parameters = request.getAllParameters("UTF-8");
+			var keys = Object.keys(parameters);
+			// if query parameters exist add them to URL
+			if(keys.length > 0) {
+				var lastKey = keys[keys.length-1];
+				var parametersString = "?";
+				for (var key in parameters) {
+					parametersString += key + "=" + parameters[key];
+					if (key != lastKey) {
+						parametersString += "&";
+					}
+				}
+				requestedPage += parametersString;
+			}
+			// put redirect link as a session value
+			session.put('requestedPage', requestedPage);
+
             response.sendRedirect(getRedirectPathForNonAuthenticatedUser());
             return;
         }

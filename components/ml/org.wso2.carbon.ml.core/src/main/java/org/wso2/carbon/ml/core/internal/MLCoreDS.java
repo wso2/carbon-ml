@@ -27,7 +27,7 @@ import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
-import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
+import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -54,9 +54,9 @@ public class MLCoreDS {
     protected void activate(ComponentContext context) {
 
         try {
-            MLConfigurationParser mlConfigParser = new MLConfigurationParser();
-            MLConfiguration mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
+            SparkConfigurationParser mlConfigParser = new SparkConfigurationParser();
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            MLConfiguration mlConfig = valueHolder.getDatabaseService().getMlConfiguration();
 
             valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
             valueHolder.setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
@@ -65,6 +65,7 @@ public class MLCoreDS {
             valueHolder.setEmailNotificationEndpoint(mlConfig.getEmailNotificationEndpoint());
             valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
+            valueHolder.setDatasetStorage(mlConfig.getDatasetStorage());
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
