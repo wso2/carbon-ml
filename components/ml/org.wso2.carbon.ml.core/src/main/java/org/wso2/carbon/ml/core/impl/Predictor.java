@@ -33,6 +33,7 @@ import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.apache.spark.mllib.tree.model.RandomForestModel;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
+import org.wso2.carbon.ml.commons.constants.MLConstants.DEEPLEARNING_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
@@ -148,7 +149,7 @@ public class Predictor {
                             + " for model id: " + id);
             }
         } else if (AlgorithmType.DEEPLEARNING == type) {
-            MLConstants.DEEPLEARNING_ALGORITHM deeplearning_algorithm = MLConstants.DEEPLEARNING_ALGORITHM.valueOf(model.getAlgorithmName());
+            DEEPLEARNING_ALGORITHM deeplearning_algorithm = DEEPLEARNING_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (deeplearning_algorithm) {
                 case STACKED_AUTOENCODERS:
                     List<Double> predictions = new ArrayList<Double>();
