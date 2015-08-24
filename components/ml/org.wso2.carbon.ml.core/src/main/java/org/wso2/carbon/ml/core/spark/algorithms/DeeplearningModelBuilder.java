@@ -166,7 +166,7 @@ public class DeeplearningModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     hyperParameters.get(MLConstants.ACTIVATION_TYPE),
-                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getTrainDataFraction(),
+                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
                     workflow.getResponseVariable(), modelID);
 
             if (deeplearningModel == null) {

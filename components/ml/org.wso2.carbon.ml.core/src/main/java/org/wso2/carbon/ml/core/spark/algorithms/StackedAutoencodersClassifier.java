@@ -69,13 +69,12 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @param batchSize Size of a training mini-batch
      * @param layerSizes Number of neurons for each layer
      * @param epochs Number of epochs to train
-     * @param trainFraction The fraction considered for training
      * @param responseColumn Name of the response column
      * @param modelID Id of the model
      * @return
      */
     public DeepLearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize, int[] layerSizes,
-            String activationType, int epochs, double trainFraction, String responseColumn, long modelID) {
+            String activationType, int epochs, String responseColumn, long modelID) {
         // build stacked autoencoder by training the model with training data
         
         double trainingFraction = 0.8;
