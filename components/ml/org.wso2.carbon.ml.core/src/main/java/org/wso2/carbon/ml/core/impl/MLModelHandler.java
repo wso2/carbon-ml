@@ -375,7 +375,6 @@ public class MLModelHandler {
         Predictor predictor = new Predictor(modelId, builtModel, data);
         List<?> predictions = predictor.predict();
 
-        log.info(String.format("Prediction from model [id] %s was successful.", modelId));
         return predictions;
     }
 

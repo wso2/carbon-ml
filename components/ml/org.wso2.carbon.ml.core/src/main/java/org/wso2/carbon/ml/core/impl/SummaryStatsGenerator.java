@@ -259,7 +259,6 @@ public class SummaryStatsGenerator implements Runnable {
             currentCol = numericColumns.next();
             // Create a unique set from the column.
             Set<String> uniqueSet = new HashSet<String>(this.columnData.get(currentCol));
-            // If the unique values are less than or equal to maximum-category-limit.
             this.unique[currentCol] = uniqueSet.size();
             if (FeatureType.CATEGORICAL.equals(this.type[currentCol])) {
                 // Calculate the category frequencies.
