@@ -393,7 +393,7 @@ public class MLModelHandler {
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset
-        if (builtModel.getFeatures().size() != data.get(0).length) {
+        if (builtModel.getNewToOldIndicesList().size() != data.get(0).length) {
             String msg = String.format("Prediction failed from model [id] %s since [number of features of model]" +
                             " %s does not match [number of features in the input data] %s",
                     modelId, builtModel.getFeatures().size(), data.get(0).length);
