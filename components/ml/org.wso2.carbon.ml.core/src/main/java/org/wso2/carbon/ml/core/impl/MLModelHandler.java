@@ -356,8 +356,9 @@ public class MLModelHandler {
                 for (int i = 0; i < predictions.size(); i++) {
                     // replace with predicted value
                     unencodedData.get(i)[responseVariableIndex] = String.valueOf(predictions.get(i));
-                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
-                            .append(MLConstants.NEW_LINE);
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()));
+                    predictionsWithData.deleteCharAt(predictionsWithData.length() - 1);
+                    predictionsWithData.append(MLConstants.NEW_LINE);
                 }
             }
             return predictionsWithData.toString();
