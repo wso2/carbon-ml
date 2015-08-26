@@ -218,7 +218,7 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-            @Multipart("file") InputStream inputStream) {
+                                     @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -233,7 +233,7 @@ public class ModelApiV10 extends MLRestAPI {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
-                    inputStream);
+                    columnHeader, inputStream);
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
