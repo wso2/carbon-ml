@@ -23,7 +23,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
 import java.util.List;
-
+/**
+ * Implementation of {@link SparkOpration} for Fill operation in Wrangler.
+ */
 public class SparkOperationFill extends SparkOpration {
 
 	@Override public JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
@@ -33,7 +35,7 @@ public class SparkOperationFill extends SparkOpration {
 		return fillColumn(jsc, data, columnIndex, wranglerOperation.getParameter("direction"));
 	}
 
-	private static JavaRDD<String[]> fillColumn(JavaSparkContext jsc, JavaRDD<String[]> data,
+	private JavaRDD<String[]> fillColumn(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                            final int columnIndex, final String direction) {
 		if (direction.equals("left") || direction.equals("right")) {
 			return data.map(new Function<String[], String[]>() {
@@ -115,7 +117,7 @@ public class SparkOperationFill extends SparkOpration {
 		return null;
 	}
 
-//	private static JavaRDD<Row> fillRow(JavaSparkContext jsc, JavaRDD<Row> data, int rowIndex,
+//	private JavaRDD<Row> fillRow(JavaSparkContext jsc, JavaRDD<Row> data, int rowIndex,
 //	                                    String direction) {
 //		List<Row> list = data.collect();
 //		Row r = list.get(rowIndex);

@@ -23,7 +23,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
 import java.util.*;
-
+/**
+ * Implementation of {@link SparkOpration} for Filter operation in Wrangler.
+ */
 public class SparkOperationFilter extends SparkOpration {
 
 	@Override public JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
@@ -63,7 +65,7 @@ public class SparkOperationFilter extends SparkOpration {
 		});
 	}
 
-	private static JavaRDD<String[]> filter_rowIndex(JavaSparkContext jsc, JavaRDD<String[]> data,
+	private JavaRDD<String[]> filter_rowIndex(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                                 String indices) {
 		String[] indecesList = indices.substring(1, indices.length() - 1).split(",");
 		ArrayList<Integer> indecesList2 = new ArrayList<Integer>();
@@ -82,7 +84,7 @@ public class SparkOperationFilter extends SparkOpration {
 		return jsc.parallelize(list);
 	}
 
-	private static JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId,
+	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId,
 	                                        final String value) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
@@ -97,7 +99,7 @@ public class SparkOperationFilter extends SparkOpration {
 		});
 	}
 
-	private static JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId) {
+	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
 				if (row[columnId] == null)

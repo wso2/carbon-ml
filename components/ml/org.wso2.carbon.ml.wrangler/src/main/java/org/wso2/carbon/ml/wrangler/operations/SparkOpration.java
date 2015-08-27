@@ -23,9 +23,20 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.Serializable;
 
+/**
+ * Implement this interface to add a new spark transformation related to a wrangler operation.
+ */
 public abstract class SparkOpration implements Serializable {
-	String name;
 
+	/**
+	 * Execute the spark transformation related to the wrangler operation.
+	 *
+	 * @param jsc
+	 * @param data
+	 * @param wrangler
+	 * @param wranglerOperation
+	 * @return Transformed data set as a {@link JavaRDD<String>}
+	 */
 	public abstract JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                          WranglerOperation wranglerOperation,
 	                                          Wrangler wrangler);
