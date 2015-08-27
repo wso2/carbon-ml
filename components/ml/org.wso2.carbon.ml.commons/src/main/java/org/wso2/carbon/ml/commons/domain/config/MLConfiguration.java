@@ -69,7 +69,7 @@ public class MLConfiguration {
             modelStorage.setStorageType("file");
             File f = new File(System.getProperty("carbon.home") + File.separator + "models");
             try {
-                if (f.mkdir()) {
+                if (f.mkdir() || f.isDirectory()) {
                     modelStorage.setStorageDirectory(f.getAbsolutePath());
                 } else {
                     modelStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
@@ -92,7 +92,7 @@ public class MLConfiguration {
             datasetStorage.setStorageType("file");
             File f = new File(System.getProperty("carbon.home") + File.separator + "datasets");
             try {
-                if (f.mkdir()) {
+                if (f.mkdir() || f.isDirectory()) {
                     datasetStorage.setStorageDirectory(f.getAbsolutePath());
                 } else {
                     datasetStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
