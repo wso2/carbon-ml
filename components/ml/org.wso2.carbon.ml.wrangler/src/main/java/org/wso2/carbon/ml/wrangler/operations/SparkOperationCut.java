@@ -24,7 +24,9 @@ import org.apache.spark.api.java.function.Function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * Implementation of {@link SparkOpration} for Cut operation in Wrangler.
+ */
 public class SparkOperationCut extends SparkOpration {
 
 	@Override public JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
@@ -82,7 +84,7 @@ public class SparkOperationCut extends SparkOpration {
 		                });
 	}
 
-	private static JavaRDD<String[]> cut(JavaRDD<String[]> data, final int columnId,
+	private JavaRDD<String[]> cut(JavaRDD<String[]> data, final int columnId,
 	                                     final String after, final String before, final String on) {
 		System.out.println("Split - " + columnId + " " + after + " " + before + " " + on);
 		return data.map(new Function<String[], String[]>() {

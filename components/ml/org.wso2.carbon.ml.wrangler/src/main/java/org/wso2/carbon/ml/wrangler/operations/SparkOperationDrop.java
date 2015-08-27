@@ -21,7 +21,9 @@ import org.wso2.carbon.ml.wrangler.WranglerOperation;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-
+/**
+ * Implementation of {@link SparkOpration} for Drop operation in Wrangler.
+ */
 public class SparkOperationDrop extends SparkOpration {
 	@Override public JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                           WranglerOperation wranglerOperation,
@@ -31,7 +33,7 @@ public class SparkOperationDrop extends SparkOpration {
 		return drop(data, columnIndex);
 	}
 
-	private static JavaRDD<String[]> drop(JavaRDD<String[]> data, final int columnId) {
+	private JavaRDD<String[]> drop(JavaRDD<String[]> data, final int columnId) {
 		return data.map(new Function<String[], String[]>() {
 			@Override public String[] call(String[] row) throws Exception {
 				String[] newRow = new String[row.length - 1];

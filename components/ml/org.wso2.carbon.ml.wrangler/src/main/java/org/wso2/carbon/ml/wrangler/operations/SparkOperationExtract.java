@@ -25,7 +25,9 @@ import org.apache.spark.api.java.function.Function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * Implementation of {@link SparkOpration} for Extract operation in Wrangler.
+ */
 public class SparkOperationExtract extends SparkOpration {
 
 	@Override public JavaRDD<String[]> execute(JavaSparkContext jsc, JavaRDD<String[]> data,
@@ -94,7 +96,7 @@ public class SparkOperationExtract extends SparkOpration {
 		                });
 	}
 
-	private static JavaRDD<String[]> extract(JavaRDD<String[]> data, final int columnId,
+	private JavaRDD<String[]> extract(JavaRDD<String[]> data, final int columnId,
 	                                         final String after, final String before,
 	                                         final String on) {
 		System.out.println("Split - " + columnId + " " + after + " " + before + " " + on);
