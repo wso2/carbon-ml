@@ -116,10 +116,9 @@ public class AnalysisApiV10 extends MLRestAPI {
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                                    analysisId, tenantId, userName), e);
+                    .getErrorMsg(String.format(
+                            "Error occurred while adding customized features for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                            analysisId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
@@ -198,8 +197,9 @@ public class AnalysisApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            List<MLCustomizedFeature> customizedFeatures = mlAnalysisHandler.getCustomizedFeatures(tenantId, userName, analysisId,
-                    limit, offset);
+            List<MLCustomizedFeature> customizedFeatures = mlAnalysisHandler.getCustomizedFeatures(tenantId, userName,
+                                                                                                   analysisId, limit,
+                                                                                                   offset);
             return Response.ok(customizedFeatures).build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils
@@ -327,6 +327,84 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
+     * get the user variable of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/userVariable")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getUserVariable(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String userVariable = mlAnalysisHandler.getUserVariable(analysisId);
+            return Response.ok(userVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving user variable for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
+        }
+    }
+
+    /**
+     * get the product variable of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/productVariable")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getProductVariable(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String productVariable = mlAnalysisHandler.getProductVariable(analysisId);
+            return Response.ok(productVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving product variable for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
+        }
+    }
+
+    /**
+     * get the rating variable of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/ratingVariable")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getRatingVariable(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String ratingVariable = mlAnalysisHandler.getRatingVariable(analysisId);
+            return Response.ok(ratingVariable).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving rating variable for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
+        }
+    }
+
+    /**
      * get the algorithm name of an analysis.
      */
     @GET
@@ -401,6 +479,32 @@ public class AnalysisApiV10 extends MLRestAPI {
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
+        }
+    }
+
+    /**
+     * get the observation list fraction of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/observationList")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getObservationList(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String observations = mlAnalysisHandler.getObservations(analysisId);
+            return Response.ok(observations).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving observations for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
         }
     }
 
