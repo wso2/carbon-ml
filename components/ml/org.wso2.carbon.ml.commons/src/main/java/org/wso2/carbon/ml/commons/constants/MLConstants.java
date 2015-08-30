@@ -97,6 +97,11 @@ public class MLConstants {
     public static final String MODEL_STATUS_COMPLETE = "Complete";
     public static final String MODEL_STATUS_FAILED = "Failed";
 
+    // dataset version statuses
+    public static final String DATASET_VERSION_STATUS_IN_PROGRESS = "Processing";
+    public static final String DATASET_VERSION_STATUS_COMPLETE = "Processed";
+    public static final String DATASET_VERSION_STATUS_FAILED = "Failed";
+
     // feature settings
     public static final String DISCARD = "DISCARD";
     public static final String MEAN_IMPUTATION = "REPLACE_WTH_MEAN";

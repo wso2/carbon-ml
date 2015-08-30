@@ -485,7 +485,17 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setVersion(result.getString(3));
                 versionset.setTargetPath(result.getString(4));
                 if(result.getBinaryStream(5) != null) {
-                    versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                    SamplePoints samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5));
+                    if(samplePoints.getIsGenerated() == true) {
+                        versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
+                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_COMPLETE);
+                    }
+                    else {
+                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_FAILED);
+                    }
+                }
+                else {
+                    versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_IN_PROGRESS);
                 }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -967,7 +977,7 @@ public class MLDatabaseService implements DatabaseService {
         Connection connection = null;
         PreparedStatement getFeatues = null;
         ResultSet result = null;
-        
+
         long datasetSchemaId = getDatasetSchemaIdFromAnalysisId(analysisId);
         
         try {
@@ -979,6 +989,8 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
             getFeatues.setLong(4, datasetSchemaId);
+            getFeatues.setInt(5, numberOfFeatures);
+            getFeatues.setInt(6, startIndex);
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
@@ -1007,6 +1019,67 @@ public class MLDatabaseService implements DatabaseService {
         } finally {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
+        }
+    }
+
+    /**
+     * Returns the customized set of features of an analysis in a given range, from the alphabetically ordered set
+     * of features, of a dataset.
+     *
+     * @param tenantId          ID of the tenant
+     * @param userName          Username of the tenant
+     * @param analysisId        Unique ID of the analysis
+     * @param startIndex        Starting index of the set of features needed
+     * @param numberOfFeatures  Number of features needed, from the starting index
+     * @return                  A list of feature configuration objects
+     * @throws                  DatabaseHandlerException
+     */
+    public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int startIndex, int numberOfFeatures)
+            throws DatabaseHandlerException {
+        List<MLCustomizedFeature> mlCustomizedFeatures = new ArrayList<MLCustomizedFeature>();
+        Connection connection = null;
+        PreparedStatement getCustomizedFeatures = null;
+        ResultSet result = null;
+
+        try {
+            // Create a prepared statement and retrieve dataset configurations.
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            getCustomizedFeatures = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
+            getCustomizedFeatures.setLong(1, analysisId);
+            getCustomizedFeatures.setInt(2, numberOfFeatures);
+            getCustomizedFeatures.setInt(3, startIndex);
+            result = getCustomizedFeatures.executeQuery();
+            while (result.next()) {
+                MLCustomizedFeature mlCustomizedFeature = new MLCustomizedFeature();
+                mlCustomizedFeature.setName(result.getString(1));
+                String featureType = FeatureType.NUMERICAL;
+                if (FeatureType.CATEGORICAL.toString().equalsIgnoreCase(result.getString(3))) {
+                    featureType = FeatureType.CATEGORICAL;
+                }
+                mlCustomizedFeature.setType(featureType);
+                String imputeOption = ImputeOption.DISCARD;
+                if (ImputeOption.REPLACE_WTH_MEAN.equalsIgnoreCase(result.getString(4))) {
+                    imputeOption = ImputeOption.REPLACE_WTH_MEAN;
+                }
+                else if (ImputeOption.REGRESSION_IMPUTATION.equalsIgnoreCase(result.getString(4))) {
+                    imputeOption = ImputeOption.REGRESSION_IMPUTATION;
+                }
+                mlCustomizedFeature.setImputeOption(imputeOption);
+                mlCustomizedFeature.setInclude(result.getBoolean(5));
+                mlCustomizedFeature.setLastModifiedUser(result.getString(6));
+                mlCustomizedFeature.setTenantId(tenantId);
+                mlCustomizedFeature.setUserName(userName);
+
+                mlCustomizedFeatures.add(mlCustomizedFeature);
+            }
+            return mlCustomizedFeatures;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving customized features of the analysis: "
+                    + analysisId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getCustomizedFeatures, result);
         }
     }
 
@@ -2335,6 +2408,9 @@ public class MLDatabaseService implements DatabaseService {
             List<Feature> mlFeatures = new ArrayList<Feature>();
             getStatement = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
             getStatement.setLong(1, analysisId);
+            // set LIMIT and OFFSET parameter values to 0 to retrieve all the rows
+            getStatement.setInt(2, 0);
+            getStatement.setInt(3, 0);
             result = getStatement.executeQuery();
             while (result.next()) {
                 // check whether to include the feature or not

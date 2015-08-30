@@ -123,7 +123,15 @@
                                         <option value="csv">CSV</option>
                                         <option value="tsv">TSV</option>                    
                                     </select>               
-                                </div>                            
+                                </div>
+
+                                <label class="input-label">Column Header Available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                <div class="input-control text">
+                                    <select class="form-control" id="column-header" name="columnHeader">
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- inputs for parameter input prediction -->
@@ -191,6 +199,12 @@
                 top: $('header').height()
             }
         });
+
+	    scrollVibrateFix();
+	    
+	    $(window).resize(function() {
+	        scrollVibrateFix();
+	    });        
 
         $("[data-toggle=popover]").popover();
 

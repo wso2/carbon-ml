@@ -141,6 +141,7 @@ public class MLUtils {
         int featureSize;
         int[] missing;
         int[] stringCellCount;
+        int[] decimalCellCount;
         // take the first line
         String firstLine = lines.first();
         // count the number of features
@@ -155,6 +156,7 @@ public class MLUtils {
 
         missing = new int[featureSize];
         stringCellCount = new int[featureSize];
+        decimalCellCount = new int[featureSize];
         if (sampleSize >= 0 && featureSize > 0) {
             sampleSize = sampleSize / featureSize;
         }
@@ -189,6 +191,9 @@ public class MLUtils {
                         // check whether a column value is a string
                         if (!NumberUtils.isNumber(columnValues[currentCol])) {
                             stringCellCount[currentCol]++;
+                        } else if (columnValues[currentCol].indexOf('.') != -1) {
+                            // if it is a number and has the decimal point
+                            decimalCellCount[currentCol]++;
                         }
                     }
                 } else {
@@ -203,6 +208,7 @@ public class MLUtils {
         samplePoints.setSamplePoints(columnData);
         samplePoints.setMissing(missing);
         samplePoints.setStringCellCount(stringCellCount);
+        samplePoints.setDecimalCellCount(decimalCellCount);
         return samplePoints;
     }
 

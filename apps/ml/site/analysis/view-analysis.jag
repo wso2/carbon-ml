@@ -30,7 +30,7 @@
 
 <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container-fluid">
 
 <!-- header -->
 <header>
@@ -81,42 +81,45 @@
 
 
 <!-- content/body -->
-<div class="row">
-	<div class="col-lg-12 wr-secondary-bar"></div>
+<div  class="row wr-content" style="margin:0">
+        <div class="col-md-12">
+                <div id="notification-area"></div>
+                <h1 id="model-summary-title" class="title">Analysis Configurations</h1>
+        </div>
 </div>
-<div class="row">
-	<div class="col-md-12">
-		
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+<div class="row" style="margin:0;">
+    <div class="col-md-12" style="background:#f9f9f9; padding-bottom:20px">
+        <div style="background:#fff; margin-top:20px; margin-left:5px; margin-right:5px; padding:15px" class="wr-graph-element-title">
 
-            <div id="notification-area"></div>
-			<h1 id="model-summary-title" class="title">Analysis Configurations</h1>
+            <h5>Preprocess</h5>
+            <div class="wr-graph-img">
+                <table id="preprocess-table" class="analysis-conf">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Include</th>
+                            <th>Type</th>
+                            <th>Impute</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-            <div class="col-md-12 wr-graph-content">
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin:0; background:#f9f9f9">
+
+        <div style="background:#f9f9f9 ">
+        <div class="col-md-6 " style="background:#f9f9f9; padding-bottom:20px">
+            <div style="background:#fff; margin-left:5px; padding:10px;" class="wr-graph-element-title">
             
-                <div class="col-md-10 wr-graph-element">
-                    <h5>Preprocess</h5>
-                    <div class="wr-graph-img">
-                        <table id="preprocess-table" class="analysis-conf">
-                            <thead>
-                                <tr>
-                                    <th>Feature</th>
-                                    <th>Include</th>
-                                    <th>Type</th>
-                                    <th>Impute</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>     
-                    </div>
-                </div>
-
-                <div class="col-md-5 wr-graph-element">
                     <h5>Algorithm</h5>
-                    <div class="wr-graph-img">
-                        <table id="algorithm-table" class="analysis-conf">
+                    <div>
+                        <table id="algorithm-table" class="analysis-conf ">
                             <thead>
                                 <tr>
                                     <th>Configuration</th>
@@ -126,22 +129,28 @@
                             <tbody>
                                 <tr>
                                     <td>Algorithm</td>
-                                    <td id="algorithm"></td>
+                                    <td id="algorithm">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>Response variable</td>
-                                    <td id="responseVariable"></td>
+                                    <td id="responseVariable">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>Train data fraction</td>
-                                    <td id="trainDataFraction"></td>
+                                    <td id="trainDataFraction">&nbsp;</td>
                                 </tr>                                
                             </tbody>
                         </table>                   
                     </div>
-                </div>  
-                
-                <div class="col-md-5 wr-graph-element">
+            
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6" style="background:#f9f9f9; padding-bottom:20px">
+            <div style="background:#fff; margin-right:5px; padding:10px;" class="wr-graph-element-title">
+            
                     <h5>Parameters</h5>
                     <div class="wr-graph-img">
                         <table id="parameters-table" class="analysis-conf">
@@ -154,14 +163,13 @@
                             <tbody></tbody>
                         </table>                   
                     </div>
-                </div>
             
             </div>
-		</div>
-		<!-- /content -->
+        </div>
+        </div>
+        
+        <br style="clear:both " />
 
-
-	</div>
 </div>
 <!-- /content/body -->
 
@@ -201,6 +209,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });
+
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-asset-type-switcher").popover({
@@ -223,93 +237,45 @@ $( document ).ready(function() {
     // get and set preprocess configurations
     $.ajax({
         type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",        
+        url: serverUrl + "/api/analyses/" + analysisId + "/configs",        
         async: false,
         success : function(res) {
-            var features = res;
-            var tableData = "";
-            for (var i=0; i<features.length; i++) {
+            // set preprocess configurations
+            var features = res.customizedFeatures;
+            var featuresTableData = "";
+            for (var i=0; i < features.length; i++) {
                 
-                tableData += '<tr class="dataRow">' +
-                                '<td>' + sanitize(features[i].fieldName) + '</td>' +
-                                '<td>' + checkboxRenderer(features[i].input) + '</td>' +
-                                '<td>' + features[i].type.toString() + '</td>' +
-                                '<td>' + features[i].imputeOperation.toString() + '</td>' +
-                             '</tr>';
+                featuresTableData += '<tr class="dataRow">' +
+		                                '<td>' + sanitize(features[i].name) + '</td>' +
+		                                '<td>' + checkboxRenderer(features[i].include) + '</td>' +
+		                                '<td>' + features[i].type.toString() + '</td>' +
+		                                '<td>' + features[i].imputeOption.toString() + '</td>' +
+		                             '</tr>';
             }
-            $('#preprocess-table tbody').append(tableData);
+            $('#preprocess-table tbody').append(featuresTableData);
+            // set response variable
+            $('#responseVariable').html(sanitize(res.responseVariable));
+            // set algorithm name
+            $('#algorithm').html(sanitize(res.algorithmName));
+            // set train data fraction
+            $('#trainDataFraction').html(sanitize(res.trainDataFraction));
+            // set hyper-parameters
+            var hyperParameters = res.hyperParameters;
+            var hyperParametersTableData = "";
+            for (var i = 0; i < hyperParameters.length; i++) {
+                
+                hyperParametersTableData += '<tr class="dataRow">' +
+				                                '<td>' + sanitize(hyperParameters[i].key) + '</td>' +
+				                                '<td>' + sanitize(hyperParameters[i].value) + '</td>' +
+				                             '</tr>';
+            }
+            $('#parameters-table tbody').append(hyperParametersTableData);            
         },
         error : function(res){
             var errorText = res.responseText
             handleNotification(errorText, '#notification-area', 'warning');
         }
     });
-    // get and set response variable
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
-        dataType: 'text',
-        success: function(res) {
-            $('#responseVariable').html(sanitize(res));
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-    // get and set algorithm name
-    var algorithmName;
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
-        async : false,
-        dataType: 'text',
-        success: function(res) {
-            algorithmName = sanitize(res);
-            $('#algorithm').html(algorithmName);
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-    // get and set train data fraction
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/trainDataFraction",
-        dataType: 'text',
-        success: function(res) {
-            $('#trainDataFraction').html(sanitize(res));
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });    
-    // get and set hyper-parameters
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/hyperParameters?algorithmName=" + algorithmName,
-        async : false,
-        dataType: 'json',
-        success: function(res) {
-
-            var hyperParameters = res;
-            var tableData = "";
-            for (var i = 0; i < hyperParameters.length; i++) {
-                
-                tableData += '<tr class="dataRow">' +
-                                '<td>' + sanitize(hyperParameters[i].key) + '</td>' +
-                                '<td>' + sanitize(hyperParameters[i].value) + '</td>' +
-                             '</tr>';
-            }
-            $('#parameters-table tbody').append(tableData);
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
-    });    
 
     // draw tables with DataTables
     $('#preprocess-table').dataTable( {

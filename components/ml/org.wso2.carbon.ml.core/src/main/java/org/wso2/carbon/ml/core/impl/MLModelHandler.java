@@ -299,27 +299,71 @@ public class MLModelHandler {
     }
 
     public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
-            InputStream dataStream) throws MLModelHandlerException {
+            String columnHeader, InputStream dataStream) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        MLModel mlModel = retrieveModel(modelId);
         BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        StringBuilder predictionsWithData = new StringBuilder();
         try {
             String line;
-            while ((line = br.readLine()) != null) {
-                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
-                data.add(dataRow);
-            }
-            // cloning unencoded data to append with predictions
-            List<String[]> unencodedData = new ArrayList<String[]>(data.size());
-            for (String[] item : data) {
-                unencodedData.add(item.clone());
-            }
-            List<?> predictions = predict(tenantId, userName, modelId, data);
-            StringBuilder predictionsWithData = new StringBuilder();
-            for (int i = 0; i < predictions.size(); i++) {
-                predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
-                        .append(String.valueOf(predictions.get(i)))
-                        .append(MLConstants.NEW_LINE);
+            if((line = br.readLine()) != null && line.split(csvFormat.getDelimiter() + "").length == mlModel.getNewToOldIndicesList().size()) {
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                }
+                // cloning unencoded data to append with predictions
+                List<String[]> unencodedData = new ArrayList<String[]>(data.size());
+                for (String[] item : data) {
+                    unencodedData.add(item.clone());
+                }
+                List<?> predictions = predict(tenantId, userName, modelId, data);
+                for (int i = 0; i < predictions.size(); i++) {
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
+                            .append(String.valueOf(predictions.get(i)))
+                            .append(MLConstants.NEW_LINE);
+                }
+            } else {
+                int responseVariableIndex = mlModel.getResponseIndex();
+                List<Integer> includedFeatureIndices = mlModel.getNewToOldIndicesList();
+                List<String[]> unencodedData = new ArrayList<String[]>();
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                }
+
+                List<?> predictions = predict(tenantId, userName, modelId, data);
+                for (int i = 0; i < predictions.size(); i++) {
+                    // replace with predicted value
+                    unencodedData.get(i)[responseVariableIndex] = String.valueOf(predictions.get(i));
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()));
+                    predictionsWithData.deleteCharAt(predictionsWithData.length() - 1);
+                    predictionsWithData.append(MLConstants.NEW_LINE);
+                }
             }
             return predictionsWithData.toString();
         } catch (IOException e) {
@@ -354,9 +398,9 @@ public class MLModelHandler {
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset
-        if (builtModel.getFeatures().size() != data.get(0).length) {
-            String msg = String.format("Prediction failed from model [id] %s since the number of features of model" +
-                            " [%s] doesn't match the number of features in the input data [%s]",
+        if (builtModel.getNewToOldIndicesList().size() != data.get(0).length) {
+            String msg = String.format("Prediction failed from model [id] %s since [number of features of model]" +
+                            " %s does not match [number of features in the input data] %s",
                     modelId, builtModel.getFeatures().size(), data.get(0).length);
             throw new MLModelHandlerException(msg);
         }
@@ -379,7 +423,6 @@ public class MLModelHandler {
         Predictor predictor = new Predictor(modelId, builtModel, data);
         List<?> predictions = predictor.predict();
 
-        log.info(String.format("Prediction from model [id] %s was successful.", modelId));
         return predictions;
     }
 

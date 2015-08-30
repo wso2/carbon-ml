@@ -83,6 +83,14 @@ public class MLAnalysisHandler {
         }
     }
 
+    public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getCustomizedFeatures(tenantId, userName, analysisId, offset, limit);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
     public List<String> getFeatureNames(String analysisId, String featureType) throws MLAnalysisHandlerException {
         try {
             return databaseService.getFeatureNames(analysisId, featureType);

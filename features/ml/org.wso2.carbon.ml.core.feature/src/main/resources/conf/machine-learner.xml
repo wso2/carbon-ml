@@ -6,14 +6,13 @@
 	<DataSourceName>jdbc/WSO2ML_DB</DataSourceName>
 
 	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
-		: Number of intervals in a histogram. categoricalThreshold : The maximum 
-		number of categories that can have in a non-string categorical feature. If 
-		exeeds, the feature will be treated as a numerical feature. sampleSize : 
-		Size of the dataset sample which will be used for summary statistics calculation 
-		and visualization. -->
+		: Number of intervals in a histogram. categoricalThreshold : threshold to 
+		determine whether a given feature is categorical or numerical based on the 
+		skewness of the distribution. sampleSize : Size of the dataset sample which 
+		will be used for summary statistics calculation and visualization. -->
 	<SummaryStatisticsSettings>
 		<HistogramBins>20</HistogramBins>
-		<CategoricalThreshold>10</CategoricalThreshold>
+		<CategoricalThreshold>80</CategoricalThreshold>
 		<SampleSize>10000</SampleSize>
 	</SummaryStatisticsSettings>
 

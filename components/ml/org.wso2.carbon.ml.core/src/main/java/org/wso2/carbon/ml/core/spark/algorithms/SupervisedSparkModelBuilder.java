@@ -21,8 +21,6 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -70,7 +68,6 @@ import scala.Tuple2;
  * Build supervised models supported by Spark.
  */
 public class SupervisedSparkModelBuilder extends MLModelBuilder {
-    private static final Log log = LogFactory.getLog(SupervisedSparkModelBuilder.class);
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
@@ -93,16 +90,18 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             String typeOfResponseVariable = getTypeOfResponseVariable(workflow.getResponseVariable(),
                     workflow.getFeatures());
 
-            if(typeOfResponseVariable == null)
-                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning" +
-                        "algorithms.");
+            if (typeOfResponseVariable == null) {
+                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning"
+                        + "algorithms.");
+            }
 
             // Stops model building if a categorical attribute is used with numerical prediction
-            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue()) &&
-                    typeOfResponseVariable.equals(FeatureType.CATEGORICAL))
-                throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable() +
-                        " cannot be used as the response variable of the Numerical Prediction algorithm: " +
-                        workflow.getAlgorithmName());
+            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue())
+                    && typeOfResponseVariable.equals(FeatureType.CATEGORICAL)) {
+                throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable()
+                        + " cannot be used as the response variable of the Numerical Prediction algorithm: "
+                        + workflow.getAlgorithmName());
+            }
 
             // pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
