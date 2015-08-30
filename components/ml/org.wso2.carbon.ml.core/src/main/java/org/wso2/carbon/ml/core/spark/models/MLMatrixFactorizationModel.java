@@ -41,6 +41,10 @@ public class MLMatrixFactorizationModel implements Externalizable {
 	private String outPath;
 	private MatrixFactorizationModel model;
 
+	public MLMatrixFactorizationModel() {
+
+	}
+
 	public MLMatrixFactorizationModel(MatrixFactorizationModel model) {
 		this.model = model;
 	}
@@ -81,7 +85,7 @@ public class MLMatrixFactorizationModel implements Externalizable {
 
 	private void saveModel() throws MLModelBuilderException {
 		if(model == null) {
-			throw new MLModelBuilderException("Error when persisting model. MatrixFactorizationModel is null.");
+			throw new MLModet lBuilderException("Error when persisting model. MatrixFactorizationModel is null.");
 		}
 
 		if(outPath == null) {
