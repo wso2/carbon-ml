@@ -270,7 +270,7 @@ public class SparkModelUtils {
     public static JavaRDD<double[]> preProcess(MLModelConfigurationContext context) throws DatasetPreProcessingException {
         JavaSparkContext sc = context.getSparkContext();
         Workflow workflow = context.getFacts();
-        JavaRDD<String> lines = context.getLines();
+        JavaRDD<String> lines = context.getLines().cache();
         String headerRow = context.getHeaderRow();
         String columnSeparator = context.getColumnSeparator();
         Map<String,String> summaryStatsOfFeatures = context.getSummaryStatsOfFeatures();
@@ -283,8 +283,8 @@ public class SparkModelUtils {
             // Apply the filter to discard rows with missing values.
             JavaRDD<String[]> tokensDiscardedRemoved = MLUtils.filterRows(columnSeparator, headerRow, lines,
                     MLUtils.getImputeFeatureIndices(workflow, new ArrayList<Integer>(), MLConstants.DISCARD));
-            JavaRDD<String[]> filteredTokens = tokensDiscardedRemoved.map(new RemoveDiscardedFeatures(newToOldIndicesList, responseIndex));
-            JavaRDD<String[]> encodedTokens = filteredTokens.map(new BasicEncoder(encodings));
+            JavaRDD<String[]> filteredTokens = tokensDiscardedRemoved.map(new RemoveDiscardedFeatures(newToOldIndicesList, responseIndex)).cache();
+            JavaRDD<String[]> encodedTokens = filteredTokens.map(new BasicEncoder(encodings)).cache();
             JavaRDD<double[]> features = null;
             // get feature indices for mean imputation
             List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(workflow, newToOldIndicesList, MLConstants
@@ -294,14 +294,14 @@ public class SparkModelUtils {
                 Map<Integer, Double> means = getMeans(sc, encodedTokens, meanImputeIndices, 0.01);
                 // Replace missing values in impute indices with the mean for that column
                 MeanImputation meanImputation = new MeanImputation(means);
-                features = encodedTokens.map(meanImputation);
+                features = encodedTokens.map(meanImputation).cache();
             } else {
                 /**
                  * Mean imputation mapper will convert string tokens to doubles as a part of the
                  * operation. If there is no mean imputation for any columns, tokens has to be
                  * converted into doubles.
                  */
-                features = encodedTokens.map(new StringArrayToDoubleArray());
+                features = encodedTokens.map(new StringArrayToDoubleArray()).cache();
             }
             return features;
        
