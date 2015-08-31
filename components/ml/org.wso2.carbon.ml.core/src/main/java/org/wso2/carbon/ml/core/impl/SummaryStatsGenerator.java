@@ -92,7 +92,7 @@ public class SummaryStatsGenerator implements Runnable {
         // extract the sample points and generate summary stats
         try {
             this.samplePoints = datasetProcessor.takeSample();
-            this.samplePoints.setIsGenerated(true);
+            this.samplePoints.setGenerated(true);
             this.headerMap = samplePoints.getHeader();
             this.columnData = samplePoints.getSamplePoints();
             this.missing = samplePoints.getMissing();
@@ -124,7 +124,7 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            this.samplePoints.setIsGenerated(false);
+            this.samplePoints.setGenerated(false);
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
             try {
                 dbService.updateSamplePoints(datasetVersionId, samplePoints);
