@@ -55,14 +55,13 @@ public class RecommendationUtils {
 		int productIndex = MLUtils.getFeatureIndex(workflow.getProductVariable(), headerRow, columnSeparator);
 		int ratingIndex = MLUtils.getFeatureIndex(workflow.getRatingVariable(), headerRow, columnSeparator);
 
-		List<Integer> observationList = getObservationList(workflow.getObservations());
-
 		JavaRDD<String[]> tokens = MLUtils.filterRows(columnSeparator, headerRow, lines,
 		                                              MLUtils.getImputeFeatureIndices(workflow,
 		                                                                              new ArrayList<Integer>(),
 		                                                                              MLConstants.DISCARD));
 
 		if (containsImplicitData) {
+			List<Integer> observationList = getObservationList(workflow.getObservations());
 			Map<String, String> parameters = workflow.getHyperParameters();
 			List<Double> weightList = getWeightList(parameters.get(MLConstants.WEIGHTS));
 			tokens = tokens.map(new ImplicitDataToRating(userIndex, productIndex, observationList, weightList));
