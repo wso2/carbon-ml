@@ -57,7 +57,6 @@ public class MLConstants {
     public static final String ISO_8859_1= "ISO-8859-1";
     
     public static final String TARGET_HOME_PROP = "target.home";
-    public static final String ML_THREAD_POOL_SIZE = "ml.thread.pool.size";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";

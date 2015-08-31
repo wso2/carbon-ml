@@ -59,16 +59,16 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
-
 import org.wso2.carbon.utils.ConfigurationContextService;
+
 import scala.Tuple2;
 
 /**
@@ -78,13 +78,32 @@ public class MLModelHandler {
     private static final Log log = LogFactory.getLog(MLModelHandler.class);
     private DatabaseService databaseService;
     private Properties mlProperties;
-    private ThreadExecutor threadExecutor;
+    private BlockingExecutor threadExecutor;
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         databaseService = valueHolder.getDatabaseService();
         mlProperties = valueHolder.getMlProperties();
-        threadExecutor = new ThreadExecutor(mlProperties);
+        String poolSizeStr = mlProperties.getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
+        String poolQueueSizeStr = mlProperties.getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_QUEUE_SIZE);
+        int poolSize = 50;
+        int poolQueueSize = 1000;
+        if (poolSizeStr != null) {
+            try {
+                poolSize = Integer.parseInt(poolSizeStr);
+            } catch (Exception ignore) {
+                // use the default
+            }
+        }
+        
+        if (poolQueueSizeStr != null) {
+            try {
+                poolQueueSize = Integer.parseInt(poolQueueSizeStr);
+            } catch (Exception ignore) {
+                // use the default
+            }
+        }
+        threadExecutor = new BlockingExecutor(poolSize, poolQueueSize);
     }
 
     /**
@@ -235,6 +254,7 @@ public class MLModelHandler {
 
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
+            threadExecutor.afterExecute(null, null);
 
             databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));

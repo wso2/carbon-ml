@@ -20,6 +20,8 @@
 	<Properties>
 		<!-- Defines the size of the thread pool used in WSO2 ML. -->
 		<Property name="ml.thread.pool.size" value="100" />
+		<!-- Defines the size of the blocked queue used by the thread pool of WSO2 ML. -->
+		<Property name="ml.thread.pool.queue.size" value="1000" />
 		<!-- Fully qualified name of the file input adapter to be used. -->
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
