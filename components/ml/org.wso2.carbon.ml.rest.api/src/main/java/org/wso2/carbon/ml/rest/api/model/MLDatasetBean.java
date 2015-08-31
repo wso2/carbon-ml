@@ -29,6 +29,7 @@ public class MLDatasetBean {
     private String comments;
     private String createdTime;
     private List<MLVersionBean> versions;
+    private String status;
     
     public long getId() {
         return id;
@@ -60,5 +61,10 @@ public class MLDatasetBean {
     public void setVersions(List<MLVersionBean> versions) {
         this.versions = versions;
     }
-    
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

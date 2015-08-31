@@ -359,13 +359,29 @@
         return true;
     }
     
-    function buildEmptyProjectDisplay(description, projectId, projectName, datasetId){
+    function buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus) {
         var display = 
         '<table>' +
             '<tr>' +
                 '<td class="c-padd project-description" valign="top">' + description + '</td>' +
-                '<td>' +
-                buildNewAnalysisUx(projectId, projectName, datasetId) +
+                '<td>';
+                // let user to create a new analysis of this project only if the dataset exists
+                if (datasetId != 0 && datasetStatus == "Available") {
+                    display += buildNewAnalysisUx(projectId, projectName, datasetId);
+                }
+                else if (datasetId != 0 && datasetStatus == "Busy") {
+                    var message = 'Dataset is busy with processing.';
+                    display += generateDatasetStatusNotification(message);                                                                        
+                }
+                else if (datasetId != 0 && datasetStatus == "Failed") {
+                    var message = 'Dataset does not contain successfully processed versions.';
+                    display += generateDatasetStatusNotification(message);                                                            
+                }
+                else {
+                    var message = 'Dataset of this project has been deleted.';
+                    display += generateDatasetStatusNotification(message);
+                }      
+                display += '' +
                 '</td>' +
             '</tr>' +
         '</table>';
@@ -425,7 +441,7 @@
     function loadProjectsOfDataset(datasetName) {
         $.ajax({
             type: "GET",
-            url: serverUrl+"/api/projects/analyses?datasetName="+datasetName,
+            url: serverUrl + "/api/projects/analyses?datasetName=" + datasetName,
             success: function(data) {
                 var tenantProjects = data;
 
@@ -482,6 +498,7 @@
                         var description = sanitize(tenantProjects[i]['description']);                        
                         var createdTime = sanitize(tenantProjects[i]['createdTime']);                        
                         var datasetId = sanitize(tenantProjects[i]['datasetId']);
+                        var datasetStatus = sanitize(tenantProjects[i]['datasetStatus']);                        
 
                         accordionPanel = '' + 
                             '<div class="panel panel-default">' +
@@ -518,7 +535,7 @@
                                     accordionPanel += '' +
                                     '<div class="panel-body">';
                                 if (noOfAnalyses == 0) {
-                                    accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId);
+                                    accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus);
                                 }
                                 else {
                                     accordionPanel += '' +
@@ -526,9 +543,21 @@
                                             '<tr>' +
                                                 '<td class="c-padd project-description" valign="top">' + description + '</td>' +
                                                 '<td>';
-                                                // let user to create a new analysis of this project only if the dataset exists
-                                                if (tenantProjects[i]['datasetId'] != 0) {
-                                                    accordionPanel += buildNewAnalysisUx(projectId, projectName, datasetId)
+                                                // let user to create a new analysis of this project only if the dataset is available
+                                                if (datasetId != 0 && datasetStatus == "Available") {
+                                                    accordionPanel += buildNewAnalysisUx(projectId, projectName, datasetId);
+                                                }
+                                                else if (datasetId != 0 && datasetStatus == "Busy") {
+                                                    var message = 'Dataset is busy with processing.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);                                                                        
+                                                }
+                                                else if (datasetId != 0 && datasetStatus == "Failed") {
+                                                    var message = 'Dataset does not contain successfully processed versions.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);                                                            
+                                                }
+                                                else {
+                                                    var message = 'Dataset of this project has been deleted.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);
                                                 }
                                     accordionPanel += '' +
                                                     '<div id="inline-list-notification-area"></div>' +
@@ -613,6 +642,15 @@
                 }
             });
         }    
+    }
+
+    function generateDatasetStatusNotification(message) {
+        notification =  '<div class="alert alert-info alert-dismissible" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<img src="../../images/icons/ico-alert.png" class="indi" />' +
+                            message +
+                        '</div>';
+        return notification;
     }
 
 </script>
