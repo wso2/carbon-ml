@@ -293,14 +293,23 @@ $( document ).ready(function() {
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
-        var fromAnalysis = getParameterByName('fromAnalysis')
+        var fromAnalysis = getParameterByName('fromAnalysis');
         window.location.href = '../algorithm/algorithm.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
     });	
 
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
     	var algorithmName = getParameterByName('algorithmName');    	
-        var fromAnalysis = getParameterByName('fromAnalysis')
+        var fromAnalysis = getParameterByName('fromAnalysis');
+
+        if(algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+            var weights = $('#Weights').val();
+            if(validateWeights(weights) == false) {
+                var errorText = 'Observation list length and weight length is not equal. Note that every observation should have a weight.';
+                    handleNotification(errorText, '#notification-area', 'warning');
+                return;
+            }
+        }
 
     	var jsonData= '';
     	var hyperParameters = [];
@@ -321,7 +330,7 @@ $( document ).ready(function() {
                 jsonData = "[".concat(jsonData,"]");
             },
             error: function(res) {
-                var errorText = res.responseText
+                var errorText = res.responseText;
                 handleNotification(errorText, '#notification-area', 'warning');
             }
     	});
@@ -403,6 +412,31 @@ $( document ).ready(function() {
 
 	});
 });
+
+function validateWeights(weights) {
+    var observationList = '';
+    var analysisId = getParameterByName('analysisId');
+    // get previously set observation list
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/observationList",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            observationList = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
+            handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    if(observationList != '') {
+        return Boolean(observationList.trim().split(",").length == weights.trim().split(",").length);
+    }
+
+    return Boolean(false);
+}
 
 function buildInput(displayName, id, value, description) {
 
