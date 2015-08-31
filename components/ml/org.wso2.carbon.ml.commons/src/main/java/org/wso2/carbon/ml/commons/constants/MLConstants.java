@@ -205,4 +205,40 @@ public class MLConstants {
             return false;
         }
     }
+
+    public enum DatasetVersionStatus {
+        IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
+
+        private String value;
+        private DatasetVersionStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum DatasetStatus {
+        AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
+
+        private String value;
+        private DatasetStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
 }

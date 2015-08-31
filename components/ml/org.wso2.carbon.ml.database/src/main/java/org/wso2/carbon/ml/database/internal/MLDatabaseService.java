@@ -488,14 +488,14 @@ public class MLDatabaseService implements DatabaseService {
                     SamplePoints samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5));
                     if(samplePoints.getIsGenerated() == true) {
                         versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
-                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_COMPLETE);
+                        versionset.setStatus(MLConstants.DatasetVersionStatus.COMPLETE.getValue());
                     }
                     else {
-                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_FAILED);
+                        versionset.setStatus(MLConstants.DatasetVersionStatus.FAILED.getValue());
                     }
                 }
                 else {
-                    versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_IN_PROGRESS);
+                    versionset.setStatus(MLConstants.DatasetVersionStatus.IN_PROGRESS.getValue());
                 }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -575,6 +575,13 @@ public class MLDatabaseService implements DatabaseService {
                 dataset.setDataType(result.getString(6));
                 dataset.setTenantId(tenantId);
                 dataset.setUserName(userName);
+                if(dataset.getId() != 0) {
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        dataset.setStatus(datasetStatus);
+                    }
+                }
                 datasets.add(dataset);
             }
             return datasets;
@@ -1537,6 +1544,11 @@ public class MLDatabaseService implements DatabaseService {
                 if(project.getDatasetId() != 0) {
                     MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
                     project.setDatasetName(dataset.getName());
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        project.setDatasetStatus(datasetStatus);
+                    }
                 }
                 projects.add(project);
             }

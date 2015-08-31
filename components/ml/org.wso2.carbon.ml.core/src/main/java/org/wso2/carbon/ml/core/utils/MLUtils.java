@@ -464,15 +464,15 @@ public class MLUtils {
             List<Integer> featureIndices) {
         String columnSeparator = String.valueOf(delimiter);
         HeaderFilter headerFilter = new HeaderFilter(headerRow);
-        JavaRDD<String> data = lines.filter(headerFilter);
+        JavaRDD<String> data = lines.filter(headerFilter).cache();
         Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens(pattern);
-        JavaRDD<String[]> tokens = data.map(lineToTokens);
+        JavaRDD<String[]> tokens = data.map(lineToTokens).cache();
 
         // get feature indices for discard imputation
         DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(featureIndices);
         // Discard the row if any of the impute indices content have a missing value
-        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
+        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter).cache();
 
         return tokensDiscardedRemoved;
     }
