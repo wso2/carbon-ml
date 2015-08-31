@@ -31,7 +31,6 @@ import org.wso2.carbon.ml.core.factories.DatasetProcessorFactory;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.utils.BlockingExecutor;
-import org.wso2.carbon.ml.core.utils.MLConstants;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
@@ -47,35 +46,15 @@ import java.util.*;
  */
 public class MLDatasetProcessor {
     private static final Log log = LogFactory.getLog(MLDatasetProcessor.class);
-    private Properties mlProperties;
     private SummaryStatisticsSettings summaryStatsSettings;
     private BlockingExecutor threadExecutor;
     private DatabaseService databaseService;
 
     public MLDatasetProcessor() {
-        mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
-        summaryStatsSettings = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings();
-        databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        String poolSizeStr = mlProperties.getProperty(MLConstants.ML_THREAD_POOL_SIZE);
-        String poolQueueSizeStr = mlProperties.getProperty(MLConstants.ML_THREAD_POOL_QUEUE_SIZE);
-        int poolSize = 50;
-        int poolQueueSize = 1000;
-        if (poolSizeStr != null) {
-            try {
-                poolSize = Integer.parseInt(poolSizeStr);
-            } catch (Exception ignore) {
-                // use the default
-            }
-        }
-        
-        if (poolQueueSizeStr != null) {
-            try {
-                poolQueueSize = Integer.parseInt(poolQueueSizeStr);
-            } catch (Exception ignore) {
-                // use the default
-            }
-        }
-        threadExecutor = new BlockingExecutor(poolSize, poolQueueSize);
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        summaryStatsSettings = valueHolder.getSummaryStatSettings();
+        databaseService = valueHolder.getDatabaseService();
+        threadExecutor = valueHolder.getThreadExecutor();
     }
 
     public List<MLDatasetVersion> getAllDatasetVersions(int tenantId, String userName, long datasetId)

@@ -84,26 +84,7 @@ public class MLModelHandler {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         databaseService = valueHolder.getDatabaseService();
         mlProperties = valueHolder.getMlProperties();
-        String poolSizeStr = mlProperties.getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
-        String poolQueueSizeStr = mlProperties.getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_QUEUE_SIZE);
-        int poolSize = 50;
-        int poolQueueSize = 1000;
-        if (poolSizeStr != null) {
-            try {
-                poolSize = Integer.parseInt(poolSizeStr);
-            } catch (Exception ignore) {
-                // use the default
-            }
-        }
-        
-        if (poolQueueSizeStr != null) {
-            try {
-                poolQueueSize = Integer.parseInt(poolQueueSizeStr);
-            } catch (Exception ignore) {
-                // use the default
-            }
-        }
-        threadExecutor = new BlockingExecutor(poolSize, poolQueueSize);
+        threadExecutor = valueHolder.getThreadExecutor();
     }
 
     /**
