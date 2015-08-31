@@ -402,7 +402,7 @@ public class MLModelHandler {
         }
 
         if (!isValidModelStatus(modelId)) {
-			String msg = String.format("The status of the model for model id %s is failed. This model cannot be used for prediction",
+			String msg = String.format("The status of the model for model id %s is not 'Complete'. The model may be in 'Not Started','In Progress' or 'Failed' state. This model cannot be used for prediction",
 							modelId);
 			throw new MLModelHandlerException(msg);
 		}

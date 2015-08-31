@@ -2650,8 +2650,8 @@ public class MLDatabaseService implements DatabaseService {
 			statement.setLong(1, modelId);
 			result = statement.executeQuery();
 			if (result.first()) {
-				if (result.getString("STATUS").equalsIgnoreCase("Failed"))
-					return false;
+				if (result.getString("STATUS").equalsIgnoreCase("Complete"))
+					return true;
 			} else {
 				throw new DatabaseHandlerException(
 						" Failed to find the model for model id " + modelId);
@@ -2665,6 +2665,7 @@ public class MLDatabaseService implements DatabaseService {
 			MLDatabaseUtils.closeDatabaseResources(connection, statement,
 					result);
 		}
-		return true;
+		//we consider anything other than "Complete" status as an invalid model.
+		return false;
 	}
 }
