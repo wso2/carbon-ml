@@ -486,7 +486,7 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setTargetPath(result.getString(4));
                 if(result.getBinaryStream(5) != null) {
                     SamplePoints samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5));
-                    if(samplePoints.getIsGenerated() == true) {
+                    if(samplePoints.isGenerated() == true) {
                         versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
                         versionset.setStatus(MLConstants.DatasetVersionStatus.COMPLETE.getValue());
                     }
@@ -618,6 +618,13 @@ public class MLDatabaseService implements DatabaseService {
                 dataset.setDataType(result.getString(6));
                 dataset.setTenantId(tenantId);
                 dataset.setUserName(userName);
+                if(dataset.getId() != 0) {
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        dataset.setStatus(datasetStatus);
+                    }
+                }
                 return dataset;
             } else {
                 return null;
