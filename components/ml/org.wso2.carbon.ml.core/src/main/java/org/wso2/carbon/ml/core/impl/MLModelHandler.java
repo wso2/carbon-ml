@@ -159,14 +159,13 @@ public class MLModelHandler {
         }
     }
     
-    public boolean isValidModelStatus(long modelId)
-			throws MLModelHandlerException {
-		try {
-			return databaseService.isValidModelStatus(modelId);
-		} catch (DatabaseHandlerException e) {
-			throw new MLModelHandlerException(e.getMessage(), e);
-		}
-	}
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
+        try {
+            return databaseService.isValidModelStatus(modelId, tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
 
 
     /**
@@ -401,11 +400,12 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
-        if (!isValidModelStatus(modelId)) {
-			String msg = String.format("The status of the model for model id %s is not 'Complete'. The model may be in 'Not Started','In Progress' or 'Failed' state. This model cannot be used for prediction",
-							modelId);
-			throw new MLModelHandlerException(msg);
-		}
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
         
         MLModel builtModel = retrieveModel(modelId);
 

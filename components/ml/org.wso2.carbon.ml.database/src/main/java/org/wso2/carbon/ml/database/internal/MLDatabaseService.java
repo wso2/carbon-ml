@@ -2639,33 +2639,33 @@ public class MLDatabaseService implements DatabaseService {
     }
     
     @Override
-	public boolean isValidModelStatus(long modelId) throws DatabaseHandlerException {
-		Connection connection = null;
-		ResultSet result = null;
-		PreparedStatement statement = null;
-		try {
-			connection = dbh.getDataSource().getConnection();
-			statement = connection
-					.prepareStatement(SQLQueries.GET_MODEL_STATUS);
-			statement.setLong(1, modelId);
-			result = statement.executeQuery();
-			if (result.first()) {
-				if (result.getString("STATUS").equalsIgnoreCase("Complete"))
-					return true;
-			} else {
-				throw new DatabaseHandlerException(
-						" Failed to find the model for model id " + modelId);
-			}
-		} catch (SQLException e) {
-			throw new DatabaseHandlerException(
-					" An error has occurred while fetching the status of the model for model id: "
-							+ modelId, e);
-		} finally {
-			// Close the database resources.
-			MLDatabaseUtils.closeDatabaseResources(connection, statement,
-					result);
-		}
-		//we consider anything other than "Complete" status as an invalid model.
-		return false;
-	}
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_MODEL_STATUS);
+            statement.setLong(1, modelId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                if (result.getString(1).equalsIgnoreCase(MLConstants.MODEL_STATUS_COMPLETE)) {
+                    return true;
+                }
+            } else {
+                throw new DatabaseHandlerException("Failed to find the model for model id " + modelId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    "An error has occurred while fetching the status of the model for model id: " + modelId + ": "
+                            + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+        // consider anything other than "Complete" status as an invalid model.
+        return false;
+    }
 }
