@@ -177,6 +177,15 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
+    
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
+        try {
+            return databaseService.isValidModelStatus(modelId, tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
+
 
     /**
      * @param type type of the storage file, hdfs etc.
@@ -411,6 +420,13 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+        
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset

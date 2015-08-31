@@ -308,11 +308,20 @@ public interface DatabaseService {
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
+     * Check whether the model is in a valid state
+     * @param modelId
+     * @return
+     * @throws DatabaseHandlerException
+     */
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws DatabaseHandlerException;
+    
+    /**
      * Get the id of the dataset-version used to generate the model
      * @param modelId  unique id of the model
      * @return
      * @throws DatabaseHandlerException
      */
+    
     public long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
 
     /**
