@@ -234,6 +234,8 @@ public class SQLQueries {
     public static final String DELETE_DATASET_SCHEMA = "DELETE FROM ML_DATASET_SCHEMA WHERE DATASET_SCHEMA_ID=?";
 
     public static final String DELETE_DATASET_VERSION = "DELETE FROM ML_DATASET_VERSION WHERE DATASET_VERSION_ID=?";
+    
+    public static final String GET_MODEL_STATUS = "SELECT STATUS FROM ML_MODEL WHERE MODEL_ID = ?";
     /*
      * private Constructor to prevent any other class from instantiating.
      */

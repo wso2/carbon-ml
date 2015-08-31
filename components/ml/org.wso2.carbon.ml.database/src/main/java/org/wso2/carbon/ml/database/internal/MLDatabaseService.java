@@ -2625,4 +2625,34 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
     }
+    
+    @Override
+	public boolean isValidModelStatus(long modelId) throws DatabaseHandlerException {
+		Connection connection = null;
+		ResultSet result = null;
+		PreparedStatement statement = null;
+		try {
+			connection = dbh.getDataSource().getConnection();
+			statement = connection
+					.prepareStatement(SQLQueries.GET_MODEL_STATUS);
+			statement.setLong(1, modelId);
+			result = statement.executeQuery();
+			if (result.first()) {
+				if (result.getString("STATUS").equalsIgnoreCase("Failed"))
+					return false;
+			} else {
+				throw new DatabaseHandlerException(
+						" Failed to find the model for model id " + modelId);
+			}
+		} catch (SQLException e) {
+			throw new DatabaseHandlerException(
+					" An error has occurred while fetching the status of the model for model id: "
+							+ modelId, e);
+		} finally {
+			// Close the database resources.
+			MLDatabaseUtils.closeDatabaseResources(connection, statement,
+					result);
+		}
+		return true;
+	}
 }
