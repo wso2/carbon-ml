@@ -321,6 +321,11 @@
 				<artifactId>org.wso2.carbon.ml.commons</artifactId>
 				<version>${ml.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.ml.wrangler</artifactId>
+                <version>${ml.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.wso2.carbon.analytics</groupId>
 				<artifactId>org.wso2.carbon.analytics.api</artifactId>
