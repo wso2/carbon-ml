@@ -57,6 +57,11 @@
 			<artifactId>org.wso2.carbon.ml.commons</artifactId>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.ml</groupId>
+            <artifactId>org.wso2.carbon.ml.wrangler</artifactId>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.wso2.carbon.analytics</groupId>
 			<artifactId>org.wso2.carbon.analytics.api</artifactId>
