@@ -44,6 +44,7 @@ public class MLCoreServiceValueHolder {
     private OutputEventAdapterService outputEventAdapterService;
     private Storage modelStorage;
     private Storage datasetStorage;
+    private BlockingExecutor threadExecutor;
     
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
@@ -158,6 +159,14 @@ public class MLCoreServiceValueHolder {
 
     public void setDatasetStorage(Storage datasetStorage) {
         this.datasetStorage = datasetStorage;
+    }
+
+    public BlockingExecutor getThreadExecutor() {
+        return threadExecutor;
+    }
+
+    public void setThreadExecutor(BlockingExecutor threadExecutor) {
+        this.threadExecutor = threadExecutor;
     }
 
 }

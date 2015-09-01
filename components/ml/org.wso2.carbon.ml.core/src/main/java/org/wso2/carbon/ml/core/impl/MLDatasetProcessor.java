@@ -30,9 +30,9 @@ import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.factories.DatasetProcessorFactory;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
@@ -46,16 +46,15 @@ import java.util.*;
  */
 public class MLDatasetProcessor {
     private static final Log log = LogFactory.getLog(MLDatasetProcessor.class);
-    private Properties mlProperties;
     private SummaryStatisticsSettings summaryStatsSettings;
-    private ThreadExecutor threadExecutor;
+    private BlockingExecutor threadExecutor;
     private DatabaseService databaseService;
 
     public MLDatasetProcessor() {
-        mlProperties = MLCoreServiceValueHolder.getInstance().getMlProperties();
-        summaryStatsSettings = MLCoreServiceValueHolder.getInstance().getSummaryStatSettings();
-        databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
-        threadExecutor = new ThreadExecutor(mlProperties);
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        summaryStatsSettings = valueHolder.getSummaryStatSettings();
+        databaseService = valueHolder.getDatabaseService();
+        threadExecutor = valueHolder.getThreadExecutor();
     }
 
     public List<MLDatasetVersion> getAllDatasetVersions(int tenantId, String userName, long datasetId)
@@ -244,6 +243,7 @@ public class MLDatasetProcessor {
         // start summary stats generation in a new thread, pass data set version id
         threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
                 datasetProcessor));
+        threadExecutor.afterExecute(null, null);
         log.info(String.format("[Created] %s", dataset));
 
     }

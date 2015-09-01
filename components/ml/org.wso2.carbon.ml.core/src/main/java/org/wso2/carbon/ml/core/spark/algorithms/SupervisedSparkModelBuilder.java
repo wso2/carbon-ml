@@ -21,8 +21,6 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -70,7 +68,6 @@ import scala.Tuple2;
  * Build supervised models supported by Spark.
  */
 public class SupervisedSparkModelBuilder extends MLModelBuilder {
-    private static final Log log = LogFactory.getLog(SupervisedSparkModelBuilder.class);
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
@@ -93,16 +90,18 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             String typeOfResponseVariable = getTypeOfResponseVariable(workflow.getResponseVariable(),
                     workflow.getFeatures());
 
-            if(typeOfResponseVariable == null)
-                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning" +
-                        "algorithms.");
+            if (typeOfResponseVariable == null) {
+                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning "
+                        + "algorithms.");
+            }
 
             // Stops model building if a categorical attribute is used with numerical prediction
-            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue()) &&
-                    typeOfResponseVariable.equals(FeatureType.CATEGORICAL))
-                throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable() +
-                        " cannot be used as the response variable of the Numerical Prediction algorithm: " +
-                        workflow.getAlgorithmName());
+            if (workflow.getAlgorithmClass().equals(AlgorithmType.NUMERICAL_PREDICTION.getValue())
+                    && typeOfResponseVariable.equals(FeatureType.CATEGORICAL)) {
+                throw new MLModelBuilderException("Categorical attribute " + workflow.getResponseVariable()
+                        + " cannot be used as the response variable of the Numerical Prediction algorithm: "
+                        + workflow.getAlgorithmName());
+            }
 
             // pre-processing
             JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
@@ -113,7 +112,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
             DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
 
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
+            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint).cache();
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
@@ -249,6 +248,11 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
                         hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
             }
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
 
             Vector weights = logisticRegressionModel.weights();
             if (!isValidWeights(weights)) {
@@ -322,6 +326,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -358,6 +368,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = randomForest.test(randomForestModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -408,6 +424,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = svmModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -465,6 +487,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = linearRegressionModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -518,6 +546,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = ridgeRegressionModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -571,6 +605,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = lassoModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -619,6 +659,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
             NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData,
                     Double.parseDouble(hyperParameters.get(MLConstants.LAMBDA)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);

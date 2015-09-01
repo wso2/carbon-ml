@@ -52,6 +52,8 @@ public class MLDataset {
     
     private boolean containsHeader;
 
+    private String status;
+
     public String getName() {
         return name;
     }
@@ -140,12 +142,20 @@ public class MLDataset {
         this.containsHeader = containsHeader;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "MLDataset [id=" + id + ", name=" + name + ", tenantId=" + tenantId + ", userName=" + userName
                 + ", dataSourceType=" + dataSourceType + ", dataTargetType=" + dataTargetType + ", sourcePath="
                 + sourcePath + ", dataType=" + dataType + ", comments=" + comments + ", version=" + version
-                + ", containsHeader=" + containsHeader + "]";
+                + ", containsHeader=" + containsHeader + ", status=" + status + "]";
     }
 
 }

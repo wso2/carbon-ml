@@ -59,16 +59,16 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
-
 import org.wso2.carbon.utils.ConfigurationContextService;
+
 import scala.Tuple2;
 
 /**
@@ -78,13 +78,13 @@ public class MLModelHandler {
     private static final Log log = LogFactory.getLog(MLModelHandler.class);
     private DatabaseService databaseService;
     private Properties mlProperties;
-    private ThreadExecutor threadExecutor;
+    private BlockingExecutor threadExecutor;
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         databaseService = valueHolder.getDatabaseService();
         mlProperties = valueHolder.getMlProperties();
-        threadExecutor = new ThreadExecutor(mlProperties);
+        threadExecutor = valueHolder.getThreadExecutor();
     }
 
     /**
@@ -158,6 +158,15 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
+    
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
+        try {
+            return databaseService.isValidModelStatus(modelId, tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
+
 
     /**
      * @param type type of the storage file, hdfs etc.
@@ -235,6 +244,7 @@ public class MLModelHandler {
 
             // build the model asynchronously
             threadExecutor.execute(new ModelBuilder(modelId, context));
+            threadExecutor.afterExecute(null, null);
 
             databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
@@ -391,6 +401,13 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+        
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset

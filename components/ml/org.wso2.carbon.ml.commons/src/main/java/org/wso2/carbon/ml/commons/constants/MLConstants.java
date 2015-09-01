@@ -57,7 +57,6 @@ public class MLConstants {
     public static final String ISO_8859_1= "ISO-8859-1";
     
     public static final String TARGET_HOME_PROP = "target.home";
-    public static final String ML_THREAD_POOL_SIZE = "ml.thread.pool.size";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";
@@ -203,6 +202,42 @@ public class MLConstants {
                     return true;
                 }
             return false;
+        }
+    }
+
+    public enum DatasetVersionStatus {
+        IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
+
+        private String value;
+        private DatasetVersionStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum DatasetStatus {
+        AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
+
+        private String value;
+        private DatasetStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }
