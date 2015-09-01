@@ -25,6 +25,7 @@ import org.apache.spark.api.java.function.Function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * Implementation of {@link SparkOpration} for Extract operation in Wrangler.
  */
@@ -50,55 +51,69 @@ public class SparkOperationExtract extends SparkOpration {
 		return extract(data, columnId, after, before, on);
 	}
 
+	/**
+	 * Apply extract operation based on a position
+	 *
+	 * @param data      JavaRDD on which transformations are executed
+	 * @param columnId  Integer representing the column
+	 * @param positions String containing the index
+	 */
 	private JavaRDD<String[]> extractOnIndex(JavaRDD<String[]> data, final int columnId,
 	                                         final String positions) {
 		return data.map(new Function<String[], String[]>() {
-			                @Override public String[] call(String[] row) throws Exception {
-				                String[] newRow = new String[row.length + 1];
-				                if (row[columnId] == null) {
-					                for (int i = 0, j = 0; i < row.length; i++, j++) {
-						                if (row[i] == null) {
-							                newRow[j] = null;
-							                if (i == columnId) {
-								                j++;
-								                newRow[j] = null;
-							                }
-						                } else {
-							                newRow[j] = row[i];
-						                }
-					                }
+			@Override public String[] call(String[] row) throws Exception {
+				String[] newRow = new String[row.length + 1];
+				if (row[columnId] == null) {
+					for (int i = 0, j = 0; i < row.length; i++, j++) {
+						if (row[i] == null) {
+							newRow[j] = null;
+							if (i == columnId) {
+								j++;
+								newRow[j] = null;
+							}
+						} else {
+							newRow[j] = row[i];
+						}
+					}
 
-					                return newRow;
-				                } else {
-					                for (int i = 0, j = 0; i < row.length; i++, j++) {
-						                if (columnId == i) {
-							                String val = row[i];
-							                String positions1 =
-									                positions.substring(1, positions.length() - 1);
-							                String[] positions2 = positions1.split(",");
-							                int p1 = Integer.parseInt(positions2[0]);
-							                int p2 = Integer.parseInt(positions2[1]);
-							                newRow[j] = val;
-							                if (p2 < val.length()) {
-								                newRow[++j] = val.substring(p1, p2);
-							                } else if (p1 < val.length()) {
-								                newRow[++j] = val.substring(p1);
-							                } else {
-								                newRow[++j] = null;
-							                }
-						                } else {
-							                newRow[j] = row[i];
-						                }
-					                }
-					                return newRow;
-				                }
-			                }
-		                });
+					return newRow;
+				} else {
+					for (int i = 0, j = 0; i < row.length; i++, j++) {
+						if (columnId == i) {
+							String val = row[i];
+							String positions1 = positions.substring(1, positions.length() - 1);
+							String[] positions2 = positions1.split(",");
+							int p1 = Integer.parseInt(positions2[0]);
+							int p2 = Integer.parseInt(positions2[1]);
+							newRow[j] = val;
+							if (p2 < val.length()) {
+								newRow[++j] = val.substring(p1, p2);
+							} else if (p1 < val.length()) {
+								newRow[++j] = val.substring(p1);
+							} else {
+								newRow[++j] = null;
+							}
+						} else {
+							newRow[j] = row[i];
+						}
+					}
+					return newRow;
+				}
+			}
+		});
 	}
 
+	/**
+	 * Apply extract operation based on a regex
+	 *
+	 * @param data     JavaRDD on which transformations are executed
+	 * @param columnId Integer representing the column
+	 * @param after    String after which operation is applied
+	 * @param before   String before which operation is applied
+	 * @param on       String on which operation is applied
+	 */
 	private JavaRDD<String[]> extract(JavaRDD<String[]> data, final int columnId,
-	                                         final String after, final String before,
-	                                         final String on) {
+	                                  final String after, final String before, final String on) {
 		System.out.println("Split - " + columnId + " " + after + " " + before + " " + on);
 		return data.map(new Function<String[], String[]>() {
 			@Override public String[] call(String[] row) throws Exception {

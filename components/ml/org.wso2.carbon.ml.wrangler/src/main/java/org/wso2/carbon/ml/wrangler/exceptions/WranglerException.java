@@ -22,4 +22,8 @@ public class WranglerException extends Exception{
 		super(message);
 	}
 
+	public WranglerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

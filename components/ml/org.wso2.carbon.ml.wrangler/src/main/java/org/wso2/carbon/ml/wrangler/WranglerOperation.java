@@ -16,53 +16,87 @@
 
 package org.wso2.carbon.ml.wrangler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.wrangler.operations.*;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.HashMap;
 
+/**
+ * This class contains a wrangler operation and its parameters
+ */
 public class WranglerOperation {
-	HashMap<String, String> paramters;
+	private static final Log logger = LogFactory.getLog(WranglerOperation.class);
+	HashMap<String, String> parameters;
 	String operation;
 	WranglerOperation nextOperation;
 
 	public WranglerOperation() {
 		nextOperation = null;
-		paramters = new HashMap<String, String>();
+		parameters = new HashMap<String, String>();
 	}
 
+	/**
+	 * Set the next operation
+	 *
+	 * @param nextOperation WranglerOperation
+	 */
 	public void setNextOperation(WranglerOperation nextOperation) {
 		this.nextOperation = nextOperation;
 	}
 
+	/**
+	 * Get the next operation
+	 *
+	 * @return next WranglerOperation
+	 */
 	public WranglerOperation getNextOperation() {
 		return nextOperation;
 	}
 
+	/**
+	 * Get the current operation
+	 *
+	 * @return String current operation
+	 */
 	public String getOperation() {
 		return operation;
 	}
 
+	/**
+	 * Set the current operation
+	 *
+	 * @param operation String
+	 */
 	public void setOperation(String operation) {
 		this.operation = operation;
 	}
 
 	public HashMap<String, String> getParameters() {
-		return paramters;
+		return parameters;
 	}
 
 	public String getParameter(String parameter) {
-		return paramters.get(parameter);
+		return parameters.get(parameter);
 	}
 
 	public void addParameter(String param, String value) {
 		if (value.matches("\".*\"")) {
 			value = value.substring(1, value.length() - 1);
 		}
-		paramters.put(param, value);
+		parameters.put(param, value);
 	}
 
+	/**
+	 * Apply the current operation on a dataset
+	 *
+	 * @param jsc      JavaSparkContext
+	 * @param data     JavaRDD on which operation is executed
+	 * @param wrangler Wrangler
+	 * @return JavaRDD on which operation is executed
+	 */
 	public JavaRDD<String[]> executeOperation(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                          Wrangler wrangler) {
 		SparkOpration so;
@@ -87,12 +121,14 @@ public class WranglerOperation {
 		return so.execute(jsc, data, this, wrangler);
 	}
 
+	/**
+	 * Log the current operation and its parameters
+	 */
 	public void printOperation() {
-		System.out.println(operation);
-		for (String k : paramters.keySet()) {
-			System.out.println(k + " - " + paramters.get(k));
+		logger.info(operation);
+		for (String k : parameters.keySet()) {
+			logger.info(k + " - " + parameters.get(k));
 		}
-		System.out.println("================================");
 	}
 
 }

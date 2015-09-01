@@ -24,6 +24,7 @@ import org.apache.spark.api.java.function.Function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * Implementation of {@link SparkOpration} for Split operation in Wrangler.
  */
@@ -49,6 +50,13 @@ public class SparkOperationSplit extends SparkOpration {
 		return split(data, columnId, after, before, on);
 	}
 
+	/**
+	 * Apply split operation based on a position
+	 *
+	 * @param data      JavaRDD on which transformations are executed
+	 * @param columnId  Integer representing the column
+	 * @param positions String containing the index
+	 */
 	private JavaRDD<String[]> splitOnIndex(JavaRDD<String[]> data, final int columnId,
 	                                       final String positions) {
 		return data.map(new Function<String[], String[]>() {
@@ -94,6 +102,16 @@ public class SparkOperationSplit extends SparkOpration {
 			}
 		});
 	}
+
+	/**
+	 * Apply split operation based on a regex
+	 *
+	 * @param data     JavaRDD on which transformations are executed
+	 * @param columnId Integer representing the column
+	 * @param after    String after which operation is applied
+	 * @param before   String before which operation is applied
+	 * @param on       String on which operation is applied
+	 */
 
 	private JavaRDD<String[]> split(JavaRDD<String[]> data, final int columnId, final String after,
 	                                final String before, final String on) {

@@ -31,7 +31,7 @@ public class MLWranglerServiceDS {
 			context.getBundleContext().registerService(WranglerService.class.getName(), wranglerService, null);
 
 		} catch (Throwable e) {
-			log.error("Could not create ModelService: " + e.getMessage(), e);
+			log.error("Could not create WranglerService: " + e.getMessage(), e);
 		}
 	}
 
