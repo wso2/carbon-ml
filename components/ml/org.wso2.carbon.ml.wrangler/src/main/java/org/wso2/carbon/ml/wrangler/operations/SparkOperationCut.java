@@ -24,6 +24,7 @@ import org.apache.spark.api.java.function.Function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * Implementation of {@link SparkOpration} for Cut operation in Wrangler.
  */
@@ -48,44 +49,58 @@ public class SparkOperationCut extends SparkOpration {
 		return cut(data, columnId, after, before, on);
 	}
 
+	/**
+	 * Apply cut operation based on a position
+	 *
+	 * @param data      JavaRDD on which transformations are executed
+	 * @param columnId  Integer representing the column
+	 * @param positions String containing the index
+	 */
 	private JavaRDD<String[]> cutOnIndex(JavaRDD<String[]> data, final int columnId,
 	                                     final String positions) {
 		return data.map(new Function<String[], String[]>() {
-			                @Override public String[] call(String[] row) throws Exception {
-				                String[] newRow = new String[row.length + 1];
-				                if (row[columnId] == null) {
-					                return row;
-				                } else {
-					                for (int i = 0; i < row.length; i++) {
-						                if (columnId == i) {
-							                String val = row[i];
-							                String positions1 =
-									                positions.substring(1, positions.length() - 1);
-							                String[] positions2 = positions1.split(",");
-							                int p1 = Integer.parseInt(positions2[0]);
-							                int p2 = Integer.parseInt(positions2[1]);
-							                newRow[i] = val;
-							                if (p2 < val.length()) {
-								                newRow[i] = val.substring(0, p1)
-								                               .concat(val.substring(p2,
-								                                                     val.length()));
-							                } else if (p1 < val.length()) {
-								                newRow[i] = val.substring(0, p1);
-							                } else {
-								                newRow[i] = row[i];
-							                }
-						                } else {
-							                newRow[i] = row[i];
-						                }
-					                }
-					                return newRow;
-				                }
-			                }
-		                });
+			@Override public String[] call(String[] row) throws Exception {
+				String[] newRow = new String[row.length + 1];
+				if (row[columnId] == null) {
+					return row;
+				} else {
+					for (int i = 0; i < row.length; i++) {
+						if (columnId == i) {
+							String val = row[i];
+							String positions1 = positions.substring(1, positions.length() - 1);
+							String[] positions2 = positions1.split(",");
+							int p1 = Integer.parseInt(positions2[0]);
+							int p2 = Integer.parseInt(positions2[1]);
+							newRow[i] = val;
+							if (p2 < val.length()) {
+								newRow[i] = val.substring(0, p1)
+								               .concat(val.substring(p2, val.length()));
+							} else if (p1 < val.length()) {
+								newRow[i] = val.substring(0, p1);
+							} else {
+								newRow[i] = row[i];
+							}
+						} else {
+							newRow[i] = row[i];
+						}
+					}
+					return newRow;
+				}
+			}
+		});
 	}
 
-	private JavaRDD<String[]> cut(JavaRDD<String[]> data, final int columnId,
-	                                     final String after, final String before, final String on) {
+	/**
+	 * Apply cut operation based on a regex
+	 *
+	 * @param data     JavaRDD on which transformations are executed
+	 * @param columnId Integer representing the column
+	 * @param after    String after which operation is applied
+	 * @param before   String before which operation is applied
+	 * @param on       String on which operation is applied
+	 */
+	private JavaRDD<String[]> cut(JavaRDD<String[]> data, final int columnId, final String after,
+	                              final String before, final String on) {
 		System.out.println("Split - " + columnId + " " + after + " " + before + " " + on);
 		return data.map(new Function<String[], String[]>() {
 			@Override public String[] call(String[] row) throws Exception {

@@ -23,6 +23,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
 import java.util.*;
+
 /**
  * Implementation of {@link SparkOpration} for Filter operation in Wrangler.
  */
@@ -47,6 +48,11 @@ public class SparkOperationFilter extends SparkOpration {
 		return null;
 	}
 
+	/**
+	 * Apply filter operation on empty rows
+	 *
+	 * @param data JavaRDD on which transformations are executed
+	 */
 	private JavaRDD<String[]> filter_empty(JavaRDD<String[]> data) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
@@ -64,8 +70,15 @@ public class SparkOperationFilter extends SparkOpration {
 		});
 	}
 
+	/**
+	 * Apply filter operation on a row
+	 *
+	 * @param jsc     JavaSparkContext
+	 * @param data    JavaRDD on which transformations are executed
+	 * @param indices String representing the rows to be filtered
+	 */
 	private JavaRDD<String[]> filter_rowIndex(JavaSparkContext jsc, JavaRDD<String[]> data,
-	                                                 String indices) {
+	                                          String indices) {
 		String[] indecesList = indices.substring(1, indices.length() - 1).split(",");
 		ArrayList<Integer> indecesList2 = new ArrayList<Integer>();
 		for (int i = 0; i < indecesList.length; i++) {
@@ -83,8 +96,15 @@ public class SparkOperationFilter extends SparkOpration {
 		return jsc.parallelize(list);
 	}
 
+	/**
+	 * Apply filter operation based on a column value
+	 *
+	 * @param data     JavaRDD on which transformations are executed
+	 * @param columnId Integer representing the column
+	 * @param value    String representing the value to be compared
+	 */
 	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId,
-	                                        final String value) {
+	                                 final String value) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
 				if (row[columnId] == null)
@@ -98,6 +118,12 @@ public class SparkOperationFilter extends SparkOpration {
 		});
 	}
 
+	/**
+	 * Apply filter operation if a column is empty
+	 *
+	 * @param data     JavaRDD on which transformations are executed
+	 * @param columnId Integer representing the column
+	 */
 	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {

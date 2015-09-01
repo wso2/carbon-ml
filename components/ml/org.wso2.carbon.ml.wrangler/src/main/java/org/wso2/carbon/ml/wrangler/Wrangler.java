@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.wso2.carbon.ml.wrangler.exceptions.WranglerException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -28,16 +29,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * This class contains all the wrangler operations and relevant data
+ */
 public class Wrangler {
 	private static final Log logger = LogFactory.getLog(Wrangler.class);
 
-	WranglerOperation currentOperation;
-	WranglerOperation previousOperation;
-	ArrayList<String> columns;
-	ArrayList<Boolean> columnsSplit;
-	ArrayList<Boolean> columnsExtract;
-	WranglerOperation firstOperation;
+	private WranglerOperation currentOperation;
+	private WranglerOperation previousOperation;
+	private ArrayList<String> columns;
+	private ArrayList<Boolean> columnsSplit;
+	private ArrayList<Boolean> columnsExtract;
+	private WranglerOperation firstOperation;
 
 	public Wrangler() {
 		columns = new ArrayList<String>();
@@ -46,14 +49,18 @@ public class Wrangler {
 		currentOperation = null;
 		previousOperation = null;
 	}
-
+	/**
+	 * Add a new Wrangler script from a file
+	 *
+	 * @param scriptPath String file path
+	 */
 	public void addFileScript(JavaRDD<String[]> data, String scriptPath) {
 		Path script = Paths.get(scriptPath);
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(script);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		boolean flag = false;
 
@@ -64,16 +71,28 @@ public class Wrangler {
 			flag = parseLine(line, flag, currentOperation);
 		}
 	}
-
-	public void addScript(String script) {
-		boolean flag = false;
-		addNewOperation();
-		String[] lines = script.split("\n");
-		for(String line:lines){
-			flag = parseLine(line, flag, currentOperation);
+	/**
+	 * Add a new Wrangler script
+	 *
+	 * @param script String
+	 * @throws WranglerException
+	 */
+	public void addScript(String script) throws WranglerException{
+		try {
+			boolean flag = false;
+			addNewOperation();
+			String[] lines = script.split("\n");
+			for (String line : lines) {
+				flag = parseLine(line, flag, currentOperation);
+			}
+		}catch (Exception e){
+			throw new WranglerException("Error while parsing the script"+e.getMessage(),e);
 		}
 	}
 
+	/**
+	 * Add a new Wrangler Operation
+	 */
 	public void addNewOperation() {
 		previousOperation = currentOperation;
 		currentOperation = new WranglerOperation();
@@ -84,18 +103,31 @@ public class Wrangler {
 		}
 	}
 
+	/**
+	 * Execute all the wrangler operations on a dataset
+	 *
+	 * @param jsc  JavaSparkContext
+	 * @param data JavaRDD on which transformations are executed
+	 * @return JavaRDD on which transformations are executed
+	 */
 	public JavaRDD<String[]> executeOperations(JavaSparkContext jsc, JavaRDD<String[]> data) {
 		WranglerOperation nextOperation = this.firstOperation;
 		while (nextOperation.nextOperation != null) {
-//			System.out.println("#### " + nextOperation.getOperation());
-//			this.printColumns();
 			data = nextOperation.executeOperation(jsc, data, this);
 			nextOperation = nextOperation.getNextOperation();
 		}
 		return data;
 	}
 
-	private boolean parseLine(String line, boolean flag, WranglerOperation wo) {
+	/**
+	 * Parse a single line in the input script
+	 *
+	 * @param line              String representing the line to be passed
+	 * @param flag              Boolean to identify a new operation
+	 * @param wranglerOperation WranglerOperation defined by current line in the script
+	 * @return flag value
+	 */
+	private boolean parseLine(String line, boolean flag, WranglerOperation wranglerOperation) {
 		Pattern pattern;
 		Matcher matcher;
 
@@ -114,21 +146,19 @@ public class Wrangler {
 			matcher.find();
 			String operation = matcher.group();
 			operation = operation.substring(1, operation.length() - 1);
-			wo.setOperation(operation);
+			wranglerOperation.setOperation(operation);
 			flag = true;
 			line = line.substring(9);
 		}
 		if (line.matches(".*dw\\.[a-zA-Z_]+\\(.*")) {
 			String l1 = line.substring(1, line.indexOf('('));
-			//System.out.println("+++++"+l1+"++++++++");
 			pattern = Pattern.compile("\\.[a-zA-Z_]+\\(");
 			matcher = pattern.matcher(line);
 			matcher.find();
 			matcher.find();
 			String operation = matcher.group();
 			operation = operation.substring(1, operation.length() - 1);
-			//System.out.println("+++++"+operation+"++++++++");
-			wo.addParameter(l1, operation);
+			wranglerOperation.addParameter(l1, operation);
 
 			line = line.replaceAll(".*dw\\.[a-zA-Z_]+\\(", "");
 
@@ -141,17 +171,13 @@ public class Wrangler {
 				String param = matcher.group();
 				param = param.substring(1, param.length() - 1);
 				line = line.substring(matcher.end());
-
-				if (line.matches(".*dw\\.[a-zA-Z_]+\\(.*")) {
-					//System.out.println(line);
-				}
 				String value = line.substring(matcher.groupCount(), line.length() - 1);
 				if (param.equals("column")) {
 					if (value.length() > 4)
 						value = value.substring(2, value.length() - 2);
 				}
 				if (!value.equals("undefined")) {
-					wo.addParameter(param, value);
+					wranglerOperation.addParameter(param, value);
 				}
 			}
 
@@ -159,6 +185,11 @@ public class Wrangler {
 		return flag;
 	}
 
+	/**
+	 * Initiate the columns for a dataset
+	 *
+	 * @param numberOfColumns int
+	 */
 	public void initColumns(int numberOfColumns) {
 		if (numberOfColumns == 1) {
 			columns.add(0, "data");
@@ -171,17 +202,31 @@ public class Wrangler {
 			columnsSplit.add(i, true);
 		}
 	}
-
+	/**
+	 * Log the columns
+	 */
 	public void printColumns() {
 		for (String s : columns) {
-			System.out.println("- " + s);
+			logger.info("- " + s);
 		}
 	}
 
+	/**
+	 * Get the column index
+	 *
+	 * @param columnName String
+	 * @return column index
+	 */
 	public int getColumnId(String columnName) {
 		return columns.indexOf(columnName);
 	}
 
+	/**
+	 * Remove a column by name
+	 *
+	 * @param columnName String
+	 * @return index of the column removed
+	 */
 	public int removeColumn(String columnName) {
 		int id = columns.indexOf(columnName);
 		columns.remove(columnName);
@@ -198,6 +243,12 @@ public class Wrangler {
 		return id;
 	}
 
+	/**
+	 * Add a column
+	 *
+	 * @param columnName  String
+	 * @param columnIndex int
+	 */
 	public void addColumn(String columnName, int columnIndex) {
 		if (columnName.equals("split")) {
 			boolean first = false;
@@ -228,6 +279,12 @@ public class Wrangler {
 		}
 	}
 
+	/**
+	 * Get the column index of a specific operation
+	 *
+	 * @param wranglerOperation WranglerOperation
+	 * @return column index
+	 */
 	public int getColumnId(WranglerOperation wranglerOperation) {
 		String columnName = wranglerOperation.getParameter("column");
 		return columns.indexOf(columnName);

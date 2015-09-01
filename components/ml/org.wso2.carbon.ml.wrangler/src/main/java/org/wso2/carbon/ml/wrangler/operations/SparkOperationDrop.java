@@ -32,7 +32,12 @@ public class SparkOperationDrop extends SparkOpration {
 		int columnIndex = wrangler.removeColumn(columnName);
 		return drop(data, columnIndex);
 	}
-
+	/**
+	 * Apply drop operation on a column
+	 *
+	 * @param data      JavaRDD on which transformations are executed
+	 * @param columnId  Integer representing the column
+	 */
 	private JavaRDD<String[]> drop(JavaRDD<String[]> data, final int columnId) {
 		return data.map(new Function<String[], String[]>() {
 			@Override public String[] call(String[] row) throws Exception {

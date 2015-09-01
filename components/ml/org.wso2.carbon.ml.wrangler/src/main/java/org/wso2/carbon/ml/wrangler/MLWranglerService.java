@@ -18,6 +18,7 @@ package org.wso2.carbon.ml.wrangler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.ml.wrangler.exceptions.WranglerException;
 
 public class MLWranglerService implements WranglerService {
 
@@ -30,8 +31,13 @@ public class MLWranglerService implements WranglerService {
 
 	@Override
 	public void addScript(String script) {
-		wrangler.addScript(script);
-		logger.info("Script added");
+		try{
+			wrangler.addScript(script);
+			logger.info("Script successfully added");
+		}catch (WranglerException e){
+			String msg = "Failed to add the script";
+			logger.error(msg,e);
+		}
 	}
 
 	@Override
