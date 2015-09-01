@@ -32,18 +32,17 @@ public class SparkOperationFilter extends SparkOpration {
 	                                           WranglerOperation wranglerOperation,
 	                                           Wrangler wrangler) {
 		int columnId = wrangler.getColumnId(wranglerOperation);
-		switch (wranglerOperation.getParameter("conditions")) {
-			case "is_null":
-				String columnName = wranglerOperation.getParameter("lcol");
-				columnId = wrangler.getColumnId(columnName);
-				return filter(data, columnId);
-			case "rowIndex":
-				return filter_rowIndex(jsc, data, wranglerOperation.getParameter("indices"));
-			case "eq":
-				return filter(data, columnId, wranglerOperation.getParameter("value"));
-			case "empty":
-				return filter_empty(data);
-
+		String s = wranglerOperation.getParameter("conditions");
+		if (s.equals("is_null")) {
+			String columnName = wranglerOperation.getParameter("lcol");
+			columnId = wrangler.getColumnId(columnName);
+			return filter(data, columnId);
+		} else if (s.equals("rowIndex")) {
+			return filter_rowIndex(jsc, data, wranglerOperation.getParameter("indices"));
+		} else if (s.equals("eq")) {
+			return filter(data, columnId, wranglerOperation.getParameter("value"));
+		} else if (s.equals("empty")) {
+			return filter_empty(data);
 		}
 		return null;
 	}

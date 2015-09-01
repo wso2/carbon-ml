@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.ml.wrangler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
@@ -28,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Wrangler {
+	private static final Log logger = LogFactory.getLog(Wrangler.class);
+
 	WranglerOperation currentOperation;
 	WranglerOperation previousOperation;
 	ArrayList<String> columns;
@@ -43,7 +47,7 @@ public class Wrangler {
 		previousOperation = null;
 	}
 
-	public void addScript(JavaRDD<String[]> data, String scriptPath) {
+	public void addFileScript(JavaRDD<String[]> data, String scriptPath) {
 		Path script = Paths.get(scriptPath);
 		Scanner scanner = null;
 		try {
@@ -55,12 +59,18 @@ public class Wrangler {
 
 		addNewOperation();
 
-		//this.initColumns(numberOfColumns);
-		//this.printColumns();
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			flag = parseLine(line, flag, currentOperation);
-			//System.out.println(flag);
+		}
+	}
+
+	public void addScript(String script) {
+		boolean flag = false;
+		addNewOperation();
+		String[] lines = script.split("\n");
+		for(String line:lines){
+			flag = parseLine(line, flag, currentOperation);
 		}
 	}
 
@@ -77,8 +87,8 @@ public class Wrangler {
 	public JavaRDD<String[]> executeOperations(JavaSparkContext jsc, JavaRDD<String[]> data) {
 		WranglerOperation nextOperation = this.firstOperation;
 		while (nextOperation.nextOperation != null) {
-			System.out.println("#### " + nextOperation.getOperation());
-			this.printColumns();
+//			System.out.println("#### " + nextOperation.getOperation());
+//			this.printColumns();
 			data = nextOperation.executeOperation(jsc, data, this);
 			nextOperation = nextOperation.getNextOperation();
 		}
@@ -94,7 +104,6 @@ public class Wrangler {
 			if (flag) {
 				this.addNewOperation();
 			}
-			//System.out.println("##############");
 			return false;
 		}
 
@@ -105,7 +114,6 @@ public class Wrangler {
 			matcher.find();
 			String operation = matcher.group();
 			operation = operation.substring(1, operation.length() - 1);
-			//System.out.println("+++++"+operation+"++++++++");
 			wo.setOperation(operation);
 			flag = true;
 			line = line.substring(9);
