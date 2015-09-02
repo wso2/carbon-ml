@@ -22,8 +22,11 @@ import java.io.InputStream;
 
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
@@ -66,10 +69,8 @@ public class FileDatasetProcessor extends DatasetProcessor {
             setTargetPath(ioFactory.getTargetPath(dataset.getName() + "." + dataset.getTenantId() + "."
                     + System.currentTimeMillis()));
             outputAdapter.write(getTargetPath(), inputStream);
-            // extract sample points
-            setSamplePoints(MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings().getSampleSize(), dataset.isContainsHeader(),
-                    dataset.getDataSourceType(), dataset.getTenantId()));
-        } catch (Exception e) {
+            setFirstLine(MLUtils.getFirstLine(getTargetPath()));
+        } catch (MLOutputAdapterException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
             if (inputStream != null) {
@@ -79,6 +80,18 @@ public class FileDatasetProcessor extends DatasetProcessor {
                     handleIgnoreException("Failed to close the input stream.", e);
                 }
             }
+        }
+    }
+
+    @Override
+    public SamplePoints takeSample() throws MLDataProcessingException {
+        MLDataset dataset = getDataset();
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        try {
+            return MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings()
+                    .getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
+        } catch (MLMalformedDatasetException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
         }
     }
 

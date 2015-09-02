@@ -34,8 +34,8 @@ public abstract class DatasetProcessor {
     private DatasetType type = null;
     private MLDataset dataset = null;
     private String targetPath = null;
-    private SamplePoints samplePoints = null;
-
+    private String firstLine = null;
+    
     public DatasetProcessor(DatasetType type, MLDataset dataset) {
         this.setType(type);
         this.setDataset(dataset);
@@ -57,12 +57,19 @@ public abstract class DatasetProcessor {
     }
     
     /**
-     * Process a given dataset and use {@link DatasetProcessor#setDataset(MLDataset)} and
-     * {@link DatasetProcessor#setSamplePoints(SamplePoints))} to set expected data.
+     * Process a given dataset and use {@link DatasetProcessor#setDataset(MLDataset)} to set expected data.
      * 
      * @throws MLDataProcessingException
      */
     public abstract void process() throws MLDataProcessingException;
+    
+    /**
+     * Take a random sample of the dataset.
+     * 
+     * @return {@link SamplePoints} of sample data.
+     * @throws MLDataProcessingException
+     */
+    public abstract SamplePoints takeSample() throws MLDataProcessingException;
     
     public void handleValidationException(String msg) throws MLInputValidationException {
         log.error(msg);
@@ -102,11 +109,12 @@ public abstract class DatasetProcessor {
         this.targetPath = targetPath;
     }
 
-    public SamplePoints getSamplePoints() {
-        return samplePoints;
+    public String getFirstLine() {
+        return firstLine;
     }
 
-    public void setSamplePoints(SamplePoints samplePoints) {
-        this.samplePoints = samplePoints;
+    public void setFirstLine(String firstLine) {
+        this.firstLine = firstLine;
     }
+
 }

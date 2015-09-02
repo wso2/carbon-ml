@@ -422,6 +422,9 @@ a.cu-btn:hover, a.cu-btn-reverse:hover {
 	background:url('../images/icons/ico-download.png') 0.8em 1em no-repeat;
 }
 
+.btn-view-models-dark {
+	background:url('../images/icons/ico-view-models-dark.png') 0.8em 1em no-repeat;
+}
 
 .ico-align {
 	vertical-align: middle;
@@ -1162,6 +1165,10 @@ a:focus {
 	min-width:750px;
 	min-height:750px;
 }
+/* analysis configurations tables */
+.analysis-conf td {
+	text-align: left;
+}
 
 .wr-desc-chart {
 	border-top:1px solid #f0f0f0;
@@ -1258,3 +1265,25 @@ a.cu-level3-btn:hover {
 .wr-graph-img .filter-md {
 	text-align: left;
 } 
+
+.wr-select-ds {
+	float:left;
+	padding:13px 0px 15px 15px;
+}
+
+#search .select2  {
+	width:250px !important;
+	font-weight:100 !important;
+}
+
+.select2-container--default .select2-selection--single {
+	border-radius:0px !important;	
+}
+
+.wr-graph-element-title  h5 {
+	font-size:18px;
+	font-weight:100;
+	margin-bottom:25px;
+	padding-bottom:10px;
+	border-bottom:1px solid #e4e4e4;
+}

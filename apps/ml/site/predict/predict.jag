@@ -123,15 +123,23 @@
                                         <option value="csv">CSV</option>
                                         <option value="tsv">TSV</option>                    
                                     </select>               
-                                </div>                            
+                                </div>
+
+                                <label class="input-label">Column Header Available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                <div class="input-control text">
+                                    <select class="form-control" id="column-header" name="columnHeader">
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- inputs for parameter input prediction -->
                             <div id="parameter-inputs"></div>
                             
                             <div class="btn-group-actions">
+                                <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>
                                 <button id="file-predict" class="btn btn-main" type="submit">Predict</button>
-                                <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>                                
                             </div>
 
                         </form>
@@ -191,6 +199,12 @@
                 top: $('header').height()
             }
         });
+
+	    scrollVibrateFix();
+	    
+	    $(window).resize(function() {
+	        scrollVibrateFix();
+	    });        
 
         $("[data-toggle=popover]").popover();
 
@@ -267,7 +281,7 @@
             	responseVariable = sanitize(data);
             },
             error: function(res) {
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
@@ -304,7 +318,7 @@
                 };
             },
             error: function(res) {
-                var errorText = res.responseText
+                var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
@@ -344,7 +358,7 @@
                         $("#prediction").html(predictionNotification);
                     },
                     error : function(res){
-                        var errorText = res.responseText
+                        var errorText = JSON.parse(res.responseText)["exception"];
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
                 });

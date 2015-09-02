@@ -34,8 +34,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MLConfiguration {
 
-    @XmlElement(name = "Database")
-    private String databaseName;
+    @XmlElement(name = "DataSourceName")
+    private String datasourceName;
 
     @XmlElement(name = "HdfsURL")
     private String hdfsUrl;
@@ -69,7 +69,7 @@ public class MLConfiguration {
             modelStorage.setStorageType("file");
             File f = new File(System.getProperty("carbon.home") + File.separator + "models");
             try {
-                if (f.mkdir()) {
+                if (f.mkdir() || f.isDirectory()) {
                     modelStorage.setStorageDirectory(f.getAbsolutePath());
                 } else {
                     modelStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
@@ -92,7 +92,7 @@ public class MLConfiguration {
             datasetStorage.setStorageType("file");
             File f = new File(System.getProperty("carbon.home") + File.separator + "datasets");
             try {
-                if (f.mkdir()) {
+                if (f.mkdir() || f.isDirectory()) {
                     datasetStorage.setStorageDirectory(f.getAbsolutePath());
                 } else {
                     datasetStorage.setStorageDirectory(System.getProperty("carbon.home") + File.separator + "tmp");
@@ -109,12 +109,12 @@ public class MLConfiguration {
         this.datasetStorage = datasetStorage;
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    public String getDatasourceName() {
+        return datasourceName;
     }
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
+    public void setDatasourceName(String datasourceName) {
+        this.datasourceName = datasourceName;
     }
 
     public List<MLAlgorithm> getMlAlgorithms() {

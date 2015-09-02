@@ -36,9 +36,10 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
-import org.wso2.carbon.ml.core.exceptions.MLConfigurationParserException;
+import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
  * Responsible for generating summary stats for a given set of sample points.
@@ -62,32 +63,23 @@ public class SummaryStatsGenerator implements Runnable {
     private int[] unique;
     private int[] missing;
     private int[] stringCellCount;
+    private int[] decimalCellCount;
     // Array containing data-type of each feature in the data-set.
     private String[] type;
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
+    private SamplePoints samplePoints;
+    private DatasetProcessor datasetProcessor;
 
     private long datasetSchemaId;
     private long datasetVersionId;
 
-    public SummaryStatsGenerator(long datasetSchemaId, long datasetVersionId, SummaryStatisticsSettings summaryStatsSettings,
-            SamplePoints samplePoints) throws MLConfigurationParserException {
+    public SummaryStatsGenerator(long datasetSchemaId, long datasetVersionId,
+            SummaryStatisticsSettings summaryStatsSettings, DatasetProcessor processor) {
         this.datasetSchemaId = datasetSchemaId;
         this.datasetVersionId = datasetVersionId;
         this.summarySettings = summaryStatsSettings;
-        this.headerMap = samplePoints.getHeader();
-        this.columnData = samplePoints.getSamplePoints();
-        this.missing = samplePoints.getMissing();
-        this.stringCellCount = samplePoints.getStringCellCount();
-        int noOfFeatures = this.headerMap.size();
-        // Initialize the lists.
-        this.unique = new int[noOfFeatures];
-        this.type = new String[noOfFeatures];
-        this.histogram = new EmpiricalDistribution[noOfFeatures];
-        for (int i = 0; i < noOfFeatures; i++) {
-            this.descriptiveStats.add(new DescriptiveStatistics());
-            this.graphFrequencies.add(new TreeMap<String, Integer>());
-        }
+        this.datasetProcessor = processor;
     }
 
     /**
@@ -97,9 +89,24 @@ public class SummaryStatsGenerator implements Runnable {
     @Override
     public void run() {
 
-        // process the sample points and generate summary stats
-
+        // extract the sample points and generate summary stats
         try {
+            this.samplePoints = datasetProcessor.takeSample();
+            this.samplePoints.setGenerated(true);
+            this.headerMap = samplePoints.getHeader();
+            this.columnData = samplePoints.getSamplePoints();
+            this.missing = samplePoints.getMissing();
+            this.stringCellCount = samplePoints.getStringCellCount();
+            this.decimalCellCount = samplePoints.getDecimalCellCount();
+            int noOfFeatures = this.headerMap.size();
+            // Initialize the lists.
+            this.unique = new int[noOfFeatures];
+            this.type = new String[noOfFeatures];
+            this.histogram = new EmpiricalDistribution[noOfFeatures];
+            for (int i = 0; i < noOfFeatures; i++) {
+                this.descriptiveStats.add(new DescriptiveStatistics());
+                this.graphFrequencies.add(new TreeMap<String, Integer>());
+            }
             // Find the columns containing String and Numeric data.
             identifyColumnDataType();
             // Calculate descriptive statistics.
@@ -109,15 +116,25 @@ public class SummaryStatsGenerator implements Runnable {
             // Calculate frequencies of each bin of the Numerical features.
             calculateNumericColumnFrequencies();
             SummaryStats stats = new SummaryStats(headerMap, type, graphFrequencies, missing, unique, descriptiveStats);
-            // TODO Update the database with calculated summary statistics.
+            // Update the database with calculated summary statistics.
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+            dbService.updateSamplePoints(datasetVersionId, samplePoints);
             dbService.updateSummaryStatistics(datasetSchemaId, datasetVersionId, stats);
             if (logger.isDebugEnabled()) {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while Calculating summary statistics " + "for dataset version "
-                    + this.datasetVersionId + ": " + e.getMessage(), e);
+            this.samplePoints.setGenerated(false);
+            DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+            try {
+                dbService.updateSamplePoints(datasetVersionId, samplePoints);
+            } catch (DatabaseHandlerException e1) {
+                logger.error("Error occurred while updating sample point generation status for dataset version "
+                        + this.datasetVersionId + ": " + e1.getMessage(), e1);
+            } finally {
+                logger.error("Error occurred while calculating summary statistics " + "for dataset version "
+                        + this.datasetVersionId + ": " + e.getMessage(), e);
+            }
         }
     }
 
@@ -129,7 +146,7 @@ public class SummaryStatsGenerator implements Runnable {
      * @throws DatasetSummaryException
      */
     protected String[] identifyColumnDataType() {
-        // If atleast one cell contains strings, then the column is considered to has string data.
+        // If at least one cell contains strings, then the column is considered to has string data.
         for (int col = 0; col < headerMap.size(); col++) {
             if (stringCellCount[col] > 0) {
                 this.stringDataColumnPositions.add(col);
@@ -138,6 +155,35 @@ public class SummaryStatsGenerator implements Runnable {
                 this.numericDataColumnPositions.add(col);
                 this.type[col] = FeatureType.NUMERICAL;
             }
+        }
+        
+        double categoricalThreshold = summarySettings.getCategoricalThreshold();
+        // Iterate through each column.
+        for (int currentCol = 0; currentCol < this.headerMap.size(); currentCol++) {
+            if (this.numericDataColumnPositions.contains(currentCol)) {
+
+                // Create a unique set from the column.
+                List<String> data = this.columnData.get(currentCol);
+                Set<String> uniqueSet = new HashSet<String>(data);
+                int multipleOccurences = 0;
+                
+                for (String uniqueValue : uniqueSet) {
+                    int frequency = Collections.frequency(data, uniqueValue);
+                    if (frequency > 1) {
+                        multipleOccurences++;
+                    }
+                }
+                
+                // if a column has at least one decimal value, then it can't be categorical.
+                // if a feature has more than X% of repetitive distinct values, then that feature can be a categorical
+                // one. X = categoricalThreshold
+                if (decimalCellCount[currentCol] == 0
+                        && (multipleOccurences / uniqueSet.size()) * 100 >= categoricalThreshold) {
+                    this.type[currentCol] = FeatureType.CATEGORICAL;
+                }
+
+            }
+
         }
 
         return type;
@@ -156,7 +202,8 @@ public class SummaryStatsGenerator implements Runnable {
                 // Convert each cell value to double and append to the
                 // Descriptive-statistics object.
                 for (int row = 0; row < this.columnData.get(currentCol).size(); row++) {
-                    if (this.columnData.get(currentCol).get(row) != null && !this.columnData.get(currentCol).get(row).isEmpty()) {
+                    if (this.columnData.get(currentCol).get(row) != null
+                            && !this.columnData.get(currentCol).get(row).isEmpty()) {
                         cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
                         this.descriptiveStats.get(currentCol).addValue(cellValue);
                     }
@@ -186,8 +233,9 @@ public class SummaryStatsGenerator implements Runnable {
             // Count the frequencies in each unique value.
             this.unique[currentCol] = uniqueSet.size();
             for (String uniqueValue : uniqueSet) {
-                if (uniqueValue != null){
-                    frequencies.put(uniqueValue.toString(), Collections.frequency(this.columnData.get(currentCol), uniqueValue));
+                if (uniqueValue != null) {
+                    frequencies.put(uniqueValue.toString(),
+                            Collections.frequency(this.columnData.get(currentCol), uniqueValue));
                 }
             }
             graphFrequencies.set(currentCol, frequencies);
@@ -203,7 +251,6 @@ public class SummaryStatsGenerator implements Runnable {
      * @param noOfIntervals Number of intervals to be calculated for continuous data
      */
     protected List<SortedMap<?, Integer>> calculateNumericColumnFrequencies() {
-        int categoricalThreshold = summarySettings.getCategoricalThreshold();
         int noOfIntervals = summarySettings.getHistogramBins();
         Iterator<Integer> numericColumns = this.numericDataColumnPositions.iterator();
         int currentCol;
@@ -212,11 +259,8 @@ public class SummaryStatsGenerator implements Runnable {
             currentCol = numericColumns.next();
             // Create a unique set from the column.
             Set<String> uniqueSet = new HashSet<String>(this.columnData.get(currentCol));
-            // If the unique values are less than or equal to maximum-category-limit.
             this.unique[currentCol] = uniqueSet.size();
-            if (this.unique[currentCol] <= categoricalThreshold) {
-                // Change the data type to categorical.
-                this.type[currentCol] = FeatureType.CATEGORICAL;
+            if (FeatureType.CATEGORICAL.equals(this.type[currentCol])) {
                 // Calculate the category frequencies.
                 SortedMap<String, Integer> frequencies = new TreeMap<String, Integer>();
                 for (String uniqueValue : uniqueSet) {
@@ -263,4 +307,5 @@ public class SummaryStatsGenerator implements Runnable {
 
         return graphFrequencies;
     }
+
 }

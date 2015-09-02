@@ -19,7 +19,6 @@
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -114,6 +113,12 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
 //            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
 //            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());

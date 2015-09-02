@@ -54,6 +54,11 @@
                 <div class="wr-project">
                     <span class="title">PROJECTS \ </span>
                 </div>
+
+                <div class="wr-select-ds">
+                    <div id="search" style="width:190px"></div>                                        
+                </div>
+
             </div>
 
             <div class="col-md-3">
@@ -145,6 +150,8 @@
 <script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/operationsmenu.js"></script>
+<script src="../../js/select2.min.js"></script>
+<link href="../../css/select2.min.css" rel="stylesheet" />
 
 <script type="text/javascript">
 
@@ -154,12 +161,17 @@
     var deleteNotificationArea;
 
     $(document).ready(function() {
-
         $('#nav').affix({
             offset: {
                 top: $('header').height()
             }
         });
+
+        scrollVibrateFix();
+        
+        $(window).resize(function() {
+            scrollVibrateFix();
+        });        
 
         $("[data-toggle=popover]").popover();
 
@@ -169,6 +181,9 @@
                 return $('#content-asset-types').html();
             }
         });
+
+        // load datasets into the search box
+	    loadDatasetsIntoSearchBox();
 
         // load projects and analyses to accordion
         loadProjects();
@@ -249,7 +264,7 @@
                     console.log("Analysis created.");                    
                 },
                 error : function(res){
-                    var errorText = res.responseText;
+                    var errorText = JSON.parse(res.responseText)["exception"];
                     handleNotification(errorText, notificationArea, 'warning');
                     isError = true;
                 }
@@ -265,7 +280,7 @@
                         analysisId = sanitize(res['id']);
                     },
                     error: function(res){
-                var errorText = res.responseText
+                        var errorText = JSON.parse(res.responseText)["exception"];
                         handleNotification(errorText, notificationArea, 'warning');
                         isError = true;
                     }
@@ -283,7 +298,7 @@
                         window.location.href = '../preprocess/preprocess.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId;
                     },
                     error: function(res){
-                var errorText = res.responseText
+                        var errorText = JSON.parse(res.responseText)["exception"];
                         handleNotification(errorText, notificationArea, 'warning');
                         isError = true;
                     }
@@ -300,8 +315,20 @@
             var projectName = $(this).data('projectname');
             var datasetId = $(this).data('datasetid');
             
-            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
+            window.location.href = '../analysis/view-analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName;
         });        
+
+        // redirects to analysis page with built models under that analysis
+        $(document).on('click', '#view-models', function(e){ 
+            e.preventDefault();
+
+            var analysisId = $(this).data('analysisid');
+            var analysisName = $(this).data('analysisname');
+            var projectName = $(this).data('projectname');
+            var datasetId = $(this).data('datasetid');
+            
+            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
+        });                
 
         // compares models
         $(document).on('click', '#compare-models', function(e){ 
@@ -332,13 +359,29 @@
         return true;
     }
     
-    function buildEmptyProjectDisplay(description, projectId, projectName, datasetId){
+    function buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus) {
         var display = 
         '<table>' +
             '<tr>' +
                 '<td class="c-padd project-description" valign="top">' + description + '</td>' +
-                '<td>' +
-                buildNewAnalysisUx(projectId, projectName, datasetId) +
+                '<td>';
+                // let user to create a new analysis of this project only if the dataset exists
+                if (datasetId != 0 && datasetStatus == "Available") {
+                    display += buildNewAnalysisUx(projectId, projectName, datasetId);
+                }
+                else if (datasetId != 0 && datasetStatus == "Busy") {
+                    var message = 'Dataset is busy with processing.';
+                    display += generateDatasetStatusNotification(message);                                                                        
+                }
+                else if (datasetId != 0 && datasetStatus == "Failed") {
+                    var message = 'Dataset does not contain successfully processed versions.';
+                    display += generateDatasetStatusNotification(message);                                                            
+                }
+                else {
+                    var message = 'Dataset of this project has been deleted.';
+                    display += generateDatasetStatusNotification(message);
+                }      
+                display += '' +
                 '</td>' +
             '</tr>' +
         '</table>';
@@ -366,28 +409,72 @@
         return analysis;                           
     }
 
+    function loadDatasetsIntoSearchBox() {
+    	$.ajax({
+                type: "GET",
+                url: serverUrl + "/api/datasets",
+                success: function(data) {
+                    var options = '<option></option>';
+                    for (var i = 0; i < data.length; i++) {
+                    	var datasetName = data[i]['name'];
+                    	options += '<option value="' + datasetName + '">' + datasetName + '</option>';
+                    }
+    		        $('#search').empty();
+                    $('#search').append('<select class="search-projects col-md-2">' + options + '</select>');
+                    $(".search-projects").select2({
+                        placeholder: "Select a dataset",
+    			        allowClear: true
+            	    });
+    		        $(".search-projects").on("change", function(e) {loadProjectsOfDataset($(".search-projects").val());});
+    	    },
+    	        error: function(res) {
+                    var errorText = JSON.parse(res.responseText)["exception"];
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+    	});
+    }
+
     function loadProjects() {
+	    loadProjectsOfDataset('');
+    }
+
+    function loadProjectsOfDataset(datasetName) {
         $.ajax({
             type: "GET",
-            url: serverUrl+"/api/projects/analyses",
+            url: serverUrl + "/api/projects/analyses?datasetName=" + datasetName,
             success: function(data) {
                 var tenantProjects = data;
 
                 if (tenantProjects.length == 0) {
-                    var accordionPanelNoProjects = 
-                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<h2>You do not have any projects created at the moment.</h2>'+
-                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
-                    '</div>';
+                    var accordionPanelNoProjects = '';
+        		    if (datasetName.length == 0) {
+        		    	accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                                '<h2>You do not have any projects created at the moment.</h2>'+
+                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '</div>';
+        		    } else {
+        			    accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                                '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '</div>';
+        		    } 
                     $('#accordion').empty();
                     $("#accordion").append(accordionPanelNoProjects);    
                 }
                 else {
 
-                    var createProject = '' + 
-                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
-                    '</div>';
+        		    var createProject = '';
+        		    if (datasetName.length == 0) {
+        			createProject = '' +
+                            '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '</div>';
+        		    } else {
+        			createProject = '' +
+                            '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '</div>';	
+        		    }
 
                     $('#accordion').empty();
                     $("#accordion").append(createProject);                        
@@ -397,13 +484,13 @@
                         var workflowString = '';
                         var noOfAnalyses = tenantProjects[i]['analyses'].length;
                         if (noOfAnalyses == 0) {
-                            workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No Analysis Available';
+                            workflowString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No analyses available';
                         }
                         else if (noOfAnalyses == 1) {
-                            workflowString = '<strong>1</strong> Analysis available';
+                            workflowString = '<strong>1</strong> analysis available';
                         }
                         else {
-                            workflowString = '<strong>'+noOfAnalyses+'</strong> Analyses available';
+                            workflowString = '<strong>'+noOfAnalyses+'</strong> analyses available';
                         }
                         
                         var projectId = sanitize(tenantProjects[i]['id']);
@@ -411,6 +498,7 @@
                         var description = sanitize(tenantProjects[i]['description']);                        
                         var createdTime = sanitize(tenantProjects[i]['createdTime']);                        
                         var datasetId = sanitize(tenantProjects[i]['datasetId']);
+                        var datasetStatus = sanitize(tenantProjects[i]['datasetStatus']);                        
 
                         accordionPanel = '' + 
                             '<div class="panel panel-default">' +
@@ -447,7 +535,7 @@
                                     accordionPanel += '' +
                                     '<div class="panel-body">';
                                 if (noOfAnalyses == 0) {
-                                    accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId);
+                                    accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus);
                                 }
                                 else {
                                     accordionPanel += '' +
@@ -455,9 +543,21 @@
                                             '<tr>' +
                                                 '<td class="c-padd project-description" valign="top">' + description + '</td>' +
                                                 '<td>';
-                                                // let user to create a new analysis of this project only if the dataset exists
-                                                if (tenantProjects[i]['datasetId'] != 0) {
-                                                    accordionPanel += buildNewAnalysisUx(projectId, projectName, datasetId)
+                                                // let user to create a new analysis of this project only if the dataset is available
+                                                if (datasetId != 0 && datasetStatus == "Available") {
+                                                    accordionPanel += buildNewAnalysisUx(projectId, projectName, datasetId);
+                                                }
+                                                else if (datasetId != 0 && datasetStatus == "Busy") {
+                                                    var message = 'Dataset is busy with processing.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);                                                                        
+                                                }
+                                                else if (datasetId != 0 && datasetStatus == "Failed") {
+                                                    var message = 'Dataset does not contain successfully processed versions.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);                                                            
+                                                }
+                                                else {
+                                                    var message = 'Dataset of this project has been deleted.';
+                                                    accordionPanel += generateDatasetStatusNotification(message);
                                                 }
                                     accordionPanel += '' +
                                                     '<div id="inline-list-notification-area"></div>' +
@@ -471,6 +571,7 @@
                                                                 '</td>' +
                                                                 '<td>' +
                                                                     '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>View</span></a>' +
+                                                                    '<a href="#" id="view-models" class="cu-level2-btn btn-view-models-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>Models</span></a>' +
                                                                     '<a href="#" id="delete-analysis" class="del-wf cu-level2-btn btn-delete-dark" data-analysisid="' + analysisId + '">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       
@@ -541,6 +642,15 @@
                 }
             });
         }    
+    }
+
+    function generateDatasetStatusNotification(message) {
+        notification =  '<div class="alert alert-info alert-dismissible" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            '<img src="../../images/icons/ico-alert.png" class="indi" />' +
+                            message +
+                        '</div>';
+        return notification;
     }
 
 </script>

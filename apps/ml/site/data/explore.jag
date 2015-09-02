@@ -70,7 +70,7 @@
         </div>
 
 		<div class="wr-action-btn-bar">
-			<a href="../data/datasets.jag" class="cu-btn btn-prev">Back</a>
+			<a href="#" id="back-btn" class="cu-btn btn-prev">Back</a>
 		</div>
 	</div>
 </div>
@@ -436,6 +436,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();
 	clusterMarkerSize = $('#cluster-marker-size-input').val();	
@@ -522,6 +528,13 @@ $( document ).ready(function() {
         }
     });
 
+    $('#back-btn').on('click', function(e){
+        e.preventDefault();
+        // hide notifications appear when navigating due to incomplete AJAX calls
+        $("#notification-area").hide();
+        window.location.href = '../data/datasets.jag';
+    });    
+
 	// functions for chart marker size changes
 	$(".scatter-marker-size").on("click", function (e) {
 		e.preventDefault();
@@ -593,17 +606,13 @@ $( document ).ready(function() {
 
 // select the active tab based on the feature types
 function selectActiveTab() {
-    if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
-        drawScatterPlotBase();
+    if (numericalFeatureNames.length > 1 & categoricalFeatureNames.length > 0) {
         $('#scatter-plot-link').click();
 	} else if (categoricalFeatureNames.length > 1) {
-	    drawParallelSetsBase();
 	    $('#parallel-sets-link').click();
 	} else if (categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0){
-	    drawTrellisChartBase();
 	    $('#trellis-chart-link').click();
 	} else if (numericalFeatureNames.length > 1) {
-	    drawClusterDiagramBase();
 	    $('#cluster-diagram-link').click();
 	}
 }

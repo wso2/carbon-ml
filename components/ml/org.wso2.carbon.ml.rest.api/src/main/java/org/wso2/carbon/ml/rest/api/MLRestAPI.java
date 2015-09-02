@@ -15,21 +15,14 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 
 public abstract class MLRestAPI {
-    private Log logger = LogFactory.getLog(MLRestAPI.class);
     private String tenantID = null;
-    
+
     protected String getTenantID() {
-        try {
-            int x = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            tenantID = String.valueOf(x);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        int x = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        tenantID = String.valueOf(x);
 
         return tenantID;
     }

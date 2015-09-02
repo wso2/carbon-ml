@@ -57,7 +57,6 @@ public class MLConstants {
     public static final String ISO_8859_1= "ISO-8859-1";
     
     public static final String TARGET_HOME_PROP = "target.home";
-    public static final String ML_THREAD_POOL_SIZE = "ml.thread.pool.size";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";
@@ -92,6 +91,11 @@ public class MLConstants {
     public static final String MODEL_STATUS_IN_PROGRESS = "In Progress";
     public static final String MODEL_STATUS_COMPLETE = "Complete";
     public static final String MODEL_STATUS_FAILED = "Failed";
+
+    // dataset version statuses
+    public static final String DATASET_VERSION_STATUS_IN_PROGRESS = "Processing";
+    public static final String DATASET_VERSION_STATUS_COMPLETE = "Processed";
+    public static final String DATASET_VERSION_STATUS_FAILED = "Failed";
 
     // feature settings
     public static final String DISCARD = "DISCARD";
@@ -198,6 +202,42 @@ public class MLConstants {
                     return true;
                 }
             return false;
+        }
+    }
+
+    public enum DatasetVersionStatus {
+        IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
+
+        private String value;
+        private DatasetVersionStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum DatasetStatus {
+        AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
+
+        private String value;
+        private DatasetStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }

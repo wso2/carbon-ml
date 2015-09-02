@@ -11,22 +11,29 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.ml.rest.api.model;
 
-package org.wso2.carbon.ml.core.exceptions;
+/**
+ * Represent an Error in ML.
+ */
+public class MLErrorBean {
 
-public class MLConfigurationParserException extends Exception {
-	
-    private static final long serialVersionUID = 8192740425418424448L;
+    private String error;
 
-    public MLConfigurationParserException(String message) {
-        super(message);
+    public MLErrorBean(String msg) {
+        error = msg;
     }
-    
-    public MLConfigurationParserException(String message, Throwable cause) {
-        super(message, cause);
+
+    public String getException() {
+        return error;
     }
+
+    public void setException(String exception) {
+        this.error = exception;
+    }
+
 }

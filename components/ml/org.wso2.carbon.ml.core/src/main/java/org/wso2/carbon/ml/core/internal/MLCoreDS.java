@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
@@ -27,7 +29,8 @@ import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
-import org.wso2.carbon.ml.core.impl.MLConfigurationParser;
+import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -54,9 +57,9 @@ public class MLCoreDS {
     protected void activate(ComponentContext context) {
 
         try {
-            MLConfigurationParser mlConfigParser = new MLConfigurationParser();
-            MLConfiguration mlConfig = mlConfigParser.getMLConfiguration(MLConstants.MACHINE_LEARNER_XML);
+            SparkConfigurationParser mlConfigParser = new SparkConfigurationParser();
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            MLConfiguration mlConfig = valueHolder.getDatabaseService().getMlConfiguration();
 
             valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
             valueHolder.setMlProperties(MLUtils.getProperties(mlConfig.getProperties()));
@@ -66,6 +69,30 @@ public class MLCoreDS {
             valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
             valueHolder.setDatasetStorage(mlConfig.getDatasetStorage());
+            
+            Properties mlProperties = valueHolder.getMlProperties();
+            String poolSizeStr = mlProperties
+                    .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
+            String poolQueueSizeStr = mlProperties
+                    .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_QUEUE_SIZE);
+            int poolSize = 50;
+            int poolQueueSize = 1000;
+            if (poolSizeStr != null) {
+                try {
+                    poolSize = Integer.parseInt(poolSizeStr);
+                } catch (Exception ignore) {
+                    // use the default
+                }
+            }
+
+            if (poolQueueSizeStr != null) {
+                try {
+                    poolQueueSize = Integer.parseInt(poolQueueSizeStr);
+                } catch (Exception ignore) {
+                    // use the default
+                }
+            }
+            valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());

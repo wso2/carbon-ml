@@ -445,6 +445,12 @@ $( document ).ready(function() {
 	      }
 	});
 
+    scrollVibrateFix();
+    
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });	
+
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();
 	clusterMarkerSize = $('#cluster-marker-size-input').val();
@@ -557,14 +563,16 @@ $( document ).ready(function() {
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
-
+        // hide notifications appear when navigating due to incomplete AJAX calls
+        $("#notification-area").hide();
         var fromAnalysis = getParameterByName('fromAnalysis');
         window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
     });
 
     $('#next-btn').on('click', function(e){
         e.preventDefault(); 
-
+        // hide notifications appear when navigating due to incomplete AJAX calls
+        $("#notification-area").hide();
 	    var fromAnalysis = getParameterByName('fromAnalysis');
         window.location.href = '../algorithm/algorithm.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
     });
@@ -577,17 +585,37 @@ $( document ).ready(function() {
             window.location.href = '../analysis/analysis.jag?analysisId='+analysisId+'&datasetId='+datasetId+'&projectName='+projectName+'&analysisName='+analysisName;
         }
         else {
+            var noOfModels;
+            // get number of models of this analysis
             $.ajax({
-	            type: 'DELETE',
-	            url: serverUrl + "/api/analyses/" + analysisId,
-	            success: function(res){
-	                window.location.href = '../project/projects.jag';
-	            },
-	            error: function(res){
-	                var errorText = res.responseText
-		        	handleNotification(errorText, '#notification-area', 'warning');
-	            }
-	        });    	
+                type: 'GET',
+                url: serverUrl + "/api/analyses/" + analysisId + "/models",
+                async: false,
+                success: function(res) {
+                    noOfModels = res.length;
+                },
+                error: function(res){
+                    var errorText = res.responseText
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            // delete analysis on CANCEL only if there are no models in this analysis
+            if(noOfModels == 0) {                
+                $.ajax({
+                    type: 'DELETE',
+                    url: serverUrl + "/api/analyses/" + analysisId,
+                    success: function(res){
+                        window.location.href = '../project/projects.jag';
+                    },
+                    error: function(res){
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });                            
+            }
+            else {
+                window.location.href = '../project/projects.jag';
+            }
         }
     });
 
@@ -663,16 +691,12 @@ $( document ).ready(function() {
 // select the active tab based on the feature types
 function selectActiveTab() {
     if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
-        drawScatterPlotBase();
         $('#scatter-plot-link').click();
 	} else if (categoricalFeatureNames.length > 1) {
-	    drawParallelSetsBase();
 	    $('#parallel-sets-link').click();
 	} else if (categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0){
-	    drawTrellisChartBase();
 	    $('#trellis-chart-link').click();
 	} else if(numericalFeatureNames.length > 1) {
-	    drawClusterDiagramBase();
 	    $('#cluster-diagram-link').click();
 	}
 }
@@ -703,7 +727,7 @@ function disableTabs() {
 
 function drawScatterPlotBase() {
 
-	if (numericalFeatureNames.length >1 & categoricalFeatureNames.length >0) {
+	if (numericalFeatureNames.length > 1 & categoricalFeatureNames.length > 0) {
 	 
 	    $('#scatter-x, #scatter-y, #scatter-group').empty();
 	    $.each(numericalFeatureNames,function(index, feature){

@@ -185,6 +185,12 @@
             }
         });
 
+        scrollVibrateFix();
+        
+        $(window).resize(function() {
+            scrollVibrateFix();
+        });        
+
         $("[data-toggle=popover]").popover();
 
         $(".ctrl-asset-type-switcher").popover({
@@ -397,13 +403,14 @@
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish",
+                dataType: 'json',
                 success : function(res){
-                    var successText = 'Model successfully published to registry.';
+                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
                     handleNotification(successText, '#notification-area', 'success');
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });            
         });        
@@ -430,8 +437,8 @@
                     algorithmName = sanitize(res);
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
 
@@ -444,8 +451,8 @@
                     algorithmType = sanitize(res);
                 },
                 error : function(res){
-                var errorText = res.responseText
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
 
@@ -467,7 +474,7 @@
                     $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});                
                 },
                 error : function(res){
-                    var errorText = res.responseText
+                    var errorText = JSON.parse(res.responseText)["exception"];
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
             });        
