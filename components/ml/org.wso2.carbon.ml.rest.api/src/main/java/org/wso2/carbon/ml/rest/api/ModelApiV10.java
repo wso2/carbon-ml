@@ -16,6 +16,7 @@
 package org.wso2.carbon.ml.rest.api;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -237,7 +238,7 @@ public class ModelApiV10 extends MLRestAPI {
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
-                    Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+                    Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
                     writer.write(predictions);
                     writer.flush();
                     writer.close();

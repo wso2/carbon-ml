@@ -164,6 +164,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
@@ -242,15 +243,14 @@ $( document ).ready(function() {
         $('#response-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
 	}
-    // hides response variable field for K-Means algorithm
+    // toggle response variable input depending on the algorithm selection
+    selectedAlgorithm = $('#algorithm-name').val();
+    toggleInput(selectedAlgorithm);
+
     $(document).on('change','#algorithm-name',function() {
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-        }
-        else {
-            $('#response-variable-field').show();
-        }
-    });    
+        selectedAlgorithm = $('#algorithm-name').val();
+        toggleInput(selectedAlgorithm);
+    });   
 	
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
@@ -359,6 +359,16 @@ function loadDatasetFeatures(setResponseVariable) {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
+}
+
+// function that toggles response variable input depending on the algorithm selection
+function toggleInput(selectedAlgorithm) {    
+    if(selectedAlgorithm == 'K_MEANS') {
+        $('#response-variable-field').hide();
+    }
+    else {
+        $('#response-variable-field').show();
+    }
 }
 
 </script>

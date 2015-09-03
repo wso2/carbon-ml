@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -283,7 +284,7 @@ public class MLModelHandler {
             throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
-        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
         try {
             String line;
             while ((line = br.readLine()) != null) {
@@ -310,7 +311,7 @@ public class MLModelHandler {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         MLModel mlModel = retrieveModel(modelId);
-        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
         StringBuilder predictionsWithData = new StringBuilder();
         try {
             String line;

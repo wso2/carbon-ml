@@ -22,9 +22,6 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.database.DatabaseService;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-import org.wso2.carbon.ml.database.internal.MLDatabaseService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,19 +63,14 @@ public class MLDBUtil {
      * Return dataset status by iterating through all the given versions
      * @param datasetVersions List of dataset versions
      * @return dataset status
-     * @throws NullPointerException
      */
-    public static String getDatasetStatus(List<MLDatasetVersion> datasetVersions) throws NullPointerException {
-        String status = MLConstants.DatasetStatus.AVAILABLE.getValue();
+    public static String getDatasetStatus(List<MLDatasetVersion> datasetVersions) {
+        MLConstants.DatasetStatus status = MLConstants.DatasetStatus.AVAILABLE;
         int failedVersionCount = 0;
 
         for(MLDatasetVersion datasetVersion: datasetVersions) {
-            if( (datasetVersions.size() == 1) && datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.FAILED.getValue()) ) {
-                status = MLConstants.DatasetStatus.FAILED.getValue();
-                break;
-            }
-            else if(datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.IN_PROGRESS.getValue())) {
-                status = MLConstants.DatasetStatus.BUSY.getValue();
+            if(datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.IN_PROGRESS.getValue())) {
+                status = MLConstants.DatasetStatus.BUSY;
                 break;
             }
             else if(datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.FAILED.getValue())) {
@@ -87,8 +79,8 @@ public class MLDBUtil {
         }
 
         if(failedVersionCount == datasetVersions.size()) {
-            status = MLConstants.DatasetStatus.FAILED.getValue();
+            status = MLConstants.DatasetStatus.FAILED;
         }
-        return status;
+        return status.getValue();
     }
 }
