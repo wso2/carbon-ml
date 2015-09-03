@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
@@ -96,6 +97,9 @@ public class MLCoreDS {
 
             SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
             sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+            String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+            int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
+            sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
             valueHolder.setSparkConf(sparkConf);
             
             // create a new java spark context
