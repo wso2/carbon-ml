@@ -244,8 +244,9 @@ public class MLModelHandler {
                     columnSeparator, model, facts, lines, sparkContext);
 
             // build the model asynchronously
-            threadExecutor.execute(new ModelBuilder(modelId, context));
-            threadExecutor.afterExecute(null, null);
+            ModelBuilder task = new ModelBuilder(modelId, context);
+            threadExecutor.execute(task);
+            threadExecutor.afterExecute(task, null);
 
             databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
