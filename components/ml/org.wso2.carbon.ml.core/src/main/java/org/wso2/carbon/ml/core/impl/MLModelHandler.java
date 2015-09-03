@@ -38,6 +38,9 @@ import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
@@ -658,6 +661,9 @@ public class MLModelHandler {
 
         @Override
         public void run() {
+            org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
+                    "org.wso2.carbon.ml.model-building-time."+ctxt.getFacts().getAlgorithmName());
+            Context context = timer.start();
             String[] emailTemplateParameters = new String[2];
             try {
                 long t1 = System.currentTimeMillis();
@@ -704,8 +710,8 @@ public class MLModelHandler {
                 }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
-            }
-            finally {
+            } finally {
+                context.stop();
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }

@@ -31,6 +31,10 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.apache.spark.mllib.tree.model.RandomForestModel;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.metrics.manager.Timer;
+import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
@@ -64,6 +68,8 @@ public class Predictor {
         String algorithmType = model.getAlgorithmClass();
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
 
+        org.wso2.carbon.metrics.manager.Timer timer = getTimer(model.getAlgorithmName());
+        
         if (AlgorithmType.CLASSIFICATION == type) {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
@@ -71,9 +77,12 @@ public class Predictor {
             case DECISION_TREE:
                 DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
                     double predictedData = decisionTreeModel.predict(vector);
                     predictions.add(predictedData);
+                    
+                    stopTimer(context);
                     if (log.isDebugEnabled()) {
 
                         log.debug("Predicted value before decoding: " + predictedData);
@@ -83,9 +92,12 @@ public class Predictor {
             case RANDOM_FOREST:
                 RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
-
+                    Context context = startTimer(timer);
+                    
                     double predictedData = randomForestModel.predict(vector);
                     predictions.add(predictedData);
+                    
+                    stopTimer(context);
                     if (log.isDebugEnabled()) {
 
                         log.debug("Predicted value before decoding: " + predictedData);
@@ -95,9 +107,12 @@ public class Predictor {
             default:
                 ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
-
+                    Context context = startTimer(timer);
+                    
                     double predictedData = classificationModel.predict(vector);
                     predictions.add(predictedData);
+                    
+                    stopTimer(context);
 
                     if (log.isDebugEnabled()) {
 
@@ -111,9 +126,13 @@ public class Predictor {
             GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel()).getModel();
             List<Double> predictions = new ArrayList<Double>();
             for (Vector vector : dataToBePredicted) {
+                Context context = startTimer(timer);
 
                 double predictedData = generalizedLinearModel.predict(vector);
                 predictions.add(predictedData);
+                
+                stopTimer(context);
+                
                 if (log.isDebugEnabled()) {
 
                     log.debug("Predicted value before decoding: " + predictedData);
@@ -128,9 +147,12 @@ public class Predictor {
                 List<Integer> predictions = new ArrayList<Integer>();
                 KMeansModel kMeansModel = (KMeansModel) model.getModel();
                 for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
                     int predictedData = kMeansModel.predict(vector);
                     predictions.add(predictedData);
+                    
+                    stopTimer(context);
                     if (log.isDebugEnabled()) {
 
                         log.debug("Predicted value before decoding: " + predictedData);
@@ -145,6 +167,32 @@ public class Predictor {
             throw new MLModelHandlerException(String.format(
                     "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
         }
+    }
+
+    private void stopTimer(Context context) {
+        if (context != null) {
+            context.stop();
+        }
+    }
+
+    private Context startTimer(Timer timer) {
+        if (timer != null) {
+            return timer.start();
+        }
+        return null;
+    }
+
+    private org.wso2.carbon.metrics.manager.Timer getTimer(String algorithmName) {
+
+        try {
+
+            org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
+                    "org.wso2.carbon.ml.prediction-time." + model.getAlgorithmName());
+            return timer;
+        } catch (IllegalStateException e) {
+            log.warn(e.getMessage());
+        }
+        return null;
     }
 
     private List<Vector> getVectors(List<String[]> data) {

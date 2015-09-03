@@ -322,6 +322,11 @@
 				<version>${ml.version}</version>
 			</dependency>
 			<dependency>
+    				<groupId>org.wso2.carbon.metrics</groupId>
+    				<artifactId>org.wso2.carbon.metrics.manager</artifactId>
+    				<version>${carbon.metrics.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.wso2.carbon.analytics</groupId>
 				<artifactId>org.wso2.carbon.analytics.api</artifactId>
 				<version>${carbon.analytics.version}</version>
@@ -626,6 +631,7 @@
 		<carbon.commons.version>4.4.5</carbon.commons.version>
 		<carbon.analytics.version>1.0.3-SNAPSHOT</carbon.analytics.version>
 		<carbon.analytics.common.version>5.0.1-SNAPSHOT</carbon.analytics.common.version>
+		<carbon.metrics.version>1.1.0</carbon.metrics.version>
 		<carbon.kernel.version>4.4.1</carbon.kernel.version>
 		<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 

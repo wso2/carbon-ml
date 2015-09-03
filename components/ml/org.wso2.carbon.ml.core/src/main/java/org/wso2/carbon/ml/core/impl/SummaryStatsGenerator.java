@@ -32,6 +32,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
@@ -89,6 +92,9 @@ public class SummaryStatsGenerator implements Runnable {
     @Override
     public void run() {
 
+        org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
+                "org.wso2.carbon.ml.dataset-summary-generation-time");
+        Context context = timer.start();
         // extract the sample points and generate summary stats
         try {
             this.samplePoints = datasetProcessor.takeSample();
@@ -135,6 +141,8 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.error("Error occurred while calculating summary statistics " + "for dataset version "
                         + this.datasetVersionId + ": " + e.getMessage(), e);
             }
+        } finally {
+            context.stop();
         }
     }
 

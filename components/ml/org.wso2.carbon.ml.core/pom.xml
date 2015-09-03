@@ -35,6 +35,10 @@
 			<artifactId>org.wso2.carbon.ml.database</artifactId>
 		</dependency>
 		<dependency>
+                   	<groupId>org.wso2.carbon.metrics</groupId>
+                    	<artifactId>org.wso2.carbon.metrics.manager</artifactId>
+                </dependency>
+		<dependency>
 			<groupId>org.wso2.orbit.org.apache.hadoop</groupId>
 			<artifactId>hadoop-client</artifactId>
 		</dependency>
