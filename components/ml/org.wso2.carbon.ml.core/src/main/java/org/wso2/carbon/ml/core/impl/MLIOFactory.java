@@ -40,30 +40,34 @@ public class MLIOFactory {
 
     public MLInputAdapter getInputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(type);
-        try {
-            c = Class.forName(className);
-            MLInputAdapter inputAdapter = (MLInputAdapter) c.newInstance();
-            return inputAdapter;
-        } catch (Exception e) {
-            log.warn(String.format(
-                    "Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
-                    className, FileInputAdapter.class.getName()));
+        if (configuration != null) {
+            String className = configuration.getProperty(type);
+            try {
+                c = Class.forName(className);
+                MLInputAdapter inputAdapter = (MLInputAdapter) c.newInstance();
+                return inputAdapter;
+            } catch (Exception e) {
+                log.warn(String
+                        .format("Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
+                                className, FileInputAdapter.class.getName()));
+            }
         }
         return new FileInputAdapter();
     }
 
     public MLOutputAdapter getOutputAdapter(String type) {
         Class<?> c;
-        String className = configuration.getProperty(type);
-        try {
-            c = Class.forName(className);
-            MLOutputAdapter outputAdapter = (MLOutputAdapter) c.newInstance();
-            return outputAdapter;
-        } catch (Exception e) {
-            log.warn(String.format(
-                    "Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
-                    className, FileOutputAdapter.class.getName()));
+        if (configuration != null) {
+            String className = configuration.getProperty(type);
+            try {
+                c = Class.forName(className);
+                MLOutputAdapter outputAdapter = (MLOutputAdapter) c.newInstance();
+                return outputAdapter;
+            } catch (Exception e) {
+                log.warn(String
+                        .format("Failed to load/instantiate the class: %s . Hence, the default implementation %s will be used.",
+                                className, FileOutputAdapter.class.getName()));
+            }
         }
         return new FileOutputAdapter();
     }
