@@ -99,6 +99,7 @@ public class MLCoreDS {
             if (System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT) != null) {
                 if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT))) {
                     valueHolder.setSparkContextEnabled(false);
+                    log.info("ML Spark context will not be initialized.");
                 }
                 else {
                     valueHolder.setSparkContextEnabled(true);
