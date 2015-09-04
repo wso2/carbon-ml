@@ -51,6 +51,9 @@ public class MLConstants {
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
     public static final String ML_PROJECTS = "MLProjects";
+
+    // Spark context disabling JVM option
+    public static final String DISABLE_ML_SPARK_CONTEXT_JVM_OPT = "disableMLSparkCtx";
     
     // Character Encodings
     public static final String UTF_8= "UTF-8";

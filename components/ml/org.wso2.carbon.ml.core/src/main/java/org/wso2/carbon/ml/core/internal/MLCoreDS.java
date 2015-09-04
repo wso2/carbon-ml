@@ -73,7 +73,7 @@ public class MLCoreDS {
             valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
             valueHolder.setDatasetStorage(mlConfig.getDatasetStorage());
-            
+
             Properties mlProperties = valueHolder.getMlProperties();
             String poolSizeStr = mlProperties
                     .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
@@ -98,21 +98,36 @@ public class MLCoreDS {
             }
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
 
-            SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-            sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
-            String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
-            int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
-            sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
-            valueHolder.setSparkConf(sparkConf);
-            
-            // create a new java spark context
-            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-            sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
-                    org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            sparkContext.hadoopConfiguration()
-                    .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+            // Checks whether ML spark context disabling JVM option is set
+            if (System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT) != null) {
+                if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT))) {
+                    valueHolder.setSparkContextEnabled(false);
+                }
+                else {
+                    valueHolder.setSparkContextEnabled(true);
+                }
+            }
+            else {
+                valueHolder.setSparkContextEnabled(true);
+            }
 
-            valueHolder.setSparkContext(sparkContext);
+            if (valueHolder.isSparkContextEnabled()) {
+                SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+                sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+                String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
+                sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
+                valueHolder.setSparkConf(sparkConf);
+
+                // create a new java spark context
+                JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+                sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
+                        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+                sparkContext.hadoopConfiguration()
+                        .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+                valueHolder.setSparkContext(sparkContext);
+            }
 
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
@@ -137,11 +152,11 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
-            
+
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-queue-size", queueSizeGauge);
-            
+
             log.info("ML core bundle activated successfully.");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
