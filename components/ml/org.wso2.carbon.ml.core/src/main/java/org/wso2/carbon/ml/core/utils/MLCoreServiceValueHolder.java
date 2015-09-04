@@ -46,7 +46,12 @@ public class MLCoreServiceValueHolder {
     private Storage datasetStorage;
     private BlockingExecutor threadExecutor;
     private boolean sparkContextEnabled;
-    
+
+    public MLCoreServiceValueHolder() {
+        sparkContextEnabled = true;
+    }
+
+
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
             synchronized (MLCoreServiceValueHolder.class) {

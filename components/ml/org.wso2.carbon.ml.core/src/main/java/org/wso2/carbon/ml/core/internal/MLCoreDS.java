@@ -101,12 +101,6 @@ public class MLCoreDS {
                     valueHolder.setSparkContextEnabled(false);
                     log.info("ML Spark context will not be initialized.");
                 }
-                else {
-                    valueHolder.setSparkContextEnabled(true);
-                }
-            }
-            else {
-                valueHolder.setSparkContextEnabled(true);
             }
 
             if (valueHolder.isSparkContextEnabled()) {
