@@ -38,6 +38,9 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
+import org.wso2.carbon.metrics.manager.Gauge;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
 
 /**
  * @scr.component name="ml.core" immediate="true"
@@ -135,11 +138,31 @@ public class MLCoreDS {
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
             
+            // ML metrices
+            MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
+            MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-queue-size", queueSizeGauge);
+            
             log.info("ML core bundle activated successfully.");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }
     }
+    
+    Gauge<Integer> activeCountGauge = new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+            // Return a value
+            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getActiveCount();
+        }
+    };
+
+    Gauge<Integer> queueSizeGauge = new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+            // Return a value
+            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getQueue().size();
+        }
+    };
 
     protected void deactivate(ComponentContext context) {
         // Destroy the created email output adapter

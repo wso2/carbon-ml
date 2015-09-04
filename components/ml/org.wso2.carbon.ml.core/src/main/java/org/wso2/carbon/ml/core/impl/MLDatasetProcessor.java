@@ -20,9 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.metrics.manager.Gauge;
-import org.wso2.carbon.metrics.manager.Level;
-import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
@@ -58,27 +55,7 @@ public class MLDatasetProcessor {
         summaryStatsSettings = valueHolder.getSummaryStatSettings();
         databaseService = valueHolder.getDatabaseService();
         threadExecutor = valueHolder.getThreadExecutor();
-        // ML metrices
-        MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
-        MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-queue-size", queueSizeGauge);
-
     }
-
-    Gauge<Integer> activeCountGauge = new Gauge<Integer>() {
-        @Override
-        public Integer getValue() {
-            // Return a value
-            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getActiveCount();
-        }
-    };
-
-    Gauge<Integer> queueSizeGauge = new Gauge<Integer>() {
-        @Override
-        public Integer getValue() {
-            // Return a value
-            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getQueue().size();
-        }
-    };
 
     public List<MLDatasetVersion> getAllDatasetVersions(int tenantId, String userName, long datasetId)
             throws MLDataProcessingException {
