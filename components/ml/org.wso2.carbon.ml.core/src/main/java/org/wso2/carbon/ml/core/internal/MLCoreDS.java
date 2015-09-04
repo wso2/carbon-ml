@@ -95,21 +95,36 @@ public class MLCoreDS {
             }
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
 
-            SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-            sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
-            String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
-            int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
-            sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
-            valueHolder.setSparkConf(sparkConf);
-            
-            // create a new java spark context
-            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-            sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
-                    org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            sparkContext.hadoopConfiguration()
-                    .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+            // Checks whether ML spark context disabling JVM option is set
+            if (System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT) != null) {
+                if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT))) {
+                    valueHolder.setSparkContextEnabled(false);
+                }
+                else {
+                    valueHolder.setSparkContextEnabled(true);
+                }
+            }
+            else {
+                valueHolder.setSparkContextEnabled(true);
+            }
 
-            valueHolder.setSparkContext(sparkContext);
+            if (valueHolder.isSparkContextEnabled()) {
+                SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+                sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+                String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
+                sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
+                valueHolder.setSparkConf(sparkConf);
+
+                // create a new java spark context
+                JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+                sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
+                        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+                sparkContext.hadoopConfiguration()
+                        .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+                valueHolder.setSparkContext(sparkContext);
+            }
 
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
