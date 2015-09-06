@@ -198,7 +198,7 @@ public class Predictor {
     private List<Vector> getVectors(List<String[]> data) {
         List<Vector> vectors = new ArrayList<Vector>();
         List<Map<String, Integer>> encodings = model.getEncodings();
-        BasicEncoder encoder = new BasicEncoder(encodings);
+        BasicEncoder encoder = new BasicEncoder.Builder().encodings(encodings).build();
         for (String[] dataEntry : data) {
             String[] encodedEntry;
             try {

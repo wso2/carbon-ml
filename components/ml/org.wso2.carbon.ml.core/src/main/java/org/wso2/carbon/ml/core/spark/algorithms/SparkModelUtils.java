@@ -26,32 +26,19 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
-import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
-import org.apache.spark.mllib.stat.MultivariateStatisticalSummary;
-import org.apache.spark.mllib.stat.Statistics;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
-import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.core.exceptions.DatasetPreProcessingException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
 import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
-import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
-import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
-import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
-import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
-import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-import org.wso2.carbon.ml.core.utils.MLUtils;
-
 import scala.Tuple2;
 
 import java.text.DecimalFormat;
@@ -255,87 +242,6 @@ public class SparkModelUtils {
         classClassificationModelSummary.setError(error);
         return classClassificationModelSummary;
     }
-
-    /**
-     * A utility method to pre-process data
-     *
-     * @param sc              JavaSparkContext
-     * @param workflow        Machine learning workflow
-     * @param lines           JavaRDD of strings
-     * @param headerRow       HeaderFilter row
-     * @param columnSeparator Column separator
-     * @return Returns a JavaRDD of doubles
-     * @throws org.wso2.carbon.ml.model.exceptions.ModelServiceException
-     */
-    public static JavaRDD<double[]> preProcess(MLModelConfigurationContext context) throws DatasetPreProcessingException {
-        JavaSparkContext sc = context.getSparkContext();
-        Workflow workflow = context.getFacts();
-        JavaRDD<String> lines = context.getLines().cache();
-        String headerRow = context.getHeaderRow();
-        String columnSeparator = context.getColumnSeparator();
-        Map<String,String> summaryStatsOfFeatures = context.getSummaryStatsOfFeatures();
-        List<Integer> newToOldIndicesList = context.getNewToOldIndicesList();
-        int responseIndex = context.getResponseIndex();
-        
-        List<Map<String, Integer>> encodings = buildEncodings(workflow.getFeatures(), summaryStatsOfFeatures, newToOldIndicesList, responseIndex);
-        context.setEncodings(encodings);
-
-            // Apply the filter to discard rows with missing values.
-            JavaRDD<String[]> tokensDiscardedRemoved = MLUtils.filterRows(columnSeparator, headerRow, lines,
-                    MLUtils.getImputeFeatureIndices(workflow, new ArrayList<Integer>(), MLConstants.DISCARD));
-            JavaRDD<String[]> filteredTokens = tokensDiscardedRemoved.map(new RemoveDiscardedFeatures(newToOldIndicesList, responseIndex)).cache();
-            JavaRDD<String[]> encodedTokens = filteredTokens.map(new BasicEncoder(encodings)).cache();
-            JavaRDD<double[]> features = null;
-            // get feature indices for mean imputation
-            List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(workflow, newToOldIndicesList, MLConstants
-                    .MEAN_IMPUTATION);
-            if (meanImputeIndices.size() > 0) {
-                // calculate means for the whole dataset (sampleFraction = 1.0) or a sample
-                Map<Integer, Double> means = getMeans(sc, encodedTokens, meanImputeIndices, 0.01);
-                // Replace missing values in impute indices with the mean for that column
-                MeanImputation meanImputation = new MeanImputation(means);
-                features = encodedTokens.map(meanImputation).cache();
-            } else {
-                /**
-                 * Mean imputation mapper will convert string tokens to doubles as a part of the
-                 * operation. If there is no mean imputation for any columns, tokens has to be
-                 * converted into doubles.
-                 */
-                features = encodedTokens.map(new StringArrayToDoubleArray()).cache();
-            }
-            return features;
-       
-    }
-
-    /**
-     * A utility method to perform mean imputation
-     *
-     * @param sparkContext                JavaSparkContext
-     * @param tokens            JavaRDD of String[]
-     * @param meanImputeIndices Indices of columns to impute
-     * @param sampleFraction    Sample fraction used to calculate mean
-     * @return Returns a map of impute indices and means
-     * @throws                  ModelServiceException
-     */
-    private static Map<Integer, Double> getMeans(JavaSparkContext sparkContext, JavaRDD<String[]> tokens,
-            List<Integer> meanImputeIndices, double sampleFraction) throws DatasetPreProcessingException {
-        Map<Integer, Double> imputeMeans = new HashMap<Integer, Double>();
-        JavaRDD<String[]> missingValuesRemoved = tokens.filter(new MissingValuesFilter());
-        JavaRDD<Vector> features = null;
-        // calculate mean and populate mean imputation hashmap
-        TokensToVectors tokensToVectors = new TokensToVectors(meanImputeIndices);
-        if (sampleFraction < 1.0) {
-            features = missingValuesRemoved.sample(false, sampleFraction).map(tokensToVectors);
-        } else {
-            features = missingValuesRemoved.map(tokensToVectors);
-        }
-        MultivariateStatisticalSummary summary = Statistics.colStats(features.rdd());
-        double[] means = summary.mean().toArray();
-        for (int i = 0; i < means.length; i++) {
-            imputeMeans.put(meanImputeIndices.get(i), means[i]);
-        }
-        return imputeMeans;
-    }
     
     /**
      * Build the encodings against each categorical feature.
@@ -346,8 +252,11 @@ public class SparkModelUtils {
      *      value - encoded value
      * 
      */
-    private static List<Map<String, Integer>> buildEncodings(List<Feature> features, Map<String, String> summaryStats,
-            List<Integer> newToOldIndicesList, int responseIndex) {
+    public static List<Map<String, Integer>> buildEncodings(MLModelConfigurationContext ctx) {
+        List<Feature> features = ctx.getFacts().getFeatures();
+        Map<String, String> summaryStats = ctx.getSummaryStatsOfFeatures();
+        List<Integer> newToOldIndicesList = ctx.getNewToOldIndicesList();
+        int responseIndex = ctx.getResponseIndex();
         List<Map<String, Integer>> encodings = new ArrayList<Map<String, Integer>>();
         for (int i = 0; i < newToOldIndicesList.size()+1; i++) {
             encodings.add(new HashMap<String, Integer>());
@@ -355,7 +264,7 @@ public class SparkModelUtils {
         for (Feature feature : features) {
             Map<String, Integer> encodingMap = new HashMap<String, Integer>();
             if (feature.getType().equals(FeatureType.CATEGORICAL)) {
-                List<String> uniqueVals = getUniqueValues(feature.getIndex(), summaryStats.get(feature.getName()));
+                List<String> uniqueVals = getUniqueValues(summaryStats.get(feature.getName()));
                 Collections.sort(uniqueVals);
                 for (int i = 0; i < uniqueVals.size(); i++) {
                     encodingMap.put(uniqueVals.get(i), i);
@@ -373,7 +282,7 @@ public class SparkModelUtils {
         return encodings;
     }
     
-    private static List<String> getUniqueValues(int index, String statsAsJson) {
+    private static List<String> getUniqueValues(String statsAsJson) {
         List<String> uniqueValues = new ArrayList<String>();
         /*
          * "values": [
@@ -410,5 +319,31 @@ public class SparkModelUtils {
         }
         
         return uniqueValues;
+    }
+    
+    public static double getMean(String statsAsJson) {
+        if (statsAsJson == null) {
+            return 0.0;
+        }
+        try {
+            // new JSONArray(statsAsJson).getJSONObject(0).getJSONArray("values").getJSONArray(0).getString(0)
+            JSONArray array = new JSONArray(statsAsJson);
+            JSONObject jsonObj = array.getJSONObject(0);
+            String mean = jsonObj.getString("mean");
+            if (mean == null) {
+                return 0.0;
+            } else {
+                try {
+                    return Double.parseDouble(mean);
+                } catch (NumberFormatException e) {
+                    return 0.0;
+                }
+            }
+
+        } catch (JSONException e) {
+            log.warn("Failed to extract unique values from summary stats: " + statsAsJson, e);
+            return 0.0;
+        }
+
     }
 }

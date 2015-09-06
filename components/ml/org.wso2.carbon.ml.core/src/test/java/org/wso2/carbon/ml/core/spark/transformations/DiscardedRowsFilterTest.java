@@ -19,7 +19,7 @@ public class DiscardedRowsFilterTest {
 
     @Test
     public void testDiscardedRowsFilter() {
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(discardedIndices);
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(discardedIndices).build();
         boolean shouldKeep = discardedRowsFilter.call(new String[] { "1.2", "2", "hi", "na" });
         Assert.assertEquals(shouldKeep, true);
         shouldKeep = discardedRowsFilter.call(new String[] { "1.2", "?", "hi", "na" });
@@ -32,7 +32,7 @@ public class DiscardedRowsFilterTest {
 
     @Test
     public void testDiscardedRowsFilterWithNonDiscardedRows() {
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(discardedIndices);
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(discardedIndices).build();
         boolean shouldKeep = discardedRowsFilter.call(new String[] { "1.2", "2", "hi", "na", "4.21" });
         Assert.assertEquals(shouldKeep, true);
         shouldKeep = discardedRowsFilter.call(new String[] { "1.2", "?", "hi", "na", "4.21" });

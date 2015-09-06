@@ -59,6 +59,7 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -596,16 +597,20 @@ public class MLModelHandler {
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
             double sampleFraction = sampleSize / (lines.count() - 1);
+            HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
+            LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
+            MissingValuesFilter missingValuesFilter = new MissingValuesFilter.Builder().build();
+            TokensToVectors tokensToVectors = new TokensToVectors.Builder().indices(featureIndices).build();
+
             // Use entire dataset if number of records is less than or equal to sample fraction
             if (sampleFraction >= 1.0) {
-                featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter()).map(new TokensToVectors(featureIndices));
+                featureVectors = lines.filter(headerFilter).map(lineToTokens).filter(missingValuesFilter)
+                        .map(tokensToVectors);
             }
             // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
             else {
-                featureVectors = lines.filter(new HeaderFilter(headerRow)).sample(false, sampleFraction)
-                        .map(new LineToTokens(pattern)).filter(new MissingValuesFilter())
-                        .map(new TokensToVectors(featureIndices));
+                featureVectors = lines.filter(headerFilter).sample(false, sampleFraction).map(lineToTokens)
+                        .filter(missingValuesFilter).map(tokensToVectors);
             }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
@@ -674,9 +679,15 @@ public class MLModelHandler {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
 
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
+                List<Map<String, Integer>> encodings = SparkModelUtils.buildEncodings(ctxt);
+                ctxt.setEncodings(encodings);
 
+                // gets the model builder
                 MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
-                MLModel model = modelBuilder.build();
+                // pre-process the data
+                JavaRDD<?> dataset = modelBuilder.preProcess();
+                // build the model
+                MLModel model = modelBuilder.build(dataset);
                 log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
                         (double) (System.currentTimeMillis() - t1)/1000));
 

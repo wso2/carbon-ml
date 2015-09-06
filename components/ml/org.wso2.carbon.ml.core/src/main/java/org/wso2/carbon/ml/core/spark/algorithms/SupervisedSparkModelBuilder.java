@@ -57,7 +57,14 @@ import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -72,11 +79,27 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
+    
+    public JavaRDD<?> preProcess() throws MLModelBuilderException {
+        MLModelConfigurationContext context = getContext();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
+        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+        DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint.Builder().build();
+
+        JavaRDD<String> lines = context.getLines().cache();
+        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
+                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
+    }
 
     /**
      * Build a supervised model.
      */
-    public MLModel build() throws MLModelBuilderException {
+    public MLModel build(JavaRDD<?> dataset) throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -103,16 +126,14 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         + workflow.getAlgorithmName());
             }
 
-            // pre-processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), responseIndex);
 
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
-
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint).cache();
+            @SuppressWarnings("unchecked")
+            JavaRDD<LabeledPoint> labeledPoints = ((JavaRDD<LabeledPoint>) dataset).cache();
+            
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);

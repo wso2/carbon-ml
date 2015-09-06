@@ -30,12 +30,12 @@ public class ModelBuilderFactory {
 
     public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
+        // common transformations
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
+
         MLModelBuilder modelBuilder = null;
         switch (type) {
         case CLASSIFICATION:
-            modelBuilder = new SupervisedSparkModelBuilder(context);
-            break;
         case NUMERICAL_PREDICTION:
             modelBuilder = new SupervisedSparkModelBuilder(context);
             break;

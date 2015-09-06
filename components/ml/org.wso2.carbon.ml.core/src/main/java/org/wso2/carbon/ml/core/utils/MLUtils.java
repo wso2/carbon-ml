@@ -132,7 +132,7 @@ public class MLUtils {
         DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
         // Additional auto-generated column "_timestamp" needs to be dropped because it is not in the schema.
         JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
-        lines = rows.map(new RowsToLines(CSVFormat.RFC4180.getDelimiter() + ""));
+        lines = rows.map(new RowsToLines.Builder().separator(CSVFormat.RFC4180.getDelimiter() + "").build());
         return lines;
     }
 
@@ -463,14 +463,14 @@ public class MLUtils {
     public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
             List<Integer> featureIndices) {
         String columnSeparator = String.valueOf(delimiter);
-        HeaderFilter headerFilter = new HeaderFilter(headerRow);
+        HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
         JavaRDD<String> data = lines.filter(headerFilter).cache();
         Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
-        LineToTokens lineToTokens = new LineToTokens(pattern);
+        LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
         JavaRDD<String[]> tokens = data.map(lineToTokens).cache();
 
         // get feature indices for discard imputation
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter(featureIndices);
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(featureIndices).build();
         // Discard the row if any of the impute indices content have a missing value
         JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter).cache();
 

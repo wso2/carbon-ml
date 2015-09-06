@@ -19,6 +19,9 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +31,10 @@ import java.util.Map;
 public class BasicEncoder implements Function<String[], String[]> {
 
     private static final long serialVersionUID = -5025419727399292773L;
-    private List<Map<String, Integer>> encodings;
+    private final List<Map<String, Integer>> encodings;
 
-    public BasicEncoder(List<Map<String, Integer>> encodings) {
-        this.encodings = encodings;
+    private BasicEncoder(Builder builder) {
+        this.encodings = builder.encodings;
     }
 
     @Override
@@ -53,6 +56,24 @@ public class BasicEncoder implements Function<String[], String[]> {
             }
         }
         return tokens;
+    }
+
+    public static class Builder {
+        private List<Map<String, Integer>> encodings;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.encodings = SparkModelUtils.buildEncodings(ctx);
+            return this;
+        }
+
+        public Builder encodings(List<Map<String, Integer>> encodings) {
+            this.encodings = encodings;
+            return this;
+        }
+
+        public BasicEncoder build() {
+            return new BasicEncoder(this);
+        }
     }
 
 }

@@ -20,36 +20,67 @@ package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MeanImputation implements Function<String[], double[]> {
+public class MeanImputation implements Function<String[], String[]> {
 
     private static final long serialVersionUID = 6936249532612016896L;
-    private Map<Integer, Double> meanImputation;
+    private final Map<Integer, Double> meanImputation;
 
-    public MeanImputation(Map<Integer, Double> meanImputation) {
-        this.meanImputation = meanImputation;
+    public MeanImputation(Builder builder) {
+        this.meanImputation = builder.meanImputation;
     }
 
     @Override
-    public double[] call(String[] tokens) throws MLModelBuilderException {
+    public String[] call(String[] tokens) throws MLModelBuilderException {
         try {
-            double[] features = new double[tokens.length];
+            String[] features = new String[tokens.length];
             for (int i = 0; i < tokens.length; ++i) {
                 if (MLConstants.MISSING_VALUES.contains(tokens[i])) {
                     // if mean imputation is set
                     if (meanImputation.containsKey(i)) {
-                        features[i] = meanImputation.get(i);
+                        features[i] = String.valueOf(meanImputation.get(i));
                     }
                 } else {
-                    features[i] = Double.parseDouble(tokens[i]);
+                    features[i] = tokens[i];
                 }
             }
             return features;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while applying mean imputation: " + e.getMessage(), e);
+        }
+    }
+
+    public static class Builder {
+        private Map<Integer, Double> meanImputation;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            meanImputation = new HashMap<Integer, Double>();
+            // get feature indices for mean imputation
+            List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(ctx.getFacts(),
+                    ctx.getNewToOldIndicesList(), MLConstants.MEAN_IMPUTATION);
+            List<Feature> features = ctx.getFacts().getFeatures();
+            Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
+            for (Feature feature : features) {
+                if (meanImputeIndices.indexOf(feature.getIndex()) != -1) {
+                    String featureStat = stats.get(feature.getName());
+                    double mean = SparkModelUtils.getMean(featureStat);
+                    meanImputation.put(feature.getIndex(), mean);
+                }
+            }
+            return this;
+        }
+
+        public MeanImputation build() {
+            return new MeanImputation(this);
         }
     }
 }
