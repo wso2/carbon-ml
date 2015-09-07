@@ -19,7 +19,6 @@ package org.wso2.carbon.ml.core.interfaces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
@@ -37,18 +36,11 @@ public abstract class MLModelBuilder {
     }
     
     /**
-     * Pre-process the dataset.
-     * @return pre-processed JavaRDD
-     * @throws MLModelBuilderException
-     */
-    public abstract JavaRDD<?> preProcess() throws MLModelBuilderException;
-    
-    /**
      * Build a model using the context.
      * @return build {@link MLModel}
      * @throws MLModelBuilderException if failed to build the model.
      */
-    public abstract MLModel build(JavaRDD<?> dataset) throws MLModelBuilderException;
+    public abstract MLModel build() throws MLModelBuilderException;
     
     public void handleIgnoreException(String msg, Exception e) {
         log.error(msg, e);

@@ -80,7 +80,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         super(context);
     }
     
-    public JavaRDD<?> preProcess() throws MLModelBuilderException {
+    private JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
@@ -99,7 +99,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * Build a supervised model.
      */
-    public MLModel build(JavaRDD<?> dataset) throws MLModelBuilderException {
+    public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -131,8 +131,8 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), responseIndex);
 
-            @SuppressWarnings("unchecked")
-            JavaRDD<LabeledPoint> labeledPoints = ((JavaRDD<LabeledPoint>) dataset).cache();
+            // gets the pre-processed dataset
+            JavaRDD<LabeledPoint> labeledPoints = preProcess().cache();
             
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
