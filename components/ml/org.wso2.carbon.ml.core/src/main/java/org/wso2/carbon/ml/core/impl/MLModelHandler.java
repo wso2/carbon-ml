@@ -683,7 +683,7 @@ public class MLModelHandler {
                 ctxt.setEncodings(encodings);
 
                 // gets the model builder
-                MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
+                MLModelBuilder modelBuilder = ModelBuilderFactory.getModelBuilder(algorithmType, ctxt);
                 // pre-process the data
                 JavaRDD<?> dataset = modelBuilder.preProcess();
                 // build the model

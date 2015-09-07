@@ -28,7 +28,7 @@ import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
  */
 public class ModelBuilderFactory {
 
-    public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
+    public static MLModelBuilder getModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
 
