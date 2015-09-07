@@ -281,7 +281,14 @@
                                                 '<td>' +
 						    '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
                                                     '<span class="cu-acc-head-title">' + modelName + '</span>' +
-                                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>' +
+                                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
+                                                    // retrieve dataset version from model summary when model building is completed
+                                                    if(modelStatus == 'Complete') {
+                                                        var datasetVersion = sanitize(analysisModels[i]['modelSummary']['datasetVersion']);
+                                                        accordionPanel += '' + 
+                                                    '<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>';
+                                                    }
+                                                    accordionPanel += '' +                                              
                                                     '<span class="cu-acc-head-workflow"></span>' +
                                                     '<span class="cu-acc-head-created">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
                                                     '</a>' +

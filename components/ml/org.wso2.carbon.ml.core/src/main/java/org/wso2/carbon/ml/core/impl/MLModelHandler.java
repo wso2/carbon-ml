@@ -230,6 +230,7 @@ public class MLModelHandler {
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
+            facts.setDatasetVersion(databaseService.getVersionset(tenantId, userName, datasetVersionId).getName());
             facts.setDatasetURL(dataUrl);
 
             JavaRDD<String> lines;

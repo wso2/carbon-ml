@@ -40,6 +40,7 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
     private double modelAccuracy;
     private MulticlassConfusionMatrix multiclassConfusionMatrix;
     private double meanSquaredError;
+    private String datasetVersion;
 
     public String getAlgorithm() {
         return algorithm;
@@ -148,6 +149,20 @@ public class ClassClassificationAndRegressionModelSummary implements ModelSummar
      */
     public void setMeanSquaredError(double meanSquaredError) {
         this.meanSquaredError = meanSquaredError;
+    }
+
+    /**
+     * @return Returns dataset version
+     */
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    /**
+     * @param datasetVersion Sets dataset version
+     */
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
     @Override

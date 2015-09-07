@@ -305,6 +305,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -366,6 +367,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -408,6 +410,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -477,6 +480,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -534,6 +538,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -593,6 +598,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -650,6 +656,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -699,6 +706,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
