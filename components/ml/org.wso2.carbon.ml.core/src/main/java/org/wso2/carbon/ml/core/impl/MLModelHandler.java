@@ -684,10 +684,8 @@ public class MLModelHandler {
 
                 // gets the model builder
                 MLModelBuilder modelBuilder = ModelBuilderFactory.getModelBuilder(algorithmType, ctxt);
-                // pre-process the data
-                JavaRDD<?> dataset = modelBuilder.preProcess();
-                // build the model
-                MLModel model = modelBuilder.build(dataset);
+                // pre-process and build the model
+                MLModel model = modelBuilder.build();
                 log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
                         (double) (System.currentTimeMillis() - t1)/1000));
 

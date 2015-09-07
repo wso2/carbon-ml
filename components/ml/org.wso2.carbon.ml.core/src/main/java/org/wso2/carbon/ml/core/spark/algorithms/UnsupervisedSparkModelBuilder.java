@@ -54,7 +54,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
         super(context);
     }
     
-    public JavaRDD<?> preProcess() throws MLModelBuilderException {
+    private JavaRDD<Vector> preProcess() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
@@ -73,7 +73,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * Build an unsupervised model.
      */
-    public MLModel build(JavaRDD<?> dataset) throws MLModelBuilderException {
+    public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         try {
@@ -81,8 +81,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
 
-            @SuppressWarnings("unchecked")
-            JavaRDD<Vector> data = ((JavaRDD<Vector>) dataset).cache();
+            // gets the pre-processed dataset
+            JavaRDD<Vector> data = preProcess().cache();
             JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED)
                     .cache();
             JavaRDD<Vector> testingData = data.subtract(trainingData);
