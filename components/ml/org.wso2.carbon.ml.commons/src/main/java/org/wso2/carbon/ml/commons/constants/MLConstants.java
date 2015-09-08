@@ -54,6 +54,10 @@ public class MLConstants {
 
     // Spark context disabling JVM option
     public static final String DISABLE_ML_SPARK_CONTEXT_JVM_OPT = "disableMLSparkCtx";
+
+    // Spark configuration properties
+    public static final String SPARK_EXECUTOR_CLASSPATH = "spark.executor.extraClassPath";
+    public static final String SPARK_DRIVER_CLASSPATH = "spark.driver.extraClassPath";
     
     // Character Encodings
     public static final String UTF_8= "UTF-8";

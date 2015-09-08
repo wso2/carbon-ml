@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -41,6 +42,7 @@ import org.wso2.carbon.utils.NetworkUtils;
 import org.wso2.carbon.metrics.manager.Gauge;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.analytics.spark.utils.ComputeClasspath;
 
 /**
  * @scr.component name="ml.core" immediate="true"
@@ -108,6 +110,21 @@ public class MLCoreDS {
 
             if (valueHolder.isSparkContextEnabled()) {
                 SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+
+                // Add extra class paths for DAS Spark cluster
+                String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
+                try {
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
+                } catch (NoSuchElementException e) {
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, "");
+                }
+
+                try {
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
+                } catch (NoSuchElementException e) {
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, "");
+                }
+
                 sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
                 String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
                 int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));

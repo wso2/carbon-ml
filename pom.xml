@@ -337,6 +337,11 @@
 				<version>${carbon.analytics.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.wso2.carbon.analytics</groupId>
+				<artifactId>org.wso2.carbon.analytics.spark.utils</artifactId>
+				<version>${carbon.analytics.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.wso2.carbon.ml</groupId>
 				<artifactId>org.wso2.carbon.ml.rest.api</artifactId>
 				<version>${ml.version}</version>
