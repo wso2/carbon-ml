@@ -110,19 +110,19 @@ public class MLCoreDS {
 
             if (valueHolder.isSparkContextEnabled()) {
                 SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-                String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
 
                 // Add extra class paths for DAS Spark cluster
+                String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
                 try {
-                    sparkConf.set("spark.executor.extraClassPath", sparkConf.get("spark.executor.extraClassPath") + ":" + sparkClassPath);
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
                 } catch (NoSuchElementException e) {
-                    sparkConf.set("spark.executor.extraClassPath", "");
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, "");
                 }
 
                 try {
-                    sparkConf.set("spark.driver.extraClassPath", sparkConf.get("spark.driver.extraClassPath") + ":" + sparkClassPath);
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
                 } catch (NoSuchElementException e) {
-                    sparkConf.set("spark.driver.extraClassPath", "");
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, "");
                 }
 
                 sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
