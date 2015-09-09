@@ -45,7 +45,7 @@ import org.wso2.carbon.ml.rest.api.model.MLAnalysisConfigsBean;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 
 /**
- * WSO2 ML Analyses API. All the operations related to Analyses are delegated from this class.
+ * WSO2 ML Analyses API. All the operations related to analyses are delegated from this class.
  */
 @Path("/analyses")
 public class AnalysisApiV10 extends MLRestAPI {
@@ -71,7 +71,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Create a new Analysis of a project.
+     * Create a new analysis of a project.
      */
     @POST
     @Produces("application/json")
@@ -100,7 +100,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Adding customized features of this analysis.
+     * Adding customized features of an analysis.
      */
     @POST
     @Path("/{analysisId}/features")
@@ -127,7 +127,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * load default features as customized features of this analysis.
+     * Set default features as customized features of an analysis.
      */
     @POST
     @Path("/{analysisId}/features/defaults")
@@ -157,7 +157,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get summarized features of an analysis.
+     * Get summarized features of an analysis.
      */
     @GET
     @Path("/{analysisId}/summarizedFeatures")
@@ -186,7 +186,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get customized features of an analysis.
+     * Get customized features of an analysis.
      */
     @GET
     @Path("/{analysisId}/customizedFeatures")
@@ -214,7 +214,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get configurations of an analysis.
+     * Get configurations of an analysis.
      */
     @GET
     @Path("/{analysisId}/configs")
@@ -248,7 +248,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get filtered feature names of an analysis.
+     * Get filtered feature names of an analysis.
      */
     @GET
     @Path("/{analysisId}/filteredFeatures")
@@ -275,7 +275,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get all feature names of an analysis.
+     * Get all feature names of an analysis.
      */
     @GET
     @Path("/{analysisId}/features")
@@ -301,7 +301,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get the response variable of an analysis.
+     * Get the response variable of an analysis.
      */
     @GET
     @Path("/{analysisId}/responseVariables")
@@ -327,7 +327,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get the algorithm name of an analysis.
+     * Get the algorithm name of an analysis.
      */
     @GET
     @Path("/{analysisId}/algorithmName")
@@ -353,7 +353,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get the algorithm type of an analysis.
+     * Get the algorithm type of an analysis.
      */
     @GET
     @Path("/{analysisId}/algorithmType")
@@ -379,7 +379,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get the train data fraction of an analysis.
+     * Get the train data fraction of an analysis.
      */
     @GET
     @Path("/{analysisId}/trainDataFraction")
@@ -405,7 +405,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get summarized statistics of a feature of an analysis.
+     * Get summary statistics of a feature of an analysis.
      */
     @GET
     @Path("/{analysisId}/stats")
@@ -438,7 +438,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Adding configurations (algorithm etc.) of this analysis.
+     * Add configurations of an analysis.
      */
     @POST
     @Path("/{analysisId}/configurations")
@@ -465,7 +465,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Adding hyper parameters for the selected algorithm of this analysis.
+     * Add hyper-parameters for the selected algorithm of an analysis.
      */
     @POST
     @Path("/{analysisId}/hyperParams")
@@ -492,7 +492,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get hyper-parameters of an analysis.
+     * Get hyper-parameter of an analysis.
      */
     @GET
     @Path("/{analysisId}/hyperParameters")
@@ -519,7 +519,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * loading default configurations as configurations (algorithm etc.) of this analysis.
+     * Load default configurations as configurations of an analysis.
      */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
@@ -567,7 +567,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get all models of a given analysis.
+     * Get all models of an analysis.
      */
     @GET
     @Path("/{analysisId}/models")
@@ -590,7 +590,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * delete an analysis of a given id.
+     * Delete an analysis of a given ID.
      */
     @DELETE
     @Path("/{analysisId}")
