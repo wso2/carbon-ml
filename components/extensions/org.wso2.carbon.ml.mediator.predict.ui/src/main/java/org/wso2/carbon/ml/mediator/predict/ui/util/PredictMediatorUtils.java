@@ -81,8 +81,8 @@ public class PredictMediatorUtils {
 
     /**
      * Get the Features list of the model
-     * @param modelStorageLocation ML model stored location
-     * @return
+     * @param modelStorageLocation ML model storage location
+     * @return the list of Features of the MLModel
      */
     public static List<Feature> getFeaturesOfModel(String modelStorageLocation) throws IOException,
             ClassNotFoundException, URISyntaxException, MLInputAdapterException {
@@ -95,9 +95,11 @@ public class PredictMediatorUtils {
     /**
      * Get the response variable of the model
      * @param modelStorageLocation model storage location
-     * @return
-     * @throws MLModelHandlerException
-     * @throws MLAnalysisHandlerException
+     * @return the response variable name of the MLModel
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws URISyntaxException
+     * @throws MLInputAdapterException
      */
     public static String getResponseVariable(String modelStorageLocation) throws IOException,
             ClassNotFoundException, URISyntaxException, MLInputAdapterException {

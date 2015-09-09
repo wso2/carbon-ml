@@ -131,6 +131,7 @@ public interface DatabaseService {
      * of features, of a dataset.
      *
      * @param tenantId ID of the tenant
+     * @param userName Tenant user name
      * @param analysisId ID of the analysis
      * @param startIndex Starting index of the set of features needed
      * @param numberOfFeatures Number of features needed, from the starting index

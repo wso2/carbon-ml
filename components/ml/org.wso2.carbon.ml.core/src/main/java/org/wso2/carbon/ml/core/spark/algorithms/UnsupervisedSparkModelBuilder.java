@@ -123,7 +123,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @throws ModelServiceException
+     * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansModel(long modelID, JavaRDD<Vector> trainingData, JavaRDD<Vector> testingData,
             Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
