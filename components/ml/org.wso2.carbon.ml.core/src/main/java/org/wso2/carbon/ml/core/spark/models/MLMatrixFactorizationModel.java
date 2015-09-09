@@ -51,20 +51,22 @@ public class MLMatrixFactorizationModel implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-		try {
-			saveModel();
-		} catch (MLModelBuilderException e) {
-			log.error(e.getMessage(), e);
-		}
+		out.writeObject(this.model);
+//		try {
+//			saveModel();
+//		} catch (MLModelBuilderException e) {
+//			log.error(e.getMessage(), e);
+//		}
 	}
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		try {
-			this.model = retrieveModel();
-		} catch (MLModelBuilderException e) {
-			log.error(e.getMessage(), e);
-		}
+		model = (MatrixFactorizationModel) in.readObject();
+//		try {
+//			this.model = retrieveModel();
+//		} catch (MLModelBuilderException e) {
+//			log.error(e.getMessage(), e);
+//		}
 	}
 
 	public MatrixFactorizationModel getModel() {
