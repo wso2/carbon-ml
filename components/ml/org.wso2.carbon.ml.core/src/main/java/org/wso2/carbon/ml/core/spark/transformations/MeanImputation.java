@@ -79,6 +79,11 @@ public class MeanImputation implements Function<String[], String[]> {
             return this;
         }
 
+        public Builder imputations(Map<Integer, Double> meanImputation) {
+            this.meanImputation = meanImputation;
+            return this;
+        }
+
         public MeanImputation build() {
             return new MeanImputation(this);
         }
