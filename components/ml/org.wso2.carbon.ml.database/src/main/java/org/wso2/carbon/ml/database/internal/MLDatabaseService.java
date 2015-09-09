@@ -1573,7 +1573,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param tenantId   tenant ID
      * @param userName   username
      * @param projectId  Project ID
-     * @return
+     * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
     @Override
