@@ -57,7 +57,14 @@ import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -71,6 +78,22 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
+    }
+    
+    private JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
+        MLModelConfigurationContext context = getContext();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
+        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+        DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint.Builder().build();
+
+        JavaRDD<String> lines = context.getLines().cache();
+        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
+                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
     }
 
     /**
@@ -91,7 +114,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     workflow.getFeatures());
 
             if (typeOfResponseVariable == null) {
-                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning"
+                throw new MLModelBuilderException("Type of response variable cannot be null for supervised learning "
                         + "algorithms.");
             }
 
@@ -103,16 +126,14 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         + workflow.getAlgorithmName());
             }
 
-            // pre-processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), responseIndex);
 
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
-
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
+            // gets the pre-processed dataset
+            JavaRDD<LabeledPoint> labeledPoints = preProcess().cache();
+            
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
@@ -248,6 +269,11 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
                         hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
             }
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
 
             Vector weights = logisticRegressionModel.weights();
             if (!isValidWeights(weights)) {
@@ -279,6 +305,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -321,6 +348,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = decisionTree.test(decisionTreeModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -334,6 +367,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -357,6 +391,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = randomForest.test(randomForestModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -370,6 +410,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -407,6 +448,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = svmModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -433,6 +480,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -464,6 +512,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)),
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = linearRegressionModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -484,6 +538,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -517,6 +572,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = ridgeRegressionModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -537,6 +598,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -570,6 +632,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
                     Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                     Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             Vector weights = lassoModel.weights();
             if (!isValidWeights(weights)) {
                 throw new MLModelBuilderException("Weights of the model generated are null or infinity. [Weights] "
@@ -588,6 +656,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -618,6 +687,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
             NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData,
                     Double.parseDouble(hyperParameters.get(MLConstants.LAMBDA)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             JavaPairRDD<Double, Double> predictionsAndLabels = naiveBayesClassifier.test(naiveBayesModel, testingData);
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
@@ -631,6 +706,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {

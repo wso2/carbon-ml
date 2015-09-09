@@ -32,6 +32,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
@@ -89,10 +92,13 @@ public class SummaryStatsGenerator implements Runnable {
     @Override
     public void run() {
 
+        org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
+                "org.wso2.carbon.ml.dataset-summary-generation-time");
+        Context context = timer.start();
         // extract the sample points and generate summary stats
         try {
             this.samplePoints = datasetProcessor.takeSample();
-            this.samplePoints.setIsGenerated(true);
+            this.samplePoints.setGenerated(true);
             this.headerMap = samplePoints.getHeader();
             this.columnData = samplePoints.getSamplePoints();
             this.missing = samplePoints.getMissing();
@@ -124,7 +130,7 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            this.samplePoints.setIsGenerated(false);
+            this.samplePoints.setGenerated(false);
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
             try {
                 dbService.updateSamplePoints(datasetVersionId, samplePoints);
@@ -135,15 +141,14 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.error("Error occurred while calculating summary statistics " + "for dataset version "
                         + this.datasetVersionId + ": " + e.getMessage(), e);
             }
+        } finally {
+            context.stop();
         }
     }
 
     /**
      * Finds the columns with Categorical data and Numerical data. Stores the raw-data in a list.
      *
-     * @param datasetIterator Iterator for the CSV parser.
-     * @param sampleSize Size of the sample.
-     * @throws DatasetSummaryException
      */
     protected String[] identifyColumnDataType() {
         // If at least one cell contains strings, then the column is considered to has string data.
@@ -218,7 +223,6 @@ public class SummaryStatsGenerator implements Runnable {
      * Calculate the frequencies of each category in String columns, needed to plot bar graphs/histograms. Calculate
      * unique value counts.
      *
-     * @param noOfIntervals Number of intervals to be calculated.
      */
     protected List<SortedMap<?, Integer>> calculateStringColumnFrequencies() {
 
@@ -247,8 +251,6 @@ public class SummaryStatsGenerator implements Runnable {
     /**
      * Calculate the frequencies of each category/interval of Numerical data columns.
      *
-     * @param categoricalThreshold Threshold for number of categories, to be considered as discrete data.
-     * @param noOfIntervals Number of intervals to be calculated for continuous data
      */
     protected List<SortedMap<?, Integer>> calculateNumericColumnFrequencies() {
         int noOfIntervals = summarySettings.getHistogramBins();

@@ -8,4 +8,5 @@
     <property name="spark.kryoserializer.buffer">256k</property>
     <property name="spark.kryoserializer.buffer.max">256m</property>
     <property name="spark.driver.allowMultipleContexts">true</property>
+    <property name="spark.ui.port">4040</property>
 </sparkSettings>

@@ -32,7 +32,14 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.models.MLKMeansModel;
 import org.wso2.carbon.ml.core.spark.summary.ClusterModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
 
@@ -46,6 +53,22 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
     public UnsupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
+    
+    private JavaRDD<Vector> preProcess() throws MLModelBuilderException {
+        MLModelConfigurationContext context = getContext();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
+        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+        DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
+
+        JavaRDD<String> lines = context.getLines().cache();
+        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
+                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToVector);
+    }
 
     /**
      * Build an unsupervised model.
@@ -58,12 +81,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
 
-            // apply pre processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
-
-            // generate train and test datasets by converting double arrays to vectors
-            DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector();
-            JavaRDD<Vector> data = features.map(doubleArrayToVector);
+            // gets the pre-processed dataset
+            JavaRDD<Vector> data = preProcess().cache();
             JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED)
                     .cache();
             JavaRDD<Vector> testingData = data.subtract(trainingData);
@@ -105,7 +124,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @throws ModelServiceException
+     * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansModel(long modelID, JavaRDD<Vector> trainingData, JavaRDD<Vector> testingData,
             Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
@@ -115,6 +134,12 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
+            
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+            
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
 //            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
 //            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());

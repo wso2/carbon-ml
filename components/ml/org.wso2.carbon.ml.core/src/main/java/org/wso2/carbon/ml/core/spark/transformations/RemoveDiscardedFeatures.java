@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 
 import java.util.List;
 
@@ -32,12 +33,9 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
     private final List<Integer> newToOldIndicesList;
     private final int responseIndex;
 
-    /**
-     * @param newToOldIndicesList old indices against new indices.
-     */
-    public RemoveDiscardedFeatures(List<Integer> newToOldIndicesList, int responseIndex) {
-        this.newToOldIndicesList = newToOldIndicesList;
-        this.responseIndex = responseIndex;
+    private RemoveDiscardedFeatures(Builder builder) {
+        this.newToOldIndicesList = builder.newToOldIndicesList;
+        this.responseIndex = builder.responseIndex;
     }
 
     /**
@@ -65,5 +63,30 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
             }
         }
         return features;
+    }
+
+    public static class Builder {
+        private List<Integer> newToOldIndicesList;
+        private int responseIndex;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.responseIndex = ctx.getResponseIndex();
+            this.newToOldIndicesList = ctx.getNewToOldIndicesList();
+            return this;
+        }
+
+        public Builder responseIndex(int index) {
+            this.responseIndex = index;
+            return this;
+        }
+
+        public Builder indices(List<Integer> indices) {
+            this.newToOldIndicesList = indices;
+            return this;
+        }
+
+        public RemoveDiscardedFeatures build() {
+            return new RemoveDiscardedFeatures(this);
+        }
     }
 }

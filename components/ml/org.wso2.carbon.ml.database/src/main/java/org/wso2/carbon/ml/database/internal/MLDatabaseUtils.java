@@ -115,8 +115,8 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      * 
-     * @param preparedStatement
-     * @param resultSet
+     * @param preparedStatement Prepared statement to be closed
+     * @param resultSet Result set to be closed
      * @throws DatabaseHandlerException
      */
     public static void closeDatabaseResources(PreparedStatement preparedStatement,ResultSet resultSet) throws DatabaseHandlerException {

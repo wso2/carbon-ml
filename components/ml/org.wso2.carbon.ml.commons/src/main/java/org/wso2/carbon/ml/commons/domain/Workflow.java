@@ -37,6 +37,7 @@ public class Workflow implements Serializable {
     private double trainDataFraction;
     private List<Feature> features;
     private Map<String, String> hyperParameters;
+    private String datasetVersion;
 
     /**
      * @return Returns machine learning workflow ID
@@ -204,6 +205,20 @@ public class Workflow implements Serializable {
      */
     public void setHyperParameters(Map<String, String> hyperParameters) {
         this.hyperParameters = hyperParameters;
+    }
+
+    /**
+     * @return Returns dataset version
+     */
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    /**
+     * @param datasetVersion Sets dataset version
+     */
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
     
     public List<Feature> getIncludedFeatures(){

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,9 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
+import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.context.CarbonContext;
@@ -59,20 +63,21 @@ import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
 import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.ThreadExecutor;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
-
 import org.wso2.carbon.utils.ConfigurationContextService;
+
 import scala.Tuple2;
 
 /**
@@ -82,13 +87,13 @@ public class MLModelHandler {
     private static final Log log = LogFactory.getLog(MLModelHandler.class);
     private DatabaseService databaseService;
     private Properties mlProperties;
-    private ThreadExecutor threadExecutor;
+    private BlockingExecutor threadExecutor;
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         databaseService = valueHolder.getDatabaseService();
         mlProperties = valueHolder.getMlProperties();
-        threadExecutor = new ThreadExecutor(mlProperties);
+        threadExecutor = valueHolder.getThreadExecutor();
     }
 
     /**
@@ -162,10 +167,19 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
+    
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
+        try {
+            return databaseService.isValidModelStatus(modelId, tenantId, userName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
+
 
     /**
-     * @param type type of the storage file, hdfs etc.
-     * @param location root directory of the file location.
+     * @param modelId unique id of the model
+     * @param storage MLStorage to be updated
      * @throws MLModelHandlerException
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
@@ -195,8 +209,8 @@ public class MLModelHandler {
      * Build a ML model asynchronously and persist the built model in a given storage.
      * 
      * @param modelId id of the model to be built.
-     * @param storageType type of the storage bam, hdfs, file. Default storage is file.
-     * @param StoragePath path of the provided storage where the model should be saved.
+     * @param tenantId tenant id
+     * @param userName tenant user name
      * @throws MLModelHandlerException
      * @throws MLModelBuilderException
      */
@@ -220,6 +234,7 @@ public class MLModelHandler {
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             MLModelData model = databaseService.getModel(tenantId, userName, modelId);
             Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
+            facts.setDatasetVersion(databaseService.getVersionset(tenantId, userName, datasetVersionId).getName());
             facts.setDatasetURL(dataUrl);
 
             JavaRDD<String> lines;
@@ -238,7 +253,9 @@ public class MLModelHandler {
                     columnSeparator, model, facts, lines, sparkContext);
 
             // build the model asynchronously
-            threadExecutor.execute(new ModelBuilder(modelId, context));
+            ModelBuilder task = new ModelBuilder(modelId, context);
+            threadExecutor.execute(task);
+            threadExecutor.afterExecute(task, null);
 
             databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
@@ -276,7 +293,7 @@ public class MLModelHandler {
             throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
-        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
         try {
             String line;
             while ((line = br.readLine()) != null) {
@@ -303,7 +320,7 @@ public class MLModelHandler {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         MLModel mlModel = retrieveModel(modelId);
-        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
         StringBuilder predictionsWithData = new StringBuilder();
         try {
             String line;
@@ -395,6 +412,13 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+        
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset
@@ -607,16 +631,20 @@ public class MLModelHandler {
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
             double sampleFraction = sampleSize / (lines.count() - 1);
+            HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
+            LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
+            MissingValuesFilter missingValuesFilter = new MissingValuesFilter.Builder().build();
+            TokensToVectors tokensToVectors = new TokensToVectors.Builder().indices(featureIndices).build();
+
             // Use entire dataset if number of records is less than or equal to sample fraction
             if (sampleFraction >= 1.0) {
-                featureVectors = lines.filter(new HeaderFilter(headerRow)).map(new LineToTokens(pattern))
-                        .filter(new MissingValuesFilter()).map(new TokensToVectors(featureIndices));
+                featureVectors = lines.filter(headerFilter).map(lineToTokens).filter(missingValuesFilter)
+                        .map(tokensToVectors);
             }
             // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
             else {
-                featureVectors = lines.filter(new HeaderFilter(headerRow)).sample(false, sampleFraction)
-                        .map(new LineToTokens(pattern)).filter(new MissingValuesFilter())
-                        .map(new TokensToVectors(featureIndices));
+                featureVectors = lines.filter(headerFilter).sample(false, sampleFraction).map(lineToTokens)
+                        .filter(missingValuesFilter).map(tokensToVectors);
             }
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(featureVectors, noOfClusters, 100);
@@ -672,6 +700,9 @@ public class MLModelHandler {
 
         @Override
         public void run() {
+            org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
+                    "org.wso2.carbon.ml.model-building-time."+ctxt.getFacts().getAlgorithmName());
+            Context context = timer.start();
             String[] emailTemplateParameters = new String[2];
             try {
                 long t1 = System.currentTimeMillis();
@@ -682,8 +713,12 @@ public class MLModelHandler {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
 
                 String algorithmType = ctxt.getFacts().getAlgorithmClass();
+                List<Map<String, Integer>> encodings = SparkModelUtils.buildEncodings(ctxt);
+                ctxt.setEncodings(encodings);
 
-                MLModelBuilder modelBuilder = ModelBuilderFactory.buildModelBuilder(algorithmType, ctxt);
+                // gets the model builder
+                MLModelBuilder modelBuilder = ModelBuilderFactory.getModelBuilder(algorithmType, ctxt);
+                // pre-process and build the model
                 MLModel model = modelBuilder.build();
                 log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
                         (double) (System.currentTimeMillis() - t1)/1000));
@@ -718,8 +753,8 @@ public class MLModelHandler {
                 }
                 EmailNotificationSender.sendModelBuildingFailedNotification(emailNotificationEndpoint,
                         emailTemplateParameters);
-            }
-            finally {
+            } finally {
+                context.stop();
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }

@@ -174,6 +174,7 @@ public class ProjectApiV10 extends MLRestAPI {
                 projectBean.setCreatedTime(mlProject.getCreatedTime());
                 projectBean.setDatasetId(mlProject.getDatasetId());
                 projectBean.setDatasetName(mlProject.getDatasetName());
+                projectBean.setDatasetStatus(mlProject.getDatasetStatus());
                 projectBean.setDescription(mlProject.getDescription());
                 projectBean.setName(mlProject.getName());
 

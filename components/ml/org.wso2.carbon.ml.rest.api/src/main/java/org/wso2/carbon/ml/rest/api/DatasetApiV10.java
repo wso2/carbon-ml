@@ -126,13 +126,29 @@ public class DatasetApiV10 extends MLRestAPI {
      */
     @GET
     @Produces("application/json")
-    public Response getAllDatasets() {
+    public Response getAllDatasets(@QueryParam("status") String status) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
+            List<MLDatasetBean> datasetBeans = new ArrayList<MLDatasetBean>();
             List<MLDataset> datasets = datasetProcessor.getAllDatasets(tenantId, userName);
-            return Response.ok(datasets).build();
+            for (MLDataset dataset : datasets) {
+                MLDatasetBean datasetBean = new MLDatasetBean();
+                datasetBean.setId(dataset.getId());
+                datasetBean.setName(dataset.getName());
+                datasetBean.setComments(dataset.getComments());
+                datasetBean.setStatus(dataset.getStatus());
+                if(status != null) {
+                    if(status.equals(datasetBean.getStatus())) {
+                        datasetBeans.add(datasetBean);
+                    }
+                }
+                else {
+                    datasetBeans.add(datasetBean);
+                }
+            }
+            return Response.ok(datasetBeans).build();
         } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while retrieving all datasets of tenant [id] %s and [user] %s .", tenantId,
@@ -162,6 +178,7 @@ public class DatasetApiV10 extends MLRestAPI {
                 datasetBean.setId(datasetId);
                 datasetBean.setName(mlDataset.getName());
                 datasetBean.setComments(mlDataset.getComments());
+                datasetBean.setStatus(mlDataset.getStatus());
                 List<MLVersionBean> versionBeans = new ArrayList<MLVersionBean>();
                 List<MLDatasetVersion> versions = datasetProcessor.getAllVersionsetsOfDataset(tenantId, userName,
                         datasetId);
@@ -205,6 +222,34 @@ public class DatasetApiV10 extends MLRestAPI {
         } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while retrieving the dataset with the [id] %s of tenant [id] %s and [user] %s .",
+                    datasetId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the dataset status corresponds to a given dataset ID.
+     */
+    @GET
+    @Path("/{datasetId}/status")
+    @Produces("application/json")
+    public Response getDatasetStatus(@PathParam("datasetId") long datasetId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            MLDataset dataset = datasetProcessor.getDataset(tenantId, userName, datasetId);
+            if (dataset == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            // create a JSON like string to be parsed
+            String responseString = "{\"status\":\"" + dataset.getStatus() + "\"}";
+            return Response.ok(responseString).build();
+        } catch (MLDataProcessingException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while retrieving the dataset status with the [id] %s of tenant [id] %s and [user] %s .",
                     datasetId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))

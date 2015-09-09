@@ -36,7 +36,7 @@ public class KMeans implements Serializable {
      * @param noOfIterations     Number of iterations to run
      * @param noOfRuns           Number of runs of the algorithm to execute in parallel
      * @param initializationMode Initialization algorithm: random or k-means||
-     * @return
+     * @return {@link org.apache.spark.mllib.clustering.KMeansModel} object
      */
     public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations, int noOfRuns,
             String initializationMode) {
@@ -50,7 +50,7 @@ public class KMeans implements Serializable {
      * @param data           Training data as a JavaRDD of Vectors
      * @param noOfClusters   Number of clusters
      * @param noOfIterations Number of iterations to run
-     * @return
+     * @return {@link org.apache.spark.mllib.clustering.KMeansModel} object
      */
     public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations) {
         return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);

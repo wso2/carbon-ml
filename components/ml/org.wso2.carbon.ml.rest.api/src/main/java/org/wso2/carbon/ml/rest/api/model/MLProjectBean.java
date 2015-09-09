@@ -28,6 +28,7 @@ public class MLProjectBean {
     private String name;
     private String datasetName;
     private long datasetId;
+    private String datasetStatus;
     private String description;
     private String createdTime;
     private List<MLAnalysisBean> analyses;
@@ -78,6 +79,14 @@ public class MLProjectBean {
 
     public void setDatasetId(long datasetId) {
         this.datasetId = datasetId;
+    }
+
+    public String getDatasetStatus() {
+        return datasetStatus;
+    }
+
+    public void setDatasetStatus(String datasetStatus) {
+        this.datasetStatus = datasetStatus;
     }
 
     public List<MLAnalysisBean> getAnalyses() {

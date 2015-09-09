@@ -50,8 +50,10 @@ public class MLConstants {
     
     public static final String TARGET_HOME_PROP = "target.home";
     public static final String ML_THREAD_POOL_SIZE = "ml.thread.pool.size";
+    public static final String ML_THREAD_POOL_QUEUE_SIZE = "ml.thread.pool.queue.size";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";
     public static final String BAM_DATA_VALUES = "values";
+    
 }

@@ -199,6 +199,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
@@ -350,15 +351,15 @@ $( document ).ready(function() {
         $('#data-fraction').attr("disabled","disabled");
         $('#observation-list').attr("disabled","disabled");
 	}
-    /*
-     hides response variable field for K-Means algorithm
-     hides response variable and data fraction field for recommendation algorithms
-     */
-    $(document).on('change','#algorithm-name',function() {
-        var algorithmName = $('#algorithm-name').val();
-        fieldManipulate(algorithmName);
-    });
 
+    selectedAlgorithm = $('#algorithm-name').val();
+    toggleInput(selectedAlgorithm);
+
+    $(document).on('change','#algorithm-name',function() {
+        selectedAlgorithm = $('#algorithm-name').val();
+        toggleInput(selectedAlgorithm);
+    });
+    
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
 
@@ -452,38 +453,7 @@ $( document ).ready(function() {
 });
 
 function fieldManipulate(algorithmName) {
-    if(algorithmName == 'K_MEANS') {
-        $('#response-variable-field').hide();
-        $('#user-variable-field').hide();
-        $('#product-variable-field').hide();
-        $('#rating-variable-field').hide();
-        $('#data-fraction-field').show();
-        $('#observation-list-field').hide();
-    }
-    else if(algorithmName == 'COLLABORATIVE_FILTERING') {
-        $('#response-variable-field').hide();
-        $('#user-variable-field').show();
-        $('#product-variable-field').show();
-        $('#rating-variable-field').show();
-        $('#data-fraction-field').hide();
-        $('#observation-list-field').hide();
-    }
-    else if(algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
-        $('#response-variable-field').hide();
-        $('#user-variable-field').show();
-        $('#product-variable-field').show();
-        $('#rating-variable-field').hide();
-        $('#data-fraction-field').hide();
-        $('#observation-list-field').show();
-    }
-    else {
-        $('#response-variable-field').show();
-        $('#user-variable-field').hide();
-        $('#product-variable-field').hide();
-        $('#rating-variable-field').hide();
-        $('#data-fraction-field').show();
-        $('#observation-list-field').hide();
-    }
+    
 }
 // function that load dataset features
 function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable) {
@@ -529,6 +499,43 @@ function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVar
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
+}
+
+// function that toggles response variable input depending on the algorithm selection
+function toggleInput(selectedAlgorithm) {    
+        
+    if(selectedAlgorithm == 'K_MEANS') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').show();
+        $('#observation-list-field').hide();
+    }
+    else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').show();
+        $('#product-variable-field').show();
+        $('#rating-variable-field').show();
+        $('#data-fraction-field').hide();
+        $('#observation-list-field').hide();
+    }
+    else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').show();
+        $('#product-variable-field').show();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').hide();
+        $('#observation-list-field').show();
+    }
+    else {
+        $('#response-variable-field').show();
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').show();
+        $('#observation-list-field').hide();
+    }
 }
 
 </script>

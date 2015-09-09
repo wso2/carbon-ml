@@ -29,27 +29,26 @@ import org.wso2.carbon.ml.core.spark.recommendation.RecommendationModelBuilder;
  */
 public class ModelBuilderFactory {
 
-    public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
+    public static MLModelBuilder getModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
-        MLModelBuilder datasetProcessor = null;
+
+        MLModelBuilder modelBuilder = null;
         switch (type) {
         case CLASSIFICATION:
-            datasetProcessor = new SupervisedSparkModelBuilder(context);
-            break;
         case NUMERICAL_PREDICTION:
-            datasetProcessor = new SupervisedSparkModelBuilder(context);
+            modelBuilder = new SupervisedSparkModelBuilder(context);
             break;
         case CLUSTERING:
-            datasetProcessor = new UnsupervisedSparkModelBuilder(context);
+            modelBuilder = new UnsupervisedSparkModelBuilder(context);
             break;
         case RECOMMENDATION:
-            datasetProcessor = new RecommendationModelBuilder(context);
+            modelBuilder = new RecommendationModelBuilder(context);
             break;
         default:
             throw new MLInputValidationException("Invalid algorithm type: " + type.name());
         }
-        return datasetProcessor;
+        return modelBuilder;
     }
 
 }

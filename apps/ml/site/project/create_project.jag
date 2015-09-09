@@ -256,7 +256,7 @@ $( document ).ready(function() {
 	function loadDatasets() {
 		$.ajax({
 			type: "GET",
-			url: serverUrl+"/api/datasets",
+			url: serverUrl+"/api/datasets?status=Available",
 			success: function(res) {
 				$.each(res, function (i, item) {
 				    $('#datasets').append($('<option>', { 

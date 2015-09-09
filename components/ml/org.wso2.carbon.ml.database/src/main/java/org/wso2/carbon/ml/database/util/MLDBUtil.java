@@ -18,20 +18,23 @@
 
 package org.wso2.carbon.ml.database.util;
 
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.List;
 
 public class MLDBUtil {
 
     /**
      * Deserialize SamplePoints object from InputStream
      *
-     * @param data
-     * @return
+     * @param data Data input stream
+     * @return {@link org.wso2.carbon.ml.commons.domain.SamplePoints} object
      * @throws java.io.IOException
      * @throws ClassNotFoundException
      */
@@ -44,8 +47,8 @@ public class MLDBUtil {
 
     /**
      * Deserialize ModelSummary from InputStream
-     * @param data
-     * @return
+     * @param data Data input stream
+     * @return {@link org.wso2.carbon.ml.commons.domain.ModelSummary} object
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -54,5 +57,30 @@ public class MLDBUtil {
         ModelSummary modelSummary = (ModelSummary) is.readObject();
         is.close();
         return modelSummary;
+    }
+
+    /**
+     * Return dataset status by iterating through all the given versions
+     * @param datasetVersions List of dataset versions
+     * @return Dataset status
+     */
+    public static String getDatasetStatus(List<MLDatasetVersion> datasetVersions) {
+        MLConstants.DatasetStatus status = MLConstants.DatasetStatus.AVAILABLE;
+        int failedVersionCount = 0;
+
+        for(MLDatasetVersion datasetVersion: datasetVersions) {
+            if(datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.IN_PROGRESS.getValue())) {
+                status = MLConstants.DatasetStatus.BUSY;
+                break;
+            }
+            else if(datasetVersion.getStatus().equals(MLConstants.DatasetVersionStatus.FAILED.getValue())) {
+                failedVersionCount++;
+            }
+        }
+
+        if(failedVersionCount == datasetVersions.size()) {
+            status = MLConstants.DatasetStatus.FAILED;
+        }
+        return status.getValue();
     }
 }

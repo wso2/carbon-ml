@@ -66,10 +66,8 @@ public class LogisticRegression implements Serializable {
      * This method uses LBFGS optimizer to train a logistic regression model for a given dataset
      *
      * @param trainingDataset           Training dataset as a JavaRDD of labeled points
-     * @param noOfCorrections           No of corrections : Default 10
-     * @param convergenceTolerance      Convergence tolerance
-     * @param noOfIterations            No of iterations
-     * @param regularizationParameter   Regularization parameter
+     * @param noOfClasses               No of classes
+     * @param regularizationType        Regularization type
      * @return                          Logistic regression model
      */
     public LogisticRegressionModel trainWithLBFGS(JavaRDD<LabeledPoint> trainingDataset, String regularizationType,

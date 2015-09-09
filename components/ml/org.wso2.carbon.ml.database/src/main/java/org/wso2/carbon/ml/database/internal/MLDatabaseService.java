@@ -486,16 +486,16 @@ public class MLDatabaseService implements DatabaseService {
                 versionset.setTargetPath(result.getString(4));
                 if(result.getBinaryStream(5) != null) {
                     SamplePoints samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5));
-                    if(samplePoints.getIsGenerated() == true) {
+                    if(samplePoints.isGenerated() == true) {
                         versionset.setSamplePoints(MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(5)));
-                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_COMPLETE);
+                        versionset.setStatus(MLConstants.DatasetVersionStatus.COMPLETE.getValue());
                     }
                     else {
-                        versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_FAILED);
+                        versionset.setStatus(MLConstants.DatasetVersionStatus.FAILED.getValue());
                     }
                 }
                 else {
-                    versionset.setStatus(MLConstants.DATASET_VERSION_STATUS_IN_PROGRESS);
+                    versionset.setStatus(MLConstants.DatasetVersionStatus.IN_PROGRESS.getValue());
                 }
                 versionset.setTenantId(tenantId);
                 versionset.setUserName(userName);
@@ -575,6 +575,13 @@ public class MLDatabaseService implements DatabaseService {
                 dataset.setDataType(result.getString(6));
                 dataset.setTenantId(tenantId);
                 dataset.setUserName(userName);
+                if(dataset.getId() != 0) {
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        dataset.setStatus(datasetStatus);
+                    }
+                }
                 datasets.add(dataset);
             }
             return datasets;
@@ -611,6 +618,13 @@ public class MLDatabaseService implements DatabaseService {
                 dataset.setDataType(result.getString(6));
                 dataset.setTenantId(tenantId);
                 dataset.setUserName(userName);
+                if(dataset.getId() != 0) {
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        dataset.setStatus(datasetStatus);
+                    }
+                }
                 return dataset;
             } else {
                 return null;
@@ -929,7 +943,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Retrieve the SamplePoints object for a given value-set.
      *
-     * @param valueSetId Unique Identifier of the value-set
+     * @param tenantId Tenant id
+     * @param user Tenant user name
+     * @param versionsetId Unique Identifier of the dataset version
      * @return SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
@@ -965,7 +981,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Returns a set of features in a given range, from the alphabetically ordered set of features, of a data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
+     * @param analysisId Unique id of the analysis
      * @param startIndex Starting index of the set of features needed
      * @param numberOfFeatures Number of features needed, from the starting index
      * @return A list of Feature objects
@@ -1290,7 +1308,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Retrieve and returns the Summary statistics for a given feature of a given data-set version, from the database.
      *
-     * @param datasetVersionId Unique identifier of the data-set version
+     * @param tenantId Tenant id
+     * @param user Tenant user name
+     * @param analysisId Unique identifier of the analysis
      * @param featureName Name of the feature of which summary statistics are needed
      * @return JSON string containing the summary statistics
      * @throws DatabaseHandlerException
@@ -1537,6 +1557,11 @@ public class MLDatabaseService implements DatabaseService {
                 if(project.getDatasetId() != 0) {
                     MLDataset dataset = getDataset(tenantId, userName, project.getDatasetId());
                     project.setDatasetName(dataset.getName());
+                    List<MLDatasetVersion> datasetVersions = getAllVersionsetsOfDataset(tenantId, userName, dataset.getId());
+                    if(datasetVersions.size() > 0) {
+                        String datasetStatus = MLDBUtil.getDatasetStatus(datasetVersions);
+                        project.setDatasetStatus(datasetStatus);
+                    }
                 }
                 projects.add(project);
             }
@@ -1554,7 +1579,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param tenantId   tenant ID
      * @param userName   username
      * @param projectId  Project ID
-     * @return
+     * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
     @Override
@@ -2628,5 +2653,36 @@ public class MLDatabaseService implements DatabaseService {
             // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
         }
+    }
+    
+    @Override
+    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws DatabaseHandlerException {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement(SQLQueries.GET_MODEL_STATUS);
+            statement.setLong(1, modelId);
+            statement.setInt(2, tenantId);
+            statement.setString(3, userName);
+            result = statement.executeQuery();
+            if (result.first()) {
+                if (result.getString(1).equalsIgnoreCase(MLConstants.MODEL_STATUS_COMPLETE)) {
+                    return true;
+                }
+            } else {
+                throw new DatabaseHandlerException("Failed to find the model for model id " + modelId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException(
+                    "An error has occurred while fetching the status of the model for model id: " + modelId + ": "
+                            + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
+        }
+        // consider anything other than "Complete" status as an invalid model.
+        return false;
     }
 }

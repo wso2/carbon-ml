@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 
 /**
  * A filter to remove header row
@@ -26,10 +27,10 @@ import org.apache.spark.api.java.function.Function;
 public class HeaderFilter implements Function<String, Boolean> {
 
     private static final long serialVersionUID = -6996897057400853414L;
-    private String header;
+    private final String header;
 
-    public HeaderFilter(String header) {
-        this.header = header;
+    private HeaderFilter(Builder builder) {
+        this.header = builder.header;
     }
 
     @Override
@@ -39,5 +40,23 @@ public class HeaderFilter implements Function<String, Boolean> {
             isRow = false;
         }
         return isRow;
+    }
+
+    public static class Builder {
+        private String header;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.header = ctx.getHeaderRow();
+            return this;
+        }
+
+        public Builder header(String header) {
+            this.header = header;
+            return this;
+        }
+
+        public HeaderFilter build() {
+            return new HeaderFilter(this);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class SamplePoints implements Serializable {
     private int[] missing;
     private int[] stringCellCount;
     private int[] decimalCellCount;
-    private boolean isGenerated;
+    private boolean generated;
 
 	/**
 	 * Returns the raw-data of the sample.
@@ -100,17 +100,17 @@ public class SamplePoints implements Serializable {
      *
      * @return A boolean representing sample points generation status
      */
-    public boolean getIsGenerated() {
-        return isGenerated;
+    public boolean isGenerated() {
+        return generated;
     }
 
     /**
      * Set the sample points generation status.
      *
-     * @param isGenerated sample points generation status
+     * @param generated sample points generation status
      */
-    public void setIsGenerated(boolean isGenerated) {
-        this.isGenerated = isGenerated;
+    public void setGenerated(boolean generated) {
+        this.generated = generated;
     }
 
     public int[] getDecimalCellCount() {

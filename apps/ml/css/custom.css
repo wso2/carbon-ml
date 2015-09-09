@@ -422,6 +422,9 @@ a.cu-btn:hover, a.cu-btn-reverse:hover {
 	background:url('../images/icons/ico-download.png') 0.8em 1em no-repeat;
 }
 
+.btn-view-models-dark {
+	background:url('../images/icons/ico-view-models-dark.png') 0.8em 1em no-repeat;
+}
 
 .ico-align {
 	vertical-align: middle;
