@@ -68,8 +68,8 @@ public class PredictMediator extends AbstractMediator {
     /**
      * Extract the relevant element values from the messageContext
      * Map the actual parameter values with the model variables
-     * @param messageContext
-     * @return
+     * @param messageContext MessageContext of the mediating message
+     * @return the string value of the prediction
      */
     private String getPredictionFromModel(MessageContext messageContext) {
 
@@ -94,6 +94,10 @@ public class PredictMediator extends AbstractMediator {
         return null;
     }
 
+    /**
+     * Set the message context property name
+     * @param propertyName message context property name
+     */
     public void setResultPropertyName(String propertyName) {
         this.isUpdated = true;
         this.resultPropertyName = propertyName;
@@ -111,23 +115,23 @@ public class PredictMediator extends AbstractMediator {
 
     /**
      * Get the property name to which the prediction value is set
-     * @return
+     * @return the message context property name to which the prediction value is set
      */
     public String getResultPropertyName() {
         return resultPropertyName;
     }
 
     /**
-     * Ge the feature mappings map
-     * @return
+     * Get the feature mappings map
+     * @return the map containing <feature-name, synapse-path> pairs
      */
     public Map<String, SynapsePath> getFeatureMappings() {
         return featureMappings;
     }
 
     /**
-     * set model name
-     * @param modelStorageLocation
+     * Set model storage location
+     * @param modelStorageLocation Path of the MLModel file
      */
     public void setModelStorageLocation(String modelStorageLocation) {
         this.isUpdated = true;
@@ -135,8 +139,8 @@ public class PredictMediator extends AbstractMediator {
     }
 
     /**
-     * Get model name
-     * @return
+     * Get model storage location
+     * @return the Path to MLModel file
      */
     public String getModelStorageLocation() {
         return modelStorageLocation;

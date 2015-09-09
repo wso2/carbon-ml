@@ -37,7 +37,6 @@ public class DoubleArrayToVector implements Function<double[], Vector> {
      *
      * @param features Double array of tokens
      * @return Vector
-     * @throws ModelServiceException
      */
     @Override
     public Vector call(double[] features) {
