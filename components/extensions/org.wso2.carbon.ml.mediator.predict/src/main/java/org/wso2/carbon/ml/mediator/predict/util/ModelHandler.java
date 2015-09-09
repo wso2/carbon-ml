@@ -60,7 +60,7 @@ public class ModelHandler {
      * Get the ModelHandler instance
      * @param storageLocation         storage location of the ML-model
      * @param featureMappings   Map containing pairs <feature-name, synapse-path>
-     * @return
+     * @return ModelHandler instance corresponding to given storage location and feature mapping {@link ModelHandler}
      */
     public static ModelHandler getInstance(String storageLocation, Map<String, SynapsePath> featureMappings, boolean isUpdated)
             throws ClassNotFoundException, IOException, URISyntaxException, MLInputAdapterException {
@@ -92,7 +92,7 @@ public class ModelHandler {
 
     /**
      * Get the MLModel from its storage location
-     * @return
+     * @return MLModel at the given storage location {@link MLModel}
      * @throws IOException
      * @throws ClassNotFoundException
      */

@@ -48,7 +48,7 @@ public class NaiveBayesClassifier implements Serializable {
      *
      * @param naiveBayesModel Naive bayes model
      * @param test            Testing dataset as a JavaRDD of labeled points
-     * @return
+     * @return JavaPairRDD    of predicted labels and actual labels {@link JavaPairRDD}
      */
     public JavaPairRDD<Double, Double> test(final NaiveBayesModel naiveBayesModel, JavaRDD<LabeledPoint>
             test) {

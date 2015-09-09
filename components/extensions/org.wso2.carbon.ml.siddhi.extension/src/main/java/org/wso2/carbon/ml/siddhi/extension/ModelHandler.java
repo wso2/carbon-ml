@@ -64,7 +64,7 @@ public class ModelHandler {
      * @param modelStorageLocation model storage location (file path or registry path)
      *                             file: -> file path
      *                             registry: -> registry path
-     * @return
+     * @return MLModel at the given storage location {@link MLModel}
      * @throws URISyntaxException
      * @throws MLInputAdapterException
      * @throws IOException
@@ -102,7 +102,7 @@ public class ModelHandler {
      * Predict the value using the feature values
      * @param data  feature values array
      * @return      predicted value
-     * @throws      MLModelBuilderException
+     * @throws      MLModelHandlerException
      */
     public String predict(String[] data) throws MLModelHandlerException {
         ArrayList<String[]> list = new ArrayList<String[]>();
@@ -114,7 +114,7 @@ public class ModelHandler {
 
     /**
      * Return the map containing <feature-name, index> pairs
-     * @return
+     * @return HashMap containing feature names and corresponding indices
      */
     public Map<String, Integer> getFeatures() {
         List<Feature> features = mlModel.getFeatures();
@@ -127,7 +127,7 @@ public class ModelHandler {
     
     /**
      * Get new to old indices list of this model.
-     * @return
+     * @return List of old indices to mapped to new indices
      */
     public List<Integer> getNewToOldIndicesList() {
         return mlModel.getNewToOldIndicesList();
@@ -135,7 +135,7 @@ public class ModelHandler {
 
     /**
      * Return the response variable of the model
-     * @return
+     * @return String response variable of the model
      */
     public String getResponseVariable() {
         return mlModel.getResponseVariable();

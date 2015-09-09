@@ -228,14 +228,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a logistic regression model
      *
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @param isSGD Whether the algorithm is Logistic regression with SGD
      * @throws MLModelBuilderException
      */
@@ -326,15 +324,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a decision tree model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildDecisionTreeModel(JavaSparkContext sparkContext, long modelID,
@@ -423,14 +418,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a support vector machine (SVM) model
      *
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildSVMModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
@@ -491,15 +484,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a linear regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildLinearRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -550,15 +540,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a ridge regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildRidgeRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -610,15 +597,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a lasso regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildLassoRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -668,15 +652,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a naive bayes model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildNaiveBayesModel(JavaSparkContext sparkContext, long modelID,
@@ -718,7 +699,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * @param features Array of names of features
      * @param weights Array of weights of features
-     * @return
+     * @return List of FeatureImportance in the model {@link FeatureImportance}
      */
     private List<FeatureImportance> getFeatureWeights(SortedMap<Integer, String> features, double[] weights) {
         List<FeatureImportance> featureWeights = new ArrayList<FeatureImportance>();
