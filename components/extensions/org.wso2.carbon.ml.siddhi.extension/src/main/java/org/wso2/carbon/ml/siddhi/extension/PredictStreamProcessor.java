@@ -179,8 +179,8 @@ public class PredictStreamProcessor extends StreamProcessor {
 
     /**
      * Return the Attribute.Type defined by the data-type argument
-     * @param dataType
-     * @return
+     * @param dataType data type of the output attribute
+     * @return Attribute.Type object corresponding to the dataType
      */
     private Attribute.Type getOutputAttributeType(String dataType) throws ExecutionPlanValidationException {
 

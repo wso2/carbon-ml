@@ -29,6 +29,7 @@ public class MLModelData {
     private String createdTime;
     private long analysisId;
     private long versionSetId;
+    private String datasetVersion;
     private String storageType;
     private String storageDirectory;
     private String status;
@@ -129,6 +130,14 @@ public class MLModelData {
 
     public void setModelSummary(ModelSummary modelSummary) {
         this.modelSummary = modelSummary;
+    }
+
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
     @Override

@@ -20,7 +20,10 @@ package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,10 +32,10 @@ import java.util.List;
 public class DiscardedRowsFilter implements Function<String[], Boolean> {
 
     private static final long serialVersionUID = -2903794636287515590L;
-    private List<Integer> indices;
+    private final List<Integer> indices;
 
-    public DiscardedRowsFilter(List<Integer> discardIndices) {
-        this.indices = discardIndices;
+    private DiscardedRowsFilter(Builder builder) {
+        this.indices = builder.indices;
     }
 
     @Override
@@ -45,5 +48,24 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
             }
         }
         return keep;
+    }
+
+    public static class Builder {
+        private List<Integer> indices;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.indices = MLUtils.getImputeFeatureIndices(ctx.getFacts(), new ArrayList<Integer>(),
+                    MLConstants.DISCARD);
+            return this;
+        }
+
+        public Builder indices(List<Integer> indices) {
+            this.indices = indices;
+            return this;
+        }
+
+        public DiscardedRowsFilter build() {
+            return new DiscardedRowsFilter(this);
+        }
     }
 }

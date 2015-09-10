@@ -35,6 +35,11 @@
 			org.springframework.web.context.ContextLoaderListener
 		</listener-class>
 	</listener>
+	<listener>
+		<listener-class>
+			org.wso2.carbon.ml.rest.api.handler.ShutdownListener
+		</listener-class>
+	</listener>
 
 	<servlet>
 		<servlet-name>MLRestApi</servlet-name>

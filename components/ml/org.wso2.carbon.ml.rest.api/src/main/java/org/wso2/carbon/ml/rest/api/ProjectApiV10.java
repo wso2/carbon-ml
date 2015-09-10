@@ -64,6 +64,7 @@ public class ProjectApiV10 extends MLRestAPI {
 
     /**
      * Create a new Project. No validation happens here. Please call {@link #getProject(String)} before this.
+     * @param project {@link org.wso2.carbon.ml.commons.domain.MLProject} object
      */
     @POST
     @Produces("application/json")
@@ -92,6 +93,11 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get project by project name
+     * @param projectName Name of the project
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLProject} object
+     */
     @GET
     @Path("/{projectName}")
     @Produces("application/json")
@@ -115,6 +121,10 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get all projects
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLProject} objects
+     */
     @GET
     @Produces("application/json")
     public Response getAllProjects() {
@@ -134,6 +144,11 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get all models of a project
+     * @param projectId Unique id of the project
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
+     */
     @GET
     @Path("/{projectId}/models")
     @Produces("application/json")
@@ -154,6 +169,11 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get all projects created with the given dataset
+     * @param datasetName Name of the dataset
+     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLProjectBean} objects
+     */
     @GET
     @Path("/analyses")
     @Produces("application/json")
@@ -202,6 +222,11 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get all analyses of a project
+     * @param projectId Unique id of the project
+     * @return A JSON array of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
+     */
     @GET
     @Path("/{projectId}/analyses")
     @Produces("application/json")
@@ -224,6 +249,12 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get analysis of a project given the analysis name
+     * @param projectId Unique id of the project
+     * @param analysisName Name of the analysis
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
+     */
     @GET
     @Path("/{projectId}/analyses/{analysisName}")
     @Produces("application/json")
@@ -250,6 +281,10 @@ public class ProjectApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Delete a project
+     * @param projectId Unique id of the project
+     */
     @DELETE
     @Path("/{projectId}")
     @Produces("application/json")

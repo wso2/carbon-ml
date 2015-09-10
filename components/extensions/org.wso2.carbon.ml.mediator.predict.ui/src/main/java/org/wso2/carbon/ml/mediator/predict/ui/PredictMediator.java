@@ -156,19 +156,19 @@ public class PredictMediator extends AbstractMediator {
     }
 
     /**
-     * Get model name
-     * @return
+     * Get model storage location
+     * @return the path to MLModel file
      */
     public String getModelStorageLocation() {
         return modelStorageLocation;
     }
 
     /**
-     * Set model name
-     * @param modelName
+     * Set model storage location
+     * @param modelStorageLocation path to MLModel file
      */
-    public void setModelStorageLocation(String modelName) {
-        this.modelStorageLocation = modelName;
+    public void setModelStorageLocation(String modelStorageLocation) {
+        this.modelStorageLocation = modelStorageLocation;
     }
 
     /**
@@ -181,10 +181,10 @@ public class PredictMediator extends AbstractMediator {
 
     /**
      * Set the prediction property name
-     * @param response
+     * @param predictionProperty message context property name
      */
-    public void setPredictionPropertyName(String response) {
-        this.predictionPropertyName = response;
+    public void setPredictionPropertyName(String predictionProperty) {
+        this.predictionPropertyName = predictionProperty;
     }
 
     /**
@@ -196,9 +196,9 @@ public class PredictMediator extends AbstractMediator {
     }
 
     /**
-     * Get mapping expression for the feature name
-     * @param featureName
-     * @return
+     * Get mapping xpath or json path expression for the feature name
+     * @param featureName name of the feature
+     * @return the xpath or json path expression
      */
     public SynapsePath getExpressionForFeature(String featureName) {
         for(MediatorProperty mediatorProperty : features) {
@@ -211,7 +211,7 @@ public class PredictMediator extends AbstractMediator {
 
     /**
      * Get the list of feature mappings
-     * @return
+     * @return MediatorProperty list
      */
     public List<MediatorProperty> getFeatures() {
         return features;

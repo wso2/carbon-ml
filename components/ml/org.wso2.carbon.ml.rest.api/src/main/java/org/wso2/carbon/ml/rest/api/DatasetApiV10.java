@@ -68,7 +68,18 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Upload a new data-set.
+     * Upload a new dataset.
+     *
+     * @param datasetName Name of the dataset
+     * @param version Version of the dataset
+     * @param description Description of the dataset
+     * @param sourceType Storage type of the source of the dataset (file/HDFS/WSO2 DAS)
+     * @param destination Storage type of the server side copy of the dataset (file/HDFS)
+     * @param sourcePath Absolute URI of the dataset if source type is DAS
+     * @param dataFormat Format of the dataset
+     * @param containsHeader Header availability of the dataset
+     * @param inputStream Input stream of the dataset
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLDataset} object
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -122,7 +133,10 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get all datasets of this tenant and user. This doesn't return version sets.
+     * Get all datasets of this tenant and user.
+     *
+     * @param status Status of the dataset
+     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLDatasetBean} objects
      */
     @GET
     @Produces("application/json")
@@ -160,7 +174,9 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get all datasets and their versions of a given user.
+     * Get all datasets with their versions.
+     *
+     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLDatasetBean} objects
      */
     @GET
     @Path("/versions")
@@ -204,7 +220,10 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get the dataset corresponds to a given dataset id.
+     * Get the dataset of a given dataset ID.
+     *
+     * @param datasetId ID of the dataset
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLDataset} object
      */
     @GET
     @Path("/{datasetId}")
@@ -230,7 +249,10 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get the dataset status corresponds to a given dataset ID.
+     * Get the status of a dataset.
+     *
+     * @param datasetId ID of the dataset
+     * @return JSON string of the dataset status
      */
     @GET
     @Path("/{datasetId}/status")
@@ -258,7 +280,10 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get all versions of a dataset with a given id.
+     * Get all versions of a dataset.
+     *
+     * @param datasetId ID of the dataset
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} objects
      */
     @GET
     @Path("/{datasetId}/versions")
@@ -283,7 +308,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get version set id of a version having a given version and of a given dataset id
+     * Get dataset version for a given dataset ID and version.
+     *
+     * @param datasetId ID of the dataset
+     * @param version Version of the dataset
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} object
      */
     @GET
     @Path("/{datasetId}/versions/{version}")
@@ -312,7 +341,10 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get a dataset version with a given id.
+     * Get dataset version for a given dataset version ID.
+     *
+     * @param versionsetId ID of the dataset version
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} object
      */
     @GET
     @Path("/versions/{versionsetId}")
@@ -341,6 +373,9 @@ public class DatasetApiV10 extends MLRestAPI {
     
     /**
      * Get sample points of a dataset version.
+     *
+     * @param versionsetId ID of the dataset version
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.SamplePoints} object
      */
     @GET
     @Path("/versions/{versionsetId}/sample")
@@ -368,7 +403,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get scatter plot points of a dataset version.
+     * Get scatter plot points of the latest version of a dataset.
+     *
+     * @param datasetId ID of the dataset
+     * @param scatterPlotPoints Scatter plot features
+     * @return JSON array of scatter plot points
      */
     @POST
     @Path("/{datasetId}/scatter")
@@ -398,6 +437,10 @@ public class DatasetApiV10 extends MLRestAPI {
 
     /**
      * Get scatter plot points of a dataset version.
+     *
+     * @param versionsetId ID of the dataset version
+     * @param scatterPlotPoints Scatter plot features
+     * @return JSON array of scatter plot points
      */
     @POST
     @Path("/versions/{versionsetId}/scatter")
@@ -427,7 +470,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get chart sample points of a dataset version for a feature list.
+     * Get chart sample points of the latest version of a dataset.
+     *
+     * @param datasetId ID of the dataset
+     * @param featureListString List of features (single string containing comma separated features)
+     * @return JSON array of chart sample points
      */
     @GET
     @Path("/{datasetId}/charts")
@@ -455,7 +502,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get chart sample points of a dataset version for a feature list.
+     * Get chart sample points of a dataset version.
+     *
+     * @param versionsetId ID of the dataset version
+     * @param featureListString List of features (single string containing comma separated features)
+     * @return JSON array of chart sample points
      */
     @GET
     @Path("/versions/{versionsetId}/charts")
@@ -483,7 +534,12 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get cluster points of a dataset for a feature list.
+     * Get cluster points of a dataset version.
+     *
+     * @param datasetId ID of the dataset
+     * @param featureListString List of features (single string containing comma separated features)
+     * @param noOfClusters No of clusters
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.ClusterPoint} objects
      */
     @GET
     @Path("/{datasetId}/cluster")
@@ -519,7 +575,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * get filtered feature names of a dataset.
+     * Get filtered feature names of a dataset.
+     *
+     * @param datasetId ID of the dataset
+     * @param featureType Feature type
+     * @return JSON array of features
      */
     @GET
     @Path("/{datasetId}/filteredFeatures")
@@ -546,7 +606,11 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * get summarized statistics of a feature of a dataset.
+     * Get summary statistics of a dataset feature.
+     *
+     * @param datasetId ID of the dataset
+     * @param featureName Name of the feature
+     * @return JSON of summary string
      */
     @GET
     @Path("/{datasetId}/stats")
@@ -574,7 +638,9 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Delete the dataset of a given dataset ID.
+     * Delete the dataset for a given dataset ID.
+     *
+     * @param datasetId ID of the dataset
      */
     @DELETE
     @Path("/{datasetId}")
@@ -597,7 +663,9 @@ public class DatasetApiV10 extends MLRestAPI {
     }
 
     /**
-     * Delete the dataset version of a given dataset version ID.
+     * Delete the dataset version for a given dataset version ID.
+     *
+     * @param versionsetId ID of the dataset version
      */
     @DELETE
     @Path("/versions/{versionsetId}")
