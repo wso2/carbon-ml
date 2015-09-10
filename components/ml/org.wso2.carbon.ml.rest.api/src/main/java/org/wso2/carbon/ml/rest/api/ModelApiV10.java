@@ -70,6 +70,8 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Create a new Model.
+     * @param model {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
      */
     @POST
     @Produces("application/json")
@@ -95,6 +97,11 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Create a new model storage
+     * @param modelId Unique id of the model
+     * @param storage {@link org.wso2.carbon.ml.commons.domain.MLStorage} object
+     */
     @POST
     @Path("/{modelId}/storages")
     @Produces("application/json")
@@ -116,6 +123,10 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Build the model
+     * @param modelId Unique id of the model to be built.
+     */
     @POST
     @Path("/{modelId}")
     @Produces("application/json")
@@ -144,6 +155,11 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Publish the model to ML registry
+     * @param modelId Unique id of the model to be published
+     * @return JSON of {@link org.wso2.carbon.ml.rest.api.model.MLResponseBean} containing the published location of the model
+     */
     @POST
     @Path("/{modelId}/publish")
     @Produces("application/json")
@@ -172,7 +188,11 @@ public class ModelApiV10 extends MLRestAPI {
     }
 
     /**
-     * Predict using a file.
+     * Predict using a file and return as a list of predicted values.
+     * @param modelId Unique id of the model
+     * @param dataFormat Data format of the file (CSV or TSV)
+     * @param inputStream File input stream generated from the file used for predictions
+     * @return JSON array of predictions
      */
     @POST
     @Path("/predict")
@@ -213,6 +233,11 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Predict using a file and return predictions as a CSV.
+     * @param modelId Unique id of the model
+     * @param dataFormat Data format of the file (CSV or TSV)
+     * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
+     * @param inputStream Input stream generated from the file used for predictions
+     * @return A file as a {@link javax.ws.rs.core.StreamingOutput}
      */
     @POST
     @Path("/predictionStreams")
@@ -265,6 +290,12 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Make predictions using a model
+     * @param modelId Unique id of the model
+     * @param data List of string arrays containing the feature values used for predictions
+     * @return JSON array of predicted values
+     */
     @POST
     @Path("/{modelId}/predict")
     @Produces("application/json")
@@ -289,6 +320,11 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get the model data
+     * @param modelName Name of the model
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
+     */
     @GET
     @Path("/{modelName}")
     @Produces("application/json")
@@ -312,6 +348,10 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get all models
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
+     */
     @GET
     @Produces("application/json")
     public Response getAllModels() {
@@ -331,6 +371,10 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Delete a model
+     * @param modelId Unique id of the model
+     */
     @DELETE
     @Path("/{modelId}")
     @Produces("application/json")
@@ -351,6 +395,11 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get the model summary
+     * @param modelId Unique id of the model
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.ModelSummary} object
+     */
     @GET
     @Path("/{modelId}/summary")
     @Produces("application/json")
@@ -372,6 +421,11 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+    /**
+     * Download the model
+     * @param modelName Name of the model
+     * @return A {@link org.wso2.carbon.ml.commons.domain.MLModel} as a {@link javax.ws.rs.core.StreamingOutput}
+     */
     @GET
     @Path("/{modelName}/export")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

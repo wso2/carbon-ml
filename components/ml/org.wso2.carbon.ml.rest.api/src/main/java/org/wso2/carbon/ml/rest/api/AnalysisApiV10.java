@@ -72,6 +72,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Create a new analysis of a project.
+     * @param analysis {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
      */
     @POST
     @Produces("application/json")
@@ -101,6 +102,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Adding customized features of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param customizedFeatures {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
      */
     @POST
     @Path("/{analysisId}/features")
@@ -128,6 +131,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Set default features as customized features of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param customizedValues {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} object
      */
     @POST
     @Path("/{analysisId}/features/defaults")
@@ -158,6 +163,10 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get summarized features of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param limit Number of features need to retrieve, from the starting index
+     * @param offset Starting index
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.FeatureSummary} objects
      */
     @GET
     @Path("/{analysisId}/summarizedFeatures")
@@ -187,6 +196,10 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get customized features of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param limit Number of features need to retrieve, from the starting index
+     * @param offset Starting index
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
      */
     @GET
     @Path("/{analysisId}/customizedFeatures")
@@ -215,6 +228,10 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get configurations of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param limit Number of features included in the analysis configuration
+     * @param offset Starting index of the features
+     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLAnalysisConfigsBean} objects
      */
     @GET
     @Path("/{analysisId}/configs")
@@ -249,6 +266,9 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get filtered feature names of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param featureType Feature type need to retrieve (Categorical or Numerical)
+     * @return JSON array of feature names
      */
     @GET
     @Path("/{analysisId}/filteredFeatures")
@@ -276,6 +296,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get all feature names of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return JSON array of feature names
      */
     @GET
     @Path("/{analysisId}/features")
@@ -302,6 +324,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get the response variable of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Response variable name
      */
     @GET
     @Path("/{analysisId}/responseVariables")
@@ -328,6 +352,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get the algorithm name of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Algorithm name
      */
     @GET
     @Path("/{analysisId}/algorithmName")
@@ -354,6 +380,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get the algorithm type of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Algorithm type
      */
     @GET
     @Path("/{analysisId}/algorithmType")
@@ -380,6 +408,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get the train data fraction of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Train data fraction
      */
     @GET
     @Path("/{analysisId}/trainDataFraction")
@@ -406,6 +436,9 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get summary statistics of a feature of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param featureName Name of the feature
+     * @return Summary statistics of the feature
      */
     @GET
     @Path("/{analysisId}/stats")
@@ -439,6 +472,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Add configurations of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param modelConfigs {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLModelConfiguration} objects
      */
     @POST
     @Path("/{analysisId}/configurations")
@@ -466,6 +501,9 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Add hyper-parameters for the selected algorithm of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param hyperParameters {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     * @param algorithmName Algorithm name
      */
     @POST
     @Path("/{analysisId}/hyperParams")
@@ -493,6 +531,9 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get hyper-parameter of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @param algorithmName Algorithm name
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
      */
     @GET
     @Path("/{analysisId}/hyperParameters")
@@ -520,6 +561,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Load default configurations as configurations of an analysis.
+     * @param analysisId Unique id of the analysis
      */
     @POST
     @Path("/{analysisId}/hyperParams/defaults")
@@ -546,6 +588,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Retrieve all analyses.
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
      */
     @GET
     @Produces("application/json")
@@ -568,6 +611,8 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Get all models of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      */
     @GET
     @Path("/{analysisId}/models")
@@ -591,6 +636,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Delete an analysis of a given ID.
+     * @param analysisId Unique id of the analysis
      */
     @DELETE
     @Path("/{analysisId}")
