@@ -35,6 +35,12 @@ public class MLConfigurationParser {
     public MLConfigurationParser() {
     }
 
+    /**
+     * Get the MLConfigurationParser
+     * @param mlConfigPath Path to MLConfiguration file
+     * @return {@link org.wso2.carbon.ml.commons.domain.config.MLConfiguration} object
+     * @throws MLConfigurationParserException
+     */
     public MLConfiguration getMLConfiguration(String mlConfigPath) throws MLConfigurationParserException {
         try {
             File file = new File(mlConfigPath);

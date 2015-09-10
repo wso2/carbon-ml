@@ -89,6 +89,7 @@ public interface DatabaseService {
     /**
      * @param datasetName   Name of the data-set
      * @param tenantId      Tenant Id
+     * @param userName      Tenant user name
      * @return              Unique Id of the data-set
      * @throws              DatabaseHandlerException
      */
@@ -118,6 +119,8 @@ public interface DatabaseService {
     /**
      * Returns sample data for selected features
      *
+     * @param tenantId Tenant id
+     * @param user Tenant user name
      * @param versionsetId        Unique Identifier of the value-set
      * @param featureListString String containing feature name list
      * @return                  A JSON array of data points
@@ -191,6 +194,8 @@ public interface DatabaseService {
      * Retrieve and returns the Summary statistics for a given feature of a
      * given data-set version, from the database
      *
+     * @param tenantId Tenant id
+     * @param user Tenant user name
      * @param analysisId     Unique identifier of the data-set
      * @param featureName          Name of the feature of which summary statistics are needed
      * @return                     JSON string containing the summary statistics
@@ -211,6 +216,8 @@ public interface DatabaseService {
     /**
      * Retrieve the SamplePoints object for a given version-set.
      *
+     * @param tenantId Tenant id
+     * @param user Tenant user name
      * @param versionsetId ID of the dataset version
      * @return {@link SamplePoints} object of the dataset version
      * @throws DatabaseHandlerException
@@ -228,6 +235,7 @@ public interface DatabaseService {
 
     /**
      * Update the database with the summary stats of data-set-version
+     * @param datasetSchemaId Unique id of the dataset schema
      * @param datasetVersionId  Unique Id of the data-set-version
      * @param summaryStats      Summary stats
      * @throws DatabaseHandlerException
@@ -312,6 +320,8 @@ public interface DatabaseService {
     /**
      * Check whether the model is in a valid state
      * @param modelId ID of the model
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
      * @return Validity of the model status
      * @throws DatabaseHandlerException
      */
@@ -579,8 +589,22 @@ public interface DatabaseService {
      */
     public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
 
+    /**
+     * Update model status
+     * @param modelId Unique id of the model
+     * @param status Status to be updated
+     * @throws DatabaseHandlerException
+     */
     void updateModelStatus(long modelId, String status) throws DatabaseHandlerException;
 
+    /**
+     * Get analysis by id
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
+     * @param analysisId Unique id of the analysis
+     * @return {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
+     * @throws DatabaseHandlerException
+     */
     MLAnalysis getAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
     /**
@@ -599,20 +623,65 @@ public interface DatabaseService {
 
     /**
      * Returns an analysis of a given name in a given project.
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
+     * @param projectId Unique id of the project
+     * @param analysisName Name of the analysis
+     * @return {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
+     * @throws DatabaseHandlerException
      */
     public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws DatabaseHandlerException;
 
+    /**
+     * Delete an analysis
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
+     * @param analysisId Unique id of the analysis
+     * @throws DatabaseHandlerException
+     */
     void deleteAnalysis(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
+    /**
+     * Update model error
+     * @param modelId Unique id of the model
+     * @param error Error value to be updated
+     * @throws DatabaseHandlerException
+     */
     void updateModelError(long modelId, String error) throws DatabaseHandlerException;
 
+    /**
+     * Get feature names of a dataset ordered by feature index
+     * @param datasetId Unique id of dataset
+     * @param columnSeparator Column separator (CSV or TSV)
+     * @return A string containing the list of feature names separated by the given column separator
+     * @throws DatabaseHandlerException
+     */
     String getFeatureNamesInOrder(long datasetId, String columnSeparator) throws DatabaseHandlerException;
 
+    /**
+     * Get feature names of a dataset version ordered by feature index
+     * @param datasetVersionId Unique id of the dataset version
+     * @param columnSeparator Column separator (CSV or TSV)
+     * @return A string containing the list of feature names separated by the given column separator
+     * @throws DatabaseHandlerException
+     */
     String getFeatureNamesInOrderUsingDatasetVersion(long datasetVersionId, String columnSeparator)
             throws DatabaseHandlerException;
 
+    /**
+     * Get the summary stats of the dataset version
+     * @param datasetVersionId Unique id of the dataset version
+     * @return A map of <feature-name, summary-stat> pairs
+     * @throws DatabaseHandlerException
+     */
     Map<String, String> getSummaryStats(long datasetVersionId) throws DatabaseHandlerException;
 
+    /**
+     * Get feature names of a dataset
+     * @param datasetId Unique id of the dataset
+     * @return A list of feature names
+     * @throws DatabaseHandlerException
+     */
     List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException;
     
     /**
