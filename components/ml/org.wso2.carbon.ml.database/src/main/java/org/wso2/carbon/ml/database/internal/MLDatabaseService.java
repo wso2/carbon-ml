@@ -2681,4 +2681,20 @@ public class MLDatabaseService implements DatabaseService {
         // consider anything other than "Complete" status as an invalid model.
         return false;
     }
+    
+    public void shutdown() throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement("SHUTDOWN");
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error has occurred while shutting down the database: "
+                    + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement);
+        }
+    }
 }
