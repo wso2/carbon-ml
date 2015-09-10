@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.rest.api.model;
 
 /**
+ * Represents a Data-set Version in ML
  */
 public class MLVersionBean {
 
