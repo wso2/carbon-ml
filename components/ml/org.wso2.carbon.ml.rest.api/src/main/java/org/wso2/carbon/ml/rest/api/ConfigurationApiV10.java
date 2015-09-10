@@ -51,14 +51,25 @@ public class ConfigurationApiV10 extends MLRestAPI {
         return Response.ok().header(HttpHeaders.ALLOW, "GET").build();
     }
 
+    /**
+     * Get all supported algorithms.
+     *
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.config.MLAlgorithm} objects
+     */
     @GET
     @Path("/algorithms")
     @Produces("application/json")
     public Response getAllAlgorithms() {
-        List<MLAlgorithm> algos = MLCoreServiceValueHolder.getInstance().getAlgorithms();
-        return Response.ok(algos).build();
+        List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+        return Response.ok(mlAlgorithms).build();
     }
 
+    /**
+     * Get {@link org.wso2.carbon.ml.commons.domain.config.MLAlgorithm} object by algorithm name.
+     *
+     * @param algorithmName Name of the algorithm
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.config.MLAlgorithm} object
+     */
     @GET
     @Path("/algorithms/{algorithmName}")
     @Produces("application/json")
@@ -67,8 +78,8 @@ public class ConfigurationApiV10 extends MLRestAPI {
             return Response.status(Response.Status.BAD_REQUEST).entity("Cannot find the Algorithm name from the URI.")
                     .build();
         }
-        List<MLAlgorithm> algos = MLCoreServiceValueHolder.getInstance().getAlgorithms();
-        for (MLAlgorithm mlAlgorithm : algos) {
+        List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
             if (algorithmName.equals(mlAlgorithm.getName())) {
                 return Response.ok(mlAlgorithm).build();
             }
@@ -77,6 +88,12 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 .build();
     }
 
+    /**
+     * Get hyper-parameters of an algorithm.
+     *
+     * @param algorithmName Name of the algorithm
+     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     */
     @GET
     @Path("/algorithms/{algorithmName}/hyperParams")
     @Produces("application/json")
@@ -85,8 +102,8 @@ public class ConfigurationApiV10 extends MLRestAPI {
             return Response.status(Response.Status.BAD_REQUEST).entity("Cannot find the Algorithm name from the URI.")
                     .build();
         }
-        List<MLAlgorithm> algos = MLCoreServiceValueHolder.getInstance().getAlgorithms();
-        for (MLAlgorithm mlAlgorithm : algos) {
+        List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
             if (algorithmName.equals(mlAlgorithm.getName())) {
                 return Response.ok(mlAlgorithm.getParameters()).build();
             }
@@ -95,6 +112,11 @@ public class ConfigurationApiV10 extends MLRestAPI {
                 .build();
     }
 
+    /**
+     * Get available WSO2 DAS tables.
+     *
+     * @return JSON array of table names
+     */
     @GET
     @Path("/das/tables")
     @Produces("application/json")
@@ -123,6 +145,11 @@ public class ConfigurationApiV10 extends MLRestAPI {
         return Response.ok(tableNames).build();
     }
 
+    /**
+     * Get summary statistics settings.
+     *
+     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings} object
+     */
     @GET
     @Path("/summaryStatSettings")
     @Produces("application/json")
