@@ -49,8 +49,8 @@ var jQuery_1_4_2 = $.noConflict(true);
 <script type="text/javascript">  
 
 var w = dw.wrangle()
-var w1;
-var file;
+
+var scriptToML;
 
 jQuery_1_4_2(document).ready(function() {
 
@@ -80,16 +80,17 @@ jQuery_1_4_2(document).ready(function() {
     }        
 
     //Set initial transfroms
+    //Initial transforms should be changed based on the input file 
     initial_transforms = [
                     dw.filter(dw.empty()),
                     dw.split().column(["data"]).status("active").drop(true).result("row").insert_position("right").on("\n").which(1).max(0),
                     dw.split().column(["data"]).drop(true).result("column").insert_position("right").on(",").which(1).max(0)
                 ];
         
-    //var name = 'crime';
+    //input data should be added as a string
     var data = "1 3 3\n3 4 5\n8 6 1"
     var dt = dv.table(data);
-    w1 =  startWrangler(dt);
+    startWrangler(dt);
 
 });
 </script>
@@ -232,8 +233,6 @@ $( document ).ready(function() {
 
     $('#next-btn').on('click', function(e) {
         e.preventDefault();
-
-        //var jsonData = '{"file" : "' + file + '"}';
         //post the wrangler script to api
         $.ajax({
                 type: "POST",
@@ -242,14 +241,14 @@ $( document ).ready(function() {
                     "Accept" : "application/json",         
                     "Content-Type":"text/plain"   
                 },
-                data: file,
+                data: scriptToML,
                 success : function(res){
-                    var successText = 'Model successfully published to registry.';
+                    var successText = 'All operations successfully added.';
                     handleNotification(successText, '#notification-area', 'success');
                 },
                 error : function(res){
                     var errorText = res.responseText
-                    handleNotification(file, '#notification-area', 'warning');
+                    handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
 
