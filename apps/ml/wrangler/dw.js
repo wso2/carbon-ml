@@ -7578,7 +7578,7 @@ dw.transform_menu = function (container, options) {
             {
                 name: 'Columns',
                 sub: [{name: 'Fill', transform: dw.transform.FILL}, 
-                {name: 'Drop', transform: dw.transform.DROP}, {name: 'Merge', transform: dw.transform.MERGE}]
+                {name: 'Drop', transform: dw.transform.DROP}]
             },
             {
                 name: 'Rows',
@@ -7971,7 +7971,7 @@ dw.wrangler = function (options) {
         upload.append(dw.jq('button').attr('id', 'wranglerInputSubmit').append('Save to ML')
                 .click(function () {
                     upload.remove();
-                    file = dw.wrangler_export(table, {format: 'javascript', wrangler: w});
+                    scriptToML = dw.wrangler_export(table, {format: 'javascript', wrangler: w});
                     jQuery_1_4_2("#table").show()
                 })
         )
