@@ -37,14 +37,14 @@ public class SparkOperationFill extends SparkOpration {
 		return fillColumn(jsc, data, columnIndex, direction);
 	}
 
-	/**
-	 * Apply fill operation on a column
-	 *
-	 * @param jsc       JavaSparkContext
-	 * @param data      JavaRDD on which transformations are executed
-	 * @param columnId  Integer representing the column
-	 * @param direction String representing the direction on the fill operation
-	 */
+		/**
+		 * Apply fill operation on a column
+		 *
+		 * @param jsc       JavaSparkContext
+		 * @param data      JavaRDD on which transformations are executed
+		 * @param columnId  Integer representing the column
+		 * @param direction String representing the direction on the fill operation
+		 */
 	private JavaRDD<String[]> fillColumn(JavaSparkContext jsc, JavaRDD<String[]> data,
 	                                     final int columnId, final String direction) {
 		if (direction.equals("left") || direction.equals("right")) {
