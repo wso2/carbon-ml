@@ -37,13 +37,13 @@ public class SparkOperationFilter extends SparkOpration {
 		if (s.equals("is_null")) {
 			String columnName = wranglerOperation.getParameter("lcol");
 			columnId = wrangler.getColumnId(columnName);
-			return filter(data, columnId);
+			return filterOnColumn(data, columnId);
 		} else if (s.equals("rowIndex")) {
-			return filter_rowIndex(jsc, data, wranglerOperation.getParameter("indices"));
+			return filterOnIndex(jsc, data, wranglerOperation.getParameter("indices"));
 		} else if (s.equals("eq")) {
-			return filter(data, columnId, wranglerOperation.getParameter("value"));
+			return filterOnColumn(data, columnId, wranglerOperation.getParameter("value"));
 		} else if (s.equals("empty")) {
-			return filter_empty(data);
+			return filterEmptyRows(data);
 		}
 		return null;
 	}
@@ -53,7 +53,7 @@ public class SparkOperationFilter extends SparkOpration {
 	 *
 	 * @param data JavaRDD on which transformations are executed
 	 */
-	private JavaRDD<String[]> filter_empty(JavaRDD<String[]> data) {
+	private JavaRDD<String[]> filterEmptyRows(JavaRDD<String[]> data) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
 				if (row == null) {
@@ -77,8 +77,8 @@ public class SparkOperationFilter extends SparkOpration {
 	 * @param data    JavaRDD on which transformations are executed
 	 * @param indices String representing the rows to be filtered
 	 */
-	private JavaRDD<String[]> filter_rowIndex(JavaSparkContext jsc, JavaRDD<String[]> data,
-	                                          String indices) {
+	private JavaRDD<String[]> filterOnIndex(JavaSparkContext jsc, JavaRDD<String[]> data,
+	                                        String indices) {
 		String[] indecesList = indices.substring(1, indices.length() - 1).split(",");
 		ArrayList<Integer> indecesList2 = new ArrayList<Integer>();
 		for (int i = 0; i < indecesList.length; i++) {
@@ -103,8 +103,8 @@ public class SparkOperationFilter extends SparkOpration {
 	 * @param columnId Integer representing the column
 	 * @param value    String representing the value to be compared
 	 */
-	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId,
-	                                 final String value) {
+	private JavaRDD<String[]> filterOnColumn(JavaRDD<String[]> data, final int columnId,
+	                                         final String value) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
 				if (row[columnId] == null)
@@ -124,7 +124,7 @@ public class SparkOperationFilter extends SparkOpration {
 	 * @param data     JavaRDD on which transformations are executed
 	 * @param columnId Integer representing the column
 	 */
-	private JavaRDD<String[]> filter(JavaRDD<String[]> data, final int columnId) {
+	private JavaRDD<String[]> filterOnColumn(JavaRDD<String[]> data, final int columnId) {
 		return data.filter(new Function<String[], Boolean>() {
 			@Override public Boolean call(String[] row) throws Exception {
 				if (row[columnId] == null)
