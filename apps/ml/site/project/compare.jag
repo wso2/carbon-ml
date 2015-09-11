@@ -260,7 +260,7 @@
 
     $(document).ready(function() {
 
-        $('#nav').affix({
+        /*$('#nav').affix({
             offset: {
                 top: $('header').height()
             }
@@ -270,7 +270,7 @@
         
         $(window).resize(function() {
             scrollVibrateFix();
-        });        
+        });*/        
 
         $("[data-toggle=popover]").popover();
 

@@ -168,7 +168,7 @@ var selectedAlgorithm;
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
+	/*$('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
@@ -178,7 +178,7 @@ $( document ).ready(function() {
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });    
+    });*/    
 
     // set previously selected values when navigating from next page
     var setResponseVariable = "";    

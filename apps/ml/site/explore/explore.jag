@@ -439,7 +439,7 @@ $(document).on('change','select[id="cluster-independent"], select[id="cluster-de
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
+	/*$('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
@@ -449,7 +449,7 @@ $( document ).ready(function() {
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });	
+    });*/	
 
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();

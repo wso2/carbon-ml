@@ -207,10 +207,10 @@ function sanitize(html) {
 }    
 
 // fix for vibrate issue on navfix
-function scrollVibrateFix() {    
+/*function scrollVibrateFix() {
     if (($(document).height() > $('body').height()) && (($(document).height() - $('body').height()) < 100)) {
         $('body > .container').css('padding-bottom', ($('#nav').height() + $('header').height()));
     } else {
-        $('body > .container').css('padding-bottom', $('#nav').height());
+        $('body > .container').css('padding-bottom', $('#nav').height() + 15);
     }
-}
+}*/

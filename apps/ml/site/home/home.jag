@@ -133,7 +133,7 @@ var serverUrl = window.location.origin;
 
 $( document ).ready(function() {
 
-    $('#nav').affix({
+    /*$('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
@@ -143,7 +143,7 @@ $( document ).ready(function() {
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });    
+    });*/    
 
     // redirect if a redirect link is available
     if(typeof requestedPage !== 'undefined') {

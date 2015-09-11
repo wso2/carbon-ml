@@ -145,7 +145,7 @@ var fromAnalysis = getParameterByName('fromAnalysis');
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
+	/*$('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
@@ -155,7 +155,7 @@ $( document ).ready(function() {
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });    
+    });*/    
 
     // put path in application navigator
     var projectName = getParameterByName('projectName');
