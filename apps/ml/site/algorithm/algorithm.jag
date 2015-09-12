@@ -117,7 +117,7 @@
 
                 <div class="spcr-2"></div>
 
-                <div id="response-variable-field">
+                <div id="supervised-inputs">
                     <label class="input-label">Response variable<span class="glyphicon"></span></label>
     		<span class="fld-required">*</span>
                     <div class="input-control text">
@@ -125,12 +125,11 @@
                         </select>
                     </div>
                     <div class="spcr-2"></div>                
-                </div>                
-
-                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
-                </div>                              
+	                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+	                <div class="input-control text">
+	                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+	                </div>                       
+                </div>
 
 			</div>
 			
@@ -264,7 +263,14 @@ $( document ).ready(function() {
         var algorithmName = $('#algorithm-name').val();
         var responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
 
-        var trainDataFraction = $('#data-fraction').val();
+        var trainDataFraction;
+        if (algorithmName == 'K_MEANS') {
+        	trainDataFraction = 1.0;
+        }
+        else {
+        	trainDataFraction = $('#data-fraction').val();
+        }
+
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
@@ -364,10 +370,10 @@ function loadDatasetFeatures(setResponseVariable) {
 // function that toggles response variable input depending on the algorithm selection
 function toggleInput(selectedAlgorithm) {    
     if(selectedAlgorithm == 'K_MEANS') {
-        $('#response-variable-field').hide();
+        $('#supervised-inputs').hide();
     }
     else {
-        $('#response-variable-field').show();
+        $('#supervised-inputs').show();
     }
 }
 
