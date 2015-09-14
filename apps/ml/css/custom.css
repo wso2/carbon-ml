@@ -1287,3 +1287,8 @@ a.cu-level3-btn:hover {
 	padding-bottom:10px;
 	border-bottom:1px solid #e4e4e4;
 }
+
+/* fix for bootstrap scrolling issue */
+.navbar-wrapper {
+ 	min-height: 50px;
+}

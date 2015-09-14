@@ -55,22 +55,24 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
+<div class="navbar-wrapper">
+	<div id="nav" class="row wr-app-bar">
+		<div class="col-md-9 wr-action-container">
 
-        <div class="wr-asset-type-switcher">
-            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-            <span class="btn-asset"></span>
-            </a>
-        </div>
+	        <div class="wr-asset-type-switcher">
+	            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+	            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+	            <span class="btn-asset"></span>
+	            </a>
+	        </div>
 
-        <div class="wr-project">
-            <span class="title">DATASETS \ </span><span id="nav-dataset">
-        </div>
+	        <div class="wr-project">
+	            <span class="title">DATASETS \ </span><span id="nav-dataset">
+	        </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" id="back-btn" class="cu-btn btn-prev">Back</a>
+			<div class="wr-action-btn-bar">
+				<a href="#" id="back-btn" class="cu-btn btn-prev">Back</a>
+			</div>
 		</div>
 	</div>
 </div>
@@ -430,17 +432,17 @@ $(document).on('change','select[id="cluster-independent"], select[id="cluster-de
 
 $( document ).ready(function() {
 
-	/*$('#nav').affix({
+	$('#nav').affix({
 	      offset: {
 	        top: $('header').height()
 	      }
 	});
-
-    scrollVibrateFix();
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/	
+    });*/ 	
 
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();
