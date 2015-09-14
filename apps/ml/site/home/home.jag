@@ -48,14 +48,16 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container"></div>
+<div class="navbar-wrapper">
+    <div id="nav" class="row wr-app-bar">
+        <div class="col-md-9 wr-action-container"></div>
 
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-			<!-- empty -->
-		</div>
-	</div>
+        <div class="col-md-3 wr-wiz-nav">
+            <div class="wr-secondary-links pull-right">
+                <!-- empty -->
+            </div>
+        </div>
+    </div>
 </div>
 <!-- secondary header - app bar -->
 
@@ -133,17 +135,17 @@ var serverUrl = window.location.origin;
 
 $( document ).ready(function() {
 
-    /*$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
-
-    scrollVibrateFix();
+    $('#nav').affix({
+          offset: {
+            top: $('header').height()
+          }
+    });
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/    
+    });*/   
 
     // redirect if a redirect link is available
     if(typeof requestedPage !== 'undefined') {

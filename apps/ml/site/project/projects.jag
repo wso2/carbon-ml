@@ -41,31 +41,33 @@
         </header>
 
         <!-- secondary header - app bar -->
-        <div id="nav" class="row wr-app-bar">
-            <div class="col-md-9 wr-action-container">
+        <div class="navbar-wrapper">
+            <div id="nav" class="row wr-app-bar">
+                <div class="col-md-9 wr-action-container">
 
-                <div class="wr-asset-type-switcher">
-                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-                    <span class="btn-asset"></span>
-                    </a>
+                    <div class="wr-asset-type-switcher">
+                        <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                        <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                        <span class="btn-asset"></span>
+                        </a>
+                    </div>
+
+                    <div class="wr-project">
+                        <span class="title">PROJECTS \ </span>
+                    </div>
+
+                    <div class="wr-select-ds">
+                        <div id="search" style="width:190px"></div>                                        
+                    </div>
+
                 </div>
 
-                <div class="wr-project">
-                    <span class="title">PROJECTS \ </span>
-                </div>
-
-                <div class="wr-select-ds">
-                    <div id="search" style="width:190px"></div>                                        
-                </div>
-
-            </div>
-
-            <div class="col-md-3">
-                <div class="wr-secondary-links pull-right">
-                    <!-- empty -->
-                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
-                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                <div class="col-md-3">
+                    <div class="wr-secondary-links pull-right">
+                        <!-- empty -->
+                        <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                        <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                    </div>
                 </div>
             </div>
         </div>
@@ -161,17 +163,17 @@
     var deleteNotificationArea;
 
     $(document).ready(function() {
-        /*$('#nav').affix({
-            offset: {
+        $('#nav').affix({
+              offset: {
                 top: $('header').height()
-            }
+              }
         });
-
-        scrollVibrateFix();
+        
+        /*scrollVibrateFix();
         
         $(window).resize(function() {
             scrollVibrateFix();
-        });*/        
+        });*/     
 
         $("[data-toggle=popover]").popover();
 
