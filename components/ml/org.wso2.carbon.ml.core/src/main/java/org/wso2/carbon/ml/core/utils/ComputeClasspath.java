@@ -229,7 +229,7 @@ public class ComputeClasspath {
     public static String getSparkClasspath(String sparkClasspath, String carbonHome)
             throws IOException {
         String cp = createInitialSparkClasspath(sparkClasspath, carbonHome, REQUIRED_JARS, SEP);
-        return cp + addJarsFromLib("", carbonHome, SEP) + addJarsFromConfig("", carbonHome, SEP);
+        return cp + addJarsFromLib("", carbonHome, SEP);
     }
 
     public static String[] getSparkClasspathJarsArray(String sparkClasspath, String carbonHome)
@@ -253,47 +253,6 @@ public class ComputeClasspath {
         for (File jar : libJars) {
             scp = scp + separator + jar.getAbsolutePath();
         }
-        return scp;
-    }
-
-    private static String addJarsFromConfig(String scp, String carbonHome, String separator)
-            throws IOException {
-        File cpFile = new File(carbonHome + File.separator + "repository" + File.separator + "conf"
-                + File.separator + "spark" + File.separator + "add-to-spark-classpath.conf");
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(cpFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) {
-                    // skip if a comment or an empty line or does not start with "carbon."
-                    continue;
-                }
-
-                if (line.endsWith(";")) {
-                    line = line.substring(0, line.length());
-                }
-
-                if (fileExists(line)) {
-                    scp = scp + separator + line;
-                } else if (fileExists(carbonHome + File.separator + line)) {
-                    scp = scp + separator + carbonHome + File.separator + line;
-                } else {
-                    throw new IOException("File not found : " + line);
-                }
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-//                        throw e;
-                }
-            }
-        }
-
         return scp;
     }
 
