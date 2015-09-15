@@ -32,10 +32,10 @@ import java.util.List;
 public class TokensToVectors implements Function<String[], Vector> {
 
     private static final long serialVersionUID = 5185155928988547761L;
-    private List<Integer> indices;
+    private final List<Integer> indices;
 
-    public TokensToVectors(List<Integer> indices) {
-        this.indices = indices;
+    private TokensToVectors(Builder builder) {
+        this.indices = builder.indices;
     }
 
     @Override
@@ -53,6 +53,19 @@ public class TokensToVectors implements Function<String[], Vector> {
         } catch (Exception e) {
             throw new MLModelBuilderException(
                     "An error occurred while converting tokens to vectors: " + e.getMessage(), e);
+        }
+    }
+
+    public static class Builder {
+        private List<Integer> indices;
+
+        public Builder indices(List<Integer> indices) {
+            this.indices = indices;
+            return this;
+        }
+
+        public TokensToVectors build() {
+            return new TokensToVectors(this);
         }
     }
 }

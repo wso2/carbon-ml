@@ -29,6 +29,9 @@ public class MissingValuesFilter implements Function<String[], Boolean> {
 
     private static final long serialVersionUID = -4767804423665643237L;
 
+    private MissingValuesFilter() {
+    }
+
     @Override
     public Boolean call(String[] tokens) throws Exception {
         try {
@@ -41,7 +44,14 @@ public class MissingValuesFilter implements Function<String[], Boolean> {
             }
             return keep;
         } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while removing missing value rows: " + e.getMessage(), e);
+            throw new MLModelBuilderException("An error occurred while removing missing value rows: " + e.getMessage(),
+                    e);
+        }
+    }
+
+    public static class Builder {
+        public MissingValuesFilter build() {
+            return new MissingValuesFilter();
         }
     }
 }

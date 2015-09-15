@@ -49,7 +49,6 @@ public class EmailNotificationSender {
      *
      * @param emailAddress              Email address to sent the mail.
      * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
-     * @throws 							MLProjectManagementServiceException
      */
     public static void sendModelBuildingCompleteNotification(String emailAddress, String[] emailTemplateParameters) {
         try {
@@ -65,7 +64,6 @@ public class EmailNotificationSender {
      *
      * @param emailAddress              Email address to sent the mail.
      * @param emailTemplateParameters   An array containing the values for the parameters defined in the email template.
-     * @throws 							MLProjectManagementServiceException
      */
     public static void sendModelBuildingFailedNotification(String emailAddress, String[] emailTemplateParameters) {
         try {

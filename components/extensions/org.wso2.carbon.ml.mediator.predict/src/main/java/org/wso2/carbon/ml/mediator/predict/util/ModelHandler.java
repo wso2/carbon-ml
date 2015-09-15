@@ -58,9 +58,9 @@ public class ModelHandler {
 
     /**
      * Get the ModelHandler instance
-     * @param storageLocation         storage location of the ML-model
+     * @param storageLocation   storage location of the ML-model
      * @param featureMappings   Map containing pairs <feature-name, synapse-path>
-     * @return
+     * @return ModelHandler instance
      */
     public static ModelHandler getInstance(String storageLocation, Map<String, SynapsePath> featureMappings, boolean isUpdated)
             throws ClassNotFoundException, IOException, URISyntaxException, MLInputAdapterException {
@@ -71,8 +71,13 @@ public class ModelHandler {
     }
 
     /**
-     * Retrieve the ML model and map the feature indices with the xpath expressions
-     * @param inputVariables Map containing the key- value pairs <feature-name, xpath-expression-to-extract-feature-value>
+     * Deserialize the ML model and map the feature indices with the xpath/json-path expressions
+     * @param modelStorageLocation path to MLModel
+     * @param inputVariables Map containing the key- value pairs <feature-name, xpath/json-path-expression-to-extract-feature-value>
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws URISyntaxException
+     * @throws MLInputAdapterException
      */
     private void initializeModel(String modelStorageLocation, Map<String, SynapsePath> inputVariables)
             throws IOException, ClassNotFoundException, URISyntaxException, MLInputAdapterException {
@@ -92,7 +97,7 @@ public class ModelHandler {
 
     /**
      * Get the MLModel from its storage location
-     * @return
+     * @return MLModel object
      * @throws IOException
      * @throws ClassNotFoundException
      */

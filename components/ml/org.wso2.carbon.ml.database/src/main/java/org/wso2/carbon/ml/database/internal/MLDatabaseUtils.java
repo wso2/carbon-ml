@@ -115,8 +115,8 @@ public class MLDatabaseUtils {
     /**
      * Close a given set of database resources.
      * 
-     * @param preparedStatement
-     * @param resultSet
+     * @param preparedStatement Prepared statement to be closed
+     * @param resultSet Result set to be closed
      * @throws DatabaseHandlerException
      */
     public static void closeDatabaseResources(PreparedStatement preparedStatement,ResultSet resultSet) throws DatabaseHandlerException {
@@ -157,6 +157,11 @@ public class MLDatabaseUtils {
         }
     }
 
+    /**
+     * Get the hyper parameters as a map
+     * @param hyperParams A {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.config.HyperParameter}
+     * @return A map of <hyper-parameter-name, hyper-parameter-value> pairs
+     */
     public static Map<String, String> getHyperParamsAsAMap(List<HyperParameter> hyperParams) {
         Map<String, String> map = new HashMap<String, String>();
         for (HyperParameter hyperParameter : hyperParams) {
@@ -165,6 +170,12 @@ public class MLDatabaseUtils {
         return map;
     }
 
+    /**
+     * Get String from Clob
+     * @param clob {@link java.sql.Clob} object
+     * @return String representation of clob
+     * @throws DatabaseHandlerException
+     */
     public static String toString(Clob clob) throws DatabaseHandlerException {
         Reader in;
         try {

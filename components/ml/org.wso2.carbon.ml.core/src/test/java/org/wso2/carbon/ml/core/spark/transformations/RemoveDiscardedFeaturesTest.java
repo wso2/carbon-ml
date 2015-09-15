@@ -18,8 +18,8 @@ public class RemoveDiscardedFeaturesTest {
         newToOldIndicesList.add(8);
         int responseIndex = 9;
 
-        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures(newToOldIndicesList,
-                responseIndex);
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder()
+                .indices(newToOldIndicesList).responseIndex(responseIndex).build();
         String[] result = removeDiscardedFeatures.call(new String[] { "2.2", "3.0", "4.2", "1.1", "2.6", "0.7", "1.44",
                 "4.5", "7.7", "0" });
         Assert.assertEquals(result.length, 6);
@@ -36,8 +36,8 @@ public class RemoveDiscardedFeaturesTest {
         newToOldIndicesList.add(8);
         int responseIndex = 4;
 
-        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures(newToOldIndicesList,
-                responseIndex);
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder()
+                .indices(newToOldIndicesList).responseIndex(responseIndex).build();
         String[] result = removeDiscardedFeatures.call(new String[] { "2.2", "3.0", "4.2", "1.1", "0", "0.7", "1.44",
                 "4.5", "7.7" });
         Assert.assertEquals(result.length, 6);
@@ -54,8 +54,8 @@ public class RemoveDiscardedFeaturesTest {
         newToOldIndicesList.add(8);
         int responseIndex = -1;
 
-        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures(newToOldIndicesList,
-                responseIndex);
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder()
+                .indices(newToOldIndicesList).responseIndex(responseIndex).build();
         String[] result = removeDiscardedFeatures.call(new String[] { "2.2", "3.0", "4.2", "1.1", "0.5", "0.7", "1.44",
                 "4.5", "7.7", "9.2" });
         Assert.assertEquals(result.length, 5);

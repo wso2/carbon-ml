@@ -171,7 +171,7 @@ public class MLDatasetProcessor {
      * Process a given data-set; read the data-set as a stream, extract meta-data, persist the data-set in a target path
      * and persist meta-data in ML db.
      * 
-     * @param dataset
+     * @param dataset {@link org.wso2.carbon.ml.commons.domain.MLDataset} object
      * @throws MLInputValidationException
      */
     public void process(MLDataset dataset, InputStream inputStream) throws MLDataProcessingException,
@@ -241,9 +241,10 @@ public class MLDatasetProcessor {
         }
 
         // start summary stats generation in a new thread, pass data set version id
-        threadExecutor.execute(new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
-                datasetProcessor));
-        threadExecutor.afterExecute(null, null);
+        SummaryStatsGenerator task = new SummaryStatsGenerator(datasetSchemaId, datasetVersionId, summaryStatsSettings,
+                datasetProcessor);
+        threadExecutor.execute(task);
+        threadExecutor.afterExecute(task, null);
         log.info(String.format("[Created] %s", dataset));
 
     }

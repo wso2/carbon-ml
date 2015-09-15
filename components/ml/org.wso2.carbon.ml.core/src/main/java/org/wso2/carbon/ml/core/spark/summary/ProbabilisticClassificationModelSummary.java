@@ -41,6 +41,7 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
     private String[] features;
     private double modelAccuracy;
     private MulticlassConfusionMatrix multiclassConfusionMatrix;
+    private String datasetVersion;
 
     public String getAlgorithm() {
         return algorithm;
@@ -149,6 +150,20 @@ public class ProbabilisticClassificationModelSummary implements ModelSummary,Ser
      */
     public void setModelAccuracy(double modelAccuracy) {
         this.modelAccuracy = modelAccuracy;
+    }
+
+    /**
+     * @return Returns dataset version
+     */
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    /**
+     * @param datasetVersion Sets dataset version
+     */
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
     @Override

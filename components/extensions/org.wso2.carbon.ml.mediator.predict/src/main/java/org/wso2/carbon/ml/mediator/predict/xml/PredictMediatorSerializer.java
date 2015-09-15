@@ -31,9 +31,9 @@ import java.util.Map;
 public class PredictMediatorSerializer extends AbstractMediatorSerializer {
 
     /**
-     *  Build the ML mediator configuration from MLMediator instance
+     *  Build the Predict mediator configuration from PredictMediator instance
      *
-     *  ML mediator configuration template
+     *  Predict mediator configuration template
      *  <predict>
      *       <model storage-location="string"/>
      *       <features>
@@ -43,7 +43,7 @@ public class PredictMediatorSerializer extends AbstractMediatorSerializer {
      *   </predict>
      *
      * @param mediator MLMediator instance
-     * @return
+     * @return Predict Mediator configuration OMElement
      */
     @Override
     protected OMElement serializeSpecificMediator(Mediator mediator) {

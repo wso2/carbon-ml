@@ -37,7 +37,8 @@ public class FeatureImportance implements Serializable {
     }
 
     /**
-     * @param feature Sets feature name
+     * Sets feature name
+     * @param label feature name
      */
     public void setLabel(String label) {
         this.label = label;

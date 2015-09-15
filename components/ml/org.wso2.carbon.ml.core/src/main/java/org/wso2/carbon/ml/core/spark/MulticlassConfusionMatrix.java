@@ -87,7 +87,7 @@ public class MulticlassConfusionMatrix implements Serializable {
 
     /**
      *
-     * @return Set the size of the confusion matrix
+     * @param size Size of the matrix
      */
     public void setSize(int size) {
         this.size = size;

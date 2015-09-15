@@ -50,6 +50,7 @@ function buildNotification(message, notificationType) {
         builtNotification = 
         '<div class="alert alert-success alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+            '<img src="../../images/icons/ico-success.png" class="indi" />' +            
             message +
         '</div>';            
     }
@@ -207,10 +208,10 @@ function sanitize(html) {
 }    
 
 // fix for vibrate issue on navfix
-function scrollVibrateFix() {    
+/*function scrollVibrateFix() {
     if (($(document).height() > $('body').height()) && (($(document).height() - $('body').height()) < 100)) {
         $('body > .container').css('padding-bottom', ($('#nav').height() + $('header').height()));
     } else {
-        $('body > .container').css('padding-bottom', $('#nav').height());
+        $('body > .container').css('padding-bottom', $('#nav').height() + 15);
     }
-}
+}*/

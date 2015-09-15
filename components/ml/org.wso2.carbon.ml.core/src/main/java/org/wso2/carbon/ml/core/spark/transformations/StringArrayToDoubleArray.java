@@ -25,6 +25,9 @@ public class StringArrayToDoubleArray implements Function<String[], double[]> {
 
     private static final long serialVersionUID = 6885775018049237606L;
 
+    private StringArrayToDoubleArray() {
+    }
+
     @Override
     public double[] call(String[] tokens) throws MLModelBuilderException {
         try {
@@ -35,6 +38,12 @@ public class StringArrayToDoubleArray implements Function<String[], double[]> {
             return features;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while transforming tokens: " + e.getMessage(), e);
+        }
+    }
+
+    public static class Builder {
+        public StringArrayToDoubleArray build() {
+            return new StringArrayToDoubleArray();
         }
     }
 }

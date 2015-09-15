@@ -57,7 +57,14 @@ import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -71,6 +78,22 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
+    }
+    
+    private JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
+        MLModelConfigurationContext context = getContext();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
+        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+        DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint.Builder().build();
+
+        JavaRDD<String> lines = context.getLines().cache();
+        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
+                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToLabeledPoint);
     }
 
     /**
@@ -103,16 +126,14 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         + workflow.getAlgorithmName());
             }
 
-            // pre-processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), responseIndex);
 
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
-
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint).cache();
+            // gets the pre-processed dataset
+            JavaRDD<LabeledPoint> labeledPoints = preProcess().cache();
+            
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
                     MLConstants.RANDOM_SEED);
@@ -207,14 +228,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a logistic regression model
      *
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @param isSGD Whether the algorithm is Logistic regression with SGD
      * @throws MLModelBuilderException
      */
@@ -284,6 +303,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -304,15 +324,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a decision tree model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildDecisionTreeModel(JavaSparkContext sparkContext, long modelID,
@@ -345,6 +362,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -387,6 +405,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -399,14 +418,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a support vector machine (SVM) model
      *
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildSVMModel(JavaSparkContext sparkContext, long modelID, JavaRDD<LabeledPoint> trainingData,
@@ -456,6 +473,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             probabilisticClassificationModelSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             probabilisticClassificationModelSummary.setModelAccuracy(modelAccuracy);
+            probabilisticClassificationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return probabilisticClassificationModelSummary;
         } catch (Exception e) {
@@ -466,15 +484,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a linear regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildLinearRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -513,6 +528,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -524,15 +540,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a ridge regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildRidgeRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -572,6 +585,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -583,15 +597,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a lasso regression model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildLassoRegressionModel(JavaSparkContext sparkContext, long modelID,
@@ -629,6 +640,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             RegressionMetrics regressionMetrics = getRegressionMetrics(sparkContext, predictionsAndLabels);
             Double meanSquaredError = regressionMetrics.meanSquaredError();
             regressionModelSummary.setMeanSquaredError(meanSquaredError);
+            regressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return regressionModelSummary;
         } catch (Exception e) {
@@ -640,15 +652,12 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * This method builds a naive bayes model
      *
-     * @param sparkContext JavaSparkContext
+     * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
      * @param testingData Testing data as a JavaRDD of LabeledPoints
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
-     * @param headerRow Header row of the dataset
-     * @param responseIndex Index of the response variable in the dataset
-     * @param columnSeparator Column separator of dataset
      * @throws MLModelBuilderException
      */
     private ModelSummary buildNaiveBayesModel(JavaSparkContext sparkContext, long modelID,
@@ -678,6 +687,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
         } catch (Exception e) {
@@ -689,7 +699,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * @param features Array of names of features
      * @param weights Array of weights of features
-     * @return
+     * @return List of FeatureImportance in the model {@link FeatureImportance}
      */
     private List<FeatureImportance> getFeatureWeights(SortedMap<Integer, String> features, double[] weights) {
         List<FeatureImportance> featureWeights = new ArrayList<FeatureImportance>();
