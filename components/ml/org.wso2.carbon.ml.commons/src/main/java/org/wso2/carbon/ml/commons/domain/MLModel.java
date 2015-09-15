@@ -37,6 +37,10 @@ public class MLModel implements Serializable {
     private List<Integer> newToOldIndicesList;
     private Externalizable model;
 
+    //ashen
+    private String normalLabels;
+    private String normalization;
+
     public String getAlgorithmName() {
         return algorithmName;
     }
@@ -101,4 +105,34 @@ public class MLModel implements Serializable {
     public void setNewToOldIndicesList(List<Integer> newToOldIndicesList) {
         this.newToOldIndicesList = newToOldIndicesList;
     }
+
+    //ashen
+    /**
+     * @return Returns normal labels
+     */
+    public String getNormalization() {
+        return normalization;
+    }
+
+    /**
+     * @param normalization Sets training data fraction
+     */
+    public void setNormalization(String normalization) {
+        this.normalization = normalization;
+    }
+
+    /**
+     * @return Returns normal labels
+     */
+    public String getNormalLabels() {
+        return normalLabels;
+    }
+
+    /**
+     * @param normalLabels Sets training data fraction
+     */
+    public void setNormalLabels(String normalLabels) {
+        this.normalLabels = normalLabels;
+    }
+
 }

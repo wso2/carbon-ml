@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.core.spark.transformations;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+
+/**
+ * This class normalize the each values row by row
+ */
+public class Normalization implements Function<double[], double[]> {
+
+    private static final long serialVersionUID = 8329428281317101710L;
+    private final List<Double> max;
+    private final List<Double> min;
+
+    public Normalization(Builder builder){
+        this.max = builder.max;
+        this.min = builder.min;
+    }
+
+    @Override
+    public double[] call(double[] values) throws MLModelBuilderException{
+
+    try {
+        double[] normalizedValues = new double[values.length];
+
+        for (int i = 0; i < values.length; i++) {
+
+            if (min.get(i) != max.get(i)) {
+
+                if (values[i] > max.get(i)) {
+                    normalizedValues[i] = 1;
+                } else if (values[i] < min.get(i)) {
+                    normalizedValues[i] = 0;
+                } else {
+                    normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
+                }
+
+            } else if (min.get(i) == 0 && max.get(i) == 0) {
+                normalizedValues[i] = 0;
+            } else {
+                normalizedValues[i] = 0.5;
+            }
+
+        }
+
+        return normalizedValues;
+
+    }catch (Exception e) {
+        throw new MLModelBuilderException("An error occurred while normalizing values: " + e.getMessage(), e);
+    }
+    }
+
+    public static class Builder {
+        private List<Double> max;
+        private List<Double> min;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+
+            List<Feature> features = ctx.getFacts().getFeatures();
+            Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
+            int index;
+            for (Feature feature : features) {
+
+                index = feature.getIndex();
+                String featureStat = stats.get(feature.getName());
+                double maxValue = SparkModelUtils.getMax(featureStat);
+                max.add(index,maxValue);
+                double minValue = SparkModelUtils.getMin(featureStat);
+                min.add(index,minValue);
+
+            }
+            return this;
+        }
+
+        public Normalization build() {
+            return new Normalization(this);
+        }
+    }
+
+}

@@ -131,9 +131,27 @@ public class MLAnalysisHandler {
         }
     }
 
+    //ashen
+    public String getNormalLabels(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
     public double getTrainDataFraction(long analysisId) throws MLAnalysisHandlerException {
         try {
             return databaseService.getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    //ashen
+    public String getNormalization(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }

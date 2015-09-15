@@ -35,6 +35,10 @@ public class Workflow implements Serializable {
     private Map<String, String> hyperParameters;
     private String datasetVersion;
 
+    //ashen
+    private String normalLabels;
+    private String normalization;
+
     /**
      * @return Returns machine learning workflow ID
      */
@@ -103,6 +107,36 @@ public class Workflow implements Serializable {
      */
     public void setTrainDataFraction(double trainDataFraction) {
         this.trainDataFraction = trainDataFraction;
+    }
+
+
+    //ashen
+    /**
+     * @return Returns normal labels
+     */
+    public String getNormalization() {
+        return normalization;
+    }
+
+    /**
+     * @param normalization Sets training data fraction
+     */
+    public void setNormalization(String normalization) {
+        this.normalization = normalization;
+    }
+
+    /**
+     * @return Returns normal labels
+     */
+    public String getNormalLabels() {
+        return normalLabels;
+    }
+
+    /**
+     * @param normalLabels Sets training data fraction
+     */
+    public void setNormalLabels(String normalLabels) {
+        this.normalLabels = normalLabels;
     }
 
     /**

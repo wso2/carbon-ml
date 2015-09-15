@@ -461,7 +461,7 @@ function listSelectionImputeOption(list, selectedOption, selectedFeatureType, cs
     return selection;
 }
 
-//change mpute Options acording to selected Field Type
+//change impute Options acording to selected Field Type
 function changeImputeOptions(fieldTypeValue, imputeMethodElement) {
 
     imputeMethodElement.empty();

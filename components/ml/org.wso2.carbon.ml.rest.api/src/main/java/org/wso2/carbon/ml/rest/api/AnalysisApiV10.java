@@ -378,6 +378,60 @@ public class AnalysisApiV10 extends MLRestAPI {
         }
     }
 
+    //ashen
+    /**
+     * get the normal labels of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/normalLabels")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNormalLabels(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNormalLabels(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving normal labels for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    //ashen
+    /**
+     * get the data normalization selection of an analysis.
+     */
+    @GET
+    @Path("/{analysisId}/normalization")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNormalization(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNormalization(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving data normalization selection for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
     /**
      * get the train data fraction of an analysis.
      */

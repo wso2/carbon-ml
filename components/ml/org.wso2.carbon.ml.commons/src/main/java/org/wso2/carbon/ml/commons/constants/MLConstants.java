@@ -85,10 +85,12 @@ public class MLConstants {
     public static final String MODEL_SETTINGS_ID = "modelSettingsID";
     public static final String WORKFLOW_ID = "workflowID";
     public static final String DATASET_URL = "datasetURL";
+    public static final String NORMAL_LABELS = "normalLabels";  //ashen
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
     public static final String RESPONSE = "responseVariable";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
+    public static final String NORMALIZATION = "normalization"; //ashen
     public static final String HYPER_PARAMETERS = "hyperParameters";
     
     public static final String MODEL_NAME = "Model";
@@ -157,9 +159,10 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
-    
+    public static final String KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY = "KMeansAnomalyDetectionModelSummary";
+
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
-    
+
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_1 = 5;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_2 = 3;
     public static final int ML_ALGORITHM_WEIGHT_LEVEL_3 = 1;
@@ -187,7 +190,11 @@ public class MLConstants {
     }
 
     public enum UNSUPERVISED_ALGORITHM {
-        K_MEANS
+        K_MEANS, K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
+    }
+
+    public enum ANOMALY_DETECTION_ALGORITHM {
+        K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
     }
 
     public enum MISSING_VALUES {
