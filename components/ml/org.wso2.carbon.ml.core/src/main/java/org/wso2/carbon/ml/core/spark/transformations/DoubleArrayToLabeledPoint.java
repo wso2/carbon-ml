@@ -37,7 +37,6 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
      *
      * @param tokens Double array of tokens
      * @return Labeled point
-     * @throws ModelServiceException
      */
     @Override
     public LabeledPoint call(double[] tokens) {

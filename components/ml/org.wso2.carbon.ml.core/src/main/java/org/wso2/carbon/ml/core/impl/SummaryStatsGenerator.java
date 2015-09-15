@@ -149,9 +149,6 @@ public class SummaryStatsGenerator implements Runnable {
     /**
      * Finds the columns with Categorical data and Numerical data. Stores the raw-data in a list.
      *
-     * @param datasetIterator Iterator for the CSV parser.
-     * @param sampleSize Size of the sample.
-     * @throws DatasetSummaryException
      */
     protected String[] identifyColumnDataType() {
         // If at least one cell contains strings, then the column is considered to has string data.
@@ -226,7 +223,6 @@ public class SummaryStatsGenerator implements Runnable {
      * Calculate the frequencies of each category in String columns, needed to plot bar graphs/histograms. Calculate
      * unique value counts.
      *
-     * @param noOfIntervals Number of intervals to be calculated.
      */
     protected List<SortedMap<?, Integer>> calculateStringColumnFrequencies() {
 
@@ -255,8 +251,6 @@ public class SummaryStatsGenerator implements Runnable {
     /**
      * Calculate the frequencies of each category/interval of Numerical data columns.
      *
-     * @param categoricalThreshold Threshold for number of categories, to be considered as discrete data.
-     * @param noOfIntervals Number of intervals to be calculated for continuous data
      */
     protected List<SortedMap<?, Integer>> calculateNumericColumnFrequencies() {
         int noOfIntervals = summarySettings.getHistogramBins();

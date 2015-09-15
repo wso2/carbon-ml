@@ -366,7 +366,6 @@ public class MLUtils {
      * @param name Dataset name
      * @param version Dataset version
      * @param targetPath path of the stored data set
-     * @param samplePoints Sample points of the dataset
      * @return Dataset Version Object
      */
     public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,

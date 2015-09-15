@@ -139,6 +139,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             // clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(new MLKMeansModel(kMeansModel));
             clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
+            clusterModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+
             return clusterModelSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);

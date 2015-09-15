@@ -943,7 +943,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Retrieve the SamplePoints object for a given value-set.
      *
-     * @param valueSetId Unique Identifier of the value-set
+     * @param tenantId Tenant id
+     * @param user Tenant user name
+     * @param versionsetId Unique Identifier of the dataset version
      * @return SamplePoints object of the value-set
      * @throws DatabaseHandlerException
      */
@@ -979,7 +981,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Returns a set of features in a given range, from the alphabetically ordered set of features, of a data-set.
      *
-     * @param datasetID Unique Identifier of the data-set
+     * @param tenantId Tenant id
+     * @param userName Tenant user name
+     * @param analysisId Unique id of the analysis
      * @param startIndex Starting index of the set of features needed
      * @param numberOfFeatures Number of features needed, from the starting index
      * @return A list of Feature objects
@@ -1304,7 +1308,9 @@ public class MLDatabaseService implements DatabaseService {
     /**
      * Retrieve and returns the Summary statistics for a given feature of a given data-set version, from the database.
      *
-     * @param datasetVersionId Unique identifier of the data-set version
+     * @param tenantId Tenant id
+     * @param user Tenant user name
+     * @param analysisId Unique identifier of the analysis
      * @param featureName Name of the feature of which summary statistics are needed
      * @return JSON string containing the summary statistics
      * @throws DatabaseHandlerException
@@ -1573,7 +1579,7 @@ public class MLDatabaseService implements DatabaseService {
      * @param tenantId   tenant ID
      * @param userName   username
      * @param projectId  Project ID
-     * @return
+     * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
     @Override
@@ -2679,5 +2685,21 @@ public class MLDatabaseService implements DatabaseService {
         }
         // consider anything other than "Complete" status as an invalid model.
         return false;
+    }
+    
+    public void shutdown() throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            statement = connection.prepareStatement("SHUTDOWN");
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error has occurred while shutting down the database: "
+                    + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, statement);
+        }
     }
 }

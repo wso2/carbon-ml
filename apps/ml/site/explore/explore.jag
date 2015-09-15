@@ -54,22 +54,24 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-        <div class="wr-project">
-            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
-        </div>
+<div class="navbar-wrapper">
+	<div id="nav" class="row wr-app-bar">
+		<div class="col-md-9 wr-action-container">
+	        <div class="wr-project">
+	            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+	        </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+			<div class="wr-action-btn-bar">
+				<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+			</div>
 		</div>
-	</div>
 
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-			<div class="ctrl-wiz-nav">
-				<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-				<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+		<div class="col-md-3 wr-wiz-nav">
+			<div class="wr-secondary-links pull-right">
+				<div class="ctrl-wiz-nav">
+					<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+					<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -444,12 +446,12 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
-
-    scrollVibrateFix();
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });	
+    });*/ 	
 
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();

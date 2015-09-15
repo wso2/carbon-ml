@@ -33,8 +33,8 @@ public class MLDBUtil {
     /**
      * Deserialize SamplePoints object from InputStream
      *
-     * @param data
-     * @return
+     * @param data Data input stream
+     * @return {@link org.wso2.carbon.ml.commons.domain.SamplePoints} object
      * @throws java.io.IOException
      * @throws ClassNotFoundException
      */
@@ -47,8 +47,8 @@ public class MLDBUtil {
 
     /**
      * Deserialize ModelSummary from InputStream
-     * @param data
-     * @return
+     * @param data Data input stream
+     * @return {@link org.wso2.carbon.ml.commons.domain.ModelSummary} object
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -62,7 +62,7 @@ public class MLDBUtil {
     /**
      * Return dataset status by iterating through all the given versions
      * @param datasetVersions List of dataset versions
-     * @return dataset status
+     * @return Dataset status
      */
     public static String getDatasetStatus(List<MLDatasetVersion> datasetVersions) {
         MLConstants.DatasetStatus status = MLConstants.DatasetStatus.AVAILABLE;

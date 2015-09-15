@@ -11,8 +11,8 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-include("../../includes/tenantAware.jag");
-%>
+        include("../../includes/tenantAware.jag");
+    %> 
 </head>
 
 <body>
@@ -22,156 +22,124 @@ include("../../includes/tenantAware.jag");
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-</div>
-<div class="col-sm-4">
-    <div class="wr-auth pull-right">
-        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-			<div class="dropdown-menu">
-				<div class="cu-arrow"></div>
-				<div class="dropdown-menu-content">
-					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
-				</div>
-			</div>			
-		</div>
-	</div>
+    <div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+    </div>
+    <div class="col-sm-4">
+        <div class="wr-auth pull-right">
+            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+            <div class="dropdown-menu">
+                <div class="cu-arrow"></div>
+                <div class="dropdown-menu-content">
+                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                </div>
+            </div>          
+        </div>
+    </div>
 </div>
 </header>
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-		<div class="wr-project">
-            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+<div class="navbar-wrapper">
+    <div id="nav" class="row wr-app-bar">
+        <div class="col-md-9 wr-action-container">
+            <div class="wr-project">
+                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+            </div>
+
+            <div class="wr-action-btn-bar">
+                <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+            </div>
         </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
-		</div>
-	</div>
-
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-            <div class="ctrl-wiz-nav">
-    			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-    			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
-    		</div>
+        <div class="col-md-3 wr-wiz-nav">
+            <div class="wr-secondary-links pull-right">
+                <div class="ctrl-wiz-nav">
+                    <a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+                    <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+                </div>
+            </div>
         </div>
-	</div>
+    </div>
 </div>
 <!-- secondary header - app bar -->
 
 <!-- content/body -->
 <div class="row">
-	<div class="col-lg-12 wr-secondary-bar">
-		
-		<!-- Wizard -->
-	    <ul class="nav nav-pills nav-wizard">
+    <div class="col-lg-12 wr-secondary-bar">
+        
+        <!-- Wizard -->
+        <ul class="nav nav-pills nav-wizard">
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
             <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
         </ul>
-	</div>
+    </div>
 </div>
 
 
 <div class="row">
-	<div class="col-md-12">
-		
+    <div class="col-md-12">
+        
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+        <!-- content -->
+        <div class="container col-md-12 col-centered wr-content">
 
-			<div id="notification-area"></div>
+            <div id="notification-area"></div>
             <div class="wr-form col-lg-5 col-centered">
 
                 <h1 class="title">Algorithm</h1>
 
                 <label class="input-label">Algorithm name<span class="glyphicon"></span></label>
-		<span class="fld-required">*</span>
+        <span class="fld-required">*</span>
                 <div class="input-control text">
                     <select id="algorithm-name" class="form-control">
                         <optgroup label="Numerical Prediction">
-	                        <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
-	                        <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
-	                        <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
+                            <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
+                            <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
+                            <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
                         </optgroup>                        
-	                    <optgroup label="Binary Classification">
-	                        <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION SGD</option>
-	                        <option value="SVM">SVM</option>
+                        <optgroup label="Binary Classification">
+                            <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION SGD</option>
+                            <option value="SVM">SVM</option>
                         </optgroup>
                         <optgroup label="Multiclass Classification">
-	                    <option value="LOGISTIC_REGRESSION_LBFGS">LOGISTIC REGRESSION L-BFGS</option>
+                        <option value="LOGISTIC_REGRESSION_LBFGS">LOGISTIC REGRESSION L-BFGS</option>
                             <option value="DECISION_TREE">DECISION TREE</option>
                             <option value="RANDOM_FOREST">RANDOM FOREST</option>
                             <option value="NAIVE_BAYES">NAIVE BAYES</option>
                         </optgroup>                        
                         <optgroup label="Clustering">
-                        	<option value="K_MEANS">K-MEANS</option>
-                        </optgroup>
-                        <optgroup label="Anomaly Detection">
-                            <option value="K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA">K-MEANS WITH UNLABELED DATA</option>
-                            <option value="K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA">K-MEANS WITH LABELED DATA</option>
+                            <option value="K_MEANS">K-MEANS</option>
                         </optgroup>
                     </select>
                 </div>
 
                 <div class="spcr-2"></div>
 
-            <!--    <div id="method-selection">
-                     <label class="input-label-sm">Training Method<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                       <div class="wr-filter-radio-group">
-                         <label class='radio' id='training-method'>
-
-                         <input type='radio' value='unsupervised' name='options' checked>Unsupervised</br>
-                         <input type='radio' value='supervised' name='options'>Supervised
-
-                         </label>
-                        </div>
-                </div>
-
-                <br class="c-both" /> -->
-
-                <div id="response-variable-field">
+                <div id="supervised-inputs">
                     <label class="input-label">Response variable<span class="glyphicon"></span></label>
-    		<span class="fld-required">*</span>
+            <span class="fld-required">*</span>
                     <div class="input-control text">
                         <select id="response-variable" class="form-control">
                         </select>
                     </div>
                     <div class="spcr-2"></div>                
+                    <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+                    <div class="input-control text">
+                        <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+                    </div>                       
                 </div>
 
-                <div id="normal-labels">
-                <label class="input-label">Normal Label(s) Values<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="lable-names" placeholder="normal label(s) values"/>
-                </div>
-                </div>
+            </div>
+            
+                
+        </div>
 
-                <div id="train-data-fraction">
-                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
-                </div>
-                </div>
-
-                <div class="wr-filter-radio-group" id="normalization">
-                <label class="checkbox">
-                   <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
-                </label>
-                </div>
-                <br class="c-both" />
-
-			</div>
-
-		</div>
-
-	</div>
-			<!-- /content -->
+    </div>
+            <!-- /content -->
 </div>
 <!-- /content/body -->
 
@@ -197,22 +165,21 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
+    $('#nav').affix({
+          offset: {
+            top: $('header').height()
+          }
+    });
     
-    scrollVibrateFix();
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });
-
-
+    });*/    
 
     // set previously selected values when navigating from next page
     var setResponseVariable = "";    
@@ -265,159 +232,27 @@ $( document ).ready(function() {
         }
     });
 
-
     loadDatasetFeatures(setResponseVariable);
-    getNormalLabelValues();
-    //ashen
-    // get previously set normal labels
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/normalLabels",
-        async : false,
-        dataType: 'text',
-        success: function(res) {
-            var setNormalLabels = sanitize(res);
-            //var lb = JSON.parse(setNormalLabels);
-            console.log(setNormalLabels);
-            var labelArray = setNormalLabels.split(',');
-            console.log(labelArray);
-
-            for(var i=0; i<labelArray.length; i++){
-
-                $("input:checkbox[name=labels]").each(function(){
-                    if($(this).val() == labelArray[i]) {
-                    $(this).prop('checked',true);
-                }
-                });
-            }
-            //avoiding allways checking the 1st value
-            var temp = 0;
-            $("input:checkbox[name=labels]:checked").each(function(){
-                for(var i=0; i<labelArray.length; i++){
-                    if($(this).val() == labelArray[i]) {
-                        temp = 1;
-                    }
-                }
-                if(temp == 0){
-                    $(this).prop('checked',false);
-                }
-            });
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-
-       // get previously set normalization option
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/normalization",
-        async : false,
-        dataType: 'text',
-        success: function(res) {
-            var setNormalization = sanitize(res);
-            if (setNormalization == 'true') {
-                $('#normalization-value').prop('checked',true);
-            }else if (setNormalization == 'false'){
-                $('#normalization-value').prop('checked',false);
-            }
-
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-
-    loadDatasetFeatures(setResponseVariable);
-    getNormalLabelValues();
         
     // put path in application navigator
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);
 
     // disable fields if the model is built from an existing analysis
-	if(fromAnalysis == 'true') {
-	    $('#algorithm-name').attr("disabled","disabled");
+    if(fromAnalysis == 'true') {
+        $('#algorithm-name').attr("disabled","disabled");
         $('#response-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
-        $('#labels-names').attr("disabled","disabled");
-        $('#normalization-value').attr("disabled","disabled");
-	}
+    }
+    // toggle response variable input depending on the algorithm selection
+    selectedAlgorithm = $('#algorithm-name').val();
+    toggleInput(selectedAlgorithm);
 
-    //hide unwanted fields when loading the page
-    document.body.onload = function() {
-
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-            $('#normalization').show();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-            $('#normalization').show();
-        }
-        else{
-            $('#response-variable-field').show();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').show();
-            $('#normalization').hide();
-        }
-
-    };
-
-    // hides response variable field for K-Means algorithm
     $(document).on('change','#algorithm-name',function() {
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-            $('#train-data-fraction').show();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-            $('#normalization').show();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-            $('#normalization').show();
-        }
-        else{
-            $('#response-variable-field').show();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-            $('#train-data-fraction').show();
-        }
-    });
-
-    // change options according to anomaly detection training method
- /*   $(document).on('change','#training-method',function() {
-        if($("input[name='options']:checked").val() == 'supervised') {
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-        }
-        else{
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-
-        }
-    }); */
-	
+        selectedAlgorithm = $('#algorithm-name').val();
+        toggleInput(selectedAlgorithm);
+    });   
+    
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
 
@@ -425,23 +260,19 @@ $( document ).ready(function() {
     });
 
     $('#btn-next').on('click', function(e){
-    	e.preventDefault();
+        e.preventDefault();
         
         var algorithmName = $('#algorithm-name').val();
         var responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
 
-        //ashen
-        var normalLabels = $('#lable-names').val();
-        var normalization;
-
-        if($('#normalization-value').is(":checked")) {
-            normalization = 'true';
+        var trainDataFraction;
+        if (algorithmName == 'K_MEANS') {
+            trainDataFraction = 1.0;
         }
-        else{
-            normalization = 'false';
+        else {
+            trainDataFraction = $('#data-fraction').val();
         }
 
-        var trainDataFraction = $('#data-fraction').val();
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
@@ -453,15 +284,9 @@ $( document ).ready(function() {
         else if (algorithmName == 'K_MEANS') {
             algorithmType = 'Clustering';            
         }
-        else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
-            algorithmType = 'Anomaly_Detection';
-        }
-        else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
-            algorithmType = 'Anomaly_Detection';
-        }
 
         // set model configurations for this analysis        
-        var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization","value":"'+normalization+'"}]';
+        var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"}]';
         $.ajax({
             type: 'POST',
             url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
@@ -520,7 +345,7 @@ $( document ).ready(function() {
     });
 }); 
 // function that load dataset features
-/*function loadDatasetFeatures(setResponseVariable) {
+function loadDatasetFeatures(setResponseVariable) {
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/features",
@@ -542,81 +367,17 @@ $( document ).ready(function() {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
-}*/
-
-// function that load dataset features
-function loadDatasetFeatures(setResponseVariable) {
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-        success: function(res) {
-            var categoricalFeatureNames = res;
-            $.each(categoricalFeatureNames,function(index, feature){
-                $('#response-variable').append($('<option>', {
-                    value: sanitize(feature),
-                    text : sanitize(feature)
-                }));
-            });
-            // set previously selected values when navigating from next page
-            if (setResponseVariable != '') {
-                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
-            }
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
 }
 
-//function that load normal label value checkboxes
-function getNormalLabelValues() {
-
-    $.ajax({
-    type: "GET",
-    url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",
-    async: false,
-    success : function(res){
-        var features = res;
-        console.log(features);
-
-        console.log(features);
-        var nm = $('#response-variable option:selected').text();
-        console.log(nm)
-        for(var i=0; i<features.length; i++){
-
-        if($('#response-variable option:selected').text() == features[i].fieldName){
-
-            var jsonObj = JSON.parse(features[i]["summaryStats"]);
-            var values = jsonObj[0]["values"];
-
-         //console.log(jsonObj[0]["values"][0][0]);
-
-            $('#lable-names').empty();
-            for(var index=0; index<values.length; index++){
-            // first 4 categorical features are plotted by default
-            if (index < 1){
-                $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "' checked>" + values[index][0] + "</label>");
-            }
-            else {
-                $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
-            }
-        }
-
-
-        }
+// function that toggles response variable input depending on the algorithm selection
+function toggleInput(selectedAlgorithm) {    
+    if(selectedAlgorithm == 'K_MEANS') {
+        $('#supervised-inputs').hide();
     }
-  },
-
-    error : function(res){
-        var errorText = res.responseText
-        handleNotification(errorText, '#notification-area', 'warning');
+    else {
+        $('#supervised-inputs').show();
     }
-});
-
 }
-
-
 
 </script>
 

@@ -35,6 +35,7 @@ import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
 import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import org.wso2.carbon.ml.core.utils.ComputeClasspath;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -42,7 +43,6 @@ import org.wso2.carbon.utils.NetworkUtils;
 import org.wso2.carbon.metrics.manager.Gauge;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
-import org.wso2.carbon.analytics.spark.utils.ComputeClasspath;
 
 /**
  * @scr.component name="ml.core" immediate="true"

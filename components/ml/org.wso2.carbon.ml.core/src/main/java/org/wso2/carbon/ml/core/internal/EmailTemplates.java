@@ -43,7 +43,8 @@ public class EmailTemplates {
     }
 
     /**
-     * @param algorithms Sets email templates.
+     * Sets email templates
+     * @param emailTemplate List of Email Templates .
      */
     public void setEmailTemplates(List<EmailTemplate> emailTemplate) {
         this.emailTemplates = emailTemplate;

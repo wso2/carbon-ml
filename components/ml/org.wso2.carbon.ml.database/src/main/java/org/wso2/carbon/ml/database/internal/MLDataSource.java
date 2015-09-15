@@ -38,6 +38,10 @@ public class MLDataSource {
         }
     }
 
+    /**
+     * Get the data source
+     * @return {@link javax.sql.DataSource} object
+     */
     public DataSource getDataSource(){
         return dataSource;
     }

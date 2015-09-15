@@ -57,7 +57,7 @@ public class LoginLogoutApiV10 extends MLRestAPI {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response Login() {
+    public Response login() {
         //create session if not found
         HttpSession httpSession = httpServletRequest.getSession();
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -75,11 +75,12 @@ public class LoginLogoutApiV10 extends MLRestAPI {
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response Logout() {
+    public Response logout() {
         HttpSession session = httpServletRequest.getSession();
-        if(session != null){
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        if (session != null) {
             session.invalidate();
         }
-        return Response.status(Response.Status.OK).entity("User logged out.").build();
+        return Response.status(Response.Status.OK).entity("User logged out: " + carbonContext.getUsername()).build();
     }
 }

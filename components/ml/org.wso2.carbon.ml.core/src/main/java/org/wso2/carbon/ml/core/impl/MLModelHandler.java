@@ -174,8 +174,8 @@ public class MLModelHandler {
 
 
     /**
-     * @param type type of the storage file, hdfs etc.
-     * @param location root directory of the file location.
+     * @param modelId unique id of the model
+     * @param storage MLStorage to be updated
      * @throws MLModelHandlerException
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
@@ -205,8 +205,8 @@ public class MLModelHandler {
      * Build a ML model asynchronously and persist the built model in a given storage.
      * 
      * @param modelId id of the model to be built.
-     * @param storageType type of the storage bam, hdfs, file. Default storage is file.
-     * @param StoragePath path of the provided storage where the model should be saved.
+     * @param tenantId tenant id
+     * @param userName tenant user name
      * @throws MLModelHandlerException
      * @throws MLModelBuilderException
      */
