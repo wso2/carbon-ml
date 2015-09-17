@@ -177,7 +177,7 @@ public class SummaryStatsGenerator implements Runnable {
                 if (data.size() == 0) {
                     String msg = String.format("Column %s is empty in the selected sample rows in dataset version %s",
                             currentCol, this.datasetVersionId);
-                    logger.error(msg);
+                    logger.warn(msg);
                     continue;
                 }
 
