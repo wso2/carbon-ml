@@ -35,6 +35,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
@@ -169,6 +170,15 @@ public class SummaryStatsGenerator implements Runnable {
 
                 // Create a unique set from the column.
                 List<String> data = this.columnData.get(currentCol);
+
+                // Check whether it is an empty column
+                if (data.size() == 0) {
+                    String msg = String.format("Column %s is empty in the selected sample rows in dataset version %s",
+                            currentCol, this.datasetVersionId);
+                    logger.error(msg);
+                    continue;
+                }
+
                 Set<String> uniqueSet = new HashSet<String>(data);
                 int multipleOccurences = 0;
                 
@@ -208,7 +218,7 @@ public class SummaryStatsGenerator implements Runnable {
                 // Descriptive-statistics object.
                 for (int row = 0; row < this.columnData.get(currentCol).size(); row++) {
                     if (this.columnData.get(currentCol).get(row) != null
-                            && !this.columnData.get(currentCol).get(row).isEmpty()) {
+                            && !MLConstants.MISSING_VALUES.contains(this.columnData.get(currentCol).get(row))) {
                         cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
                         this.descriptiveStats.get(currentCol).addValue(cellValue);
                     }
@@ -292,7 +302,8 @@ public class SummaryStatsGenerator implements Runnable {
         double[] data = new double[this.columnData.get(column).size()];
         // Create an array from the column data.
         for (int row = 0; row < columnData.get(column).size(); row++) {
-            if (this.columnData.get(column).get(row) != null && !this.columnData.get(column).get(row).isEmpty()) {
+            if (this.columnData.get(column).get(row) != null &&
+                    !MLConstants.MISSING_VALUES.contains(this.columnData.get(column).get(row))) {
                 data[row] = Double.parseDouble(this.columnData.get(column).get(row));
             }
         }
