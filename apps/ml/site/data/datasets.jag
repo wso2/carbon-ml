@@ -179,7 +179,7 @@ function buildAccordingHeader(collapseSection, datasetName, datasetVersions, dat
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
 				      		'<td>' +
-						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
+						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="false" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
 						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
 						          	'<span class="cu-acc-head-workflow">' + versionsString + '</span>'+
 						        '</a>' +	
