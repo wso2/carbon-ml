@@ -35,6 +35,8 @@ import java.util.Properties;
 public class PredictStreamProcessorTestCase {
 
     private volatile boolean eventArrived;
+    private String modelPath = File.separator + "src" + File.separator + "test" + File.separator + "resources"
+            + File.separator + "test-model";
 
     @Before
     public void init() {
@@ -46,7 +48,7 @@ public class PredictStreamProcessorTestCase {
     @Test
     public void predictFunctionTest() throws InterruptedException, URISyntaxException {
 
-        URI resource = new URI("file://" + System.getProperty("user.dir") + "/src/test/resources/test-model");
+        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
         String modelStorageLocation = new File(resource).getAbsolutePath();
 
         SiddhiManager siddhiManager = new SiddhiManager();
@@ -83,7 +85,7 @@ public class PredictStreamProcessorTestCase {
     @Test
     public void predictFunctionWithSelectedAttributesTest() throws InterruptedException, URISyntaxException {
 
-        URI resource = new URI("file://" + System.getProperty("user.dir") + "/src/test/resources/test-model");
+        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
         String modelStorageLocation = new File(resource).getAbsolutePath();
 
         SiddhiManager siddhiManager = new SiddhiManager();
@@ -120,7 +122,7 @@ public class PredictStreamProcessorTestCase {
     @Test
     public void predictFunctionWithSelectPredictionTest() throws InterruptedException, URISyntaxException {
 
-        URI resource = new URI("file://" + System.getProperty("user.dir") + "/src/test/resources/test-model");
+        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
         String modelStorageLocation = new File(resource).getAbsolutePath();
 
         SiddhiManager siddhiManager = new SiddhiManager();
