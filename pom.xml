@@ -624,8 +624,8 @@
 
 		<carbon.integration.version>4.3.0</carbon.integration.version>
 
-		<carbon.registry.version>4.4.5</carbon.registry.version>
-		<carbon.identity.version>4.4.0</carbon.identity.version>
+		<carbon.registry.version>4.4.6</carbon.registry.version>
+		<carbon.identity.version>4.5.6</carbon.identity.version>
 		<carbon.deployment.version>4.5.2</carbon.deployment.version>
 		<carbon.multitenancy.version>4.4.3</carbon.multitenancy.version>
 		<carbon.commons.version>4.4.7</carbon.commons.version>
