@@ -56,7 +56,8 @@ public class HdfsInputAndOutputAdapterTest {
     public void testReadDataset() throws URISyntaxException, MLInputAdapterException, IOException {
         MLInputAdapter fileInAdapter = new FileInputAdapter();
         String filePrefix = "file://";
-        String uriString = "src/test/resources/fcSample.csv";
+        String uriString = "src" + File.separator + "test" + File.separator + "resources" + File.separator
+                + "fcSample.csv";
         String uri;
         InputStream in = null;
 

@@ -32,7 +32,8 @@ public class FileInputAdapterTest {
     public void testReadDataset() throws URISyntaxException, MLInputAdapterException {
         MLInputAdapter inputAdapter = new FileInputAdapter();
         String filePrefix = "";
-        String uriString = "src/test/resources/fcSample.csv";
+        String uriString = "src" + File.separator + "test" + File.separator + "resources" + File.separator
+                + "fcSample.csv";
         String uri = filePrefix + uriString;
         InputStream in = null;
         // test a relative path
