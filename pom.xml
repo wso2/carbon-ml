@@ -662,7 +662,7 @@
 		<typesafe.version>1.2.0</typesafe.version>
 
 		<!-- Jaggery dependency versions -->
-		<jaggery.version>0.10.1</jaggery.version>
+		<jaggery.version>0.11.0</jaggery.version>
 		<caramel.feature.version>1.0.1</caramel.feature.version>
 		<handlebars.feature.version>1.0.0</handlebars.feature.version>
 		<markdown.feature.version>1.0.0</markdown.feature.version>
