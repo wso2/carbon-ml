@@ -28,15 +28,14 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.util.EventPrinter;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
 public class PredictStreamProcessorTestCase {
 
     private volatile boolean eventArrived;
-    private String modelPath = File.separator + "src" + File.separator + "test" + File.separator + "resources"
-            + File.separator + "test-model";
+    private String modelStorageLocation = System.getProperty("user.dir") + File.separator + "src" + File.separator
+            + "test" + File.separator + "resources" + File.separator + "test-model";
 
     @Before
     public void init() {
@@ -48,16 +47,13 @@ public class PredictStreamProcessorTestCase {
     @Test
     public void predictFunctionTest() throws InterruptedException, URISyntaxException {
 
-        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
-        String modelStorageLocation = new File(resource).getAbsolutePath();
-
         SiddhiManager siddhiManager = new SiddhiManager();
 
         String inputStream = "define stream InputStream "
                 + "(NumPregnancies double, PG2 double, DBP double, TSFT double, SI2 double, BMI double, DPF double, Age double);";
 
-        String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation + "','double') "
-                + "select * " + "insert into outputStream ;";
+        String query = "@info(name = 'query1') " + "from InputStream#ml:predict('" + modelStorageLocation
+                + "','double') " + "select * " + "insert into outputStream ;";
 
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inputStream + query);
 
@@ -75,7 +71,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21});
+        inputHandler.send(new Object[] { 2, 84, 0, 0, 0, 0.0, 0.304, 21 });
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
@@ -84,9 +80,6 @@ public class PredictStreamProcessorTestCase {
 
     @Test
     public void predictFunctionWithSelectedAttributesTest() throws InterruptedException, URISyntaxException {
-
-        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
-        String modelStorageLocation = new File(resource).getAbsolutePath();
 
         SiddhiManager siddhiManager = new SiddhiManager();
 
@@ -113,7 +106,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21 });
+        inputHandler.send(new Object[] { 2, 84, 0, 0, 0, 0.0, 0.304, 21 });
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
@@ -121,9 +114,6 @@ public class PredictStreamProcessorTestCase {
 
     @Test
     public void predictFunctionWithSelectPredictionTest() throws InterruptedException, URISyntaxException {
-
-        URI resource = new URI("file://" + System.getProperty("user.dir") + modelPath);
-        String modelStorageLocation = new File(resource).getAbsolutePath();
 
         SiddhiManager siddhiManager = new SiddhiManager();
 
@@ -150,7 +140,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21 });
+        inputHandler.send(new Object[] { 2, 84, 0, 0, 0, 0.0, 0.304, 21 });
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
