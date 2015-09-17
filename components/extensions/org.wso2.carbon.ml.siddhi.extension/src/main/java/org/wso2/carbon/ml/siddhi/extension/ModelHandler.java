@@ -20,7 +20,6 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.impl.MLIOFactory;
@@ -102,12 +101,36 @@ public class ModelHandler {
      * @return      predicted value
      * @throws      MLModelHandlerException
      */
-    public String predict(String[] data) throws MLModelHandlerException {
+    public Object predict(String[] data, String outputType) throws MLModelHandlerException {
         ArrayList<String[]> list = new ArrayList<String[]>();
         list.add(data);
         Predictor predictor = new Predictor(modelId, mlModel, list);
         List<?> predictions = predictor.predict();
-        return predictions.get(0).toString();
+        String predictionStr = predictions.get(0).toString();
+        Object prediction = castValue(outputType, predictionStr);
+        return prediction;
+    }
+
+    /**
+     * Cast the given value to the given output type
+     * @param outputType Output data type
+     * @param value value to be casted in String
+     * @return Value casted to output type object
+     */
+    private Object castValue(String outputType, String value) {
+        if (outputType.equalsIgnoreCase("double")) {
+            return Double.parseDouble(value);
+        } else if (outputType.equalsIgnoreCase("float")) {
+            return Float.parseFloat(value);
+        } else if (outputType.equalsIgnoreCase("integer") || outputType.equalsIgnoreCase("int")) {
+            return Integer.parseInt(value);
+        } else if (outputType.equalsIgnoreCase("long")) {
+            return Long.parseLong(value);
+        } else if (outputType.equalsIgnoreCase("boolean") || outputType.equalsIgnoreCase("bool")) {
+            return Boolean.parseBoolean(value);
+        } else {
+            return value;
+        }
     }
 
     /**
