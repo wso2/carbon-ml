@@ -35,11 +35,11 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
-import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 
@@ -151,8 +151,17 @@ public class MLUtils {
         for (int i = 0; i < featureSize; i++)
             featureIndices.add(i);
 
-        JavaRDD<String[]> tokensDiscardedRemoved = filterRows(String.valueOf(dataFormat.getDelimiter()), lines.first(),
-                lines, featureIndices).cache();
+        String columnSeparator = String.valueOf(dataFormat.getDelimiter());
+        HeaderFilter headerFilter = new HeaderFilter.Builder().header(lines.first()).build();
+        JavaRDD<String> data = lines.filter(headerFilter).cache();
+        Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
+        LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
+        JavaRDD<String[]> tokens = data.map(lineToTokens);
+
+        // remove from cache
+        data.unpersist();
+        // add to cache
+        tokens.cache();
 
         missing = new int[featureSize];
         stringCellCount = new int[featureSize];
@@ -174,11 +183,11 @@ public class MLUtils {
         }
 
         // take a random sample
-        List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
+        List<String[]> sampleLines = tokens.takeSample(false, sampleSize);
 
         // remove from cache
-        tokensDiscardedRemoved.unpersist();
-        
+        tokens.unpersist();
+
         // iterate through sample lines
         for (String[] columnValues : sampleLines) {
             for (int currentCol = 0; currentCol < featureSize; currentCol++) {
@@ -187,7 +196,7 @@ public class MLUtils {
                     // Append the cell to the respective column.
                     columnData.get(currentCol).add(columnValues[currentCol]);
 
-                    if (columnValues[currentCol].isEmpty()) {
+                    if (MLConstants.MISSING_VALUES.contains(columnValues[currentCol])) {
                         // If the cell is empty, increase the missing value count.
                         missing[currentCol]++;
                     } else {
@@ -451,39 +460,6 @@ public class MLUtils {
     public static String[] getFeatures(String line, CSVFormat format) {
         String[] values = line.split("" + format.getDelimiter());
         return values;
-    }
-
-    /**
-     * Applies the discard filter to a JavaRDD
-     * 
-     * @param delimiter Column separator of the dataset
-     * @param headerRow Header row
-     * @param lines JavaRDD which contains the dataset
-     * @param featureIndices Indices of the features to apply filter
-     * @return filtered JavaRDD
-     */
-    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
-            List<Integer> featureIndices) {
-        String columnSeparator = String.valueOf(delimiter);
-        HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
-        JavaRDD<String> data = lines.filter(headerFilter).cache();
-        Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
-        LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
-        JavaRDD<String[]> tokens = data.map(lineToTokens);
-        
-        // remove from cache
-        data.unpersist();
-        // add to cache
-        tokens.cache();
-
-        // get feature indices for discard imputation
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(featureIndices).build();
-        // Discard the row if any of the impute indices content have a missing value
-        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
-        
-        // remove from cache
-        tokens.unpersist();
-        return tokensDiscardedRemoved;
     }
 
     /**
