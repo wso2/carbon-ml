@@ -172,6 +172,8 @@ public class SummaryStatsGenerator implements Runnable {
                 List<String> data = this.columnData.get(currentCol);
 
                 // Check whether it is an empty column
+                // Rows with missing values are not filtered at summery stat generation. Therefore it is possible to
+                // have all rows in sample with values missing in a column.
                 if (data.size() == 0) {
                     String msg = String.format("Column %s is empty in the selected sample rows in dataset version %s",
                             currentCol, this.datasetVersionId);
