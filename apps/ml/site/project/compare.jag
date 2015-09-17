@@ -98,6 +98,7 @@
                 <div class="container col-md-12 col-centered wr-content">
 
                     <div id="notification-area"></div>
+                    <h1 id="model-summary-title" class="title">Model Comparison</h1>                    
 
                     <div role="tabpanel" class="wr-tabbed-container">
 
@@ -345,7 +346,7 @@
                             '<table class="tbl-projects" projectID="' + modelId + '">' +
                                 '<tr>' +
                                     '<td>' +
-                                        '<a data-parent="#' + modelType + '-accordion" href="#collapse' + i + '" aria-expanded="true" aria-controls="collapse' + i + '" class="ctrl-exp-col reset-hover">' +
+                                        '<a data-parent="#' + modelType + '-accordion" href="#collapse' + i + '" aria-controls="collapse' + i + '" class="ctrl-exp-col reset-hover">' +
                                             '<span class="cu-acc-head-title">' + modelName + '</span>' +
                                             '<span class="cu-acc-head-workflow"></span>' +
                                             '<span class="cu-acc-head-created">[ Algorithm: ' + algorithm + ' ]</span>';
