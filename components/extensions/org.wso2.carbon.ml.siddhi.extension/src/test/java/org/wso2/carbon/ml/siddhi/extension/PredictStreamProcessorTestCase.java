@@ -64,7 +64,7 @@ public class PredictStreamProcessorTestCase {
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 if (inEvents != null) {
-                    Assert.assertEquals("0", String.valueOf(inEvents[0].getData(8)));
+                    Assert.assertEquals(1.0, inEvents[0].getData(8));
                     eventArrived = true;
                 }
             }
@@ -73,7 +73,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
+        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21});
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
@@ -102,7 +102,7 @@ public class PredictStreamProcessorTestCase {
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 if (inEvents != null) {
-                    Assert.assertEquals("0", inEvents[0].getData(8));
+                    Assert.assertEquals(1.0, inEvents[0].getData(8));
                     eventArrived = true;
                 }
             }
@@ -111,7 +111,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
+        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21 });
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
@@ -139,7 +139,7 @@ public class PredictStreamProcessorTestCase {
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 if (inEvents != null) {
-                    Assert.assertEquals("0", inEvents[0].getData(0));
+                    Assert.assertEquals(1.0, inEvents[0].getData(0));
                     eventArrived = true;
                 }
             }
@@ -148,7 +148,7 @@ public class PredictStreamProcessorTestCase {
 
         InputHandler inputHandler = executionPlanRuntime.getInputHandler("InputStream");
         executionPlanRuntime.start();
-        inputHandler.send(new Object[] { 6, 148, 72, 35, 0, 33.6, 0.627, 50 });
+        inputHandler.send(new Object[] { 2,84,0,0,0,0.0,0.304,21 });
         sleepTillArrive(5001);
         Assert.assertTrue(eventArrived);
         executionPlanRuntime.shutdown();
