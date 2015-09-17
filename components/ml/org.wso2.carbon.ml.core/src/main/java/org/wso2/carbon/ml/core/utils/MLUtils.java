@@ -152,7 +152,7 @@ public class MLUtils {
             featureIndices.add(i);
 
         JavaRDD<String[]> tokensDiscardedRemoved = filterRows(String.valueOf(dataFormat.getDelimiter()), lines.first(),
-                lines, featureIndices);
+                lines, featureIndices).cache();
 
         missing = new int[featureSize];
         stringCellCount = new int[featureSize];
@@ -176,6 +176,9 @@ public class MLUtils {
         // take a random sample
         List<String[]> sampleLines = tokensDiscardedRemoved.takeSample(false, sampleSize);
 
+        // remove from cache
+        tokensDiscardedRemoved.unpersist();
+        
         // iterate through sample lines
         for (String[] columnValues : sampleLines) {
             for (int currentCol = 0; currentCol < featureSize; currentCol++) {
@@ -466,13 +469,20 @@ public class MLUtils {
         JavaRDD<String> data = lines.filter(headerFilter).cache();
         Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
-        JavaRDD<String[]> tokens = data.map(lineToTokens).cache();
+        JavaRDD<String[]> tokens = data.map(lineToTokens);
+        
+        // remove from cache
+        data.unpersist();
+        // add to cache
+        tokens.cache();
 
         // get feature indices for discard imputation
         DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(featureIndices).build();
         // Discard the row if any of the impute indices content have a missing value
-        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter).cache();
-
+        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter);
+        
+        // remove from cache
+        tokens.unpersist();
         return tokensDiscardedRemoved;
     }
 

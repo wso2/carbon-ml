@@ -55,19 +55,28 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
     }
     
     private JavaRDD<Vector> preProcess() throws MLModelBuilderException {
-        MLModelConfigurationContext context = getContext();
-        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
-        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
-        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
-        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
-        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
-        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
-        DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
+        JavaRDD<String> lines = null;
+        try {
+            MLModelConfigurationContext context = getContext();
+            HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+            LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+            RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context)
+                    .build();
+            BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+            MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+            StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+            DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
 
-        JavaRDD<String> lines = context.getLines().cache();
-        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
-                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToVector);
+            lines = context.getLines().cache();
+            return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
+                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(doubleArrayToVector);
+        } finally {
+            if (lines != null) {
+                lines.unpersist();
+            }
+        }
     }
 
     /**
@@ -83,9 +92,17 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
 
             // gets the pre-processed dataset
             JavaRDD<Vector> data = preProcess().cache();
-            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED)
-                    .cache();
-            JavaRDD<Vector> testingData = data.subtract(trainingData);
+            JavaRDD<Vector>[] dataSplit = data.randomSplit(
+                    new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
+                    MLConstants.RANDOM_SEED);
+            
+            data.unpersist();
+            
+            JavaRDD<Vector> trainingData = dataSplit[0].cache();
+            JavaRDD<Vector> testingData = null;
+            if (dataSplit.length > 1) {
+                testingData = dataSplit[1];
+            }
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
@@ -136,8 +153,10 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             
             // remove from cache
             trainingData.unpersist();
-            // add test data to cache
-            testingData.cache();
+            // add test data to cache - test data is not used as of now
+//            if (testingData != null) {
+//                testingData.cache();
+//            }
             
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
 //            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
