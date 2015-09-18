@@ -35,8 +35,10 @@ import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer;
 import org.wso2.carbon.metrics.manager.Timer.Context;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
+import org.wso2.carbon.ml.commons.constants.MLConstants.ANOMALY_DETECTION_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
@@ -163,7 +165,30 @@ public class Predictor {
                 throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
                         + " for model id: " + id);
             }
-        } else {
+        } else if (AlgorithmType.ANOMALY_DETECTION == type) {
+            ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = ANOMALY_DETECTION_ALGORITHM.valueOf(model.getAlgorithmName());
+            switch (anomaly_detection_algorithm) {
+                case K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA:
+                    List<Integer> predictions = new ArrayList<Integer>();
+                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                    for (Vector vector : dataToBePredicted) {
+                        Context context = startTimer(timer);
+
+                        int predictedData = kMeansModel.predict(vector);
+                        predictions.add(predictedData);
+
+                        stopTimer(context);
+                        if (log.isDebugEnabled()) {
+
+                            log.debug("Predicted value before decoding: " + predictedData);
+                        }
+                    }
+                    return decodePredictedValues(predictions);
+                default:
+                    throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
+                            + " for model id: " + id);
+            }
+        }else {
             throw new MLModelHandlerException(String.format(
                     "Failed to build the model [id] %s . Invalid algorithm type: %s", id, algorithmType));
         }

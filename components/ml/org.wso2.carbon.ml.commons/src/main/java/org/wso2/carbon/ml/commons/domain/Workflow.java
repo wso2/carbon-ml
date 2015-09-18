@@ -112,7 +112,7 @@ public class Workflow implements Serializable {
 
     //ashen
     /**
-     * @return Returns normal labels
+     * @return Returns normalization
      */
     public String getNormalization() {
         return normalization;

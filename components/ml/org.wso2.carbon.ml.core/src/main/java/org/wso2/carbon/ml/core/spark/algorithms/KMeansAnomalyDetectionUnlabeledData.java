@@ -26,7 +26,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 
-public class KMeansUnlabeledData implements Serializable {
+public class KMeansAnomalyDetectionUnlabeledData implements Serializable {
 
     private static final long serialVersionUID = 7012024887487309471L;
 

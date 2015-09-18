@@ -374,9 +374,9 @@
 			<Name>K_MEANS</Name>
 			<Type>Clustering</Type>
 			<Parameters>
-				<Name>Iterations</Name>
+				<Name>Max_Iterations</Name>
 				<Value>20</Value>
-				<Description>Number of times optimizer runs before completing the
+				<Description>Maximum number of times optimizer runs before completing the
 					optimization process. This parameter value should be an integer
 					greater than 0.
 				</Description>
@@ -397,15 +397,15 @@
 			<Multicollinearity>5</Multicollinearity>
 			<Dimensionality>2</Dimensionality>
 			<Parameters>
-				<Name>Iterations</Name>
+				<Name>Max_Iterations</Name>
 				<Value>100</Value>
-				<Description>Number of times optimizer runs before completing the
+				<Description>Maximum number of times optimizer runs before completing the
 					optimization process. This parameter value should be an integer
 					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
-				<Name>Num_Clusters</Name>
+				<Name>Num_of_Normal_Clusters</Name>
 				<Value>5</Value>
 				<Description>The number of desired clusters. This value should be
 					an integer greater than 0.
@@ -420,18 +420,24 @@
 			<Multicollinearity>5</Multicollinearity>
 			<Dimensionality>2</Dimensionality>
 			<Parameters>
-				<Name>Iterations</Name>
+				<Name>Max_Iterations</Name>
 				<Value>100</Value>
-				<Description>Number of times optimizer runs before completing the
+				<Description>Maximum number of times optimizer runs before completing the
 					optimization process. This parameter value should be an integer
 					greater than 0.
 				</Description>
 			</Parameters>
 			<Parameters>
-				<Name>Num_Clusters</Name>
+				<Name>Num_of_Normal_Clusters</Name>
 				<Value>5</Value>
 				<Description>The number of desired clusters. This value should be
 					an integer greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Percentile_Value</Name>
+				<Value>98.5</Value>
+				<Description>The threshold distance value to identify cluster borders.
 				</Description>
 			</Parameters>
 		</Algorithm>

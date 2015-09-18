@@ -133,6 +133,7 @@ public class MLConstants {
     // hyper-parameter names
     public static final String LEARNING_RATE = "Learning_Rate";
     public static final String ITERATIONS = "Iterations";
+    public static final String MAX_ITERATIONS = "Max_Iterations";
     public static final String REGULARIZATION_TYPE = "Reg_Type";
     public static final String REGULARIZATION_PARAMETER = "Reg_Parameter";
     public static final String SGD_DATA_FRACTION = "SGD_Data_Fraction";
@@ -146,7 +147,9 @@ public class MLConstants {
     public static final String L1 = "L1";
     public static final String L2 = "L2";
     public static final String NUM_CLUSTERS = "Num_Clusters";
+    public static final String NUM_OF_NORMAL_CLUSTERS = "Num_of_Normal_Clusters";
     public static final String LAMBDA = "Lambda";
+    public static final String PERCENTILE_VALUE = "Percentile_Value";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -190,7 +193,7 @@ public class MLConstants {
     }
 
     public enum UNSUPERVISED_ALGORITHM {
-        K_MEANS, K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
+        K_MEANS
     }
 
     public enum ANOMALY_DETECTION_ALGORITHM {

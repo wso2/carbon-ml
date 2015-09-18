@@ -2405,6 +2405,8 @@ public class MLDatabaseService implements DatabaseService {
         DecimalFormat decimalFormat = new DecimalFormat("#.###");
         if (descriptiveStats.getN() != 0) {
             json.put("mean", decimalFormat.format(descriptiveStats.getMean()));
+            json.put("min", decimalFormat.format(descriptiveStats.getMin()));
+            json.put("max", decimalFormat.format(descriptiveStats.getMax()));
             json.put("median", decimalFormat.format(descriptiveStats.getPercentile(50)));
             json.put("std", decimalFormat.format(descriptiveStats.getStandardDeviation()));
             if (type.equalsIgnoreCase(FeatureType.NUMERICAL)) {

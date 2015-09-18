@@ -145,26 +145,36 @@ include("../../includes/tenantAware.jag");
                     <div class="spcr-2"></div>                
                 </div>
 
-                <div id="normal-labels">
+                <!-- <div id="normal-labels">
                 <label class="input-label">Normal Label(s) Values<span class="glyphicon"></span></label>
                 <div class="input-control text">
                     <input type="text" id="lable-names" placeholder="normal label(s) values"/>
                 </div>
-                </div>
+                </div> -->
+
+                <div id="normal-labels">
+                    <label class="input-label-sm">Normal Label(s) Values<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <div id="lable-names" class="wr-filter-radio-group">
+                    </div>
+                    <div class="spcr-2"></div>
+                </div> 
+                
 
                 <div id="train-data-fraction">
                 <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
                 <div class="input-control text">
                     <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
                 </div>
+
                 </div>
 
                 <div class="wr-filter-radio-group" id="normalization">
                 <label class="checkbox">
                    <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
                 </label>
+                <div class="spcr-2"></div>
                 </div>
-                <br class="c-both" />
+                
 
             </div>
 
@@ -206,7 +216,7 @@ $( document ).ready(function() {
           }
     });
     
-    scrollVibrateFix();
+    //scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
@@ -230,6 +240,35 @@ $( document ).ready(function() {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
+
+    // function that load dataset features
+    function loadDatasetFeatures(setResponseVariable) {
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
+            success: function(res) {
+                var categoricalFeatureNames = res;
+                $.each(categoricalFeatureNames,function(index, feature){
+                    $('#response-variable').append($('<option>', {
+                        value: sanitize(feature),
+                        text : sanitize(feature)
+                    }));
+                });
+            // set previously selected values when navigating from next page
+            if (setResponseVariable != '') {
+                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+    }
+
+
+    loadDatasetFeatures(setResponseVariable);
+    getNormalLabelValues();
     // get previously set algorithm name
     $.ajax({
         type: "GET",
@@ -265,9 +304,6 @@ $( document ).ready(function() {
         }
     });
 
-
-    loadDatasetFeatures(setResponseVariable);
-    getNormalLabelValues();
     //ashen
     // get previously set normal labels
     $.ajax({
@@ -281,9 +317,9 @@ $( document ).ready(function() {
             console.log(setNormalLabels);
             var labelArray = setNormalLabels.split(',');
             console.log(labelArray);
-
+            
             for(var i=0; i<labelArray.length; i++){
-
+                
                 $("input:checkbox[name=labels]").each(function(){
                     if($(this).val() == labelArray[i]) {
                     $(this).prop('checked',true);
@@ -301,14 +337,14 @@ $( document ).ready(function() {
                 if(temp == 0){
                     $(this).prop('checked',false);
                 }
-            });
+            });    
         },
         error: function(res) {
             var errorText = res.responseText
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
-
+    
        // get previously set normalization option
     $.ajax({
         type: "GET",
@@ -317,6 +353,7 @@ $( document ).ready(function() {
         dataType: 'text',
         success: function(res) {
             var setNormalization = sanitize(res);
+            console.log(setNormalization);
             if (setNormalization == 'true') {
                 $('#normalization-value').prop('checked',true);
             }else if (setNormalization == 'false'){
@@ -330,8 +367,7 @@ $( document ).ready(function() {
         }
     });
 
-    loadDatasetFeatures(setResponseVariable);
-    getNormalLabelValues();
+    
         
     // put path in application navigator
     $('#nav-project').text(projectName);
@@ -403,6 +439,10 @@ $( document ).ready(function() {
         }
     });
 
+    $(document).on('change','#response-variable',function() {
+        getNormalLabelValues();
+    });
+
     // change options according to anomaly detection training method
  /*   $(document).on('change','#training-method',function() {
         if($("input[name='options']:checked").val() == 'supervised') {
@@ -431,7 +471,14 @@ $( document ).ready(function() {
         var responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
 
         //ashen
-        var normalLabels = $('#lable-names').val();
+        //var normalLabels = $('#lable-names').val();
+        var normalLabels = new Array();
+        
+        $("input:checkbox[name=labels]:checked").each(function(){
+            normalLabels.push($(this).val());
+        });
+           
+
         var normalization;
 
         if($('#normalization-value').is(":checked")) {
@@ -519,64 +566,16 @@ $( document ).ready(function() {
         }        
     });
 }); 
-// function that load dataset features
-/*function loadDatasetFeatures(setResponseVariable) {
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/features",
-        success: function(res) {
-            var datasetFeatures = res;
-            $.each(datasetFeatures,function(index, feature){
-                $('#response-variable').append($('<option>', { 
-                    value: sanitize(feature),
-                    text : sanitize(feature)
-                }));
-            });
-            // set previously selected values when navigating from next page
-            if (setResponseVariable != '') {
-                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
-            }
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-}*/
 
-// function that load dataset features
-function loadDatasetFeatures(setResponseVariable) {
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-        success: function(res) {
-            var categoricalFeatureNames = res;
-            $.each(categoricalFeatureNames,function(index, feature){
-                $('#response-variable').append($('<option>', {
-                    value: sanitize(feature),
-                    text : sanitize(feature)
-                }));
-            });
-            // set previously selected values when navigating from next page
-            if (setResponseVariable != '') {
-                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
-            }
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-}
 
-//function that load normal label value checkboxes
+
 function getNormalLabelValues() {
 
     $.ajax({
     type: "GET",
-    url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",
+    url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",        
     async: false,
-    success : function(res){
+    success : function(res){  
         var features = res;
         console.log(features);
 
@@ -584,10 +583,10 @@ function getNormalLabelValues() {
         var nm = $('#response-variable option:selected').text();
         console.log(nm)
         for(var i=0; i<features.length; i++){
-
+        
         if($('#response-variable option:selected').text() == features[i].fieldName){
-
-            var jsonObj = JSON.parse(features[i]["summaryStats"]);
+                     
+            var jsonObj = JSON.parse(features[i]["summaryStats"]);  
             var values = jsonObj[0]["values"];
 
          //console.log(jsonObj[0]["values"][0][0]);
@@ -603,7 +602,7 @@ function getNormalLabelValues() {
             }
         }
 
-
+       
         }
     }
   },
@@ -615,8 +614,6 @@ function getNormalLabelValues() {
 });
 
 }
-
-
 
 </script>
 

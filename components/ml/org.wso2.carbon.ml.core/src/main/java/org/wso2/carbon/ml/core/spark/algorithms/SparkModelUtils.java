@@ -341,7 +341,7 @@ public class SparkModelUtils {
             }
 
         } catch (JSONException e) {
-            log.warn("Failed to extract unique values from summary stats: " + statsAsJson, e);
+            log.warn("Failed to extract mean values from summary stats: " + statsAsJson, e);
             return 0.0;
         }
 
@@ -367,7 +367,7 @@ public class SparkModelUtils {
             }
 
         } catch (JSONException e) {
-            log.warn("Failed to extract unique values from summary stats: " + statsAsJson, e);
+            log.warn("Failed to extract min values from summary stats: " + statsAsJson, e);
             return 0.0;
         }
 
@@ -387,6 +387,32 @@ public class SparkModelUtils {
             } else {
                 try {
                     return Double.parseDouble(max);
+                } catch (NumberFormatException e) {
+                    return 0.0;
+                }
+            }
+
+        } catch (JSONException e) {
+            log.warn("Failed to extract max values from summary stats: " + statsAsJson, e);
+            return 0.0;
+        }
+
+    }
+
+    public static double getUnique(String statsAsJson) {
+        if (statsAsJson == null) {
+            return 0.0;
+        }
+        try {
+            // new JSONArray(statsAsJson).getJSONObject(0).getJSONArray("values").getJSONArray(0).getString(0)
+            JSONArray array = new JSONArray(statsAsJson);
+            JSONObject jsonObj = array.getJSONObject(0);
+            String unique = jsonObj.getString("unique");
+            if (unique == null) {
+                return 0.0;
+            } else {
+                try {
+                    return Double.parseDouble(unique);
                 } catch (NumberFormatException e) {
                     return 0.0;
                 }

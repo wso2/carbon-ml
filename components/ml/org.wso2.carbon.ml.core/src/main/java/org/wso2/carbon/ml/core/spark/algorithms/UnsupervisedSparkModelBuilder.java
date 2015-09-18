@@ -125,7 +125,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
 
             // remove from cache
             trainingData.unpersist();

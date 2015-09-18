@@ -456,7 +456,7 @@ function listSelectionImputeOption(list, selectedOption, selectedFeatureType, cs
     }
     }
     else {
-        selection = selection + "<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>";
+        selection = selection + "<option style='padding-right:6.3em' selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>";
     }
 
     selection = selection + "</select>";
@@ -473,7 +473,7 @@ function changeImputeOptions(fieldTypeValue, imputeMethodElement) {
         imputeMethodElement.append("<option value=\"" + "REPLACE_WTH_MEAN" + "\">" + "REPLACE_WTH_MEAN" + "</option>");            
     }
     else {           
-        imputeMethodElement.append("<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>"); 
+        imputeMethodElement.append("<option style='padding-right:6.3em' selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>");
     }
 
 }

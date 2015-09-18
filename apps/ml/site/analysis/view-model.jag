@@ -431,6 +431,11 @@ $( document ).ready(function() {
                     $('#residual').html(getInfo(chartType));
                 }                    
             }
+            else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+                if(res.modelAccuracy) {
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                }
+            }
         },
         error: function(res){
             var errorText = res.responseText

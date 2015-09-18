@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.transformations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,61 +37,74 @@ public class Normalization implements Function<double[], double[]> {
     private final List<Double> max;
     private final List<Double> min;
 
-    public Normalization(Builder builder){
+    public Normalization(Builder builder) {
         this.max = builder.max;
         this.min = builder.min;
     }
 
     @Override
-    public double[] call(double[] values) throws MLModelBuilderException{
+    public double[] call(double[] values) throws MLModelBuilderException {
 
-    try {
-        double[] normalizedValues = new double[values.length];
+        try {
+            double[] normalizedValues = new double[values.length];
 
-        for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < values.length; i++) {
 
-            if (min.get(i) != max.get(i)) {
+                if (min.get(i) != max.get(i)) {
 
-                if (values[i] > max.get(i)) {
-                    normalizedValues[i] = 1;
-                } else if (values[i] < min.get(i)) {
+                    if (values[i] > max.get(i)) {
+                        normalizedValues[i] = 1;
+                    } else if (values[i] < min.get(i)) {
+                        normalizedValues[i] = 0;
+                    } else {
+                        normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
+                    }
+
+                } else if (min.get(i) == 0 && max.get(i) == 0) {
                     normalizedValues[i] = 0;
                 } else {
-                    normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
+                    normalizedValues[i] = 0.5;
                 }
 
-            } else if (min.get(i) == 0 && max.get(i) == 0) {
-                normalizedValues[i] = 0;
-            } else {
-                normalizedValues[i] = 0.5;
             }
 
+            return normalizedValues;
+
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while normalizing values: " + e.getMessage(), e);
         }
-
-        return normalizedValues;
-
-    }catch (Exception e) {
-        throw new MLModelBuilderException("An error occurred while normalizing values: " + e.getMessage(), e);
-    }
     }
 
     public static class Builder {
-        private List<Double> max;
-        private List<Double> min;
+        private List<Double> max = new ArrayList<Double>();
+        private List<Double> min = new ArrayList<Double>();
 
         public Builder init(MLModelConfigurationContext ctx) {
 
             List<Feature> features = ctx.getFacts().getFeatures();
             Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
-            int index;
+            List<Integer> newIndex = ctx.getNewToOldIndicesList();
+
             for (Feature feature : features) {
 
-                index = feature.getIndex();
-                String featureStat = stats.get(feature.getName());
-                double maxValue = SparkModelUtils.getMax(featureStat);
-                max.add(index,maxValue);
-                double minValue = SparkModelUtils.getMin(featureStat);
-                min.add(index,minValue);
+                if (feature.getType().equals("NUMERICAL")) {
+                    int index = newIndex.get(feature.getIndex());
+                    String featureStat = stats.get(feature.getName());
+                    double maxValue = SparkModelUtils.getMax(featureStat);
+                    this.max.add(index, maxValue);
+                    double minValue = SparkModelUtils.getMin(featureStat);
+                    this.min.add(index, minValue);
+
+                } else {
+                    if (feature.getIndex() != ctx.getResponseIndex()) {
+                        int index = newIndex.get(feature.getIndex());
+                        String featureStat = stats.get(feature.getName());
+                        double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
+                        this.max.add(index, maxValue);
+                        double minValue = 0;
+                        this.min.add(index, minValue);
+                    }
+                }
 
             }
             return this;

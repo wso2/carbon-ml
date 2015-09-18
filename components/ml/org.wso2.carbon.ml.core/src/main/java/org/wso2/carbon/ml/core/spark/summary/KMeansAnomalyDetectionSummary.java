@@ -20,6 +20,8 @@ package org.wso2.carbon.ml.core.spark.summary;
 
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.core.spark.ConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,6 +33,8 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
     private double testDataComputeCost;
     private String algorithm;
     private String[] features;
+    private MulticlassConfusionMatrix multiclassConfusionMatrix;
+    private double modelAccuracy;
 
     public String getAlgorithm() {
         return algorithm;
@@ -74,6 +78,22 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
     @Override
     public String[] getFeatures() {
         return features;
+    }
+
+    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
+        return multiclassConfusionMatrix;
+    }
+
+    public void setMulticlassConfusionMatrix(MulticlassConfusionMatrix multiclassConfusionMatrix) {
+        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
+    }
+
+    public double getModelAccuracy() {
+        return modelAccuracy;
+    }
+
+    public void setModelAccuracy(double modelAccuracy) {
+        this.modelAccuracy = modelAccuracy;
     }
 }
 
