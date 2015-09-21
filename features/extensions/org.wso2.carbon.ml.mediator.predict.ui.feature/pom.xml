@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.ml</groupId>
         <artifactId>ml-extension-features</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
