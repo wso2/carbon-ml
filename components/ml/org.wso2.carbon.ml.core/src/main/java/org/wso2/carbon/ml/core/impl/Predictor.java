@@ -24,6 +24,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.math3.ml.distance.EuclideanDistance;
+import org.apache.poi.ss.formula.functions.T;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.classification.ClassificationModel;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.DenseVector;
@@ -41,13 +44,14 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.ANOMALY_DETECTION_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
-import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
-import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
-import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
-import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.KMeansAnomalyDetectionLabeledData;
+import org.wso2.carbon.ml.core.spark.models.*;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.Normalization;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
@@ -59,11 +63,20 @@ public class Predictor {
     private long id;
     private MLModel model;
     private List<Vector> dataToBePredicted;
+    //for K means anomaly detection
+    private double percentileValue;
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
         model = mlModel;
         dataToBePredicted = getVectors(data);
+    }
+
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile) {
+        id = modelId;
+        model = mlModel;
+        dataToBePredicted = getVectors(data);
+        percentileValue = percentile;
     }
 
     public List<?> predict() throws MLModelHandlerException {
@@ -169,12 +182,33 @@ public class Predictor {
             ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = ANOMALY_DETECTION_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (anomaly_detection_algorithm) {
                 case K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA:
+                case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
                     List<Integer> predictions = new ArrayList<Integer>();
-                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                    MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = (MLKMeansAnomalyDetectionModel) model.getModel();
+                    Vector[] clusterCenters = mlkMeansAnomalyDetectionModel.getModel().clusterCenters();
+                    double[][] distanceArray = mlkMeansAnomalyDetectionModel.getDistancesArray();
+
+                    Normalization normalization = new Normalization.Builder().minMax(model.getFeatures(),model.getSummaryStatsOfFeatures(),model.getNewToOldIndicesList(),model.getResponseIndex()).build();
+
                     for (Vector vector : dataToBePredicted) {
+
+                        if(model.getNormalization().equals("true")) {
+                            double[] data = vector.toArray();
+                            double[] normalizedData;
+
+                            try {
+                                normalizedData = normalization.call(data);
+                            } catch (Exception e) {
+                                log.warn("Data normalization failed. Cause: " + e.getMessage());
+                                normalizedData = data;
+                            }
+
+                            vector = new DenseVector(normalizedData);
+                        }
+
                         Context context = startTimer(timer);
 
-                        int predictedData = kMeansModel.predict(vector);
+                        int predictedData = mlkMeansAnomalyDetectionModel.getModel().predict(vector);
                         predictions.add(predictedData);
 
                         stopTimer(context);
@@ -183,7 +217,8 @@ public class Predictor {
                             log.debug("Predicted value before decoding: " + predictedData);
                         }
                     }
-                    return decodePredictedValues(predictions);
+                    //return decodePredictedValues(predictions);
+                    return decodeAnomalyDetectionPredictedValues(predictions, clusterCenters, distanceArray);
                 default:
                     throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
                             + " for model id: " + id);
@@ -272,6 +307,29 @@ public class Predictor {
             return decodedPredictions;
         }
     }
+
+    // A method to decode the predicted values of Anomaly detection
+    private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictions, Vector[] clusterCenters, double[][] distanceArray) {
+
+        KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
+        EuclideanDistance distance = new EuclideanDistance();
+        double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distanceArray,percentileValue);
+        List<String> decodedPredictions = new ArrayList<String>();
+
+        for(int i=0; i<dataToBePredicted.size(); i++){
+
+            double distanceValue = distance.compute(clusterCenters[predictions.get(i)].toArray(),dataToBePredicted.get(i).toArray());
+            if(distanceValue > percentiles[i]){
+                decodedPredictions.add("Anomaly");
+            }
+            else {
+                decodedPredictions.add("Normal");
+            }
+
+        }
+        return decodedPredictions;
+    }
+
 
     private String decode(Map<String, Integer> encodingMap, int roundedValue) {
         // first try to find the exact matching entry

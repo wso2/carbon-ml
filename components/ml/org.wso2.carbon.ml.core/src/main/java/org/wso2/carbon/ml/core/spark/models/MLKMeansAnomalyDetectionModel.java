@@ -50,6 +50,8 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
+        out.writeObject(distancesArray);
+
     }
 
     /*
@@ -61,6 +63,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = (KMeansModel) in.readObject();
+        distancesArray = (double[][]) in.readObject();
     }
 
     public KMeansModel getModel() {

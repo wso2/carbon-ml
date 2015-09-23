@@ -100,6 +100,14 @@
 
                         <form id="prediction-form" method="POST" enctype="multipart/form-data">
 
+                            <div id="percentile-value">
+                            <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
+                            <span class="fld-required">*</span>
+                            <div class="input-control text">
+                            <input type="text" id="percentile" value="98.5" placeholder="input text"/>
+                            </div>
+                            </div>
+
                             <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
                             <div class="input-control text">
                                 <select class="form-control" id="prediction-src" name="sourceType">
@@ -318,6 +326,13 @@
                         }
                     });
                 };
+
+                var algorithmName = data['algorithm'];
+                if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' || algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+                    $('#percentile-value').show();
+                }else{
+                    $('#percentile-value').hide();
+                }
             },
             error: function(res) {
                 var errorText = JSON.parse(res.responseText)["exception"];
@@ -343,13 +358,17 @@
                 inputArray[index] = val;
             });
 
+            var percentile = $('#percentile').val();
+
+            //inputArray[inputArray.length] = percentile;
+
             if(!emptyFeatureValues) {
                 jsonData = JSON.stringify(inputArray);
                 jsonData = "[".concat(jsonData, "]");
 
                 $.ajax({
                     type: "POST",
-                    url: serverUrl + "/api/models/" + modelId + "/predict",
+                    url: serverUrl + "/api/models/" + modelId + "/predict?percentile=" + percentile,
                     contentType: "application/json",
                     data: jsonData,
                     success : function(res){
@@ -399,7 +418,9 @@
             $('#file-predict').hide();
             $('#feature-predict').show();
         }
-    }    
+    }
+
+
 
 </script>
 

@@ -40,6 +40,7 @@ public class MLModel implements Serializable {
     //ashen
     private String normalLabels;
     private String normalization;
+    private Map<String, String> summaryStatsOfFeatures;
 
     public String getAlgorithmName() {
         return algorithmName;
@@ -106,33 +107,28 @@ public class MLModel implements Serializable {
         this.newToOldIndicesList = newToOldIndicesList;
     }
 
-    //ashen
-    /**
-     * @return Returns normal labels
-     */
-    public String getNormalization() {
-        return normalization;
-    }
-
-    /**
-     * @param normalization Sets training data fraction
-     */
-    public void setNormalization(String normalization) {
-        this.normalization = normalization;
-    }
-
-    /**
-     * @return Returns normal labels
-     */
     public String getNormalLabels() {
         return normalLabels;
     }
 
-    /**
-     * @param normalLabels Sets training data fraction
-     */
     public void setNormalLabels(String normalLabels) {
         this.normalLabels = normalLabels;
     }
 
+    public String getNormalization() {
+        return normalization;
+    }
+
+    public void setNormalization(String normalization) {
+        this.normalization = normalization;
+    }
+
+    
+    public Map<String, String> getSummaryStatsOfFeatures() {
+        return summaryStatsOfFeatures;
+    }
+
+    public void setSummaryStatsOfFeatures(Map<String, String> summaryStatsOfFeatures) {
+        this.summaryStatsOfFeatures = summaryStatsOfFeatures;
+    }
 }

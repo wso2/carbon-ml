@@ -112,6 +112,36 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return distancesArray;
     }
 
+    public double[][] getDistancesToDataPoints(List<Integer> predictCenters,
+                                               Vector[] clusterCenters, List<Vector> dataList) {
+
+        int[] count = new int[clusterCenters.length];
+
+
+        for (int center : predictCenters) {
+            count[center]++;
+        }
+
+        double[][] distancesArray = new double[clusterCenters.length][];
+        for (int i = 0; i < clusterCenters.length; i++) {
+            distancesArray[i] = new double[count[i]];
+        }
+
+
+        EuclideanDistance distance = new EuclideanDistance();
+        int center;
+
+        for (int i = 0; i < dataList.size(); i++) {
+            center = predictCenters.get(i);
+            count[center]--;
+            distancesArray[center][count[center]] = distance.compute(dataList.get(i).toArray(),
+                    clusterCenters[center].toArray());
+
+        }
+
+        return distancesArray;
+    }
+
     public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
 
         // Get a DescriptiveStatistics instance
@@ -135,10 +165,10 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
 
        // ConfusionMatrix confusionMatrix = new ConfusionMatrix();
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
-        long truePositive = 0;
-        long trueNegetive = 0;
-        long falsePositive = 0;
-        long falseNegetive = 0;
+        double truePositive = 0;
+        double trueNegetive = 0;
+        double falsePositive = 0;
+        double falseNegetive = 0;
 
         //evaluating testNormal data
         for(int i=0; i<percentiles.length; i++){
@@ -180,6 +210,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         labels.add(0,"Anomaly");
         labels.add(1,"Normal");
         multiclassConfusionMatrix.setLabels(labels);
+        multiclassConfusionMatrix.setSize(2);
 
         return multiclassConfusionMatrix;
 

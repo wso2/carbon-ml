@@ -19,14 +19,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -192,6 +185,7 @@ public class ModelApiV10 extends MLRestAPI {
      * @param modelId Unique id of the model
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param inputStream File input stream generated from the file used for predictions
+     * @param percentile a threshold value used to identified cluster boundaries
      * @return JSON array of predictions
      */
     @POST
@@ -199,7 +193,7 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-            @Multipart("file") InputStream inputStream) {
+            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -213,7 +207,7 @@ public class ModelApiV10 extends MLRestAPI {
                 logger.error(msg);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(msg)).build();
             }
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream, percentile);
             return Response.ok(predictions).build();
         } catch (IOException e) {
             String msg = MLUtils.getErrorMsg(String.format(
@@ -237,6 +231,7 @@ public class ModelApiV10 extends MLRestAPI {
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
      * @param inputStream Input stream generated from the file used for predictions
+     * @param percentile a threshold value used to identified cluster boundaries
      * @return A file as a {@link javax.ws.rs.core.StreamingOutput}
      */
     @POST
@@ -244,7 +239,7 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-                                     @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream) {
+                                     @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -259,7 +254,7 @@ public class ModelApiV10 extends MLRestAPI {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
-                    columnHeader, inputStream);
+                    columnHeader, inputStream, percentile);
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
@@ -290,23 +285,26 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
+
+
     /**
      * Make predictions using a model
      * @param modelId Unique id of the model
      * @param data List of string arrays containing the feature values used for predictions
+     * @param percentile a threshold value used to identified cluster boundaries
      * @return JSON array of predicted values
      */
     @POST
     @Path("/{modelId}/predict")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response predict(@PathParam("modelId") long modelId, List<String[]> data) {
+    public Response predict(@PathParam("modelId") long modelId, List<String[]> data, @QueryParam("percentile") double percentile) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
             long t1 = System.currentTimeMillis();
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data, percentile);
             logger.info(String.format("Prediction from model [id] %s finished in %s seconds.", modelId,
                     (System.currentTimeMillis() - t1) / 1000.0));
             return Response.ok(predictions).build();

@@ -35,6 +35,7 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
     private String[] features;
     private MulticlassConfusionMatrix multiclassConfusionMatrix;
     private double modelAccuracy;
+    private String datasetVersion;
 
     public String getAlgorithm() {
         return algorithm;
@@ -94,6 +95,20 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
 
     public void setModelAccuracy(double modelAccuracy) {
         this.modelAccuracy = modelAccuracy;
+    }
+
+    /**
+     * @return Returns dataset version
+     */
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    /**
+     * @param datasetVersion Sets dataset version
+     */
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 }
 

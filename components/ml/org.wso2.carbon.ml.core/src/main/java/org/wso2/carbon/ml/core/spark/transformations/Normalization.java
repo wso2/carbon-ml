@@ -110,6 +110,34 @@ public class Normalization implements Function<double[], double[]> {
             return this;
         }
 
+        public Builder minMax(List<Feature> features, Map<String, String> stats, List<Integer> newIndex,
+                int responseIndex) {
+
+            for (Feature feature : features) {
+
+                if (feature.getType().equals("NUMERICAL")) {
+                    int index = newIndex.get(feature.getIndex());
+                    String featureStat = stats.get(feature.getName());
+                    double maxValue = SparkModelUtils.getMax(featureStat);
+                    this.max.add(index, maxValue);
+                    double minValue = SparkModelUtils.getMin(featureStat);
+                    this.min.add(index, minValue);
+
+                } else {
+                    if (feature.getIndex() != responseIndex) {
+                        int index = newIndex.get(feature.getIndex());
+                        String featureStat = stats.get(feature.getName());
+                        double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
+                        this.max.add(index, maxValue);
+                        double minValue = 0;
+                        this.min.add(index, minValue);
+                    }
+                }
+
+            }
+            return this;
+        }
+
         public Normalization build() {
             return new Normalization(this);
         }

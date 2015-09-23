@@ -18,12 +18,15 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -36,6 +39,7 @@ import org.wso2.carbon.ml.core.spark.models.MLKMeansAnomalyDetectionModel;
 import org.wso2.carbon.ml.core.spark.summary.KMeansAnomalyDetectionSummary;
 import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 /**
@@ -62,6 +66,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
         MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
         DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
+        RemoveResponseColumn removeResponseColumn = new RemoveResponseColumn();
 
         JavaRDD<String> lines = context.getLines().cache();
 
@@ -69,12 +74,12 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             Normalization normalization = new Normalization.Builder().init(context).build();
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(normalization).map(doubleArrayToVector);
 
         } else {
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(doubleArrayToVector);
         }
 
@@ -182,23 +187,28 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             mlModel.setNormalLabels(workflow.getNormalLabels());
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
-            mlModel.setFeatures(workflow.getFeatures());
+           // mlModel.setFeatures(workflow.getFeatures());
+            mlModel.setFeatures(workflow.getIncludedFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setEncodings(context.getEncodings());
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
-            mlModel.setResponseIndex(-1);
+            mlModel.setSummaryStatsOfFeatures(context.getSummaryStatsOfFeatures());
 
 
+            SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
+                    context.getNewToOldIndicesList(), context.getResponseIndex());
             // build a machine learning model according to user selected algorithm
             MLConstants.ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = MLConstants.ANOMALY_DETECTION_ALGORITHM
                     .valueOf(workflow.getAlgorithmName());
             switch (anomaly_detection_algorithm) {
             case K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA:
+                mlModel.setResponseIndex(-1);
                 // gets the pre-processed dataset for unlabeled data
                 JavaRDD<Vector> data = preProcess().cache();
-                summaryModel = buildKMeansUnlabeledDataModel(modelId, data, workflow, mlModel);
+                summaryModel = buildKMeansUnlabeledDataModel(modelId, data, workflow, mlModel, includedFeatures);
                 break;
             case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
+                mlModel.setResponseIndex(context.getResponseIndex());
                 // gets the pre-processed dataset for labeled data
                 JavaRDD<Vector> dataNormal = preProcessNormal().cache();
                 JavaRDD<Vector> trainingDataNormal = dataNormal.sample(false, workflow.getTrainDataFraction(),
@@ -215,7 +225,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 // remove from cache
                 dataAnomaly.unpersist();
 
-                summaryModel = buildKMeansLabeledDataModel(modelId, trainingDataNormal, testingDataNormal, testingDataAnomaly, workflow, mlModel);
+                summaryModel = buildKMeansLabeledDataModel(modelId, trainingDataNormal, testingDataNormal, testingDataAnomaly, workflow, mlModel, includedFeatures);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + workflow.getAlgorithmName()
@@ -240,7 +250,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansUnlabeledDataModel(long modelID, JavaRDD<Vector> data, Workflow workflow,
-            MLModel mlModel) throws MLModelBuilderException {
+            MLModel mlModel, SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeansAnomalyDetectionUnlabeledData kMeansAnomalyDetectionUnlabeledData = new KMeansAnomalyDetectionUnlabeledData();
@@ -266,6 +276,8 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             kMeansAnomalyDetectionSummary
                     .setAlgorithm(MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA
                             .toString());
+            kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
+            kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             //kMeansAnomalyDetectionSummary.setModelAccuracy(99);
 
             return kMeansAnomalyDetectionSummary;
@@ -284,7 +296,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansLabeledDataModel(long modelID, JavaRDD<Vector> trainData,
-            JavaRDD<Vector> testDataNormal, JavaRDD<Vector> testDataAnomaly, Workflow workflow, MLModel mlModel)
+            JavaRDD<Vector> testDataNormal, JavaRDD<Vector> testDataAnomaly, Workflow workflow, MLModel mlModel, SortedMap<Integer, String> includedFeatures)
             throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
@@ -334,7 +346,8 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(predictionResults);
             kMeansAnomalyDetectionSummary.setModelAccuracy(getModelAccuracy(predictionResults));
-
+            kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
+            kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
             return kMeansAnomalyDetectionSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building k-means anomaly detection with labeled data model: " + e.getMessage(), e);
@@ -342,8 +355,20 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
     }
 
     private Double getModelAccuracy(MulticlassConfusionMatrix multiclassConfusionMatrix){
-        double f1Score = 99.99;
+        double f1Score;
+        double truePositive;
+        //double trueNegetive = 0;
+        double falsePositive;
+        double falseNegetive;
 
-        return f1Score;
+        double[][] matrix = multiclassConfusionMatrix.getMatrix();
+        truePositive = matrix[0][0];
+        falseNegetive = matrix[0][1];
+        falsePositive = matrix[1][0];
+       // trueNegetive =  matrix[1][1];
+
+        f1Score = 2*truePositive / (2*truePositive + falsePositive + falseNegetive);
+
+        return f1Score * 100;
     }
 }
