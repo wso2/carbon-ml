@@ -437,7 +437,7 @@
 			<Parameters>
 				<Name>Percentile_Value</Name>
 				<Value>98.5</Value>
-				<Description>The threshold distance value to identify cluster borders.
+				<Description>The threshold distance value to identify cluster boundaries (Used in model evaluation process).
 				</Description>
 			</Parameters>
 		</Algorithm>
