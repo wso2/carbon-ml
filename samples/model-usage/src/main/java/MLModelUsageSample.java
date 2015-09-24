@@ -26,6 +26,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public class MLModelUsageSample {
         MLModel mlModel = modelUsageSample.deserializeMLModel(pathToDownloadedModel);
 
         // Predict
-        String[] featureValueArray1 = new String[] { "6", "148", "72", "35", "0", "33.6", "0.627", "50" };
+        String[] featureValueArray1 = new String[] { "2", "84", "0", "0", "0", "0.0", "0.304", "21" };
         String[] featureValueArray2 = new String[] { "0", "101", "80", "40", "0", "26", "0.5", "33" };
         ArrayList<String[]> list = new ArrayList<String[]>();
         list.add(featureValueArray1);
@@ -57,7 +58,7 @@ public class MLModelUsageSample {
 
     /**
      * Deserialize to MLModel object
-     * @return
+     * @return A {@link org.wso2.carbon.ml.commons.domain.MLModel} object
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws URISyntaxException
@@ -77,13 +78,28 @@ public class MLModelUsageSample {
 
     /**
      * Make Predictions using Predictor
-     * @param featureValueLists Feature values to be used for the prediction
+     * @param featureValuesList Feature values to be used for the prediction
      * @param mlModel           MLModel to be used for predictions
      * @throws MLModelHandlerException
      */
-    public void predict(List<String[]> featureValueLists, MLModel mlModel) throws MLModelHandlerException {
-        Predictor predictor = new Predictor(0, mlModel, featureValueLists);
+    public void predict(List<String[]> featureValuesList, MLModel mlModel) throws MLModelHandlerException {
+
+        // Validate number of features
+        // Number of feature values in the array should be same as the number of features in the model
+        for (String[] featureValues : featureValuesList) {
+            if (featureValues.length != mlModel.getFeatures().size()) {
+                logger.error("Number of features in the array does not match the number of features in the model.");
+                return;
+            }
+        }
+
+        Predictor predictor = new Predictor(0, mlModel, featureValuesList);
         List<?> predictions = predictor.predict();
-        logger.info("Predictions : " + predictions);
+
+        logger.info("Feature values list 1 : " + Arrays.toString(featureValuesList.get(0)));
+        logger.info("Prediction : " + predictions.get(0));
+
+        logger.info("Feature values list 2 : " + Arrays.toString(featureValuesList.get(1)));
+        logger.info("Prediction : " + predictions.get(1));
     }
 }
