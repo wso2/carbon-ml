@@ -188,7 +188,10 @@ public class Predictor {
                     Vector[] clusterCenters = mlkMeansAnomalyDetectionModel.getModel().clusterCenters();
                     double[][] distanceArray = mlkMeansAnomalyDetectionModel.getDistancesArray();
 
-                    Normalization normalization = new Normalization.Builder().minMax(model.getFeatures(),model.getSummaryStatsOfFeatures(),model.getNewToOldIndicesList(),model.getResponseIndex()).build();
+                    Normalization normalization = null;
+                    if(model.getNormalization().equals("true")) {
+                        normalization = new Normalization.Builder().minMax(model.getFeatures(), model.getSummaryStatsOfFeatures()).build();
+                    }
 
                     for (Vector vector : dataToBePredicted) {
 

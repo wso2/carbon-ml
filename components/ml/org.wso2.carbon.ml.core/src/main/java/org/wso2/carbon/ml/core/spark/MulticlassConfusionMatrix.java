@@ -40,6 +40,16 @@ public class MulticlassConfusionMatrix implements Serializable {
      */
     private int size;
 
+    private double f1Score;
+    private double accuracy;
+    private double precision;
+    private double recall;
+
+    private double truePositive;
+    private double falsePositive;
+    private double trueNegetive;
+    private double falseNegetive;
+
     /**
      *
      * @return Returns the confusion matrix
@@ -59,6 +69,7 @@ public class MulticlassConfusionMatrix implements Serializable {
         else {
             this.matrix = Arrays.copyOf(matrix, matrix.length);
         }
+
     }
 
     /**
@@ -75,6 +86,18 @@ public class MulticlassConfusionMatrix implements Serializable {
      */
     public void setLabels(List<String> labels) {
         this.labels = labels;
+
+        if(labels.size() == 2){
+            truePositive = matrix[0][0];
+            falsePositive = matrix[1][0];
+            trueNegetive = matrix[1][1];
+            falseNegetive = matrix[0][1];
+
+            f1Score = (2*truePositive / (2*truePositive + falsePositive + falseNegetive))*100;
+            accuracy = ((truePositive + trueNegetive) / (truePositive + trueNegetive +falsePositive + falseNegetive))*100;
+            precision = (truePositive/(truePositive+falsePositive))*100;
+            recall = (truePositive/(truePositive+falseNegetive))*100;
+        }
     }
 
     /**
@@ -91,6 +114,22 @@ public class MulticlassConfusionMatrix implements Serializable {
      */
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public double getF1Score() {
+        return f1Score;
+    }
+
+    public double getAccuracy() {
+        return accuracy;
+    }
+
+    public double getPrecision() {
+        return precision;
+    }
+
+    public double getRecall() {
+        return recall;
     }
 
     @Override

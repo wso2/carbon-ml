@@ -81,7 +81,44 @@ commond to all type of graphs.*/
 }
 #confusion-matrix .incorrect {
 	background-color: #FFF0F0;
-} 
+}
+
+/*Other measures table styles*/
+#other-measures table {
+	text-align: center;
+	width: 100%;
+	height:200px;
+	table-layout: fixed;
+	border-color: #999999;
+}
+
+#other-measures .header-level-1 {
+	font-weight:bold;
+}
+#other-measures .header-level-2 {
+	font-style: italic;
+}
+#other-measures .rotate {
+	/* Safari */
+	-webkit-transform: rotate(-90deg);
+
+	/* Firefox */
+	-moz-transform: rotate(-90deg);
+
+	/* IE */
+	-ms-transform: rotate(-90deg);
+
+	/* Opera */
+	-o-transform: rotate(-90deg);
+
+	/* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+#other-measures .values {
+	background-color: #ECFFEC;
+}
+
 .ui-slider-horizontal {
     width: 100%;
 }

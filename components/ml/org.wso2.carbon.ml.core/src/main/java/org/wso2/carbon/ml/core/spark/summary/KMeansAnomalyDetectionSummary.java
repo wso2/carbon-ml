@@ -25,6 +25,7 @@ import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 
 public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable{
 
@@ -33,8 +34,8 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
     private double testDataComputeCost;
     private String algorithm;
     private String[] features;
-    private MulticlassConfusionMatrix multiclassConfusionMatrix;
-    private double modelAccuracy;
+    private Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix;
+    //private Map<Integer, Double> modelAccuracy;
     private String datasetVersion;
 
     public String getAlgorithm() {
@@ -81,7 +82,7 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         return features;
     }
 
-    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
+/*    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
         return multiclassConfusionMatrix;
     }
 
@@ -95,7 +96,23 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
 
     public void setModelAccuracy(double modelAccuracy) {
         this.modelAccuracy = modelAccuracy;
+    }*/
+
+    public Map<Integer, MulticlassConfusionMatrix> getMulticlassConfusionMatrix() {
+        return multiclassConfusionMatrix;
     }
+
+    public void setMulticlassConfusionMatrix(Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix) {
+        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
+    }
+
+    /*public Map<Integer, Double> getModelAccuracy() {
+        return modelAccuracy;
+    }
+
+    public void setModelAccuracy(Map<Integer, Double> modelAccuracy) {
+        this.modelAccuracy = modelAccuracy;
+    }*/
 
     /**
      * @return Returns dataset version

@@ -28,6 +28,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import scala.Tuple2;
 
 public class KMeansAnomalyDetectionLabeledData implements Serializable {
 
@@ -169,6 +170,11 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         double trueNegetive = 0;
         double falsePositive = 0;
         double falseNegetive = 0;
+
+//        Tuple2<Object,Object> t = new Tuple2<Object, Object>(1,2);
+//
+//        JavaRDD<Tuple2<Object, Object>> results;
+//        results = new Tuple2<1,2>()
 
         //evaluating testNormal data
         for(int i=0; i<percentiles.length; i++){

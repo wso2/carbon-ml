@@ -417,7 +417,7 @@ $( document ).ready(function() {
             $('#response-variable-field').hide();
             $('#normal-labels').hide();
             $('#normalization').hide();
-            $('#train-data-fraction').show();
+            $('#train-data-fraction').hide();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
             $('#response-variable-field').hide();
@@ -468,10 +468,15 @@ $( document ).ready(function() {
         e.preventDefault();
         
         var algorithmName = $('#algorithm-name').val();
-        var responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
+
+        var responseVariable;
+        if($('#response-variable-field').is(":hidden")){
+            responseVariable = '';
+        }else{
+            responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
+        }
 
         //ashen
-        //var normalLabels = $('#lable-names').val();
         var normalLabels = new Array();
         
         $("input:checkbox[name=labels]:checked").each(function(){
@@ -488,7 +493,13 @@ $( document ).ready(function() {
             normalization = 'false';
         }
 
-        var trainDataFraction = $('#data-fraction').val();
+        var trainDataFraction;
+        if($('#train-data-fraction').is(":hidden")){
+            trainDataFraction = '1.0';
+        }else{
+            trainDataFraction = $('#data-fraction').val();
+        }
+
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {

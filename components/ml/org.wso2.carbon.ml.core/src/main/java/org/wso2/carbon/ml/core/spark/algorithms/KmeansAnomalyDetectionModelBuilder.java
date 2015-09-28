@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -66,7 +67,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
         MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
         DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
-        RemoveResponseColumn removeResponseColumn = new RemoveResponseColumn();
+        //RemoveResponseColumn removeResponseColumn = new RemoveResponseColumn();
 
         JavaRDD<String> lines = context.getLines().cache();
 
@@ -74,12 +75,12 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             Normalization normalization = new Normalization.Builder().init(context).build();
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(normalization).map(doubleArrayToVector);
 
         } else {
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(doubleArrayToVector);
         }
 
@@ -322,8 +323,13 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             mlModel.setModel(mlkMeansAnomalyDetectionModel);
 
             // evaluating the model
-            double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
-                    Double.parseDouble(hyperParameters.get(MLConstants.PERCENTILE_VALUE)));
+
+//            Map<Double, MulticlassConfusionMatrix> modelEvatuationResults;
+            //int[] setOfPercentileValues = {90,50,10,93,94,95,96,97,98,99,100};
+
+
+//            double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
+//                    Double.parseDouble(hyperParameters.get(MLConstants.PERCENTILE_VALUE)));
             JavaRDD<Integer> predictionTestNormal = kMeansAnomalyDetectionLabeledData.test(kMeansModel, testDataNormal);
             double[][] distancesArrayTetsNormal = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
                     predictionTestNormal, clusterCenters, testDataNormal);
@@ -337,24 +343,40 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             // remove from cache
             testDataAnomaly.unpersist();
 
-            MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
-                    distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
+            Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix = new HashMap<Integer, MulticlassConfusionMatrix>();
+            //Map<Integer, Double> modelAccuracy = new HashMap<Integer, Double>();
+
+            for(int i=80; i<=100; i++) {
+
+                double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
+                        i);
+
+                MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
+                        distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
+
+                multiclassConfusionMatrix.put(i, predictionResults);
+                //modelAccuracy.put(i,getModelAccuracy(predictionResults));
+
+
+
+            }
 
             kMeansAnomalyDetectionSummary
                     .setAlgorithm(MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
                             .toString());
-
-            kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(predictionResults);
-            kMeansAnomalyDetectionSummary.setModelAccuracy(getModelAccuracy(predictionResults));
+            //change setters to set MAps
+            kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
+            //kMeansAnomalyDetectionSummary.setModelAccuracy(modelAccuracy);
             kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
             kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
+
             return kMeansAnomalyDetectionSummary;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building k-means anomaly detection with labeled data model: " + e.getMessage(), e);
         }
     }
 
-    private Double getModelAccuracy(MulticlassConfusionMatrix multiclassConfusionMatrix){
+    /*private Double getModelAccuracy(MulticlassConfusionMatrix multiclassConfusionMatrix){
         double f1Score;
         double truePositive;
         //double trueNegetive = 0;
@@ -370,5 +392,5 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
         f1Score = 2*truePositive / (2*truePositive + falsePositive + falseNegetive);
 
         return f1Score * 100;
-    }
+    }*/
 }

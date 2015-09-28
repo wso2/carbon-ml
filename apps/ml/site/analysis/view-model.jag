@@ -26,8 +26,8 @@
     <script src="../../js/jquery-1.11.1.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-    %> 
+include("../../includes/tenantAware.jag");
+%>
 
 </head>
 
@@ -37,13 +37,13 @@
 
 <!-- header -->
 <header>
-    <div class="row wr-global-header">
-        <div class="col-sm-8 app-logo">
-            <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-        </div>
-    	<div class="col-sm-4">
-    		<div class="wr-auth pull-right">
-    			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="row wr-global-header">
+    <div class="col-sm-8 app-logo">
+        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+    </div>
+    <div class="col-sm-4">
+        <div class="wr-auth pull-right">
+            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
     			<div class="dropdown-menu">
     				<div class="cu-arrow"></div>
     				<div class="dropdown-menu-content">
@@ -97,9 +97,16 @@
 		<div class="container col-md-12 col-centered wr-content">
 
             <div id="notification-area"></div>
-			<h1 id="model-summary-title" class="title">Model Summary</h1>
+			<h1 class="title">Model Summary<span id="model-summary-title"><span></h1>
 
             <div class="col-md-12 wr-graph-content">
+
+                <div class="wr-graph-element gr03">
+                    <h5>Percentile Value :&nbsp;<input type="text" name="chance" id="chance" class="text" value="90" style="border:none"></h5>
+                        <div id="percentile">
+                        <input type="range" id="myRange" defaultValue="90" min="80" max="100" step="1"><h7> 80<span style="float:right;">100</span></h7>
+                        </div>                            
+                </div>
             
                 <div class="wr-graph-element gr03">
                     <h5>ROC Graph</h5>
@@ -121,6 +128,13 @@
                     <h5>Confusion Matrix</h5>
                     <div class="wr-graph-img">
                         <div id="confusion-matrix"></div>
+                    </div>
+                </div>
+
+                <div class="wr-graph-element gr03">
+                    <h5>Other Measures</h5>
+                    <div class="wr-graph-img">
+                        <div id="other-measures"></div>
                     </div>
                 </div>
 
@@ -332,6 +346,9 @@ $( document ).ready(function() {
                 if(res.modelAccuracy) {
                     $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
                 }                
+               
+                // remove not applicable charts/tables
+                $("#other-measures, #percentile").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // format data and draw ROC graph
                 var rocData  = JSON.parse(res.roc);
@@ -375,7 +392,7 @@ $( document ).ready(function() {
                     $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
                 }                
                 // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart").closest("div.wr-graph-element").remove();
+                $("#roc-graph, #weights-chart, #other-measures, #percentile").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // draw confusion matrix                
                 drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
@@ -405,7 +422,7 @@ $( document ).ready(function() {
                     $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
                 }                
                 // remove not applicable charts/tables
-                $("#roc-graph, #confusion-matrix").closest("div.wr-graph-element").remove();
+                $("#roc-graph, #confusion-matrix, #other-measures, #percentile").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
@@ -432,12 +449,49 @@ $( document ).ready(function() {
                 }                    
             }
             else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
-                if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+ 
+                var percentile = $('#myRange').val();
+                if(res.multiclassConfusionMatrix[percentile].f1Score) {
+                    $("#model-summary-title").empty();
+                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[percentile].f1Score.toFixed(2) + "%]");
                 }
-                // draw confusion matrix
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");
+                // remove not applicable charts/tables
+                $("#roc-graph, #weights-chart, #predicted-vs-actual").closest("div.wr-graph-element").remove();
+                $("#residual").remove();
+                $("#predicted-vs-actual").remove();
 
+                // draw confusion matrix
+                drawConfusionMatrix(res.multiclassConfusionMatrix[percentile].matrix, res.multiclassConfusionMatrix[percentile].labels, "#confusion-matrix");
+                // draw other measures table
+                drawOtherMeasuresTable(res.multiclassConfusionMatrix[percentile], "#other-measures");
+
+                var slider = $('#myRange');
+                var textbox = $('#chance');
+
+                slider.change(function() {
+                var newValue = ($(this).val());    
+                textbox.val(newValue);
+                
+                if(res.multiclassConfusionMatrix[newValue].f1Score) {
+                    $("#model-summary-title").empty();
+                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[newValue].f1Score.toFixed(2) + "%]");
+                }
+                // remove not applicable charts/tables
+                $("#roc-graph, #weights-chart").closest("div.wr-graph-element").remove();
+                $("#residual").remove();
+                $("#predicted-vs-actual").remove();
+                // draw confusion matrix
+                drawConfusionMatrix(res.multiclassConfusionMatrix[newValue].matrix, res.multiclassConfusionMatrix[newValue].labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.multiclassConfusionMatrix[newValue], "#other-measures");
+
+                });
+
+                textbox.change(function() {
+
+                var newValue = parseInt($(this).val());
+                slider.val(newValue);
+                
+                });
             }
         },
         error: function(res){
@@ -690,6 +744,28 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
     multiclassConfusionMatrixHtml += "</table>";
 
     $(cssSelector).html(multiclassConfusionMatrixHtml);   
+}
+
+//function to draw other measures table
+function drawOtherMeasuresTable(multiclassConfusionMatrix, cssSelector){
+
+    var otherMeasuresHtml = "<table border='1'>"; 
+    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-1'>Measures</td><td class='header-level-1'>Values</td>" +
+                        "</tr>"; 
+    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Precision</td><td class='values'>"+multiclassConfusionMatrix.precision.toFixed(2) + "</td>" +
+                        "</tr>";
+    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Recall</td><td class='values'>"+multiclassConfusionMatrix.recall.toFixed(2) + "</td>" +
+                        "</tr>"; 
+    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Accuracy</td><td class='values'>"+multiclassConfusionMatrix.accuracy.toFixed(2) + "</td>" +
+                        "</tr>";  
+    otherMeasuresHtml += "</table>";
+
+    $(cssSelector).html(otherMeasuresHtml); 
+
 }
 
 // function to get the binary class label of a predicted value for given threshold
