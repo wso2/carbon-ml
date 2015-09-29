@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import java.util.Map;
-
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
@@ -34,9 +32,18 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.models.MLKMeansModel;
 import org.wso2.carbon.ml.core.spark.summary.ClusterModelSummary;
-import org.wso2.carbon.ml.core.spark.transformations.*;
+import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
+import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToVector;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
+import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+
+import java.util.Map;
 
 /**
  * Building unsupervised models supported by Spark.
@@ -46,21 +53,30 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
     public UnsupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
-
+    
     private JavaRDD<Vector> preProcess() throws MLModelBuilderException {
-        MLModelConfigurationContext context = getContext();
-        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
-        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
-        RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
-        BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
-        MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
-        StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
-        DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
+        JavaRDD<String> lines = null;
+        try {
+            MLModelConfigurationContext context = getContext();
+            HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+            LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+            RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context)
+                    .build();
+            BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
+            MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
+            StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
+            DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
 
-        JavaRDD<String> lines = context.getLines().cache();
-        return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).map(removeDiscardedFeatures)
-                .map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray).map(doubleArrayToVector);
+            lines = context.getLines().cache();
+            return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
+                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+                    .map(doubleArrayToVector);
+        } finally {
+            if (lines != null) {
+                lines.unpersist();
+            }
+        }
     }
 
     /**
@@ -76,9 +92,17 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
 
             // gets the pre-processed dataset
             JavaRDD<Vector> data = preProcess().cache();
-            JavaRDD<Vector> trainingData = data.sample(false, workflow.getTrainDataFraction(), MLConstants.RANDOM_SEED)
-                    .cache();
-            JavaRDD<Vector> testingData = data.subtract(trainingData);
+            JavaRDD<Vector>[] dataSplit = data.randomSplit(
+                    new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
+                    MLConstants.RANDOM_SEED);
+            
+            data.unpersist();
+            
+            JavaRDD<Vector> trainingData = dataSplit[0].cache();
+            JavaRDD<Vector> testingData = null;
+            if (dataSplit.length > 1) {
+                testingData = dataSplit[1];
+            }
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
@@ -125,18 +149,20 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
-
+                    Integer.parseInt(hyperParameters.get(MLConstants.ITERATIONS)));
+            
             // remove from cache
             trainingData.unpersist();
-            // add test data to cache
-            testingData.cache();
-
+            // add test data to cache - test data is not used as of now
+//            if (testingData != null) {
+//                testingData.cache();
+//            }
+            
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
-            // double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
-            // double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
-            // clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
-            // clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
+//            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
+//            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
+//            clusterModelSummary.setTrainDataComputeCost(trainDataComputeCost);
+//            clusterModelSummary.setTestDataComputeCost(testDataComputeCost);
             mlModel.setModel(new MLKMeansModel(kMeansModel));
             clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
             clusterModelSummary.setDatasetVersion(workflow.getDatasetVersion());
@@ -146,5 +172,5 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             throw new MLModelBuilderException("An error occurred while building k-means model: " + e.getMessage(), e);
         }
     }
-
 }
+
