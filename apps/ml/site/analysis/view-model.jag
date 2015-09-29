@@ -751,7 +751,7 @@ function drawOtherMeasuresTable(multiclassConfusionMatrix, cssSelector){
 
     var otherMeasuresHtml = "<table border='1'>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-1'>Measures</td><td class='header-level-1'>Values</td>" +
+                        "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value</td>" +
                         "</tr>"; 
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-2'>Precision</td><td class='values'>"+multiclassConfusionMatrix.precision.toFixed(2) + "</td>" +
