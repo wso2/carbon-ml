@@ -45,7 +45,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private ModelHandler modelHandler;
     private String modelStorageLocation;
     private String responseVariable;
-    private Attribute.Type outputDatatype;
+    private String outputType;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap;           // <feature-index, [event-array-type][attribute-index]> pairs
 
@@ -75,7 +75,7 @@ public class PredictStreamProcessor extends StreamProcessor {
 
             if (featureValues != null) {
                 try {
-                    String predictionResult = modelHandler.predict(featureValues);
+                    Object predictionResult = modelHandler.predict(featureValues, outputType);
                     Object[] output = new Object[] { predictionResult };
                     complexEventPopulater.populateComplexEvent(event, output);
                 } catch (Exception e) {
@@ -108,9 +108,11 @@ public class PredictStreamProcessor extends StreamProcessor {
         }
 
         // data-type
+        Attribute.Type outputDatatype;
         if(attributeExpressionExecutors[1] instanceof ConstantExpressionExecutor) {
             Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[1]).getValue();
-            outputDatatype = getOutputAttributeType((String) constantObj);
+            outputType = (String) constantObj;
+            outputDatatype = getOutputAttributeType(outputType);
         } else {
             throw new ExecutionPlanValidationException("Response variable type has not been defined as the second parameter");
         }

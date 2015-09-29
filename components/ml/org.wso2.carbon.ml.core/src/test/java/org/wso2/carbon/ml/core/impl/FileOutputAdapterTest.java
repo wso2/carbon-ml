@@ -34,7 +34,8 @@ public class FileOutputAdapterTest {
     @Test
     public void testWriteDataset() throws URISyntaxException, MLInputAdapterException {
         MLInputAdapter inputAdapter = new FileInputAdapter();
-        String uriString = "src/test/resources/fcSample.csv";
+        String uriString = "src" + File.separator + "test" + File.separator + "resources" + File.separator
+                + "fcSample.csv";
         String uri;
         String outPath;
         InputStream in = null;

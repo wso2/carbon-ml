@@ -509,7 +509,7 @@
                                         '<table class="tbl-projects" projectID="' + projectId + '">' +
                                             '<tr>' +
                                                 '<td>' +
-                                                    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
+                                                    '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="' + appendAriaExpanded(i) + '" aria-' + 'controls="collapse1" class="ctrl-exp-col">' +
                                                         '<span class="cu-acc-head-title">' + projectName + '</span>' +
                                                         '<span class="cu-acc-head-created">[ created: ' + createdTime + ' ]</span>' +
                                                         '<span class="cu-acc-head-workflow">' + workflowString + '</span>' +
@@ -517,24 +517,16 @@
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
-                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendClass(noOfAnalyses) + '" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
+                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendDisabled(noOfAnalyses) + '" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
                                                         '<a href="#" data-projectid="' + projectId + '" id="delete-project" class="cu-reg-btn btn-delete">Delete Project</a>' +
                                                     '</div>' +
                                                 '</td>' +
                                             '</tr>' +
                                         '</table>' +
                                     '</h4>' +
-                                '</div>';
-                                // first panel will be expanded on page load
-                                if(i == 0) {
-                                    accordionPanel += '' +
-                                '<div id="collapse' + i + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading'+i+'">';
-                                }
-                                else {
-                                    accordionPanel += '' +
-                                '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">';
-                                }
-                                    accordionPanel += '' +
+                                '</div>' +
+                                // first panel will be expanded on page load                                
+                                '<div id="collapse' + i + '" class="panel-collapse collapse ' + appendCollapse(i) + '" role="tabpanel" aria-labelledby="heading'+i+'">'+
                                     '<div class="panel-body">';
                                 if (noOfAnalyses == 0) {
                                     accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus);
@@ -602,13 +594,29 @@
     }
 
     // function to append button disabled CSS class when there are no analyses in a project
-    function appendClass(noOfAnalyses) {
+    function appendDisabled(noOfAnalyses) {
         var classAppend = '';
         if(noOfAnalyses == 0) {
             classAppend = 'btn-disabled';  
         }
         return classAppend;
     }
+    // function to append collapse in CSS class for first accordion panel
+    function appendCollapse(accordionNumber) {
+        var classAppend = '';
+        if(accordionNumber == 0) {
+            classAppend = 'in';  
+        }
+        return classAppend;
+    }
+    // function to expand first accordion panel
+    function appendAriaExpanded(accordionNumber) {
+        var ariaExpandedValue = 'false';
+        if(accordionNumber == 0) {
+            ariaExpandedValue = 'true';  
+        }
+        return ariaExpandedValue;
+    }    
 
     // deletes a project
     function deleteProject(projectId) {

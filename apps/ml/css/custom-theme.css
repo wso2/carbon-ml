@@ -246,10 +246,18 @@ a.ctrl-filter-category:hover {
 }
 
 .ctrl-exp-col {
-	background-size: 26px 26px !important;		
-	background:url('../images/icons/ico-collapsed.png') 0.1em 1.4em no-repeat;	
 	padding:26px;
 	padding-left:35px;	
+}
+
+.ctrl-exp-col[aria-expanded=false] {
+	background-size: 26px 26px !important;
+	background:url('../images/icons/ico-collapsed.png') 0.1em 1.4em no-repeat;	
+}
+
+.ctrl-exp-col[aria-expanded=true] {
+	background-size: 26px 26px !important;
+	background:url('../images/icons/ico-expanded.png') 0.1em 1.4em no-repeat;	
 }
 
 .empty-button-panel {
@@ -343,10 +351,16 @@ a.ctrl-filter-category:hover {
 
 .wr-tabs-grphs .nav-pills > li > a {
 	border-radius: 0px;
+	background: #e4e4e4;
+	color: #444;
+}
+
+.wr-tabs-grphs .nav-pills > li.disabled a {
+	background: transparent;
+	opacity: 0.5;
 }
 
 .wr-tabs-grphs {
-	border-bottom:1px solid #e4e4e4;
 	padding-bottom:10px;
 }
 
