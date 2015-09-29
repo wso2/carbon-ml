@@ -217,6 +217,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         labels.add(1,"Normal");
         multiclassConfusionMatrix.setLabels(labels);
         multiclassConfusionMatrix.setSize(2);
+        multiclassConfusionMatrix.setAccuracyMeasures();
 
         return multiclassConfusionMatrix;
 

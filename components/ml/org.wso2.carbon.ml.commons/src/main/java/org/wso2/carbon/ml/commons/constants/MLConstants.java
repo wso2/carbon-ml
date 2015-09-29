@@ -149,7 +149,7 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String NUM_OF_NORMAL_CLUSTERS = "Num_of_Normal_Clusters";
     public static final String LAMBDA = "Lambda";
-    public static final String PERCENTILE_VALUE = "Percentile_Value";
+    //public static final String PERCENTILE_VALUE = "Percentile_Value";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";

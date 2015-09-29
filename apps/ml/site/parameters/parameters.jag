@@ -229,7 +229,7 @@ $( document ).ready(function() {
                 else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
-                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    //hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
                 }
             }
         },
