@@ -244,13 +244,6 @@
 			<Multicollinearity>5</Multicollinearity>
 			<Dimensionality>5</Dimensionality>
 			<Parameters>
-				<Name>Learning_Rate</Name>
-				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm. This parameter
-					value should be between 0 and 1, 1 inclusive.
-				</Description>
-			</Parameters>
-			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
 				<Description>Number of times optimizer runs before completing the
@@ -258,6 +251,13 @@
 					greater than 0.
 				</Description>
 			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
+			</Parameters>			
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>

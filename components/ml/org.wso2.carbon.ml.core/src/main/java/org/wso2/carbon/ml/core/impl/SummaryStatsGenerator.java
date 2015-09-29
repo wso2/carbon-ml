@@ -35,6 +35,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
@@ -71,7 +72,7 @@ public class SummaryStatsGenerator implements Runnable {
     private String[] type;
     // Map containing indices and names of features of the data-set.
     private Map<String, Integer> headerMap;
-    private SamplePoints samplePoints;
+    private SamplePoints samplePoints = new SamplePoints();
     private DatasetProcessor datasetProcessor;
 
     private long datasetSchemaId;
@@ -95,6 +96,7 @@ public class SummaryStatsGenerator implements Runnable {
         org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
                 "org.wso2.carbon.ml.dataset-summary-generation-time");
         Context context = timer.start();
+        this.samplePoints.setGenerated(false);
         // extract the sample points and generate summary stats
         try {
             this.samplePoints = datasetProcessor.takeSample();
@@ -130,7 +132,6 @@ public class SummaryStatsGenerator implements Runnable {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
         } catch (Exception e) {
-            this.samplePoints.setGenerated(false);
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
             try {
                 dbService.updateSamplePoints(datasetVersionId, samplePoints);
@@ -169,6 +170,17 @@ public class SummaryStatsGenerator implements Runnable {
 
                 // Create a unique set from the column.
                 List<String> data = this.columnData.get(currentCol);
+
+                // Check whether it is an empty column
+                // Rows with missing values are not filtered at summery stat generation. Therefore it is possible to
+                // have all rows in sample with values missing in a column.
+                if (data.size() == 0) {
+                    String msg = String.format("Column %s is empty in the selected sample rows in dataset version %s",
+                            currentCol, this.datasetVersionId);
+                    logger.warn(msg);
+                    continue;
+                }
+
                 Set<String> uniqueSet = new HashSet<String>(data);
                 int multipleOccurences = 0;
                 
@@ -208,7 +220,7 @@ public class SummaryStatsGenerator implements Runnable {
                 // Descriptive-statistics object.
                 for (int row = 0; row < this.columnData.get(currentCol).size(); row++) {
                     if (this.columnData.get(currentCol).get(row) != null
-                            && !this.columnData.get(currentCol).get(row).isEmpty()) {
+                            && !MLConstants.MISSING_VALUES.contains(this.columnData.get(currentCol).get(row))) {
                         cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
                         this.descriptiveStats.get(currentCol).addValue(cellValue);
                     }
@@ -292,7 +304,8 @@ public class SummaryStatsGenerator implements Runnable {
         double[] data = new double[this.columnData.get(column).size()];
         // Create an array from the column data.
         for (int row = 0; row < columnData.get(column).size(); row++) {
-            if (this.columnData.get(column).get(row) != null && !this.columnData.get(column).get(row).isEmpty()) {
+            if (this.columnData.get(column).get(row) != null &&
+                    !MLConstants.MISSING_VALUES.contains(this.columnData.get(column).get(row))) {
                 data[row] = Double.parseDouble(this.columnData.get(column).get(row));
             }
         }

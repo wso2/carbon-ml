@@ -68,7 +68,7 @@ public class SparkModelUtils {
         // store predictions and actuals
         List<PredictedVsActual> predictedVsActuals = new ArrayList<PredictedVsActual>();
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
-        for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.take(sampleSize)) {
+        for (Tuple2<Object, Object> scoreAndLabel : scoresAndLabels.cache().take(sampleSize)) {
             PredictedVsActual predictedVsActual = new PredictedVsActual();
             predictedVsActual.setPredicted(Double.parseDouble(decimalFormat.format(scoreAndLabel._1())));
             predictedVsActual.setActual(Double.parseDouble(decimalFormat.format(scoreAndLabel._2())));
@@ -77,6 +77,12 @@ public class SparkModelUtils {
                 log.trace("Predicted: "+predictedVsActual.getPredicted() + " ------ Actual: "+predictedVsActual.getActual());
             }
         }
+        
+        // generate binary classification metrics
+        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoresAndLabels));
+        
+        scoresAndLabels.unpersist();
+        
         // create a list of feature values
         List<double[]> features = new ArrayList<double[]>();
         for (LabeledPoint labeledPoint : testingData.take(sampleSize)) {
@@ -94,7 +100,8 @@ public class SparkModelUtils {
             testResultDataPoints.add(testResultDataPoint);
         }
         // covert List to JavaRDD
-        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints);
+        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints)
+                .cache();
         // collect RDD as a sampled list
         List<TestResultDataPoint> testResultDataPointsSample;
         if(testResultDataPointsJavaRDD.count() > sampleSize) {
@@ -103,13 +110,16 @@ public class SparkModelUtils {
         else {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
+        
+        // remove from cache
+        testResultDataPointsJavaRDD.unpersist();
+        
         probabilisticClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
-        // generate binary classification metrics
-        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoresAndLabels));
         // store AUC
         probabilisticClassificationModelSummary.setAuc(metrics.areaUnderROC());
         // store ROC data points
-        List<Tuple2<Object, Object>> rocData = metrics.roc().toJavaRDD().collect();
+        JavaRDD<Tuple2<Object, Object>> rocRdd = metrics.roc().toJavaRDD().cache();
+        List<Tuple2<Object, Object>> rocData = rocRdd.collect();
         JSONArray rocPoints = new JSONArray();
         for (int i = 0; i < rocData.size(); i += 1) {
             JSONArray point = new JSONArray();
@@ -117,6 +127,7 @@ public class SparkModelUtils {
             point.put(decimalFormat.format(rocData.get(i)._2()));
             rocPoints.put(point);
         }
+        rocRdd.unpersist();
         probabilisticClassificationModelSummary.setRoc(rocPoints.toString());
         return probabilisticClassificationModelSummary;
     }
@@ -168,6 +179,9 @@ public class SparkModelUtils {
         else {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
+        
+        testResultDataPointsJavaRDD.unpersist();
+        
         regressionModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
         // calculate mean squared error (MSE)
         double meanSquaredError = new JavaDoubleRDD(predictionsAndLabels.map(
@@ -220,7 +234,7 @@ public class SparkModelUtils {
             testResultDataPoints.add(testResultDataPoint);
         }
         // covert List to JavaRDD
-        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints);
+        JavaRDD<TestResultDataPoint> testResultDataPointsJavaRDD = sparkContext.parallelize(testResultDataPoints).cache();
         // collect RDD as a sampled list
         List<TestResultDataPoint> testResultDataPointsSample;
         if(testResultDataPointsJavaRDD.count() > sampleSize) {
@@ -229,6 +243,9 @@ public class SparkModelUtils {
         else {
             testResultDataPointsSample = testResultDataPointsJavaRDD.collect();
         }
+        
+        testResultDataPointsJavaRDD.unpersist();
+        
         classClassificationModelSummary.setTestResultDataPointsSample(testResultDataPointsSample);
         // calculate test error
         double error = 1.0 * predictionsAndLabels.filter(new Function<Tuple2<Double, Double>, Boolean>() {
@@ -239,6 +256,7 @@ public class SparkModelUtils {
                 return !pl._1().equals(pl._2());
             }
         }).count() / predictionsAndLabels.count();
+        
         classClassificationModelSummary.setError(error);
         return classClassificationModelSummary;
     }
