@@ -28,7 +28,18 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
-import scala.Tuple2;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class KMeansAnomalyDetectionLabeledData implements Serializable {
 
@@ -143,7 +154,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return distancesArray;
     }
 
-    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
+/*    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
 
         // Get a DescriptiveStatistics instance
         DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -156,6 +167,48 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
                 stats.addValue(trainDistances[i][j]);
             }
 
+            percentiles[i] = stats.getPercentile(percentileValue);
+            stats.clear();
+        }
+        return percentiles;
+    }*/
+
+    public double[] getPercentileDistances(final double[][] trainDistances, double percentileValue){
+
+        // Get a DescriptiveStatistics instance
+        final DescriptiveStatistics stats = new DescriptiveStatistics();
+        double[] percentiles = new double[trainDistances.length];
+
+        for (int i = 0; i < percentiles.length; i++) {
+
+            // Add the data from the array
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+            try {
+                //Set<Future<String>> printTaskFutures = new HashSet<Future<String>>();
+                for (final double distance : trainDistances[i]) {
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                stats.addValue(distance);
+                            } catch (Exception ex) {
+                                // error management logic
+                            }
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                if (executor != null) {
+                    executor.shutdownNow();
+                }
+            }
+
+            //stats.addValue(trainDistances[i][j]);
+
+            // wait for all of the executor threads to finish
+            executor.shutdown();
             percentiles[i] = stats.getPercentile(percentileValue);
             stats.clear();
         }

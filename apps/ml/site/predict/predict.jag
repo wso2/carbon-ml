@@ -263,7 +263,8 @@
         });*/
 
 		$(document).on('click', '#file-predict', function(e){
-		    var actionUrl = serverUrl + '/api/models/predictionStreams';
+		    var percentile = $('#percentile').val();
+		    var actionUrl = serverUrl + '/api/models/predictionStreams?percentile=' + percentile;
 		    $('#prediction-form').attr('action', actionUrl);
 		});        
 

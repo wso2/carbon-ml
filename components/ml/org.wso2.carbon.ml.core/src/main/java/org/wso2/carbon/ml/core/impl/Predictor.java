@@ -322,7 +322,7 @@ public class Predictor {
         for(int i=0; i<dataToBePredicted.size(); i++){
 
             double distanceValue = distance.compute(clusterCenters[predictions.get(i)].toArray(),dataToBePredicted.get(i).toArray());
-            if(distanceValue > percentiles[i]){
+            if(distanceValue > percentiles[predictions.get(i)]){
                 decodedPredictions.add("Anomaly");
             }
             else {
