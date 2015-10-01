@@ -19,22 +19,23 @@
 package org.wso2.carbon.ml.core.spark.summary;
 
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.spark.ConfusionMatrix;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable{
 
     private static final long serialVersionUID = -2367643384961727119L;
-    private double trainDataComputeCost;
-    private double testDataComputeCost;
     private String algorithm;
     private String[] features;
     private Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix;
+    private List<ClusterPoint> clusterPoints;
     //private Map<Integer, Double> modelAccuracy;
     private String datasetVersion;
 
@@ -50,21 +51,6 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         return MLConstants.KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY;
     }
 
-    public double getTrainDataComputeCost() {
-        return trainDataComputeCost;
-    }
-
-    public void setTrainDataComputeCost(double trainDataComputeCost) {
-        this.trainDataComputeCost = trainDataComputeCost;
-    }
-
-    public double getTestDataComputeCost() {
-        return testDataComputeCost;
-    }
-
-    public void setTestDataComputeCost(double testDataComputeCost) {
-        this.testDataComputeCost = testDataComputeCost;
-    }
 
     /**
      * @param features Array of names of the features
@@ -104,6 +90,14 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
 
     public void setMulticlassConfusionMatrix(Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix) {
         this.multiclassConfusionMatrix = multiclassConfusionMatrix;
+    }
+
+    public List<ClusterPoint> getClusterPoints() {
+        return clusterPoints;
+    }
+
+    public void setClusterPoints(List<ClusterPoint> clusterPoints) {
+        this.clusterPoints = clusterPoints;
     }
 
     /*public Map<Integer, Double> getModelAccuracy() {

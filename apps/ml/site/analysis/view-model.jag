@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
     <!-- for threshold slider -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-  	
+    
     <script src="../../js/respond.min.js"></script>  
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
@@ -44,14 +44,14 @@ include("../../includes/tenantAware.jag");
     <div class="col-sm-4">
         <div class="wr-auth pull-right">
             <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-    			<div class="dropdown-menu">
-    				<div class="cu-arrow"></div>
-    				<div class="dropdown-menu-content">
-    					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
-    				</div>
-    			</div>			
-    		</div>
-    	</div>
+                <div class="dropdown-menu">
+                    <div class="cu-arrow"></div>
+                    <div class="dropdown-menu-content">
+                        <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                    </div>
+                </div>          
+            </div>
+        </div>
     </div>
 </header>
 <!-- /header -->
@@ -87,17 +87,17 @@ include("../../includes/tenantAware.jag");
 
 <!-- content/body -->
 <div class="row">
-	<div class="col-lg-12 wr-secondary-bar"></div>
+    <div class="col-lg-12 wr-secondary-bar"></div>
 </div>
 <div class="row">
-	<div class="col-md-12">
-		
+    <div class="col-md-12">
+        
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+        <!-- content -->
+        <div class="container col-md-12 col-centered wr-content">
 
             <div id="notification-area"></div>
-			<h1 class="title">Model Summary<span id="model-summary-title"><span></h1>
+            <h1 class="title">Model Summary<span id="model-summary-title"><span></h1>
 
             <div class="col-md-12 wr-graph-content">
 
@@ -196,17 +196,52 @@ include("../../includes/tenantAware.jag");
                                     <select class="form-control" id="residual-features"></select>
                                 </div>
                             </div>
-                        </div>   
-
+                        </div> 
                     </div>
-                </div>                          
+                </div> 
+
+                <div class="wr-graph-element gr04">
+                    <h5>Cluster Diagram</h5>
+                    <div class="wr-graph-img">
+                            <div id='clusterDiagram'>Loading chart...</div>
+
+                                    <div class="sp-quantity">
+                                        <div class="sp-minus"> <a class="cluster-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+                                        </div>
+                                        <div class="sp-input">
+                                            <input type="text" id="cluster-marker-size-input" class="quntity-input" value="2" disabled/>
+                                        </div>
+                                        <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+                                        </div>
+                                    </div>
+                                
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="filter-md">
+                                        <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                        <div class="input-control text">
+                                            <select class="form-control" id="cluster-independent"></select>
+                                        </div>
+                                    </div>                              
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="filter-md">
+                                        <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                        <div class="input-control text">
+                                            <select class="form-control" id="cluster-dependent"></select>
+                                        </div>
+                                    </div>                              
+                                </div>                           
+                    </div>
+                </div>
+                
             
             </div>
-		</div>
-		<!-- /content -->
+        </div>
+        <!-- /content -->
 
 
-	</div>
+    </div>
 </div>
 <!-- /content/body -->
 
@@ -257,6 +292,7 @@ var features;
 // variables for chart marker sizes
 var predictedActualMarkerSize;
 var residualMarkerSize;
+var clusterMarkerSize;
 // variables for predicted vs. actual chart (for redrawing on marker size change)
 var predictedVsActualData = [];
 var xAxisFeatureName;
@@ -264,6 +300,8 @@ var yAxisFeatureName;
 // variables for residual chart (for redrawing on marker size change)
 var residualData = [];
 var featureName;
+// variables for cluster diagram
+var clusterData;
 
 // redraw charts upon changes in selections
 $(document).on('change','select[id="predicted-actual-x-features"], select[id="predicted-actual-y-features"]',function() {
@@ -271,6 +309,9 @@ $(document).on('change','select[id="predicted-actual-x-features"], select[id="pr
 });
 $(document).on('change','select[id="residual-features"]',function() {
     drawResidualPlot(testResultDataPointsSample);
+});
+$(document).on('change','select[id="cluster-independent"], select[id="cluster-dependent"]',function() {
+    drawClusterDiagram();
 });
 
 $( document ).ready(function() {
@@ -297,7 +338,8 @@ $( document ).ready(function() {
     });
 
     predictedActualMarkerSize = $('#predicted-actual-marker-size-input').val();
-    residualMarkerSize = $('#residual-marker-size-input').val();    
+    residualMarkerSize = $('#residual-marker-size-input').val();  
+    clusterMarkerSize = $('#cluster-marker-size-input').val();  
 
     // get numerical feature names
     $.ajax({
@@ -305,7 +347,7 @@ $( document ).ready(function() {
         url: serverUrl + "/api/analyses/" + analysisId + "/filteredFeatures?featureType=NUMERICAL",
         async: false,
         success : function(res){
-        	numericalFeatureNames = res;
+            numericalFeatureNames = res;
         },
         error : function(res){
                 var errorText = res.responseText
@@ -320,7 +362,7 @@ $( document ).ready(function() {
         async: false,
         dataType: "text",
         success : function(res){
-        	responseVariable = res;
+            responseVariable = res;
         },
         error : function(res){
                 var errorText = res.responseText
@@ -348,7 +390,7 @@ $( document ).ready(function() {
                 }                
                
                 // remove not applicable charts/tables
-                $("#other-measures, #percentile").closest("div.wr-graph-element").remove();
+                $("#other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // format data and draw ROC graph
                 var rocData  = JSON.parse(res.roc);
@@ -363,7 +405,7 @@ $( document ).ready(function() {
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
-                // draw confusion matrix	            
+                // draw confusion matrix                
                 drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
@@ -371,20 +413,20 @@ $( document ).ready(function() {
                 numOfClasses = res.multiclassConfusionMatrix.size;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
                 if(features.length > 0) {
-	                $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
-	                $.each(features,function(index, feature){
-	                    $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
-	                        value: index,
-	                        text : sanitize(feature)
-	                    }));
-	                });                    
+                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                    $.each(features,function(index, feature){
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                            value: index,
+                            text : sanitize(feature)
+                        }));
+                    });                    
                     $('#predicted-actual-y-features option')[1].selected = true;
-	                // draw predicted vs. actual chart
-	                drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
+                    // draw predicted vs. actual chart
+                    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
                 }
                 else {
-                	var chartType = 'predicted vs. actual chart';
-					$('#predicted-vs-actual').html(getInfo(chartType));
+                    var chartType = 'predicted vs. actual chart';
+                    $('#predicted-vs-actual').html(getInfo(chartType));
                 }
             }
             else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST' || algorithm == 'NAIVE_BAYES') {
@@ -392,7 +434,7 @@ $( document ).ready(function() {
                     $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
                 }                
                 // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart, #other-measures, #percentile").closest("div.wr-graph-element").remove();
+                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // draw confusion matrix                
                 drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
@@ -409,8 +451,8 @@ $( document ).ready(function() {
                         }));
                     });                    
                     $('#predicted-actual-y-features option')[1].selected = true;
-	                // draw predicted vs. actual chart
-	                drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
+                    // draw predicted vs. actual chart
+                    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
                 }
                 else {
                     var chartType = 'predicted vs. actual chart';
@@ -422,7 +464,7 @@ $( document ).ready(function() {
                     $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
                 }                
                 // remove not applicable charts/tables
-                $("#roc-graph, #confusion-matrix, #other-measures, #percentile").closest("div.wr-graph-element").remove();
+                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
@@ -492,6 +534,12 @@ $( document ).ready(function() {
                 slider.val(newValue);
                 
                 });
+                console.log(res.clusterPoints);
+                console.log("clusterssss")
+                clusterData = res.clusterPoints;
+                console.log(clusterData);
+                drawClusterDiagramBase();
+                drawClusterDiagram();
             }
         },
         error: function(res){
@@ -551,7 +599,30 @@ $( document ).ready(function() {
         residualMarkerSize = newValue;
         $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
         drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
-    });	
+    }); 
+
+    $(".cluster-marker-size").on("click", function (e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+        if ($button.data('operator') == "+") {
+            var newValue = parseFloat(oldValue) + 1;
+        } else {
+            // Don't allow decrementing below 1
+            if (oldValue > 1) {
+                var newValue = parseFloat(oldValue) - 1;
+            } else {
+                newValue = 1;
+            }
+        }
+        clusterMarkerSize = newValue;
+        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+        $("#clusterDiagram").html("Loading chart...");
+        drawClusterDiagram();
+    });
+
 });
 
 // function to draw ROC graph
@@ -565,7 +636,7 @@ function drawRocGraph (data, auc, cssClass) {
     rocGraph.setPlotingAreaHeight(380);
     rocGraph.setLineColor("#f16c20"); 
     rocGraph.plot(d3.select(cssClass),function(){
-	   	var xLoc = xScale.invert(d3.mouse(this)[0]);
+        var xLoc = xScale.invert(d3.mouse(this)[0]);
         var yLoc = yScale.invert(d3.mouse(this)[1]);
     });
 };
@@ -768,13 +839,66 @@ function drawOtherMeasuresTable(multiclassConfusionMatrix, cssSelector){
 
 }
 
+
+function drawClusterDiagramBase() {
+
+    if(numericalFeatureNames.length > 1) {
+        $('#cluster-independent, #cluster-dependent').empty();
+        $.each(numericalFeatureNames,function(index, feature){
+            $('#cluster-independent, #cluster-dependent').append($('<option>', {
+                value: sanitize(feature),
+                text : sanitize(feature)
+            }));
+        });
+        // make second option selected by default
+        $('#cluster-dependent option')[1].selected = true;
+
+        drawClusterDiagram();
+    }
+}
+
+function drawClusterDiagram() {
+    
+    // get categorical feature list from checkbox selection
+    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+
+            var dataArray = clusterData;
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var clusterDataArray = [];
+            for (var i = 0; i < dataArray.length; i++) {                
+                var dataRow = [];
+                dataRow[0] = parseFloat(dataArray[i]['featureMap'][numericalFeatureIndependent]);
+                dataRow[1] = parseFloat(dataArray[i]['featureMap'][numericalFeatureDependent]);
+                dataRow[2] = dataArray[i]['cluster'];
+                clusterDataArray.push(dataRow);
+            }
+            drawScatterPlot(clusterDataArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize, false);
+}
+
+// drawing a simple scatter graph
+function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
+    $(cssClass).empty();
+    var scatter = new ScatterPlot(data);
+
+    scatter.setPlotingAreaWidth(720);
+    scatter.setPlotingAreaHeight(560);
+    scatter.setMarkerSize(markerSize);
+    scatter.setLegend(legendEnabled);
+    scatter.setXAxisText(xLabel);
+    scatter.setYAxisText(yLabel);
+    scatter.plot(d3.select(cssClass));
+}
+
+// functions for chart marker size changes
+
 // function to get the binary class label of a predicted value for given threshold
 function labelPredicted(actualValue, threshold) {
-	var actual = 0;
-	if (actualValue >= threshold) {
-		actual = 1;
-	}
-	return actual;
+    var actual = 0;
+    if (actualValue >= threshold) {
+        actual = 1;
+    }
+    return actual;
 }
 
 // function to get the binary class label of a predicted value

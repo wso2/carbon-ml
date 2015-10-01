@@ -18,19 +18,13 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
@@ -42,6 +36,7 @@ import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+import scala.Tuple2;
 
 /**
  * Building K means Anomaly Detection model supported by Spark.
@@ -354,18 +349,54 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
                         distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
 
-                multiclassConfusionMatrix.put(i, predictionResults);
+                multiclassConfusionMatrix.put(i, predictionResults);v
                 //modelAccuracy.put(i,getModelAccuracy(predictionResults));
 
 
 
             }
 
+            //generating data for summary clusters
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
+                    .getSampleSize();
+            double sampleFraction = sampleSize / (trainData.count() - 1);
+            JavaRDD<Vector> sampleData = null;
+
+            if (sampleFraction >= 1.0) {
+                sampleData = trainData;
+            }
+            // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
+            else {
+                sampleData = trainData.sample(false, sampleFraction);
+            }
+
+            // Populate cluster points list with predicted clusters and features
+            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansAnomalyDetectionLabeledData.test(kMeansModel, sampleData).zip(sampleData).collect();
+            List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+            List<Feature> featuresList = mlModel.getFeatures();
+
+            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction: kMeansPredictions) {
+
+                ClusterPoint clusterPoint = new ClusterPoint();
+                clusterPoint.setCluster(kMeansPrediction._1());
+                Map<String, Double> featureMap = new HashMap<String, Double>();
+                //clusterPoint.setFeatures(kMeansPrediction._2().toArray());
+                for(int i=0; i<featuresList.size(); i++){
+                    String featureName = featuresList.get(i).getName();
+                    double point = (kMeansPrediction._2().toArray())[i];
+                    featureMap.put(featureName, point);
+                }
+                clusterPoint.setFeatureMap(featureMap);
+                clusterPoints.add(clusterPoint);
+            }
+
+
             kMeansAnomalyDetectionSummary
                     .setAlgorithm(MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
                             .toString());
             //change setters to set MAps
             kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
+            kMeansAnomalyDetectionSummary.setClusterPoints(clusterPoints);
             //kMeansAnomalyDetectionSummary.setModelAccuracy(modelAccuracy);
             kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
             kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));

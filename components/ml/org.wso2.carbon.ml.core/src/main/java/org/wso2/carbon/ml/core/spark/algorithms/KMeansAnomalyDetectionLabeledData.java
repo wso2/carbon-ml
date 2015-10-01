@@ -28,6 +28,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -154,7 +155,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return distancesArray;
     }
 
-/*    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
+    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
 
         // Get a DescriptiveStatistics instance
         DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -171,9 +172,9 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
             stats.clear();
         }
         return percentiles;
-    }*/
+    }
 
-    public double[] getPercentileDistances(final double[][] trainDistances, double percentileValue){
+    /*public double[] getPercentileDistances(final double[][] trainDistances, double percentileValue){
 
         // Get a DescriptiveStatistics instance
         final DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -213,43 +214,52 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
             stats.clear();
         }
         return percentiles;
-    }
+    }*/
 
     public MulticlassConfusionMatrix getEvaluationResults(double[][] testNormalDistances, double[][] testAnomalyDistances, double[] percentiles){
 
        // ConfusionMatrix confusionMatrix = new ConfusionMatrix();
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
+        //List<PredictedVsActual> predictedVsActualList = new ArrayList<PredictedVsActual>();
         double truePositive = 0;
         double trueNegetive = 0;
         double falsePositive = 0;
         double falseNegetive = 0;
 
-//        Tuple2<Object,Object> t = new Tuple2<Object, Object>(1,2);
-//
-//        JavaRDD<Tuple2<Object, Object>> results;
-//        results = new Tuple2<1,2>()
+        //normal - 0
+        //anomaly - 1
 
         //evaluating testNormal data
         for(int i=0; i<percentiles.length; i++){
             for(int j=0; j<testNormalDistances[i].length; j++){
+//                PredictedVsActual predictedVsActual = new PredictedVsActual();
+//                predictedVsActual.setActual(0);
                 if(testNormalDistances[i][j] > percentiles[i]){
                     falsePositive++;
+//                    predictedVsActual.setPredicted(1);
                 }
                 else {
                     trueNegetive++;
+//                    predictedVsActual.setPredicted(0);
                 }
+//                predictedVsActualList.add(predictedVsActual);
             }
         }
 
         //evaluating testAnomaly data
         for(int i=0; i<percentiles.length; i++){
             for(int j=0; j<testAnomalyDistances[i].length; j++){
+//                PredictedVsActual predictedVsActual = new PredictedVsActual();
+//                predictedVsActual.setActual(1);
                 if(testAnomalyDistances[i][j] > percentiles[i]){
                     truePositive++;
+//                    predictedVsActual.setPredicted(1);
                 }
                 else {
                     falseNegetive++;
+//                    predictedVsActual.setPredicted(0);
                 }
+//                predictedVsActualList.add(predictedVsActual);
             }
         }
 
