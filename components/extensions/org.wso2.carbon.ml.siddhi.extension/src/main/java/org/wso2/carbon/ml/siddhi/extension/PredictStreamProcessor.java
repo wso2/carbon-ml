@@ -18,7 +18,11 @@ package org.wso2.carbon.ml.siddhi.extension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
 
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
@@ -228,7 +232,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                         attributeIndexMap.put(newFeatureIndex, variable.getPosition());
                     } else {
                         throw new ExecutionPlanCreationException(
-                                "No matching feature name found in the model " + "for the attribute : " + variableName);
+                                "No matching feature name found in the models for the attribute : " + variableName);
                     }
                 }
             }
@@ -244,7 +248,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                     attributeIndexMap.put(newFeatureIndex, attributeIndexArray);
                 } else {
                     throw new ExecutionPlanCreationException(
-                            "No matching feature name found in the model " + "for the attribute : " + attributeName);
+                            "No matching feature name found in the models for the attribute : " + attributeName);
                 }
             }
         }
