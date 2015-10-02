@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.ml.siddhi.extension;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
+
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
@@ -33,18 +37,13 @@ import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
 import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class PredictStreamProcessor extends StreamProcessor {
 
-    private ModelHandler modelHandler;
-    private String modelStorageLocation;
+
+    private ModelHandler[] modelHandlers;
+    private String[] modelStorageLocations;
     private String responseVariable;
+    private String algorithmClass;
     private String outputType;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap;           // <feature-index, [event-array-type][attribute-index]> pairs
@@ -75,7 +74,30 @@ public class PredictStreamProcessor extends StreamProcessor {
 
             if (featureValues != null) {
                 try {
-                    Object predictionResult = modelHandler.predict(featureValues, outputType);
+                    Object[] predictionResults = new Object[modelHandlers.length];
+                    Object predictionResult = null;
+
+                    if (responseVariable != null) {
+                        if (algorithmClass.equals("classification")) {
+                            for (int i = 0; i < modelHandlers.length; i++) {
+                                predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
+                            }
+                            // Gets the majority vote
+                            predictionResult = getMostFrequent(predictionResults);
+                        } else {
+                            double sum = 0;
+                            for (int i = 0; i < modelHandlers.length; i++) {
+                                sum += Double
+                                        .parseDouble(modelHandlers[i].predict(featureValues, outputType).toString());
+                            }
+                            // Gets the average value of predictions
+                            predictionResult = sum / modelHandlers.length;
+                        }
+                    } else {
+                        throw new ExecutionPlanRuntimeException(
+                                "Error while predicting. " + "Response variable is null in models");
+                    }
+
                     Object[] output = new Object[] { predictionResult };
                     complexEventPopulater.populateComplexEvent(event, output);
                 } catch (Exception e) {
@@ -91,7 +113,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
 
         if(attributeExpressionExecutors.length < 2) {
-            throw new ExecutionPlanValidationException("ML model storage location and response variable type have not " +
+            throw new ExecutionPlanValidationException("ML model storage locations and response variable type have not " +
                     "been defined as the first two parameters");
         } else if(attributeExpressionExecutors.length == 2) {
             attributeSelectionAvailable = false;    // model-storage-location, data-type
@@ -100,30 +122,78 @@ public class PredictStreamProcessor extends StreamProcessor {
         }
 
         // model-storage-location
-        if(attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
+        if (attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
             Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[0]).getValue();
-            modelStorageLocation = (String) constantObj;
+            String allPaths = (String) constantObj;
+            modelStorageLocations = allPaths.split(",");
         } else {
-            throw new ExecutionPlanValidationException("ML model storage-location has not been defined as the first parameter");
+            throw new ExecutionPlanValidationException(
+                    "ML model storage-location has not been defined as the first parameter");
         }
 
         // data-type
         Attribute.Type outputDatatype;
-        if(attributeExpressionExecutors[1] instanceof ConstantExpressionExecutor) {
+        if (attributeExpressionExecutors[1] instanceof ConstantExpressionExecutor) {
             Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[1]).getValue();
             outputType = (String) constantObj;
             outputDatatype = getOutputAttributeType(outputType);
         } else {
-            throw new ExecutionPlanValidationException("Response variable type has not been defined as the second parameter");
+            throw new ExecutionPlanValidationException(
+                    "Response variable type has not been defined as the second parameter");
         }
 
-        try {
-            modelHandler = new ModelHandler(modelStorageLocation);
-            responseVariable = modelHandler.getResponseVariable();
-        } catch (Exception e) {
-            log.error("Error while retrieving ML-model : " + modelStorageLocation, e);
-            throw new ExecutionPlanCreationException("Error while retrieving ML-model : " + modelStorageLocation + "\n" + e.getMessage());
+        modelHandlers = new ModelHandler[modelStorageLocations.length];
+        for (int i = 0; i < modelStorageLocations.length; i++) {
+            try {
+                modelHandlers[i] = new ModelHandler(modelStorageLocations[i]);
+            } catch (ClassNotFoundException e) {
+                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
+                throw new ExecutionPlanCreationException(
+                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+            } catch (URISyntaxException e) {
+                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
+                throw new ExecutionPlanCreationException(
+                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+            } catch (MLInputAdapterException e) {
+                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
+                throw new ExecutionPlanCreationException(
+                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+            } catch (IOException e) {
+                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
+                throw new ExecutionPlanCreationException(
+                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+            }
         }
+
+        // Validate response variables
+        HashSet<String> responseVariables = new HashSet<String>();
+        for (int i = 0; i < modelStorageLocations.length; i++) {
+            responseVariables.add(modelHandlers[i].getResponseVariable());
+        }
+        if (responseVariables.size() > 1) {
+            throw new ExecutionPlanCreationException("Response variables of models are not equal");
+        }
+        responseVariable = modelHandlers[0].getResponseVariable();
+
+        // Validate algorithm classes
+        HashSet<String> algorithmClasses = new HashSet<String>();
+        for (int i = 0; i < modelHandlers.length; i++) {
+            algorithmClasses.add(modelHandlers[i].getAlgorithmClass());
+        }
+        if (algorithmClasses.size() > 1) {
+            throw new ExecutionPlanRuntimeException("Types of response variables are not equal");
+        }
+        algorithmClass = modelHandlers[0].getAlgorithmClass();
+
+        // Validate features
+        HashSet<Map<String, Integer>> features = new HashSet<Map<String, Integer>>();
+        for (int i = 0; i < modelHandlers.length; i++) {
+            features.add(modelHandlers[i].getFeatures());
+        }
+        if (features.size() > 1) {
+            throw new ExecutionPlanRuntimeException("Features in models are not equal");
+        }
+
         return Arrays.asList(new Attribute(responseVariable, outputDatatype));
     }
 
@@ -132,23 +202,24 @@ public class PredictStreamProcessor extends StreamProcessor {
         try {
             populateFeatureAttributeMapping();
         } catch (Exception e) {
-            log.error("Error while retrieving ML-model : " + modelStorageLocation, e);
-            throw new ExecutionPlanCreationException("Error while retrieving ML-model : " + modelStorageLocation + "\n" + e.getMessage());
+            log.error("Error while retrieving ML-models", e);
+            throw new ExecutionPlanCreationException("Error while retrieving ML-models" + "\n" + e.getMessage());
         }
     }
 
     /**
      * Match the attribute index values of stream with feature index value of the model
+     * 
      * @throws Exception
      */
     private void populateFeatureAttributeMapping() throws Exception {
         attributeIndexMap = new HashMap<Integer, int[]>();
-        Map<String, Integer> featureIndexMap = modelHandler.getFeatures();
-        List<Integer> newToOldIndicesList = modelHandler.getNewToOldIndicesList();
+        Map<String, Integer> featureIndexMap = modelHandlers[0].getFeatures();
+        List<Integer> newToOldIndicesList = modelHandlers[0].getNewToOldIndicesList();
 
-        if(attributeSelectionAvailable) {
+        if (attributeSelectionAvailable) {
             for (ExpressionExecutor expressionExecutor : attributeExpressionExecutors) {
-                if(expressionExecutor instanceof VariableExpressionExecutor) {
+                if (expressionExecutor instanceof VariableExpressionExecutor) {
                     VariableExpressionExecutor variable = (VariableExpressionExecutor) expressionExecutor;
                     String variableName = variable.getAttribute().getName();
                     if (featureIndexMap.get(variableName) != null) {
@@ -156,14 +227,14 @@ public class PredictStreamProcessor extends StreamProcessor {
                         int newFeatureIndex = newToOldIndicesList.indexOf(featureIndex);
                         attributeIndexMap.put(newFeatureIndex, variable.getPosition());
                     } else {
-                        throw new ExecutionPlanCreationException("No matching feature name found in the model " +
-                                "for the attribute : " + variableName);
+                        throw new ExecutionPlanCreationException(
+                                "No matching feature name found in the model " + "for the attribute : " + variableName);
                     }
                 }
             }
         } else {
             String[] attributeNames = inputDefinition.getAttributeNameArray();
-            for(String attributeName : attributeNames) {
+            for (String attributeName : attributeNames) {
                 if (featureIndexMap.get(attributeName) != null) {
                     int featureIndex = featureIndexMap.get(attributeName);
                     int newFeatureIndex = newToOldIndicesList.indexOf(featureIndex);
@@ -172,8 +243,8 @@ public class PredictStreamProcessor extends StreamProcessor {
                     attributeIndexArray[3] = inputDefinition.getAttributePosition(attributeName);
                     attributeIndexMap.put(newFeatureIndex, attributeIndexArray);
                 } else {
-                    throw new ExecutionPlanCreationException("No matching feature name found in the model " +
-                            "for the attribute : " + attributeName);
+                    throw new ExecutionPlanCreationException(
+                            "No matching feature name found in the model " + "for the attribute : " + attributeName);
                 }
             }
         }
@@ -201,6 +272,25 @@ public class PredictStreamProcessor extends StreamProcessor {
         } else {
             throw new ExecutionPlanValidationException("Invalid data-type defined for response variable.");
         }
+    }
+
+    private Object getMostFrequent(Object[] predictions) {
+        Map<Object, Integer> m = new HashMap<Object, Integer>();
+        // Calculates the frequency of each prediction
+        for (Object prediction : predictions) {
+            Integer freq = m.get(prediction);
+            m.put(prediction, (freq == null) ? 1 : freq + 1);
+        }
+        int max = -1;
+        Object mostFrequent = null;
+        // Finds the key with highest frequency
+        for (Map.Entry<Object, Integer> e : m.entrySet()) {
+            if (e.getValue() > max) {
+                mostFrequent = e.getKey();
+                max = e.getValue();
+            }
+        }
+        return mostFrequent;
     }
 
     @Override
