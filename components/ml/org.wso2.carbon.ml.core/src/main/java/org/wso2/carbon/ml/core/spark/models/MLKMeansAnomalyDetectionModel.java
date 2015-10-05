@@ -31,8 +31,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
     private KMeansModel model;
     private double[][] distancesArray;
-/*    private double[][] distancesArrayTestNormal;
-    private double[][] distancesArrayTestAnomaly;*/
+    private int bestPercentile;
 
     public MLKMeansAnomalyDetectionModel() {
     }
@@ -82,21 +81,12 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
         this.distancesArray = distancesArray;
     }
 
-/*    public double[][] getDistancesArrayTestNormal() {
-        return distancesArrayTestNormal;
+    public int getBestPercentile() {
+        return bestPercentile;
     }
 
-    public void setDistancesArrayTestNormal(double[][] distancesArrayTestNormal){
-        this.distancesArrayTestNormal = distancesArrayTestNormal;
+    public void setBestPercentile(int bestPercentile) {
+        this.bestPercentile = bestPercentile;
     }
-
-    public double[][] getDistancesArrayTestAnomaly() {
-        return distancesArrayTestAnomaly;
-    }
-
-    public void setDistancesArrayTestAnomaly(double[][] distancesArrayTestAnomaly){
-        this.distancesArrayTestAnomaly = distancesArrayTestAnomaly;
-    }*/
-
 }
 

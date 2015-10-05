@@ -315,7 +315,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             KMeansAnomalyDetectionSummary kMeansAnomalyDetectionSummary = new KMeansAnomalyDetectionSummary();
             MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = new MLKMeansAnomalyDetectionModel(kMeansModel);
             mlkMeansAnomalyDetectionModel.setDistancesArray(distancesArray);
-            mlModel.setModel(mlkMeansAnomalyDetectionModel);
+
 
             // evaluating the model
 
@@ -340,8 +340,12 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix = new HashMap<Integer, MulticlassConfusionMatrix>();
             //Map<Integer, Double> modelAccuracy = new HashMap<Integer, Double>();
+            int maxRange = 100;
+            int minRange = 80;
+            double maxF1= 0;
+            int bestPercentile = maxRange;
 
-            for(int i=80; i<=100; i++) {
+            for(int i=minRange; i<=maxRange; i++) {
 
                 double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
                         i);
@@ -349,16 +353,19 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
                         distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
 
-                multiclassConfusionMatrix.put(i, predictionResults);v
+                if(predictionResults.getF1Score() > maxF1){
+                    maxF1 = predictionResults.getF1Score();
+                    bestPercentile = i;
+                }
+
+                multiclassConfusionMatrix.put(i, predictionResults);
                 //modelAccuracy.put(i,getModelAccuracy(predictionResults));
-
-
-
             }
 
             //generating data for summary clusters
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
+
             double sampleFraction = sampleSize / (trainData.count() - 1);
             JavaRDD<Vector> sampleData = null;
 
@@ -390,14 +397,15 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 clusterPoints.add(clusterPoint);
             }
 
+            mlkMeansAnomalyDetectionModel.setBestPercentile(bestPercentile);
+            mlModel.setModel(mlkMeansAnomalyDetectionModel);
 
             kMeansAnomalyDetectionSummary
                     .setAlgorithm(MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
                             .toString());
-            //change setters to set MAps
             kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
             kMeansAnomalyDetectionSummary.setClusterPoints(clusterPoints);
-            //kMeansAnomalyDetectionSummary.setModelAccuracy(modelAccuracy);
+            kMeansAnomalyDetectionSummary.setBestPercentile(bestPercentile);
             kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
             kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
 

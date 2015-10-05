@@ -102,12 +102,23 @@ include("../../includes/tenantAware.jag");
             <div class="col-md-12 wr-graph-content">
 
                 <div class="wr-graph-element gr03">
-                    <h5>Percentile Value :&nbsp;<input type="text" name="chance" id="chance" class="text" value="90" style="border:none"></h5>
+                    <h5>Percentile Value<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                    data-placement="right" title="The threshold distance value used to identify cluster boundaries in
+                    the model evaluation process."></span>:&nbsp;
+                    <input type="text" name="chance" id="chance" class="text" value="90" style="border:none"></h5>
                         <div id="percentile">
-                        <input type="range" id="myRange" defaultValue="90" min="80" max="100" step="1"><h7> 80<span style="float:right;">100</span></h7>
+                        <input type="range" id="myRange" defaultValue="90" min="80" max="100" step="1"><h7>
+                        80<span style="float:right;">100</span></h7>
                         </div>                            
                 </div>
-            
+
+                <div class="wr-graph-element gr03">
+                    <h5>Other Measures</h5>
+                    <div class="wr-graph-img">
+                        <div id="other-measures"></div>
+                    </div>
+                </div>
+
                 <div class="wr-graph-element gr03">
                     <h5>ROC Graph</h5>
                     <div class="wr-graph-img">
@@ -128,13 +139,6 @@ include("../../includes/tenantAware.jag");
                     <h5>Confusion Matrix</h5>
                     <div class="wr-graph-img">
                         <div id="confusion-matrix"></div>
-                    </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5>Other Measures</h5>
-                    <div class="wr-graph-img">
-                        <div id="other-measures"></div>
                     </div>
                 </div>
 
@@ -491,7 +495,12 @@ $( document ).ready(function() {
                 }                    
             }
             else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
- 
+
+                if(res.bestPercentile) {
+                    $('#myRange').val(res.bestPercentile);
+                    $('#chance').val(res.bestPercentile);
+                }
+
                 var percentile = $('#myRange').val();
                 if(res.multiclassConfusionMatrix[percentile].f1Score) {
                     $("#model-summary-title").empty();
@@ -518,11 +527,8 @@ $( document ).ready(function() {
                     $("#model-summary-title").empty();
                     $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[newValue].f1Score.toFixed(2) + "%]");
                 }
-                // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart").closest("div.wr-graph-element").remove();
-                $("#residual").remove();
-                $("#predicted-vs-actual").remove();
-                // draw confusion matrix
+
+                // draw confusion matrix and other measures
                 drawConfusionMatrix(res.multiclassConfusionMatrix[newValue].matrix, res.multiclassConfusionMatrix[newValue].labels, "#confusion-matrix");
                 drawOtherMeasuresTable(res.multiclassConfusionMatrix[newValue], "#other-measures");
 
@@ -532,12 +538,19 @@ $( document ).ready(function() {
 
                 var newValue = parseInt($(this).val());
                 slider.val(newValue);
+
+                if(res.multiclassConfusionMatrix[newValue].f1Score) {
+                    $("#model-summary-title").empty();
+                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[newValue].f1Score.toFixed(2) + "%]");
+                }
+
+                // draw confusion matrix and other measures
+                drawConfusionMatrix(res.multiclassConfusionMatrix[newValue].matrix, res.multiclassConfusionMatrix[newValue].labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.multiclassConfusionMatrix[newValue], "#other-measures");
                 
                 });
-                console.log(res.clusterPoints);
-                console.log("clusterssss")
+
                 clusterData = res.clusterPoints;
-                console.log(clusterData);
                 drawClusterDiagramBase();
                 drawClusterDiagram();
             }

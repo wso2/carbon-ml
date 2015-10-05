@@ -36,7 +36,7 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
     private String[] features;
     private Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix;
     private List<ClusterPoint> clusterPoints;
-    //private Map<Integer, Double> modelAccuracy;
+    private int bestPercentile;
     private String datasetVersion;
 
     public String getAlgorithm() {
@@ -68,22 +68,6 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         return features;
     }
 
-/*    public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
-        return multiclassConfusionMatrix;
-    }
-
-    public void setMulticlassConfusionMatrix(MulticlassConfusionMatrix multiclassConfusionMatrix) {
-        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
-    }
-
-    public double getModelAccuracy() {
-        return modelAccuracy;
-    }
-
-    public void setModelAccuracy(double modelAccuracy) {
-        this.modelAccuracy = modelAccuracy;
-    }*/
-
     public Map<Integer, MulticlassConfusionMatrix> getMulticlassConfusionMatrix() {
         return multiclassConfusionMatrix;
     }
@@ -100,13 +84,13 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         this.clusterPoints = clusterPoints;
     }
 
-    /*public Map<Integer, Double> getModelAccuracy() {
-        return modelAccuracy;
+    public int getBestPercentile() {
+        return bestPercentile;
     }
 
-    public void setModelAccuracy(Map<Integer, Double> modelAccuracy) {
-        this.modelAccuracy = modelAccuracy;
-    }*/
+    public void setBestPercentile(int bestPercentile) {
+        this.bestPercentile = bestPercentile;
+    }
 
     /**
      * @return Returns dataset version

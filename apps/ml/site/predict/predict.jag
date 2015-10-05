@@ -104,7 +104,7 @@
                             <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
                             <span class="fld-required">*</span>
                             <div class="input-control text">
-                            <input type="text" id="percentile" value="98" placeholder="input text"/>
+                            <input type="text" id="percentile" defaultValue="98" placeholder="input text"/>
                             </div>
                             </div>
 
@@ -296,6 +296,7 @@
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
+
         // get feature names of this model
         $.ajax({
             type: "GET",
@@ -329,7 +330,12 @@
                 };
 
                 var algorithmName = data['algorithm'];
-                if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' || algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+                if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+                    $('#percentile-value').show();
+                    if(data.bestPercentile){
+                        $('#percentile').val(data.bestPercentile);
+                    }
+                }else if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                     $('#percentile-value').show();
                 }else{
                     $('#percentile-value').hide();
@@ -360,8 +366,6 @@
             });
 
             var percentile = $('#percentile').val();
-
-            //inputArray[inputArray.length] = percentile;
 
             if(!emptyFeatureValues) {
                 jsonData = JSON.stringify(inputArray);
