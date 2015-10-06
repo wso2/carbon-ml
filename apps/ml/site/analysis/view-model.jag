@@ -97,7 +97,7 @@ include("../../includes/tenantAware.jag");
         <div class="container col-md-12 col-centered wr-content">
 
             <div id="notification-area"></div>
-            <h1 class="title">Model Summary<span id="model-summary-title"><span></h1>
+            <h1 class="title">Model Summary<span id="model-summary-title"></span></h1>
 
             <div class="col-md-12 wr-graph-content">
 
@@ -105,11 +105,18 @@ include("../../includes/tenantAware.jag");
                     <h5>Percentile Value<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip"
                     data-placement="right" title="The threshold distance value used to identify cluster boundaries in
                     the model evaluation process."></span>:&nbsp;
-                    <input type="text" name="chance" id="chance" class="text" value="90" style="border:none"></h5>
+                    <input type="text" name="chance" id="chance" class="text no-border"></h5>
                         <div id="percentile">
-                        <input type="range" id="myRange" defaultValue="90" min="80" max="100" step="1"><h7>
+                        <input type="range" id="myRange" min="80" max="100" step="1"><h7>
                         80<span style="float:right;">100</span></h7>
                         </div>                            
+                </div>
+
+                <div class="wr-graph-element gr03">
+                    <h5>Confusion Matrix</h5>
+                    <div class="wr-graph-img">
+                        <div id="confusion-matrix"></div>
+                    </div>
                 </div>
 
                 <div class="wr-graph-element gr03">
@@ -132,13 +139,6 @@ include("../../includes/tenantAware.jag");
                         <div id="weights-chart">
                             <svg></svg>
                         </div>
-                    </div>
-                </div>  
-                
-                <div class="wr-graph-element gr03">
-                    <h5>Confusion Matrix</h5>
-                    <div class="wr-graph-img">
-                        <div id="confusion-matrix"></div>
                     </div>
                 </div>
 
@@ -238,12 +238,10 @@ include("../../includes/tenantAware.jag");
                                 </div>                           
                     </div>
                 </div>
-                
-            
+
             </div>
         </div>
         <!-- /content -->
-
 
     </div>
 </div>
@@ -924,6 +922,6 @@ function labelPredictedSvm(actualValue) {
 }
 
 </script>
-
+</div>
 </body>
 </html>

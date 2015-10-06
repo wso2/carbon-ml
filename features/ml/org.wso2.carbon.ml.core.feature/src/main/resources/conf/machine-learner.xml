@@ -407,7 +407,7 @@
 			<Parameters>
 				<Name>Num_of_Normal_Clusters</Name>
 				<Value>5</Value>
-				<Description>The number of desired clusters. This value should be
+				<Description>The number of desired normal clusters. This value should be
 					an integer greater than 0.
 				</Description>
 			</Parameters>
@@ -430,7 +430,7 @@
 			<Parameters>
 				<Name>Num_of_Normal_Clusters</Name>
 				<Value>5</Value>
-				<Description>The number of desired clusters. This value should be
+				<Description>The number of desired normal clusters. This value should be
 					an integer greater than 0.
 				</Description>
 			</Parameters>

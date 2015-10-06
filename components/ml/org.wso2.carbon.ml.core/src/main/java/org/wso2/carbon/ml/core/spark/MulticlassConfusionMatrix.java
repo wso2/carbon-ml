@@ -39,7 +39,7 @@ public class MulticlassConfusionMatrix implements Serializable {
      * Size of the matrix (for a 3x3 matrix this value will be 3 since the confusion matrix is always a square matrix).
      */
     private int size;
-
+    //accuracy measures
     private double f1Score;
     private double accuracy;
     private double precision;

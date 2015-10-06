@@ -35,21 +35,6 @@ public class NormalRowsFilter implements Function<String[], Boolean> {
         this.responseIndex = builder.responseIndex;
     }
 
-    // @Override
-    // public Boolean call(String[] tokens) {
-    // Boolean keep = false;
-    // for (int i=0; i<tokens.length; i++) {
-    // if (i == responseIndex) {
-    // for(String label: normalLabels) {
-    // if(tokens[i] == label)
-    // keep = true;
-    // break;
-    // }
-    // }
-    // }
-    // return keep;
-    // }
-
     @Override
     public Boolean call(String[] tokens) {
         Boolean keep = false;

@@ -18,18 +18,17 @@
 
 package org.wso2.carbon.ml.core.spark.summary;
 
-import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.ClusterPoint;
-import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.core.spark.ConfusionMatrix;
-import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable{
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+
+public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable {
 
     private static final long serialVersionUID = -2367643384961727119L;
     private String algorithm;
@@ -47,14 +46,11 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         this.algorithm = algorithm;
     }
 
-    @Override public String getModelSummaryType() {
+    @Override
+    public String getModelSummaryType() {
         return MLConstants.KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY;
     }
 
-
-    /**
-     * @param features Array of names of the features
-     */
     public void setFeatures(String[] features) {
         if (features == null) {
             this.features = new String[0];
@@ -92,18 +88,11 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         this.bestPercentile = bestPercentile;
     }
 
-    /**
-     * @return Returns dataset version
-     */
     public String getDatasetVersion() {
         return datasetVersion;
     }
 
-    /**
-     * @param datasetVersion Sets dataset version
-     */
     public void setDatasetVersion(String datasetVersion) {
         this.datasetVersion = datasetVersion;
     }
 }
-

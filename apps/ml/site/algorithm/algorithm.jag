@@ -121,23 +121,9 @@ include("../../includes/tenantAware.jag");
 
                 <div class="spcr-2"></div>
 
-            <!--    <div id="method-selection">
-                     <label class="input-label-sm">Training Method<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                       <div class="wr-filter-radio-group">
-                         <label class='radio' id='training-method'>
-
-                         <input type='radio' value='unsupervised' name='options' checked>Unsupervised</br>
-                         <input type='radio' value='supervised' name='options'>Supervised
-
-                         </label>
-                        </div>
-                </div>
-
-                <br class="c-both" /> -->
-
                 <div id="response-variable-field">
                     <label class="input-label">Response variable<span class="glyphicon"></span></label>
-            <span class="fld-required">*</span>
+                    <span class="fld-required">*</span>
                     <div class="input-control text">
                         <select id="response-variable" class="form-control">
                         </select>
@@ -145,36 +131,25 @@ include("../../includes/tenantAware.jag");
                     <div class="spcr-2"></div>                
                 </div>
 
-                <!-- <div id="normal-labels">
-                <label class="input-label">Normal Label(s) Values<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="lable-names" placeholder="normal label(s) values"/>
-                </div>
-                </div> -->
-
                 <div id="normal-labels">
                     <label class="input-label-sm">Normal Label(s) Values<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                    <div id="lable-names" class="wr-filter-radio-group">
-                    </div>
+                    <div id="lable-names" class="wr-filter-radio-group"></div>
                     <div class="spcr-2"></div>
                 </div> 
-                
 
                 <div id="train-data-fraction">
-                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
-                </div>
-
+                    <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+                    <div class="input-control text">
+                        <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+                    </div>
                 </div>
 
                 <div class="wr-filter-radio-group" id="normalization">
-                <label class="checkbox">
-                   <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
-                </label>
-                <div class="spcr-2"></div>
+                    <label class="checkbox">
+                        <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
+                    </label>
+                    <div class="spcr-2"></div>
                 </div>
-                
 
             </div>
 
@@ -215,14 +190,12 @@ $( document ).ready(function() {
             top: $('header').height()
           }
     });
-    
-    //scrollVibrateFix();
-    
-    $(window).resize(function() {
-        scrollVibrateFix();
-    });
 
+     /*scrollVibrateFix();
 
+        $(window).resize(function() {
+            scrollVibrateFix();
+        });*/
 
     // set previously selected values when navigating from next page
     var setResponseVariable = "";    
@@ -266,9 +239,9 @@ $( document ).ready(function() {
     });
     }
 
-
     loadDatasetFeatures(setResponseVariable);
     getNormalLabelValues();
+
     // get previously set algorithm name
     $.ajax({
         type: "GET",
@@ -286,6 +259,7 @@ $( document ).ready(function() {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
+
     // get previously set train data fraction
     $.ajax({
         type: "GET",
@@ -304,7 +278,6 @@ $( document ).ready(function() {
         }
     });
 
-    //ashen
     // get previously set normal labels
     $.ajax({
         type: "GET",
@@ -313,10 +286,7 @@ $( document ).ready(function() {
         dataType: 'text',
         success: function(res) {
             var setNormalLabels = sanitize(res);
-            //var lb = JSON.parse(setNormalLabels);
-            console.log(setNormalLabels);
             var labelArray = setNormalLabels.split(',');
-            console.log(labelArray);
             
             for(var i=0; i<labelArray.length; i++){
                 
@@ -326,7 +296,7 @@ $( document ).ready(function() {
                 }
                 });
             }
-            //avoiding allways checking the 1st value
+            //avoiding always checking the 1st value
             var temp = 0;
             $("input:checkbox[name=labels]:checked").each(function(){
                 for(var i=0; i<labelArray.length; i++){
@@ -345,7 +315,7 @@ $( document ).ready(function() {
         }
     });
     
-       // get previously set normalization option
+    // get previously set normalization option
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/normalization",
@@ -367,8 +337,6 @@ $( document ).ready(function() {
         }
     });
 
-    
-        
     // put path in application navigator
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);
@@ -382,13 +350,12 @@ $( document ).ready(function() {
         $('#normalization-value').attr("disabled","disabled");
     }
 
-    //hide unwanted fields when loading the page
-    document.body.onload = function() {
-
+    //hide unnecessary fields when loading the page
         if($('#algorithm-name').val() == 'K_MEANS') {
             $('#response-variable-field').hide();
             $('#normal-labels').hide();
             $('#normalization').hide();
+            $('#train-data-fraction').hide();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
             $('#response-variable-field').hide();
@@ -409,9 +376,7 @@ $( document ).ready(function() {
             $('#normalization').hide();
         }
 
-    };
-
-    // hides response variable field for K-Means algorithm
+    // hides unnecessary fields according to algorithm
     $(document).on('change','#algorithm-name',function() {
         if($('#algorithm-name').val() == 'K_MEANS') {
             $('#response-variable-field').hide();
@@ -434,8 +399,8 @@ $( document ).ready(function() {
         else{
             $('#response-variable-field').show();
             $('#normal-labels').hide();
-            $('#normalization').hide();
             $('#train-data-fraction').show();
+            $('#normalization').hide();
         }
     });
 
@@ -443,21 +408,6 @@ $( document ).ready(function() {
         getNormalLabelValues();
     });
 
-    // change options according to anomaly detection training method
- /*   $(document).on('change','#training-method',function() {
-        if($("input[name='options']:checked").val() == 'supervised') {
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-        }
-        else{
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-
-        }
-    }); */
-    
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
 
@@ -476,16 +426,12 @@ $( document ).ready(function() {
             responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
         }
 
-        //ashen
         var normalLabels = new Array();
-        
         $("input:checkbox[name=labels]:checked").each(function(){
             normalLabels.push($(this).val());
         });
-           
 
         var normalization;
-
         if($('#normalization-value').is(":checked")) {
             normalization = 'true';
         }
@@ -578,8 +524,6 @@ $( document ).ready(function() {
     });
 }); 
 
-
-
 function getNormalLabelValues() {
 
     $.ajax({
@@ -595,35 +539,29 @@ function getNormalLabelValues() {
         console.log(nm)
         for(var i=0; i<features.length; i++){
         
-        if($('#response-variable option:selected').text() == features[i].fieldName){
+            if($('#response-variable option:selected').text() == features[i].fieldName){
                      
-            var jsonObj = JSON.parse(features[i]["summaryStats"]);  
-            var values = jsonObj[0]["values"];
+                var jsonObj = JSON.parse(features[i]["summaryStats"]);
+                var values = jsonObj[0]["values"];
 
-         //console.log(jsonObj[0]["values"][0][0]);
-
-            $('#lable-names').empty();
-            for(var index=0; index<values.length; index++){
-            // first 4 categorical features are plotted by default
-            if (index < 1){
-                $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "' checked>" + values[index][0] + "</label>");
-            }
-            else {
-                $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
+                $('#lable-names').empty();
+                for(var index=0; index<values.length; index++){
+                // first 4 categorical features are plotted by default
+                    if (index < 1){
+                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "' checked>" + values[index][0] + "</label>");
+                    }
+                    else {
+                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
+                    }
+                }
             }
         }
-
-       
-        }
-    }
-  },
-
+    },
     error : function(res){
         var errorText = res.responseText
         handleNotification(errorText, '#notification-area', 'warning');
     }
-});
-
+    });
 }
 
 </script>

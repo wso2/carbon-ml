@@ -36,6 +36,7 @@ import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+
 import scala.Tuple2;
 
 /**
@@ -50,9 +51,6 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
     private JavaRDD<Vector> preProcess() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         Workflow workflow = context.getFacts();
-        // MLModel mlModel = new MLModel();
-        // mlModel.setNormalization(workflow.getNormalization());
-        // mlModel.setNormalLabels(workflow.getNormalLabels());
 
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
@@ -62,7 +60,6 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
         MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
         DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
-        //RemoveResponseColumn removeResponseColumn = new RemoveResponseColumn();
 
         JavaRDD<String> lines = context.getLines().cache();
 
@@ -78,15 +75,11 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                     .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(doubleArrayToVector);
         }
-
     }
 
     private JavaRDD<Vector> preProcessNormal() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         Workflow workflow = context.getFacts();
-        // MLModel mlModel = new MLModel();
-        // mlModel.setNormalization(workflow.getNormalization());
-        // mlModel.setNormalLabels(workflow.getNormalLabels());
 
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
@@ -105,23 +98,19 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             Normalization normalization = new Normalization.Builder().init(context).build();
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).filter(normalRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
-                    .map(normalization).map(doubleArrayToVector);
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation)
+                    .map(stringArrayToDoubleArray).map(normalization).map(doubleArrayToVector);
 
         } else {
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).filter(normalRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
-                    .map(doubleArrayToVector);
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation)
+                    .map(stringArrayToDoubleArray).map(doubleArrayToVector);
         }
-
     }
 
     private JavaRDD<Vector> preProcessAnomaly() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         Workflow workflow = context.getFacts();
-        // MLModel mlModel = new MLModel();
-        // mlModel.setNormalization(workflow.getNormalization());
-        // mlModel.setNormalLabels(workflow.getNormalLabels());
 
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
@@ -140,19 +129,18 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
 
             Normalization normalization = new Normalization.Builder().init(context).build();
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).filter(anomalyRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
-                    .map(normalization).map(doubleArrayToVector);
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation)
+                    .map(stringArrayToDoubleArray).map(normalization).map(doubleArrayToVector);
 
         } else {
             return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter).filter(anomalyRowsFilter)
-                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
-                    .map(doubleArrayToVector);
+                    .map(removeDiscardedFeatures).map(removeResponseColumn).map(basicEncoder).map(meanImputation)
+                    .map(stringArrayToDoubleArray).map(doubleArrayToVector);
         }
-
     }
 
     /**
-     * Build an unsupervised model.
+     * Build an KMeans Anomaly Detection model.
      */
     public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
@@ -160,22 +148,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
         try {
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
-            ModelSummary summaryModel = null;
-
-            // // gets the pre-processed dataset for unlabeled data
-            // JavaRDD<Vector> data = preProcess().cache();
-
-            // // gets the pre-processed dataset for labeled data
-            // JavaRDD<Vector> dataNormal = preProcessNormal().cache();
-            // JavaRDD<Vector> trainingDataNormal = dataNormal.sample(false, workflow.getTrainDataFraction(),
-            // MLConstants.RANDOM_SEED).cache();
-            // JavaRDD<Vector> testingDataNormal = dataNormal.subtract(trainingDataNormal);
-            //
-            // JavaRDD<Vector> dataAnomaly = preProcessAnomaly().cache();
-            // double testDataFraction = (1 - workflow.getTrainDataFraction());
-            // JavaRDD<Vector> testingDataAnomaly = dataAnomaly.sample(false, testDataFraction, MLConstants.RANDOM_SEED)
-            // .cache();
-            // JavaRDD<Vector> testingDataNormal = data.subtract(trainingDataNormal);
+            ModelSummary summaryModel;
 
             // create a deployable MLModel object
             MLModel mlModel = new MLModel();
@@ -183,13 +156,11 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             mlModel.setNormalLabels(workflow.getNormalLabels());
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
-           // mlModel.setFeatures(workflow.getFeatures());
             mlModel.setFeatures(workflow.getIncludedFeatures());
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setEncodings(context.getEncodings());
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setSummaryStatsOfFeatures(context.getSummaryStatsOfFeatures());
-
 
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), context.getResponseIndex());
@@ -203,6 +174,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 JavaRDD<Vector> data = preProcess().cache();
                 summaryModel = buildKMeansUnlabeledDataModel(modelId, data, workflow, mlModel, includedFeatures);
                 break;
+
             case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
                 mlModel.setResponseIndex(context.getResponseIndex());
                 // gets the pre-processed dataset for labeled data
@@ -210,7 +182,6 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 JavaRDD<Vector> trainingDataNormal = dataNormal.sample(false, workflow.getTrainDataFraction(),
                         MLConstants.RANDOM_SEED).cache();
                 JavaRDD<Vector> testingDataNormal = dataNormal.subtract(trainingDataNormal).cache();
-
                 // remove from cache
                 dataNormal.unpersist();
 
@@ -221,8 +192,10 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 // remove from cache
                 dataAnomaly.unpersist();
 
-                summaryModel = buildKMeansLabeledDataModel(modelId, trainingDataNormal, testingDataNormal, testingDataAnomaly, workflow, mlModel, includedFeatures);
+                summaryModel = buildKMeansLabeledDataModel(modelId, trainingDataNormal, testingDataNormal,
+                        testingDataAnomaly, workflow, mlModel, includedFeatures);
                 break;
+
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + workflow.getAlgorithmName()
                         + " for model id: " + modelId);
@@ -230,9 +203,10 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
+
         } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while building anomaly detection machine learning model: "
-                    + e.getMessage(), e);
+            throw new MLModelBuilderException(
+                    "An error occurred while building anomaly detection machine learning model: " + e.getMessage(), e);
         }
     }
 
@@ -247,6 +221,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      */
     private ModelSummary buildKMeansUnlabeledDataModel(long modelID, JavaRDD<Vector> data, Workflow workflow,
             MLModel mlModel, SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
+
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeansAnomalyDetectionUnlabeledData kMeansAnomalyDetectionUnlabeledData = new KMeansAnomalyDetectionUnlabeledData();
@@ -274,11 +249,13 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                             .toString());
             kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());
             kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
-            //kMeansAnomalyDetectionSummary.setModelAccuracy(99);
 
             return kMeansAnomalyDetectionSummary;
+
         } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while building k-means anomaly detection with unlabeled data model: " + e.getMessage(), e);
+            throw new MLModelBuilderException(
+                    "An error occurred while building k-means anomaly detection with unlabeled data model: "
+                            + e.getMessage(), e);
         }
     }
 
@@ -292,16 +269,15 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansLabeledDataModel(long modelID, JavaRDD<Vector> trainData,
-            JavaRDD<Vector> testDataNormal, JavaRDD<Vector> testDataAnomaly, Workflow workflow, MLModel mlModel, SortedMap<Integer, String> includedFeatures)
-            throws MLModelBuilderException {
+            JavaRDD<Vector> testDataNormal, JavaRDD<Vector> testDataAnomaly, Workflow workflow, MLModel mlModel,
+            SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
+
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
             KMeansModel kMeansModel = kMeansAnomalyDetectionLabeledData.train(trainData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_OF_NORMAL_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
-
-            //KMeansModel kMeansModel = kMeansAnomalyDetectionLabeledData.train(trainData, 5, 100);
 
             JavaRDD<Integer> prediction = kMeansAnomalyDetectionLabeledData.test(kMeansModel, trainData);
             Vector[] clusterCenters = kMeansAnomalyDetectionLabeledData.getClusterCenters(kMeansModel);
@@ -316,15 +292,7 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = new MLKMeansAnomalyDetectionModel(kMeansModel);
             mlkMeansAnomalyDetectionModel.setDistancesArray(distancesArray);
 
-
             // evaluating the model
-
-//            Map<Double, MulticlassConfusionMatrix> modelEvatuationResults;
-            //int[] setOfPercentileValues = {90,50,10,93,94,95,96,97,98,99,100};
-
-
-//            double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
-//                    Double.parseDouble(hyperParameters.get(MLConstants.PERCENTILE_VALUE)));
             JavaRDD<Integer> predictionTestNormal = kMeansAnomalyDetectionLabeledData.test(kMeansModel, testDataNormal);
             double[][] distancesArrayTetsNormal = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
                     predictionTestNormal, clusterCenters, testDataNormal);
@@ -339,30 +307,28 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             testDataAnomaly.unpersist();
 
             Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix = new HashMap<Integer, MulticlassConfusionMatrix>();
-            //Map<Integer, Double> modelAccuracy = new HashMap<Integer, Double>();
             int maxRange = 100;
             int minRange = 80;
-            double maxF1= 0;
+            double maxF1 = 0;
             int bestPercentile = maxRange;
 
-            for(int i=minRange; i<=maxRange; i++) {
+            for (int i = minRange; i <= maxRange; i++) {
 
-                double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray,
-                        i);
+                double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray, i);
 
                 MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
                         distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
 
-                if(predictionResults.getF1Score() > maxF1){
+                if (predictionResults.getF1Score() > maxF1) {
                     maxF1 = predictionResults.getF1Score();
                     bestPercentile = i;
                 }
 
                 multiclassConfusionMatrix.put(i, predictionResults);
-                //modelAccuracy.put(i,getModelAccuracy(predictionResults));
+
             }
 
-            //generating data for summary clusters
+            // generating data for summary clusters
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
 
@@ -378,17 +344,18 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             }
 
             // Populate cluster points list with predicted clusters and features
-            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansAnomalyDetectionLabeledData.test(kMeansModel, sampleData).zip(sampleData).collect();
+            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansAnomalyDetectionLabeledData
+                    .test(kMeansModel, sampleData).zip(sampleData).collect();
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
             List<Feature> featuresList = mlModel.getFeatures();
 
-            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction: kMeansPredictions) {
+            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
 
                 ClusterPoint clusterPoint = new ClusterPoint();
                 clusterPoint.setCluster(kMeansPrediction._1());
                 Map<String, Double> featureMap = new HashMap<String, Double>();
-                //clusterPoint.setFeatures(kMeansPrediction._2().toArray());
-                for(int i=0; i<featuresList.size(); i++){
+
+                for (int i = 0; i < featuresList.size(); i++) {
                     String featureName = featuresList.get(i).getName();
                     double point = (kMeansPrediction._2().toArray())[i];
                     featureMap.put(featureName, point);
@@ -410,26 +377,12 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             kMeansAnomalyDetectionSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
 
             return kMeansAnomalyDetectionSummary;
+
         } catch (Exception e) {
-            throw new MLModelBuilderException("An error occurred while building k-means anomaly detection with labeled data model: " + e.getMessage(), e);
+            throw new MLModelBuilderException(
+                    "An error occurred while building k-means anomaly detection with labeled data model: "
+                            + e.getMessage(), e);
         }
     }
 
-    /*private Double getModelAccuracy(MulticlassConfusionMatrix multiclassConfusionMatrix){
-        double f1Score;
-        double truePositive;
-        //double trueNegetive = 0;
-        double falsePositive;
-        double falseNegetive;
-
-        double[][] matrix = multiclassConfusionMatrix.getMatrix();
-        truePositive = matrix[0][0];
-        falseNegetive = matrix[0][1];
-        falsePositive = matrix[1][0];
-       // trueNegetive =  matrix[1][1];
-
-        f1Score = 2*truePositive / (2*truePositive + falsePositive + falseNegetive);
-
-        return f1Score * 100;
-    }*/
 }

@@ -19,8 +19,8 @@
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -28,19 +28,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
-import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class KMeansAnomalyDetectionLabeledData implements Serializable {
 
@@ -57,7 +44,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
      * @return
      */
     public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations, int noOfRuns,
-                             String initializationMode) {
+            String initializationMode) {
         return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations, noOfRuns,
                 initializationMode);
     }
@@ -95,8 +82,8 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return kMeansModel.clusterCenters();
     }
 
-    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedCenters,
-                                               Vector[] clusterCenters, JavaRDD<Vector> data) {
+    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedCenters, Vector[] clusterCenters,
+            JavaRDD<Vector> data) {
 
         int[] count = new int[clusterCenters.length];
         List<Integer> predictCenters = predictedCenters.collect();
@@ -125,37 +112,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return distancesArray;
     }
 
-    public double[][] getDistancesToDataPoints(List<Integer> predictCenters,
-                                               Vector[] clusterCenters, List<Vector> dataList) {
-
-        int[] count = new int[clusterCenters.length];
-
-
-        for (int center : predictCenters) {
-            count[center]++;
-        }
-
-        double[][] distancesArray = new double[clusterCenters.length][];
-        for (int i = 0; i < clusterCenters.length; i++) {
-            distancesArray[i] = new double[count[i]];
-        }
-
-
-        EuclideanDistance distance = new EuclideanDistance();
-        int center;
-
-        for (int i = 0; i < dataList.size(); i++) {
-            center = predictCenters.get(i);
-            count[center]--;
-            distancesArray[center][count[center]] = distance.compute(dataList.get(i).toArray(),
-                    clusterCenters[center].toArray());
-
-        }
-
-        return distancesArray;
-    }
-
-    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue){
+    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue) {
 
         // Get a DescriptiveStatistics instance
         DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -174,99 +131,38 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return percentiles;
     }
 
-    /*public double[] getPercentileDistances(final double[][] trainDistances, double percentileValue){
+    public MulticlassConfusionMatrix getEvaluationResults(double[][] testNormalDistances,
+            double[][] testAnomalyDistances, double[] percentiles) {
 
-        // Get a DescriptiveStatistics instance
-        final DescriptiveStatistics stats = new DescriptiveStatistics();
-        double[] percentiles = new double[trainDistances.length];
-
-        for (int i = 0; i < percentiles.length; i++) {
-
-            // Add the data from the array
-            ExecutorService executor = Executors.newFixedThreadPool(3);
-            try {
-                //Set<Future<String>> printTaskFutures = new HashSet<Future<String>>();
-                for (final double distance : trainDistances[i]) {
-                    executor.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                stats.addValue(distance);
-                            } catch (Exception ex) {
-                                // error management logic
-                            }
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-            } finally {
-                if (executor != null) {
-                    executor.shutdownNow();
-                }
-            }
-
-            //stats.addValue(trainDistances[i][j]);
-
-            // wait for all of the executor threads to finish
-            executor.shutdown();
-            percentiles[i] = stats.getPercentile(percentileValue);
-            stats.clear();
-        }
-        return percentiles;
-    }*/
-
-    public MulticlassConfusionMatrix getEvaluationResults(double[][] testNormalDistances, double[][] testAnomalyDistances, double[] percentiles){
-
-       // ConfusionMatrix confusionMatrix = new ConfusionMatrix();
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
-        //List<PredictedVsActual> predictedVsActualList = new ArrayList<PredictedVsActual>();
         double truePositive = 0;
         double trueNegetive = 0;
         double falsePositive = 0;
         double falseNegetive = 0;
 
-        //normal - 0
-        //anomaly - 1
+        // evaluating testNormal data
+        for (int i = 0; i < percentiles.length; i++) {
+            for (int j = 0; j < testNormalDistances[i].length; j++) {
 
-        //evaluating testNormal data
-        for(int i=0; i<percentiles.length; i++){
-            for(int j=0; j<testNormalDistances[i].length; j++){
-//                PredictedVsActual predictedVsActual = new PredictedVsActual();
-//                predictedVsActual.setActual(0);
-                if(testNormalDistances[i][j] > percentiles[i]){
+                if (testNormalDistances[i][j] > percentiles[i]) {
                     falsePositive++;
-//                    predictedVsActual.setPredicted(1);
-                }
-                else {
+                } else {
                     trueNegetive++;
-//                    predictedVsActual.setPredicted(0);
                 }
-//                predictedVsActualList.add(predictedVsActual);
             }
         }
 
-        //evaluating testAnomaly data
-        for(int i=0; i<percentiles.length; i++){
-            for(int j=0; j<testAnomalyDistances[i].length; j++){
-//                PredictedVsActual predictedVsActual = new PredictedVsActual();
-//                predictedVsActual.setActual(1);
-                if(testAnomalyDistances[i][j] > percentiles[i]){
+        // evaluating testAnomaly data
+        for (int i = 0; i < percentiles.length; i++) {
+            for (int j = 0; j < testAnomalyDistances[i].length; j++) {
+
+                if (testAnomalyDistances[i][j] > percentiles[i]) {
                     truePositive++;
-//                    predictedVsActual.setPredicted(1);
-                }
-                else {
+                } else {
                     falseNegetive++;
-//                    predictedVsActual.setPredicted(0);
                 }
-//                predictedVsActualList.add(predictedVsActual);
             }
         }
-
-/*        confusionMatrix.setTruePositives(truePositive);
-        confusionMatrix.setTrueNegatives(trueNegetive);
-        confusionMatrix.setFalsePositives(falsePositive);
-        confusionMatrix.setFalseNegatives(falseNegetive);*/
 
         double[][] matrix = new double[2][2];
         matrix[0][0] = truePositive;
@@ -276,8 +172,8 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         multiclassConfusionMatrix.setMatrix(matrix);
 
         List<String> labels = new ArrayList<String>();
-        labels.add(0,"Anomaly");
-        labels.add(1,"Normal");
+        labels.add(0, "Anomaly");
+        labels.add(1, "Normal");
         multiclassConfusionMatrix.setLabels(labels);
         multiclassConfusionMatrix.setSize(2);
         multiclassConfusionMatrix.setAccuracyMeasures();

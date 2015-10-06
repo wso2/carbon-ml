@@ -19,12 +19,7 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.utils.MLUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A filter to remove normal rows
@@ -35,7 +30,7 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
     private final String[] normalLabels;
     private final int responseIndex;
 
-    public AnomalyRowsFilter(Builder builder){
+    public AnomalyRowsFilter(Builder builder) {
         this.normalLabels = builder.normalLabels;
         this.responseIndex = builder.responseIndex;
     }
@@ -43,8 +38,8 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
     @Override
     public Boolean call(String[] tokens) {
         Boolean keep = true;
-        for(String label: normalLabels) {
-            if(tokens[responseIndex].equals(label)) {
+        for (String label : normalLabels) {
+            if (tokens[responseIndex].equals(label)) {
                 keep = false;
                 break;
             }
@@ -59,7 +54,6 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
         public Builder init(MLModelConfigurationContext ctx) {
             normalLabels = ctx.getFacts().getNormalLabels().split(",");
             responseIndex = ctx.getResponseIndex();
-            //responseIndex = 4;
 
             return this;
         }
@@ -67,7 +61,5 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
         public AnomalyRowsFilter build() {
             return new AnomalyRowsFilter(this);
         }
-
     }
-
 }

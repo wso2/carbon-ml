@@ -34,8 +34,6 @@ public class Workflow implements Serializable {
     private List<Feature> features;
     private Map<String, String> hyperParameters;
     private String datasetVersion;
-
-    //ashen
     private String normalLabels;
     private String normalization;
 
@@ -109,8 +107,6 @@ public class Workflow implements Serializable {
         this.trainDataFraction = trainDataFraction;
     }
 
-
-    //ashen
     /**
      * @return Returns normalization
      */

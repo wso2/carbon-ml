@@ -42,7 +42,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
     @Override
@@ -50,12 +50,12 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
         out.writeObject(model);
         out.writeObject(distancesArray);
-
+        out.writeObject(bestPercentile);
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
     @Override
@@ -63,6 +63,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
         model = (KMeansModel) in.readObject();
         distancesArray = (double[][]) in.readObject();
+        bestPercentile = (Integer) in.readObject();
     }
 
     public KMeansModel getModel() {
@@ -77,7 +78,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
         return distancesArray;
     }
 
-    public void setDistancesArray(double[][] distancesArray){
+    public void setDistancesArray(double[][] distancesArray) {
         this.distancesArray = distancesArray;
     }
 
@@ -89,4 +90,3 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
         this.bestPercentile = bestPercentile;
     }
 }
-

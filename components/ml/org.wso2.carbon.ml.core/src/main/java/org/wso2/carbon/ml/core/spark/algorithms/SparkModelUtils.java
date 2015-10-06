@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.text.DecimalFormat;
+import java.util.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaDoubleRDD;
@@ -35,14 +38,12 @@ import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
-import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
 import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
+import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-import scala.Tuple2;
 
-import java.text.DecimalFormat;
-import java.util.*;
+import scala.Tuple2;
 
 public class SparkModelUtils {
     private static final Log log = LogFactory.getLog(SparkModelUtils.class);

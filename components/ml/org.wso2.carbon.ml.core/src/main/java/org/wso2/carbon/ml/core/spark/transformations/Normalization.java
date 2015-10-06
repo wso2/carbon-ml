@@ -83,12 +83,12 @@ public class Normalization implements Function<double[], double[]> {
 
             List<Feature> features = ctx.getFacts().getIncludedFeatures();
             Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
-            //List<Integer> newIndex = ctx.getNewToOldIndicesList();
+            // List<Integer> newIndex = ctx.getNewToOldIndicesList();
 
             for (Feature feature : features) {
 
                 if (feature.getType().equals("NUMERICAL")) {
-                    //int index = newIndex.get(feature.getIndex());
+                    // int index = newIndex.get(feature.getIndex());
                     String featureStat = stats.get(feature.getName());
                     double maxValue = SparkModelUtils.getMax(featureStat);
                     this.max.add(maxValue);
@@ -96,14 +96,12 @@ public class Normalization implements Function<double[], double[]> {
                     this.min.add(minValue);
 
                 } else {
-                   // if (feature.getIndex() != ctx.getResponseIndex()) {
-                        //int index = newIndex.get(feature.getIndex());
-                        String featureStat = stats.get(feature.getName());
-                        double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
-                        this.max.add(maxValue);
-                        double minValue = 0;
-                        this.min.add(minValue);
-                   // }
+                    // int index = newIndex.get(feature.getIndex());
+                    String featureStat = stats.get(feature.getName());
+                    double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
+                    this.max.add(maxValue);
+                    double minValue = 0;
+                    this.min.add(minValue);
                 }
 
             }
@@ -115,7 +113,7 @@ public class Normalization implements Function<double[], double[]> {
             for (Feature feature : features) {
 
                 if (feature.getType().equals("NUMERICAL")) {
-                    //int index = newIndex.get(feature.getIndex());
+                    // int index = newIndex.get(feature.getIndex());
                     String featureStat = stats.get(feature.getName());
                     double maxValue = SparkModelUtils.getMax(featureStat);
                     this.max.add(maxValue);
@@ -123,16 +121,13 @@ public class Normalization implements Function<double[], double[]> {
                     this.min.add(minValue);
 
                 } else {
-                    //if (feature.getIndex() != responseIndex) {
-                        //int index = newIndex.get(feature.getIndex());
-                        String featureStat = stats.get(feature.getName());
-                        double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
-                        this.max.add(maxValue);
-                        double minValue = 0;
-                        this.min.add(minValue);
-                    //}
+                    // int index = newIndex.get(feature.getIndex());
+                    String featureStat = stats.get(feature.getName());
+                    double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
+                    this.max.add(maxValue);
+                    double minValue = 0;
+                    this.min.add(minValue);
                 }
-
             }
             return this;
         }
@@ -141,5 +136,4 @@ public class Normalization implements Function<double[], double[]> {
             return new Normalization(this);
         }
     }
-
 }

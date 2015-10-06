@@ -574,47 +574,6 @@ public class DatasetApiV10 extends MLRestAPI {
         }
     }
 
-   /* *//**
-     * Get cluster points of a dataset version.
-     *
-     * @param datasetId ID of the dataset
-     * @param featureListString List of features (single string containing comma separated features)
-     * @param noOfClusters No of clusters
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.ClusterPoint} objects
-     *//*
-    @GET
-    @Path("/{datasetId}/{modelId}/cluster")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response getSummaryClusterPoints(@PathParam("datasetId") long datasetId, @PathParam("modelId") long modelId,
-                                     @QueryParam("features") String featureListString) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            List<ClusterPoint> points = mlModelHandler.getSummaryClusterPoints(tenantId, userName, datasetId, modelId,
-                    featureListString);
-            return Response.ok(points).build();
-        } catch (MLMalformedDatasetException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving cluster points with [features] %s and [number of clusters] %s of dataset [id] %s of tenant [id] %s and [user] %s .",
-                                    featureListString, datasetId, tenantId, modelId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
-        } catch (MLModelHandlerException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving cluster points with [features] %s and [number of clusters] %s of dataset [id] %s of tenant [id] %s and [user] %s .",
-                                    featureListString, datasetId, tenantId, modelId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        }
-    }
-*/
     /**
      * Get filtered feature names of a dataset.
      *

@@ -31,7 +31,7 @@ public class RemoveResponseColumn implements Function<String[], String[]> {
     private static final long serialVersionUID = -3847503088002249546L;
 
     /**
-     * Function to remove discarded columns.
+     * Function to remove response column.
      *
      * @param tokens String array of tokens
      * @return String array

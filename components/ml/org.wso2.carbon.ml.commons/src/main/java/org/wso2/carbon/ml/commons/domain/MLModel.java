@@ -36,8 +36,6 @@ public class MLModel implements Serializable {
     private List<Map<String, Integer>> encodings;
     private List<Integer> newToOldIndicesList;
     private Externalizable model;
-
-    //ashen
     private String normalLabels;
     private String normalization;
     private Map<String, String> summaryStatsOfFeatures;
@@ -123,7 +121,6 @@ public class MLModel implements Serializable {
         this.normalization = normalization;
     }
 
-    
     public Map<String, String> getSummaryStatsOfFeatures() {
         return summaryStatsOfFeatures;
     }

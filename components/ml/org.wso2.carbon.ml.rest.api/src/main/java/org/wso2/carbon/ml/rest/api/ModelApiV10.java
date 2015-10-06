@@ -182,6 +182,7 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Predict using a file and return as a list of predicted values.
+     * 
      * @param modelId Unique id of the model
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param inputStream File input stream generated from the file used for predictions
@@ -207,7 +208,8 @@ public class ModelApiV10 extends MLRestAPI {
                 logger.error(msg);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(msg)).build();
             }
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream, percentile);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream,
+                    percentile);
             return Response.ok(predictions).build();
         } catch (IOException e) {
             String msg = MLUtils.getErrorMsg(String.format(
@@ -227,6 +229,7 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Predict using a file and return predictions as a CSV.
+     * 
      * @param modelId Unique id of the model
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
@@ -239,7 +242,8 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-                                     @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile) {
+            @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
+            @QueryParam("percentile") double percentile) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -285,10 +289,9 @@ public class ModelApiV10 extends MLRestAPI {
         }
     }
 
-
-
     /**
      * Make predictions using a model
+     * 
      * @param modelId Unique id of the model
      * @param data List of string arrays containing the feature values used for predictions
      * @param percentile a threshold value used to identified cluster boundaries
@@ -298,7 +301,8 @@ public class ModelApiV10 extends MLRestAPI {
     @Path("/{modelId}/predict")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response predict(@PathParam("modelId") long modelId, List<String[]> data, @QueryParam("percentile") double percentile) {
+    public Response predict(@PathParam("modelId") long modelId, List<String[]> data,
+            @QueryParam("percentile") double percentile) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();

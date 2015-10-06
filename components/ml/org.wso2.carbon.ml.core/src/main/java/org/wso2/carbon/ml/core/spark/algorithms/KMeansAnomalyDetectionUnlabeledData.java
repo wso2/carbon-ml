@@ -79,8 +79,8 @@ public class KMeansAnomalyDetectionUnlabeledData implements Serializable {
         return kMeansModel.clusterCenters();
     }
 
-    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedCenters,
-            Vector[] clusterCenters, JavaRDD<Vector> data) {
+    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedCenters, Vector[] clusterCenters,
+            JavaRDD<Vector> data) {
 
         int[] count = new int[clusterCenters.length];
         List<Integer> predictCenters = predictedCenters.collect();

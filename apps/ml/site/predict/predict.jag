@@ -12,24 +12,24 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
+include("../../includes/tenantAware.jag");
+%>
+
 </head>
 
 <body>
 
-    <div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container col-lg-12 col-md-12 col-sm-12">
 
-        <!-- header -->
-        <header>
-            <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo">
-                    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-                </div>
-                <div class="col-sm-4">
-                    <div class="wr-auth pull-right">
-                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+    <!-- header -->
+    <header>
+        <div class="row wr-global-header">
+            <div class="col-sm-8 app-logo">
+                <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+            </div>
+            <div class="col-sm-4">
+                <div class="wr-auth pull-right">
+                    <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
                         <div class="dropdown-menu">
                             <div class="cu-arrow"></div>
                             <div class="dropdown-menu-content">
@@ -101,11 +101,11 @@
                         <form id="prediction-form" method="POST" enctype="multipart/form-data">
 
                             <div id="percentile-value">
-                            <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
-                            <span class="fld-required">*</span>
-                            <div class="input-control text">
-                            <input type="text" id="percentile" defaultValue="98" placeholder="input text"/>
-                            </div>
+                                <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
+                                <span class="fld-required">*</span>
+                                <div class="input-control text">
+                                    <input type="text" id="percentile" value="98" placeholder="input text"/>
+                                </div>
                             </div>
 
                             <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
@@ -168,10 +168,6 @@
         <!-- /content/body -->
 
 </div>
-
-
-
-
 
     <!--footer class="footer">
     <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
@@ -304,7 +300,7 @@
             async: false,
             success: function(data) {
                 var modelFeatures = data['features'];
-                
+
                 for (var i = 0; i < modelFeatures.length; i++) {
 
                     if (modelFeatures[i] == responseVariable) continue;
@@ -347,7 +343,7 @@
             }
         });
 
-        bindEvents();            
+        bindEvents();
     }
 
     function bindEvents() {
@@ -424,7 +420,6 @@
             $('#feature-predict').show();
         }
     }
-
 
 
 </script>

@@ -22,12 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.FeatureSummary;
-import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
-import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
-import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
-import org.wso2.carbon.ml.commons.domain.MLModelData;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -130,8 +125,7 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
-
-    //ashen
+    
     public String getNormalLabels(long analysisId) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS);
@@ -147,8 +141,7 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
-
-    //ashen
+    
     public String getNormalization(long analysisId) throws MLAnalysisHandlerException {
         try {
             return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION);
