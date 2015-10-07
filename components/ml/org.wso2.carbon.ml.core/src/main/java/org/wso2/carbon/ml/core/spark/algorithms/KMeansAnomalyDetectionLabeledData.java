@@ -82,14 +82,14 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return kMeansModel.clusterCenters();
     }
 
-    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedCenters, Vector[] clusterCenters,
-            JavaRDD<Vector> data) {
+    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints, Vector[] clusterCenters,
+                                               JavaRDD<Vector> data) {
 
         int[] count = new int[clusterCenters.length];
-        List<Integer> predictCenters = predictedCenters.collect();
+        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
 
-        for (int center : predictCenters) {
-            count[center]++;
+        for (int cluster : predictedClusters) {
+            count[cluster]++;
         }
 
         double[][] distancesArray = new double[clusterCenters.length][];
@@ -99,13 +99,13 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
 
         List<Vector> dataList = data.collect();
         EuclideanDistance distance = new EuclideanDistance();
-        int center;
+        int cluster;
 
         for (int i = 0; i < dataList.size(); i++) {
-            center = predictCenters.get(i);
-            count[center]--;
-            distancesArray[center][count[center]] = distance.compute(dataList.get(i).toArray(),
-                    clusterCenters[center].toArray());
+            cluster = predictedClusters.get(i);
+            count[cluster]--;
+            distancesArray[cluster][count[cluster]] = distance.compute(dataList.get(i).toArray(),
+                    clusterCenters[cluster].toArray());
 
         }
 
