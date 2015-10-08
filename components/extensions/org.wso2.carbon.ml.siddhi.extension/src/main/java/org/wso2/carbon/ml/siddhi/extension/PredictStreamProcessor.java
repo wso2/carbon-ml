@@ -18,11 +18,7 @@ package org.wso2.carbon.ml.siddhi.extension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.HashSet;
+import java.util.*;
 
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
@@ -81,25 +77,24 @@ public class PredictStreamProcessor extends StreamProcessor {
                     Object[] predictionResults = new Object[modelHandlers.length];
                     Object predictionResult = null;
 
-                    if (responseVariable != null) {
-                        if (algorithmClass.equals("classification")) {
-                            for (int i = 0; i < modelHandlers.length; i++) {
-                                predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
-                            }
-                            // Gets the majority vote
-                            predictionResult = getMostFrequent(predictionResults);
-                        } else {
-                            double sum = 0;
-                            for (int i = 0; i < modelHandlers.length; i++) {
-                                sum += Double
-                                        .parseDouble(modelHandlers[i].predict(featureValues, outputType).toString());
-                            }
-                            // Gets the average value of predictions
-                            predictionResult = sum / modelHandlers.length;
+                    if ("classification".equals(algorithmClass)) {
+                        for (int i = 0; i < modelHandlers.length; i++) {
+                            predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
                         }
+                        // Gets the majority vote
+                        predictionResult = getMostFrequent(predictionResults);
+                    } else if ("numerical_prediction".equals(algorithmClass)) {
+                        double sum = 0;
+                        for (int i = 0; i < modelHandlers.length; i++) {
+                            sum += Double.parseDouble(modelHandlers[i].predict(featureValues, outputType).toString());
+                        }
+                        // Gets the average value of predictions
+                        predictionResult = sum / modelHandlers.length;
                     } else {
-                        throw new ExecutionPlanRuntimeException(
-                                "Error while predicting. " + "Response variable is null in models");
+                        String msg = String.format(
+                                "Error while predicting. Prediction is not supported for the " + "algorithm class %s. ",
+                                algorithmClass);
+                        throw new ExecutionPlanRuntimeException(msg);
                     }
 
                     Object[] output = new Object[] { predictionResult };
