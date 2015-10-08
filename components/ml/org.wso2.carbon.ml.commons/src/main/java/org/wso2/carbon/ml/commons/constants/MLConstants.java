@@ -85,12 +85,14 @@ public class MLConstants {
     public static final String MODEL_SETTINGS_ID = "modelSettingsID";
     public static final String WORKFLOW_ID = "workflowID";
     public static final String DATASET_URL = "datasetURL";
-    public static final String NORMAL_LABELS = "normalLabels";  //ashen
+    public static final String NORMAL_LABELS = "normalLabels";
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
     public static final String RESPONSE = "responseVariable";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
-    public static final String NORMALIZATION = "normalization"; //ashen
+    public static final String NORMALIZATION = "normalization";
+    public static final String NEW_NORMAL_LABEL = "newNormalLabel";
+    public static final String NEW_ANOMALY_LABEL = "newAnomalyLabel";
     public static final String HYPER_PARAMETERS = "hyperParameters";
     
     public static final String MODEL_NAME = "Model";

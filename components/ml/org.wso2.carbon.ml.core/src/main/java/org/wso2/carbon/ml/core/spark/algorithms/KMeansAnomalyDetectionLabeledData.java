@@ -20,7 +20,9 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -82,57 +84,95 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         return kMeansModel.clusterCenters();
     }
 
-    public double[][] getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints, Vector[] clusterCenters,
-                                               JavaRDD<Vector> data) {
+    /**
+     * This method is to calculate the euclidean distances of each data point to it's cluster centers
+     *
+     * @param predictedClustersOfEachDataPoints predicted clusters from the model for data points
+     * @param clusterCenters vector array of cluster centers
+     * @param data data points
+     * @return Map<Integer, double[]> containing double arrays of distances of each cluster mapped with their cluster
+     *         Indexes
+     */
+    public Map<Integer, double[]> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
+            Vector[] clusterCenters, JavaRDD<Vector> data) {
 
-        int[] count = new int[clusterCenters.length];
+        int[] noOfPointsInEachCluster = new int[clusterCenters.length];
         List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
 
-        for (int cluster : predictedClusters) {
-            count[cluster]++;
+        // calculating the no of data points in each clusters
+        for (int clusterIndex : predictedClusters) {
+            noOfPointsInEachCluster[clusterIndex]++;
         }
 
-        double[][] distancesArray = new double[clusterCenters.length][];
-        for (int i = 0; i < clusterCenters.length; i++) {
-            distancesArray[i] = new double[count[i]];
+        // creating the distance array to store the distances of each points to its cluster center
+        // double[][] distancesArray = new double[clusterCenters.length][];
+        Map<Integer, double[]> distancesMap = new HashMap<Integer, double[]>();
+
+        // creating the 2D array according to the size of each clusters
+        for (int clusterIndex = 0; clusterIndex < clusterCenters.length; clusterIndex++) {
+            double[] distancesArray = new double[noOfPointsInEachCluster[clusterIndex]];
+            distancesMap.put(clusterIndex, distancesArray);
         }
 
         List<Vector> dataList = data.collect();
+        // creating the EuclideanDistance Object
         EuclideanDistance distance = new EuclideanDistance();
-        int cluster;
 
+        // calculating and storing the distances of each data point to it's cluster center
         for (int i = 0; i < dataList.size(); i++) {
-            cluster = predictedClusters.get(i);
-            count[cluster]--;
-            distancesArray[cluster][count[cluster]] = distance.compute(dataList.get(i).toArray(),
-                    clusterCenters[cluster].toArray());
 
+            int clusterIndex = predictedClusters.get(i);
+            noOfPointsInEachCluster[clusterIndex]--;
+            int arrayIndex = noOfPointsInEachCluster[clusterIndex];
+            double[] dataPoint = dataList.get(i).toArray();
+            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
+
+            (distancesMap.get(clusterIndex))[arrayIndex] = distance.compute(dataPoint, clusterCenter);
         }
 
-        return distancesArray;
+        return distancesMap;
     }
 
-    public double[] getPercentileDistances(double[][] trainDistances, double percentileValue) {
+    /**
+     * This method returns cluster centers of a given kmeans model
+     *
+     * @param distanceMap distance Map of each cluster
+     * @param percentileValue percentile value to identify the cluster boundaries
+     * @return Map<Integer, Double> containing percentile distance values mapped with their respective cluster Indexes
+     */
+    public Map<Integer, Double> getPercentileDistances(Map<Integer, double[]> distanceMap, double percentileValue) {
 
         // Get a DescriptiveStatistics instance
         DescriptiveStatistics stats = new DescriptiveStatistics();
-        double[] percentiles = new double[trainDistances.length];
+        Map<Integer, Double> percentilesMap = new HashMap<Integer, Double>();
 
-        for (int i = 0; i < percentiles.length; i++) {
+        // calculating percentile distance of each cluster
+        for (int clusterIndex = 0; clusterIndex < distanceMap.size(); clusterIndex++) {
 
-            // Add the data from the array
-            for (int j = 0; j < trainDistances[i].length; j++) {
-                stats.addValue(trainDistances[i][j]);
+            for (double distance : distanceMap.get(clusterIndex)) {
+                stats.addValue(distance);
             }
 
-            percentiles[i] = stats.getPercentile(percentileValue);
+            double percentileDistance = stats.getPercentile(percentileValue);
+            percentilesMap.put(clusterIndex, percentileDistance);
             stats.clear();
         }
-        return percentiles;
+        return percentilesMap;
     }
 
-    public MulticlassConfusionMatrix getEvaluationResults(double[][] testNormalDistances,
-            double[][] testAnomalyDistances, double[] percentiles) {
+    /**
+     * This method returns cluster centers of a given kmeans model
+     *
+     * @param normalTestDataDistanceMap distance Map of normal test data points
+     * @param anomalyTestDataDistanceMap distance Map of anomaly test data points
+     * @param percentilesMap percentile values Map
+     * @param newNormalLabel new normal label value
+     * @param newAnomalyLabel new anomaly label value
+     * @return MulticlassConfusionMatrix containing multiclassconfusionmatrix of test results
+     */
+    public MulticlassConfusionMatrix getEvaluationResults(Map<Integer, double[]> normalTestDataDistanceMap,
+            Map<Integer, double[]> anomalyTestDataDistanceMap, Map<Integer, Double> percentilesMap,
+            String newNormalLabel, String newAnomalyLabel) {
 
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
         double truePositive = 0;
@@ -141,10 +181,11 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         double falseNegetive = 0;
 
         // evaluating testNormal data
-        for (int i = 0; i < percentiles.length; i++) {
-            for (int j = 0; j < testNormalDistances[i].length; j++) {
+        for (int clusterIndex = 0; clusterIndex < percentilesMap.size(); clusterIndex++) {
 
-                if (testNormalDistances[i][j] > percentiles[i]) {
+            for (double distance : normalTestDataDistanceMap.get(clusterIndex)) {
+
+                if (distance > percentilesMap.get(clusterIndex)) {
                     falsePositive++;
                 } else {
                     trueNegetive++;
@@ -153,10 +194,11 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         }
 
         // evaluating testAnomaly data
-        for (int i = 0; i < percentiles.length; i++) {
-            for (int j = 0; j < testAnomalyDistances[i].length; j++) {
+        for (int clusterIndex = 0; clusterIndex < percentilesMap.size(); clusterIndex++) {
 
-                if (testAnomalyDistances[i][j] > percentiles[i]) {
+            for (double distance : anomalyTestDataDistanceMap.get(clusterIndex)) {
+
+                if (distance > percentilesMap.get(clusterIndex)) {
                     truePositive++;
                 } else {
                     falseNegetive++;
@@ -172,8 +214,8 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
         multiclassConfusionMatrix.setMatrix(matrix);
 
         List<String> labels = new ArrayList<String>();
-        labels.add(0, "Anomaly");
-        labels.add(1, "Normal");
+        labels.add(0, newNormalLabel);
+        labels.add(1, newAnomalyLabel);
         multiclassConfusionMatrix.setLabels(labels);
         multiclassConfusionMatrix.setSize(2);
         multiclassConfusionMatrix.setAccuracyMeasures();

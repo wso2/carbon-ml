@@ -36,6 +36,8 @@ public class Workflow implements Serializable {
     private String datasetVersion;
     private String normalLabels;
     private String normalization;
+    private String newNormalLabel;
+    private String newAnomalyLabel;
 
     /**
      * @return Returns machine learning workflow ID
@@ -115,7 +117,7 @@ public class Workflow implements Serializable {
     }
 
     /**
-     * @param normalization Sets training data fraction
+     * @param normalization Sets nomalization option
      */
     public void setNormalization(String normalization) {
         this.normalization = normalization;
@@ -129,10 +131,38 @@ public class Workflow implements Serializable {
     }
 
     /**
-     * @param normalLabels Sets training data fraction
+     * @param normalLabels Sets normal labels
      */
     public void setNormalLabels(String normalLabels) {
         this.normalLabels = normalLabels;
+    }
+
+    /**
+     * @return new normal labels
+     */
+    public String getNewNormalLabel() {
+        return newNormalLabel;
+    }
+
+    /**
+     * @param newNormalLabel Sets new normal label
+     */
+    public void setNewNormalLabel(String newNormalLabel) {
+        this.newNormalLabel = newNormalLabel;
+    }
+
+    /**
+     * @return new anomaly labels
+     */
+    public String getNewAnomalyLabel() {
+        return newAnomalyLabel;
+    }
+
+    /**
+     * @param newAnomalyLabel Sets new anomaly label
+     */
+    public void setNewAnomalyLabel(String newAnomalyLabel) {
+        this.newAnomalyLabel = newAnomalyLabel;
     }
 
     /**

@@ -132,21 +132,39 @@ include("../../includes/tenantAware.jag");
                 </div>
 
                 <div id="normal-labels">
-                    <label class="input-label-sm">Normal Label(s) Values<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <label class="input-label-sm">Normal label(s) values<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
                     <div id="lable-names" class="wr-filter-radio-group"></div>
                     <div class="spcr-2"></div>
                 </div> 
 
                 <div id="train-data-fraction">
                     <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
                     <div class="input-control text">
                         <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
                     </div>
                 </div>
 
+                <div id="new-normal-label">
+                    <label class="input-label">New normal label<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <input type="text" id="new-normal-value" value="normal" placeholder="input text"/>
+                    </div>
+                </div>
+
+                <div id="new-anomaly-label">
+                    <label class="input-label">New anomaly label<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <input type="text" id="new-anomaly-value" value="anomaly" placeholder="input text"/>
+                    </div>
+                </div>
+
                 <div class="wr-filter-radio-group" id="normalization">
                     <label class="checkbox">
-                        <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
+                        <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize data</br>
                     </label>
                     <div class="spcr-2"></div>
                 </div>
@@ -296,18 +314,6 @@ $( document ).ready(function() {
                 }
                 });
             }
-            //avoiding always checking the 1st value
-            var temp = 0;
-            $("input:checkbox[name=labels]:checked").each(function(){
-                for(var i=0; i<labelArray.length; i++){
-                    if($(this).val() == labelArray[i]) {
-                        temp = 1;
-                    }
-                }
-                if(temp == 0){
-                    $(this).prop('checked',false);
-                }
-            });    
         },
         error: function(res) {
             var errorText = res.responseText
@@ -323,13 +329,48 @@ $( document ).ready(function() {
         dataType: 'text',
         success: function(res) {
             var setNormalization = sanitize(res);
-            console.log(setNormalization);
             if (setNormalization == 'true') {
                 $('#normalization-value').prop('checked',true);
             }else if (setNormalization == 'false'){
                 $('#normalization-value').prop('checked',false);
             }
 
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+        // get previously set new normal label
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/newNormalLabel",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            var setNewNormalLabel = sanitize(res);
+            if (setNewNormalLabel != '') {
+                $('#new-normal-value').val(setNewNormalLabel);
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+        // get previously set new anomaly label
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/newAnomalyLabel",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            var setNewAnomalyLabel = sanitize(res);
+            if (setNewAnomalyLabel != '') {
+                $('#new-anomaly-value').val(setNewAnomalyLabel);
+            }
         },
         error: function(res) {
             var errorText = res.responseText
@@ -348,6 +389,8 @@ $( document ).ready(function() {
         $('#data-fraction').attr("disabled","disabled");
         $('#labels-names').attr("disabled","disabled");
         $('#normalization-value').attr("disabled","disabled");
+        $('#new-normal-value').attr("disabled","disabled");
+        $('#new-anomaly-value').attr("disabled","disabled");
     }
 
     //hide unnecessary fields when loading the page
@@ -356,24 +399,32 @@ $( document ).ready(function() {
             $('#normal-labels').hide();
             $('#normalization').hide();
             $('#train-data-fraction').hide();
+            $('#new-normal-label').hide();
+            $('#new-anomaly-label').hide();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
             $('#response-variable-field').hide();
             $('#normal-labels').hide();
             $('#train-data-fraction').hide();
             $('#normalization').show();
+            $('#new-normal-label').show();
+            $('#new-anomaly-label').show();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
             $('#response-variable-field').show();
             $('#normal-labels').show();
             $('#train-data-fraction').show();
             $('#normalization').show();
+            $('#new-normal-label').show();
+            $('#new-anomaly-label').show();
         }
         else{
             $('#response-variable-field').show();
             $('#normal-labels').hide();
             $('#train-data-fraction').show();
             $('#normalization').hide();
+            $('#new-normal-label').hide();
+            $('#new-anomaly-label').hide();
         }
 
     // hides unnecessary fields according to algorithm
@@ -383,24 +434,32 @@ $( document ).ready(function() {
             $('#normal-labels').hide();
             $('#normalization').hide();
             $('#train-data-fraction').hide();
+            $('#new-normal-label').hide();
+            $('#new-anomaly-label').hide();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
             $('#response-variable-field').hide();
             $('#normal-labels').hide();
             $('#train-data-fraction').hide();
             $('#normalization').show();
+            $('#new-normal-label').show();
+            $('#new-anomaly-label').show();
         }
         else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
             $('#response-variable-field').show();
             $('#normal-labels').show();
             $('#train-data-fraction').show();
             $('#normalization').show();
+            $('#new-normal-label').show();
+            $('#new-anomaly-label').show();
         }
         else{
             $('#response-variable-field').show();
             $('#normal-labels').hide();
             $('#train-data-fraction').show();
             $('#normalization').hide();
+            $('#new-normal-label').hide();
+            $('#new-anomaly-label').hide();
         }
     });
 
@@ -414,9 +473,10 @@ $( document ).ready(function() {
         window.location.href = '../explore/explore.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
     });
 
+
     $('#btn-next').on('click', function(e){
         e.preventDefault();
-        
+
         var algorithmName = $('#algorithm-name').val();
 
         var responseVariable;
@@ -446,6 +506,9 @@ $( document ).ready(function() {
             trainDataFraction = $('#data-fraction').val();
         }
 
+        var newNormalLabel = $('#new-normal-value').val();
+        var newAnomalyLabel = $('#new-anomaly-value').val();
+
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
@@ -464,21 +527,22 @@ $( document ).ready(function() {
             algorithmType = 'Anomaly_Detection';
         }
 
+
         // set model configurations for this analysis        
-        var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization","value":"'+normalization+'"}]';
-        $.ajax({
-            type: 'POST',
-            url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
-            contentType: "application/json",
-            data: jsonData,
-            success: function(res){
-                window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-            },
-            error: function(res){
-                var errorText = res.responseText
-                handleNotification(errorText, notificationArea, 'warning');
-            }
-        });
+            var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization","value":"'+normalization+'"},{"key":"newNormalLabel","value":"'+newNormalLabel+'"},{"key":"newAnomalyLabel","value":"'+newAnomalyLabel+'"}]';
+            $.ajax({
+                type: 'POST',
+                url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
+                contentType: "application/json",
+                data: jsonData,
+                success: function(res){
+                    window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+                },
+                error: function(res){
+                    var errorText = res.responseText
+                    handleNotification(errorText, notificationArea, 'warning');
+                }
+            });
     });
 
     // function that cancels an analysis
@@ -546,9 +610,9 @@ function getNormalLabelValues() {
 
                 $('#lable-names').empty();
                 for(var index=0; index<values.length; index++){
-                // first 4 categorical features are plotted by default
+
                     if (index < 1){
-                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "' checked>" + values[index][0] + "</label>");
+                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
                     }
                     else {
                     $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");

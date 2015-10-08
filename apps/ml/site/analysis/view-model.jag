@@ -236,8 +236,8 @@ include("../../includes/tenantAware.jag");
                                         </div>
                                     </div>                              
                                 </div>                           
+                        </div>
                     </div>
-                </div>
 
             </div>
         </div>
@@ -398,7 +398,7 @@ $( document ).ready(function() {
                 var rocData  = JSON.parse(res.roc);
                 var auc  = parseFloat(res.auc).toFixed(3);
                 // draw ROC curve only for binary classification models (applies for LOGISTIC_REGRESSION_LBFGS)
-                if(res.multiclassConfusionMatrix.size == 2) {
+                if(res.percentileToMulticlassConfusionMatrixMap.size == 2) {
                     drawRocGraph(rocData, auc, "#roc-graph");
                 }
                 else {
@@ -408,11 +408,11 @@ $( document ).ready(function() {
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
                 // draw confusion matrix                
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
+                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap.matrix, res.percentileToMulticlassConfusionMatrixMap.labels, "#confusion-matrix");
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
-                numOfClasses = res.multiclassConfusionMatrix.size;
+                numOfClasses = res.percentileToMulticlassConfusionMatrixMap.size;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
                 if(features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
@@ -439,7 +439,7 @@ $( document ).ready(function() {
                 $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // draw confusion matrix                
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
+                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap.matrix, res.percentileToMulticlassConfusionMatrixMap.labels, "#confusion-matrix");
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
@@ -500,9 +500,9 @@ $( document ).ready(function() {
                 }
 
                 var percentile = $('#myRange').val();
-                if(res.multiclassConfusionMatrix[percentile].f1Score) {
+                if(res.percentileToMulticlassConfusionMatrixMap[percentile].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[percentile].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[percentile].f1Score.toFixed(2) + "%]");
                 }
                 // remove not applicable charts/tables
                 $("#roc-graph, #weights-chart, #predicted-vs-actual").closest("div.wr-graph-element").remove();
@@ -510,9 +510,9 @@ $( document ).ready(function() {
                 $("#predicted-vs-actual").remove();
 
                 // draw confusion matrix
-                drawConfusionMatrix(res.multiclassConfusionMatrix[percentile].matrix, res.multiclassConfusionMatrix[percentile].labels, "#confusion-matrix");
+                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[percentile].matrix, res.percentileToMulticlassConfusionMatrixMap[percentile].labels, "#confusion-matrix");
                 // draw other measures table
-                drawOtherMeasuresTable(res.multiclassConfusionMatrix[percentile], "#other-measures");
+                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[percentile], "#other-measures");
 
                 var slider = $('#myRange');
                 var textbox = $('#chance');
@@ -521,14 +521,14 @@ $( document ).ready(function() {
                 var newValue = ($(this).val());    
                 textbox.val(newValue);
                 
-                if(res.multiclassConfusionMatrix[newValue].f1Score) {
+                if(res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[newValue].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score.toFixed(2) + "%]");
                 }
 
                 // draw confusion matrix and other measures
-                drawConfusionMatrix(res.multiclassConfusionMatrix[newValue].matrix, res.multiclassConfusionMatrix[newValue].labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.multiclassConfusionMatrix[newValue], "#other-measures");
+                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[newValue].matrix, res.percentileToMulticlassConfusionMatrixMap[newValue].labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[newValue], "#other-measures");
 
                 });
 
@@ -537,14 +537,14 @@ $( document ).ready(function() {
                 var newValue = parseInt($(this).val());
                 slider.val(newValue);
 
-                if(res.multiclassConfusionMatrix[newValue].f1Score) {
+                if(res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.multiclassConfusionMatrix[newValue].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score.toFixed(2) + "%]");
                 }
 
                 // draw confusion matrix and other measures
-                drawConfusionMatrix(res.multiclassConfusionMatrix[newValue].matrix, res.multiclassConfusionMatrix[newValue].labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.multiclassConfusionMatrix[newValue], "#other-measures");
+                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[newValue].matrix, res.percentileToMulticlassConfusionMatrixMap[newValue].labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[newValue], "#other-measures");
                 
                 });
 
@@ -829,20 +829,20 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
 }
 
 //function to draw other measures table
-function drawOtherMeasuresTable(multiclassConfusionMatrix, cssSelector){
+function drawOtherMeasuresTable(percentileToMulticlassConfusionMatrixMap, cssSelector){
 
     var otherMeasuresHtml = "<table border='1'>"; 
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value</td>" +
                         "</tr>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Precision</td><td class='values'>"+multiclassConfusionMatrix.precision.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Precision</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.precision.toFixed(2) + "</td>" +
                         "</tr>";
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Recall</td><td class='values'>"+multiclassConfusionMatrix.recall.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Recall</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.recall.toFixed(2) + "</td>" +
                         "</tr>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Accuracy</td><td class='values'>"+multiclassConfusionMatrix.accuracy.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Accuracy</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.accuracy.toFixed(2) + "</td>" +
                         "</tr>";  
     otherMeasuresHtml += "</table>";
 

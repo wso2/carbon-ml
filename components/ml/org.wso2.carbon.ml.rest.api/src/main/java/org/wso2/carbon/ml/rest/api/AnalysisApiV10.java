@@ -392,9 +392,11 @@ public class AnalysisApiV10 extends MLRestAPI {
                     .build();
         }
     }
-    
+
     /**
-     * get the normal labels of an analysis.
+     * Get the normal labels of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Normal Labels
      */
     @GET
     @Path("/{analysisId}/normalLabels")
@@ -420,7 +422,9 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * get the data normalization selection of an analysis.
+     * Get the normalization option of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Normalization option
      */
     @GET
     @Path("/{analysisId}/normalization")
@@ -438,6 +442,62 @@ public class AnalysisApiV10 extends MLRestAPI {
                     .getErrorMsg(
                             String.format(
                                     "Error occurred while retrieving data normalization selection for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the new normal label of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return New Normal Label
+     */
+    @GET
+    @Path("/{analysisId}/newNormalLabel")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNewNormalLabel(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNewNormalLabel(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving data new normal label for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the new anomaly labels of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return New Anomaly Label
+     */
+    @GET
+    @Path("/{analysisId}/newAnomalyLabel")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNewAnomalyLabel(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNewAnomalyLabel(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving new anomaly label for the analysis [id] %s of tenant [id] %s and [user] %s .",
                                     analysisId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))

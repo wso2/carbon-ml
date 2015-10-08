@@ -183,7 +183,9 @@ public class Predictor {
                 MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = (MLKMeansAnomalyDetectionModel) model
                         .getModel();
                 Vector[] clusterCenters = mlkMeansAnomalyDetectionModel.getModel().clusterCenters();
-                double[][] distanceArray = mlkMeansAnomalyDetectionModel.getDistancesArray();
+                Map<Integer, double[]> distanceMap = mlkMeansAnomalyDetectionModel.getDistancesMap();
+                String newNormalLabel = model.getNewNormalLabel();
+                String newAnomalyLabel = model.getNewAnomalyLabel();
 
                 Normalization normalization = null;
                 if (model.getNormalization().equals("true")) {
@@ -218,7 +220,7 @@ public class Predictor {
                     }
                 }
                 // return decodePredictedValues(predictions);
-                return decodeAnomalyDetectionPredictedValues(predictions, clusterCenters, distanceArray);
+                return decodeAnomalyDetectionPredictedValues(predictions, clusterCenters, distanceMap, newNormalLabel, newAnomalyLabel);
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
                         + " for model id: " + id);
@@ -309,22 +311,26 @@ public class Predictor {
     }
 
     // A method to decode the predicted values of Anomaly detection
-    private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictions, Vector[] clusterCenters,
-            double[][] distanceArray) {
+    private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictedClusters, Vector[] clusterCenters,
+            Map<Integer, double[]> distanceMap, String newNormalLabel, String newAnomalyLabel) {
 
         KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
         EuclideanDistance distance = new EuclideanDistance();
-        double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distanceArray, percentileValue);
+        Map<Integer, Double> percentilesMap = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distanceMap,
+                percentileValue);
         List<String> decodedPredictions = new ArrayList<String>();
 
         for (int i = 0; i < dataToBePredicted.size(); i++) {
 
-            double distanceValue = distance.compute(clusterCenters[predictions.get(i)].toArray(), dataToBePredicted
-                    .get(i).toArray());
-            if (distanceValue > percentiles[predictions.get(i)]) {
-                decodedPredictions.add("Anomaly");
+            int clusterIndex = predictedClusters.get(i);
+            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
+            double[] dataPoint = dataToBePredicted.get(i).toArray();
+            double distanceValue = distance.compute(clusterCenter, dataPoint);
+
+            if (distanceValue > percentilesMap.get(clusterIndex)) {
+                decodedPredictions.add(newAnomalyLabel);
             } else {
-                decodedPredictions.add("Normal");
+                decodedPredictions.add(newNormalLabel);
             }
 
         }

@@ -2460,6 +2460,8 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION)));
             mlWorkflow.setNormalLabels(getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS));
             mlWorkflow.setNormalization(getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION));
+            mlWorkflow.setNewNormalLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL));
+            mlWorkflow.setNewAnomalyLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL));
 
             // set hyper parameters
             mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));

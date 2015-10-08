@@ -21,6 +21,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Map;
 
 import org.apache.spark.mllib.clustering.KMeansModel;
 
@@ -30,7 +31,7 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
     private KMeansModel model;
-    private double[][] distancesArray;
+    private Map<Integer, double[]> distancesMap;
     private int bestPercentile;
 
     public MLKMeansAnomalyDetectionModel() {
@@ -49,7 +50,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
-        out.writeObject(distancesArray);
+        out.writeObject(distancesMap);
         out.writeObject(bestPercentile);
     }
 
@@ -62,7 +63,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = (KMeansModel) in.readObject();
-        distancesArray = (double[][]) in.readObject();
+        distancesMap = (Map<Integer, double[]>) in.readObject();
         bestPercentile = (Integer) in.readObject();
     }
 
@@ -74,12 +75,12 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
         this.model = model;
     }
 
-    public double[][] getDistancesArray() {
-        return distancesArray;
+    public Map<Integer, double[]> getDistancesMap() {
+        return distancesMap;
     }
 
-    public void setDistancesArray(double[][] distancesArray) {
-        this.distancesArray = distancesArray;
+    public void setDistancesMap(Map<Integer, double[]> distancesMap) {
+        this.distancesMap = distancesMap;
     }
 
     public int getBestPercentile() {

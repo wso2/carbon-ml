@@ -154,6 +154,8 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             MLModel mlModel = new MLModel();
             mlModel.setNormalization(workflow.getNormalization());
             mlModel.setNormalLabels(workflow.getNormalLabels());
+            mlModel.setNewNormalLabel(workflow.getNewNormalLabel());
+            mlModel.setNewAnomalyLabel(workflow.getNewAnomalyLabel());
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
             mlModel.setFeatures(workflow.getIncludedFeatures());
@@ -178,22 +180,22 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
             case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
                 mlModel.setResponseIndex(context.getResponseIndex());
                 // gets the pre-processed dataset for labeled data
-                JavaRDD<Vector> dataNormal = preProcessNormal().cache();
-                JavaRDD<Vector> trainingDataNormal = dataNormal.sample(false, workflow.getTrainDataFraction(),
+                JavaRDD<Vector> normalData = preProcessNormal().cache();
+                JavaRDD<Vector> normalTrainData = normalData.sample(false, workflow.getTrainDataFraction(),
                         MLConstants.RANDOM_SEED).cache();
-                JavaRDD<Vector> testingDataNormal = dataNormal.subtract(trainingDataNormal).cache();
+                JavaRDD<Vector> normalTestData = normalData.subtract(normalTrainData).cache();
                 // remove from cache
-                dataNormal.unpersist();
+                normalData.unpersist();
 
-                JavaRDD<Vector> dataAnomaly = preProcessAnomaly().cache();
+                JavaRDD<Vector> anomalyData = preProcessAnomaly().cache();
                 double testDataFraction = (1 - workflow.getTrainDataFraction());
-                JavaRDD<Vector> testingDataAnomaly = dataAnomaly.sample(false, testDataFraction,
+                JavaRDD<Vector> anomalyTestData = anomalyData.sample(false, testDataFraction,
                         MLConstants.RANDOM_SEED).cache();
                 // remove from cache
-                dataAnomaly.unpersist();
+                anomalyData.unpersist();
 
-                summaryModel = buildKMeansLabeledDataModel(modelId, trainingDataNormal, testingDataNormal,
-                        testingDataAnomaly, workflow, mlModel, includedFeatures);
+                summaryModel = buildKMeansLabeledDataModel(modelId, normalTrainData, normalTestData,
+                        anomalyTestData, workflow, mlModel, includedFeatures);
                 break;
 
             default:
@@ -214,33 +216,42 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      * This method builds a k-means model.
      *
      * @param modelID Model ID
-     * @param data Training data as a JavaRDD of LabeledPoints
+     * @param data Training data as a JavaRDD of Vectors
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
+     * @param includedFeatures included features Map
      * @throws MLModelBuilderException
+     * @return ModelSummary containing the KMeansAnomalyDetectionSummary
      */
     private ModelSummary buildKMeansUnlabeledDataModel(long modelID, JavaRDD<Vector> data, Workflow workflow,
             MLModel mlModel, SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
 
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
+
+            // creating the kMeansAnomalyDetectionUnLabeledData object
             KMeansAnomalyDetectionUnlabeledData kMeansAnomalyDetectionUnlabeledData = new KMeansAnomalyDetectionUnlabeledData();
+            // building the kmeans model
             KMeansModel kMeansModel = kMeansAnomalyDetectionUnlabeledData.train(data,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_OF_NORMAL_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
 
-            JavaRDD<Integer> predict = kMeansAnomalyDetectionUnlabeledData.test(kMeansModel, data);
+            // get the cluster indexes of each data points of the train dataset
+            JavaRDD<Integer> predictedClusters = kMeansAnomalyDetectionUnlabeledData.test(kMeansModel, data);
+            // get the cluster centers array from the model
             Vector[] clusterCenters = kMeansAnomalyDetectionUnlabeledData.getClusterCenters(kMeansModel);
-
-            double[][] distancesArray = kMeansAnomalyDetectionUnlabeledData.getDistancesToDataPoints(predict,
-                    clusterCenters, data);
+            // get the distance Map of training data
+            Map<Integer, double[]> distancesMap = kMeansAnomalyDetectionUnlabeledData.getDistancesToDataPoints(
+                    predictedClusters, clusterCenters, data);
 
             // remove from cache
             data.unpersist();
 
+            // creating the model summary object
             KMeansAnomalyDetectionSummary kMeansAnomalyDetectionSummary = new KMeansAnomalyDetectionSummary();
+            // creating the model object
             MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = new MLKMeansAnomalyDetectionModel(kMeansModel);
-            mlkMeansAnomalyDetectionModel.setDistancesArray(distancesArray);
+            mlkMeansAnomalyDetectionModel.setDistancesMap(distancesMap);
 
             mlModel.setModel(mlkMeansAnomalyDetectionModel);
 
@@ -263,68 +274,93 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
      * This method builds a k-means model.
      *
      * @param modelID Model ID
-     * @param trainData Training data as a JavaRDD of LabeledPoints
+     * @param trainData Training data as a JavaRDD of Vectors
+     * @param normalTestData Normal test data as a JavaRDD of Vectors
+     * @param anomalyTestData Anomaly test data as a JavaRDD of Vectors
      * @param workflow Machine learning workflow
      * @param mlModel Deployable machine learning model
+     * @param includedFeatures included features Map
      * @throws MLModelBuilderException
+     * @return ModelSummary containing the KMeansAnomalyDetectionSummary
      */
     private ModelSummary buildKMeansLabeledDataModel(long modelID, JavaRDD<Vector> trainData,
-            JavaRDD<Vector> testDataNormal, JavaRDD<Vector> testDataAnomaly, Workflow workflow, MLModel mlModel,
+            JavaRDD<Vector> normalTestData, JavaRDD<Vector> anomalyTestData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
 
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
+            String newNormalLabel = workflow.getNewNormalLabel();
+            String newAnomalyLabel = workflow.getNewAnomalyLabel();
+
+            // creating the kMeansAnomalyDetectionLabeledData object
             KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
+            // building the kmeans model
             KMeansModel kMeansModel = kMeansAnomalyDetectionLabeledData.train(trainData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_OF_NORMAL_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
 
-            JavaRDD<Integer> prediction = kMeansAnomalyDetectionLabeledData.test(kMeansModel, trainData);
+            // get the cluster indexes of each data points of the train dataset
+            JavaRDD<Integer> predictedClustersOfTrainData = kMeansAnomalyDetectionLabeledData.test(kMeansModel, trainData);
+            // get the cluster centers array from the model
             Vector[] clusterCenters = kMeansAnomalyDetectionLabeledData.getClusterCenters(kMeansModel);
 
-            double[][] distancesArray = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(prediction,
-                    clusterCenters, trainData);
+            // get the distance Map of training data
+            Map<Integer, double[]> distancesMapOfTrainData = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
+                    predictedClustersOfTrainData, clusterCenters, trainData);
 
             // remove from cache
             trainData.unpersist();
 
+            // creating the model summary object
             KMeansAnomalyDetectionSummary kMeansAnomalyDetectionSummary = new KMeansAnomalyDetectionSummary();
+            // creating the model object
             MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = new MLKMeansAnomalyDetectionModel(kMeansModel);
-            mlkMeansAnomalyDetectionModel.setDistancesArray(distancesArray);
+            mlkMeansAnomalyDetectionModel.setDistancesMap(distancesMapOfTrainData);
 
-            // evaluating the model
-            JavaRDD<Integer> predictionTestNormal = kMeansAnomalyDetectionLabeledData.test(kMeansModel, testDataNormal);
-            double[][] distancesArrayTetsNormal = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
-                    predictionTestNormal, clusterCenters, testDataNormal);
+            // evaluating the model using test data
+            // get the cluster indexes of each data points of the normal test dataset
+            JavaRDD<Integer> predictedClustesOfNormalTestData = kMeansAnomalyDetectionLabeledData.test(kMeansModel, normalTestData);
+            // get the distance Map of normal test data
+            Map<Integer, double[]> distanceMapOfNormalTestData = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
+                    predictedClustesOfNormalTestData, clusterCenters, normalTestData);
             // remove from cache
-            testDataNormal.unpersist();
+            normalTestData.unpersist();
 
-            JavaRDD<Integer> predictionTestAnomaly = kMeansAnomalyDetectionLabeledData.test(kMeansModel,
-                    testDataAnomaly);
-            double[][] distancesArrayTetsAnomaly = kMeansAnomalyDetectionLabeledData.getDistancesToDataPoints(
-                    predictionTestAnomaly, clusterCenters, testDataAnomaly);
+            // get the cluster indexes of each data points of the anomaly test dataset
+            JavaRDD<Integer> predictedClustesOfAnomalyTestData = kMeansAnomalyDetectionLabeledData.test(kMeansModel,
+                    anomalyTestData);
+            // get the distance Map of anomaly test data
+            Map<Integer, double[]> distanceMapOfAnomalyTestData = kMeansAnomalyDetectionLabeledData
+                    .getDistancesToDataPoints(predictedClustesOfAnomalyTestData, clusterCenters, anomalyTestData);
             // remove from cache
-            testDataAnomaly.unpersist();
+            anomalyTestData.unpersist();
 
-            Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix = new HashMap<Integer, MulticlassConfusionMatrix>();
+            Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrixMap = new HashMap<Integer, MulticlassConfusionMatrix>();
             int maxRange = 100;
             int minRange = 80;
             double maxF1 = 0;
             int bestPercentile = maxRange;
 
-            for (int i = minRange; i <= maxRange; i++) {
+            // calculating the evaluation results for each percentile of defined range
+            for (int percentileValue = minRange; percentileValue <= maxRange; percentileValue++) {
 
-                double[] percentiles = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distancesArray, i);
+                // get the percentile Map of each cluster
+                Map<Integer, Double> percentilesMap = kMeansAnomalyDetectionLabeledData.getPercentileDistances(
+                        distancesMapOfTrainData, percentileValue);
 
-                MulticlassConfusionMatrix predictionResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
-                        distancesArrayTetsNormal, distancesArrayTetsAnomaly, percentiles);
+                // get the multiclassconfusionmatrix of test data
+                MulticlassConfusionMatrix evaluationResults = kMeansAnomalyDetectionLabeledData.getEvaluationResults(
+                        distanceMapOfNormalTestData, distanceMapOfAnomalyTestData, percentilesMap, newNormalLabel,
+                        newAnomalyLabel);
 
-                if (predictionResults.getF1Score() > maxF1) {
-                    maxF1 = predictionResults.getF1Score();
-                    bestPercentile = i;
+                // finding the best percentile value based on the F1 score
+                if (evaluationResults.getF1Score() > maxF1) {
+                    maxF1 = evaluationResults.getF1Score();
+                    bestPercentile = percentileValue;
                 }
 
-                multiclassConfusionMatrix.put(i, predictionResults);
+                // storing the evaluation results mapped with their respective percentile values
+                multiclassConfusionMatrixMap.put(percentileValue, evaluationResults);
 
             }
 
@@ -364,13 +400,14 @@ public class KmeansAnomalyDetectionModelBuilder extends MLModelBuilder {
                 clusterPoints.add(clusterPoint);
             }
 
+
             mlkMeansAnomalyDetectionModel.setBestPercentile(bestPercentile);
             mlModel.setModel(mlkMeansAnomalyDetectionModel);
 
             kMeansAnomalyDetectionSummary
                     .setAlgorithm(MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
                             .toString());
-            kMeansAnomalyDetectionSummary.setMulticlassConfusionMatrix(multiclassConfusionMatrix);
+            kMeansAnomalyDetectionSummary.setPercentileToMulticlassConfusionMatrixMap(multiclassConfusionMatrixMap);
             kMeansAnomalyDetectionSummary.setClusterPoints(clusterPoints);
             kMeansAnomalyDetectionSummary.setBestPercentile(bestPercentile);
             kMeansAnomalyDetectionSummary.setDatasetVersion(workflow.getDatasetVersion());

@@ -38,6 +38,8 @@ public class MLModel implements Serializable {
     private Externalizable model;
     private String normalLabels;
     private String normalization;
+    private String newNormalLabel;
+    private String newAnomalyLabel;
     private Map<String, String> summaryStatsOfFeatures;
 
     public String getAlgorithmName() {
@@ -119,6 +121,22 @@ public class MLModel implements Serializable {
 
     public void setNormalization(String normalization) {
         this.normalization = normalization;
+    }
+
+    public String getNewNormalLabel() {
+        return newNormalLabel;
+    }
+
+    public void setNewNormalLabel(String newNormalLabel) {
+        this.newNormalLabel = newNormalLabel;
+    }
+
+    public String getNewAnomalyLabel() {
+        return newAnomalyLabel;
+    }
+
+    public void setNewAnomalyLabel(String newAnomalyLabel) {
+        this.newAnomalyLabel = newAnomalyLabel;
     }
 
     public Map<String, String> getSummaryStatsOfFeatures() {
