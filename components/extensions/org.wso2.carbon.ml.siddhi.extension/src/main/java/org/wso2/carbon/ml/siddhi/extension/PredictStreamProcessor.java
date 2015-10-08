@@ -180,7 +180,7 @@ public class PredictStreamProcessor extends StreamProcessor {
             algorithmClasses.add(modelHandlers[i].getAlgorithmClass());
         }
         if (algorithmClasses.size() > 1) {
-            throw new ExecutionPlanRuntimeException("Types of response variables are not equal");
+            throw new ExecutionPlanRuntimeException("Algorithm classes are not equal");
         }
         algorithmClass = modelHandlers[0].getAlgorithmClass();
 
