@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -77,13 +78,13 @@ public class PredictStreamProcessor extends StreamProcessor {
                     Object[] predictionResults = new Object[modelHandlers.length];
                     Object predictionResult = null;
 
-                    if ("classification".equals(algorithmClass)) {
+                    if (AlgorithmType.CLASSIFICATION.getValue().equals(algorithmClass)) {
                         for (int i = 0; i < modelHandlers.length; i++) {
                             predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
                         }
                         // Gets the majority vote
                         predictionResult = getMostFrequent(predictionResults);
-                    } else if ("numerical_prediction".equals(algorithmClass)) {
+                    } else if (AlgorithmType.NUMERICAL_PREDICTION.getValue().equals(algorithmClass)) {
                         double sum = 0;
                         for (int i = 0; i < modelHandlers.length; i++) {
                             sum += Double.parseDouble(modelHandlers[i].predict(featureValues, outputType).toString());
