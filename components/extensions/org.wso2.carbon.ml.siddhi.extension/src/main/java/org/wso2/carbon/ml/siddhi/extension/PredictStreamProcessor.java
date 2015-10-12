@@ -160,6 +160,8 @@ public class PredictStreamProcessor extends StreamProcessor {
         }
 
         // Validate response variables
+        // All models should have the same response variable.
+        // When put into a set, the size of the set should be 1
         HashSet<String> responseVariables = new HashSet<String>();
         for (int i = 0; i < modelStorageLocations.length; i++) {
             responseVariables.add(modelHandlers[i].getResponseVariable());
@@ -170,6 +172,8 @@ public class PredictStreamProcessor extends StreamProcessor {
         responseVariable = modelHandlers[0].getResponseVariable();
 
         // Validate algorithm classes
+        // All models should have the same algorithm class.
+        // When put into a set, the size of the set should be 1
         HashSet<String> algorithmClasses = new HashSet<String>();
         for (int i = 0; i < modelHandlers.length; i++) {
             algorithmClasses.add(modelHandlers[i].getAlgorithmClass());
@@ -180,6 +184,8 @@ public class PredictStreamProcessor extends StreamProcessor {
         algorithmClass = modelHandlers[0].getAlgorithmClass();
 
         // Validate features
+        // All models should have same features.
+        // When put into a set, the size of the set should be 1
         HashSet<Map<String, Integer>> features = new HashSet<Map<String, Integer>>();
         for (int i = 0; i < modelHandlers.length; i++) {
             features.add(modelHandlers[i].getFeatures());
