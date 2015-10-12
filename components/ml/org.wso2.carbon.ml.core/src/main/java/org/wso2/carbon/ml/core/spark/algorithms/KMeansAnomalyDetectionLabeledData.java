@@ -90,47 +90,13 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
      * @param predictedClustersOfEachDataPoints predicted clusters from the model for data points
      * @param clusterCenters vector array of cluster centers
      * @param data data points
-     * @return Map<Integer, double[]> containing double arrays of distances of each cluster mapped with their cluster
+     * @return Map<Integer, List<Double>> containing double Lists of distances of each cluster mapped with their cluster
      *         Indexes
      */
-    public Map<Integer, double[]> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
+    public Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
             Vector[] clusterCenters, JavaRDD<Vector> data) {
 
-        int[] noOfPointsInEachCluster = new int[clusterCenters.length];
-        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
-
-        // calculating the no of data points in each clusters
-        for (int clusterIndex : predictedClusters) {
-            noOfPointsInEachCluster[clusterIndex]++;
-        }
-
-        // creating the distance array to store the distances of each points to its cluster center
-        // double[][] distancesArray = new double[clusterCenters.length][];
-        Map<Integer, double[]> distancesMap = new HashMap<Integer, double[]>();
-
-        // creating the 2D array according to the size of each clusters
-        for (int clusterIndex = 0; clusterIndex < clusterCenters.length; clusterIndex++) {
-            double[] distancesArray = new double[noOfPointsInEachCluster[clusterIndex]];
-            distancesMap.put(clusterIndex, distancesArray);
-        }
-
-        List<Vector> dataList = data.collect();
-        // creating the EuclideanDistance Object
-        EuclideanDistance distance = new EuclideanDistance();
-
-        // calculating and storing the distances of each data point to it's cluster center
-        for (int i = 0; i < dataList.size(); i++) {
-
-            int clusterIndex = predictedClusters.get(i);
-            noOfPointsInEachCluster[clusterIndex]--;
-            int arrayIndex = noOfPointsInEachCluster[clusterIndex];
-            double[] dataPoint = dataList.get(i).toArray();
-            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
-
-            (distancesMap.get(clusterIndex))[arrayIndex] = distance.compute(dataPoint, clusterCenter);
-        }
-
-        return distancesMap;
+        return SparkModelUtils.getDistancesToDataPoints(predictedClustersOfEachDataPoints, clusterCenters, data);
     }
 
     /**
@@ -140,7 +106,7 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
      * @param percentileValue percentile value to identify the cluster boundaries
      * @return Map<Integer, Double> containing percentile distance values mapped with their respective cluster Indexes
      */
-    public Map<Integer, Double> getPercentileDistances(Map<Integer, double[]> distanceMap, double percentileValue) {
+    public Map<Integer, Double> getPercentileDistances(Map<Integer, List<Double>> distanceMap, double percentileValue) {
 
         // Get a DescriptiveStatistics instance
         DescriptiveStatistics stats = new DescriptiveStatistics();
@@ -170,8 +136,8 @@ public class KMeansAnomalyDetectionLabeledData implements Serializable {
      * @param newAnomalyLabel new anomaly label value
      * @return MulticlassConfusionMatrix containing multiclassconfusionmatrix of test results
      */
-    public MulticlassConfusionMatrix getEvaluationResults(Map<Integer, double[]> normalTestDataDistanceMap,
-            Map<Integer, double[]> anomalyTestDataDistanceMap, Map<Integer, Double> percentilesMap,
+    public MulticlassConfusionMatrix getEvaluationResults(Map<Integer, List<Double>> normalTestDataDistanceMap,
+            Map<Integer, List<Double>> anomalyTestDataDistanceMap, Map<Integer, Double> percentilesMap,
             String newNormalLabel, String newAnomalyLabel) {
 
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();

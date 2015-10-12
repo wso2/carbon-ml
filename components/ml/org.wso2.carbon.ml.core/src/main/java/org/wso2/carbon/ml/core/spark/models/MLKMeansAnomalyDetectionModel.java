@@ -21,6 +21,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.spark.mllib.clustering.KMeansModel;
@@ -31,7 +32,7 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 public class MLKMeansAnomalyDetectionModel implements Externalizable {
 
     private KMeansModel model;
-    private Map<Integer, double[]> distancesMap;
+    private Map<Integer, List<Double>> distancesMap;
     private int bestPercentile;
 
     public MLKMeansAnomalyDetectionModel() {
@@ -63,7 +64,7 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = (KMeansModel) in.readObject();
-        distancesMap = (Map<Integer, double[]>) in.readObject();
+        distancesMap = (Map<Integer, List<Double>>) in.readObject();
         bestPercentile = (Integer) in.readObject();
     }
 
@@ -75,11 +76,11 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
         this.model = model;
     }
 
-    public Map<Integer, double[]> getDistancesMap() {
+    public Map<Integer, List<Double>> getDistancesMap() {
         return distancesMap;
     }
 
-    public void setDistancesMap(Map<Integer, double[]> distancesMap) {
+    public void setDistancesMap(Map<Integer, List<Double>> distancesMap) {
         this.distancesMap = distancesMap;
     }
 

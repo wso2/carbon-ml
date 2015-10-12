@@ -259,4 +259,8 @@ public class MLConstants {
             return value;
         }
     }
+
+    public enum ANOMALY_DETECTION_DATA_TYPE {
+        MIX, NORMAL, ANOMALOUS
+    }
 }

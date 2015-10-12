@@ -19,6 +19,7 @@
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,48 +88,13 @@ public class KMeansAnomalyDetectionUnlabeledData implements Serializable {
      * @param predictedClustersOfEachDataPoints predicted clusters from the model for data points
      * @param clusterCenters vector array of cluster centers
      * @param data data points
-     * @return Map<Integer, double[]> containing double arrays of distances of each cluster mapped with their cluster
+     * @return Map<Integer, List<Double>> containing double Lists of distances of each cluster mapped with their cluster
      *         Indexes
      */
-    public Map<Integer, double[]> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
-            Vector[] clusterCenters, JavaRDD<Vector> data) {
+    public Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
+                                                               Vector[] clusterCenters, JavaRDD<Vector> data) {
 
-        int[] noOfPointsInEachCluster = new int[clusterCenters.length];
-        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
-
-        // calculating the no of data points in each clusters
-        for (int clusterIndex : predictedClusters) {
-            noOfPointsInEachCluster[clusterIndex]++;
-        }
-
-        // creating the distance array to store the distances of each points to its cluster center
-        // double[][] distancesArray = new double[clusterCenters.length][];
-        Map<Integer, double[]> distancesMap = new HashMap<Integer, double[]>();
-
-        // creating the 2D array according to the size of each clusters
-        for (int clusterIndex = 0; clusterIndex < clusterCenters.length; clusterIndex++) {
-
-            double[] distancesArray = new double[noOfPointsInEachCluster[clusterIndex]];
-            distancesMap.put(clusterIndex, distancesArray);
-        }
-
-        List<Vector> dataList = data.collect();
-        // creating the EuclideanDistance Object
-        EuclideanDistance distance = new EuclideanDistance();
-
-        // calculating and storing the distances of each data point to it's cluster center
-        for (int i = 0; i < dataList.size(); i++) {
-
-            int clusterIndex = predictedClusters.get(i);
-            noOfPointsInEachCluster[clusterIndex]--;
-            int arrayIndex = noOfPointsInEachCluster[clusterIndex];
-            double[] dataPoint = dataList.get(i).toArray();
-            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
-
-            (distancesMap.get(clusterIndex))[arrayIndex] = distance.compute(dataPoint, clusterCenter);
-        }
-
-        return distancesMap;
+        return SparkModelUtils.getDistancesToDataPoints(predictedClustersOfEachDataPoints, clusterCenters, data);
     }
     
 }

@@ -183,7 +183,7 @@ public class Predictor {
                 MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = (MLKMeansAnomalyDetectionModel) model
                         .getModel();
                 Vector[] clusterCenters = mlkMeansAnomalyDetectionModel.getModel().clusterCenters();
-                Map<Integer, double[]> distanceMap = mlkMeansAnomalyDetectionModel.getDistancesMap();
+                Map<Integer, List<Double>> distanceMap = mlkMeansAnomalyDetectionModel.getDistancesMap();
                 String newNormalLabel = model.getNewNormalLabel();
                 String newAnomalyLabel = model.getNewAnomalyLabel();
 
@@ -312,7 +312,7 @@ public class Predictor {
 
     // A method to decode the predicted values of Anomaly detection
     private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictedClusters, Vector[] clusterCenters,
-            Map<Integer, double[]> distanceMap, String newNormalLabel, String newAnomalyLabel) {
+            Map<Integer, List<Double>> distanceMap, String newNormalLabel, String newAnomalyLabel) {
 
         KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
         EuclideanDistance distance = new EuclideanDistance();
