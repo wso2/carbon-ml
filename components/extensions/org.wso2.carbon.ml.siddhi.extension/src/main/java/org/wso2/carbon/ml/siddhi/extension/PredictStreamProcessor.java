@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
@@ -47,7 +48,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private String algorithmClass;
     private String outputType;
     private boolean attributeSelectionAvailable;
-    private Map<Integer, int[]> attributeIndexMap;           // <feature-index, [event-array-type][attribute-index]> pairs
+    private Map<Integer, int[]> attributeIndexMap; // <feature-index, [event-array-type][attribute-index]> pairs
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
@@ -83,7 +84,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                             predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
                         }
                         // Gets the majority vote
-                        predictionResult = getMostFrequent(predictionResults);
+                        predictionResult = ObjectUtils.mode(predictionResults);
                     } else if (AlgorithmType.NUMERICAL_PREDICTION.getValue().equals(algorithmClass)) {
                         double sum = 0;
                         for (int i = 0; i < modelHandlers.length; i++) {
@@ -93,7 +94,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                         predictionResult = sum / modelHandlers.length;
                     } else {
                         String msg = String.format(
-                                "Error while predicting. Prediction is not supported for the " + "algorithm class %s. ",
+                                "Error while predicting. Prediction is not supported for the algorithm class %s. ",
                                 algorithmClass);
                         throw new ExecutionPlanRuntimeException(msg);
                     }
@@ -110,11 +111,12 @@ public class PredictStreamProcessor extends StreamProcessor {
     }
 
     @Override
-    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
+    protected List<Attribute> init(AbstractDefinition inputDefinition,
+            ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
 
         if(attributeExpressionExecutors.length < 2) {
-            throw new ExecutionPlanValidationException("ML model storage locations and response variable type have not " +
-                    "been defined as the first two parameters");
+            throw new ExecutionPlanValidationException("ML model storage locations and response variable type have not "
+                    + "been defined as the first two parameters");
         } else if(attributeExpressionExecutors.length == 2) {
             attributeSelectionAvailable = false;    // model-storage-location, data-type
         } else {
@@ -147,21 +149,13 @@ public class PredictStreamProcessor extends StreamProcessor {
             try {
                 modelHandlers[i] = new ModelHandler(modelStorageLocations[i]);
             } catch (ClassNotFoundException e) {
-                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
-                throw new ExecutionPlanCreationException(
-                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+                logError(i, e);
             } catch (URISyntaxException e) {
-                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
-                throw new ExecutionPlanCreationException(
-                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+                logError(i, e);
             } catch (MLInputAdapterException e) {
-                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
-                throw new ExecutionPlanCreationException(
-                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+                logError(i, e);
             } catch (IOException e) {
-                log.error("Error while retrieving ML-model : " + modelStorageLocations[i], e);
-                throw new ExecutionPlanCreationException(
-                        "Error while retrieving ML-model : " + modelStorageLocations[i] + "\n" + e.getMessage());
+                logError(i, e);
             }
         }
 
@@ -274,23 +268,10 @@ public class PredictStreamProcessor extends StreamProcessor {
         }
     }
 
-    private Object getMostFrequent(Object[] predictions) {
-        Map<Object, Integer> m = new HashMap<Object, Integer>();
-        // Calculates the frequency of each prediction
-        for (Object prediction : predictions) {
-            Integer freq = m.get(prediction);
-            m.put(prediction, (freq == null) ? 1 : freq + 1);
-        }
-        int max = -1;
-        Object mostFrequent = null;
-        // Finds the key with highest frequency
-        for (Map.Entry<Object, Integer> e : m.entrySet()) {
-            if (e.getValue() > max) {
-                mostFrequent = e.getKey();
-                max = e.getValue();
-            }
-        }
-        return mostFrequent;
+    private void logError(int modelId, Exception e) {
+        log.error("Error while retrieving ML-model : " + modelStorageLocations[modelId], e);
+        throw new ExecutionPlanCreationException(
+                "Error while retrieving ML-model : " + modelStorageLocations[modelId] + "\n" + e.getMessage());
     }
 
     @Override
