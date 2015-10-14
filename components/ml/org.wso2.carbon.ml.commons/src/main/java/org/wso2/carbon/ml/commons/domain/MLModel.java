@@ -37,7 +37,7 @@ public class MLModel implements Serializable {
     private List<Integer> newToOldIndicesList;
     private Externalizable model;
     private String normalLabels;
-    private String normalization;
+    private boolean normalization;
     private String newNormalLabel;
     private String newAnomalyLabel;
     private Map<String, String> summaryStatsOfFeatures;
@@ -115,11 +115,11 @@ public class MLModel implements Serializable {
         this.normalLabels = normalLabels;
     }
 
-    public String getNormalization() {
+    public boolean getNormalization() {
         return normalization;
     }
 
-    public void setNormalization(String normalization) {
+    public void setNormalization(boolean normalization) {
         this.normalization = normalization;
     }
 

@@ -1317,3 +1317,8 @@ a.cu-level3-btn:hover {
 .impute-fix {
 	padding-right:6.3em;
 }
+
+.algorithm-inputs-group{
+	background:#F0F0F0;
+	padding:10px;
+}

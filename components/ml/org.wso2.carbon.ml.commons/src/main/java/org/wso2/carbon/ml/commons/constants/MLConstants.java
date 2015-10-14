@@ -261,6 +261,6 @@ public class MLConstants {
     }
 
     public enum ANOMALY_DETECTION_DATA_TYPE {
-        MIX, NORMAL, ANOMALOUS
+        NORMAL, ANOMALOUS
     }
 }

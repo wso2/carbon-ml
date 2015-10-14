@@ -43,7 +43,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
-import org.wso2.carbon.ml.core.spark.algorithms.KMeansAnomalyDetectionLabeledData;
+import org.wso2.carbon.ml.core.spark.algorithms.AnomalyDetection;
 import org.wso2.carbon.ml.core.spark.models.*;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.spark.transformations.Normalization;
@@ -180,22 +180,22 @@ public class Predictor {
             case K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA:
             case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
                 List<Integer> predictions = new ArrayList<Integer>();
-                MLKMeansAnomalyDetectionModel mlkMeansAnomalyDetectionModel = (MLKMeansAnomalyDetectionModel) model
+                MLAnomalyDetectionModel mLAnomalyDetectionModel = (MLAnomalyDetectionModel) model
                         .getModel();
-                Vector[] clusterCenters = mlkMeansAnomalyDetectionModel.getModel().clusterCenters();
-                Map<Integer, List<Double>> distanceMap = mlkMeansAnomalyDetectionModel.getDistancesMap();
+                Vector[] clusterCenters = mLAnomalyDetectionModel.getModel().clusterCenters();
+                Map<Integer, List<Double>> distanceMap = mLAnomalyDetectionModel.getDistancesMap();
                 String newNormalLabel = model.getNewNormalLabel();
                 String newAnomalyLabel = model.getNewAnomalyLabel();
 
                 Normalization normalization = null;
-                if (model.getNormalization().equals("true")) {
+                if (model.getNormalization()) {
                     normalization = new Normalization.Builder().minMax(model.getFeatures(), 
                             model.getSummaryStatsOfFeatures()).build();
                 }
 
                 for (Vector vector : dataToBePredicted) {
 
-                    if (model.getNormalization().equals("true")) {
+                    if (model.getNormalization()) {
                         double[] data = vector.toArray();
                         double[] normalizedData;
 
@@ -210,7 +210,7 @@ public class Predictor {
 
                     Context context = startTimer(timer);
 
-                    int predictedData = mlkMeansAnomalyDetectionModel.getModel().predict(vector);
+                    int predictedData = mLAnomalyDetectionModel.getModel().predict(vector);
                     predictions.add(predictedData);
 
                     stopTimer(context);
@@ -314,9 +314,9 @@ public class Predictor {
     private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictedClusters, Vector[] clusterCenters,
             Map<Integer, List<Double>> distanceMap, String newNormalLabel, String newAnomalyLabel) {
 
-        KMeansAnomalyDetectionLabeledData kMeansAnomalyDetectionLabeledData = new KMeansAnomalyDetectionLabeledData();
+        AnomalyDetection anomalyDetection = new AnomalyDetection();
         EuclideanDistance distance = new EuclideanDistance();
-        Map<Integer, Double> percentilesMap = kMeansAnomalyDetectionLabeledData.getPercentileDistances(distanceMap,
+        Map<Integer, Double> percentilesMap = anomalyDetection.getPercentileDistances(distanceMap,
                 percentileValue);
         List<String> decodedPredictions = new ArrayList<String>();
 

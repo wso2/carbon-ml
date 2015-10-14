@@ -264,50 +264,6 @@ public class SparkModelUtils {
         classClassificationModelSummary.setError(error);
         return classClassificationModelSummary;
     }
-
-    /**
-     * This method is to calculate the euclidean distances of each data point to it's cluster centers
-     *
-     * @param predictedClustersOfEachDataPoints predicted clusters from the model for data points
-     * @param clusterCenters vector array of cluster centers
-     * @param data data points
-     * @return Map<Integer, List<Double>> containing double Lists of distances of each cluster mapped with their cluster
-     *         Indexes
-     */
-    public static Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
-                                                               org.apache.spark.mllib.linalg.Vector[] clusterCenters, JavaRDD<Vector> data) {
-
-        // convert predicted clusters JAVARDD into a List
-        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
-
-        // creating the distance Map to store the distances of each points with their cluster centers
-        Map<Integer, List<Double>> distancesMap = new HashMap<Integer, List<Double>>();
-
-        // creating the map with respect to each cluster
-        for (int clusterIndex = 0; clusterIndex < clusterCenters.length; clusterIndex++) {
-
-            List<Double> distancesList = new ArrayList<Double>();
-            distancesMap.put(clusterIndex, distancesList);
-        }
-
-        // convert data JAVARDD into a List
-        List<Vector> dataList = data.collect();
-        // creating the EuclideanDistance Object
-        EuclideanDistance distance = new EuclideanDistance();
-
-        // calculating and storing the distances of each data point to it's cluster center
-        for (int i = 0; i < dataList.size(); i++) {
-
-            int clusterIndex = predictedClusters.get(i);
-            double[] dataPoint = dataList.get(i).toArray();
-            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
-            List<Double> distanceList = distancesMap.get(clusterIndex);
-            double distanceBetweenDataPointAndItsClusterCenter = distance.compute(dataPoint, clusterCenter);
-            distanceList.add(distanceBetweenDataPointAndItsClusterCenter);
-        }
-
-        return distancesMap;
-    }
     
     /**
      * Build the encodings against each categorical feature.
@@ -465,7 +421,7 @@ public class SparkModelUtils {
 
     }
 
-    public static int getUnique(String statsAsJson) {
+/*    public static int getUnique(String statsAsJson) {
         if (statsAsJson == null) {
             return 0;
         }
@@ -489,5 +445,5 @@ public class SparkModelUtils {
             return 0;
         }
 
-    }
+    }*/
 }

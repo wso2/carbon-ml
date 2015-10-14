@@ -27,18 +27,18 @@ import java.util.Map;
 import org.apache.spark.mllib.clustering.KMeansModel;
 
 /**
- * Wraps Spark's {@link MLKMeansAnomalyDetectionModel} model.
+ * Wraps Spark's {@link MLAnomalyDetectionModel} model.
  */
-public class MLKMeansAnomalyDetectionModel implements Externalizable {
+public class MLAnomalyDetectionModel implements Externalizable {
 
     private KMeansModel model;
     private Map<Integer, List<Double>> distancesMap;
     private int bestPercentile;
 
-    public MLKMeansAnomalyDetectionModel() {
+    public MLAnomalyDetectionModel() {
     }
 
-    public MLKMeansAnomalyDetectionModel(KMeansModel model) {
+    public MLAnomalyDetectionModel(KMeansModel model) {
         this.model = model;
     }
 

@@ -35,7 +35,7 @@ public class Workflow implements Serializable {
     private Map<String, String> hyperParameters;
     private String datasetVersion;
     private String normalLabels;
-    private String normalization;
+    private boolean normalization;
     private String newNormalLabel;
     private String newAnomalyLabel;
 
@@ -112,14 +112,14 @@ public class Workflow implements Serializable {
     /**
      * @return Returns normalization
      */
-    public String getNormalization() {
+    public boolean getNormalization() {
         return normalization;
     }
 
     /**
      * @param normalization Sets nomalization option
      */
-    public void setNormalization(String normalization) {
+    public void setNormalization(boolean normalization) {
         this.normalization = normalization;
     }
 

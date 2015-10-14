@@ -25,11 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
+import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
 
-public class KMeansAnomalyDetectionUnlabeledData implements Serializable {
+public class AnomalyDetection implements Serializable {
 
     private static final long serialVersionUID = 7012024887487309471L;
 
@@ -91,10 +93,66 @@ public class KMeansAnomalyDetectionUnlabeledData implements Serializable {
      * @return Map<Integer, List<Double>> containing double Lists of distances of each cluster mapped with their cluster
      *         Indexes
      */
-    public Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
-                                                               Vector[] clusterCenters, JavaRDD<Vector> data) {
+    public static Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
+                                                                      org.apache.spark.mllib.linalg.Vector[] clusterCenters, JavaRDD<Vector> data) {
 
-        return SparkModelUtils.getDistancesToDataPoints(predictedClustersOfEachDataPoints, clusterCenters, data);
+        // convert predicted clusters JAVARDD into a List
+        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
+
+        // creating the distance Map to store the distances of each points with their cluster centers
+        Map<Integer, List<Double>> distancesMap = new HashMap<Integer, List<Double>>();
+
+        // creating the map with respect to each cluster
+        for (int clusterIndex = 0; clusterIndex < clusterCenters.length; clusterIndex++) {
+
+            List<Double> distancesList = new ArrayList<Double>();
+            distancesMap.put(clusterIndex, distancesList);
+        }
+
+        // convert data JAVARDD into a List
+        List<Vector> dataList = data.collect();
+        // creating the EuclideanDistance Object
+        EuclideanDistance distance = new EuclideanDistance();
+
+        // calculating and storing the distances of each data point to it's cluster center
+        for (int i = 0; i < dataList.size(); i++) {
+
+            int clusterIndex = predictedClusters.get(i);
+            double[] dataPoint = dataList.get(i).toArray();
+            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
+            List<Double> distanceList = distancesMap.get(clusterIndex);
+            double distanceBetweenDataPointAndItsClusterCenter = distance.compute(dataPoint, clusterCenter);
+            distanceList.add(distanceBetweenDataPointAndItsClusterCenter);
+        }
+
+        return distancesMap;
     }
-    
+
+    /**
+     * This method returns cluster centers of a given kmeans model
+     *
+     * @param distanceMap distance Map of each cluster
+     * @param percentileValue percentile value to identify the cluster boundaries
+     * @return Map<Integer, Double> containing percentile distance values mapped with their respective cluster Indexes
+     */
+    public Map<Integer, Double> getPercentileDistances(Map<Integer, List<Double>> distanceMap, double percentileValue) {
+
+        // Get a DescriptiveStatistics instance
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        Map<Integer, Double> percentilesMap = new HashMap<Integer, Double>();
+
+        // calculating percentile distance of each cluster
+        for (int clusterIndex = 0; clusterIndex < distanceMap.size(); clusterIndex++) {
+
+            for (double distance : distanceMap.get(clusterIndex)) {
+                stats.addValue(distance);
+            }
+
+            double percentileDistance = stats.getPercentile(percentileValue);
+            percentilesMap.put(clusterIndex, percentileDistance);
+            stats.clear();
+        }
+        return percentilesMap;
+    }
+
 }

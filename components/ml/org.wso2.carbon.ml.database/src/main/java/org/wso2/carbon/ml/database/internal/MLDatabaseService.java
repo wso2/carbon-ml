@@ -2459,7 +2459,7 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setResponseVariable(getAStringModelConfiguration(analysisId, MLConstants.RESPONSE));
             mlWorkflow.setTrainDataFraction(Double.valueOf(getAStringModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION)));
             mlWorkflow.setNormalLabels(getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS));
-            mlWorkflow.setNormalization(getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION));
+            mlWorkflow.setNormalization(getABooleanModelConfiguration(analysisId, MLConstants.NORMALIZATION));
             mlWorkflow.setNewNormalLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL));
             mlWorkflow.setNewAnomalyLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL));
 
@@ -2527,6 +2527,33 @@ public class MLDatabaseService implements DatabaseService {
                 return result.getDouble(1);
             } else {
                 return -1;
+            }
+        } catch (SQLException e) {
+            String msg = String.format(
+                    "An error occurred white retrieving [model config] %s  associated with [model id] %s : %s",
+                    configKey, analysisId, e.getMessage());
+            throw new DatabaseHandlerException(msg, e);
+        } finally {
+            // Close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, model, result);
+        }
+    }
+
+    @Override
+    public boolean getABooleanModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException {
+        Connection connection = null;
+        PreparedStatement model = null;
+        ResultSet result = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            model = connection.prepareStatement(SQLQueries.GET_A_MODEL_CONFIGURATION);
+            model.setLong(1, analysisId);
+            model.setString(2, configKey);
+            result = model.executeQuery();
+            if (result.first()) {
+                return result.getBoolean(1);
+            } else {
+                return false;
             }
         } catch (SQLException e) {
             String msg = String.format(
