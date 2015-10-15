@@ -39,32 +39,21 @@ import org.apache.spark.mllib.tree.model.RandomForestModel;
 import org.apache.spark.rdd.RDD;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
-import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.commons.domain.FeatureType;
-import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
-import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 import org.wso2.carbon.ml.core.spark.summary.ClassClassificationAndRegressionModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.FeatureImportance;
 import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSummary;
-import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
-import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
-import org.wso2.carbon.ml.core.spark.transformations.DoubleArrayToLabeledPoint;
-import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
-import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
-import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
+import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -221,8 +210,9 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     private String getTypeOfResponseVariable(String responseVariable, List<Feature> features){
         String type = null;
         for(Feature feature: features){
-            if(feature.getName().equals(responseVariable))
+            if (feature.getName().equals(responseVariable)) {
                 type = feature.getType();
+            }
         }
         return type;
     }
@@ -264,9 +254,10 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             if (isSGD) {
                 algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION.toString();
 
-                if (noOfClasses > 2)
-                    throw new MLModelBuilderException("A binary classification algorithm cannot have more than " +
-                            "two distinct values in response variable.");
+                if (noOfClasses > 2) {
+                    throw new MLModelBuilderException("A binary classification algorithm cannot have more than "
+                            + "two distinct values in response variable.");
+                }
 
                 logisticRegressionModel = logisticRegression.trainWithSGD(trainingData,
                         Double.parseDouble(hyperParameters.get(MLConstants.LEARNING_RATE)),
@@ -275,7 +266,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         Double.parseDouble(hyperParameters.get(MLConstants.REGULARIZATION_PARAMETER)),
                         Double.parseDouble(hyperParameters.get(MLConstants.SGD_DATA_FRACTION)));
             } else {
-
                 algorithmName = SUPERVISED_ALGORITHM.LOGISTIC_REGRESSION_LBFGS.toString();
                 logisticRegressionModel = logisticRegression.trainWithLBFGS(trainingData,
                         hyperParameters.get(MLConstants.REGULARIZATION_TYPE), noOfClasses);
@@ -461,9 +451,11 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
 
-        if (getNoOfClasses(mlModel) > 2)
-            throw new MLModelBuilderException("A binary classification algorithm cannot have more than " +
-                    "two distinct values in response variable.");
+        if (getNoOfClasses(mlModel) > 2) {
+            throw new MLModelBuilderException("A binary classification algorithm cannot have more than "
+                    + "two distinct values in response variable.");
+        }
+        
         try {
             SVM svm = new SVM();
             Map<String, String> hyperParameters = workflow.getHyperParameters();
