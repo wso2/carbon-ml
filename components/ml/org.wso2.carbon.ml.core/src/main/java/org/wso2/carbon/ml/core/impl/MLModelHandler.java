@@ -17,15 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -37,7 +29,11 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.mllib.classification.ClassificationModel;
+import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.regression.*;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
@@ -58,8 +54,10 @@ import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
-import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+import org.wso2.carbon.ml.core.spark.algorithms.*;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
+import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
+import org.wso2.carbon.ml.core.spark.models.MLKMeansModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -73,7 +71,6 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
-
 import scala.Tuple2;
 
 /**
@@ -645,6 +642,42 @@ public class MLModelHandler {
         }
         return lines;
     }
+    /**
+     * Export a ML model as a PMML.
+     *
+     * @param model Unique ID of the built ML model.
+     * @throws MLModelPublisherException
+     */
+    public String exportAsPMML(MLModel model) throws MLModelHandlerException {
+        Externalizable extModel = model.getModel();
+
+        //Deserializing to find the actual type of the model
+        if (extModel instanceof MLClassificationModel) {
+            ClassificationModel clasModel = ((MLClassificationModel) extModel).getModel();
+            if (clasModel instanceof LogisticRegressionModel) {
+                return ((LogisticRegressionModel) clasModel).toPMML();
+            } else {
+                throw new MLModelHandlerException("PMML export not supported for model type");
+            }
+        } else if (extModel instanceof MLGeneralizedLinearModel) {
+            GeneralizedLinearModel genModel = ((MLGeneralizedLinearModel) extModel).getModel();
+            if (genModel instanceof LinearRegressionModel) {
+                return ((LinearRegressionModel) genModel).toPMML();
+            } else if (genModel instanceof LassoModel) {
+                return ((LassoModel) genModel).toPMML();
+            } else if (genModel instanceof RidgeRegressionModel) {
+                return ((RidgeRegressionModel) genModel).toPMML();
+            } else {
+                throw new MLModelHandlerException("PMML export not supported for model type");
+            }
+        } else if (extModel instanceof MLKMeansModel) {
+            KMeansModel kmeansModel = ((MLKMeansModel) extModel).getModel();
+            return kmeansModel.toPMML();
+        } else {
+            throw new MLModelHandlerException("PMML export not supported for model type");
+        }
+    }
+
 
     class ModelBuilder implements Runnable {
 
@@ -779,4 +812,6 @@ public class MLModelHandler {
         }
         return link;
     }
+
+
 }

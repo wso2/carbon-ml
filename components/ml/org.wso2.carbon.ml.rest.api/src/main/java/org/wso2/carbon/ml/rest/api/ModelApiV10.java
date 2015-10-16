@@ -457,4 +457,39 @@ public class ModelApiV10 extends MLRestAPI {
                     .build();
         }
     }
+
+    /**
+     * Download model in PMML format
+     * @param modelName Name of the model
+     * @return A {@link org.wso2.carbon.ml.commons.domain.MLModel} as an XML file(PMML format)
+     */
+    @GET
+    @Path("/{modelName}/pmmlexport")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response exportModelAsPMML(@PathParam("modelName") String modelName) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+
+        try {
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelName);
+            if (model != null) {
+                final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
+                final String pmmlModel = mlModelHandler.exportAsPMML(generatedModel);
+
+                return Response.ok(pmmlModel)
+                        .header("Content-disposition", "attachment; filename=" + modelName + "PMML").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while retrieving the model [name] %s of tenant [id] %s and [user] %s .", modelName,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+
+    }
 }

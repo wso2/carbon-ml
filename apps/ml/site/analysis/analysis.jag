@@ -128,6 +128,15 @@
                     </div>
                     <!-- /delete model popup -->                    
 
+                    <!--download model popup -->
+                      <div class="popup-content" data-operation="download-model">
+                        <div class="content">Please selecte download type</div>
+                        <div class="buttons">
+                            <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                            <a href="#" id="download-model-pmml"  class="btn-opr-default">PMML</a>
+                        </div>
+                    </div>
+                    <!-- /download model popup -->
                 </div>
                 <!-- /content -->
 
@@ -231,6 +240,26 @@
             deleteModelId = null;
             hidePopup();
         });
+        var modelName;
+        //events to handle downloading
+        $(document).on('click','#download-model',function(e){
+        	e.preventDefault();
+            
+            modelName = sanitize($(this).data('modelname'));            
+            operationSelect('download-model');
+        });
+        $(document).on('click','#download-model-serialized',function(e){
+            e.preventDefault();
+
+            window.location.href = serverUrl+'/api/models/'+modelName+'/export';
+            hidePopup();
+        });
+        $(document).on('click','#download-model-pmml',function(e){
+        	e.preventDefault();
+            window.location.href = serverUrl+'/api/models/'+modelName+'/pmmlexport';
+        	hidePopup();
+            
+        });
     });
     
     function loadModels() {
@@ -304,7 +333,7 @@
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
                                                     }
                                                         accordionPanel += '' + 
-                                                        '<a href="' + serverUrl + '/api/models/' + modelName + '/export" id="download-model" class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
+                                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
                                                         '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '"><span>Publish</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
                                                     '</div>' +
@@ -504,3 +533,4 @@
 </body>
 
 </html>
+
