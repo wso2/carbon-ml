@@ -33,6 +33,7 @@ import org.apache.spark.mllib.classification.ClassificationModel;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.apache.spark.mllib.regression.*;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
@@ -53,6 +54,7 @@ import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.*;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
@@ -651,28 +653,9 @@ public class MLModelHandler {
     public String exportAsPMML(MLModel model) throws MLModelHandlerException {
         Externalizable extModel = model.getModel();
 
-        //Deserializing to find the actual type of the model
-        if (extModel instanceof MLClassificationModel) {
-            ClassificationModel clasModel = ((MLClassificationModel) extModel).getModel();
-            if (clasModel instanceof LogisticRegressionModel) {
-                return ((LogisticRegressionModel) clasModel).toPMML();
-            } else {
-                throw new MLModelHandlerException("PMML export not supported for model type");
-            }
-        } else if (extModel instanceof MLGeneralizedLinearModel) {
-            GeneralizedLinearModel genModel = ((MLGeneralizedLinearModel) extModel).getModel();
-            if (genModel instanceof LinearRegressionModel) {
-                return ((LinearRegressionModel) genModel).toPMML();
-            } else if (genModel instanceof LassoModel) {
-                return ((LassoModel) genModel).toPMML();
-            } else if (genModel instanceof RidgeRegressionModel) {
-                return ((RidgeRegressionModel) genModel).toPMML();
-            } else {
-                throw new MLModelHandlerException("PMML export not supported for model type");
-            }
-        } else if (extModel instanceof MLKMeansModel) {
-            KMeansModel kmeansModel = ((MLKMeansModel) extModel).getModel();
-            return kmeansModel.toPMML();
+        if (extModel instanceof PMMLModelContainer) {
+            PMMLExportable pmmlExportableModel = ((PMMLModelContainer) extModel).getPMMLExportable();
+            return pmmlExportableModel.toPMML();
         } else {
             throw new MLModelHandlerException("PMML export not supported for model type");
         }

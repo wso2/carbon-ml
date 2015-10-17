@@ -22,12 +22,15 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
 /**
  * Wraps Spark's {@link GeneralizedLinearModel} model.
  */
-public class MLGeneralizedLinearModel implements Externalizable {
+public class MLGeneralizedLinearModel implements Externalizable,PMMLModelContainer {
     private GeneralizedLinearModel model;
 
     public MLGeneralizedLinearModel() {
@@ -67,4 +70,11 @@ public class MLGeneralizedLinearModel implements Externalizable {
         this.model = model;
     }
 
+    @Override public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
+        if(model instanceof PMMLExportable){
+            return (PMMLExportable)model;
+        }else{
+            throw new MLModelHandlerException("PMML export not supported for model type");
+        }
+    }
 }
