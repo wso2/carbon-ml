@@ -212,7 +212,7 @@ public class PredictStreamProcessor extends StreamProcessor {
      * 
      * @throws ExecutionPlanCreationException
      */
-    private void populateFeatureAttributeMapping() throws ExecutionPlanCreationException{
+    private void populateFeatureAttributeMapping() throws ExecutionPlanCreationException {
         attributeIndexMap = new HashMap<Integer, int[]>();
         Map<String, Integer> featureIndexMap = modelHandlers[0].getFeatures();
         List<Integer> newToOldIndicesList = modelHandlers[0].getNewToOldIndicesList();
