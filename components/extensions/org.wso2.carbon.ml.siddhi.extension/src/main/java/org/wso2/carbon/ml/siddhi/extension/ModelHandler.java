@@ -59,7 +59,7 @@ public class ModelHandler {
     }
 
     /**
-     * Retrieve the MLModel from the storage location
+     * Retrieve the MLModel from the storage location.
      * @param modelStorageLocation model storage location (file path or registry path)
      * @return the deserialized MLModel object
      * @throws URISyntaxException
@@ -96,7 +96,7 @@ public class ModelHandler {
     }
 
     /**
-     * Predict the value using the feature values
+     * Predict the value using the feature values.
      * @param data  feature values array
      * @return      predicted value
      * @throws      MLModelHandlerException
@@ -112,7 +112,7 @@ public class ModelHandler {
     }
 
     /**
-     * Cast the given value to the given output type
+     * Cast the given value to the given output type.
      * @param outputType Output data type
      * @param value value to be casted in String
      * @return Value casted to output type object
