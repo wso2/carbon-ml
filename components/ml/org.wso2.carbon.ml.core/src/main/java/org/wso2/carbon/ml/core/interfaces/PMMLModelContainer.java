@@ -21,5 +21,5 @@ import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 public interface PMMLModelContainer{
 
 
-    public PMMLExportable getPMMLExportable() throws MLModelHandlerException;
+    PMMLExportable getPMMLExportable() throws MLModelHandlerException;
 }
