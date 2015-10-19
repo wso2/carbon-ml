@@ -46,6 +46,9 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 
+/**
+ * Common utility methods used in ML core.
+ */
 public class MLUtils {
 
     /**
@@ -477,7 +480,7 @@ public class MLUtils {
     }
 
     /**
-     * Utility method to get key from value of a map
+     * Utility method to get key from value of a map.
      *
      * @param map Map to be searched for a key
      * @param value Value of the key
@@ -492,7 +495,7 @@ public class MLUtils {
     }
 
     /**
-     * Utility method to convert a String array to CSV/TSV row string
+     * Utility method to convert a String array to CSV/TSV row string.
      *
      * @param array String array to be converted
      * @param delimiter Delimiter to be used (comma for CSV tab for TSV)

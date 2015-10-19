@@ -208,11 +208,11 @@ public class PredictStreamProcessor extends StreamProcessor {
     }
 
     /**
-     * Match the attribute index values of stream with feature index value of the model
+     * Match the attribute index values of stream with feature index value of the model.
      * 
-     * @throws Exception
+     * @throws ExecutionPlanCreationException
      */
-    private void populateFeatureAttributeMapping() throws Exception {
+    private void populateFeatureAttributeMapping() throws ExecutionPlanCreationException{
         attributeIndexMap = new HashMap<Integer, int[]>();
         Map<String, Integer> featureIndexMap = modelHandlers[0].getFeatures();
         List<Integer> newToOldIndicesList = modelHandlers[0].getNewToOldIndicesList();
@@ -251,7 +251,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     }
 
     /**
-     * Return the Attribute.Type defined by the data-type argument
+     * Return the Attribute.Type defined by the data-type argument.
      * @param dataType data type of the output attribute
      * @return Attribute.Type object corresponding to the dataType
      */
