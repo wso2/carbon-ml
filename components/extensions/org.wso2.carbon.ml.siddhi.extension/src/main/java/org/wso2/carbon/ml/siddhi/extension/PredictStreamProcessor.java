@@ -201,7 +201,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     public void start() {
         try {
             populateFeatureAttributeMapping();
-        } catch (Exception e) {
+        } catch (ExecutionPlanCreationException e) {
             log.error("Error while retrieving ML-models", e);
             throw new ExecutionPlanCreationException("Error while retrieving ML-models" + "\n" + e.getMessage());
         }
@@ -212,7 +212,7 @@ public class PredictStreamProcessor extends StreamProcessor {
      * 
      * @throws ExecutionPlanCreationException
      */
-    private void populateFeatureAttributeMapping() throws ExecutionPlanCreationException {
+    private void populateFeatureAttributeMapping() {
         attributeIndexMap = new HashMap<Integer, int[]>();
         Map<String, Integer> featureIndexMap = modelHandlers[0].getFeatures();
         List<Integer> newToOldIndicesList = modelHandlers[0].getNewToOldIndicesList();
@@ -255,7 +255,7 @@ public class PredictStreamProcessor extends StreamProcessor {
      * @param dataType data type of the output attribute
      * @return Attribute.Type object corresponding to the dataType
      */
-    private Attribute.Type getOutputAttributeType(String dataType) throws ExecutionPlanValidationException {
+    private Attribute.Type getOutputAttributeType(String dataType) {
 
         if (dataType.equalsIgnoreCase("double")) {
             return Attribute.Type.DOUBLE;
