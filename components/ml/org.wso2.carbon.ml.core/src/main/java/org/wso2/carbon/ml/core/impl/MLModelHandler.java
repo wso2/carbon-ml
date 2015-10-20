@@ -648,7 +648,7 @@ public class MLModelHandler {
      * Export a ML model as a PMML.
      *
      * @param model Unique ID of the built ML model.
-     * @throws MLModelPublisherException
+     * @throws MLModelHandlerException
      */
     public String exportAsPMML(MLModel model) throws MLModelHandlerException {
         Externalizable extModel = model.getModel();
