@@ -19,10 +19,17 @@ import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 
 /**
-All MLModels(wrapper models) which support pmml export should extend this interface
+All MLModels(wrapper models) which support pmml export should extend this class
  */
-public interface PMMLModelContainer{
+public abstract class PMMLModelContainer {
 
+    protected Object model;
 
-    PMMLExportable getPMMLExportable() throws MLModelHandlerException;
+    public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
+        if (model instanceof PMMLExportable) {
+            return (PMMLExportable) model;
+        } else {
+            throw new MLModelHandlerException("PMML export not supported for model type");
+        }
+    }
 }

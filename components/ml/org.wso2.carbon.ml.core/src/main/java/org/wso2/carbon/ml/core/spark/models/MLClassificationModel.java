@@ -23,15 +23,13 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.classification.ClassificationModel;
-import org.apache.spark.mllib.pmml.PMMLExportable;
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
 /**
  * Wraps Spark's {@link ClassificationModel} model.
  */
-public class MLClassificationModel implements Externalizable,PMMLModelContainer {
-    private ClassificationModel model;
+public class MLClassificationModel extends PMMLModelContainer implements Externalizable {
+
 
     public MLClassificationModel() {
     }
@@ -59,22 +57,15 @@ public class MLClassificationModel implements Externalizable,PMMLModelContainer 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = (ClassificationModel) in.readObject();
+        model = in.readObject();
     }
 
     public ClassificationModel getModel() {
-        return model;
+        return (ClassificationModel)model;
     }
 
     public void setModel(ClassificationModel model) {
         this.model = model;
     }
 
-    @Override public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
-        if(model instanceof PMMLExportable){
-            return (PMMLExportable)model;
-        }else{
-            throw new MLModelHandlerException("PMML export not supported for model type");
-        }
-    }
 }
