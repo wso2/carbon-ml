@@ -17,36 +17,22 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.regex.Pattern;
-
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.mllib.classification.ClassificationModel;
-import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.pmml.PMMLExportable;
-import org.apache.spark.mllib.regression.*;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.MLModelData;
-import org.wso2.carbon.ml.commons.domain.MLStorage;
-import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
 import org.wso2.carbon.ml.core.exceptions.*;
 import org.wso2.carbon.ml.core.factories.DatasetType;
@@ -56,10 +42,8 @@ import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
-import org.wso2.carbon.ml.core.spark.algorithms.*;
-import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
-import org.wso2.carbon.ml.core.spark.models.MLGeneralizedLinearModel;
-import org.wso2.carbon.ml.core.spark.models.MLKMeansModel;
+import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -74,6 +58,11 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import scala.Tuple2;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.
