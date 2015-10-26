@@ -30,21 +30,19 @@ import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
  */
 public class MLClassificationModel extends PMMLModelContainer implements Externalizable {
 
-
     public MLClassificationModel() {
     }
-    
+
     public MLClassificationModel(ClassificationModel model) {
         this.model = model;
     }
-    
+
     /*
      * (non-Javadoc)
      * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    @Override public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
     }
@@ -54,14 +52,13 @@ public class MLClassificationModel extends PMMLModelContainer implements Externa
      * 
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = in.readObject();
     }
 
     public ClassificationModel getModel() {
-        return (ClassificationModel)model;
+        return (ClassificationModel) model;
     }
 
     public void setModel(ClassificationModel model) {

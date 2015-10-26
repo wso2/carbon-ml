@@ -30,43 +30,39 @@ import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
  */
 public class MLKMeansModel extends PMMLModelContainer implements Externalizable {
 
-
     public MLKMeansModel() {
     }
-    
+
     public MLKMeansModel(KMeansModel model) {
         this.model = model;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    @Override public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = (KMeansModel) in.readObject();
     }
 
     public KMeansModel getModel() {
-        return (KMeansModel)model;
+        return (KMeansModel) model;
     }
 
     public void setModel(KMeansModel model) {
         this.model = model;
     }
-
 
 }

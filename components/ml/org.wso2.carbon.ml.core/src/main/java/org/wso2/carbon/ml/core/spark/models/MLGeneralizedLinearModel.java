@@ -30,21 +30,19 @@ import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
  */
 public class MLGeneralizedLinearModel extends PMMLModelContainer implements Externalizable {
 
-
     public MLGeneralizedLinearModel() {
     }
-    
+
     public MLGeneralizedLinearModel(GeneralizedLinearModel model) {
         this.model = model;
     }
-    
+
     /*
      * (non-Javadoc)
      * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    @Override public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
     }
@@ -54,14 +52,13 @@ public class MLGeneralizedLinearModel extends PMMLModelContainer implements Exte
      * 
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
         model = in.readObject();
     }
 
     public GeneralizedLinearModel getModel() {
-        return (GeneralizedLinearModel)model;
+        return (GeneralizedLinearModel) model;
     }
 
     public void setModel(GeneralizedLinearModel model) {

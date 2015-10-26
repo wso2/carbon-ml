@@ -647,7 +647,8 @@ public class MLModelHandler {
     /**
      * Export a ML model as a PMML.
      *
-     * @param model Unique ID of the built ML model.
+     * @param model the model to be exported
+     * @return PMML model as a String
      * @throws MLModelHandlerException
      */
     public String exportAsPMML(MLModel model) throws MLModelHandlerException {
