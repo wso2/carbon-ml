@@ -18,12 +18,14 @@ package org.wso2.carbon.ml.core.interfaces;
 import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 
+import java.io.Serializable;
+
 /**
 All MLModels(wrapper models) which support pmml export should extend this class
  */
 public abstract class PMMLModelContainer {
 
-    protected Object model;
+    protected Serializable model;
 
     public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
         if (model instanceof PMMLExportable) {

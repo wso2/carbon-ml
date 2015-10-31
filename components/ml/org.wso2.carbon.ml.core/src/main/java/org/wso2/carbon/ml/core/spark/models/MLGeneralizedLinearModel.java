@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.ml.core.spark.models;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
@@ -54,7 +51,7 @@ public class MLGeneralizedLinearModel extends PMMLModelContainer implements Exte
      */
     @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = in.readObject();
+        model = (Serializable)in.readObject();
     }
 
     public GeneralizedLinearModel getModel() {
