@@ -204,7 +204,7 @@ include("../../includes/tenantAware.jag");
                     </div>
                 </div> 
 
-                <div class="wr-graph-element gr04">
+                <div class="wr-graph-element gr05">
                     <h5>Cluster Diagram</h5>
                     <div class="wr-graph-img">
                             <div id='clusterDiagram'>Loading chart...</div>
@@ -398,7 +398,7 @@ $( document ).ready(function() {
                 var rocData  = JSON.parse(res.roc);
                 var auc  = parseFloat(res.auc).toFixed(3);
                 // draw ROC curve only for binary classification models (applies for LOGISTIC_REGRESSION_LBFGS)
-                if(res.percentileToMulticlassConfusionMatrixMap.size == 2) {
+                if(res.multiclassConfusionMatrix.size == 2) {
                     drawRocGraph(rocData, auc, "#roc-graph");
                 }
                 else {
@@ -408,11 +408,10 @@ $( document ).ready(function() {
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
                 // draw confusion matrix                
-                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap.matrix, res.percentileToMulticlassConfusionMatrixMap.labels, "#confusion-matrix");
-                // draw feature select
+                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
-                numOfClasses = res.percentileToMulticlassConfusionMatrixMap.size;
+                numOfClasses = res.multiclassConfusionMatrix.size;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
                 if(features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
@@ -439,8 +438,7 @@ $( document ).ready(function() {
                 $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
                 // draw confusion matrix                
-                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap.matrix, res.percentileToMulticlassConfusionMatrixMap.labels, "#confusion-matrix");
-                // draw feature select
+                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
@@ -494,15 +492,17 @@ $( document ).ready(function() {
             }
             else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
 
+                features = res.features;
+
                 if(res.bestPercentile) {
                     $('#myRange').val(res.bestPercentile);
                     $('#chance').val(res.bestPercentile);
                 }
 
                 var percentile = $('#myRange').val();
-                if(res.percentileToMulticlassConfusionMatrixMap[percentile].f1Score) {
+                if(res.percentileToMulticlassMetricsMap[percentile].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[percentile].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[percentile].f1Score.toFixed(4)  + "]");
                 }
                 // remove not applicable charts/tables
                 $("#roc-graph, #weights-chart, #predicted-vs-actual").closest("div.wr-graph-element").remove();
@@ -510,9 +510,9 @@ $( document ).ready(function() {
                 $("#predicted-vs-actual").remove();
 
                 // draw confusion matrix
-                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[percentile].matrix, res.percentileToMulticlassConfusionMatrixMap[percentile].labels, "#confusion-matrix");
+                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.labels, "#confusion-matrix");
                 // draw other measures table
-                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[percentile], "#other-measures");
+                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[percentile], "#other-measures");
 
                 var slider = $('#myRange');
                 var textbox = $('#chance');
@@ -521,14 +521,14 @@ $( document ).ready(function() {
                 var newValue = ($(this).val());    
                 textbox.val(newValue);
                 
-                if(res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score) {
+                if(res.percentileToMulticlassMetricsMap[newValue].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
                 }
 
                 // draw confusion matrix and other measures
-                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[newValue].matrix, res.percentileToMulticlassConfusionMatrixMap[newValue].labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[newValue], "#other-measures");
+                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
 
                 });
 
@@ -537,14 +537,14 @@ $( document ).ready(function() {
                 var newValue = parseInt($(this).val());
                 slider.val(newValue);
 
-                if(res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score) {
+                if(res.percentileToMulticlassMetricsMap[newValue].f1Score) {
                     $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassConfusionMatrixMap[newValue].f1Score.toFixed(2) + "%]");
+                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
                 }
 
                 // draw confusion matrix and other measures
-                drawConfusionMatrix(res.percentileToMulticlassConfusionMatrixMap[newValue].matrix, res.percentileToMulticlassConfusionMatrixMap[newValue].labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.percentileToMulticlassConfusionMatrixMap[newValue], "#other-measures");
+                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
+                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
                 
                 });
 
@@ -829,20 +829,20 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
 }
 
 //function to draw other measures table
-function drawOtherMeasuresTable(percentileToMulticlassConfusionMatrixMap, cssSelector){
+function drawOtherMeasuresTable(percentileToMulticlassMetricsMap, cssSelector){
 
     var otherMeasuresHtml = "<table border='1'>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value</td>" +
+                        "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value (%)</td>" +
                         "</tr>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Precision</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.precision.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Precision</td><td>"+percentileToMulticlassMetricsMap.precision.toFixed(2) + "</td>" +
                         "</tr>";
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Recall</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.recall.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Recall</td><td>"+percentileToMulticlassMetricsMap.recall.toFixed(2) + "</td>" +
                         "</tr>"; 
     otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Accuracy</td><td class='values'>"+percentileToMulticlassConfusionMatrixMap.accuracy.toFixed(2) + "</td>" +
+                        "<td class='header-level-2'>Accuracy</td><td>"+percentileToMulticlassMetricsMap.accuracy.toFixed(2) + "</td>" +
                         "</tr>";  
     otherMeasuresHtml += "</table>";
 
@@ -853,9 +853,9 @@ function drawOtherMeasuresTable(percentileToMulticlassConfusionMatrixMap, cssSel
 
 function drawClusterDiagramBase() {
 
-    if(numericalFeatureNames.length > 1) {
+    if(features.length > 1) {
         $('#cluster-independent, #cluster-dependent').empty();
-        $.each(numericalFeatureNames,function(index, feature){
+        $.each(features,function(index, feature){
             $('#cluster-independent, #cluster-dependent').append($('<option>', {
                 value: sanitize(feature),
                 text : sanitize(feature)
@@ -871,20 +871,23 @@ function drawClusterDiagramBase() {
 function drawClusterDiagram() {
     
     // get categorical feature list from checkbox selection
-    var numericalFeatureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
-    var numericalFeatureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+    var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+
+    var featureIndependentIndex = $.inArray(featureIndependent, features);
+    var featureDependenttIndex = $.inArray(featureDependent, features);
 
             var dataArray = clusterData;
             // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
             var clusterDataArray = [];
             for (var i = 0; i < dataArray.length; i++) {                
                 var dataRow = [];
-                dataRow[0] = parseFloat(dataArray[i]['featureMap'][numericalFeatureIndependent]);
-                dataRow[1] = parseFloat(dataArray[i]['featureMap'][numericalFeatureDependent]);
+                dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
+                dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
                 dataRow[2] = dataArray[i]['cluster'];
                 clusterDataArray.push(dataRow);
             }
-            drawScatterPlot(clusterDataArray, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, clusterMarkerSize, false);
+            drawScatterPlot(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
 }
 
 // drawing a simple scatter graph

@@ -174,23 +174,19 @@ public class Predictor {
                         + " for model id: " + id);
             }
         } else if (AlgorithmType.ANOMALY_DETECTION == type) {
-            ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = ANOMALY_DETECTION_ALGORITHM.valueOf(model
-                    .getAlgorithmName());
+            ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = ANOMALY_DETECTION_ALGORITHM
+                    .valueOf(model.getAlgorithmName());
             switch (anomaly_detection_algorithm) {
             case K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA:
             case K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA:
-                List<Integer> predictions = new ArrayList<Integer>();
-                MLAnomalyDetectionModel mLAnomalyDetectionModel = (MLAnomalyDetectionModel) model
-                        .getModel();
-                Vector[] clusterCenters = mLAnomalyDetectionModel.getModel().clusterCenters();
-                Map<Integer, List<Double>> distanceMap = mLAnomalyDetectionModel.getDistancesMap();
-                String newNormalLabel = model.getNewNormalLabel();
-                String newAnomalyLabel = model.getNewAnomalyLabel();
+
+                List<String> predictions = new ArrayList<String>();
+                MLAnomalyDetectionModel mLAnomalyDetectionModel = (MLAnomalyDetectionModel) model.getModel();
 
                 Normalization normalization = null;
                 if (model.getNormalization()) {
-                    normalization = new Normalization.Builder().minMax(model.getFeatures(), 
-                            model.getSummaryStatsOfFeatures()).build();
+                    normalization = new Normalization.Builder()
+                            .minMax(model.getFeatures(), model.getSummaryStatsOfFeatures()).build();
                 }
 
                 for (Vector vector : dataToBePredicted) {
@@ -201,8 +197,8 @@ public class Predictor {
 
                         try {
                             normalizedData = normalization.call(data);
-                        } catch (Exception e) {
-                            log.warn("Data normalization failed. Cause: " + e.getMessage());
+                        } catch (Exception MLModelBuilderException) {
+                            log.warn("Data normalization failed. Cause: " + MLModelBuilderException.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
@@ -210,17 +206,17 @@ public class Predictor {
 
                     Context context = startTimer(timer);
 
-                    int predictedData = mLAnomalyDetectionModel.getModel().predict(vector);
-                    predictions.add(predictedData);
+                    String predictedValue = mLAnomalyDetectionModel.getModel().predict(vector, percentileValue);
+                    predictions.add(predictedValue);
 
                     stopTimer(context);
                     if (log.isDebugEnabled()) {
 
-                        log.debug("Predicted value before decoding: " + predictedData);
+                        log.debug("Predicted value before decoding: " + predictedValue);
                     }
                 }
-                // return decodePredictedValues(predictions);
-                return decodeAnomalyDetectionPredictedValues(predictions, clusterCenters, distanceMap, newNormalLabel, newAnomalyLabel);
+                return predictions;
+
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
                         + " for model id: " + id);
@@ -308,33 +304,6 @@ public class Predictor {
             }
             return decodedPredictions;
         }
-    }
-
-    // A method to decode the predicted values of Anomaly detection
-    private List<String> decodeAnomalyDetectionPredictedValues(List<Integer> predictedClusters, Vector[] clusterCenters,
-            Map<Integer, List<Double>> distanceMap, String newNormalLabel, String newAnomalyLabel) {
-
-        AnomalyDetection anomalyDetection = new AnomalyDetection();
-        EuclideanDistance distance = new EuclideanDistance();
-        Map<Integer, Double> percentilesMap = anomalyDetection.getPercentileDistances(distanceMap,
-                percentileValue);
-        List<String> decodedPredictions = new ArrayList<String>();
-
-        for (int i = 0; i < dataToBePredicted.size(); i++) {
-
-            int clusterIndex = predictedClusters.get(i);
-            double[] clusterCenter = clusterCenters[clusterIndex].toArray();
-            double[] dataPoint = dataToBePredicted.get(i).toArray();
-            double distanceValue = distance.compute(clusterCenter, dataPoint);
-
-            if (distanceValue > percentilesMap.get(clusterIndex)) {
-                decodedPredictions.add(newAnomalyLabel);
-            } else {
-                decodedPredictions.add(newNormalLabel);
-            }
-
-        }
-        return decodedPredictions;
     }
 
     private String decode(Map<String, Integer> encodingMap, int roundedValue) {

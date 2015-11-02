@@ -26,6 +26,7 @@ import java.util.List;
  * DTO class to store multiclass confusion matrix
  */
 public class MulticlassConfusionMatrix implements Serializable {
+
     private static final long serialVersionUID = -3812754594966583187L;
     /**
      * 2D array containing values of the matrix.
@@ -39,16 +40,6 @@ public class MulticlassConfusionMatrix implements Serializable {
      * Size of the matrix (for a 3x3 matrix this value will be 3 since the confusion matrix is always a square matrix).
      */
     private int size;
-    //accuracy measures
-    private double f1Score;
-    private double accuracy;
-    private double precision;
-    private double recall;
-
-    private double truePositive;
-    private double falsePositive;
-    private double trueNegetive;
-    private double falseNegetive;
 
     /**
      *
@@ -71,7 +62,6 @@ public class MulticlassConfusionMatrix implements Serializable {
         }
 
     }
-
     /**
      *
      * @return Returns the sequence of labels in ascending order
@@ -104,36 +94,6 @@ public class MulticlassConfusionMatrix implements Serializable {
         this.size = size;
     }
 
-    public void setAccuracyMeasures() {
-
-        if (size == 2) {
-            truePositive = matrix[0][0];
-            falsePositive = matrix[1][0];
-            trueNegetive = matrix[1][1];
-            falseNegetive = matrix[0][1];
-
-            f1Score = (2 * truePositive / (2 * truePositive + falsePositive + falseNegetive)) * 100;
-            accuracy = ((truePositive + trueNegetive) / (truePositive + trueNegetive + falsePositive + falseNegetive)) * 100;
-            precision = (truePositive / (truePositive + falsePositive)) * 100;
-            recall = (truePositive / (truePositive + falseNegetive)) * 100;
-        }
-    }
-
-    public double getF1Score() {
-        return f1Score;
-    }
-
-    public double getAccuracy() {
-        return accuracy;
-    }
-
-    public double getPrecision() {
-        return precision;
-    }
-
-    public double getRecall() {
-        return recall;
-    }
 
     @Override
     public String toString() {

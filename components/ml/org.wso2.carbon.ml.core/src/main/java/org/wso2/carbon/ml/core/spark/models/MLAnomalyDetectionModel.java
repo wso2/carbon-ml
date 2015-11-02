@@ -21,24 +21,19 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.spark.mllib.clustering.KMeansModel;
+import org.wso2.carbon.ml.core.spark.models.ext.AnomalyDetectionModel;
 
 /**
  * Wraps Spark's {@link MLAnomalyDetectionModel} model.
  */
 public class MLAnomalyDetectionModel implements Externalizable {
 
-    private KMeansModel model;
-    private Map<Integer, List<Double>> distancesMap;
-    private int bestPercentile;
+    private AnomalyDetectionModel model;
 
     public MLAnomalyDetectionModel() {
     }
 
-    public MLAnomalyDetectionModel(KMeansModel model) {
+    public MLAnomalyDetectionModel(AnomalyDetectionModel model) {
         this.model = model;
     }
 
@@ -51,8 +46,6 @@ public class MLAnomalyDetectionModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
-        out.writeObject(distancesMap);
-        out.writeObject(bestPercentile);
     }
 
     /*
@@ -63,32 +56,15 @@ public class MLAnomalyDetectionModel implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = (KMeansModel) in.readObject();
-        distancesMap = (Map<Integer, List<Double>>) in.readObject();
-        bestPercentile = (Integer) in.readObject();
+        model = (AnomalyDetectionModel) in.readObject();
     }
 
-    public KMeansModel getModel() {
+    public AnomalyDetectionModel getModel() {
         return model;
     }
 
-    public void setModel(KMeansModel model) {
+    public void setModel(AnomalyDetectionModel model) {
         this.model = model;
     }
 
-    public Map<Integer, List<Double>> getDistancesMap() {
-        return distancesMap;
-    }
-
-    public void setDistancesMap(Map<Integer, List<Double>> distancesMap) {
-        this.distancesMap = distancesMap;
-    }
-
-    public int getBestPercentile() {
-        return bestPercentile;
-    }
-
-    public void setBestPercentile(int bestPercentile) {
-        this.bestPercentile = bestPercentile;
-    }
 }

@@ -34,7 +34,7 @@ import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
  */
 public class Normalization implements Function<double[], double[]> {
 
-    private static final long serialVersionUID = 8329428281317101710L;
+    private static final long serialVersionUID = 4558936873487486962L;
     private final List<Double> max;
     private final List<Double> min;
 

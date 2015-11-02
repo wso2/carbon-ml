@@ -26,7 +26,8 @@ import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
  */
 public class AnomalyRowsFilter implements Function<String[], Boolean> {
 
-    private static final long serialVersionUID = 8329428281317101710L;
+
+    private static final long serialVersionUID = 9011345464754786888L;
     private final String[] normalLabels;
     private final int responseIndex;
 

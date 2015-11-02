@@ -164,7 +164,7 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
-    public static final String KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY = "KMeansAnomalyDetectionModelSummary";
+    public static final String ANOMALY_DETECTION_MODEL_SUMMARY = "AnomalyDetectionModelSummary";
 
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
 
@@ -184,6 +184,10 @@ public class MLConstants {
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
+
+    //percentile range for anomaly detection
+    public static final int MIN_PERCENTILE = 80;
+    public static final int MAX_PERCENTILE = 100;
 
     // to build predictions CSV
     public static final String NEW_LINE = "\n";

@@ -25,79 +25,33 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.clustering.*;
 import org.apache.spark.mllib.linalg.Vector;
-import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.models.ext.AnomalyDetectionModel;
 
 public class AnomalyDetection implements Serializable {
 
-    private static final long serialVersionUID = 7012024887487309471L;
+    private static final long serialVersionUID = -8547369844618293845L;
 
     /**
-     * This method trains a k-means clustering model
+     * This methods trains Anomaly detection model
      *
-     * @param data Training data as a JavaRDD of Vectors
-     * @param noOfClusters Number of clusters
-     * @param noOfIterations Number of iterations to run
-     * @param noOfRuns Number of runs of the algorithm to execute in parallel
-     * @param initializationMode Initialization algorithm: random or k-means||
-     * @return
-     */
-    public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations, int noOfRuns,
-            String initializationMode) {
-        return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations, noOfRuns,
-                initializationMode);
-    }
-
-    /**
-     * This method trains a k-means clustering model - overload method with 3 parameters
-     *
-     * @param data Training data as a JavaRDD of Vectors
+     * @param trainData Training data as a JavaRDD of Vectors
      * @param noOfClusters Number of clusters
      * @param noOfIterations Number of iterations to run
      * @return
      */
-    public KMeansModel train(JavaRDD<Vector> data, int noOfClusters, int noOfIterations) {
-        return org.apache.spark.mllib.clustering.KMeans.train(data.rdd(), noOfClusters, noOfIterations);
-    }
+    public AnomalyDetectionModel train(JavaRDD<Vector> trainData, int noOfClusters, int noOfIterations,
+            String newNormalLabel, String newAnomalyLabel) {
 
-    /**
-     * This method applies a kmeans model to a given dataset
-     *
-     * @param kMeansModel KMeans model
-     * @param data JavaRDD containing feature vectors
-     * @return JavaRDD containing cluster centers
-     */
-    public JavaRDD<Integer> test(KMeansModel kMeansModel, JavaRDD<Vector> data) {
-        return kMeansModel.predict(data);
-    }
-
-    /**
-     * This method returns cluster centers of a given kmeans model
-     *
-     * @param kMeansModel KMeans model
-     * @return Vector[] containing cluster centers
-     */
-    public Vector[] getClusterCenters(KMeansModel kMeansModel) {
-        return kMeansModel.clusterCenters();
-    }
-
-    /**
-     * This method is to calculate the euclidean distances of each data point to it's cluster centers
-     *
-     * @param predictedClustersOfEachDataPoints predicted clusters from the model for data points
-     * @param clusterCenters vector array of cluster centers
-     * @param data data points
-     * @return Map<Integer, List<Double>> containing double Lists of distances of each cluster mapped with their cluster
-     *         Indexes
-     */
-    public static Map<Integer, List<Double>> getDistancesToDataPoints(JavaRDD<Integer> predictedClustersOfEachDataPoints,
-                                                                      org.apache.spark.mllib.linalg.Vector[] clusterCenters, JavaRDD<Vector> data) {
+        AnomalyDetectionModel anomalyDetectionModel = new AnomalyDetectionModel();
+        KMeansModel kMeansModel = org.apache.spark.mllib.clustering.KMeans.train(trainData.rdd(), noOfClusters,
+                noOfIterations);
 
         // convert predicted clusters JAVARDD into a List
-        List<Integer> predictedClusters = predictedClustersOfEachDataPoints.collect();
+        List<Integer> predictedClusters = kMeansModel.predict(trainData).collect();
+        Vector[] clusterCenters = kMeansModel.clusterCenters();
 
         // creating the distance Map to store the distances of each points with their cluster centers
         Map<Integer, List<Double>> distancesMap = new HashMap<Integer, List<Double>>();
@@ -110,7 +64,7 @@ public class AnomalyDetection implements Serializable {
         }
 
         // convert data JAVARDD into a List
-        List<Vector> dataList = data.collect();
+        List<Vector> dataList = trainData.collect();
         // creating the EuclideanDistance Object
         EuclideanDistance distance = new EuclideanDistance();
 
@@ -125,34 +79,68 @@ public class AnomalyDetection implements Serializable {
             distanceList.add(distanceBetweenDataPointAndItsClusterCenter);
         }
 
-        return distancesMap;
+        anomalyDetectionModel.setkMeansModel(kMeansModel);
+        anomalyDetectionModel.setClusterIndexTodistancesListMap(distancesMap);
+        anomalyDetectionModel.setNormalLabel(newNormalLabel);
+        anomalyDetectionModel.setAnomalyLabel(newAnomalyLabel);
+
+        return anomalyDetectionModel;
     }
 
     /**
-     * This method returns cluster centers of a given kmeans model
+     * This method applies a anomaly detection model to a given dataset
      *
-     * @param distanceMap distance Map of each cluster
-     * @param percentileValue percentile value to identify the cluster boundaries
-     * @return Map<Integer, Double> containing percentile distance values mapped with their respective cluster Indexes
+     * @param anomalyDetectionModel anomaly detection model
+     * @param data a single data point as a Vector
+     * @param percentile percentile value to identify the cluster boundaries
+     * @return prediction label as a String
      */
-    public Map<Integer, Double> getPercentileDistances(Map<Integer, List<Double>> distanceMap, double percentileValue) {
+    public String test(AnomalyDetectionModel anomalyDetectionModel, Vector data, int percentile) {
 
-        // Get a DescriptiveStatistics instance
-        DescriptiveStatistics stats = new DescriptiveStatistics();
-        Map<Integer, Double> percentilesMap = new HashMap<Integer, Double>();
+        return anomalyDetectionModel.predict(data, percentile);
+    }
 
-        // calculating percentile distance of each cluster
-        for (int clusterIndex = 0; clusterIndex < distanceMap.size(); clusterIndex++) {
+    /**
+     * This method applies a anomaly detection model to a given dataset
+     *
+     * @param anomalyDetectionModel anomaly detection model
+     * @param data JavaRDD containing feature vectors
+     * @param percentile percentile value to identify the cluster boundaries
+     * @return prediction labels as a List of Strings
+     */
+    public List<String> test(AnomalyDetectionModel anomalyDetectionModel, JavaRDD<Vector> data, int percentile) {
 
-            for (double distance : distanceMap.get(clusterIndex)) {
-                stats.addValue(distance);
-            }
+        return anomalyDetectionModel.predict(data, percentile);
+    }
 
-            double percentileDistance = stats.getPercentile(percentileValue);
-            percentilesMap.put(clusterIndex, percentileDistance);
-            stats.clear();
-        }
-        return percentilesMap;
+    /**
+     * This method applies a anomaly detection model to a given dataset for a range of percentile values
+     *
+     * @param anomalyDetectionModel anomaly detection model
+     * @param data a single data point as a Vector
+     * @param minPercentile min percentile value of the range
+     * @param maxPercentile max percentile value of the range
+     * @return Map<Integer, String> key:percentile value:prediction label
+     */
+    public Map<Integer, String> test(AnomalyDetectionModel anomalyDetectionModel, Vector data, int minPercentile,
+            int maxPercentile) {
+
+        return anomalyDetectionModel.predict(data, minPercentile, maxPercentile);
+    }
+
+    /**
+     * This method applies a anomaly detection model to a given dataset for a range of percentile values
+     *
+     * @param anomalyDetectionModel anomaly detection model
+     * @param data JavaRDD containing feature vectors
+     * @param minPercentile min percentile value of the range
+     * @param maxPercentile max percentile value of the range
+     * @return Map<Integer, List<String>> key:percentile value:prediction labels as a List of Strings
+     */
+    public Map<Integer, List<String>> test(AnomalyDetectionModel anomalyDetectionModel, JavaRDD<Vector> data,
+            int minPercentile, int maxPercentile) {
+
+        return anomalyDetectionModel.predict(data, minPercentile, maxPercentile);
     }
 
 }
