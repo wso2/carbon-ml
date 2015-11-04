@@ -130,22 +130,15 @@
 
                     <!--download model popup -->
                       <div class="popup-content" data-operation="download-model">
-                        <div class="content">Please selecte download type</div>
+                        <div class="content">Please select download type</div>
                         <div class="buttons">
                             <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
-                            <a href="#" id="download-model-pmml"  class="btn-opr-default">PMML</a>
+                            <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled">PMML</a>
                         </div>
                     </div>
                     <!-- /download model popup -->
                     
-                    <!--download model popup -->
-                      <div class="popup-content" data-operation="pmml-error">
-                        <div class="content">PMML download not supported for this model type</div>
-                        <div class="buttons">
-                            <a href="#" id="pmml-ok" class="btn-opr-default" >OK</a>
-                       
-                        </div>
-                    </div>
+                    
                     
 
 
@@ -230,6 +223,9 @@
         $('#nav-analysis').text(" \\ "+analysisName);
 
         loadModels();
+
+
+
         // add pagination
         panelsPerPage = parseInt($("#no-of-panels").val());
         $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
@@ -254,42 +250,8 @@
             deleteModelId = null;
             hidePopup();
         });
-        var modelName;
-        //events to handle downloading
-        $(document).on('click','#download-model',function(e){
-        	e.preventDefault();
-            
-            modelName = sanitize($(this).data('modelname'));            
-            operationSelect('download-model');
-        });
-        $(document).on('click','#download-model-serialized',function(e){
-            e.preventDefault();
 
-            window.location.href = serverUrl+'/api/models/'+modelName+'/export';
-            hidePopup();
-        });
-        $(document).on('click','#download-model-pmml',function(e){
-            $.ajax({
-                type: "GET",
-                url: serverUrl+'/api/models/'+modelName+'/pmmlexport',
-                success : function(res){
-                    window.location.href = serverUrl+'/api/models/'+modelName+'/pmmlexport';
-                    hidePopup();
-                },
-                error : function(res){
-                //var errorText = JSON.parse(res.responseText)["exception"];
-                //console.log("");
-                operationSelect('pmml-error');
-               // hidePopup();
-                //showPMMLError();
-                }
-            });
-            
-        });
-         $(document).on('click','#pmml-ok',function(e){
-            e.preventDefault();
-            hidePopup();
-        });
+      
     });
     
     function loadModels() {
@@ -300,7 +262,7 @@
             url: serverUrl+"/api/analyses/"+analysisId+"/models",
             async : false,
             success: function(data) {
-            	// order models in reverse chronological order
+                // order models in reverse chronological order
                 var analysisModels = data.sort(sortByTimestamp);
                 
                 if (analysisModels.length == 0) {
@@ -340,7 +302,7 @@
                                         '<table class="tbl-projects" projectID="' + modelId + '">' +
                                             '<tr>' +
                                                 '<td>' +
-						    '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
+                            '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
                                                     '<span class="cu-acc-head-title">' + modelName + '</span>' +
                                                     '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
                                                     // retrieve dataset version from model summary when model building is completed
@@ -379,6 +341,50 @@
                             $("#accordion").append(accordionPanel);
                     };
                 }
+               //pmml 
+              
+
+                 //events to handle downloading
+                $(document).on('click','#download-model',function(e){
+                    e.preventDefault();
+                    
+                    modelName = sanitize($(this).data('modelname'));    
+                    var algorithmName = findAlgorithmName(analysisId); 
+                                       
+                    if(loadPMMLAvailability(algorithmName)){
+                        $('#download-model-pmml').removeClass('btn-disabled');
+                    }      
+                    operationSelect('download-model');
+                });
+                $(document).on('click','#download-model-serialized',function(e){
+                    e.preventDefault();
+
+                    window.location.href = serverUrl+'/api/models/'+modelName+'/export';
+                    hidePopup();
+                });
+                $(document).on('click','#download-model-pmml',function(e){
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl+'/api/models/'+modelName+'/pmmlexport',
+                        success : function(res){
+                            window.location.href = serverUrl+'/api/models/'+modelName+'/pmmlexport';
+                            hidePopup();
+                        },
+                        error : function(res){
+                        //var errorText = JSON.parse(res.responseText)["exception"];
+                        //console.log("");
+                        operationSelect('pmml-error');
+                       // hidePopup();
+                        //showPMMLError();
+                        }
+                    });
+                    
+                });
+                 $(document).on('click','#pmml-ok',function(e){
+                    e.preventDefault();
+                    hidePopup();
+                });
+
             },
             error: function(res) {
                 var errorText = res.responseText
@@ -445,8 +451,8 @@
     // compare function for models
     function sortByTimestamp(a, b) {
         var sortStatus = 0;
-		timestamp1 = new Date(a.createdTime);
-		timestamp2 = new Date(b.createdTime);
+        timestamp1 = new Date(a.createdTime);
+        timestamp2 = new Date(b.createdTime);
      
         if (timestamp1 > timestamp2) {
             sortStatus = -1;
@@ -556,6 +562,45 @@
                 }
             });        
         }      
+    }
+
+    function loadPMMLAvailability(algorithmName){
+            var status=false;
+        if(algorithmName){
+        
+            $.ajax({
+                type: "GET",
+                url: serverUrl+'/api/configs/pmml/'+algorithmName,
+                async: false,
+                success : function(res){
+                    status = true;
+                  },
+                error: function(res){
+                    status = false;
+                     }
+            });
+
+           
+        }
+         return status;
+    }
+
+    function findAlgorithmName(analysisId){
+            var algorithmName;
+            $.ajax({
+                type: "GET",
+                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+                async : false,
+                dataType: 'text',
+                success : function(res){
+                    algorithmName = sanitize(res);
+                },
+                error : function(res){
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            return algorithmName;
     }
 
 </script>
