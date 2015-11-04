@@ -36,6 +36,7 @@ public class MLAlgorithm {
     private int scalability;
     private int multicollinearity;
     private int dimensionality;
+    private boolean pmml;
     private List<MLHyperParameter> parameters;
 
     /**
@@ -127,6 +128,11 @@ public class MLAlgorithm {
     public void setDimensionality(int dimensionality) {
         this.dimensionality = dimensionality;
     }
+
+    @XmlElement(name= "Pmml")
+    public boolean getPmml(){ return pmml;}
+
+    public void setPmml(boolean pmml){this.pmml = pmml;}
 
     /**
      * @return Returns a list of hyper-parameters

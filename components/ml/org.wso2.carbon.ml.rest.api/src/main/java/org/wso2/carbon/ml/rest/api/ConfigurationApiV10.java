@@ -166,5 +166,26 @@ public class ConfigurationApiV10 extends MLRestAPI {
         }
         return Response.ok(summaryStatisticsSettings).build();
     }
+    /**
+     * Get PMML availability of an algorithm.
+     *
+     */
+    @GET
+    @Path("/pmml/{algorithmName}")
+    @Produces("application/json")
+    public Response getPMMLAvailability(@PathParam("algorithmName") String algorithmName) {
+        if (algorithmName == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Cannot find the Algorithm name from the URI.")
+                    .build();
+        }
+        List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+        for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
+            if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmml()) {
+                return Response.ok().build();
+            }
+        }
+        return Response.status(Response.Status.NOT_FOUND).entity("PMML downoald not supported for : " + algorithmName)
+                .build();
+    }
 
 }

@@ -71,6 +71,7 @@
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -98,6 +99,7 @@
 		<Algorithm>
 			<Name>RIDGE_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -135,6 +137,7 @@
 		<Algorithm>
 			<Name>LASSO_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -172,6 +175,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION</Name>
 			<Type>Classification</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -216,6 +220,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION_LBFGS</Name>
 			<Type>Classification</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
@@ -227,6 +232,7 @@
 		<Algorithm>
 			<Name>SVM</Name>
 			<Type>Classification</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -271,6 +277,7 @@
 		<Algorithm>
 			<Name>DECISION_TREE</Name>
 			<Type>Classification</Type>
+			<Pmml>false</Pmml>
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
@@ -303,6 +310,7 @@
 		<Algorithm>
 			<Name>RANDOM_FOREST</Name>
 			<Type>Classification</Type>
+			<Pmml>false</Pmml>
 			<Parameters>
 				<Name>Num_Trees</Name>
 				<Value>5</Value>
@@ -361,6 +369,7 @@
 		<Algorithm>
 			<Name>NAIVE_BAYES</Name>
 			<Type>Classification</Type>
+			<Pmml>false</Pmml>
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
@@ -373,6 +382,7 @@
 		<Algorithm>
 			<Name>K_MEANS</Name>
 			<Type>Clustering</Type>
+			<Pmml>true</Pmml>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>20</Value>
