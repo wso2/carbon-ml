@@ -363,26 +363,6 @@
             hidePopup();
         });
 
-
-         $(document).on('click', '#delete-model', function(e){ 
-            e.preventDefault();
-            
-            deleteModelId = $(this).data('modelid');            
-            operationSelect('delete-model');
-        });
-        $(document).on('click', '#delete-model-yes', function(e){ 
-            e.preventDefault();
-
-            deleteModel(deleteModelId);
-            deleteModelId = null;
-            hidePopup();
-        });
-        $(document).on('click', '#delete-model-no', function(e){ 
-            e.preventDefault();
-
-            deleteModelId = null;
-            hidePopup();
-        });
         
 
         // add pagination
