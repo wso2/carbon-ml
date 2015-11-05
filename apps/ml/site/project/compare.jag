@@ -79,7 +79,7 @@
         <!-- content/body -->
         <div class="row">
             <div class="col-lg-12 wr-secondary-bar">
-
+ 
                 <!-- Wizard -->
                 <!--ul class="nav nav-pills nav-wizard">
         <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
@@ -96,6 +96,7 @@
 
                 <!-- content -->
                 <div class="container col-md-12 col-centered wr-content">
+
 
                     <div id="notification-area"></div>
                     <h1 id="model-summary-title" class="title">Model Comparison</h1>                    
@@ -204,18 +205,25 @@
                                 <!-- /pagination -->
                             </div>
                         </div>
+                     
+                    
                     </div>
+                 
+                    
+                    </div>
+ 
+    </div>
+                    
                 <!-- /content -->
 
 
             </div>
+
+
         </div>
+
         <!-- /content/body -->
-
-    </div>
-
-
-
+ 
 
 
     <!--footer class="footer">
@@ -229,9 +237,39 @@
     </div>
 </div> 
 
+<!-- modal popup template -->
+<div class="wr-modalpopup">
+    <div class="modalpopup-content"><!-- dynamic content --></div>
+    <div class="modalpopup-bg"></div>
+</div>
+<!-- /modal popup template -->
+
+<!-- download model popup-->
+  <div class="container-fluid col-centered wr-content">
+                 <div class="popup-content" data-operation="download-model">
+                        <div class="content">Please select download type</div>
+                        <div class="buttons">
+                            <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                            <a href="#" id="download-model-pmml"  class="btn-opr-default">PMML</a>
+                        </div>
+                    </div>
+                    <!-- /download model popup -->
+                    
+            
+                      <div class="popup-content" data-operation="pmml-error">
+                        <div class="content">PMML download not supported for this model type</div>
+                        <div class="buttons">
+                            <a href="#" id="pmml-ok" class="btn-opr-default" >OK</a>
+                       
+                        </div>
+</div>
+
+<!-- download model popup -->
+
 <script src="../../js/jquery-1.11.1.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/operationsmenu.js"></script>
 
 <script type="text/javascript">
 
@@ -288,6 +326,64 @@
         $('#nav-project').text(projectName);
 
         loadModels();
+  //events to handle downloading
+   var modelName;
+        $(document).on('click','#download-model',function(e){
+            e.preventDefault();
+            
+            modelName = sanitize($(this).data('modelname'));            
+            operationSelect('download-model');
+        });
+        $(document).on('click','#download-model-serialized',function(e){
+            e.preventDefault();
+
+            window.location.href = serverUrl+'/api/models/'+modelName+'/export';
+            hidePopup();
+        });
+        $(document).on('click','#download-model-pmml',function(e){
+            $.ajax({
+                type: "GET",
+                url: serverUrl+'/api/models/'+modelName+'/pmmlexport',
+                success : function(res){
+                    window.location.href = serverUrl+'/api/models/'+modelName+'/pmmlexport';
+                    hidePopup();
+                },
+                error : function(res){
+                //var errorText = JSON.parse(res.responseText)["exception"];
+                //console.log("");
+                operationSelect('pmml-error');
+               // hidePopup();
+                //showPMMLError();
+                }
+            });
+            
+        });
+         $(document).on('click','#pmml-ok',function(e){
+            e.preventDefault();
+            hidePopup();
+        });
+
+
+         $(document).on('click', '#delete-model', function(e){ 
+            e.preventDefault();
+            
+            deleteModelId = $(this).data('modelid');            
+            operationSelect('delete-model');
+        });
+        $(document).on('click', '#delete-model-yes', function(e){ 
+            e.preventDefault();
+
+            deleteModel(deleteModelId);
+            deleteModelId = null;
+            hidePopup();
+        });
+        $(document).on('click', '#delete-model-no', function(e){ 
+            e.preventDefault();
+
+            deleteModelId = null;
+            hidePopup();
+        });
+        
 
         // add pagination
         classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());        
@@ -367,7 +463,7 @@
                                         '<div>' +
                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>' +
                                             '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>' +
-                                            '<a href="' + serverUrl + '/api/models/' + modelName + '/export" id="download-model" class="cu-reg-btn btn-download" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
+                                             '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
                                             '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '"><span>Publish</span></a>' +
                                         '</div>' +
                                     '</td>';                                        
