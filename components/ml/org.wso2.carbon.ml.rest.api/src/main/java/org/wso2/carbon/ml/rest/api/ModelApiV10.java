@@ -478,7 +478,7 @@ public class ModelApiV10 extends MLRestAPI {
                 final String pmmlModel = mlModelHandler.exportAsPMML(generatedModel);
 
                 return Response.ok(pmmlModel)
-                        .header("Content-disposition", "attachment; filename=" + modelName + "PMML").build();
+                        .header("Content-disposition", "attachment; filename=" + modelName + "PMML.xml").build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
