@@ -139,10 +139,6 @@
                         </div>
                     </div>
                     <!-- /download model popup -->
-                    
-                    
-                    
-
 
 
                     
@@ -382,10 +378,7 @@
                     });
                     
                 });
-                 $(document).on('click','#pmml-ok',function(e){
-                    e.preventDefault();
-                    hidePopup();
-                });
+              
 
             },
             error: function(res) {
@@ -576,10 +569,10 @@
                 async: false,
                 success : function(res){
                     status = true;
-                  },
+                },
                 error: function(res){
                     status = false;
-                     }
+                }
             });
 
            
