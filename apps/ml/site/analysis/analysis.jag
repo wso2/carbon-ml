@@ -133,7 +133,9 @@
                         <div class="content">Please select download type</div>
                         <div class="buttons">
                             <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
-                            <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled">PMML</a>
+                            <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                                 <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                            </div>
                         </div>
                     </div>
                     <!-- /download model popup -->
@@ -352,7 +354,7 @@
                     var algorithmName = findAlgorithmName(analysisId); 
                                        
                     if(loadPMMLAvailability(algorithmName)){
-                        $('#download-model-pmml').removeClass('btn-disabled');
+                        $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
                     }      
                     operationSelect('download-model');
                 });
