@@ -180,7 +180,7 @@ public class ConfigurationApiV10 extends MLRestAPI {
         }
         List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
         for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
-            if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.isPMMLExportable()) {
+            if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPMMLExportable()) {
                 return Response.ok().build();
             }
         }

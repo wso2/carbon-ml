@@ -36,7 +36,7 @@ public class MLAlgorithm {
     private int scalability;
     private int multicollinearity;
     private int dimensionality;
-    private boolean isPMMLExportable;
+    private boolean PMMLExportable;
     private List<MLHyperParameter> parameters;
 
     /**
@@ -130,9 +130,9 @@ public class MLAlgorithm {
     }
 
     @XmlElement(name= "isPMMLExportable")
-    public boolean isPMMLExportable(){ return isPMMLExportable;}
+    public boolean getPMMLExportable(){ return PMMLExportable;}
 
-    public void setMMLExportable(boolean status){this.isPMMLExportable = status;}
+    public void setPMMLExportable(boolean status){this.PMMLExportable = status;}
 
     /**
      * @return Returns a list of hyper-parameters
