@@ -17,49 +17,65 @@
  */
 package org.wso2.carbon.ml.core.spark.models;
 
-import java.io.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
 /**
  * Wraps Spark's {@link KMeansModel} model.
  */
-public class MLKMeansModel extends PMMLModelContainer implements Externalizable {
+public class MLKMeansModel implements Externalizable,PMMLModelContainer {
+    private KMeansModel model;
 
     public MLKMeansModel() {
     }
-
+    
     public MLKMeansModel(KMeansModel model) {
         this.model = model;
     }
-
+    
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
-    @Override public void writeExternal(ObjectOutput out) throws IOException {
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = (Serializable) in.readObject();
+        model = (KMeansModel) in.readObject();
     }
 
     public KMeansModel getModel() {
-        return (KMeansModel) model;
+        return model;
     }
 
     public void setModel(KMeansModel model) {
         this.model = model;
     }
 
+    @Override
+    public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
+        if (model instanceof PMMLExportable) {
+            return model;
+        } else {
+            throw new MLModelHandlerException("PMML export not supported for model type");
+        }
+    }
 }

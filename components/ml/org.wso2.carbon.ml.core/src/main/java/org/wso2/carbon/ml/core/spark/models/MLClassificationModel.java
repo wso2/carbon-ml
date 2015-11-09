@@ -17,29 +17,36 @@
  */
 package org.wso2.carbon.ml.core.spark.models;
 
-import java.io.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.classification.ClassificationModel;
+import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
 /**
  * Wraps Spark's {@link ClassificationModel} model.
  */
-public class MLClassificationModel extends PMMLModelContainer implements Externalizable {
+public class MLClassificationModel implements Externalizable, PMMLModelContainer {
+    private ClassificationModel model;
 
     public MLClassificationModel() {
     }
-
+    
     public MLClassificationModel(ClassificationModel model) {
         this.model = model;
     }
-
+    
     /*
      * (non-Javadoc)
      * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */
-    @Override public void writeExternal(ObjectOutput out) throws IOException {
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
     }
@@ -49,17 +56,26 @@ public class MLClassificationModel extends PMMLModelContainer implements Externa
      * 
      * @see java.io.Externalizable#readExternal(java.io.ObjectInput)
      */
-    @Override public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = (Serializable)in.readObject();
+        model = (ClassificationModel) in.readObject();
     }
 
     public ClassificationModel getModel() {
-        return (ClassificationModel) model;
+        return model;
     }
 
     public void setModel(ClassificationModel model) {
         this.model = model;
     }
 
+    @Override
+    public PMMLExportable getPMMLExportable() throws MLModelHandlerException {
+        if (model instanceof PMMLExportable) {
+            return (PMMLExportable)model;
+        } else {
+            throw new MLModelHandlerException("PMML export not supported for model type");
+        }
+    }
 }
