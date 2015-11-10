@@ -138,6 +138,16 @@
                             </div>
                         </div>
                     </div>
+                     <div class="popup-content" data-operation="publish-model">
+			            <div class="content">Please select model type to publish</div>
+			                <div class="buttons">
+			                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
+			                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+			                                 <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+			                    </div>
+			                </div>
+        			</div>
+
                     <!-- /download model popup -->
 
 
@@ -339,9 +349,7 @@
                             $("#accordion").append(accordionPanel);
                     };
                 }
-               //pmml 
               
-
                  //events to handle downloading
                 $(document).on('click','#download-model',function(e){
                     e.preventDefault();
@@ -357,25 +365,14 @@
                 $(document).on('click','#download-model-serialized',function(e){
                     e.preventDefault();
 
-                    window.location.href = serverUrl+'/api/models/'+modelName+'/export';
+                    window.location.href = serverUrl+'/api/models/'+modelName+'/export?mode=serialized';
                     hidePopup();
                 });
                 $(document).on('click','#download-model-pmml',function(e){
-                    $.ajax({
-                        type: "GET",
-                        url: serverUrl+'/api/models/'+modelName+'/pmmlexport',
-                        success : function(res){
-                            window.location.href = serverUrl+'/api/models/'+modelName+'/pmmlexport';
-                            hidePopup();
-                        },
-                        error : function(res){
-                        //var errorText = JSON.parse(res.responseText)["exception"];
-                        //console.log("");
-                        operationSelect('pmml-error');
-                       // hidePopup();
-                        //showPMMLError();
-                        }
-                    });
+                	e.preventDefault();
+                	
+                	window.location.href = serverUrl+'/api/models/'+modelName+'/export?mode=pmml';
+                    hidePopup();
                     
                 });
               
@@ -473,14 +470,25 @@
             window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
         });
 
+        var modelId ;
         $(document).on('click', '#publish', function(e){ 
             e.preventDefault();
-            
-            var modelId = $(this).data('modelid');
 
+            var algorithmName = findAlgorithmName(analysisId); 
+
+            if(loadPMMLAvailability(algorithmName)){
+                    $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
+             }    
+			modelId = $(this).data('modelid');
+
+
+            operationSelect('publish-model');
+        });
+        $(document).on('click','#publish-model-serialized',function(e){
+            e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
                 dataType: 'json',
                 success : function(res){
                     var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
@@ -490,9 +498,28 @@
                 var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
                 }
-            });            
-        });        
-
+            });
+            
+            hidePopup();
+         });        
+          $(document).on('click','#publish-model-pmml',function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                dataType: 'json',
+                success : function(res){
+                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
+                    handleNotification(successText, '#notification-area', 'success');
+                },
+                error : function(res){
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            
+            hidePopup();
+         });    
         $(document).on('click', '#view-model', function(e){ 
             e.preventDefault();
             
