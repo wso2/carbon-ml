@@ -222,8 +222,6 @@ public class ComputeClasspath {
 
         String carbonHome = args[0];
         String sparkClasspath = "";
-
-        System.out.println(getSparkClasspath(sparkClasspath, carbonHome));
     }
 
     public static String getSparkClasspath(String sparkClasspath, String carbonHome)

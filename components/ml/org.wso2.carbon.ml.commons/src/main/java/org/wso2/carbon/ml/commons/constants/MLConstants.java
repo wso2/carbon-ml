@@ -214,10 +214,11 @@ public class MLConstants {
         }
 
         public static boolean contains(String s) {
-            for (MISSING_VALUES val : values())
+            for (MISSING_VALUES val : values()) {
                 if (val.toString().equals(s)) {
                     return true;
                 }
+            }
             return false;
         }
     }

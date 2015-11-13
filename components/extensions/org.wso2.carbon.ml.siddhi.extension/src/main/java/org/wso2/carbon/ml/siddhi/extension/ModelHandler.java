@@ -16,6 +16,15 @@
 
 package org.wso2.carbon.ml.siddhi.extension;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLModel;
@@ -26,15 +35,6 @@ import org.wso2.carbon.ml.core.impl.MLIOFactory;
 import org.wso2.carbon.ml.core.impl.Predictor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ModelHandler {
 
@@ -59,7 +59,7 @@ public class ModelHandler {
     }
 
     /**
-     * Retrieve the MLModel from the storage location
+     * Retrieve the MLModel from the storage location.
      * @param modelStorageLocation model storage location (file path or registry path)
      * @return the deserialized MLModel object
      * @throws URISyntaxException
@@ -96,7 +96,7 @@ public class ModelHandler {
     }
 
     /**
-     * Predict the value using the feature values
+     * Predict the value using the feature values.
      * @param data  feature values array
      * @return      predicted value
      * @throws      MLModelHandlerException
@@ -112,7 +112,7 @@ public class ModelHandler {
     }
 
     /**
-     * Cast the given value to the given output type
+     * Cast the given value to the given output type.
      * @param outputType Output data type
      * @param value value to be casted in String
      * @return Value casted to output type object
@@ -160,5 +160,13 @@ public class ModelHandler {
      */
     public String getResponseVariable() {
         return mlModel.getResponseVariable();
+    }
+
+    /**
+     * Returns the algorithm class - classification, numerical prediction or clustering
+     * @return the algorithm class
+     */
+    public String getAlgorithmClass() {
+        return mlModel.getAlgorithmClass();
     }
 }
