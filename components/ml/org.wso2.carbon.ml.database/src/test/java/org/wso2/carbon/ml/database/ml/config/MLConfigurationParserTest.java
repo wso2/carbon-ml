@@ -34,7 +34,7 @@ public class MLConfigurationParserTest {
         
         Assert.assertNotNull(mlConfig.getMlAlgorithms());
         Assert.assertNotNull(mlConfig.getMlAlgorithms().get(0));
-        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 10);
+        Assert.assertEquals(mlConfig.getMlAlgorithms().size(), 12);
         Assert.assertEquals(mlConfig.getMlAlgorithms().get(0).getName(), "LINEAR_REGRESSION");
         
         Assert.assertNotNull(mlConfig.getProperties());

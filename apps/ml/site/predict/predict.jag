@@ -100,14 +100,6 @@ include("../../includes/tenantAware.jag");
 
                         <form id="prediction-form" method="POST" enctype="multipart/form-data">
 
-                            <div id="percentile-value">
-                                <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
-                                <span class="fld-required">*</span>
-                                <div class="input-control text">
-                                    <input type="text" id="percentile" value="98" placeholder="input text"/>
-                                </div>
-                            </div>
-
                             <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
                             <div class="input-control text">
                                 <select class="form-control" id="prediction-src" name="sourceType">
@@ -146,7 +138,15 @@ include("../../includes/tenantAware.jag");
 
                             <!-- inputs for parameter input prediction -->
                             <div id="parameter-inputs"></div>
-                            
+
+                            <div id="percentile-value">
+                                <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
+                                <span class="fld-required">*</span>
+                                <div class="input-control text">
+                                    <input type="text" id="percentile" value="98" placeholder="input text"/>
+                                </div>
+                            </div>
+
                             <div class="btn-group-actions">
                                 <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>
                                 <button id="file-predict" class="btn btn-main" type="submit">Predict</button>

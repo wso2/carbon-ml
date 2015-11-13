@@ -21,22 +21,19 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-
-import org.apache.spark.mllib.clustering.KMeansModel;
+import org.wso2.carbon.ml.core.spark.models.ext.AnomalyDetectionModel;
 
 /**
- * Wraps Spark's {@link MLKMeansAnomalyDetectionModel} model.
+ * Wraps Spark's {@link MLAnomalyDetectionModel} model.
  */
-public class MLKMeansAnomalyDetectionModel implements Externalizable {
+public class MLAnomalyDetectionModel implements Externalizable {
 
-    private KMeansModel model;
-    private double[][] distancesArray;
-    private int bestPercentile;
+    private AnomalyDetectionModel model;
 
-    public MLKMeansAnomalyDetectionModel() {
+    public MLAnomalyDetectionModel() {
     }
 
-    public MLKMeansAnomalyDetectionModel(KMeansModel model) {
+    public MLAnomalyDetectionModel(AnomalyDetectionModel model) {
         this.model = model;
     }
 
@@ -49,8 +46,6 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeObject(model);
-        out.writeObject(distancesArray);
-        out.writeObject(bestPercentile);
     }
 
     /*
@@ -61,32 +56,15 @@ public class MLKMeansAnomalyDetectionModel implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-        model = (KMeansModel) in.readObject();
-        distancesArray = (double[][]) in.readObject();
-        bestPercentile = (Integer) in.readObject();
+        model = (AnomalyDetectionModel) in.readObject();
     }
 
-    public KMeansModel getModel() {
+    public AnomalyDetectionModel getModel() {
         return model;
     }
 
-    public void setModel(KMeansModel model) {
+    public void setModel(AnomalyDetectionModel model) {
         this.model = model;
     }
 
-    public double[][] getDistancesArray() {
-        return distancesArray;
-    }
-
-    public void setDistancesArray(double[][] distancesArray) {
-        this.distancesArray = distancesArray;
-    }
-
-    public int getBestPercentile() {
-        return bestPercentile;
-    }
-
-    public void setBestPercentile(int bestPercentile) {
-        this.bestPercentile = bestPercentile;
-    }
 }

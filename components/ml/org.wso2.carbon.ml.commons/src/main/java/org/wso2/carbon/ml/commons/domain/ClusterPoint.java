@@ -26,8 +26,9 @@ import java.util.Map;
  * DTO class to store k-means cluster point
  */
 public class ClusterPoint implements Serializable {
+
+    private static final long serialVersionUID = 2038403143111019647L;
     private double[] features;
-    private Map<String, Double> featureMap;
     private int cluster;
 
     /**
@@ -62,11 +63,4 @@ public class ClusterPoint implements Serializable {
         }
     }
 
-    public Map<String, Double> getFeatureMap() {
-        return featureMap;
-    }
-
-    public void setFeatureMap(Map<String, Double> featureMap) {
-        this.featureMap = featureMap;
-    }
 }

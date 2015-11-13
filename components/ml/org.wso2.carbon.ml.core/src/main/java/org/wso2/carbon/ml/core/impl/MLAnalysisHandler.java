@@ -149,6 +149,22 @@ public class MLAnalysisHandler {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
     }
+
+    public String getNewNormalLabel(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public String getNewAnomalyLabel(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
     
     public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
         try {

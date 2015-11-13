@@ -85,12 +85,14 @@ public class MLConstants {
     public static final String MODEL_SETTINGS_ID = "modelSettingsID";
     public static final String WORKFLOW_ID = "workflowID";
     public static final String DATASET_URL = "datasetURL";
-    public static final String NORMAL_LABELS = "normalLabels";  //ashen
+    public static final String NORMAL_LABELS = "normalLabels";
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
     public static final String RESPONSE = "responseVariable";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
-    public static final String NORMALIZATION = "normalization"; //ashen
+    public static final String NORMALIZATION = "normalization";
+    public static final String NEW_NORMAL_LABEL = "newNormalLabel";
+    public static final String NEW_ANOMALY_LABEL = "newAnomalyLabel";
     public static final String HYPER_PARAMETERS = "hyperParameters";
     
     public static final String MODEL_NAME = "Model";
@@ -162,7 +164,7 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
-    public static final String KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY = "KMeansAnomalyDetectionModelSummary";
+    public static final String ANOMALY_DETECTION_MODEL_SUMMARY = "AnomalyDetectionModelSummary";
 
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
 
@@ -182,6 +184,10 @@ public class MLConstants {
     public static final String TEMPLATE = "template";
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
+
+    //percentile range for anomaly detection
+    public static final int MIN_PERCENTILE = 80;
+    public static final int MAX_PERCENTILE = 100;
 
     // to build predictions CSV
     public static final String NEW_LINE = "\n";
@@ -257,5 +263,9 @@ public class MLConstants {
         public String toString() {
             return value;
         }
+    }
+
+    public enum ANOMALY_DETECTION_DATA_TYPE {
+        NORMAL, ANOMALOUS
     }
 }
