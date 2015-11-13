@@ -421,5 +421,51 @@
 				</Description>
 			</Parameters>
 		</Algorithm>
+		<Algorithm>
+			<Name>K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA</Name>
+			<Type>Anomaly_Detection</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>2</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>2</Dimensionality>
+			<Parameters>
+				<Name>Max_Iterations</Name>
+				<Value>100</Value>
+				<Description>Maximum number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Num_of_Normal_Clusters</Name>
+				<Value>5</Value>
+				<Description>The number of desired normal clusters. This value should be
+					an integer greater than 0.
+				</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA</Name>
+			<Type>Anomaly_Detection</Type>
+			<Interpretability>5</Interpretability>
+			<Scalability>2</Scalability>
+			<Multicollinearity>5</Multicollinearity>
+			<Dimensionality>2</Dimensionality>
+			<Parameters>
+				<Name>Max_Iterations</Name>
+				<Value>100</Value>
+				<Description>Maximum number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Num_of_Normal_Clusters</Name>
+				<Value>5</Value>
+				<Description>The number of desired normal clusters. This value should be
+					an integer greater than 0.
+				</Description>
+			</Parameters>
+		</Algorithm>
 	</Algorithms>
 </MachineLearner>

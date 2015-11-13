@@ -204,7 +204,7 @@ include("../../includes/tenantAware.jag");
                     </div>
                 </div> 
 
-                <div class="wr-graph-element gr05">
+                <div class="wr-graph-element gr03">
                     <h5>Cluster Diagram</h5>
                     <div class="wr-graph-img">
                             <div id='clusterDiagram'>Loading chart...</div>
@@ -887,16 +887,16 @@ function drawClusterDiagram() {
                 dataRow[2] = dataArray[i]['cluster'];
                 clusterDataArray.push(dataRow);
             }
-            drawScatterPlot(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
+            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
 }
 
 // drawing a simple scatter graph
-function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
+function drawClusters(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
     $(cssClass).empty();
     var scatter = new ScatterPlot(data);
 
-    scatter.setPlotingAreaWidth(720);
-    scatter.setPlotingAreaHeight(560);
+    scatter.setPlotingAreaWidth(600);
+    scatter.setPlotingAreaHeight(400);
     scatter.setMarkerSize(markerSize);
     scatter.setLegend(legendEnabled);
     scatter.setXAxisText(xLabel);

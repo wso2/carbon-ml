@@ -37,7 +37,7 @@ public class AnomalyDetectionModel implements Serializable {
     private static final long serialVersionUID = 7012024887487309471L;
 
     private KMeansModel kMeansModel;
-    private Map<Integer, List<Double>> clusterIndexTodistancesListMap;
+    private Map<Integer, List<Double>> clusterIndexToDistancesListMap;
     private String normalLabel;
     private String anomalyLabel;
 
@@ -49,12 +49,12 @@ public class AnomalyDetectionModel implements Serializable {
         this.kMeansModel = kMeansModel;
     }
 
-    public Map<Integer, List<Double>> getClusterIndexTodistancesListMap() {
-        return clusterIndexTodistancesListMap;
+    public Map<Integer, List<Double>> getClusterIndexToDistancesListMap() {
+        return clusterIndexToDistancesListMap;
     }
 
-    public void setClusterIndexTodistancesListMap(Map<Integer, List<Double>> clusterIndexTodistancesListMap) {
-        this.clusterIndexTodistancesListMap = clusterIndexTodistancesListMap;
+    public void setClusterIndexToDistancesListMap(Map<Integer, List<Double>> clusterIndexTodistancesListMap) {
+        this.clusterIndexToDistancesListMap = clusterIndexTodistancesListMap;
     }
 
     public String getNormalLabel() {
@@ -102,20 +102,12 @@ public class AnomalyDetectionModel implements Serializable {
      */
     public List<String> predict(JavaRDD<Vector> data, double percentile) {
 
-        List<String> predictions = new ArrayList<String>();
         // convert data JAVARDD into a List
         List<Vector> dataList = data.collect();
         List<Integer> predictedClusters = kMeansModel.predict(data).collect();
         Map<Integer, Double> percentilesMap = getPercentileDistancesMap(percentile);
 
-        for (int i = 0; i < dataList.size(); i++) {
-
-            int clusterIndex = predictedClusters.get(i);
-            double clusterBoundary = percentilesMap.get(clusterIndex);
-
-            String prediction = getPredictedValue(dataList.get(i), clusterIndex, clusterBoundary);
-            predictions.add(prediction);
-        }
+        List<String> predictions = getPredictionsList(dataList, predictedClusters, percentilesMap);
 
         return predictions;
     }
@@ -134,7 +126,7 @@ public class AnomalyDetectionModel implements Serializable {
          * key : percentile value
          * value : prediction label
          */
-        Map<Integer, String> percentileTopredictionMap = new HashMap<Integer, String>();
+        Map<Integer, String> percentileToPredictionMap = new HashMap<Integer, String>();
 
         int predictedCluster = kMeansModel.predict(data);
 
@@ -144,10 +136,10 @@ public class AnomalyDetectionModel implements Serializable {
             double clusterBoundary = getPercentileDistance(percentile, clusterIndex);
 
             String prediction = getPredictedValue(data, clusterIndex, clusterBoundary);
-            percentileTopredictionMap.put(percentile, prediction);
+            percentileToPredictionMap.put(percentile, prediction);
         }
 
-        return percentileTopredictionMap;
+        return percentileToPredictionMap;
     }
 
     /**
@@ -164,28 +156,36 @@ public class AnomalyDetectionModel implements Serializable {
          * key : percentile value
          * value : predictions List
          */
-        Map<Integer, List<String>> percentileTopredictionsListMap = new HashMap<Integer, List<String>>();
+        Map<Integer, List<String>> percentileToPredictionsListMap = new HashMap<Integer, List<String>>();
         // convert data JAVARDD into a List
         List<Vector> dataList = data.collect();
         List<Integer> predictedClusters = kMeansModel.predict(data).collect();
 
         for (int percentile = minPercentile; percentile <= maxPercentile; percentile++) {
 
-            List<String> predictionsList = new ArrayList<String>();
             Map<Integer, Double> percentilesMap = getPercentileDistancesMap(percentile);
-
-            for (int i = 0; i < dataList.size(); i++) {
-
-                int clusterIndex = predictedClusters.get(i);
-                double clusterBoundary = percentilesMap.get(clusterIndex);
-
-                String prediction = getPredictedValue(dataList.get(i), clusterIndex, clusterBoundary);
-                predictionsList.add(prediction);
-            }
-            percentileTopredictionsListMap.put(percentile, predictionsList);
+            List<String> predictionsList = getPredictionsList(dataList, predictedClusters, percentilesMap);
+            percentileToPredictionsListMap.put(percentile, predictionsList);
         }
 
-        return percentileTopredictionsListMap;
+        return percentileToPredictionsListMap;
+    }
+
+    private List<String> getPredictionsList(List<Vector> dataList, List<Integer> predictedClusters,
+            Map<Integer, Double> percentilesMap) {
+
+        List<String> predictionsList = new ArrayList<String>();
+
+        for (int i = 0; i < dataList.size(); i++) {
+
+            int clusterIndex = predictedClusters.get(i);
+            double clusterBoundary = percentilesMap.get(clusterIndex);
+
+            String prediction = getPredictedValue(dataList.get(i), clusterIndex, clusterBoundary);
+            predictionsList.add(prediction);
+        }
+
+        return predictionsList;
     }
 
     /**
@@ -224,9 +224,9 @@ public class AnomalyDetectionModel implements Serializable {
         Map<Integer, Double> percentilesMap = new HashMap<Integer, Double>();
 
         // calculating percentile distance of each cluster
-        for (int clusterIndex = 0; clusterIndex < clusterIndexTodistancesListMap.size(); clusterIndex++) {
+        for (int clusterIndex = 0; clusterIndex < clusterIndexToDistancesListMap.size(); clusterIndex++) {
 
-            for (double distance : clusterIndexTodistancesListMap.get(clusterIndex)) {
+            for (double distance : clusterIndexToDistancesListMap.get(clusterIndex)) {
                 stats.addValue(distance);
             }
 
@@ -247,7 +247,7 @@ public class AnomalyDetectionModel implements Serializable {
         DescriptiveStatistics stats = new DescriptiveStatistics();
 
         // calculating percentile distance
-        for (double distance : clusterIndexTodistancesListMap.get(clusterIndex)) {
+        for (double distance : clusterIndexToDistancesListMap.get(clusterIndex)) {
             stats.addValue(distance);
         }
         double percentileDistance = stats.getPercentile(percentileValue);

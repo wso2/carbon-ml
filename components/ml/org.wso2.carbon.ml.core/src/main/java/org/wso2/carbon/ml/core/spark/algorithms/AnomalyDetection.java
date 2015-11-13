@@ -80,7 +80,7 @@ public class AnomalyDetection implements Serializable {
         }
 
         anomalyDetectionModel.setkMeansModel(kMeansModel);
-        anomalyDetectionModel.setClusterIndexTodistancesListMap(distancesMap);
+        anomalyDetectionModel.setClusterIndexToDistancesListMap(distancesMap);
         anomalyDetectionModel.setNormalLabel(newNormalLabel);
         anomalyDetectionModel.setAnomalyLabel(newAnomalyLabel);
 
