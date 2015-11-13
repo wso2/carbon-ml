@@ -26,14 +26,14 @@ import java.util.Map;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
+import org.wso2.carbon.ml.core.spark.MulticlassMetrics;
 
-public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable {
+public class AnomalyDetectionModelSummary implements ModelSummary, Serializable {
 
-    private static final long serialVersionUID = -2367643384961727119L;
+    private static final long serialVersionUID = 3629214143615665158L;
     private String algorithm;
     private String[] features;
-    private Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix;
+    private Map<Integer, MulticlassMetrics> percentileToMulticlassMetricsMap;
     private List<ClusterPoint> clusterPoints;
     private int bestPercentile;
     private String datasetVersion;
@@ -48,7 +48,7 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
 
     @Override
     public String getModelSummaryType() {
-        return MLConstants.KMEANS_ANOMALY_DETECTION_MODEL_SUMMARY;
+        return MLConstants.ANOMALY_DETECTION_MODEL_SUMMARY;
     }
 
     public void setFeatures(String[] features) {
@@ -64,12 +64,12 @@ public class KMeansAnomalyDetectionSummary implements ModelSummary, Serializable
         return features;
     }
 
-    public Map<Integer, MulticlassConfusionMatrix> getMulticlassConfusionMatrix() {
-        return multiclassConfusionMatrix;
+    public Map<Integer, MulticlassMetrics> getPercentileToMulticlassMetricsMap() {
+        return percentileToMulticlassMetricsMap;
     }
 
-    public void setMulticlassConfusionMatrix(Map<Integer, MulticlassConfusionMatrix> multiclassConfusionMatrix) {
-        this.multiclassConfusionMatrix = multiclassConfusionMatrix;
+    public void setPercentileToMulticlassMetricsMap(Map<Integer, MulticlassMetrics> percentileToMulticlassMetricsMap) {
+        this.percentileToMulticlassMetricsMap = percentileToMulticlassMetricsMap;
     }
 
     public List<ClusterPoint> getClusterPoints() {

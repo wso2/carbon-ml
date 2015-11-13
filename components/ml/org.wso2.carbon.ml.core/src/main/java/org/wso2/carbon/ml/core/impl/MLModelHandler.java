@@ -269,6 +269,167 @@ public class MLModelHandler {
         return context;
     }
 
+    public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream)
+            throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                data.add(dataRow);
+            }
+            return predict(tenantId, userName, modelId, data);
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                dataStream.close();
+                br.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+    }
+
+    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
+                                   String columnHeader, InputStream dataStream) throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        MLModel mlModel = retrieveModel(modelId);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
+        StringBuilder predictionsWithData = new StringBuilder();
+        try {
+            String line;
+            if((line = br.readLine()) != null && line.split(csvFormat.getDelimiter() + "").length == mlModel.getNewToOldIndicesList().size()) {
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                }
+                // cloning unencoded data to append with predictions
+                List<String[]> unencodedData = new ArrayList<String[]>(data.size());
+                for (String[] item : data) {
+                    unencodedData.add(item.clone());
+                }
+                List<?> predictions = predict(tenantId, userName, modelId, data);
+                for (int i = 0; i < predictions.size(); i++) {
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
+                            .append(String.valueOf(predictions.get(i)))
+                            .append(MLConstants.NEW_LINE);
+                }
+            } else {
+                int responseVariableIndex = mlModel.getResponseIndex();
+                List<Integer> includedFeatureIndices = mlModel.getNewToOldIndicesList();
+                List<String[]> unencodedData = new ArrayList<String[]>();
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                }
+
+                List<?> predictions = predict(tenantId, userName, modelId, data);
+                for (int i = 0; i < predictions.size(); i++) {
+                    // replace with predicted value
+                    unencodedData.get(i)[responseVariableIndex] = String.valueOf(predictions.get(i));
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()));
+                    predictionsWithData.deleteCharAt(predictionsWithData.length() - 1);
+                    predictionsWithData.append(MLConstants.NEW_LINE);
+                }
+            }
+            return predictionsWithData.toString();
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                if (dataStream != null && br != null) {
+                    dataStream.close();
+                    br.close();
+                }
+            } catch (IOException e) {
+                String msg = MLUtils.getErrorMsg(String.format(
+                        "Error occurred while closing the streams for model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                        tenantId, userName), e);
+                log.warn(msg, e);
+            }
+        }
+
+    }
+
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data)
+            throws MLModelHandlerException {
+
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                    modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        MLModel builtModel = retrieveModel(modelId);
+
+        // Validate number of features in predict dataset
+        if (builtModel.getNewToOldIndicesList().size() != data.get(0).length) {
+            String msg = String.format("Prediction failed from model [id] %s since [number of features of model]" +
+                            " %s does not match [number of features in the input data] %s",
+                    modelId, builtModel.getFeatures().size(), data.get(0).length);
+            throw new MLModelHandlerException(msg);
+        }
+
+        // Validate numerical feature type in predict dataset
+        for (Feature feature: builtModel.getFeatures()) {
+            if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
+                for (String[] dataPoint: data) {
+                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                                dataPoint[actualIndex], feature.getName(), actualIndex);
+                        throw new MLModelHandlerException(msg);
+                    }
+                }
+            }
+        }
+
+        // predict
+        Predictor predictor = new Predictor(modelId, builtModel, data);
+        List<?> predictions = predictor.predict();
+
+        return predictions;
+    }
+
     public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream, double percentile)
             throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();

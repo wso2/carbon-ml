@@ -30,10 +30,11 @@ import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 
 /**
  * This class normalize the each values row by row
+ * Using this you can normalize numerical features
  */
 public class Normalization implements Function<double[], double[]> {
 
-    private static final long serialVersionUID = 8329428281317101710L;
+    private static final long serialVersionUID = 4558936873487486962L;
     private final List<Double> max;
     private final List<Double> min;
 
@@ -50,22 +51,15 @@ public class Normalization implements Function<double[], double[]> {
 
             for (int i = 0; i < values.length; i++) {
 
-                if (min.get(i) != max.get(i)) {
-
-                    if (values[i] > max.get(i)) {
-                        normalizedValues[i] = 1;
-                    } else if (values[i] < min.get(i)) {
-                        normalizedValues[i] = 0;
-                    } else {
-                        normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
-                    }
-
-                } else if (min.get(i) == 0 && max.get(i) == 0) {
+                if (values[i] > max.get(i)) {
+                    normalizedValues[i] = 1;
+                } else if (values[i] < min.get(i)) {
                     normalizedValues[i] = 0;
-                } else {
+                } else if (min.get(i) == max.get(i)) {
                     normalizedValues[i] = 0.5;
+                } else {
+                    normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
                 }
-
             }
 
             return normalizedValues;
@@ -83,27 +77,14 @@ public class Normalization implements Function<double[], double[]> {
 
             List<Feature> features = ctx.getFacts().getIncludedFeatures();
             Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
-            // List<Integer> newIndex = ctx.getNewToOldIndicesList();
 
             for (Feature feature : features) {
 
-                if (feature.getType().equals("NUMERICAL")) {
-                    // int index = newIndex.get(feature.getIndex());
-                    String featureStat = stats.get(feature.getName());
-                    double maxValue = SparkModelUtils.getMax(featureStat);
-                    this.max.add(maxValue);
-                    double minValue = SparkModelUtils.getMin(featureStat);
-                    this.min.add(minValue);
-
-                } else {
-                    // int index = newIndex.get(feature.getIndex());
-                    String featureStat = stats.get(feature.getName());
-                    double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
-                    this.max.add(maxValue);
-                    double minValue = 0;
-                    this.min.add(minValue);
-                }
-
+                String featureStat = stats.get(feature.getName());
+                double maxValue = SparkModelUtils.getMax(featureStat);
+                this.max.add(maxValue);
+                double minValue = SparkModelUtils.getMin(featureStat);
+                this.min.add(minValue);
             }
             return this;
         }
@@ -112,22 +93,11 @@ public class Normalization implements Function<double[], double[]> {
 
             for (Feature feature : features) {
 
-                if (feature.getType().equals("NUMERICAL")) {
-                    // int index = newIndex.get(feature.getIndex());
-                    String featureStat = stats.get(feature.getName());
-                    double maxValue = SparkModelUtils.getMax(featureStat);
-                    this.max.add(maxValue);
-                    double minValue = SparkModelUtils.getMin(featureStat);
-                    this.min.add(minValue);
-
-                } else {
-                    // int index = newIndex.get(feature.getIndex());
-                    String featureStat = stats.get(feature.getName());
-                    double maxValue = (SparkModelUtils.getUnique(featureStat)) - 1;
-                    this.max.add(maxValue);
-                    double minValue = 0;
-                    this.min.add(minValue);
-                }
+                String featureStat = stats.get(feature.getName());
+                double maxValue = SparkModelUtils.getMax(featureStat);
+                this.max.add(maxValue);
+                double minValue = SparkModelUtils.getMin(featureStat);
+                this.min.add(minValue);
             }
             return this;
         }

@@ -28,7 +28,7 @@ import org.apache.spark.api.java.function.Function;
  */
 public class RemoveResponseColumn implements Function<String[], String[]> {
 
-    private static final long serialVersionUID = -3847503088002249546L;
+    private static final long serialVersionUID = 5227320285806133114L;
 
     /**
      * Function to remove response column.

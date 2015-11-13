@@ -35,21 +35,21 @@ import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
  * WSO2 ML Analyses API. All the operations related to analyses are delegated from this class.
  */
 @Path("/analyses")
-public class AnalysisApiV10 extends MLRestAPI {
+public class AnalysisApiV11 extends MLRestAPI {
 
-    private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
+    private static final Log logger = LogFactory.getLog(AnalysisApiV11.class);
     /*
      * Analysis handler which is doing the real work.
      */
     private MLAnalysisHandler mlAnalysisHandler;
 
-    public AnalysisApiV10() {
+    public AnalysisApiV11() {
         mlAnalysisHandler = new MLAnalysisHandler();
     }
 
     /**
      * HTTP Options method implementation for analysis API.
-     * 
+     *
      * @return
      */
     @OPTIONS
@@ -59,7 +59,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Create a new analysis of a project.
-     * @param analysis {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
+     * @param analysis {@link MLAnalysis} object
      */
     @POST
     @Produces("application/json")
@@ -90,7 +90,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Adding customized features of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param customizedFeatures {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
+     * @param customizedFeatures {@link List} of {@link MLCustomizedFeature} objects
      */
     @POST
     @Path("/{analysisId}/features")
@@ -119,7 +119,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Set default features as customized features of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param customizedValues {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} object
+     * @param customizedValues {@link MLCustomizedFeature} object
      */
     @POST
     @Path("/{analysisId}/features/defaults")
@@ -153,7 +153,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features need to retrieve, from the starting index
      * @param offset Starting index
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.FeatureSummary} objects
+     * @return JSON array of {@link FeatureSummary} objects
      */
     @GET
     @Path("/{analysisId}/summarizedFeatures")
@@ -186,7 +186,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features need to retrieve, from the starting index
      * @param offset Starting index
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
+     * @return JSON array of {@link MLCustomizedFeature} objects
      */
     @GET
     @Path("/{analysisId}/customizedFeatures")
@@ -218,7 +218,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features included in the analysis configuration
      * @param offset Starting index of the features
-     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLAnalysisConfigsBean} objects
+     * @return JSON array of {@link MLAnalysisConfigsBean} objects
      */
     @GET
     @Path("/{analysisId}/configs")
@@ -572,7 +572,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Add configurations of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param modelConfigs {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLModelConfiguration} objects
+     * @param modelConfigs {@link List} of {@link MLModelConfiguration} objects
      */
     @POST
     @Path("/{analysisId}/configurations")
@@ -601,7 +601,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Add hyper-parameters for the selected algorithm of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param hyperParameters {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     * @param hyperParameters {@link List} of {@link MLHyperParameter} objects
      * @param algorithmName Algorithm name
      */
     @POST
@@ -632,7 +632,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * Get hyper-parameter of an analysis.
      * @param analysisId Unique id of the analysis
      * @param algorithmName Algorithm name
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     * @return JSON array of {@link MLHyperParameter} objects
      */
     @GET
     @Path("/{analysisId}/hyperParameters")
@@ -687,7 +687,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Retrieve all analyses.
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
+     * @return JSON array of {@link MLAnalysis} objects
      */
     @GET
     @Produces("application/json")
@@ -711,7 +711,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Get all models of an analysis.
      * @param analysisId Unique id of the analysis
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
+     * @return JSON array of {@link MLModelData} objects
      */
     @GET
     @Path("/{analysisId}/models")

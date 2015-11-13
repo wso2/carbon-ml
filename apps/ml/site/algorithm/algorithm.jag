@@ -88,6 +88,16 @@ include("../../includes/tenantAware.jag");
             <div id="notification-area"></div>
             <div class="wr-form col-lg-5 col-centered">
 
+            <!-- CATEGORICAL features dropping popup -->
+                <div class="popup-content" data-operation="delete-project">
+                    <div class="content">All input variables for K-means algorithm should be numerical</div>
+                    <div class="buttons">
+                         <a id="delete-project-yes" href="#" class="btn-opr-default">Drop categorical input variables</a>
+                         <a id="delete-project-no" href="#" class="btn-opr-cancel">Back to Pre-processing</a>
+                    </div>
+                </div>
+            <!-- /CATEGORICAL features dropping popup -->
+
                 <h1 class="title">Algorithm</h1>
 
                 <label class="input-label">Algorithm name<span class="glyphicon"></span></label>
@@ -121,6 +131,7 @@ include("../../includes/tenantAware.jag");
 
                 <div class="spcr-2"></div>
 
+                <div id="response-variable-group">
                 <div id="response-variable-field">
                     <label class="input-label">Response variable<span class="glyphicon"></span></label>
                     <span class="fld-required">*</span>
@@ -132,21 +143,43 @@ include("../../includes/tenantAware.jag");
                 </div>
 
                 <div id="normal-labels">
-                    <label class="input-label-sm">Normal Label(s) Values<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <label class="input-label-sm">Normal label(s) values<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
                     <div id="lable-names" class="wr-filter-radio-group"></div>
-                    <div class="spcr-2"></div>
-                </div> 
+                </div>
+                </div>
+                <div class="spcr-2"></div>
 
                 <div id="train-data-fraction">
                     <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
                     <div class="input-control text">
                         <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
                     </div>
                 </div>
 
+                <div id="custom-label-group">
+                <h5>Edit text of Prediction Labels</h5>
+                <div id="new-normal-label">
+                    <label class="input-label">Normal label<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <input type="text" id="new-normal-value" value="normal" placeholder="input text"/>
+                    </div>
+                </div>
+
+                <div id="new-anomaly-label">
+                    <label class="input-label">Anomaly label<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <input type="text" id="new-anomaly-value" value="anomaly" placeholder="input text"/>
+                    </div>
+                </div>
+                </div>
+
                 <div class="wr-filter-radio-group" id="normalization">
                     <label class="checkbox">
-                        <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize Data</br>
+                        <input type='checkbox' id="normalization-value" name='option' value='normalize' checked>Normalize data</br>
                     </label>
                     <div class="spcr-2"></div>
                 </div>
@@ -166,9 +199,19 @@ include("../../includes/tenantAware.jag");
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
+<!-- modal popup template -->
+<div class="wr-modalpopup">
+    <div class="modalpopup-content"><!-- dynamic content --></div>
+    <div class="modalpopup-bg"></div>
+</div>
+<!-- /modal popup template -->
+
 <script src="../../js/jquery-1.11.1.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/operationsmenu.js"></script>
+<script src="../../js/select2.min.js"></script>
+<link href="../../css/select2.min.css" rel="stylesheet" />
 
 
 
@@ -182,6 +225,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
+
 
 $( document ).ready(function() {
 
@@ -214,33 +258,24 @@ $( document ).ready(function() {
         }
     });
 
-    // function that load dataset features
-    function loadDatasetFeatures(setResponseVariable) {
-        $.ajax({
-            type: "GET",
-            url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
-            success: function(res) {
-                var categoricalFeatureNames = res;
-                $.each(categoricalFeatureNames,function(index, feature){
-                    $('#response-variable').append($('<option>', {
-                        value: sanitize(feature),
-                        text : sanitize(feature)
-                    }));
-                });
-            // set previously selected values when navigating from next page
-            if (setResponseVariable != '') {
-                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
-            }
-        },
-        error: function(res) {
-            var errorText = res.responseText
-            handleNotification(errorText, notificationArea, 'warning');
-        }
-    });
-    }
-
-    loadDatasetFeatures(setResponseVariable);
+    //hide unnecessary fields when loading the page
+    loadFields(setResponseVariable);
+    //load response variable
+    loadResponseVariable(setResponseVariable);
+    //get normal label values
     getNormalLabelValues();
+
+
+    // hides unnecessary fields according to algorithm
+    $(document).on('change','#algorithm-name',function() {
+        loadFields(setResponseVariable);
+        loadResponseVariable(setResponseVariable);
+        getNormalLabelValues();
+    });
+
+    $(document).on('change','#response-variable',function() {
+        getNormalLabelValues();
+    });
 
     // get previously set algorithm name
     $.ajax({
@@ -296,18 +331,6 @@ $( document ).ready(function() {
                 }
                 });
             }
-            //avoiding always checking the 1st value
-            var temp = 0;
-            $("input:checkbox[name=labels]:checked").each(function(){
-                for(var i=0; i<labelArray.length; i++){
-                    if($(this).val() == labelArray[i]) {
-                        temp = 1;
-                    }
-                }
-                if(temp == 0){
-                    $(this).prop('checked',false);
-                }
-            });    
         },
         error: function(res) {
             var errorText = res.responseText
@@ -323,13 +346,48 @@ $( document ).ready(function() {
         dataType: 'text',
         success: function(res) {
             var setNormalization = sanitize(res);
-            console.log(setNormalization);
             if (setNormalization == 'true') {
                 $('#normalization-value').prop('checked',true);
             }else if (setNormalization == 'false'){
                 $('#normalization-value').prop('checked',false);
             }
 
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+        // get previously set new normal label
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/newNormalLabel",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            var setNewNormalLabel = sanitize(res);
+            if (setNewNormalLabel != '') {
+                $('#new-normal-value').val(setNewNormalLabel);
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+        // get previously set new anomaly label
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/newAnomalyLabel",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            var setNewAnomalyLabel = sanitize(res);
+            if (setNewAnomalyLabel != '') {
+                $('#new-anomaly-value').val(setNewAnomalyLabel);
+            }
         },
         error: function(res) {
             var errorText = res.responseText
@@ -346,67 +404,11 @@ $( document ).ready(function() {
         $('#algorithm-name').attr("disabled","disabled");
         $('#response-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
-        $('#labels-names').attr("disabled","disabled");
+        $('.normalLabel').attr("disabled","disabled");
         $('#normalization-value').attr("disabled","disabled");
+        $('#new-normal-value').attr("disabled","disabled");
+        $('#new-anomaly-value').attr("disabled","disabled");
     }
-
-    //hide unnecessary fields when loading the page
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-            $('#train-data-fraction').hide();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-            $('#normalization').show();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-            $('#normalization').show();
-        }
-        else{
-            $('#response-variable-field').show();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').show();
-            $('#normalization').hide();
-        }
-
-    // hides unnecessary fields according to algorithm
-    $(document).on('change','#algorithm-name',function() {
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-            $('#train-data-fraction').hide();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-            $('#normalization').show();
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-            $('#normalization').show();
-        }
-        else{
-            $('#response-variable-field').show();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').show();
-            $('#normalization').hide();
-        }
-    });
-
-    $(document).on('change','#response-variable',function() {
-        getNormalLabelValues();
-    });
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
@@ -414,9 +416,10 @@ $( document ).ready(function() {
         window.location.href = '../explore/explore.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
     });
 
+
     $('#btn-next').on('click', function(e){
         e.preventDefault();
-        
+
         var algorithmName = $('#algorithm-name').val();
 
         var responseVariable;
@@ -431,20 +434,17 @@ $( document ).ready(function() {
             normalLabels.push($(this).val());
         });
 
-        var normalization;
-        if($('#normalization-value').is(":checked")) {
-            normalization = 'true';
-        }
-        else{
-            normalization = 'false';
-        }
+        var normalization = $('#normalization-value').is(":checked");
 
         var trainDataFraction;
         if($('#train-data-fraction').is(":hidden")){
-            trainDataFraction = '1.0';
+            trainDataFraction = 1.0;
         }else{
             trainDataFraction = $('#data-fraction').val();
         }
+
+        var newNormalLabel = $('#new-normal-value').val();
+        var newAnomalyLabel = $('#new-anomaly-value').val();
 
         var algorithmType;
 
@@ -455,7 +455,7 @@ $( document ).ready(function() {
             algorithmType = 'Classification';
         }
         else if (algorithmName == 'K_MEANS') {
-            algorithmType = 'Clustering';            
+            algorithmType = 'Clustering';
         }
         else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
             algorithmType = 'Anomaly_Detection';
@@ -465,20 +465,34 @@ $( document ).ready(function() {
         }
 
         // set model configurations for this analysis        
-        var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization","value":"'+normalization+'"}]';
-        $.ajax({
-            type: 'POST',
-            url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
-            contentType: "application/json",
-            data: jsonData,
-            success: function(res){
-                window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-            },
-            error: function(res){
-                var errorText = res.responseText
-                handleNotification(errorText, notificationArea, 'warning');
+            var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization", "value":"'+normalization+'"},{"key":"newNormalLabel","value":"'+newNormalLabel+'"},{"key":"newAnomalyLabel","value":"'+newAnomalyLabel+'"}]';
+
+            if((algorithmName == 'K_MEANS' && ($('#response-variable option').length > 0)) || (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' && ($('#response-variable option').length > 0)) || (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA' && ($('#response-variable option').length > 1))){
+                operationSelect('delete-project');
+            }else{
+                setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId);
             }
-        });
+
+            $(document).on('click', '#delete-project-yes', function(e){
+                e.preventDefault();
+
+                hidePopup();
+
+                // Dropping categorical features
+                dropCategoricalFeatures(responseVariable);
+
+                setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId);
+                console.log(ml.confirmOption)
+            });
+
+            $(document).on('click', '#delete-project-no', function(e){
+                e.preventDefault();
+
+                hidePopup();
+
+                window.location.href = '../preprocess/preprocess.jag?projectName='+projectName+'&analysisName='+analysisName+'&analysisId='+analysisId+'&datasetId='+datasetId+'&fromAnalysis='+fromAnalysis;
+                console.log(ml.confirmOption)
+            });
     });
 
     // function that cancels an analysis
@@ -532,11 +546,7 @@ function getNormalLabelValues() {
     async: false,
     success : function(res){  
         var features = res;
-        console.log(features);
 
-        console.log(features);
-        var nm = $('#response-variable option:selected').text();
-        console.log(nm)
         for(var i=0; i<features.length; i++){
         
             if($('#response-variable option:selected').text() == features[i].fieldName){
@@ -545,14 +555,10 @@ function getNormalLabelValues() {
                 var values = jsonObj[0]["values"];
 
                 $('#lable-names').empty();
-                for(var index=0; index<values.length; index++){
-                // first 4 categorical features are plotted by default
-                    if (index < 1){
-                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "' checked>" + values[index][0] + "</label>");
-                    }
-                    else {
-                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='numericalFeatureNames' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
-                    }
+                for(var index = 0; index < values.length; index++){
+
+                    $('#lable-names').append("<label class='checkbox'><input type='checkbox' name='labels' class='normalLabel' value='" + values[index][0].trim().replace(/"/g,"\\\"") + "'>" + values[index][0] + "</label>");
+
                 }
             }
         }
@@ -561,6 +567,181 @@ function getNormalLabelValues() {
         var errorText = res.responseText
         handleNotification(errorText, '#notification-area', 'warning');
     }
+    });
+}
+
+function loadFields(){
+    if($('#algorithm-name').val() == 'K_MEANS') {
+            $('#response-variable-field').hide();
+            $('#normal-labels').hide();
+            $('#normalization').hide();
+            $('#train-data-fraction').hide();
+            $('#custom-label-group').hide();
+            $('#response-variable-group').removeClass("algorithm-inputs-group");
+            $('#custom-label-group').removeClass("algorithm-inputs-group");
+        }
+        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+            $('#response-variable-field').hide();
+            $('#normal-labels').hide();
+            $('#train-data-fraction').hide();
+            $('#normalization').show();
+            $('#custom-label-group').show();
+            $('#response-variable-group').removeClass("algorithm-inputs-group");
+            $('#custom-label-group').addClass("algorithm-inputs-group");
+        }
+        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+            $('#response-variable-field').show();
+            $('#normal-labels').show();
+            $('#train-data-fraction').show();
+            $('#normalization').show();
+            $('#custom-label-group').show();
+            $('#response-variable-group').addClass("algorithm-inputs-group");
+            $('#custom-label-group').addClass("algorithm-inputs-group");
+        }
+        else{
+            $('#response-variable-field').show();
+            $('#normal-labels').hide();
+            $('#train-data-fraction').show();
+            $('#normalization').hide();
+            $('#custom-label-group').hide();
+            $('#response-variable-group').removeClass("algorithm-inputs-group");
+            $('#custom-label-group').removeClass("algorithm-inputs-group");
+        }
+}
+
+//function that load response variable
+function loadResponseVariable(setResponseVariable){
+
+    if($('#algorithm-name').val() == 'K_MEANS' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+
+        loadCategoricalFeatures(setResponseVariable);
+    }else{
+        loadDatasetFeatures(setResponseVariable);
+    }
+
+}
+
+// function that load dataset features
+function loadDatasetFeatures(setResponseVariable) {
+
+    $('#response-variable').empty();
+
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/features",
+        success: function(res) {
+            var datasetFeatures = res;
+            $.each(datasetFeatures,function(index, feature){
+                $('#response-variable').append($('<option>', {
+                    value: sanitize(feature),
+                    text : sanitize(feature)
+                }));
+            });
+            // set previously selected values when navigating from next page
+            if (setResponseVariable != '') {
+                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+}
+
+//function that only loads categorical features in response variable
+function loadCategoricalFeatures(setResponseVariable){
+
+    $('#response-variable').empty();
+
+    // function that load dataset features
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/analyses/"+analysisId+"/filteredFeatures?featureType=CATEGORICAL",
+            async : false,
+            success: function(res) {
+                var categoricalFeatureNames = res;
+                $.each(categoricalFeatureNames,function(index, feature){
+                    $('#response-variable').append($('<option>', {
+                        value: sanitize(feature),
+                        text : sanitize(feature)
+                    }));
+                });
+            // set previously selected values when navigating from next page
+            if (setResponseVariable != '') {
+                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+}
+
+function setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId){
+    $.ajax({
+        type: 'POST',
+        url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
+        contentType: "application/json",
+        data: jsonData,
+        success: function(res){
+            window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+        },
+        error: function(res){
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+}
+
+function dropCategoricalFeatures(responseVariable){
+    var customizedFeatures = [];
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",
+        async: false,
+        success : function(res){
+            var features = res;
+
+                    // to drop categorical features from K means
+                    for(var i = 0; i < features.length; i++) {
+                        var featureRow = {};
+                        featureRow['type'] = features[i]['type'];
+                        featureRow['name'] = features[i]['fieldName'];
+                        if(features[i]['type'] == 'CATEGORICAL' && featureRow['name'] != responseVariable){
+                            featureRow['include'] = false;
+                        }else{
+                            featureRow['include'] = features[i]['input'];
+                        }
+                        featureRow['imputeOption'] = features[i]['imputeOperation'];
+
+                        customizedFeatures.push(featureRow);
+                    }
+                },
+                error : function(res){
+                    var errorText = res.responseText
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+
+    $.ajax({
+        type: 'POST',
+        headers: {
+            "Accept" : "application/json",
+            "Content-Type": "application/json"
+        },
+        url: serverUrl + "/api/analyses/" + analysisId + "/features",
+        async : false,
+        data: JSON.stringify(customizedFeatures),
+        success: function(res){
+            console.log("Customized features set.");
+        },
+        error: function(res){
+            var errorText = res.responseText
+            handleNotification(errorText, '#notification-area', 'warning');
+        }
     });
 }
 

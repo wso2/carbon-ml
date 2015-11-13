@@ -26,7 +26,7 @@ import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
  */
 public class NormalRowsFilter implements Function<String[], Boolean> {
 
-    private static final long serialVersionUID = 8329428281317101710L;
+    private static final long serialVersionUID = -3612337318474283027L;
     private final String[] normalLabels;
     private final int responseIndex;
 
