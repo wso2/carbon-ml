@@ -50,13 +50,13 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         </jaxrs:providers>
     </jaxrs:server>
 
-    <jaxrs:server id="servicesV10" address="/V10">
+    <jaxrs:server id="servicesV11" address="/v11">
         <jaxrs:serviceBeans>
             <bean class="org.wso2.carbon.ml.rest.api.LoginLogoutApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ProjectApiV10"/>
-            <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV10"/>
+            <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV11"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
-            <bean class="org.wso2.carbon.ml.rest.api.ModelApiV10"/>
+            <bean class="org.wso2.carbon.ml.rest.api.ModelApiV11"/>
             <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV10"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
@@ -66,13 +66,13 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         </jaxrs:providers>
     </jaxrs:server>
 
-    <jaxrs:server id="servicesV11" address="/V11">
+    <jaxrs:server id="servicesV10" address="/v10">
         <jaxrs:serviceBeans>
             <bean class="org.wso2.carbon.ml.rest.api.LoginLogoutApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ProjectApiV10"/>
-            <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV11"/>
+            <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
-            <bean class="org.wso2.carbon.ml.rest.api.ModelApiV11"/>
+            <bean class="org.wso2.carbon.ml.rest.api.ModelApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV10"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
