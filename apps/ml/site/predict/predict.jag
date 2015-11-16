@@ -12,24 +12,24 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
+include("../../includes/tenantAware.jag");
+%>
+
 </head>
 
 <body>
 
-    <div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container col-lg-12 col-md-12 col-sm-12">
 
-        <!-- header -->
-        <header>
-            <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo">
-                    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-                </div>
-                <div class="col-sm-4">
-                    <div class="wr-auth pull-right">
-                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+    <!-- header -->
+    <header>
+        <div class="row wr-global-header">
+            <div class="col-sm-8 app-logo">
+                <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+            </div>
+            <div class="col-sm-4">
+                <div class="wr-auth pull-right">
+                    <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
                         <div class="dropdown-menu">
                             <div class="cu-arrow"></div>
                             <div class="dropdown-menu-content">
@@ -138,7 +138,15 @@
 
                             <!-- inputs for parameter input prediction -->
                             <div id="parameter-inputs"></div>
-                            
+
+                            <div id="percentile-value">
+                                <label class="input-label">Percentile Value<span class="glyphicon"></span></label>
+                                <span class="fld-required">*</span>
+                                <div class="input-control text">
+                                    <input type="text" id="percentile" value="98" placeholder="input text"/>
+                                </div>
+                            </div>
+
                             <div class="btn-group-actions">
                                 <button id="feature-predict" class="btn btn-main" type="submit">Predict</button>
                                 <button id="file-predict" class="btn btn-main" type="submit">Predict</button>
@@ -160,10 +168,6 @@
         <!-- /content/body -->
 
 </div>
-
-
-
-
 
     <!--footer class="footer">
     <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
@@ -255,7 +259,8 @@
         });*/
 
 		$(document).on('click', '#file-predict', function(e){
-		    var actionUrl = serverUrl + '/api/models/predictionStreams';
+		    var percentile = $('#percentile').val();
+		    var actionUrl = serverUrl + '/api/models/predictionStreams?percentile=' + percentile;
 		    $('#prediction-form').attr('action', actionUrl);
 		});        
 
@@ -287,6 +292,7 @@
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
+
         // get feature names of this model
         $.ajax({
             type: "GET",
@@ -294,7 +300,7 @@
             async: false,
             success: function(data) {
                 var modelFeatures = data['features'];
-                
+
                 for (var i = 0; i < modelFeatures.length; i++) {
 
                     if (modelFeatures[i] == responseVariable) continue;
@@ -318,6 +324,18 @@
                         }
                     });
                 };
+
+                var algorithmName = data['algorithm'];
+                if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+                    $('#percentile-value').show();
+                    if(data.bestPercentile){
+                        $('#percentile').val(data.bestPercentile);
+                    }
+                }else if(algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                    $('#percentile-value').show();
+                }else{
+                    $('#percentile-value').hide();
+                }
             },
             error: function(res) {
                 var errorText = JSON.parse(res.responseText)["exception"];
@@ -325,7 +343,7 @@
             }
         });
 
-        bindEvents();            
+        bindEvents();
     }
 
     function bindEvents() {
@@ -343,13 +361,15 @@
                 inputArray[index] = val;
             });
 
+            var percentile = $('#percentile').val();
+
             if(!emptyFeatureValues) {
                 jsonData = JSON.stringify(inputArray);
                 jsonData = "[".concat(jsonData, "]");
 
                 $.ajax({
                     type: "POST",
-                    url: serverUrl + "/api/models/" + modelId + "/predict",
+                    url: serverUrl + "/api/models/" + modelId + "/predict?percentile=" + percentile,
                     contentType: "application/json",
                     data: jsonData,
                     success : function(res){
@@ -399,7 +419,8 @@
             $('#file-predict').hide();
             $('#feature-predict').show();
         }
-    }    
+    }
+
 
 </script>
 

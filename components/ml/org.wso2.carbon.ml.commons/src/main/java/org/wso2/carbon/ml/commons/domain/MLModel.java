@@ -36,6 +36,13 @@ public class MLModel implements Serializable {
     private List<Map<String, Integer>> encodings;
     private List<Integer> newToOldIndicesList;
     private Externalizable model;
+    private String normalLabels;
+    private boolean normalization;
+    /*
+    key - summary stat name
+    value - summary stat value
+     */
+    private Map<String, String> summaryStatsOfFeatures;
 
     public String getAlgorithmName() {
         return algorithmName;
@@ -100,5 +107,29 @@ public class MLModel implements Serializable {
 
     public void setNewToOldIndicesList(List<Integer> newToOldIndicesList) {
         this.newToOldIndicesList = newToOldIndicesList;
+    }
+
+    public String getNormalLabels() {
+        return normalLabels;
+    }
+
+    public void setNormalLabels(String normalLabels) {
+        this.normalLabels = normalLabels;
+    }
+
+    public boolean getNormalization() {
+        return normalization;
+    }
+
+    public void setNormalization(boolean normalization) {
+        this.normalization = normalization;
+    }
+
+    public Map<String, String> getSummaryStatsOfFeatures() {
+        return summaryStatsOfFeatures;
+    }
+
+    public void setSummaryStatsOfFeatures(Map<String, String> summaryStatsOfFeatures) {
+        this.summaryStatsOfFeatures = summaryStatsOfFeatures;
     }
 }

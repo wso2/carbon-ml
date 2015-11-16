@@ -17,27 +17,14 @@ package org.wso2.carbon.ml.rest.api;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.domain.FeatureSummary;
-import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
-import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
-import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
-import org.wso2.carbon.ml.commons.domain.MLModelData;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -48,15 +35,15 @@ import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
  * WSO2 ML Analyses API. All the operations related to analyses are delegated from this class.
  */
 @Path("/analyses")
-public class AnalysisApiV10 extends MLRestAPI {
+public class AnalysisApiV11 extends MLRestAPI {
 
-    private static final Log logger = LogFactory.getLog(AnalysisApiV10.class);
+    private static final Log logger = LogFactory.getLog(AnalysisApiV11.class);
     /*
      * Analysis handler which is doing the real work.
      */
     private MLAnalysisHandler mlAnalysisHandler;
 
-    public AnalysisApiV10() {
+    public AnalysisApiV11() {
         mlAnalysisHandler = new MLAnalysisHandler();
     }
 
@@ -72,7 +59,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Create a new analysis of a project.
-     * @param analysis {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
+     * @param analysis {@link MLAnalysis} object
      */
     @POST
     @Produces("application/json")
@@ -103,14 +90,14 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Adding customized features of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param customizedFeatures {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
+     * @param customizedFeatures {@link List} of {@link MLCustomizedFeature} objects
      */
     @POST
     @Path("/{analysisId}/features")
     @Produces("application/json")
     @Consumes("application/json")
     public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId,
-                                          List<MLCustomizedFeature> customizedFeatures) {
+            List<MLCustomizedFeature> customizedFeatures) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -132,14 +119,14 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Set default features as customized features of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param customizedValues {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} object
+     * @param customizedValues {@link MLCustomizedFeature} object
      */
     @POST
     @Path("/{analysisId}/features/defaults")
     @Produces("application/json")
     @Consumes("application/json")
     public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId,
-                                                      MLCustomizedFeature customizedValues) {
+            MLCustomizedFeature customizedValues) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -166,14 +153,14 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features need to retrieve, from the starting index
      * @param offset Starting index
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.FeatureSummary} objects
+     * @return JSON array of {@link FeatureSummary} objects
      */
     @GET
     @Path("/{analysisId}/summarizedFeatures")
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummarizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
-                                          @QueryParam("offset") int offset) {
+            @QueryParam("offset") int offset) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -199,7 +186,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features need to retrieve, from the starting index
      * @param offset Starting index
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLCustomizedFeature} objects
+     * @return JSON array of {@link MLCustomizedFeature} objects
      */
     @GET
     @Path("/{analysisId}/customizedFeatures")
@@ -231,7 +218,7 @@ public class AnalysisApiV10 extends MLRestAPI {
      * @param analysisId Unique id of the analysis
      * @param limit Number of features included in the analysis configuration
      * @param offset Starting index of the features
-     * @return JSON array of {@link org.wso2.carbon.ml.rest.api.model.MLAnalysisConfigsBean} objects
+     * @return JSON array of {@link MLAnalysisConfigsBean} objects
      */
     @GET
     @Path("/{analysisId}/configs")
@@ -274,7 +261,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/filteredFeatures")
     @Produces("application/json")
     public Response getfilteredFeatures(@PathParam("analysisId") String analysisId,
-                                        @QueryParam("featureType") String featureType) {
+            @QueryParam("featureType") String featureType) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -407,6 +394,118 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
+     * Get the normal labels of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Normal Labels
+     */
+    @GET
+    @Path("/{analysisId}/normalLabels")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNormalLabels(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNormalLabels(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving normal labels for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the normalization option of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return Normalization option
+     */
+    @GET
+    @Path("/{analysisId}/normalization")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNormalization(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNormalization(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving data normalization selection for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the new normal label of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return New Normal Label
+     */
+    @GET
+    @Path("/{analysisId}/newNormalLabel")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNewNormalLabel(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNewNormalLabel(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving data new normal label for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Get the new anomaly labels of an analysis.
+     * @param analysisId Unique id of the analysis
+     * @return New Anomaly Label
+     */
+    @GET
+    @Path("/{analysisId}/newAnomalyLabel")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response getNewAnomalyLabel(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            String normalLabels = mlAnalysisHandler.getNewAnomalyLabel(analysisId);
+            return Response.ok(normalLabels).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving new anomaly label for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Get the train data fraction of an analysis.
      * @param analysisId Unique id of the analysis
      * @return Train data fraction
@@ -445,7 +544,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummaryStatistics(@PathParam("analysisId") long analysisId,
-                                         @QueryParam("feature") String featureName) {
+            @QueryParam("feature") String featureName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -473,14 +572,14 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Add configurations of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param modelConfigs {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLModelConfiguration} objects
+     * @param modelConfigs {@link List} of {@link MLModelConfiguration} objects
      */
     @POST
     @Path("/{analysisId}/configurations")
     @Produces("application/json")
     @Consumes("application/json")
     public Response addModelConfiguration(@PathParam("analysisId") long analysisId,
-                                          List<MLModelConfiguration> modelConfigs) {
+            List<MLModelConfiguration> modelConfigs) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -502,7 +601,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Add hyper-parameters for the selected algorithm of an analysis.
      * @param analysisId Unique id of the analysis
-     * @param hyperParameters {@link java.util.List} of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     * @param hyperParameters {@link List} of {@link MLHyperParameter} objects
      * @param algorithmName Algorithm name
      */
     @POST
@@ -510,7 +609,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addHyperParameters(@PathParam("analysisId") long analysisId,
-                                       List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
+            List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -533,14 +632,14 @@ public class AnalysisApiV10 extends MLRestAPI {
      * Get hyper-parameter of an analysis.
      * @param analysisId Unique id of the analysis
      * @param algorithmName Algorithm name
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
+     * @return JSON array of {@link MLHyperParameter} objects
      */
     @GET
     @Path("/{analysisId}/hyperParameters")
     @Produces("application/json")
     @Consumes("application/json")
     public Response getHyperParameters(@PathParam("analysisId") long analysisId,
-                                       @QueryParam("algorithmName") String algorithmName) {
+            @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -588,7 +687,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * Retrieve all analyses.
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
+     * @return JSON array of {@link MLAnalysis} objects
      */
     @GET
     @Produces("application/json")
@@ -612,7 +711,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     /**
      * Get all models of an analysis.
      * @param analysisId Unique id of the analysis
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
+     * @return JSON array of {@link MLModelData} objects
      */
     @GET
     @Path("/{analysisId}/models")

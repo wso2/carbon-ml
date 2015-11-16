@@ -155,7 +155,7 @@ public class ModelHandler {
      */
     private String predict(String[] data) throws MLModelHandlerException {
 
-        ArrayList<String[]> list = new ArrayList<String[]>();
+        List<String[]> list = new ArrayList<String[]>();
         list.add(data);
         Predictor predictor = new Predictor(modelId, mlModel, list);
         List<?> predictions = predictor.predict();
