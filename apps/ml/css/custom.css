@@ -1117,7 +1117,7 @@ a.btn-opr-cancel {
 	pointer-events: none;
     cursor: default;
     color:#cecece !Important;
-	-webkit-filter: opacity(50%)    
+	opacity: 0.5; /* webkit-filter doesn't work for firefox. changing to opacity */
 }
 
 .tab-link-disabled {

@@ -39,6 +39,9 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
+import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 import org.wso2.carbon.ml.rest.api.model.MLResponseBean;
@@ -157,13 +160,38 @@ public class ModelApiV11 extends MLRestAPI {
     @Path("/{modelId}/publish")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response publishModel(@PathParam("modelId") long modelId) {
+    public Response publishModel(@PathParam("modelId") long modelId, @QueryParam("mode") String mode) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
+        boolean isPMMLSupported = false;
+
         try {
-            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId);
-            return Response.ok(new MLResponseBean(registryPath)).build();
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelId);
+            // check pmml support
+           if(model != null) {
+               final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
+               String algorithmName = generatedModel.getAlgorithmName();
+               List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+               for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
+                   if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmmlExportable()) {
+                       isPMMLSupported = true;
+                       break;
+                   }
+               }
+               if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
+                   String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.PMML);
+                   return Response.ok(new MLResponseBean(registryPath)).build();
+               }
+               else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
+                   String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.SERIALIZED);
+                   return Response.ok(new MLResponseBean(registryPath)).build();
+               } else {
+                   return Response.status(Response.Status.BAD_REQUEST).build();
+               }
+           } else{
+               return Response.status(Response.Status.NOT_FOUND).build();
+           }
         } catch (InvalidRequestException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
@@ -177,6 +205,21 @@ public class ModelApiV11 extends MLRestAPI {
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        } catch (MLPmmlExportException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the pmml model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+
         }
     }
 
@@ -195,6 +238,7 @@ public class ModelApiV11 extends MLRestAPI {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
             @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -244,6 +288,7 @@ public class ModelApiV11 extends MLRestAPI {
     public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
             @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
             @QueryParam("percentile") double percentile) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -259,6 +304,7 @@ public class ModelApiV11 extends MLRestAPI {
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
                     columnHeader, inputStream, percentile);
+
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
@@ -303,6 +349,7 @@ public class ModelApiV11 extends MLRestAPI {
     @Consumes("application/json")
     public Response predict(@PathParam("modelId") long modelId, List<String[]> data,
             @QueryParam("percentile") double percentile) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -324,6 +371,7 @@ public class ModelApiV11 extends MLRestAPI {
 
     /**
      * Get the model data
+     *
      * @param modelName Name of the model
      * @return JSON of {@link MLModelData} object
      */
@@ -352,6 +400,7 @@ public class ModelApiV11 extends MLRestAPI {
 
     /**
      * Get all models
+     *
      * @return JSON array of {@link MLModelData} objects
      */
     @GET
@@ -375,6 +424,7 @@ public class ModelApiV11 extends MLRestAPI {
 
     /**
      * Delete a model
+     *
      * @param modelId Unique id of the model
      */
     @DELETE
@@ -399,6 +449,7 @@ public class ModelApiV11 extends MLRestAPI {
 
     /**
      * Get the model summary
+     *
      * @param modelId Unique id of the model
      * @return JSON of {@link ModelSummary} object
      */
@@ -425,38 +476,71 @@ public class ModelApiV11 extends MLRestAPI {
 
     /**
      * Download the model
-     * @param modelName Name of the model
+     *
+     * @param modelId Name of the model
      * @return A {@link MLModel} as a {@link StreamingOutput}
      */
     @GET
-    @Path("/{modelName}/export")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response exportModel(@PathParam("modelName") String modelName) {
-
+    @Path("/{modelId}/export")
+    public Response exportModel(@PathParam("modelId") long modelId, @QueryParam("mode") String mode) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
+        boolean isPMMLSupported = false;
+
         try {
-            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelName);
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelId);
+
             if (model != null) {
+                String modelName = model.getName();
                 final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
-                StreamingOutput stream = new StreamingOutput() {
-                    public void write(OutputStream outputStream) throws IOException {
-                        ObjectOutputStream out = new ObjectOutputStream(outputStream);
-                        out.writeObject(generatedModel);
+
+                // check pmml support
+                String algorithmName = generatedModel.getAlgorithmName();
+                List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+                for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
+                    if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmmlExportable()) {
+                        isPMMLSupported = true;
+                        break;
                     }
-                };
-                return Response.ok(stream).header("Content-disposition", "attachment; filename=" + modelName).build();
+                }
+
+                if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
+                    final String pmmlModel = mlModelHandler.exportAsPMML(generatedModel);
+                    logger.info(String.format("Successfully exported model [id] %s into pmml format",modelId));
+                    return Response.ok(pmmlModel)
+                            .header("Content-disposition", "attachment; filename=" + modelName + "PMML.xml").build();
+                } else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
+                    StreamingOutput stream = new StreamingOutput() {
+                        public void write(OutputStream outputStream) throws IOException {
+                            ObjectOutputStream out = new ObjectOutputStream(outputStream);
+                            out.writeObject(generatedModel);
+                        }
+                    };
+                    return Response.ok(stream).header("Content-disposition", "attachment; filename=" + modelName)
+                            .build();
+                } else {
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+                }
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .", modelName,
-                    tenantId, userName), e);
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .",
+                            modelId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
+        } catch (MLPmmlExportException e) {
+
+            String msg = MLUtils.getErrorMsg(String.format(
+                            "Error occurred while exporting to pmml model [name] %s of tenant [id] %s and [user] %s .",
+                            modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+
         }
     }
 }
