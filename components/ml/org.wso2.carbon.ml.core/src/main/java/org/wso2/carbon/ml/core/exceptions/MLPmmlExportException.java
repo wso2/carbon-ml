@@ -1,4 +1,4 @@
-/*
+package org.wso2.carbon.ml.core.exceptions;/*
 * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +13,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.wso2.carbon.ml.core.interfaces;
 
-import org.apache.spark.mllib.pmml.PMMLExportable;
-import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+public class MLPmmlExportException extends Exception {
 
+    public MLPmmlExportException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-/**
-All MLModels(wrapper models) which support pmml export should implement this interface
- */
-public interface PMMLModelContainer {
+    public MLPmmlExportException(String message) {
+        super(message);
+    }
 
-    PMMLExportable getPMMLExportable() throws MLPmmlExportException;
-
+    public MLPmmlExportException(Throwable cause) {
+        super(cause);
+    }
 }

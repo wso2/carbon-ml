@@ -26,6 +26,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.metrics.manager.Level;
@@ -57,8 +59,15 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import scala.Tuple2;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -72,6 +81,8 @@ public class MLModelHandler {
     private DatabaseService databaseService;
     private Properties mlProperties;
     private BlockingExecutor threadExecutor;
+
+    public enum Format {SERIALIZED, PMML};
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
@@ -131,6 +142,14 @@ public class MLModelHandler {
     public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public MLModelData getModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
+        try {
+            return databaseService.getModel(tenantId, userName, modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -508,51 +527,79 @@ public class MLModelHandler {
      *
      * @param tenantId Unique ID of the tenant.
      * @param userName Username of the user.
-     * @param modelId Unique ID of the built ML model.
-     * @throws MLModelPublisherException
+     * @param modelId  Unique ID of the built ML model
+     * @throws InvalidRequestException, MLModelPublisherException, MLModelHandlerException
      */
-    public String publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
+    public String publishModel(int tenantId, String userName, long modelId, Format mode)
+            throws InvalidRequestException, MLModelPublisherException, MLModelHandlerException, MLPmmlExportException {
         InputStream in = null;
         String errorMsg = "Failed to publish the model [id] " + modelId;
-        try {
-            // read model
-            MLStorage storage = databaseService.getModelStorage(modelId);
-            if (storage == null) {
-                throw new InvalidRequestException("Invalid model [id] " + modelId);
-            }
-            String storageType = storage.getType();
-            String storageLocation = storage.getLocation();
-            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-            MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-            in = inputAdapter.read(storageLocation);
-            if (in == null) {
-                throw new InvalidRequestException("Invalid model [id] " + modelId);
-            }
-            // create registry path
-            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-            String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
-            // publish to registry
-            RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
-            registryOutputAdapter.write(relativeRegistryPath, in);
+        RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();;
+        String relativeRegistryPath = null;
 
-            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
-
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } catch (MLInputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } catch (MLOutputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignore) {
+        switch (mode) {
+        case SERIALIZED:
+            try {
+                // read model
+                MLStorage storage = databaseService.getModelStorage(modelId);
+                if (storage == null) {
+                    throw new InvalidRequestException("Invalid model [id] " + modelId);
+                }
+                String storageType = storage.getType();
+                String storageLocation = storage.getLocation();
+                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+                in = inputAdapter.read(storageLocation);
+                if (in == null) {
+                    throw new InvalidRequestException("Invalid model [id] " + modelId);
+                }
+                // create registry path
+                MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+                // publish to registry
+                registryOutputAdapter.write(relativeRegistryPath, in);
+            } catch (DatabaseHandlerException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLInputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLOutputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ignore) {
+                    }
                 }
             }
+            break;
+        case PMML:
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            try {
+                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName + ".xml";
+
+                MLModel model = retrieveModel(modelId);
+                String pmmlModel = exportAsPMML(model);
+                InputStream stream = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
+                registryOutputAdapter.write(relativeRegistryPath, stream);
+
+            } catch (DatabaseHandlerException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLModelHandlerException e) {
+                throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
+            } catch (MLOutputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLPmmlExportException e) {
+                throw new MLPmmlExportException("PMML export not supported for model type");
+            }
+            break;
         }
+
+    return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
     }
+
 
     public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
             int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
@@ -633,21 +680,53 @@ public class MLModelHandler {
         }
         return lines;
     }
+
     /**
-     * Export a ML model as a PMML.
+     * Export a ML model in PMML format.
      *
      * @param model the model to be exported
      * @return PMML model as a String
-     * @throws MLModelHandlerException
+     * @throws MLPmmlExportException
      */
-    public String exportAsPMML(MLModel model) throws MLModelHandlerException {
+    public String exportAsPMML(MLModel model) throws MLPmmlExportException {
         Externalizable extModel = model.getModel();
 
-        if (extModel instanceof PMMLModelContainer) {
-            PMMLExportable pmmlExportableModel = ((PMMLModelContainer) extModel).getPMMLExportable();
-            return pmmlExportableModel.toPMML();
-        } else {
-            throw new MLModelHandlerException("PMML export not supported for model type");
+        try {
+            if (extModel instanceof PMMLModelContainer) {
+                PMMLExportable pmmlExportableModel = ((PMMLModelContainer) extModel).getPMMLExportable();
+                String pmmlString = pmmlExportableModel.toPMML();
+
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder;
+
+                try {
+                    //convert the string to xml to append the version attribute
+                    builder = factory.newDocumentBuilder();
+                    Document document = builder.parse(new InputSource(new StringReader(pmmlString)));
+                    Element root = document.getDocumentElement();
+                    root.setAttribute("version", "4.2");
+
+                    // convert it back to string
+                    StringWriter stringWriter = new StringWriter();
+                    TransformerFactory tf = TransformerFactory.newInstance();
+                    Transformer transformer = tf.newTransformer();
+                    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+                    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+                    transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+                    return stringWriter.toString();
+                } catch (Exception e) {
+                    String msg = "Error while appending version attribute to pmml";
+                    log.error(msg, e);
+                    throw new MLPmmlExportException(msg);
+                }
+            } else {
+                throw new MLPmmlExportException("PMML export not supported for model type");
+            }
+        } catch (MLPmmlExportException e) {
+            throw new MLPmmlExportException("PMML export not supported for model type");
         }
     }
 

@@ -45,6 +45,7 @@ import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
@@ -169,7 +170,7 @@ public class ModelApiV10 extends MLRestAPI {
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
-            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId);
+            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId,MLModelHandler.Format.SERIALIZED);
             return Response.ok(new MLResponseBean(registryPath)).build();
         } catch (InvalidRequestException e) {
             String msg = MLUtils.getErrorMsg(String.format(
@@ -178,6 +179,20 @@ public class ModelApiV10 extends MLRestAPI {
             logger.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
         } catch (MLModelPublisherException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
+                    tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        } catch (MLPmmlExportException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
