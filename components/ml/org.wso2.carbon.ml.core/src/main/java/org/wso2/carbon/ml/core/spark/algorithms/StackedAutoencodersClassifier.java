@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import hex.FrameSplitter;
 import hex.deeplearning.DeepLearning;
 import hex.deeplearning.DeepLearningModel;
 import hex.deeplearning.DeepLearningParameters;
@@ -28,6 +27,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.regression.LabeledPoint;
 
+import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 import scala.Tuple2;
 
 import java.io.Serializable;
@@ -38,12 +38,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import water.DKV;
-import water.H2O;
 import water.Key;
 import water.Scope;
 import water.fvec.Frame;
 import static water.util.FrameUtils.generateNumKeys;
-import water.util.MRUtils;
 
 public class StackedAutoencodersClassifier implements Serializable {
 
@@ -153,7 +151,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                     dlModel = deeplearning.trainModel().get();
                     log.info("Successfully finished Training deeplearning model ....");
                 } catch (RuntimeException ex) {
-                    log.info("Error in training the model");
+                    log.info("Error in training Stacked Autoencoder classifier model");
                     log.info(ex.getMessage());
                 }
             } else {

@@ -44,7 +44,6 @@ public class ModelBuilderFactory {
             modelBuilder = new UnsupervisedSparkModelBuilder(context);
             break;
         case DEEPLEARNING:
-            System.out.println("Getting deeplearning model builder");
             modelBuilder = new DeeplearningModelBuilder(context);
             break;
         default:

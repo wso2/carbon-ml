@@ -82,7 +82,6 @@ public class MLDeeplearningModel implements Externalizable {
      */
     public double predict(Vector input) {
         double predVal = dlModel.score(input.toArray());
-        System.out.println(predVal);
         return predVal;
     }
 

@@ -42,7 +42,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
-import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelUtils;
+import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 import org.wso2.carbon.ml.core.spark.models.*;
 import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.utils.MLUtils;

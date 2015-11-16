@@ -34,6 +34,7 @@ import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
+import org.wso2.carbon.ml.core.impl.H2OServer;
 import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
 import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.ComputeClasspath;
@@ -143,6 +144,10 @@ public class MLCoreDS {
 
                 valueHolder.setSparkContext(sparkContext);
             }
+
+            // Starting H2O server - for deep learning algorithms
+            H2OServer.startH2O();
+            log.info("H2O server has started.");
 
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
