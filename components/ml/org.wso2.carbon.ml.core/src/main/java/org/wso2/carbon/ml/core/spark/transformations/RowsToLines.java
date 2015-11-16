@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Row;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 
 /**
  * This class converts Spark SQL Rows into a CSV/TSV string.
@@ -27,10 +28,10 @@ import org.apache.spark.sql.Row;
 public class RowsToLines implements Function<Row, String> {
 
     private static final long serialVersionUID = -5025419727399292773L;
-    private String columnSeparator;
+    private final String columnSeparator;
 
-    public RowsToLines(String columnSeparator) {
-        this.columnSeparator = columnSeparator;
+    private RowsToLines(Builder builder) {
+        this.columnSeparator = builder.columnSeparator;
     }
 
     @Override
@@ -43,6 +44,24 @@ public class RowsToLines implements Function<Row, String> {
             sb.append(row.get(i) + columnSeparator);
         }
         return sb.substring(0, sb.length() - 1);
+    }
+
+    public static class Builder {
+        private String columnSeparator;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.columnSeparator = ctx.getColumnSeparator();
+            return this;
+        }
+
+        public Builder separator(String separator) {
+            this.columnSeparator = separator;
+            return this;
+        }
+
+        public RowsToLines build() {
+            return new RowsToLines(this);
+        }
     }
 
 }

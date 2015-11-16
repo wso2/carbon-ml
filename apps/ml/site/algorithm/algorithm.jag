@@ -11,8 +11,8 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-    %> 
+include("../../includes/tenantAware.jag");
+%>
 </head>
 
 <body>
@@ -22,11 +22,11 @@
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
@@ -40,25 +40,27 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-		<div class="wr-project">
-            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+<div class="navbar-wrapper">
+    <div id="nav" class="row wr-app-bar">
+        <div class="col-md-9 wr-action-container">
+            <div class="wr-project">
+                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+            </div>
+
+            <div class="wr-action-btn-bar">
+                <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+            </div>
         </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
-		</div>
-	</div>
-
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-            <div class="ctrl-wiz-nav">
-    			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-    			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
-    		</div>
+        <div class="col-md-3 wr-wiz-nav">
+            <div class="wr-secondary-links pull-right">
+                <div class="ctrl-wiz-nav">
+                    <a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+                    <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+                </div>
+            </div>
         </div>
-	</div>
+    </div>
 </div>
 <!-- secondary header - app bar -->
 
@@ -120,7 +122,7 @@
 
                 <div class="spcr-2"></div>
 
-                <div id="response-variable-field">
+                <div id="supervised-inputs">
                     <label class="input-label">Response variable<span class="glyphicon"></span></label>
     		<span class="fld-required">*</span>
                     <div class="input-control text">
@@ -128,12 +130,11 @@
                         </select>
                     </div>
                     <div class="spcr-2"></div>                
-                </div>                
-
-                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
-                </div>                              
+	                <label class="input-label">Train data fraction<span class="glyphicon"></span></label>
+	                <div class="input-control text">
+	                    <input type="text" id="data-fraction" value="0.7" placeholder="input text"/>
+	                </div>                       
+                </div>
 
 			</div>
 			
@@ -167,6 +168,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
@@ -176,11 +178,11 @@ $( document ).ready(function() {
 	      }
 	});
     
-    scrollVibrateFix();
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });    
+    });*/    
 
     // set previously selected values when navigating from next page
     var setResponseVariable = "";    
@@ -245,15 +247,14 @@ $( document ).ready(function() {
         $('#response-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
 	}
-    // hides response variable field for K-Means algorithm
+    // toggle response variable input depending on the algorithm selection
+    selectedAlgorithm = $('#algorithm-name').val();
+    toggleInput(selectedAlgorithm);
+
     $(document).on('change','#algorithm-name',function() {
-        if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-        }
-        else {
-            $('#response-variable-field').show();
-        }
-    });    
+        selectedAlgorithm = $('#algorithm-name').val();
+        toggleInput(selectedAlgorithm);
+    });   
 	
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
@@ -267,7 +268,14 @@ $( document ).ready(function() {
         var algorithmName = $('#algorithm-name').val();
         var responseVariable = $('#response-variable').val().replace(/"/g,"\\\"");
 
-        var trainDataFraction = $('#data-fraction').val();
+        var trainDataFraction;
+        if (algorithmName == 'K_MEANS') {
+        	trainDataFraction = 1.0;
+        }
+        else {
+        	trainDataFraction = $('#data-fraction').val();
+        }
+
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
@@ -365,6 +373,16 @@ function loadDatasetFeatures(setResponseVariable) {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
+}
+
+// function that toggles response variable input depending on the algorithm selection
+function toggleInput(selectedAlgorithm) {    
+    if(selectedAlgorithm == 'K_MEANS') {
+        $('#supervised-inputs').hide();
+    }
+    else {
+        $('#supervised-inputs').show();
+    }
 }
 
 </script>

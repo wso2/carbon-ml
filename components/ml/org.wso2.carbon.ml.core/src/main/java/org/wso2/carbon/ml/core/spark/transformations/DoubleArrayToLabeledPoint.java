@@ -29,12 +29,14 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
 
     private static final long serialVersionUID = -3847503088002249546L;
 
+    private DoubleArrayToLabeledPoint() {
+    }
+
     /**
      * Function to transform double array into labeled point
      *
-     * @param tokens    Double array of tokens
-     * @return          Labeled point
-     * @throws          ModelServiceException
+     * @param tokens Double array of tokens
+     * @return Labeled point
      */
     @Override
     public LabeledPoint call(double[] tokens) {
@@ -47,5 +49,11 @@ public class DoubleArrayToLabeledPoint implements Function<double[], LabeledPoin
             features[i] = tokens[i];
         }
         return new LabeledPoint(response, Vectors.dense(features));
+    }
+
+    public static class Builder {
+        public DoubleArrayToLabeledPoint build() {
+            return new DoubleArrayToLabeledPoint();
+        }
     }
 }

@@ -108,7 +108,7 @@ public class PredictMediatorFactory extends AbstractMediatorFactory {
      * Get the attribute value from the OMAttribute
      * @param element OMElement containing the OMAttribute
      * @param qName Qname of the Attribute
-     * @return
+     * @return the attribute value corresponding to the qName
      */
     private String getAttributeValue(OMElement element, QName qName) {
         OMAttribute a = element.getAttribute(qName);

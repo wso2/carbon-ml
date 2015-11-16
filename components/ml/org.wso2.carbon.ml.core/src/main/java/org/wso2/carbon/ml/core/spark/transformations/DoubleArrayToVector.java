@@ -29,16 +29,23 @@ public class DoubleArrayToVector implements Function<double[], Vector> {
 
     private static final long serialVersionUID = 8329428281317101710L;
 
+    private DoubleArrayToVector() {
+    }
+
     /**
      * Function to transform double array into labeled point.
      *
-     * @param features  Double array of tokens
-     * @return          Vector
-     * @throws          ModelServiceException
+     * @param features Double array of tokens
+     * @return Vector
      */
     @Override
     public Vector call(double[] features) {
         return Vectors.dense(features);
+    }
 
+    public static class Builder {
+        public DoubleArrayToVector build() {
+            return new DoubleArrayToVector();
+        }
     }
 }

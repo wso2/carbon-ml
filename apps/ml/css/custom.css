@@ -422,6 +422,9 @@ a.cu-btn:hover, a.cu-btn-reverse:hover {
 	background:url('../images/icons/ico-download.png') 0.8em 1em no-repeat;
 }
 
+.btn-view-models-dark {
+	background:url('../images/icons/ico-view-models-dark.png') 0.8em 1em no-repeat;
+}
 
 .ico-align {
 	vertical-align: middle;
@@ -760,7 +763,7 @@ h4.h-option-head span {
 
 /* content */
 .wr-content {
-	padding-top:40px;
+	padding:40px 15px;
 	clear:both;
 }
 
@@ -1283,4 +1286,9 @@ a.cu-level3-btn:hover {
 	margin-bottom:25px;
 	padding-bottom:10px;
 	border-bottom:1px solid #e4e4e4;
+}
+
+/* fix for bootstrap scrolling issue */
+.navbar-wrapper {
+ 	min-height: 50px;
 }

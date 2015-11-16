@@ -20,6 +20,8 @@
 	<Properties>
 		<!-- Defines the size of the thread pool used in WSO2 ML. -->
 		<Property name="ml.thread.pool.size" value="100" />
+		<!-- Defines the size of the blocked queue used by the thread pool of WSO2 ML. -->
+		<Property name="ml.thread.pool.queue.size" value="1000" />
 		<!-- Fully qualified name of the file input adapter to be used. -->
 		<Property name="file.in"
 			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
@@ -69,10 +71,6 @@
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -100,10 +98,6 @@
 		<Algorithm>
 			<Name>RIDGE_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -141,10 +135,6 @@
 		<Algorithm>
 			<Name>LASSO_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -182,10 +172,6 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION</Name>
 			<Type>Classification</Type>
-			<Interpretability>3</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -230,10 +216,6 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION_LBFGS</Name>
 			<Type>Classification</Type>
-			<Interpretability>3</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
@@ -245,17 +227,6 @@
 		<Algorithm>
 			<Name>SVM</Name>
 			<Type>Classification</Type>
-			<Interpretability>1</Interpretability>
-			<Scalability>1</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
-			<Parameters>
-				<Name>Learning_Rate</Name>
-				<Value>0.001</Value>
-				<Description>Step size of the optimization algorithm. This parameter
-					value should be between 0 and 1, 1 inclusive.
-				</Description>
-			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -264,6 +235,13 @@
 					greater than 0.
 				</Description>
 			</Parameters>
+			<Parameters>
+				<Name>Learning_Rate</Name>
+				<Value>0.001</Value>
+				<Description>Step size of the optimization algorithm. This parameter
+					value should be between 0 and 1, 1 inclusive.
+				</Description>
+			</Parameters>			
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
@@ -293,10 +271,6 @@
 		<Algorithm>
 			<Name>DECISION_TREE</Name>
 			<Type>Classification</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>4</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>3</Dimensionality>
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
@@ -329,10 +303,6 @@
 		<Algorithm>
 			<Name>RANDOM_FOREST</Name>
 			<Type>Classification</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>4</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>3</Dimensionality>
 			<Parameters>
 				<Name>Num_Trees</Name>
 				<Value>5</Value>
@@ -391,10 +361,6 @@
 		<Algorithm>
 			<Name>NAIVE_BAYES</Name>
 			<Type>Classification</Type>
-			<Interpretability>3</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>1</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
@@ -407,10 +373,6 @@
 		<Algorithm>
 			<Name>K_MEANS</Name>
 			<Type>Clustering</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>2</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>2</Dimensionality>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>20</Value>

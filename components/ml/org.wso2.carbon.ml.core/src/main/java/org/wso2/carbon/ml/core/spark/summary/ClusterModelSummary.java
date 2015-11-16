@@ -31,6 +31,7 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
     private double testDataComputeCost;
     private String algorithm;
     private String[] features;
+    private String datasetVersion;
 
     public String getAlgorithm() {
         return algorithm;
@@ -69,6 +70,14 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
         } else {
             this.features = Arrays.copyOf(features, features.length);
         }
+    }
+
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
     @Override

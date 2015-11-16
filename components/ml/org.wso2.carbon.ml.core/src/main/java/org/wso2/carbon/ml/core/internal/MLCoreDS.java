@@ -17,17 +17,26 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.NoSuchElementException;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
+import org.wso2.carbon.metrics.manager.Gauge;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
 import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
+import org.wso2.carbon.ml.core.utils.BlockingExecutor;
+import org.wso2.carbon.ml.core.utils.ComputeClasspath;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -67,19 +76,73 @@ public class MLCoreDS {
             valueHolder.setModelStorage(mlConfig.getModelStorage());
             valueHolder.setDatasetStorage(mlConfig.getDatasetStorage());
 
-            SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-            sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+            Properties mlProperties = valueHolder.getMlProperties();
+            String poolSizeStr = mlProperties
+                    .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
+            String poolQueueSizeStr = mlProperties
+                    .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_QUEUE_SIZE);
+            int poolSize = 50;
+            int poolQueueSize = 1000;
+            if (poolSizeStr != null) {
+                try {
+                    poolSize = Integer.parseInt(poolSizeStr);
+                } catch (Exception ignore) {
+                    // use the default
+                }
+            }
 
-            valueHolder.setSparkConf(sparkConf);
-            
-            // create a new java spark context
-            JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-            sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
-                    org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            sparkContext.hadoopConfiguration()
-                    .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+            if (poolQueueSizeStr != null) {
+                try {
+                    poolQueueSize = Integer.parseInt(poolQueueSizeStr);
+                } catch (Exception ignore) {
+                    // use the default
+                }
+            }
+            valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
 
-            valueHolder.setSparkContext(sparkContext);
+            // Checks whether ML spark context disabling JVM option is set
+            if (System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT) != null) {
+                if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT))) {
+                    valueHolder.setSparkContextEnabled(false);
+                    log.info("ML Spark context will not be initialized.");
+                }
+            }
+
+            if (valueHolder.isSparkContextEnabled()) {
+                SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
+
+                // Add extra class paths for DAS Spark cluster
+                String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
+                try {
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH,
+                            sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
+                } catch (NoSuchElementException e) {
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, "");
+                }
+
+                try {
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH,
+                            sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
+                } catch (NoSuchElementException e) {
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, "");
+                }
+
+                sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
+                String portOffset = System.getProperty("portOffset",
+                        ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
+                sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
+                valueHolder.setSparkConf(sparkConf);
+
+                // create a new java spark context
+                JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+                sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
+                        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+                sparkContext.hadoopConfiguration()
+                        .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+                valueHolder.setSparkContext(sparkContext);
+            }
 
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
@@ -104,11 +167,32 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+            
+            // ML metrices
+            MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
+            MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-queue-size", queueSizeGauge);
+            
             log.info("ML core bundle activated successfully.");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }
     }
+    
+    Gauge<Integer> activeCountGauge = new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+            // Return a value
+            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getActiveCount();
+        }
+    };
+
+    Gauge<Integer> queueSizeGauge = new Gauge<Integer>() {
+        @Override
+        public Integer getValue() {
+            // Return a value
+            return MLCoreServiceValueHolder.getInstance().getThreadExecutor().getQueue().size();
+        }
+    };
 
     protected void deactivate(ComponentContext context) {
         // Destroy the created email output adapter

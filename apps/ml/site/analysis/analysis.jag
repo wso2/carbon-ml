@@ -43,30 +43,32 @@
         <!-- /header -->
 
     <!-- secondary header - app bar -->
-    <div id="nav" class="row wr-app-bar">
-        <div class="col-md-9 wr-action-container">
-            <div class="wr-asset-type-switcher">
-                <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-                <span class="btn-asset"></span>
-                </a>
+    <div class="navbar-wrapper">
+        <div id="nav" class="row wr-app-bar">
+            <div class="col-md-9 wr-action-container">
+                <div class="wr-asset-type-switcher">
+                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                    <span class="btn-asset"></span>
+                    </a>
+                </div>
+
+                <div class="wr-project">
+                    <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+                </div>
+
+                <div class="wr-action-btn-bar">
+                    <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
+                    <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
+                </div>            
             </div>
 
-            <div class="wr-project">
-                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+            <div class="col-md-3">
+                <div class="wr-secondary-links pull-right">                
+                </div>
             </div>
-
-            <div class="wr-action-btn-bar">
-                <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
-                <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
-            </div>            
         </div>
-
-        <div class="col-md-3">
-            <div class="wr-secondary-links pull-right">                
-            </div>
-        </div>
-    </div>
+    </div>    
     <!-- secondary header - app bar -->
 
 
@@ -180,16 +182,16 @@
     $(document).ready(function() {
 
         $('#nav').affix({
-            offset: {
+              offset: {
                 top: $('header').height()
-            }
+              }
         });
-
-        scrollVibrateFix();
+        
+        /*scrollVibrateFix();
         
         $(window).resize(function() {
             scrollVibrateFix();
-        });        
+        });*/ 
 
         $("[data-toggle=popover]").popover();
 
@@ -279,9 +281,16 @@
                                         '<table class="tbl-projects" projectID="' + modelId + '">' +
                                             '<tr>' +
                                                 '<td>' +
-						    '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse'+i+'" aria-expanded="true" aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
+						    '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
                                                     '<span class="cu-acc-head-title">' + modelName + '</span>' +
-                                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>' +
+                                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
+                                                    // retrieve dataset version from model summary when model building is completed
+                                                    if(modelStatus == 'Complete') {
+                                                        var datasetVersion = sanitize(analysisModels[i]['modelSummary']['datasetVersion']);
+                                                        accordionPanel += '' + 
+                                                    '<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>';
+                                                    }
+                                                    accordionPanel += '' +                                              
                                                     '<span class="cu-acc-head-workflow"></span>' +
                                                     '<span class="cu-acc-head-created">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
                                                     '</a>' +
@@ -364,6 +373,15 @@
         }
         return statusIconAppend;
     }
+
+    // function to append expand property when model building fails
+    function appendExpandProperty(modelStatus) {
+        var expandProperty = '';
+        if(modelStatus == 'Failed') {
+            expandProperty = 'aria-expanded="false"';  
+        }
+        return expandProperty;
+    }      
 
     // compare function for models
     function sortByTimestamp(a, b) {

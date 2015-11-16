@@ -51,13 +51,19 @@ public class MLConstants {
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
     public static final String ML_PROJECTS = "MLProjects";
+
+    // Spark context disabling JVM option
+    public static final String DISABLE_ML_SPARK_CONTEXT_JVM_OPT = "disableMLSparkCtx";
+
+    // Spark configuration properties
+    public static final String SPARK_EXECUTOR_CLASSPATH = "spark.executor.extraClassPath";
+    public static final String SPARK_DRIVER_CLASSPATH = "spark.driver.extraClassPath";
     
     // Character Encodings
     public static final String UTF_8= "UTF-8";
     public static final String ISO_8859_1= "ISO-8859-1";
     
     public static final String TARGET_HOME_PROP = "target.home";
-    public static final String ML_THREAD_POOL_SIZE = "ml.thread.pool.size";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";
@@ -212,11 +218,48 @@ public class MLConstants {
         }
 
         public static boolean contains(String s) {
-            for (MISSING_VALUES val : values())
+            for (MISSING_VALUES val : values()) {
                 if (val.toString().equals(s)) {
                     return true;
                 }
+            }
             return false;
+        }
+    }
+
+    public enum DatasetVersionStatus {
+        IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
+
+        private String value;
+        private DatasetVersionStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum DatasetStatus {
+        AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
+
+        private String value;
+        private DatasetStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }

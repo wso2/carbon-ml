@@ -44,7 +44,14 @@ public class MLCoreServiceValueHolder {
     private OutputEventAdapterService outputEventAdapterService;
     private Storage modelStorage;
     private Storage datasetStorage;
-    
+    private BlockingExecutor threadExecutor;
+    private boolean sparkContextEnabled;
+
+    public MLCoreServiceValueHolder() {
+        sparkContextEnabled = true;
+    }
+
+
     public static MLCoreServiceValueHolder getInstance() {
         if (instance == null) {
             synchronized (MLCoreServiceValueHolder.class) {
@@ -158,6 +165,22 @@ public class MLCoreServiceValueHolder {
 
     public void setDatasetStorage(Storage datasetStorage) {
         this.datasetStorage = datasetStorage;
+    }
+
+    public BlockingExecutor getThreadExecutor() {
+        return threadExecutor;
+    }
+
+    public void setThreadExecutor(BlockingExecutor threadExecutor) {
+        this.threadExecutor = threadExecutor;
+    }
+
+    public boolean isSparkContextEnabled() {
+        return sparkContextEnabled;
+    }
+
+    public void setSparkContextEnabled(boolean sparkContextEnabled) {
+        this.sparkContextEnabled = sparkContextEnabled;
     }
 
 }

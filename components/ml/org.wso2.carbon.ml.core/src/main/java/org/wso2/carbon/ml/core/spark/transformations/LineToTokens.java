@@ -19,6 +19,8 @@
 package org.wso2.carbon.ml.core.spark.transformations;
 
 import org.apache.spark.api.java.function.Function;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 import java.util.regex.Pattern;
 
@@ -28,14 +30,32 @@ import java.util.regex.Pattern;
 public class LineToTokens implements Function<String, String[]> {
 
     private static final long serialVersionUID = -5025419727399292773L;
-    private Pattern tokenSeparator;
+    private final Pattern tokenSeparator;
 
-    public LineToTokens(Pattern pattern) {
-        this.tokenSeparator = pattern;
+    public LineToTokens(Builder builder) {
+        this.tokenSeparator = builder.tokenSeparator;
     }
 
     @Override
     public String[] call(String line) {
         return tokenSeparator.split(line);
+    }
+
+    public static class Builder {
+        private Pattern tokenSeparator;
+
+        public Builder init(MLModelConfigurationContext ctx) {
+            this.tokenSeparator = MLUtils.getPatternFromDelimiter(ctx.getColumnSeparator());
+            return this;
+        }
+
+        public Builder separator(Pattern separator) {
+            this.tokenSeparator = separator;
+            return this;
+        }
+
+        public LineToTokens build() {
+            return new LineToTokens(this);
+        }
     }
 }

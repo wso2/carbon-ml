@@ -26,6 +26,7 @@ public class MLProject {
     private String name;
     private String datasetName;
     private long datasetId;
+    private String datasetStatus;
     private int tenantId;
     private String userName;
     private String description;
@@ -74,7 +75,7 @@ public class MLProject {
     @Override
     public String toString() {
         return "MLProject [id=" + id + ", name=" + name + ", datasetName=" + datasetName + ", datasetId=" + datasetId
-                + ", tenantId=" + tenantId + ", userName=" + userName + ", description=" + description
+                + ", datasetStatus=" + datasetStatus + ", tenantId=" + tenantId + ", userName=" + userName + ", description=" + description
                 + ", createdTime=" + createdTime + "]";
     }
 
@@ -100,6 +101,14 @@ public class MLProject {
 
     public void setDatasetId(long datasetId) {
         this.datasetId = datasetId;
+    }
+
+    public String getDatasetStatus() {
+        return datasetStatus;
+    }
+
+    public void setDatasetStatus(String datasetStatus) {
+        this.datasetStatus = datasetStatus;
     }
 
 }

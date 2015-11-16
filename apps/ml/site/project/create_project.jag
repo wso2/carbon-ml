@@ -11,9 +11,9 @@
     <script src="../../js/respond.min.js"></script> 
 
     <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
+include("../../includes/tenantAware.jag");
+%>
+
 </head>
 
 <body>
@@ -22,13 +22,13 @@
 
 <!-- header -->
 <header>
-	<div class="row wr-global-header">
-	    <div class="col-sm-8 app-logo">
-	        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-	    </div>
-		<div class="col-sm-4">
-			<div class="wr-auth pull-right">
-				<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="row wr-global-header">
+    <div class="col-sm-8 app-logo">
+        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+    </div>
+    <div class="col-sm-4">
+        <div class="wr-auth pull-right">
+            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 				<div class="dropdown-menu">
 					<div class="cu-arrow"></div>
 					<div class="dropdown-menu-content">
@@ -42,30 +42,33 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
+<div class="navbar-wrapper">
+	<div id="nav" class="row wr-app-bar">
+		<div class="col-md-9 wr-action-container">
 
-        <div class="wr-asset-type-switcher">
-            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-            <span class="btn-asset"></span>
-            </a>
-        </div>
+	        <div class="wr-asset-type-switcher">
+	            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+	            <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+	            <span class="btn-asset"></span>
+	            </a>
+	        </div>
 
-        <div class="wr-project">
-            <span class="title">PROJECTS \ </span>
-        </div>        
+	        <div class="wr-project">
+	            <span class="title">PROJECTS \ </span>
+	        </div>        
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+			<div class="wr-action-btn-bar">
+				<a href="#" class="cu-btn btn-cancel" id="cancel-project">Cancel</a>
+			</div>
 		</div>
 	</div>
 
-	<div class="col-md-3">
-		<div class="wr-secondary-links pull-right">
-			<!-- empty -->
-			<!--a href="#" class="cu-btn btn-prev">Previous</a>
-			<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		<div class="col-md-3">
+			<div class="wr-secondary-links pull-right">
+				<!-- empty -->
+				<!--a href="#" class="cu-btn btn-prev">Previous</a>
+				<a href="#" class="cu-btn-reverse btn-next">Next</a-->
+			</div>
 		</div>
 	</div>
 </div>
@@ -171,12 +174,12 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
-
-    scrollVibrateFix();
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });	
+    });*/ 
 
     $("[data-toggle=popover]").popover();
 
@@ -256,7 +259,7 @@ $( document ).ready(function() {
 	function loadDatasets() {
 		$.ajax({
 			type: "GET",
-			url: serverUrl+"/api/datasets",
+			url: serverUrl+"/api/datasets?status=Available",
 			success: function(res) {
 				$.each(res, function (i, item) {
 				    $('#datasets').append($('<option>', { 

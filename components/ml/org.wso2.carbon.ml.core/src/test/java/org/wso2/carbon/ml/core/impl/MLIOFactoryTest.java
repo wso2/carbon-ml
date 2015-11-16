@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.testng.Assert;
@@ -62,10 +63,10 @@ public class MLIOFactoryTest {
     @Test
     public void getTargetPath() {
         Storage storage = new Storage();
-        storage.setStorageDirectory("/tmp");
+        storage.setStorageDirectory(File.separator + "tmp");
         storage.setStorageType("file");
         MLCoreServiceValueHolder.getInstance().setDatasetStorage(storage);
         String path = ioFactory.getTargetPath("test-ml.csv");
-        Assert.assertEquals(path, "/tmp/test-ml.csv");
+        Assert.assertEquals(path, File.separator + "tmp" + File.separator + "test-ml.csv");
     }
 }

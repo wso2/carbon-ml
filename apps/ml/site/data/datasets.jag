@@ -11,8 +11,8 @@
     <script src="../../js/respond.min.js"></script> 
 
     <%
-        include("../../includes/tenantAware.jag");
-    %>
+include("../../includes/tenantAware.jag");
+%>
 </head>
 
 <body>
@@ -21,13 +21,13 @@
 
 <!-- header -->
 <header>
-	<div class="row wr-global-header">
-		<div class="col-sm-8 app-logo">
-            <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-        </div>
-		<div class="col-sm-4">
-			<div class="wr-auth pull-right">
-				<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="row wr-global-header">
+    <div class="col-sm-8 app-logo">
+        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+    </div>
+    <div class="col-sm-4">
+        <div class="wr-auth pull-right">
+            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 				<div class="dropdown-menu">
 					<div class="cu-arrow"></div>
 					<div class="dropdown-menu-content">
@@ -41,34 +41,36 @@
 <!-- /header -->
 
         <!-- secondary header - app bar -->
-        <div id="nav" class="row wr-app-bar">
-            <div class="col-md-9 wr-action-container">
+		<div class="navbar-wrapper">
+		    <div id="nav" class="row wr-app-bar">
+		        <div class="col-md-9 wr-action-container">
 
-                <div class="wr-asset-type-switcher">
-                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-                    <span class="btn-asset"></span>
-                    </a>
-                </div>
+		            <div class="wr-asset-type-switcher">
+		                <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+		                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+		                <span class="btn-asset"></span>
+		                </a>
+		            </div>
 
-		        <div class="wr-project">
-					<span class="title">DATASETS \ </span>
-				</div>
+			        <div class="wr-project">
+						<span class="title">DATASETS \ </span>
+					</div>
 
-	            <div class="wr-action-btn-bar">
-	                <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
-	            </div>  
+		            <div class="wr-action-btn-bar">
+		                <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
+		            </div>  
 
-            </div>
+		        </div>
 
-            <div class="col-md-3">
-                <div class="wr-secondary-links pull-right">
-                    <!-- empty -->
-                    <!--a href="#" class="cu-btn btn-prev">Previous</a-->
-                    <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
-                </div>
-            </div>
-        </div>
+		        <div class="col-md-3">
+		            <div class="wr-secondary-links pull-right">
+		                <!-- empty -->
+		                <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+		                <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+		            </div>
+		        </div>
+		    </div>
+		</div>        
         <!-- secondary header - app bar -->
 
 
@@ -177,7 +179,7 @@ function buildAccordingHeader(collapseSection, datasetName, datasetVersions, dat
                           '<table class="tbl-projects">' + 
 				      	  '<tr>' +
 				      		'<td>' +
-						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="true" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
+						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="false" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
 						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
 						          	'<span class="cu-acc-head-workflow">' + versionsString + '</span>'+
 						        '</a>' +	
@@ -279,12 +281,12 @@ $( document ).ready(function() {
 	        top: $('header').height()
 	      }
 	});
-
-    scrollVibrateFix();
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });	
+    });*/ 
 
     $("[data-toggle=popover]").popover();
 

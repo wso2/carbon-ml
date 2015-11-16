@@ -22,9 +22,9 @@
     
     <script src="../../js/jquery-1.11.1.min.js"></script>
     <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
+include("../../includes/tenantAware.jag");
+%>
+
 </head>
 
 <body>
@@ -34,11 +34,11 @@
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
@@ -52,25 +52,27 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-		<div class="wr-project">
-            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
-        </div>
+<div class="navbar-wrapper">
+    <div id="nav" class="row wr-app-bar">
+        <div class="col-md-9 wr-action-container">
+            <div class="wr-project">
+                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+            </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
-		</div>
-	</div>
+            <div class="wr-action-btn-bar">
+                <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+            </div>
+	    </div>
 
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-            <div class="ctrl-wiz-nav">
-    			<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-    			<a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
-    		</div>
+        <div class="col-md-3 wr-wiz-nav">
+            <div class="wr-secondary-links pull-right">
+                <div class="ctrl-wiz-nav">
+                    <a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+                    <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a>
+                </div>
+            </div>
         </div>
-	</div>
+    </div>
 </div>
 <!-- secondary header - app bar -->
 
@@ -165,17 +167,17 @@ var integerRegEx = /^\d+$/g;
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
-
-    scrollVibrateFix();
+    $('#nav').affix({
+          offset: {
+            top: $('header').height()
+          }
+    });
+    
+    /*scrollVibrateFix();
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });
+    });*/ 
     
     // for tooltip
     $(function () {

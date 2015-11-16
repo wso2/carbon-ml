@@ -24,8 +24,8 @@
     <script src="../../js/jquery-1.11.1.min.js"></script>    
 
     <%
-        include("../../includes/tenantAware.jag");
-    %> 
+include("../../includes/tenantAware.jag");
+%>
 
 </head>
 
@@ -36,17 +36,17 @@
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
 					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
 				</div>
-			</div>			
+			</div>
 		</div>
 	</div>
 </div>
@@ -54,22 +54,24 @@
 <!-- /header -->
 
 <!-- secondary header - app bar -->
-<div id="nav" class="row wr-app-bar">
-	<div class="col-md-9 wr-action-container">
-        <div class="wr-project">
-            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
-        </div>
+<div class="navbar-wrapper">
+	<div id="nav" class="row wr-app-bar">
+		<div class="col-md-9 wr-action-container">
+	        <div class="wr-project">
+	            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+	        </div>
 
-		<div class="wr-action-btn-bar">
-			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+			<div class="wr-action-btn-bar">
+				<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+			</div>
 		</div>
-	</div>
 
-	<div class="col-md-3 wr-wiz-nav">
-		<div class="wr-secondary-links pull-right">
-			<div class="ctrl-wiz-nav">
-				<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-				<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+		<div class="col-md-3 wr-wiz-nav">
+			<div class="wr-secondary-links pull-right">
+				<div class="ctrl-wiz-nav">
+					<a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+					<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -80,7 +82,7 @@
 <!-- content/body -->
 <div class="row">
 	<div class="col-lg-12 wr-secondary-bar">
-		
+
 		<!-- Wizard -->
 	    <ul class="nav nav-pills nav-wizard">
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
@@ -90,7 +92,7 @@
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
 	    </ul>
 
-		
+
 	</div>
 </div>
 <div class="row">
@@ -141,7 +143,7 @@
 					                    <select class="form-control" id="scatter-group"></select>
 					                </div>
 					            </div>
-					            
+
 					            <br class="c-both" />
 
 					        </div>
@@ -151,9 +153,9 @@
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Scatter plot & histograms</h5>
 								<p>Scatter plot visualizes the relationship between the two selected features of the dataset. Moreover, histograms provide the user a graphical representation of the data distribution for the same two features you select. The scatter plot user interface allows you to select two numerical features from the dataset to be visualized through a scatter plot and histograms.</p>
 
-								<p id="scatter-desc-note"></p>								
+								<p id="scatter-desc-note"></p>
 							</div>
-							<!-- /graph description -->					        
+							<!-- /graph description -->
 
 					    </div>
 
@@ -162,7 +164,7 @@
 								<h5 id='scatterPlotTitle'></h5>
 								<div class="wr-graph-img">
 									<div id='scatter'>Loading chart...</div>
-									
+
 									<div class="sp-quantity">
 									    <div class="sp-minus"> <a class="scatter-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
 									    </div>
@@ -171,11 +173,11 @@
 									    </div>
 									    <div class="sp-plus"> <a class="scatter-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
 									    </div>
-									</div>																		
+									</div>
 
 								</div>
 							</div>
-				    	
+
 							<div id='histogramIndependent' class="wr-graph-element gr02">
 								<h5 id='histogramIndependentTitle'></h5>
 								<div class="wr-graph-img">
@@ -183,14 +185,14 @@
 								</div>
 								<div id='numFeatureIndependentSummary' class='graphSummary'></div>
 							</div>
-							
+
 							<div id='histogramDependent' class="wr-graph-element gr02">
 								<h5 id='histogramDependentTitle'></h5>
 								<div class="wr-graph-img">
-									<svg></svg>									
+									<svg></svg>
 								</div>
 								<div id='numFeatureDependentSummary' class='graphSummary'></div>
-							</div>						
+							</div>
 				    	</div>
 
 					</div>
@@ -206,20 +208,20 @@
 					                <div id="parallel-sets-features" class="wr-filter-radio-group">
 					                </div>
 					            </div>
-					            
+
 					            <br class="c-both" />
 
 					        </div>
-					        <!-- /filters -->   
+					        <!-- /filters -->
 
 							<!-- graph description -->
 							<div class="wr-desc-chart">
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Parallel sets</h5>
 								<p>Parallel sets is a visualization method used for categorical data. It adopts the layout of parallel coordinates, but substitutes the individual data points by a frequency-based representation. This abstract view is combined with a set of interactions. It supports visual data analysis of large and complex data sets. Using the parallel sets user interface, you can specify which categorical features to draw the diagram.</p>
 
-								<p id="parallel-sets-desc-note"></p>								
+								<p id="parallel-sets-desc-note"></p>
 							</div>
-							<!-- /graph description -->					        					        
+							<!-- /graph description -->
 
 					    </div>
 
@@ -229,14 +231,14 @@
 								<div class="wr-graph-img">
 									<div id='parallelSets'>Loading chart...</div>
 								</div>
-							</div>					      
+							</div>
 
 					    </div>
 					</div>
 
 
 					<div role="tabpanel" class="tab-pane fade in" id="trellis-chart">
-					    
+
 					    <div class="col-md-2 wr-left-nav">
 
 					        <!-- filters -->
@@ -254,9 +256,9 @@
 					                <label class="input-label-sm">Numerical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
 					                <div id="trellis-num-features" class="wr-filter-radio-group">
 					                </div>
-					            </div>      
+					            </div>
 
-					            <br class="c-both" />			            
+					            <br class="c-both" />
 
 					        </div>
 
@@ -265,9 +267,9 @@
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Trellis chart</h5>
 								<p>Trellis chart is a series of graphs or charts based on the same scale and axes, allowing them to be easily compared. It uses multiple views to show different partitions of a dataset, and is useful for finding the structure and patterns in complex data. Trellis chart user interface allows you to select one categorical feature and multiple numerical features (bound to a maximum) to draw the diagram.</p>
 
-								<p id="trellis-desc-note"></p>								
+								<p id="trellis-desc-note"></p>
 							</div>
-							<!-- /graph description -->					        					        					        
+							<!-- /graph description -->
 
 					    </div>
 
@@ -285,10 +287,10 @@
 									    </div>
 									    <div class="sp-plus"> <a class="trellis-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
 									    </div>
-									</div>																											
+									</div>
 
 								</div>
-							</div>					      					        
+							</div>
 
 					    </div>
 
@@ -296,7 +298,7 @@
 
 
 					<div role="tabpanel" class="tab-pane fade in" id="cluster-diagram">
-					    
+
 					    <div class="col-md-2 wr-left-nav">
 
 					        <!-- filters -->
@@ -335,12 +337,12 @@
 										    <option value='12'>12</option>
 										    <option value='13'>13</option>
 										    <option value='14'>14</option>
-										    <option value='15'>15</option>                                    
+										    <option value='15'>15</option>
 					                    </select>
 					                </div>
-					            </div>      
+					            </div>
 
-					            <br class="c-both" />				            
+					            <br class="c-both" />
 
 					        </div>
 
@@ -349,9 +351,9 @@
 								<h5><span class="glyphicon glyphicon-info-sign"></span> Cluster diagram</h5>
 								<p>Cluster diagram is a general type of diagram, which depicts one or more clusters in a dataset. A cluster in general is a group or collection of discrete points that are close to each other. In explore view, a cluster diagram provides a perspective on data clusters for two selected numerical features. A popular clustering algorithm is applied on the data sample to derive data clusters. You can select two numerical features and the number of clusters required through the cluster diagram user interface.</p>
 
-								<p id="cluster-desc-note"></p>								
+								<p id="cluster-desc-note"></p>
 							</div>
-							<!-- /graph description -->					        					        					        					        
+							<!-- /graph description -->
 
 					    </div>
 
@@ -369,10 +371,10 @@
 									    </div>
 									    <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
 									    </div>
-									</div>																																											
+									</div>
 
 								</div>
-							</div>					      					        
+							</div>
 
 					    </div>
 
@@ -388,7 +390,7 @@
 <!-- /content/body -->
 
 </div>
-    
+
 
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
@@ -399,7 +401,7 @@
 <script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/jquery.dataTables.js"></script>
-    
+
 <script src="../../js/d3.parsets.js"></script>
 <script src="../../js/figue.js"></script>
 
@@ -445,11 +447,11 @@ $( document ).ready(function() {
 	      }
 	});
 
-    scrollVibrateFix();
-    
+    /*scrollVibrateFix();
+
     $(window).resize(function() {
         scrollVibrateFix();
-    });	
+    });*/
 
 	scatterMarkerSize = $('#scatter-marker-size-input').val();
 	trellisMarkerSize = $('#trellis-marker-size-input').val();

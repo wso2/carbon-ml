@@ -16,18 +16,6 @@
 
 package org.wso2.carbon.ml.siddhi.extension;
 
-import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
-import org.wso2.carbon.ml.core.factories.DatasetType;
-import org.wso2.carbon.ml.core.impl.MLIOFactory;
-import org.wso2.carbon.ml.core.impl.Predictor;
-import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
-import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -36,6 +24,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.factories.DatasetType;
+import org.wso2.carbon.ml.core.impl.MLIOFactory;
+import org.wso2.carbon.ml.core.impl.Predictor;
+import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 public class ModelHandler {
 
@@ -60,11 +59,9 @@ public class ModelHandler {
     }
 
     /**
-     * Retrieve the MLModel from the storage location
+     * Retrieve the MLModel from the storage location.
      * @param modelStorageLocation model storage location (file path or registry path)
-     *                             file: -> file path
-     *                             registry: -> registry path
-     * @return
+     * @return the deserialized MLModel object
      * @throws URISyntaxException
      * @throws MLInputAdapterException
      * @throws IOException
@@ -99,22 +96,46 @@ public class ModelHandler {
     }
 
     /**
-     * Predict the value using the feature values
+     * Predict the value using the feature values.
      * @param data  feature values array
      * @return      predicted value
-     * @throws      MLModelBuilderException
+     * @throws      MLModelHandlerException
      */
-    public String predict(String[] data) throws MLModelHandlerException {
+    public Object predict(String[] data, String outputType) throws MLModelHandlerException {
         ArrayList<String[]> list = new ArrayList<String[]>();
         list.add(data);
         Predictor predictor = new Predictor(modelId, mlModel, list);
         List<?> predictions = predictor.predict();
-        return predictions.get(0).toString();
+        String predictionStr = predictions.get(0).toString();
+        Object prediction = castValue(outputType, predictionStr);
+        return prediction;
+    }
+
+    /**
+     * Cast the given value to the given output type.
+     * @param outputType Output data type
+     * @param value value to be casted in String
+     * @return Value casted to output type object
+     */
+    private Object castValue(String outputType, String value) {
+        if (outputType.equalsIgnoreCase("double")) {
+            return Double.parseDouble(value);
+        } else if (outputType.equalsIgnoreCase("float")) {
+            return Float.parseFloat(value);
+        } else if (outputType.equalsIgnoreCase("integer") || outputType.equalsIgnoreCase("int")) {
+            return Integer.parseInt(value);
+        } else if (outputType.equalsIgnoreCase("long")) {
+            return Long.parseLong(value);
+        } else if (outputType.equalsIgnoreCase("boolean") || outputType.equalsIgnoreCase("bool")) {
+            return Boolean.parseBoolean(value);
+        } else {
+            return value;
+        }
     }
 
     /**
      * Return the map containing <feature-name, index> pairs
-     * @return
+     * @return the <feature-name, feature-index> map of the MLModel
      */
     public Map<String, Integer> getFeatures() {
         List<Feature> features = mlModel.getFeatures();
@@ -127,7 +148,7 @@ public class ModelHandler {
     
     /**
      * Get new to old indices list of this model.
-     * @return
+     * @return the new to old indices list of the MLModel
      */
     public List<Integer> getNewToOldIndicesList() {
         return mlModel.getNewToOldIndicesList();
@@ -135,9 +156,17 @@ public class ModelHandler {
 
     /**
      * Return the response variable of the model
-     * @return
+     * @return the response variable of the MLModel
      */
     public String getResponseVariable() {
         return mlModel.getResponseVariable();
+    }
+
+    /**
+     * Returns the algorithm class - classification, numerical prediction or clustering
+     * @return the algorithm class
+     */
+    public String getAlgorithmClass() {
+        return mlModel.getAlgorithmClass();
     }
 }

@@ -69,24 +69,19 @@ public class DeeplearningModelBuilder extends MLModelBuilder {
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
         MLModel mlModel = new MLModel();
+        SupervisedSparkModelBuilder supervisedSparkModelBuilder = new SupervisedSparkModelBuilder(context);
         try {
             sparkContext = context.getSparkContext();
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
-
-            // pre-processing
-            JavaRDD<double[]> features = SparkModelUtils.preProcess(context);
-
-            List<double[]> featureList = features.collect();
 
             // generate train and test datasets by converting tokens to labeled points
             int responseIndex = context.getResponseIndex();
             SortedMap<Integer, String> includedFeatures = MLUtils.getIncludedFeaturesAfterReordering(workflow,
                     context.getNewToOldIndicesList(), responseIndex);
 
-            DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint();
-
-            JavaRDD<LabeledPoint> labeledPoints = features.map(doubleArrayToLabeledPoint);
+            // gets the pre-processed dataset
+            JavaRDD<LabeledPoint> labeledPoints = supervisedSparkModelBuilder.preProcess().cache();
 
             JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
                     new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },

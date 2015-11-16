@@ -29,31 +29,28 @@ import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
  */
 public class ModelBuilderFactory {
 
-    public static MLModelBuilder buildModelBuilder(String algorithmType, MLModelConfigurationContext context)
+    public static MLModelBuilder getModelBuilder(String algorithmType, MLModelConfigurationContext context)
             throws MLInputValidationException {
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
-        MLModelBuilder datasetProcessor = null;
-        
-        System.out.println(algorithmType);
-        
+
+        MLModelBuilder modelBuilder = null;
+
         switch (type) {
         case CLASSIFICATION:
-            datasetProcessor = new SupervisedSparkModelBuilder(context);
-            break;
         case NUMERICAL_PREDICTION:
-            datasetProcessor = new SupervisedSparkModelBuilder(context);
+            modelBuilder = new SupervisedSparkModelBuilder(context);
             break;
         case CLUSTERING:
-            datasetProcessor = new UnsupervisedSparkModelBuilder(context);
+            modelBuilder = new UnsupervisedSparkModelBuilder(context);
             break;
         case DEEPLEARNING:
             System.out.println("Getting deeplearning model builder");
-            datasetProcessor = new DeeplearningModelBuilder(context);
+            modelBuilder = new DeeplearningModelBuilder(context);
             break;
         default:
             throw new MLInputValidationException("Invalid algorithm type: " + type.name());
         }
-        return datasetProcessor;
+        return modelBuilder;
     }
 
 }
