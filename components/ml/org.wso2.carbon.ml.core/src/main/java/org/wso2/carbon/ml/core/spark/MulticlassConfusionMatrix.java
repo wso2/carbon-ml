@@ -60,7 +60,6 @@ public class MulticlassConfusionMatrix implements Serializable {
         else {
             this.matrix = Arrays.copyOf(matrix, matrix.length);
         }
-
     }
     /**
      *
@@ -93,7 +92,6 @@ public class MulticlassConfusionMatrix implements Serializable {
     public void setSize(int size) {
         this.size = size;
     }
-
 
     @Override
     public String toString() {

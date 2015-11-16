@@ -42,12 +42,30 @@ public class MulticlassMetrics implements Serializable {
         double falsePositive = matrix[1][0];
         double trueNegative = matrix[1][1];
 
-        this.f1Score = (2 * truePositive / (2 * truePositive + falsePositive + falseNegative));
-        this.accuracy = ((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative))
-                * 100;
-        this.precision = (truePositive / (truePositive + falsePositive)) * 100;
-        this.recall = (truePositive / (truePositive + falseNegative)) * 100;
+        if (isDenominatorZero(truePositive, falsePositive, falseNegative)) {
+            this.f1Score = 0;
+        } else {
+            this.f1Score = (2 * truePositive / (2 * truePositive + falsePositive + falseNegative));
+        }
 
+        if (isDenominatorZero(truePositive, trueNegative, falsePositive, falseNegative)) {
+            this.accuracy = 0;
+        } else {
+            this.accuracy = ((truePositive + trueNegative)
+                    / (truePositive + trueNegative + falsePositive + falseNegative)) * 100;
+        }
+
+        if (isDenominatorZero(truePositive, falsePositive)) {
+            this.precision = 0;
+        } else {
+            this.precision = (truePositive / (truePositive + falsePositive)) * 100;
+        }
+
+        if (isDenominatorZero(truePositive, falseNegative)) {
+            this.recall = 0;
+        } else {
+            this.recall = (truePositive / (truePositive + falseNegative)) * 100;
+        }
     }
 
     public MulticlassConfusionMatrix getMulticlassConfusionMatrix() {
@@ -68,5 +86,15 @@ public class MulticlassMetrics implements Serializable {
 
     public double getRecall() {
         return recall;
+    }
+
+    private boolean isDenominatorZero(double... values) {
+
+        for (double value : values) {
+            if (value != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -17,14 +17,27 @@ package org.wso2.carbon.ml.rest.api;
 
 import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.FeatureSummary;
+import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.MLCustomizedFeature;
+import org.wso2.carbon.ml.commons.domain.MLHyperParameter;
+import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.impl.MLAnalysisHandler;
 import org.wso2.carbon.ml.core.utils.MLUtils;
@@ -49,7 +62,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * HTTP Options method implementation for analysis API.
-     * 
+     *
      * @return
      */
     @OPTIONS
@@ -97,7 +110,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId,
-            List<MLCustomizedFeature> customizedFeatures) {
+                                          List<MLCustomizedFeature> customizedFeatures) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -126,7 +139,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId,
-            MLCustomizedFeature customizedValues) {
+                                                      MLCustomizedFeature customizedValues) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -160,7 +173,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummarizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
-            @QueryParam("offset") int offset) {
+                                          @QueryParam("offset") int offset) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -261,7 +274,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/filteredFeatures")
     @Produces("application/json")
     public Response getfilteredFeatures(@PathParam("analysisId") String analysisId,
-            @QueryParam("featureType") String featureType) {
+                                        @QueryParam("featureType") String featureType) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -394,118 +407,6 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
-     * Get the normal labels of an analysis.
-     * @param analysisId Unique id of the analysis
-     * @return Normal Labels
-     */
-    @GET
-    @Path("/{analysisId}/normalLabels")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response getNormalLabels(@PathParam("analysisId") long analysisId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            String normalLabels = mlAnalysisHandler.getNormalLabels(analysisId);
-            return Response.ok(normalLabels).build();
-        } catch (MLAnalysisHandlerException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving normal labels for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                                    analysisId, tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        }
-    }
-
-    /**
-     * Get the normalization option of an analysis.
-     * @param analysisId Unique id of the analysis
-     * @return Normalization option
-     */
-    @GET
-    @Path("/{analysisId}/normalization")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response getNormalization(@PathParam("analysisId") long analysisId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            String normalLabels = mlAnalysisHandler.getNormalization(analysisId);
-            return Response.ok(normalLabels).build();
-        } catch (MLAnalysisHandlerException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving data normalization selection for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                                    analysisId, tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        }
-    }
-
-    /**
-     * Get the new normal label of an analysis.
-     * @param analysisId Unique id of the analysis
-     * @return New Normal Label
-     */
-    @GET
-    @Path("/{analysisId}/newNormalLabel")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response getNewNormalLabel(@PathParam("analysisId") long analysisId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            String normalLabels = mlAnalysisHandler.getNewNormalLabel(analysisId);
-            return Response.ok(normalLabels).build();
-        } catch (MLAnalysisHandlerException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving data new normal label for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                                    analysisId, tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        }
-    }
-
-    /**
-     * Get the new anomaly labels of an analysis.
-     * @param analysisId Unique id of the analysis
-     * @return New Anomaly Label
-     */
-    @GET
-    @Path("/{analysisId}/newAnomalyLabel")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response getNewAnomalyLabel(@PathParam("analysisId") long analysisId) {
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            String normalLabels = mlAnalysisHandler.getNewAnomalyLabel(analysisId);
-            return Response.ok(normalLabels).build();
-        } catch (MLAnalysisHandlerException e) {
-            String msg = MLUtils
-                    .getErrorMsg(
-                            String.format(
-                                    "Error occurred while retrieving new anomaly label for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                                    analysisId, tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        }
-    }
-
-    /**
      * Get the train data fraction of an analysis.
      * @param analysisId Unique id of the analysis
      * @return Train data fraction
@@ -544,7 +445,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummaryStatistics(@PathParam("analysisId") long analysisId,
-            @QueryParam("feature") String featureName) {
+                                         @QueryParam("feature") String featureName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -579,7 +480,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addModelConfiguration(@PathParam("analysisId") long analysisId,
-            List<MLModelConfiguration> modelConfigs) {
+                                          List<MLModelConfiguration> modelConfigs) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -609,7 +510,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addHyperParameters(@PathParam("analysisId") long analysisId,
-            List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
+                                       List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -639,7 +540,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getHyperParameters(@PathParam("analysisId") long analysisId,
-            @QueryParam("algorithmName") String algorithmName) {
+                                       @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();

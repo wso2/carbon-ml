@@ -47,6 +47,8 @@ public class MLConstants {
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
+    public static final String MIN_PERCENTILE_CONF = "minPercentile";
+    public static final String MAX_PERCENTILE_CONF = "maxPercentile";
     
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
@@ -151,7 +153,6 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String NUM_OF_NORMAL_CLUSTERS = "Num_of_Normal_Clusters";
     public static final String LAMBDA = "Lambda";
-    //public static final String PERCENTILE_VALUE = "Percentile_Value";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -175,7 +176,7 @@ public class MLConstants {
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
     
-    //Email Sender constants
+    // Email Sender constants
     public static final String ML_EMAIL_ADAPTER = "MLEmailAdapter";
     public static final String EMAIL_CONF_DIRECTORY = "email";
     public static final String ML_EMAIL_TEMPLATES_FILE = "ml-email-templates.xml";
@@ -185,7 +186,7 @@ public class MLConstants {
     public static final String MODEL_BUILDING_COMPLETE_NOTIFICATION = "modelBuildingCompleteNotification";
     public static final String MODEL_BUILDING_FAILED_NOTIFICATION = "modelBuildingFailedNotification";
 
-    //percentile range for anomaly detection
+    // percentile range for anomaly detection
     public static final int MIN_PERCENTILE = 80;
     public static final int MAX_PERCENTILE = 100;
 

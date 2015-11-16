@@ -36,7 +36,9 @@ public class Workflow implements Serializable {
     private String datasetVersion;
     private String normalLabels;
     private boolean normalization;
+    // user defined normal label
     private String newNormalLabel;
+    // user defined anomaly label
     private String newAnomalyLabel;
 
     /**

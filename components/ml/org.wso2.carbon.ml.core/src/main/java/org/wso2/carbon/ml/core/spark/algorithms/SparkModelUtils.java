@@ -421,29 +421,4 @@ public class SparkModelUtils {
 
     }
 
-/*    public static int getUnique(String statsAsJson) {
-        if (statsAsJson == null) {
-            return 0;
-        }
-        try {
-            // new JSONArray(statsAsJson).getJSONObject(0).getJSONArray("values").getJSONArray(0).getString(0)
-            JSONArray array = new JSONArray(statsAsJson);
-            JSONObject jsonObj = array.getJSONObject(0);
-            String unique = jsonObj.getString("unique");
-            if (unique == null) {
-                return 0;
-            } else {
-                try {
-                    return Integer.parseInt(unique);
-                } catch (NumberFormatException e) {
-                    return 0;
-                }
-            }
-
-        } catch (JSONException e) {
-            log.warn("Failed to extract unique values from summary stats: " + statsAsJson, e);
-            return 0;
-        }
-
-    }*/
 }

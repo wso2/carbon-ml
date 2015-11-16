@@ -38,6 +38,10 @@ public class MLModel implements Serializable {
     private Externalizable model;
     private String normalLabels;
     private boolean normalization;
+    /*
+    key - summary stat name
+    value - summary stat value
+     */
     private Map<String, String> summaryStatsOfFeatures;
 
     public String getAlgorithmName() {

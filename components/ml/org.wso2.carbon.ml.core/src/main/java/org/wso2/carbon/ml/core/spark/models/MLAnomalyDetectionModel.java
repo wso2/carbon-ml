@@ -24,7 +24,7 @@ import java.io.ObjectOutput;
 import org.wso2.carbon.ml.core.spark.models.ext.AnomalyDetectionModel;
 
 /**
- * Wraps Spark's {@link MLAnomalyDetectionModel} model.
+ * Wraps ext {@link AnomalyDetectionModel} model.
  */
 public class MLAnomalyDetectionModel implements Externalizable {
 

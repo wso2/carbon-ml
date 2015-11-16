@@ -212,6 +212,9 @@ public class AnomalyDetectionModel implements Serializable {
 
     /**
      * This method is to get the percentile distances map
+     * key : percentile value
+     * value : distance value
+     * This will return cluster boundary distance values with respect to each percentile
      */
     private Map<Integer, Double> getPercentileDistancesMap(double percentileValue) {
 

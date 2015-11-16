@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -28,6 +28,8 @@ import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 
+import java.lang.Double;
+
 /**
  * This class normalize the each values row by row
  * Using this you can normalize numerical features
@@ -51,11 +53,11 @@ public class Normalization implements Function<double[], double[]> {
 
             for (int i = 0; i < values.length; i++) {
 
-                if (values[i] > max.get(i)) {
-                    normalizedValues[i] = 1;
-                } else if (values[i] < min.get(i)) {
-                    normalizedValues[i] = 0;
-                } else if (min.get(i) == max.get(i)) {
+                if (Double.compare(values[i], max.get(i)) > 0) {
+                    normalizedValues[i] = 1.0;
+                } else if (Double.compare(values[i], min.get(i)) < 0) {
+                    normalizedValues[i] = 0.0;
+                } else if (Double.compare(min.get(i), max.get(i)) == 0) {
                     normalizedValues[i] = 0.5;
                 } else {
                     normalizedValues[i] = (values[i] - min.get(i)) / (max.get(i) - min.get(i));
@@ -78,19 +80,25 @@ public class Normalization implements Function<double[], double[]> {
             List<Feature> features = ctx.getFacts().getIncludedFeatures();
             Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
 
-            for (Feature feature : features) {
-
-                String featureStat = stats.get(feature.getName());
-                double maxValue = SparkModelUtils.getMax(featureStat);
-                this.max.add(maxValue);
-                double minValue = SparkModelUtils.getMin(featureStat);
-                this.min.add(minValue);
-            }
+            setMinMax(features, stats);
             return this;
         }
 
         public Builder minMax(List<Feature> features, Map<String, String> stats) {
 
+            setMinMax(features, stats);
+            return this;
+        }
+
+        public Builder minMax(List<Double> max, List<Double> min) {
+            this.max = max;
+            this.min = min;
+
+            return this;
+        }
+
+        private void setMinMax(List<Feature> features, Map<String, String> stats) {
+
             for (Feature feature : features) {
 
                 String featureStat = stats.get(feature.getName());
@@ -99,7 +107,7 @@ public class Normalization implements Function<double[], double[]> {
                 double minValue = SparkModelUtils.getMin(featureStat);
                 this.min.add(minValue);
             }
-            return this;
+
         }
 
         public Normalization build() {

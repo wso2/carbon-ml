@@ -58,7 +58,7 @@ public class Predictor {
     private long id;
     private MLModel model;
     private List<Vector> dataToBePredicted;
-    //for K means anomaly detection
+    // for K means anomaly detection
     private double percentileValue;
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
@@ -191,6 +191,8 @@ public class Predictor {
 
                 for (Vector vector : dataToBePredicted) {
 
+                    Context context = startTimer(timer);
+
                     if (model.getNormalization()) {
                         double[] data = vector.toArray();
                         double[] normalizedData;
@@ -198,13 +200,12 @@ public class Predictor {
                         try {
                             normalizedData = normalization.call(data);
                         } catch (Exception MLModelBuilderException) {
-                            log.warn("Data normalization failed. Cause: " + MLModelBuilderException.getMessage());
+                            log.warn("Data normalization failed for data: " + data + " Cause: "
+                                    + MLModelBuilderException.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
                     }
-
-                    Context context = startTimer(timer);
 
                     String predictedValue = mLAnomalyDetectionModel.getModel().predict(vector, percentileValue);
                     predictions.add(predictedValue);

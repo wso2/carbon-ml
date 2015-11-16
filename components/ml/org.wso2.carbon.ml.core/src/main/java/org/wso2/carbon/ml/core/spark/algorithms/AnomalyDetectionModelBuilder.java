@@ -59,7 +59,6 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
         LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
         DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
         RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
-        // BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
         MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
         StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
         DoubleArrayToVector doubleArrayToVector = new DoubleArrayToVector.Builder().build();
@@ -72,12 +71,12 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
         if (dataType != null) {
             switch (dataType) {
             case NORMAL:
-                NormalRowsFilter normalRowsFilter = new NormalRowsFilter.Builder().init(context).build();
-                tokens = tokens.filter(normalRowsFilter);
-                break;
-            case ANOMALOUS:
                 AnomalyRowsFilter anomalyRowsFilter = new AnomalyRowsFilter.Builder().init(context).build();
                 tokens = tokens.filter(anomalyRowsFilter);
+                break;
+            case ANOMALOUS:
+                NormalRowsFilter normalRowsFilter = new NormalRowsFilter.Builder().init(context).build();
+                tokens = tokens.filter(normalRowsFilter);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect data type: " + workflow.getAlgorithmName());
@@ -275,8 +274,10 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
 
             // evaluating the model using test data
             // calculating the evaluation results for each percentile of defined range
-            int maxRange = MLConstants.MAX_PERCENTILE;
-            int minRange = MLConstants.MIN_PERCENTILE;
+            int maxRange = System.getProperty(MLConstants.MAX_PERCENTILE_CONF) == null ? MLConstants.MAX_PERCENTILE
+                    : Integer.parseInt(System.getProperty(MLConstants.MAX_PERCENTILE_CONF));
+            int minRange = System.getProperty(MLConstants.MIN_PERCENTILE_CONF) == null ? MLConstants.MIN_PERCENTILE
+                    : Integer.parseInt(System.getProperty(MLConstants.MIN_PERCENTILE_CONF));
 
             Map<Integer, MulticlassMetrics> percentileToMulticlassMetricsMap = getEvaluationResults(
                     anomalyDetectionModel, normalTestData, anomalyTestData, minRange, maxRange, newNormalLabel,

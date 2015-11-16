@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,12 +22,11 @@ import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 
 /**
- * A filter to remove normal rows
+ * A filter to remove anomaly rows
  */
 public class AnomalyRowsFilter implements Function<String[], Boolean> {
 
-
-    private static final long serialVersionUID = 9011345464754786888L;
+    private static final long serialVersionUID = -3612337318474283027L;
     private final String[] normalLabels;
     private final int responseIndex;
 
@@ -38,10 +37,10 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
 
     @Override
     public Boolean call(String[] tokens) {
-        Boolean keep = true;
+        Boolean keep = false;
         for (String label : normalLabels) {
             if (tokens[responseIndex].equals(label)) {
-                keep = false;
+                keep = true;
                 break;
             }
         }
@@ -62,5 +61,6 @@ public class AnomalyRowsFilter implements Function<String[], Boolean> {
         public AnomalyRowsFilter build() {
             return new AnomalyRowsFilter(this);
         }
+
     }
 }
