@@ -402,7 +402,6 @@
 		<Algorithm>
 			<Name>K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA</Name>
 			<Type>Anomaly_Detection</Type>
-			<Interpretability>5</Interpretability>
 			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Iterations</Name>
