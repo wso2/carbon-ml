@@ -259,7 +259,7 @@
             <div class="content">Please select model type to publish</div>
                 <div class="buttons">
                     <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
-                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
                                  <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
                     </div>
                 </div>
