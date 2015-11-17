@@ -226,7 +226,7 @@ public class Workflow implements Serializable {
     public List<Feature> getIncludedFeatures(){
         List<Feature> includedFeatures = new ArrayList<Feature>();
         for (Feature feature : features) {
-            if (feature.isInclude() == true && !responseVariable.equals(feature.getName())) {
+            if (feature.isInclude() == true && (responseVariable == null || !responseVariable.equals(feature.getName()))) {
                 includedFeatures.add(feature);
             }
         }
