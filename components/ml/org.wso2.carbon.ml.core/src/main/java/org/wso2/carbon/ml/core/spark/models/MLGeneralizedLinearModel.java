@@ -24,7 +24,6 @@ import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.apache.spark.mllib.regression.GeneralizedLinearModel;
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
@@ -71,7 +70,8 @@ public class MLGeneralizedLinearModel implements Externalizable, PMMLModelContai
         this.model = model;
     }
 
-    @Override public PMMLExportable getPMMLExportable() throws MLPmmlExportException {
+    @Override
+    public PMMLExportable getPMMLExportable() throws MLPmmlExportException {
         if (model instanceof PMMLExportable) {
             return (PMMLExportable)model;
         } else {

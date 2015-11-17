@@ -26,6 +26,7 @@ import org.apache.http.HttpHeaders;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
@@ -175,7 +176,7 @@ public class ConfigurationApiV11 extends MLRestAPI {
             return Response.status(Response.Status.BAD_REQUEST).entity("Cannot find the algorithm name from the URI.")
                     .build();
         }
-        if (format == null || format.equals("pmml")) {
+        if (format == null || format.equals(MLConstants.ML_MODEL_FORMAT_PMML)) {
             List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
             for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
                 if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmmlExportable()) {
@@ -184,7 +185,7 @@ public class ConfigurationApiV11 extends MLRestAPI {
 
             }
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("PMML downoald not supported for : " + algorithmName).build();
+                    .entity("PMML download not supported for : " + algorithmName).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).entity("unidentified value for query parameter")
                     .build();

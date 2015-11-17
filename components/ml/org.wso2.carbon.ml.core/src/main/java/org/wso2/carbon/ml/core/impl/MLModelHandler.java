@@ -52,7 +52,16 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
-import org.wso2.carbon.ml.core.exceptions.*;
+
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -93,7 +102,7 @@ public class MLModelHandler {
     private Properties mlProperties;
     private BlockingExecutor threadExecutor;
 
-    public enum Format {SERIALIZED, PMML};
+    public enum Format {SERIALIZED, PMML}
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
@@ -712,7 +721,7 @@ public class MLModelHandler {
             throws InvalidRequestException, MLModelPublisherException, MLModelHandlerException, MLPmmlExportException {
         InputStream in = null;
         String errorMsg = "Failed to publish the model [id] " + modelId;
-        RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();;
+        RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
         String relativeRegistryPath = null;
 
         switch (mode) {
@@ -752,6 +761,7 @@ public class MLModelHandler {
                 }
             }
             break;
+
         case PMML:
             MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             try {
@@ -773,6 +783,9 @@ public class MLModelHandler {
                 throw new MLPmmlExportException("PMML export not supported for model type");
             }
             break;
+
+        default:
+            throw new MLModelPublisherException(errorMsg);
         }
 
     return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
@@ -873,28 +886,12 @@ public class MLModelHandler {
             if (extModel instanceof PMMLModelContainer) {
                 PMMLExportable pmmlExportableModel = ((PMMLModelContainer) extModel).getPMMLExportable();
                 String pmmlString = pmmlExportableModel.toPMML();
-
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder;
-
                 try {
-                    //convert the string to xml to append the version attribute
-                    builder = factory.newDocumentBuilder();
-                    Document document = builder.parse(new InputSource(new StringReader(pmmlString)));
-                    Element root = document.getDocumentElement();
-                    root.setAttribute("version", "4.2");
-
-                    // convert it back to string
-                    StringWriter stringWriter = new StringWriter();
-                    TransformerFactory tf = TransformerFactory.newInstance();
-                    Transformer transformer = tf.newTransformer();
-                    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-                    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-                    transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
-                    return stringWriter.toString();
+                    //temporary fix for appending version
+                    String pmmlWithVersion = appendVersionToPMML(pmmlString);
+                    // print the model in the log
+                    log.info(pmmlWithVersion);
+                    return pmmlWithVersion;
                 } catch (Exception e) {
                     String msg = "Error while appending version attribute to pmml";
                     log.error(msg, e);
@@ -908,6 +905,52 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * Append version attribute to pmml (temporary fix)
+     *
+     * @param pmmlString the pmml string to be appended
+     * @return PMML with version as a String
+     * @throws MLPmmlExportException
+     */
+    private String appendVersionToPMML(String pmmlString) throws MLPmmlExportException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        StringWriter stringWriter = null;
+
+        try {
+            //convert the string to xml to append the version attribute
+            builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(pmmlString)));
+            Element root = document.getDocumentElement();
+            root.setAttribute("version", "4.2");
+
+            // convert it back to string
+            stringWriter = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+            return stringWriter.toString();
+        } catch (Exception e) {
+            String msg = "Error while appending version attribute to pmml";
+            log.error(msg, e);
+            throw new MLPmmlExportException(msg);
+        } finally {
+            try {
+                if(stringWriter != null) {
+                    stringWriter.close();
+                }
+            } catch (IOException e) {
+                String msg = "Error while closing stringWriter stream resource";
+                log.error(msg, e);
+                throw new MLPmmlExportException(msg);
+            }
+        }
+    }
 
     class ModelBuilder implements Runnable {
 
