@@ -129,10 +129,14 @@ public class MLAlgorithm {
         this.dimensionality = dimensionality;
     }
 
-    @XmlElement(name= "isPMMLExportable")
-    public boolean getPmmlExportable(){ return pmmlExportable;}
+    @XmlElement(name = "isPMMLExportable")
+    public boolean getPmmlExportable() {
+        return pmmlExportable;
+    }
 
-    public void setPmmlExportable(boolean status){this.pmmlExportable = status;}
+    public void setPmmlExportable(boolean status) {
+        this.pmmlExportable = status;
+    }
 
     /**
      * @return Returns a list of hyper-parameters

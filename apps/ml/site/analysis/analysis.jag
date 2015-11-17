@@ -473,17 +473,15 @@ include("../../includes/tenantAware.jag");
             e.preventDefault();
 
             var algorithmName = findAlgorithmName(analysisId); 
-
             if(loadPMMLAvailability(algorithmName)){
                     $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
-             }    
+            }    
 			modelId = $(this).data('modelid');
-
-
             operationSelect('publish-model');
         });
         $(document).on('click','#publish-model-serialized',function(e){
             e.preventDefault();
+
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
@@ -502,6 +500,7 @@ include("../../includes/tenantAware.jag");
          });        
           $(document).on('click','#publish-model-pmml',function(e){
             e.preventDefault();
+            
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
@@ -585,7 +584,7 @@ include("../../includes/tenantAware.jag");
     }
 
     function loadPMMLAvailability(algorithmName){
-            var status=false;
+        var status=false;
         if(algorithmName){
         
             $.ajax({
@@ -606,21 +605,21 @@ include("../../includes/tenantAware.jag");
     }
 
     function findAlgorithmName(analysisId){
-            var algorithmName;
-            $.ajax({
-                type: "GET",
-                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
-                async : false,
-                dataType: 'text',
-                success : function(res){
-                    algorithmName = sanitize(res);
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-            return algorithmName;
+        var algorithmName;
+        $.ajax({
+            type: "GET",
+            url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+            async : false,
+            dataType: 'text',
+            success : function(res){
+                algorithmName = sanitize(res);
+            },
+            error : function(res){
+            var errorText = JSON.parse(res.responseText)["exception"];
+            handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });
+        return algorithmName;
     }
 
 </script>
