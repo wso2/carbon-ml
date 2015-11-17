@@ -36,6 +36,7 @@ public class MLAlgorithm {
     private int scalability;
     private int multicollinearity;
     private int dimensionality;
+    private boolean pmmlExportable;
     private List<MLHyperParameter> parameters;
 
     /**
@@ -126,6 +127,15 @@ public class MLAlgorithm {
      */
     public void setDimensionality(int dimensionality) {
         this.dimensionality = dimensionality;
+    }
+
+    @XmlElement(name = "isPMMLExportable")
+    public boolean getPmmlExportable() {
+        return pmmlExportable;
+    }
+
+    public void setPmmlExportable(boolean status) {
+        this.pmmlExportable = status;
     }
 
     /**

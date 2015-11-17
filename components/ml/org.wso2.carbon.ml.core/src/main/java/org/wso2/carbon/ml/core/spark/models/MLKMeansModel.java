@@ -23,11 +23,15 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 
 /**
  * Wraps Spark's {@link KMeansModel} model.
  */
-public class MLKMeansModel implements Externalizable {
+public class MLKMeansModel implements Externalizable, PMMLModelContainer {
     private KMeansModel model;
 
     public MLKMeansModel() {
@@ -67,4 +71,12 @@ public class MLKMeansModel implements Externalizable {
         this.model = model;
     }
 
+    @Override
+    public PMMLExportable getPMMLExportable() throws MLPmmlExportException {
+        if (model instanceof PMMLExportable) {
+            return model;
+        } else {
+            throw new MLPmmlExportException("PMML export not supported for model type");
+        }
+    }
 }

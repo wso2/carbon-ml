@@ -41,7 +41,7 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
             <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV11"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ModelApiV11"/>
-            <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV10"/>
+            <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV11"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
@@ -57,7 +57,7 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
             <bean class="org.wso2.carbon.ml.rest.api.AnalysisApiV11"/>
             <bean class="org.wso2.carbon.ml.rest.api.DatasetApiV10"/>
             <bean class="org.wso2.carbon.ml.rest.api.ModelApiV11"/>
-            <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV10"/>
+            <bean class="org.wso2.carbon.ml.rest.api.ConfigurationApiV11"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>

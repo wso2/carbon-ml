@@ -193,6 +193,10 @@ public class MLConstants {
     // to build predictions CSV
     public static final String NEW_LINE = "\n";
 
+    // Model export,publish formats
+    public static final String ML_MODEL_FORMAT_SERIALIZED = "serialized";
+    public static final String ML_MODEL_FORMAT_PMML = "pmml";
+
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, 

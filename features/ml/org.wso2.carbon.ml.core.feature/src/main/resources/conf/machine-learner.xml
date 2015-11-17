@@ -71,6 +71,7 @@
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -98,6 +99,7 @@
 		<Algorithm>
 			<Name>RIDGE_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -135,6 +137,7 @@
 		<Algorithm>
 			<Name>LASSO_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -172,6 +175,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -216,6 +220,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION_LBFGS</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
@@ -227,6 +232,7 @@
 		<Algorithm>
 			<Name>SVM</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -271,6 +277,7 @@
 		<Algorithm>
 			<Name>DECISION_TREE</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
@@ -303,6 +310,7 @@
 		<Algorithm>
 			<Name>RANDOM_FOREST</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Num_Trees</Name>
 				<Value>5</Value>
@@ -361,6 +369,7 @@
 		<Algorithm>
 			<Name>NAIVE_BAYES</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
@@ -373,6 +382,7 @@
 		<Algorithm>
 			<Name>K_MEANS</Name>
 			<Type>Clustering</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Iterations</Name>
 				<Value>20</Value>
@@ -392,10 +402,7 @@
 		<Algorithm>
 			<Name>K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA</Name>
 			<Type>Anomaly_Detection</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>2</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>2</Dimensionality>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Iterations</Name>
 				<Value>100</Value>
@@ -415,10 +422,7 @@
 		<Algorithm>
 			<Name>K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA</Name>
 			<Type>Anomaly_Detection</Type>
-			<Interpretability>5</Interpretability>
-			<Scalability>2</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>2</Dimensionality>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Iterations</Name>
 				<Value>100</Value>
