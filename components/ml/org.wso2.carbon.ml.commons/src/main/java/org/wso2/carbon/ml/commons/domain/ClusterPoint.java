@@ -18,12 +18,16 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * DTO class to store k-means cluster point
  */
-public class ClusterPoint {
+public class ClusterPoint implements Serializable {
+
+    private static final long serialVersionUID = 2038403143111019647L;
     private double[] features;
     private int cluster;
 
@@ -58,4 +62,5 @@ public class ClusterPoint {
             this.features = Arrays.copyOf(features, features.length);
         }
     }
+
 }

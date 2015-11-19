@@ -26,6 +26,7 @@ import java.util.List;
  * DTO class to store multiclass confusion matrix
  */
 public class MulticlassConfusionMatrix implements Serializable {
+
     private static final long serialVersionUID = -3812754594966583187L;
     /**
      * 2D array containing values of the matrix.
@@ -60,7 +61,6 @@ public class MulticlassConfusionMatrix implements Serializable {
             this.matrix = Arrays.copyOf(matrix, matrix.length);
         }
     }
-
     /**
      *
      * @return Returns the sequence of labels in ascending order

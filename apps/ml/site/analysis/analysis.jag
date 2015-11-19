@@ -12,24 +12,24 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
+include("../../includes/tenantAware.jag");
+%>
+
 </head>
 
 <body>
 
-    <div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container col-lg-12 col-md-12 col-sm-12">
 
-        <!-- header -->
-        <header>
-            <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo">
-                    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-                </div>
-                <div class="col-sm-4">
-                    <div class="wr-auth pull-right">
-                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+    <!-- header -->
+    <header>
+        <div class="row wr-global-header">
+            <div class="col-sm-8 app-logo">
+                <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+            </div>
+            <div class="col-sm-4">
+                <div class="wr-auth pull-right">
+                    <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
                         <div class="dropdown-menu">
                             <div class="cu-arrow"></div>
                             <div class="dropdown-menu-content">
@@ -128,10 +128,28 @@
                     </div>
                     <!-- /delete model popup -->                    
 
+                    <!--download model popup -->
+                      <div class="popup-content" data-operation="download-model">
+                        <div class="content">Please select download type</div>
+                        <div class="buttons">
+                            <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                            <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                                 <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="popup-content" data-operation="publish-model">
+			            <div class="content">Please select model type to publish</div>
+			                <div class="buttons">
+			                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
+			                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
+			                     	<a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+			                    </div>
+			                </div>
+        			</div>
+                    <!-- /download model popup -->
                 </div>
                 <!-- /content -->
-
-
             </div>
         </div>
         <!-- /content/body -->
@@ -207,6 +225,9 @@
         $('#nav-analysis').text(" \\ "+analysisName);
 
         loadModels();
+
+
+
         // add pagination
         panelsPerPage = parseInt($("#no-of-panels").val());
         $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
@@ -231,6 +252,8 @@
             deleteModelId = null;
             hidePopup();
         });
+
+      
     });
     
     function loadModels() {
@@ -241,7 +264,7 @@
             url: serverUrl+"/api/analyses/"+analysisId+"/models",
             async : false,
             success: function(data) {
-            	// order models in reverse chronological order
+                // order models in reverse chronological order
                 var analysisModels = data.sort(sortByTimestamp);
                 
                 if (analysisModels.length == 0) {
@@ -281,7 +304,7 @@
                                         '<table class="tbl-projects" projectID="' + modelId + '">' +
                                             '<tr>' +
                                                 '<td>' +
-						    '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
+                            '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
                                                     '<span class="cu-acc-head-title">' + modelName + '</span>' +
                                                     '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
                                                     // retrieve dataset version from model summary when model building is completed
@@ -299,12 +322,16 @@
                                                     '<div>';
                                                     // remove view and and predict links for k-means
                                                     if(modelStatus == 'Complete' && sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS') {
-                                                        accordionPanel += '' + 
-                                                        '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>' +
+                                                        //remove view from Kmeans Anomaly detection with Unlabeled data
+                                                        if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                                                            accordionPanel += '' +
+                                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
+                                                        }
+                                                        accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
                                                     }
                                                         accordionPanel += '' + 
-                                                        '<a href="' + serverUrl + '/api/models/' + modelName + '/export" id="download-model" class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
+                                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
                                                         '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '"><span>Publish</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
                                                     '</div>' +
@@ -320,6 +347,34 @@
                             $("#accordion").append(accordionPanel);
                     };
                 }
+              
+                 //events to handle downloading
+                $(document).on('click','#download-model',function(e){
+                    e.preventDefault();
+                    
+                    modelId = sanitize($(this).data('modelid'));    
+                    var algorithmName = findAlgorithmName(analysisId); 
+                                       
+                    if(loadPMMLAvailability(algorithmName)){
+                        $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
+                    }      
+                    operationSelect('download-model');
+                });
+                $(document).on('click','#download-model-serialized',function(e){
+                    e.preventDefault();
+
+                    window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=serialized';
+                    hidePopup();
+                });
+                $(document).on('click','#download-model-pmml',function(e){
+                	e.preventDefault();
+                	
+                	window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=pmml';
+                    hidePopup();
+                    
+                });
+              
+
             },
             error: function(res) {
                 var errorText = res.responseText
@@ -386,8 +441,8 @@
     // compare function for models
     function sortByTimestamp(a, b) {
         var sortStatus = 0;
-		timestamp1 = new Date(a.createdTime);
-		timestamp2 = new Date(b.createdTime);
+        timestamp1 = new Date(a.createdTime);
+        timestamp2 = new Date(b.createdTime);
      
         if (timestamp1 > timestamp2) {
             sortStatus = -1;
@@ -413,14 +468,23 @@
             window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
         });
 
+        var modelId ;
         $(document).on('click', '#publish', function(e){ 
             e.preventDefault();
-            
-            var modelId = $(this).data('modelid');
+
+            var algorithmName = findAlgorithmName(analysisId); 
+            if(loadPMMLAvailability(algorithmName)){
+                    $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
+            }    
+			modelId = $(this).data('modelid');
+            operationSelect('publish-model');
+        });
+        $(document).on('click','#publish-model-serialized',function(e){
+            e.preventDefault();
 
             $.ajax({
                 type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
                 dataType: 'json',
                 success : function(res){
                     var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
@@ -430,9 +494,29 @@
                 var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
                 }
-            });            
-        });        
-
+            });
+            
+            hidePopup();
+         });        
+          $(document).on('click','#publish-model-pmml',function(e){
+            e.preventDefault();
+            
+            $.ajax({
+                type: "POST",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                dataType: 'json',
+                success : function(res){
+                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
+                    handleNotification(successText, '#notification-area', 'success');
+                },
+                error : function(res){
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            
+            hidePopup();
+         });    
         $(document).on('click', '#view-model', function(e){ 
             e.preventDefault();
             
@@ -499,8 +583,48 @@
         }      
     }
 
+    function loadPMMLAvailability(algorithmName){
+        var status=false;
+        if(algorithmName){
+        
+            $.ajax({
+                type: "GET",
+                url: serverUrl+'/api/configs/algorithms/'+algorithmName+'/exportable?format=pmml',
+                async: false,
+                success : function(res){
+                    status = true;
+                },
+                error: function(res){
+                    status = false;
+                }
+            });
+
+           
+        }
+         return status;
+    }
+
+    function findAlgorithmName(analysisId){
+        var algorithmName;
+        $.ajax({
+            type: "GET",
+            url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+            async : false,
+            dataType: 'text',
+            success : function(res){
+                algorithmName = sanitize(res);
+            },
+            error : function(res){
+            var errorText = JSON.parse(res.responseText)["exception"];
+            handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });
+        return algorithmName;
+    }
+
 </script>
 
 </body>
 
 </html>
+

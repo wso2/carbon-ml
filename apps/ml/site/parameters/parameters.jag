@@ -34,11 +34,11 @@ include("../../includes/tenantAware.jag");
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-</div>
-<div class="col-sm-4">
-    <div class="wr-auth pull-right">
-        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+	</div>
+	<div class="col-sm-4">
+		<div class="wr-auth pull-right">
+			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
 			<div class="dropdown-menu">
 				<div class="cu-arrow"></div>
 				<div class="dropdown-menu-content">
@@ -62,7 +62,7 @@ include("../../includes/tenantAware.jag");
             <div class="wr-action-btn-bar">
                 <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
             </div>
-	    </div>
+        </div>
 
         <div class="col-md-3 wr-wiz-nav">
             <div class="wr-secondary-links pull-right">
@@ -247,13 +247,21 @@ $( document ).ready(function() {
                 else if (algorithmName == 'K_MEANS') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
-                } 
-                else if (algorithmName == 'STACKED_AUTOENCODERS') {
-                	hyperParametersArray[0] = sanitize(hyperParametersResponse[1].value);
+                }
+                else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                }
+                else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                }
+		else if (algorithmName == 'STACKED_AUTOENCODERS') {
+        	    hyperParametersArray[0] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[2].value);
-                }               
+                }
             }
         },
         error: function(res) {

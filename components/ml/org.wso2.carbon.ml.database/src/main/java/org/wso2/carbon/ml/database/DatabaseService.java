@@ -371,6 +371,15 @@ public interface DatabaseService {
     public double getADoubleModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
     /**
+     * Get a boolean value of model configuration
+     * @param analysisId  unique id of the analysis
+     * @param configKey   model configuration key
+     * @return Model configuration as a double
+     * @throws DatabaseHandlerException
+     */
+    public boolean getABooleanModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
+
+    /**
      * Get the list of Hyper-parameters of the model
      * @param analysisId     Unique ID of the analysis
      * @param algorithmName  Algorithm name

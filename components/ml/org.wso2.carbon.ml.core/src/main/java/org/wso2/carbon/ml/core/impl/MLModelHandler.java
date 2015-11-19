@@ -17,11 +17,11 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -30,20 +30,44 @@ import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
+import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.*;
+import org.wso2.carbon.ml.commons.domain.MLAnalysis;
+import org.wso2.carbon.ml.commons.domain.ModelSummary;
+import org.wso2.carbon.ml.commons.domain.MLDataset;
+import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.MLStorage;
+import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
+import org.wso2.carbon.ml.commons.domain.MLModelData;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.FeatureType;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
+import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
-import org.wso2.carbon.ml.core.exceptions.*;
+
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
+
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
@@ -61,8 +85,14 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
-
+import org.xml.sax.InputSource;
 import scala.Tuple2;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 
 /**
  * {@link MLModelHandler} is responsible for handling/delegating all the model related requests.
@@ -72,6 +102,8 @@ public class MLModelHandler {
     private DatabaseService databaseService;
     private Properties mlProperties;
     private BlockingExecutor threadExecutor;
+
+    public enum Format {SERIALIZED, PMML}
 
     public MLModelHandler() {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
@@ -131,6 +163,14 @@ public class MLModelHandler {
     public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
+        } catch (DatabaseHandlerException e) {
+            throw new MLModelHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public MLModelData getModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
+        try {
+            return databaseService.getModel(tenantId, userName, modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -300,7 +340,7 @@ public class MLModelHandler {
     }
 
     public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
-            String columnHeader, InputStream dataStream) throws MLModelHandlerException {
+                                   String columnHeader, InputStream dataStream) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         MLModel mlModel = retrieveModel(modelId);
@@ -403,10 +443,6 @@ public class MLModelHandler {
             throw new MLModelHandlerException(msg);
         }
 
-        if (data.size() == 0) {
-            throw new MLModelHandlerException("Predict dataset is empty.");
-        }
-        
         MLModel builtModel = retrieveModel(modelId);
 
         // Validate number of features in predict dataset
@@ -433,6 +469,173 @@ public class MLModelHandler {
 
         // predict
         Predictor predictor = new Predictor(modelId, builtModel, data);
+        List<?> predictions = predictor.predict();
+
+        return predictions;
+    }
+
+    public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream, double percentile)
+            throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                data.add(dataRow);
+            }
+            return predict(tenantId, userName, modelId, data, percentile);
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                dataStream.close();
+                br.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+    }
+
+    public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
+            String columnHeader, InputStream dataStream, double percentile) throws MLModelHandlerException {
+        List<String[]> data = new ArrayList<String[]>();
+        CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
+        MLModel mlModel = retrieveModel(modelId);
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
+        StringBuilder predictionsWithData = new StringBuilder();
+        try {
+            String line;
+            if((line = br.readLine()) != null && line.split(csvFormat.getDelimiter() + "").length == mlModel.getNewToOldIndicesList().size()) {
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    data.add(dataRow);
+                }
+                // cloning unencoded data to append with predictions
+                List<String[]> unencodedData = new ArrayList<String[]>(data.size());
+                for (String[] item : data) {
+                    unencodedData.add(item.clone());
+                }
+                List<?> predictions = predict(tenantId, userName, modelId, data, percentile);
+                for (int i = 0; i < predictions.size(); i++) {
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
+                            .append(String.valueOf(predictions.get(i)))
+                            .append(MLConstants.NEW_LINE);
+                }
+            } else {
+                int responseVariableIndex = mlModel.getResponseIndex();
+                List<Integer> includedFeatureIndices = mlModel.getNewToOldIndicesList();
+                List<String[]> unencodedData = new ArrayList<String[]>();
+                if(columnHeader.equalsIgnoreCase(MLConstants.NO)) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                } else {
+                    predictionsWithData.append(line).append(MLConstants.NEW_LINE);
+                }
+                while ((line = br.readLine()) != null) {
+                    int count = 0;
+                    String[] dataRow = line.split(csvFormat.getDelimiter() + "");
+                    unencodedData.add(dataRow.clone());
+                    String[] includedFeatureValues = new String[includedFeatureIndices.size()];
+                    for (int index : includedFeatureIndices) {
+                        includedFeatureValues[count++] = dataRow[index];
+                    }
+                    data.add(includedFeatureValues);
+                }
+
+                List<?> predictions = predict(tenantId, userName, modelId, data, percentile);
+                for (int i = 0; i < predictions.size(); i++) {
+                    // replace with predicted value
+                    unencodedData.get(i)[responseVariableIndex] = String.valueOf(predictions.get(i));
+                    predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()));
+                    predictionsWithData.deleteCharAt(predictionsWithData.length() - 1);
+                    predictionsWithData.append(MLConstants.NEW_LINE);
+                }
+            }
+            return predictionsWithData.toString();
+        } catch (IOException e) {
+            String msg = "Failed to read the data points for prediction for model [id] " + modelId;
+            log.error(msg, e);
+            throw new MLModelHandlerException(msg, e);
+        } finally {
+            try {
+                if (dataStream != null && br != null) {
+                    dataStream.close();
+                    br.close();
+                }
+            } catch (IOException e) {
+                String msg = MLUtils.getErrorMsg(String.format(
+                        "Error occurred while closing the streams for model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                        tenantId, userName), e);
+                log.warn(msg, e);
+            }
+        }
+
+    }
+
+
+
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data, double percentile)
+            throws MLModelHandlerException {
+
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                    modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        if (!isValidModelStatus(modelId, tenantId, userName)) {
+            String msg = String
+                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                            modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        if (data.size() == 0) {
+            throw new MLModelHandlerException("Predict dataset is empty.");
+        }
+
+        MLModel builtModel = retrieveModel(modelId);
+
+        // Validate number of features in predict dataset
+        if (builtModel.getNewToOldIndicesList().size() != data.get(0).length) {
+            String msg = String.format("Prediction failed from model [id] %s since [number of features of model]" +
+                            " %s does not match [number of features in the input data] %s",
+                    modelId, builtModel.getFeatures().size(), data.get(0).length);
+            throw new MLModelHandlerException(msg);
+        }
+
+        // Validate numerical feature type in predict dataset
+        for (Feature feature: builtModel.getFeatures()) {
+            if (feature.getType().equals(FeatureType.NUMERICAL)) {
+                int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
+                for (String[] dataPoint: data) {
+                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                                dataPoint[actualIndex], feature.getName(), actualIndex);
+                        throw new MLModelHandlerException(msg);
+                    }
+                }
+            }
+        }
+
+        // predict
+        Predictor predictor = new Predictor(modelId, builtModel, data, percentile);
         List<?> predictions = predictor.predict();
 
         return predictions;
@@ -527,51 +730,83 @@ public class MLModelHandler {
      * 
      * @param tenantId Unique ID of the tenant.
      * @param userName Username of the user.
-     * @param modelId Unique ID of the built ML model.
-     * @throws MLModelPublisherException
+     * @param modelId  Unique ID of the built ML model
+     * @throws InvalidRequestException, MLModelPublisherException, MLModelHandlerException
      */
-    public String publishModel(int tenantId, String userName, long modelId) throws InvalidRequestException, MLModelPublisherException {
+    public String publishModel(int tenantId, String userName, long modelId, Format mode)
+            throws InvalidRequestException, MLModelPublisherException, MLModelHandlerException, MLPmmlExportException {
         InputStream in = null;
         String errorMsg = "Failed to publish the model [id] " + modelId;
-        try {
-            // read model
-            MLStorage storage = databaseService.getModelStorage(modelId);
-            if (storage == null) {
-                throw new InvalidRequestException("Invalid model [id] " + modelId);
-            }
-            String storageType = storage.getType();
-            String storageLocation = storage.getLocation();
-            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-            MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-            in = inputAdapter.read(storageLocation);
-            if (in == null) {
-                throw new InvalidRequestException("Invalid model [id] " + modelId);
-            }
-            // create registry path
-            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-            String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-            String relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
-            // publish to registry
-            RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
-            registryOutputAdapter.write(relativeRegistryPath, in);
+        RegistryOutputAdapter registryOutputAdapter = new RegistryOutputAdapter();
+        String relativeRegistryPath = null;
 
-            return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
-
-        } catch (DatabaseHandlerException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } catch (MLInputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } catch (MLOutputAdapterException e) {
-            throw new MLModelPublisherException(errorMsg, e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignore) {
+        switch (mode) {
+        case SERIALIZED:
+            try {
+                // read model
+                MLStorage storage = databaseService.getModelStorage(modelId);
+                if (storage == null) {
+                    throw new InvalidRequestException("Invalid model [id] " + modelId);
+                }
+                String storageType = storage.getType();
+                String storageLocation = storage.getLocation();
+                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+                in = inputAdapter.read(storageLocation);
+                if (in == null) {
+                    throw new InvalidRequestException("Invalid model [id] " + modelId);
+                }
+                // create registry path
+                MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+                // publish to registry
+                registryOutputAdapter.write(relativeRegistryPath, in);
+            } catch (DatabaseHandlerException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLInputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLOutputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ignore) {
+                    }
                 }
             }
+            break;
+
+        case PMML:
+            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+            try {
+                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName + ".xml";
+
+                MLModel model = retrieveModel(modelId);
+                String pmmlModel = exportAsPMML(model);
+                InputStream stream = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
+                registryOutputAdapter.write(relativeRegistryPath, stream);
+
+            } catch (DatabaseHandlerException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLModelHandlerException e) {
+                throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
+            } catch (MLOutputAdapterException e) {
+                throw new MLModelPublisherException(errorMsg, e);
+            } catch (MLPmmlExportException e) {
+                throw new MLPmmlExportException("PMML export not supported for model type");
+            }
+            break;
+
+        default:
+            throw new MLModelPublisherException(errorMsg);
         }
+
+    return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
     }
+
 
     public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
             int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
@@ -651,6 +886,86 @@ public class MLModelHandler {
             lines = sparkContext.textFile(datasetURL);
         }
         return lines;
+    }
+
+    /**
+     * Export a ML model in PMML format.
+     *
+     * @param model the model to be exported
+     * @return PMML model as a String
+     * @throws MLPmmlExportException
+     */
+    public String exportAsPMML(MLModel model) throws MLPmmlExportException {
+        Externalizable extModel = model.getModel();
+
+        try {
+            if (extModel instanceof PMMLModelContainer) {
+                PMMLExportable pmmlExportableModel = ((PMMLModelContainer) extModel).getPMMLExportable();
+                String pmmlString = pmmlExportableModel.toPMML();
+                try {
+                    //temporary fix for appending version
+                    String pmmlWithVersion = appendVersionToPMML(pmmlString);
+                    // print the model in the log
+                    log.info(pmmlWithVersion);
+                    return pmmlWithVersion;
+                } catch (Exception e) {
+                    String msg = "Error while appending version attribute to pmml";
+                    log.error(msg, e);
+                    throw new MLPmmlExportException(msg);
+                }
+            } else {
+                throw new MLPmmlExportException("PMML export not supported for model type");
+            }
+        } catch (MLPmmlExportException e) {
+            throw new MLPmmlExportException("PMML export not supported for model type");
+        }
+    }
+
+    /**
+     * Append version attribute to pmml (temporary fix)
+     *
+     * @param pmmlString the pmml string to be appended
+     * @return PMML with version as a String
+     * @throws MLPmmlExportException
+     */
+    private String appendVersionToPMML(String pmmlString) throws MLPmmlExportException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        StringWriter stringWriter = null;
+
+        try {
+            //convert the string to xml to append the version attribute
+            builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(pmmlString)));
+            Element root = document.getDocumentElement();
+            root.setAttribute("version", "4.2");
+
+            // convert it back to string
+            stringWriter = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+            return stringWriter.toString();
+        } catch (Exception e) {
+            String msg = "Error while appending version attribute to pmml";
+            log.error(msg, e);
+            throw new MLPmmlExportException(msg);
+        } finally {
+            try {
+                if(stringWriter != null) {
+                    stringWriter.close();
+                }
+            } catch (IOException e) {
+                String msg = "Error while closing stringWriter stream resource";
+                log.error(msg, e);
+                throw new MLPmmlExportException(msg);
+            }
+        }
     }
 
     class ModelBuilder implements Runnable {
@@ -786,4 +1101,6 @@ public class MLModelHandler {
         }
         return link;
     }
+
+
 }

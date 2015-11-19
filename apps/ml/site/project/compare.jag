@@ -79,7 +79,7 @@
         <!-- content/body -->
         <div class="row">
             <div class="col-lg-12 wr-secondary-bar">
-
+ 
                 <!-- Wizard -->
                 <!--ul class="nav nav-pills nav-wizard">
         <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
@@ -96,6 +96,7 @@
 
                 <!-- content -->
                 <div class="container col-md-12 col-centered wr-content">
+
 
                     <div id="notification-area"></div>
                     <h1 id="model-summary-title" class="title">Model Comparison</h1>                    
@@ -235,18 +236,25 @@
                                 <!-- /pagination -->
                             </div>
                         </div>
+                     
+                    
                     </div>
+                 
+                    
+                    </div>
+ 
+    </div>
+                    
                 <!-- /content -->
 
 
             </div>
+
+
         </div>
+
         <!-- /content/body -->
-
-    </div>
-
-
-
+ 
 
 
     <!--footer class="footer">
@@ -260,9 +268,43 @@
     </div>
 </div> 
 
+<!-- modal popup template -->
+<div class="wr-modalpopup">
+    <div class="modalpopup-content"><!-- dynamic content --></div>
+    <div class="modalpopup-bg"></div>
+</div>
+<!-- /modal popup template -->
+
+<!-- download model popup-->
+  <div class="container-fluid col-centered wr-content">
+        <div class="popup-content" data-operation="download-model">
+            <div class="content">Please select download type</div>
+                <div class="buttons">
+                    <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                                 <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                    </div>
+                </div>
+        </div>
+        <div class="popup-content" data-operation="publish-model">
+            <div class="content">Please select model type to publish</div>
+                <div class="buttons">
+                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
+                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
+                                 <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                    </div>
+                </div>
+        </div>
+
+ </div>
+    <!-- /download model popup -->
+                       
+
+
 <script src="../../js/jquery-1.11.1.min.js"></script>
 <script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/operationsmenu.js"></script>
 
 <script type="text/javascript">
 
@@ -325,6 +367,12 @@
         $('#nav-project').text(projectName);
 
         loadModels();
+  //events to handle downloading
+       
+
+
+       
+        
 
         // add pagination
         classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());        
@@ -410,8 +458,8 @@
                                         '<div>' +
                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>' +
                                             '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>' +
-                                            '<a href="' + serverUrl + '/api/models/' + modelName + '/export" id="download-model" class="cu-reg-btn btn-download" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
-                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '"><span>Publish</span></a>' +
+                                             '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
+                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
                                         '</div>' +
                                     '</td>';                                        
                                     }
@@ -545,25 +593,121 @@
             window.location.href = '../analysis/view-model.jag?projectId='+projectId+'&analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName+'&fromCompare=true';
         });
 
+         var modelId ;
         $(document).on('click', '#publish', function(e){ 
             e.preventDefault();
-            
-            var modelId = $(this).data('modelid');
-
+            var analysisId = $(this).data('analysisid');
+            var algorithmName = findAlgorithmName(analysisId); 
+            if(loadPMMLAvailability(algorithmName)){
+                    $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
+             } 
+            modelId = $(this).data('modelid');
+            operationSelect('publish-model');          
+        });  
+        $(document).on('click','#publish-model-serialized',function(e){
+            e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
                 dataType: 'json',
                 success : function(res){
                     var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
                     handleNotification(successText, '#notification-area', 'success');
                 },
                 error : function(res){
-                    var errorText = JSON.parse(res.responseText)["exception"];
-                    handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
                 }
-            });            
-        });             
+            });
+            
+            hidePopup();
+         });        
+        $(document).on('click','#publish-model-pmml',function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                dataType: 'json',
+                success : function(res){
+                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
+                    handleNotification(successText, '#notification-area', 'success');
+                },
+                error : function(res){
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            
+            hidePopup();
+         }); 
+        //events to handle downloading
+        var modeld;
+            $(document).on('click','#download-model',function(e){
+                e.preventDefault();
+                
+                modelId = $(this).data('modelid');  
+                var analysisId = $(this).data('analysisid');
+                var algorithmName = findAlgorithmName(analysisId); 
+                                   
+                if(loadPMMLAvailability(algorithmName)){
+                    $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
+                }      
+                operationSelect('download-model');
+            });
+            $(document).on('click','#download-model-serialized',function(e){
+                e.preventDefault();
+
+                window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=serialized';
+                hidePopup();
+            });
+            $(document).on('click','#download-model-pmml',function(e){
+                e.preventDefault();
+
+                window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=pmml';
+                hidePopup();
+                
+            });  
+
+
+    }
+
+    function loadPMMLAvailability(algorithmName){
+            var status=false;
+        if(algorithmName){
+        
+            $.ajax({
+                type: "GET",
+                url: serverUrl+'/api/configs/algorithms/'+algorithmName+'/exportable?format=pmml',
+                async: false,
+                success : function(res){
+                    status = true;
+                },
+                error: function(res){
+                    status = false;
+                }
+            });
+
+           
+        }
+         return status;
+    }
+
+    function findAlgorithmName(analysisId){
+            var algorithmName;
+            $.ajax({
+                type: "GET",
+                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+                async : false,
+                dataType: 'text',
+                success : function(res){
+                    algorithmName = sanitize(res);
+                },
+                error : function(res){
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+            return algorithmName;
     }
 
 </script>

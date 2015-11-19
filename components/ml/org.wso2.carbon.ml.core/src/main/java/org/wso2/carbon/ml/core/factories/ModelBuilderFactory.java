@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.core.factories;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.algorithms.AnomalyDetectionModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
@@ -36,18 +37,21 @@ public class ModelBuilderFactory {
         MLModelBuilder modelBuilder = null;
 
         switch (type) {
-        case CLASSIFICATION:
-        case NUMERICAL_PREDICTION:
-            modelBuilder = new SupervisedSparkModelBuilder(context);
-            break;
-        case CLUSTERING:
-            modelBuilder = new UnsupervisedSparkModelBuilder(context);
-            break;
-        case DEEPLEARNING:
-            modelBuilder = new DeeplearningModelBuilder(context);
-            break;
-        default:
-            throw new MLInputValidationException("Invalid algorithm type: " + type.name());
+            case CLASSIFICATION:
+            case NUMERICAL_PREDICTION:
+                modelBuilder = new SupervisedSparkModelBuilder(context);
+                break;
+            case CLUSTERING:
+                modelBuilder = new UnsupervisedSparkModelBuilder(context);
+                break;
+            case ANOMALY_DETECTION:
+                modelBuilder = new AnomalyDetectionModelBuilder(context);
+                break;
+            case DEEPLEARNING:
+                modelBuilder = new DeeplearningModelBuilder(context);
+                break;
+            default:
+                throw new MLInputValidationException("Invalid algorithm type: " + type.name());
         }
         return modelBuilder;
     }

@@ -271,7 +271,12 @@ $( document ).ready(function() {
 				                                '<td>' + sanitize(hyperParameters[i].value) + '</td>' +
 				                             '</tr>';
             }
-            $('#parameters-table tbody').append(hyperParametersTableData);            
+            $('#parameters-table tbody').append(hyperParametersTableData);
+
+            //remove response variable and train data fraction from unaplicable algorithms
+            if(res.algorithmName == 'K_MEANS' || res.algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                $("#responseVariable, #trainDataFraction").closest("tr").remove();
+            }
         },
         error : function(res){
             var errorText = res.responseText

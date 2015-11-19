@@ -24,22 +24,22 @@
 		<Property name="ml.thread.pool.queue.size" value="1000" />
 		<!-- Fully qualified name of the file input adapter to be used. -->
 		<Property name="file.in"
-			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<!-- Fully qualified name of the file output adapter to be used. -->
 		<Property name="file.out"
-			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
 		<!-- Fully qualified name of the HDFS input adapter to be used. -->
 		<Property name="hdfs.in"
-			value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.HdfsInputAdapter" />
 		<!-- Fully qualified name of the HDFS output adapter to be used. -->
 		<Property name="hdfs.out"
-			value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.HdfsOutputAdapter" />
 		<!-- Fully qualified name of the Registry input adapter to be used. -->
 		<Property name="registry.in"
-			value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.RegistryInputAdapter" />
 		<!-- Fully qualified name of the Registry output adapter to be used. -->
 		<Property name="registry.out"
-			value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.RegistryOutputAdapter" />
 	</Properties>
 
 	<!-- Comma separated set of email addresses to which the model building status mails are sent. -->
@@ -51,7 +51,7 @@
 	<!-- Optional element. This element should point to a HDFS location where 
 		ML is allowed to store files. -->
 	<HdfsURL>hdfs://localhost:9000</HdfsURL>
-	
+
 	<!-- Storage Details for uploaded datasets. StorageType can be either "file" 
 		or "hdfs". Default storage type is file and location is {carbon.home}/datasets -->
 	<!-- DatasetStorage> 
@@ -71,6 +71,7 @@
 		<Algorithm>
 			<Name>LINEAR_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -98,6 +99,7 @@
 		<Algorithm>
 			<Name>RIDGE_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -135,6 +137,7 @@
 		<Algorithm>
 			<Name>LASSO_REGRESSION</Name>
 			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -172,6 +175,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -216,6 +220,7 @@
 		<Algorithm>
 			<Name>LOGISTIC_REGRESSION_LBFGS</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L2</Value>
@@ -227,6 +232,7 @@
 		<Algorithm>
 			<Name>SVM</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
 				<Name>Iterations</Name>
 				<Value>100</Value>
@@ -241,7 +247,7 @@
 				<Description>Step size of the optimization algorithm. This parameter
 					value should be between 0 and 1, 1 inclusive.
 				</Description>
-			</Parameters>			
+			</Parameters>
 			<Parameters>
 				<Name>Reg_Type</Name>
 				<Value>L1</Value>
@@ -271,6 +277,7 @@
 		<Algorithm>
 			<Name>DECISION_TREE</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Max_Depth</Name>
 				<Value>5</Value>
@@ -303,6 +310,7 @@
 		<Algorithm>
 			<Name>RANDOM_FOREST</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Num_Trees</Name>
 				<Value>5</Value>
@@ -361,6 +369,7 @@
 		<Algorithm>
 			<Name>NAIVE_BAYES</Name>
 			<Type>Classification</Type>
+			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>1</Value>
@@ -373,10 +382,11 @@
 		<Algorithm>
 			<Name>K_MEANS</Name>
 			<Type>Clustering</Type>
+			<isPMMLExportable>true</isPMMLExportable>
 			<Parameters>
-				<Name>Iterations</Name>
+				<Name>Max_Iterations</Name>
 				<Value>20</Value>
-				<Description>Number of times optimizer runs before completing the
+				<Description>Maximum number of times optimizer runs before completing the
 					optimization process. This parameter value should be an integer
 					greater than 0.
 				</Description>
@@ -385,6 +395,46 @@
 				<Name>Num_Clusters</Name>
 				<Value>3</Value>
 				<Description>The number of desired clusters. This value should be
+					an integer greater than 0.
+				</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA</Name>
+			<Type>Anomaly_Detection</Type>
+			<isPMMLExportable>true</isPMMLExportable>
+			<Parameters>
+				<Name>Max_Iterations</Name>
+				<Value>100</Value>
+				<Description>Maximum number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Num_of_Normal_Clusters</Name>
+				<Value>5</Value>
+				<Description>The number of desired normal clusters. This value should be
+					an integer greater than 0.
+				</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA</Name>
+			<Type>Anomaly_Detection</Type>
+			<isPMMLExportable>true</isPMMLExportable>
+			<Parameters>
+				<Name>Max_Iterations</Name>
+				<Value>100</Value>
+				<Description>Maximum number of times optimizer runs before completing the
+					optimization process. This parameter value should be an integer
+					greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Num_of_Normal_Clusters</Name>
+				<Value>5</Value>
+				<Description>The number of desired normal clusters. This value should be
 					an integer greater than 0.
 				</Description>
 			</Parameters>
@@ -399,32 +449,32 @@
 			<Parameters>
 				<Name>Batch_Size</Name>
 				<Value>100</Value>
-				<Description>Batch Size determines the number of training cases considered 
-				for each epoch.</Description>
+				<Description>Batch Size determines the number of training cases considered
+					for each epoch.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Layer_Sizes</Name>
 				<Value>500,500,500</Value>
 				<Description>Layer Sizes determines the number of neurons of each layer.
-				The first layer is the closest to the inputs and the last is the furthest 
-				from inputs.This is a comma-separated value.</Description>
+					The first layer is the closest to the inputs and the last is the furthest
+					from inputs.This is a comma-separated value.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Activation_Type</Name>
 				<Value>RectifierWithDropout</Value>
 				<Description>Activation type is the function used to activate neurons
-				when inputs given (i.e. f(W.x + b) where W,b and x are weights and bias and inputs
-				respectively). The possible values are, Rectifier, RectifierWithDropout, Tanh, TanhWithDropout,
-				Maxout, MaxoutWithDropout (case sensitive)
+					when inputs given (i.e. f(W.x + b) where W,b and x are weights and bias and inputs
+					respectively). The possible values are, Rectifier, RectifierWithDropout, Tanh, TanhWithDropout,
+					Maxout, MaxoutWithDropout (case sensitive)
 				</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Epochs</Name>
 				<Value>10</Value>
 				<Description>Epochs define the number of iterations the network is trained for.
-				It is important to have a suitable number of epochs, as a high number can lead
-				to over-fitting.</Description>
-			</Parameters>			
+					It is important to have a suitable number of epochs, as a high number can lead
+					to over-fitting.</Description>
+			</Parameters>
 		</Algorithm>
 	</Algorithms>
 </MachineLearner>

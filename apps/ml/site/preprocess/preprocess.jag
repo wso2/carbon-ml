@@ -456,14 +456,14 @@ function listSelectionImputeOption(list, selectedOption, selectedFeatureType, cs
     }
     }
     else {
-        selection = selection + "<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>";
+        selection = selection + "<option class='impute-fix' selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>";
     }
 
     selection = selection + "</select>";
     return selection;
 }
 
-//change mpute Options acording to selected Field Type
+//change impute Options according to selected Field Type
 function changeImputeOptions(fieldTypeValue, imputeMethodElement) {
 
     imputeMethodElement.empty();
@@ -473,7 +473,7 @@ function changeImputeOptions(fieldTypeValue, imputeMethodElement) {
         imputeMethodElement.append("<option value=\"" + "REPLACE_WTH_MEAN" + "\">" + "REPLACE_WTH_MEAN" + "</option>");            
     }
     else {           
-        imputeMethodElement.append("<option selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>"); 
+        imputeMethodElement.append("<option class='impute-fix' selected value=\"" + "DISCARD" + "\">" + "DISCARD" + "</option>");
     }
 
 }

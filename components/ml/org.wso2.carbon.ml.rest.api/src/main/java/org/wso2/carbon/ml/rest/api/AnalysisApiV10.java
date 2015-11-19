@@ -62,7 +62,7 @@ public class AnalysisApiV10 extends MLRestAPI {
 
     /**
      * HTTP Options method implementation for analysis API.
-     * 
+     *
      * @return
      */
     @OPTIONS
@@ -110,7 +110,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addCustomizedFeatures(@PathParam("analysisId") long analysisId,
-            List<MLCustomizedFeature> customizedFeatures) {
+                                          List<MLCustomizedFeature> customizedFeatures) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -139,7 +139,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addDefaultsIntoCustomizedFeatures(@PathParam("analysisId") long analysisId,
-            MLCustomizedFeature customizedValues) {
+                                                      MLCustomizedFeature customizedValues) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -173,7 +173,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummarizedFeatures(@PathParam("analysisId") long analysisId, @QueryParam("limit") int limit,
-            @QueryParam("offset") int offset) {
+                                          @QueryParam("offset") int offset) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -274,7 +274,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Path("/{analysisId}/filteredFeatures")
     @Produces("application/json")
     public Response getfilteredFeatures(@PathParam("analysisId") String analysisId,
-            @QueryParam("featureType") String featureType) {
+                                        @QueryParam("featureType") String featureType) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -445,7 +445,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getSummaryStatistics(@PathParam("analysisId") long analysisId,
-            @QueryParam("feature") String featureName) {
+                                         @QueryParam("feature") String featureName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -480,7 +480,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addModelConfiguration(@PathParam("analysisId") long analysisId,
-            List<MLModelConfiguration> modelConfigs) {
+                                          List<MLModelConfiguration> modelConfigs) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -510,7 +510,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response addHyperParameters(@PathParam("analysisId") long analysisId,
-            List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
+                                       List<MLHyperParameter> hyperParameters, @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -540,7 +540,7 @@ public class AnalysisApiV10 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response getHyperParameters(@PathParam("analysisId") long analysisId,
-            @QueryParam("algorithmName") String algorithmName) {
+                                       @QueryParam("algorithmName") String algorithmName) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
