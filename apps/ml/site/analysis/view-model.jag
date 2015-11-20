@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
     <!-- for threshold slider -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-  
+    
     <script src="../../js/respond.min.js"></script>  
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
@@ -38,12 +38,12 @@ include("../../includes/tenantAware.jag");
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-    <div class="col-sm-8 app-logo">
-        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-    </div>
-    <div class="col-sm-4">
-        <div class="wr-auth pull-right">
-            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+<div class="col-sm-8 app-logo">
+    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
                 <div class="dropdown-menu">
                     <div class="cu-arrow"></div>
                     <div class="dropdown-menu-content">
@@ -238,8 +238,20 @@ include("../../includes/tenantAware.jag");
                                 </div>                           
                         </div>
                     </div>
-
             </div>
+
+	    <div class="row">
+		<div class="col-md-12">
+            		<div class="wr-graph-element gr03">				                          
+                    	<h5>Deep Network Visualization</h5>                                        
+		            	<div class="wr-graph-img">
+		                	<div id="dl-network"></div>
+		            	</div>
+            		</div>
+            	</div>
+            </div>
+
+
         </div>
         <!-- /content -->
 
@@ -552,6 +564,36 @@ $( document ).ready(function() {
                 drawClusterDiagramBase();
                 drawClusterDiagram();
             }
+	    else if (algorithm == 'STACKED_AUTOENCODERS') {
+                if(res.modelAccuracy) {
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
+                }                
+                // remove not applicable charts/tables
+                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                $("#residual").remove();
+                // draw confusion matrix                
+                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
+                // draw feature select
+                testResultDataPointsSample = res.testResultDataPointsSample;
+                features = res.features;
+                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
+                if(features.length > 0) {
+                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                    $.each(features,function(index, feature){
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                            value: index,
+                            text : sanitize(feature)
+                        }));
+                    });                    
+                    $('#predicted-actual-y-features option')[1].selected = true;
+	                // draw predicted vs. actual chart
+	                drawPredictedVsActualChart(testResultDataPointsSample);
+                }
+                else {
+                    var chartType = 'predicted vs. actual chart';
+                    $('#predicted-vs-actual').html(getInfo(chartType));
+                }                    
+            }
         },
         error: function(res){
             var errorText = res.responseText
@@ -562,7 +604,7 @@ $( document ).ready(function() {
     if (algorithm == 'STACKED_AUTOENCODERS') {
 		loadInputFeaturesCountAndCreateDeepNetwork();
     } else {    	
-		$("#dl-network").closest("div.wr-content").remove();
+		$("#dl-network").closest("div.wr-graph-element").remove();
 		//$("#col-md-12 col-centered wr-graph-content").children().remove();
     }
 
@@ -856,6 +898,68 @@ function drawOtherMeasuresTable(percentileToMulticlassMetricsMap, cssSelector){
 
     $(cssSelector).html(otherMeasuresHtml); 
 
+}
+
+
+function drawClusterDiagramBase() {
+
+    if(features.length > 1) {
+        $('#cluster-independent, #cluster-dependent').empty();
+        $.each(features,function(index, feature){
+            $('#cluster-independent, #cluster-dependent').append($('<option>', {
+                value: sanitize(feature),
+                text : sanitize(feature)
+            }));
+        });
+        // make second option selected by default
+        $('#cluster-dependent option')[1].selected = true;
+
+        drawClusterDiagram();
+    }
+}
+
+function drawClusterDiagram() {
+    
+    // get categorical feature list from checkbox selection
+    var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+    var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+
+    var featureIndependentIndex = $.inArray(featureIndependent, features);
+    var featureDependenttIndex = $.inArray(featureDependent, features);
+
+            var dataArray = clusterData;
+            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+            var clusterDataArray = [];
+            for (var i = 0; i < dataArray.length; i++) {                
+                var dataRow = [];
+                dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
+                dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
+                dataRow[2] = dataArray[i]['cluster'];
+                clusterDataArray.push(dataRow);
+            }
+            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
+}
+
+// drawing a simple scatter graph
+function drawClusters(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
+    $(cssClass).empty();
+    var scatter = new ScatterPlot(data);
+
+    scatter.setPlotingAreaWidth(600);
+    scatter.setPlotingAreaHeight(400);
+    scatter.setMarkerSize(markerSize);
+    scatter.setLegend(legendEnabled);
+    scatter.setXAxisText(xLabel);
+    scatter.setYAxisText(yLabel);
+    scatter.plot(d3.select(cssClass));
+}
+
+function loadInputFeaturesCountAndCreateDeepNetwork() {
+	var featuresCount = features.length;
+	var responseVariable = "";
+	var classCount = -1;
+	var hidLayerArr = [];
+
 	
 	/*
 	$.ajax({
@@ -940,57 +1044,166 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	var allCounts = allCounts.concat(hiddenCounts);
 	allCounts.push(outCount);
 
-function drawClusterDiagramBase() {
+	// if the height of an element is more than this,
+	// set height to this value
+	var maxHeightThreshold = 750;
+	var minHeightThreshold = 50; 
+	//to get min and max values of arrays
+	Array.prototype.min = function() {
+		  return Math.min.apply(null, this);
+	};
+	Array.prototype.max = function() {
+		  return Math.max.apply(null, this);
+	};
 
-    if(features.length > 1) {
-        $('#cluster-independent, #cluster-dependent').empty();
-        $.each(features,function(index, feature){
-            $('#cluster-independent, #cluster-dependent').append($('<option>', {
-                value: sanitize(feature),
-                text : sanitize(feature)
-            }));
-        });
-        // make second option selected by default
-        $('#cluster-dependent option')[1].selected = true;
+	var rectHeights = [];
+	var rectColors = [];
+	var minCount = allCounts.slice(1,allCounts.length-1).min();
+	for(var i=0; i<allCounts.length; i++){
+		rectHeights[i] = parseInt(allCounts[i]*100/minCount);
+		if(rectHeights[i] > maxHeightThreshold){
+			rectHeights[i] = maxHeightThreshold;
+		}
+		if(rectHeights[i] < minHeightThreshold){
+			rectHeights[i] = minHeightThreshold;
+		}
+		if(i==0 || i == allCounts.length-1){
+			rectColors[i] = "red";
+		} else {
+			rectColors[i] = "green";
+		}
+	}	
 
-        drawClusterDiagram();
-    }
-}
+	var canvasWidth = 500;
+	var spacingY = 10;
 
-function drawClusterDiagram() {
-    
-    // get categorical feature list from checkbox selection
-    var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
-    var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+	//set the canvas size accordingly
+	var canvasHeight;
+	if(rectHeights.max()<maxHeightThreshold){
+		canvasHeight = rectHeights.max() + (spacingY * 2);
+	} else {
+		canvasHeight = maxHeightThreshold;
+	}
 
-    var featureIndependentIndex = $.inArray(featureIndependent, features);
-    var featureDependenttIndex = $.inArray(featureDependent, features);
+	//create the canvas
+	var canvas = d3.select(cssClass)
+					.append("svg")
+					.attr("width", canvasWidth)
+					.attr("height", canvasHeight);
 
-            var dataArray = clusterData;
-            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
-            var clusterDataArray = [];
-            for (var i = 0; i < dataArray.length; i++) {                
-                var dataRow = [];
-                dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
-                dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
-                dataRow[2] = dataArray[i]['cluster'];
-                clusterDataArray.push(dataRow);
-            }
-            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
-}
+	//creating shape elements (rectangles) to represent different layers
+	var startX = 10;
+	var widthRect = 50;
+	var widthSpacing = 50;
+	var currX = startX;
+	for(var i=0; i<allCounts.length; i++){
+		var posY = (canvasHeight - rectHeights[i])/2;
+		var rect = canvas.append("rect")
+				.attr("x", currX)
+				.attr("y", posY)
+				.attr("width", 50)
+				.attr("height", rectHeights[i])
+				.attr("fill", rectColors[i]);
 
-// drawing a simple scatter graph
-function drawClusters(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
-    $(cssClass).empty();
-    var scatter = new ScatterPlot(data);
+		canvas.append("text")
+		  .style("fill", "white")
+		  .style("font-size", "25px")
+		  .attr("dy", ".35em")
+		  .attr("text-anchor", "middle")
+		  .attr("transform", "translate(" + (currX + widthRect/2).toString() 
+				  + "," + (posY + rectHeights[i]/2).toString() +") rotate(90)")
+		  .text(allCounts[i].toString());
+		currX = currX + widthRect + widthSpacing;
+	}
 
-    scatter.setPlotingAreaWidth(600);
-    scatter.setPlotingAreaHeight(400);
-    scatter.setMarkerSize(markerSize);
-    scatter.setLegend(legendEnabled);
-    scatter.setXAxisText(xLabel);
-    scatter.setYAxisText(yLabel);
-    scatter.plot(d3.select(cssClass));
+	//to move background elements to the background
+	d3.selection.prototype.moveToBack = function() { 
+	    return this.each(function() { 
+	        var firstChild = this.parentNode.firstChild; 
+	        if (firstChild) { 
+	            this.parentNode.insertBefore(this, firstChild); 
+	        } 
+	    }); 
+	};
+	
+	//drawing the arrow which goes from inputs to outputs
+	var arrowHeadWidth = 20;
+	var arrowHeadHeight = 20;
+	
+	var line = canvas.append("line")
+    			.attr("x1", startX + widthRect)
+    			.attr("y1", canvasHeight/2)
+    			.attr("x2", currX - widthRect - widthSpacing - arrowHeadWidth)
+    			.attr("y2", canvasHeight/2)
+    			.attr("stroke-width", 6)
+    			.attr("stroke", "green");
+
+	var arrowStartX = currX - widthRect - widthSpacing;
+	var arrowStartY = canvasHeight/2;
+	var pathString = "M " + arrowStartX.toString() + " " + arrowStartY.toString() + " "
+	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight/2)).toString() + " "
+	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight/2)).toString() + " "
+	+ "L " + arrowStartX.toString() + " " + arrowStartY.toString();
+	
+	var arrowHead = canvas.append("svg:path")
+    .attr("d",pathString)
+    .style("stroke-width", 1)
+    .style("stroke", "green")
+    .style("fill", "green");
+
+	line.moveToBack();
+	arrowHead.moveToBack();
+	
+	//add header text
+	var textPosY = rectHeights.max() + spacingY + 50;
+	var fontSize = "15px";
+	data = ["Inputs", "Hidden Layers", "Outputs"];
+
+	//added Input text as two text elements because 
+	//<br/> doesn't render in SVG
+	var in1Text = canvas.append("text")
+	  .attr("x", startX + widthRect/2)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[0]);
+
+	var in2Text = canvas.append("text")
+	  .attr("x", startX + widthRect/2)
+	  .attr("y", textPosY + 20)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text("(Features)");
+
+	//added Output text as two text elements because 
+	//<br/> doesn't render in SVG
+	var out1Text = canvas.append("text")
+	  .attr("x", currX - widthSpacing - widthRect/2)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[2]);
+
+	var out2Text = canvas.append("text")
+	  .attr("x", currX - widthSpacing - widthRect/2)
+	  .attr("y", textPosY + 20)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text("(Classes)");
+
+	//hidden layer text  
+	var hiddenTextPosX = (startX + widthRect/2 + (currX - widthSpacing - widthRect/2 - (startX + widthRect/2)))/2;
+	var hiddenText = canvas.append("text")
+	  .attr("x", hiddenTextPosX)
+	  .attr("y", textPosY)
+	  .style("fill", "black")
+	  .style("font-size", fontSize)
+	  .attr("text-anchor", "middle")
+	  .text(data[1]);
 }
 
 // functions for chart marker size changes
