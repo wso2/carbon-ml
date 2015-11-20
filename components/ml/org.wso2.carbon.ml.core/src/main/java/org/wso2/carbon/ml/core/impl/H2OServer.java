@@ -24,8 +24,7 @@ import water.H2O;
 import water.H2OApp;
 
 /**
- *
- * @author Thush
+ * H2O server for Deep Learning.
  */
 public class H2OServer {
 
