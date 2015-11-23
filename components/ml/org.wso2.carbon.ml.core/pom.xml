@@ -138,26 +138,22 @@
                     	<artifactId>org.wso2.carbon.analytics.api</artifactId>
            	</dependency>
 			<!-- Deeplearning dependencies -->
-		<dependency>
-			<groupId>ai.h2o</groupId>
-			<artifactId>h2o-app</artifactId>
-			<version>3.2.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>ai.h2o</groupId>
-			<artifactId>h2o-core</artifactId>
-			<version>3.2.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>ai.h2o</groupId>
-			<artifactId>h2o-algos</artifactId>
-			<version>3.2.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>ai.h2o</groupId>
-			<artifactId>h2o-genmodel</artifactId>
-			<version>3.2.0.9</version>
-		</dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.ai.h2o</groupId>
+            <artifactId>h2o-app</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.ai.h2o</groupId>
+            <artifactId>h2o-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.ai.h2o</groupId>
+            <artifactId>h2o-algos</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.ai.h2o</groupId>
+            <artifactId>h2o-genmodel</artifactId>
+        </dependency>
 	</dependencies>
 
     <profiles>

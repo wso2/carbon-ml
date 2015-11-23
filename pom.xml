@@ -539,24 +539,24 @@
 
 			<!-- Deeplearning dependencies -->
 			<dependency>
-				<groupId>ai.h2o</groupId>
+				<groupId>org.wso2.orbit.ai.h2o</groupId>
 				<artifactId>h2o-app</artifactId>
-				<version>3.2.0.9</version>
+				<version>${h2o.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ai.h2o</groupId>
+				<groupId>org.wso2.orbit.ai.h2o</groupId>
 				<artifactId>h2o-core</artifactId>
-				<version>3.2.0.9</version>
+				<version>${h2o.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ai.h2o</groupId>
+				<groupId>org.wso2.orbit.ai.h2o</groupId>
 				<artifactId>h2o-algos</artifactId>
-				<version>3.2.0.9</version>
+				<version>${h2o.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ai.h2o</groupId>
+				<groupId>org.wso2.orbit.ai.h2o</groupId>
 				<artifactId>h2o-genmodel</artifactId>
-				<version>3.2.0.9</version>
+				<version>${h2o.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -683,6 +683,9 @@
 		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
 		<akka.version>2.3.4-spark</akka.version>
 		<typesafe.version>1.2.0</typesafe.version>
+
+		<!-- H2O dependency versions -->
+		<h2o.version>3.2.0.9.wso2v1</h2o.version>
 
 		<!-- Jaggery dependency versions -->
 		<jaggery.version>0.11.0</jaggery.version>
