@@ -22,8 +22,6 @@ import org.apache.commons.logging.LogFactory;
 
 import water.H2O;
 import water.H2OApp;
-import water.H2OClient;
-import water.H2OClientApp;
 
 /**
  * H2O server for Deep Learning.
@@ -56,26 +54,6 @@ public class H2OServer {
         } else {
             log.info("H2O Server is not running");
         }
-    }
-
-    /**
-     * Connects to a remote H2O cloud
-     * @param port port of the remote cloud
-     * @param ip host IP of the remote cloud
-     * @param name name of the remote cloud
-     */
-    public static void startH2O(String port, String ip, String name) {
-        String[] args = new String[6];
-
-        args[0] = "-port";
-        args[1] = port;
-        args[2] = "-ip";
-        args[3] = ip;
-        args[4] = "-name";
-        args[5] = name;
-
-        H2OClientApp.main(args);
-        H2OClient.waitForCloudSize(1, 10 * 1000 /* ms */);
     }
 
     public static boolean hasH2OServerStarted() {
