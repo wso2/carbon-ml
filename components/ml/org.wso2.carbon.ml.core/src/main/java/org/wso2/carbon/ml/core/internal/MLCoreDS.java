@@ -145,10 +145,6 @@ public class MLCoreDS {
                 valueHolder.setSparkContext(sparkContext);
             }
 
-            // Starting H2O server - for deep learning algorithms
-            H2OServer.startH2O();
-            log.info("H2O server has started.");
-
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
             OutputEventAdapterConfiguration outputAdapterConfig = new OutputEventAdapterConfiguration();
@@ -172,6 +168,10 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+
+            // Starting H2O server - for deep learning algorithms
+            H2OServer.startH2O();
+            log.info("H2O server has started.");
             
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
@@ -207,7 +207,7 @@ public class MLCoreDS {
         if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
             MLCoreServiceValueHolder.getInstance().getSparkContext().close();
         }
-        
+        H2OServer.stopH2O();
     }
 
     protected void setDatabaseService(DatabaseService databaseService) {

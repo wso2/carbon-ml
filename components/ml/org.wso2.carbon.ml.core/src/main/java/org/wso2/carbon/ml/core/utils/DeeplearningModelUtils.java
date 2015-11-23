@@ -29,7 +29,6 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.wso2.carbon.ml.core.spark.summary.DeeplearningModelSummary;
 import org.wso2.carbon.ml.core.spark.summary.PredictedVsActual;
 import org.wso2.carbon.ml.core.spark.summary.TestResultDataPoint;
-import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
 import scala.Tuple2;
 import water.fvec.Frame;

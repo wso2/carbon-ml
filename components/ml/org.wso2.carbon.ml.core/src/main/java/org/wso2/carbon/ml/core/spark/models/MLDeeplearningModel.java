@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -78,7 +78,7 @@ public class MLDeeplearningModel implements Externalizable {
      * Predicts the label of a given input
      * 
      * @param input input to predict as a vector
-     * @return
+     * @return prediction
      */
     public double predict(Vector input) {
         double predVal = dlModel.score(input.toArray());
