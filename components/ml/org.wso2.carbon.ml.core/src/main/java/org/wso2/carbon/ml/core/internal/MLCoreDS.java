@@ -207,7 +207,7 @@ public class MLCoreDS {
         if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
             MLCoreServiceValueHolder.getInstance().getSparkContext().close();
         }
-        H2OServer.stopH2O();
+//        H2OServer.stopH2O();
     }
 
     protected void setDatabaseService(DatabaseService databaseService) {
