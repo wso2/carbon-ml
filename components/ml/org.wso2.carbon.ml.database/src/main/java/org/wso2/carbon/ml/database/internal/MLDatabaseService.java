@@ -977,6 +977,57 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, updateStatement, result);
         }
     }
+    
+    /**
+     * Retrieve the latest SamplePoints object of a given dataset.
+     *
+     * @param tenantId Tenant id
+     * @param user Tenant user name
+     * @param datasetId Unique Identifier of the dataset
+     * @return SamplePoints object of the value-set
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public String getLatestSample(int tenantId, String user, long datasetId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        ResultSet result = null;
+        SamplePoints samplePoints = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            updateStatement = connection.prepareStatement(SQLQueries.GET_SAMPLE_POINTS_OF_LATEST_VERSION);
+            updateStatement.setLong(1, datasetId);
+            updateStatement.setInt(2, tenantId);
+            updateStatement.setString(3, user);
+            result = updateStatement.executeQuery();
+            if (result.first() && result.getBinaryStream(1) != null) {
+                samplePoints = MLDBUtil.getSamplePointsFromInputStream(result.getBinaryStream(1));
+            }
+            StringBuffer csv = new StringBuffer("");
+            if (samplePoints != null) {
+                List<List<String>> points = samplePoints.getSamplePoints();
+                for (List<String> list : points) {
+                    StringBuffer col = new StringBuffer("");
+                    // for each column
+                    for (String string : list) {
+                        col.append(string+",");
+                    }
+                    csv.append(col.substring(0, col.length()-1)+"\n");
+                }
+            }
+            return csv.toString();
+        } catch (Exception e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException("An error occurred while retrieving the sample of latest dataset version of "
+                    + datasetId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement, result);
+        }
+    }
 
     /**
      * Returns a set of features in a given range, from the alphabetically ordered set of features, of a data-set.
@@ -1374,6 +1425,39 @@ public class MLDatabaseService implements DatabaseService {
             throw new DatabaseHandlerException("An error occurred while retrieving summary "
                     + "statistics for the dataset version: " + datasetVersionId
                     + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources
+            MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
+        }
+    }
+    
+    /**
+     * Retrieve and returns the wrangler script for a given analysis, from the database.
+     *
+     * @param analysisId analysis id
+     * @return wrangler script as a String
+     * @throws DatabaseHandlerException
+     */
+    @Override
+    public String getWranglerScript(long analysisId) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement getSummaryStatement = null;
+        ResultSet result = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            getSummaryStatement = connection.prepareStatement(SQLQueries.GET_WRANGLER_SCRIPT);
+            getSummaryStatement.setLong(1, analysisId);
+            result = getSummaryStatement.executeQuery();
+            if (result.next()) {
+                return result.getString(1);
+            }
+
+            return "";
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving wrangler script for analysis [id] "
+                    + analysisId + ": " + e.getMessage(), e);
         } finally {
             // Close the database resources
             MLDatabaseUtils.closeDatabaseResources(connection, getSummaryStatement, result);
@@ -2465,15 +2549,9 @@ public class MLDatabaseService implements DatabaseService {
 
             // set hyper parameters
             mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
-            // result = getStatement.executeQuery();
-            // if (result.first()) {
-            // mlWorkflow.setAlgorithmClass(result.getString(1));
-            // mlWorkflow.setAlgorithmName(result.getString(2));
-            // mlWorkflow.setResponseVariable(result.getString(3));
-            // mlWorkflow.setTrainDataFraction(result.getDouble(4));
-            // List<HyperParameter> hyperParameters = (List<HyperParameter>) result.getObject(5);
-            // mlWorkflow.setHyperParameters(MLDatabaseUtils.getHyperParamsAsAMap(hyperParameters));
-            // }
+            // set wrangler script
+            mlWorkflow.setWranglerScript(getWranglerScript(analysisId));
+            
             return mlWorkflow;
         } catch (SQLException e) {
             throw new DatabaseHandlerException(e.getMessage(), e);
@@ -2675,6 +2753,36 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.rollBack(connection);
             throw new DatabaseHandlerException(
                     "An error occurred while updating the sample points of dataset version: " + datasetVersionId + ": "
+                            + e.getMessage(), e);
+        } finally {
+            // Enable auto commit.
+            MLDatabaseUtils.enableAutoCommit(connection);
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, updateStatement);
+        }
+    }
+    
+    @Override
+    public void updateWranglerScript(long analysisId, String script) throws DatabaseHandlerException {
+
+        Connection connection = null;
+        PreparedStatement updateStatement = null;
+        try {
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            updateStatement = connection.prepareStatement(SQLQueries.UPDATE_WRANGLER_SCRIPT);
+            updateStatement.setString(1, script);
+            updateStatement.setLong(2, analysisId);
+            updateStatement.execute();
+            connection.commit();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Successfully updated the wrangler script of analysis [id]: " + analysisId);
+            }
+        } catch (SQLException e) {
+            // Roll-back the changes.
+            MLDatabaseUtils.rollBack(connection);
+            throw new DatabaseHandlerException(
+                    "An error occurred while updating the wrangler script of analysis [id]: " + analysisId + ": "
                             + e.getMessage(), e);
         } finally {
             // Enable auto commit.

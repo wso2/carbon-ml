@@ -84,6 +84,15 @@ public class MLDatasetProcessor {
         }
     }
 
+    public String getLatestSamplePoints(int tenantId, String userName, long datasetId)
+            throws MLDataProcessingException {
+        try {
+            return databaseService.getLatestSample(tenantId, userName, datasetId);
+        } catch (DatabaseHandlerException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        }
+    }
+
     public MLDatasetVersion getVersionSetWithVersion(int tenantId, String userName, long datasetId, String version)
             throws MLDataProcessingException {
         try {

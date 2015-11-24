@@ -694,9 +694,39 @@ public interface DatabaseService {
     List<String> getFeatureNames(long datasetId) throws DatabaseHandlerException;
     
     /**
+     * Updates the wrangler script of a given analysis.
+     * @param analysisId analysis id.
+     * @param script wrangler script to be updated.
+     * @throws DatabaseHandlerException
+     */
+    void updateWranglerScript(long analysisId, String script) throws DatabaseHandlerException;
+    
+    /**
+     * Returns the wrangler script for a given analysis id. Returns an empty string, if not found.
+     * 
+     * @param analysisId analysis id
+     * @return wrangler script as a String or an empty String if not found.
+     * @throws DatabaseHandlerException
+     */
+    String getWranglerScript(long analysisId) throws DatabaseHandlerException;
+    
+    /**
+     * Get the SamplePoints for the latest version of a given dataset.
+     * @param tenantId tenant id
+     * @param user name of the user
+     * @param datasetId id of the dataset
+     * @return Sample data points of the latest version as a CSV.
+     * @throws DatabaseHandlerException
+     */
+    String getLatestSample(int tenantId, String user, long datasetId) throws DatabaseHandlerException;
+    
+    /**
      * Executes the SHUTDOWN statement. 
      * @throws DatabaseHandlerException
      */
     void shutdown() throws DatabaseHandlerException;
+
+
+
 
 }

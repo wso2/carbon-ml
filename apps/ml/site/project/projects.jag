@@ -297,7 +297,7 @@
                     contentType: "application/json",
                     data: featureDefaultsData,
                     success: function(res){
-                        window.location.href = '../preprocess/preprocess.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId;
+                        window.location.href = '../clean/clean.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId;
                     },
                     error: function(res){
                         var errorText = JSON.parse(res.responseText)["exception"];

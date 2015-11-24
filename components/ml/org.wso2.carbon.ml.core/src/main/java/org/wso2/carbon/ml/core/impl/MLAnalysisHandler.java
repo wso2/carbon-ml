@@ -254,4 +254,15 @@ public class MLAnalysisHandler {
         }
     }
 
+    public void addWranglerScript(int tenantId, String userName, long analysisId, String script)
+            throws MLAnalysisHandlerException {
+        try {
+            databaseService.updateWranglerScript(analysisId, script);
+            log.info(String.format("[Updated wrangler script] [analysis id] %s of [user] %s of [tenant] %s",
+                    analysisId, userName, tenantId));
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
 }

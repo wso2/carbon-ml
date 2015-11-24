@@ -147,6 +147,26 @@ public class AnalysisApiV11 extends MLRestAPI {
                     .build();
         }
     }
+    
+    /**
+     * add the javascript with wrangler operations
+     */
+    @POST
+    @Path("/{analysisId}/wrangle")
+    @Produces("application/json")
+    @Consumes("text/plain")
+    public Response addScript(@PathParam("analysisId") long analysisId, String script) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try{
+            mlAnalysisHandler.addWranglerScript(tenantId, userName, analysisId, script);
+            return Response.ok().build();
+        }catch (Exception e){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
 
     /**
      * Get summarized features of an analysis.

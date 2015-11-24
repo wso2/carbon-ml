@@ -40,6 +40,10 @@ public class Workflow implements Serializable {
     private String newNormalLabel;
     // user defined anomaly label
     private String newAnomalyLabel;
+    /*
+     * Wrangler script of this analysis.
+     */
+    private String wranglerScript;
 
     /**
      * @return Returns machine learning workflow ID
@@ -238,5 +242,13 @@ public class Workflow implements Serializable {
         return "Model Configuration [algorithmName=" + algorithmName + ", algorithmClass="
                 + algorithmClass + ", responseVariable=" + responseVariable + ", trainDataFraction="
                 + trainDataFraction + ", hyperParameters=" + hyperParameters + ", features=" + features + "]";
+    }
+
+    public String getWranglerScript() {
+        return wranglerScript;
+    }
+
+    public void setWranglerScript(String wranglerScript) {
+        this.wranglerScript = wranglerScript;
     }
 }

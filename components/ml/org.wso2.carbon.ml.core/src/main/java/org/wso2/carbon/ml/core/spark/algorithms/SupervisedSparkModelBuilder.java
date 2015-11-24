@@ -42,6 +42,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.exceptions.WranglerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
@@ -56,6 +57,7 @@ import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSum
 import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import org.wso2.carbon.ml.core.wrangler.Wrangler;
 import org.wso2.carbon.ml.database.DatabaseService;
 
 import scala.Tuple2;
@@ -73,9 +75,32 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         JavaRDD<String> lines = null;
         try {
             MLModelConfigurationContext context = getContext();
-            HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
-            LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
-            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+//            Workflow workflow = context.getFacts();
+//            String wranglerScript = workflow.getWranglerScript();
+//            
+//            HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+//            LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+//            DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+//            
+//            // clean up data using wrangler
+//            lines = context.getLines().cache();
+//            JavaRDD<String[]> inputData = lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter);
+//            JavaRDD<String[]> cleansedData;
+//            lines.unpersist();
+//            inputData.cache();
+//            Wrangler wrangler = new Wrangler();
+//            try {
+//                wrangler.addScript(wranglerScript);
+//                cleansedData = wrangler.executeOperations(context.getSparkContext(), inputData);
+//            } catch (WranglerException e) {
+//                //FIXME
+//                System.err.println(e);
+//                cleansedData = inputData;
+//            }
+//            inputData.unpersist();
+//            cleansedData.cache();
+            
+            JavaRDD<String[]> cleansedData = cleanData();
             RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context)
                     .build();
             BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
@@ -83,9 +108,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
             DoubleArrayToLabeledPoint doubleArrayToLabeledPoint = new DoubleArrayToLabeledPoint.Builder().build();
 
-            lines = context.getLines().cache();
-            return lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
+            return cleansedData.map(removeDiscardedFeatures).map(basicEncoder).map(meanImputation).map(stringArrayToDoubleArray)
                     .map(doubleArrayToLabeledPoint);
         } finally {
             if (lines != null) {

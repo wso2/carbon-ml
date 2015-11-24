@@ -19,9 +19,16 @@ package org.wso2.carbon.ml.core.interfaces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.exceptions.WranglerException;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
+import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
+import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
+import org.wso2.carbon.ml.core.wrangler.Wrangler;
 
 /**
  * All Model Builders should extend this class.
@@ -33,6 +40,35 @@ public abstract class MLModelBuilder {
 
     public MLModelBuilder(MLModelConfigurationContext context) {
         this.setContext(context);
+    }
+    
+    public JavaRDD<String[]> cleanData() {
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
+        LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
+
+        Workflow workflow = context.getFacts();
+        String wranglerScript = workflow.getWranglerScript();
+
+        // clean up data using wrangler
+        JavaRDD<String> lines = context.getLines().cache();
+        JavaRDD<String[]> inputData = lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter);
+        JavaRDD<String[]> cleansedData;
+        lines.unpersist();
+        inputData.cache();
+        Wrangler wrangler = new Wrangler();
+        try {
+            wrangler.addScript(wranglerScript);
+            cleansedData = wrangler.executeOperations(context.getSparkContext(), inputData);
+        } catch (WranglerException e) {
+            // FIXME
+            System.err.println(e);
+            cleansedData = inputData;
+        }
+        inputData.unpersist();
+        cleansedData.cache();
+
+        return cleansedData;
     }
     
     /**
