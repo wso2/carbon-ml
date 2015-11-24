@@ -138,21 +138,25 @@
                     	<artifactId>org.wso2.carbon.analytics.api</artifactId>
            	</dependency>
 			<!-- Deeplearning dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.ai.h2o</groupId>-->
+            <!--<artifactId>h2o-app</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.ai.h2o</groupId>-->
+            <!--<artifactId>h2o-core</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.ai.h2o</groupId>-->
+            <!--<artifactId>h2o-algos</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.ai.h2o</groupId>-->
+            <!--<artifactId>h2o-genmodel</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.orbit.ai.h2o</groupId>
-            <artifactId>h2o-app</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.ai.h2o</groupId>
-            <artifactId>h2o-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.ai.h2o</groupId>
-            <artifactId>h2o-algos</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.ai.h2o</groupId>
-            <artifactId>h2o-genmodel</artifactId>
+            <artifactId>h2o</artifactId>
         </dependency>
 	</dependencies>
 
