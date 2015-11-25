@@ -1007,7 +1007,7 @@ public class MLDatabaseService implements DatabaseService {
             }
             StringBuffer csv = new StringBuffer("");
             if (samplePoints != null) {
-                List<List<String>> points = samplePoints.getSamplePoints();
+                List<List<String>> points = samplePoints.getRowDataPoints();
                 for (List<String> list : points) {
                     StringBuffer col = new StringBuffer("");
                     // for each column

@@ -28,6 +28,12 @@ public class SamplePoints implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private List<List<String>> samplePoints = new ArrayList<List<String>>();
+	/*
+	 * Holds sample data points row wise.
+	 * Outer list - holds values of each row
+	 * Inner list - column values of a row
+	 */
+	private List<List<String>> rowDataPoints = new ArrayList<List<String>>();
 	private Map<String, Integer> headerMap;
 	// Array containing number of missing values of each feature in the data-set.
     private int[] missing;
@@ -58,9 +64,22 @@ public class SamplePoints implements Serializable {
 	 *
 	 * @param samplePoints A list of data columns of the sample
 	 */
-	public void setSamplePoints(List<List<String>> samplePoints) {
-		this.samplePoints = samplePoints;
-	}
+    public void setSamplePoints(List<List<String>> samplePoints) {
+        this.samplePoints = samplePoints;
+        rowDataPoints = new ArrayList<List<String>>();
+        for (int i = 0; i < samplePoints.size(); i++) {
+            List<String> columnData = samplePoints.get(i);
+            if (i == 0) {
+                for (int j = 0; j < columnData.size(); j++) {
+                    // initialize row data
+                    rowDataPoints.add(new ArrayList<String>());
+                }
+            }
+            for (int j = 0; j < columnData.size(); j++) {
+                rowDataPoints.get(j).add(columnData.get(j));
+            }
+        }
+    }
 
 	/**
 	 * Set the header of the sample points.
@@ -123,5 +142,9 @@ public class SamplePoints implements Serializable {
         } else {
             this.decimalCellCount = Arrays.copyOf(decimalCellCount, decimalCellCount.length);
         }
+    }
+
+    public List<List<String>> getRowDataPoints() {
+        return rowDataPoints;
     }
 }
