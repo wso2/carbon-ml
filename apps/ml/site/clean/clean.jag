@@ -79,13 +79,13 @@ jQuery_1_4_2(document).ready(function() {
         })
 
     }        
-
+    var data;
     $.ajax({
                 type: 'GET',
                 url: serverUrl + "/api/datasets/" + datasetId + "/latest-sample",
                 async: false,
                 success: function(res) {
-                    handleNotification(res, '#notification-area', 'warning');
+			data = res.response;
                 },
                 error: function(res){
                     var errorText = res.responseText
@@ -101,8 +101,6 @@ jQuery_1_4_2(document).ready(function() {
                     dw.split().column(["data"]).drop(true).result("column").insert_position("right").on(",").which(1).max(0)
                 ];
         
-    //input data should be added as a string
-    var data = "{[1, 3, 3],[3, 4, 5],[8, 6, 1]}"
     var dt = dv.table(data);
     startWrangler(dt);
 
