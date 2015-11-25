@@ -45,9 +45,6 @@ import static water.util.FrameUtils.generateNumKeys;
 
 public class StackedAutoencodersClassifier implements Serializable {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = -3518369175759608115L;
 
     private static final Log log = LogFactory.getLog(StackedAutoencodersClassifier.class);
