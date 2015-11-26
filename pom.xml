@@ -23,7 +23,7 @@
 	<groupId>org.wso2.carbon.ml</groupId>
 	<artifactId>carbon-ml</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<name>WSO2 Carbon - Machine Learner Aggregator POM</name>
 	<url>http://wso2.com/products/machine-learner</url>
 	<description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -625,9 +625,9 @@
 		<project.scm.id>my-scm-server</project.scm.id>
 
 		<!-- Product ML version -->
-		<ml.version>1.0.4-SNAPSHOT</ml.version>
-		<ml.exp.pkg.version>1.0.4-SNAPSHOT</ml.exp.pkg.version>
-		<ml.imp.pkg.version>[1.0.4, 1.1.0)</ml.imp.pkg.version>
+		<ml.version>1.0.5-SNAPSHOT</ml.version>
+		<ml.exp.pkg.version>1.0.5-SNAPSHOT</ml.exp.pkg.version>
+		<ml.imp.pkg.version>[1.0.5, 1.1.0)</ml.imp.pkg.version>
 
 		<carbon.integration.version>4.3.0</carbon.integration.version>
 
