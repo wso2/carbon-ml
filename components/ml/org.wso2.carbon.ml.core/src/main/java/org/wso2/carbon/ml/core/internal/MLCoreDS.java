@@ -171,7 +171,6 @@ public class MLCoreDS {
 
             // Starting H2O server - for deep learning algorithms
             H2OServer.startH2O();
-            log.info("H2O server has started.");
             
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
