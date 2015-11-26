@@ -36,7 +36,7 @@ import water.serial.ObjectTreeBinarySerializer;
 import water.util.FileUtils;
 
 /**
- * Wraps a SparkDeeplearningModel object
+ * Wraps an H2O DeeplearningModel object
  */
 public class MLDeeplearningModel implements Externalizable {
 

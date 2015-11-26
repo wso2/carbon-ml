@@ -234,7 +234,7 @@ public class Predictor {
                 for (Vector vector : dataToBePredicted) {
                     tobePredictedList.add(vector.toArray());
                 }
-                Frame predFrame = DeeplearningModelUtils.DoubleArrayListtoFrame(tobePredictedList);
+                Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(tobePredictedList);
                 double[] predictedData = saeModel.predict(predFrame);
 
                 for (double pVal : predictedData) {

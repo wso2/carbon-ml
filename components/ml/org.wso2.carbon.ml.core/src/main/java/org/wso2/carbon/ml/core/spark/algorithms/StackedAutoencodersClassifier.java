@@ -18,31 +18,33 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import hex.deeplearning.DeepLearning;
-import hex.deeplearning.DeepLearningModel;
-import hex.deeplearning.DeepLearningParameters;
-import hex.splitframe.ShuffleSplitFrame;
-
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.mllib.regression.LabeledPoint;
-
-import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
-import scala.Tuple2;
+import static water.util.FrameUtils.generateNumKeys;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 
+import scala.Tuple2;
 import water.DKV;
 import water.Key;
 import water.Scope;
 import water.fvec.Frame;
-import static water.util.FrameUtils.generateNumKeys;
+import hex.deeplearning.DeepLearning;
+import hex.deeplearning.DeepLearningModel;
+import hex.deeplearning.DeepLearningParameters;
+import hex.splitframe.ShuffleSplitFrame;
 
+/**
+ * Stacked Autoencoder classifier class
+ */
 public class StackedAutoencodersClassifier implements Serializable {
 
     private static final long serialVersionUID = -3518369175759608115L;
@@ -53,11 +55,6 @@ public class StackedAutoencodersClassifier implements Serializable {
     private transient DeepLearningModel dlModel;
 
     /**
-     * @param trainingData Training dataset as a JavaRDD of labeled points
-     * @param lambda Lambda parameter
-     * @return Naive bayes model
-     */
-    /**
      * This method trains a stacked autoencoder
      * 
      * @param trainData Training dataset as a JavaRDD
@@ -66,7 +63,7 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @param epochs Number of epochs to train
      * @param responseColumn Name of the response column
      * @param modelID Id of the model
-     * @return
+     * @return DeepLearningModel
      */
     public DeepLearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize, int[] layerSizes,
             String activationType, int epochs, String responseColumn, long modelID) {
@@ -77,7 +74,7 @@ public class StackedAutoencodersClassifier implements Serializable {
             Scope.enter();
             if (trainData != null) {
 
-                Frame frame = DeeplearningModelUtils.JavaRDDtoFrame(trainData);
+                Frame frame = DeeplearningModelUtils.javaRDDToFrame(trainData);
 
                 // H2O uses default C<x> for column header
                 String classifColName = "C" + frame.numCols();
@@ -105,7 +102,10 @@ public class StackedAutoencodersClassifier implements Serializable {
                     System.out.print(validArr[i] + "\t");
                 }
 
-                log.info("Creating Deeplearning parameters");
+                if (log.isDebugEnabled()) {
+                    log.info("Creating Deeplearning parameters");
+                }
+
                 DeepLearningParameters deeplearningParameters = new DeepLearningParameters();
 
                 // populate model parameters
@@ -143,22 +143,27 @@ public class StackedAutoencodersClassifier implements Serializable {
 
                 deeplearning = new DeepLearning(deeplearningParameters);
 
-                log.info("Start training deeplearning model ....");
+                if (log.isDebugEnabled()) {
+                    log.info("Start training deeplearning model ....");
+                }
+
                 try {
                     dlModel = deeplearning.trainModel().get();
-                    log.info("Successfully finished Training deeplearning model ....");
+                    if (log.isDebugEnabled()) {
+                        log.info("Successfully finished Training deeplearning model.");
+                    }
+
                 } catch (RuntimeException ex) {
-                    log.info("Error in training Stacked Autoencoder classifier model");
-                    log.info(ex.getMessage());
+                    log.error("Error in training Stacked Autoencoder classifier model");
+                    log.error(ex.getMessage());
                 }
             } else {
                 log.error("Train file not found!");
             }
         } catch (RuntimeException ex) {
-            log.info("Failed to train the deeplearning model [id] " + modelID + ". " + ex.getMessage());
+            log.error("Failed to train the deeplearning model [id] " + modelID + ". " + ex.getMessage());
         } finally {
             Scope.exit();
-            log.info("Exit scope");
         }
 
         return dlModel;
@@ -191,15 +196,15 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @return
      */
     public JavaPairRDD<Double, Double> test(JavaSparkContext ctxt, final DeepLearningModel deeplearningModel,
-            JavaRDD<LabeledPoint> test) {
+            JavaRDD<LabeledPoint> test) throws MLModelBuilderException {
 
         Scope.enter();
 
         if (deeplearningModel == null) {
-            log.info("DeeplearningModel is Null");
+            throw new MLModelBuilderException("DeeplearningModel is Null");
         }
 
-        Frame testData = DeeplearningModelUtils.JavaRDDtoFrame(test);
+        Frame testData = DeeplearningModelUtils.javaRDDToFrame(test);
         Frame testDataWithoutLabels = testData.subframe(0, testData.numCols() - 1);
         double[] predVales = deeplearningModel.score(testDataWithoutLabels).vec(0).toDoubleArray();
         double[] labels = testData.vec(testData.numCols() - 1).toDoubleArray();

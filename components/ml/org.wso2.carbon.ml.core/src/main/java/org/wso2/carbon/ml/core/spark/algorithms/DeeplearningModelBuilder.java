@@ -46,6 +46,9 @@ import org.wso2.carbon.ml.database.DatabaseService;
 
 import hex.deeplearning.DeepLearningModel;
 
+/**
+ * Build deep learning models
+ */
 public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
     private static final Log log = LogFactory.getLog(DeeplearningModelBuilder.class);
 
@@ -56,7 +59,9 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
     @Override
     public MLModel build() throws MLModelBuilderException {
 
-        log.info("Start building the Stacked Autoencoders...");
+        if (log.isDebugEnabled()) {
+            log.debug("Start building the Stacked Autoencoders...");
+        }       
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -154,7 +159,7 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getResponseVariable(), modelID);
 
             if (deeplearningModel == null) {
-                log.info("DeeplearningModel is Null");
+                throw new MLModelBuilderException("DeeplearningModel is Null.");
             }
 
             // remove from cache

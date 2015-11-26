@@ -29,18 +29,19 @@ import water.H2OApp;
 public class H2OServer {
 
     private static final Log log = LogFactory.getLog(H2OServer.class);
-    private static boolean H2OServerStarted = false;
+    private static boolean isH2OServerStarted = false;
 
     /**
      * Starts H20 server in local mode
      */
     public static void startH2O() {
-        if (!H2OServerStarted) {
+        if (!isH2OServerStarted) {
             H2OApp.main(new String[0]);
             H2O.waitForCloudSize(1, 10 * 1000 /* ms */);
-            H2OServerStarted = true;
+            isH2OServerStarted = true;
+            log.info("H2o Server has started.");
         } else {
-            log.info("H2O Server is already Running");
+            log.warn("H2O Server is already Running.");
         }
     }
 
@@ -48,15 +49,16 @@ public class H2OServer {
      * Stop H2O
      */
     public static void stopH2O() {
-        if (H2OServerStarted) {
+        if (isH2OServerStarted) {
             H2O.shutdown(0);
-            log.info("H2O Server has shut down");
+            isH2OServerStarted = false;
+            log.info("H2O Server has shutdown.");
         } else {
-            log.info("H2O Server is not running");
+            log.warn("H2O server is not started, hence cannot be stopped");
         }
     }
 
     public static boolean hasH2OServerStarted() {
-        return H2OServerStarted;
+        return isH2OServerStarted;
     }
 }

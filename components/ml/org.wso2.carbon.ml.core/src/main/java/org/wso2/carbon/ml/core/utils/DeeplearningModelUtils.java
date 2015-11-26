@@ -103,7 +103,7 @@ public class DeeplearningModelUtils {
      * @param data Data to be converted to a Frame
      * @return Frame with training data
      */
-    public static Frame JavaRDDtoFrame(JavaRDD<LabeledPoint> data) {
+    public static Frame javaRDDToFrame(JavaRDD<LabeledPoint> data) {
         List<LabeledPoint> list = data.collect();
         Vec[] allVecs = new Vec[list.get(0).features().size() + 1];
 
@@ -132,7 +132,7 @@ public class DeeplearningModelUtils {
      * @param data Data to be converted to a Frame
      * @return Frame with training data
      */
-    public static Frame DoubleArrayListtoFrame(List<double[]> data) {
+    public static Frame doubleArrayListToFrame(List<double[]> data) {
         Vec[] allVecs = new Vec[data.get(0).length];
 
         for (int i = 0; i < data.get(0).length; i++) {

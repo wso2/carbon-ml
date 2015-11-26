@@ -21,6 +21,7 @@ package org.wso2.carbon.ml.core.spark.summary;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
@@ -41,7 +42,7 @@ public class DeeplearningModelSummary implements ModelSummary, Serializable{
     private MulticlassConfusionMatrix multiclassConfusionMatrix;
     private double meanSquaredError;
 
-        public String getAlgorithm() {
+    public String getAlgorithm() {
         return algorithm;
     }
 
