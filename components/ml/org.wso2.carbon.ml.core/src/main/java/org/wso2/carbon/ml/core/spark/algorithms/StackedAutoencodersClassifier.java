@@ -154,8 +154,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                     }
 
                 } catch (RuntimeException ex) {
-                    log.error("Error in training Stacked Autoencoder classifier model");
-                    log.error(ex.getMessage());
+                    log.error("Error in training Stacked Autoencoder classifier model", ex);
                 }
             } else {
                 log.error("Train file not found!");
