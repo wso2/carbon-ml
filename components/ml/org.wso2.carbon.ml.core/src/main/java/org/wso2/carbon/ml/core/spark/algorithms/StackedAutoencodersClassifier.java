@@ -103,7 +103,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.info("Creating Deeplearning parameters");
+                    log.debug("Creating Deeplearning parameters");
                 }
 
                 DeepLearningParameters deeplearningParameters = new DeepLearningParameters();
@@ -144,13 +144,13 @@ public class StackedAutoencodersClassifier implements Serializable {
                 deeplearning = new DeepLearning(deeplearningParameters);
 
                 if (log.isDebugEnabled()) {
-                    log.info("Start training deeplearning model ....");
+                    log.debug("Start training deeplearning model ....");
                 }
 
                 try {
                     dlModel = deeplearning.trainModel().get();
                     if (log.isDebugEnabled()) {
-                        log.info("Successfully finished Training deeplearning model.");
+                        log.debug("Successfully finished Training deeplearning model.");
                     }
 
                 } catch (RuntimeException ex) {
