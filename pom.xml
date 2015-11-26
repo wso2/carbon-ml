@@ -23,7 +23,7 @@
 	<groupId>org.wso2.carbon.ml</groupId>
 	<artifactId>carbon-ml</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<name>WSO2 Carbon - Machine Learner Aggregator POM</name>
 	<url>http://wso2.com/products/machine-learner</url>
 	<description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -38,7 +38,7 @@
 		<url>https://github.com/wso2/carbon-ml.git</url>
 		<developerConnection>scm:git:https://github.com/wso2/carbon-ml.git</developerConnection>
 		<connection>scm:git:https://github.com/wso2/carbon-ml.git</connection>
-		<tag>v1.0.4</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
@@ -625,7 +625,7 @@
 		<project.scm.id>my-scm-server</project.scm.id>
 
 		<!-- Product ML version -->
-		<ml.version>1.0.4</ml.version>
+		<ml.version>1.0.5-SNAPSHOT</ml.version>
 		<ml.exp.pkg.version>1.0.4</ml.exp.pkg.version>
 		<ml.imp.pkg.version>[1.0.4, 1.1.0)</ml.imp.pkg.version>
 
