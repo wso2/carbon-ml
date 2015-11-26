@@ -69,7 +69,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         super(context);
     }
     
-    private JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
+    public JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
         JavaRDD<String> lines = null;
         try {
             MLModelConfigurationContext context = getContext();
@@ -777,7 +777,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      * @param sparkContext JavaSparkContext
      * @param predictionsAndLabels Prediction and label values RDD
      */
-    private MulticlassMetrics getMulticlassMetrics(JavaSparkContext sparkContext,
+    protected MulticlassMetrics getMulticlassMetrics(JavaSparkContext sparkContext,
             JavaPairRDD<Double, Double> predictionsAndLabels) {
         List<Tuple2<Double, Double>> predictionsAndLabelsDoubleList = predictionsAndLabels.collect();
         List<Tuple2<Object, Object>> predictionsAndLabelsObjectList = new ArrayList<Tuple2<Object, Object>>();
@@ -800,7 +800,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      *
      * @param multiclassMetrics Multiclass metric object
      */
-    private MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics, MLModel mlModel) {
+    protected MulticlassConfusionMatrix getMulticlassConfusionMatrix(MulticlassMetrics multiclassMetrics, MLModel mlModel) {
         MulticlassConfusionMatrix multiclassConfusionMatrix = new MulticlassConfusionMatrix();
         if (multiclassMetrics != null) {
             int size = multiclassMetrics.confusionMatrix().numCols();
@@ -871,7 +871,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      *
      * @param multiclassMetrics multi-class metrics object
      */
-    private Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
+    protected Double getModelAccuracy(MulticlassMetrics multiclassMetrics) {
         DecimalFormat decimalFormat = new DecimalFormat(MLConstants.DECIMAL_FORMAT);
 
         Double modelAccuracy = 0.0;
@@ -893,7 +893,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      *
      * @param array Double array
      */
-    private long arraySum(double[] array) {
+    protected long arraySum(double[] array) {
         long sum = 0;
         for (double i : array) {
             sum += i;

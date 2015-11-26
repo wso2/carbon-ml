@@ -10,15 +10,15 @@
     <link href="../../css/custom-theme.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script>
 
-    <% 
-            include("../../includes/header.jag");            
-            (function () {
-                if (session.get("logged.user")) {
-                    response.sendRedirect("../project/projects.jag");
-                    return;
-                }
-            }());
-    %> 
+    <%
+include("../../includes/header.jag");
+(function () {
+	if (session.get("logged.user")) {
+		response.sendRedirect("../project/projects.jag");
+		return;
+	}
+}());
+%>
 </head>
 
 <body>
@@ -28,13 +28,13 @@
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<!-- empty -->		
-		</div>
-	</div>
+<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <!-- empty -->
+    </div>
+</div>
 </div>
 </header>
 <!-- /header -->
@@ -44,60 +44,60 @@
 
 <!-- content/body -->
 <div class="row">
-	<div class="col-md-12">
-		
-
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
+<div class="col-md-12">
 
 
-			<!-- login -->
-
-			<div class="container col-md-5 col-lg-3 col-centered wr-login">
-
-				<h2>Login</h2>
-				<p>Use your Machine Learner credentials to login.</p>
-
-				<div class="hr-spcr"></div>
-                <!-- validation -->
-				<span class="wr-validation-summary">
-					<p></p>
-				</span>
-				<div class="spcr-2"></div>
-
-				<label class="input-label">Username</label>
-				<div class="input-control text">
-				    <input id="userName" type="text" value="" placeholder="your username"/>
-				</div>
-
-				<label class="input-label">Password</label>
-				<div class="input-control text">
-				    <input id="password" type="password" value="" placeholder="your password"/>
-				</div>			
-
-				<div class="input-control text">
-				<button id="login-btn" class="btn btn-primary btn-login col-centered">Login</button>	
-				</div>	
-
-			</div>
+    <!-- content -->
+    <div class="container col-md-12 col-centered wr-content">
 
 
-		</div>
-		<!-- /content -->
+        <!-- login -->
+
+        <div class="container col-md-5 col-lg-3 col-centered wr-login">
+
+            <h2>Login</h2>
+            <p>Use your Machine Learner credentials to login.</p>
+
+            <div class="hr-spcr"></div>
+            <!-- validation -->
+            <span class="wr-validation-summary">
+                <p></p>
+            </span>
+            <div class="spcr-2"></div>
+
+            <label class="input-label">Username</label>
+            <div class="input-control text">
+                <input id="userName" type="text" value="" placeholder="your username"/>
+            </div>
+
+            <label class="input-label">Password</label>
+            <div class="input-control text">
+                <input id="password" type="password" value="" placeholder="your password"/>
+            </div>
+
+            <div class="input-control text">
+            <button id="login-btn" class="btn btn-primary btn-login col-centered">Login</button>
+            </div>
+
+        </div>
 
 
-	</div>
+    </div>
+    <!-- /content -->
+
+
+</div>
 </div>
 <!-- /content/body -->
 
 </div>
-    
+
 
 
 
 
 <!--footer class="footer">
-        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+    <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
 
 
@@ -112,89 +112,89 @@
 
 $( document ).ready(function() {
 
-	$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
-    
-    /*scrollVibrateFix();
-    
-    $(window).resize(function() {
-        scrollVibrateFix();
-    });*/ 	
+$('#nav').affix({
+      offset: {
+        top: $('header').height()
+      }
+});
 
-	$('.wr-validation-summary').hide();
-	$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
-	
-	$('#login-btn').on('click', function(e){
-	    authenticate();	
-    });
+/*scrollVibrateFix();
 
-    $('#password').keydown(function(e){
-        if(e.keyCode == 13){
-            authenticate();
-        }
-    }); 
+$(window).resize(function() {
+    scrollVibrateFix();
+});*/
+
+$('.wr-validation-summary').hide();
+$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
+
+$('#login-btn').on('click', function(e){
+    authenticate();
+});
+
+$('#password').keydown(function(e){
+    if(e.keyCode == 13){
+        authenticate();
+    }
+});
 });
 
 function authenticate(){
-	var user = $('#userName').val();
-	var passwd = $('#password').val(); 
-    $('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
+var user = $('#userName').val();
+var passwd = $('#password').val();
+$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
 
-    if(validate(user) && validate(passwd)){
-    	var auth = user+":"+passwd;
-    	var authEncoded = btoa(auth)
+if(validate(user) && validate(passwd)){
+    var auth = user+":"+passwd;
+    var authEncoded = btoa(auth)
 
-		$.ajax({
-			url : './ajax/authenticate.jag',
-			data : {userName: user, password: passwd, authEncoded: authEncoded},
-			success : function(res){
-				getSessionCookie();
-			},
-			error : function(res){
-				console.log(res);
-				$('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');
-                $('.wr-validation-summary').show();	
-			}
-		});
-	} else {
-		$('.wr-validation-summary').show();
-	}
+    $.ajax({
+        url : './ajax/authenticate.jag',
+        data : {userName: user, password: passwd, authEncoded: authEncoded},
+        success : function(res){
+            getSessionCookie();
+        },
+        error : function(res){
+            console.log(res);
+            $('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');
+            $('.wr-validation-summary').show();
+        }
+    });
+} else {
+    $('.wr-validation-summary').show();
+}
 }
 
 function getSessionCookie() {
-	var user = $('#userName').val();
-	var passwd = $('#password').val(); 
-	var baseUrl = window.location.origin;
-	var auth = user+":"+passwd;
-    	var authEncoded = btoa(auth)
-	// start a new login seesion and retrieve the cookie. Login must be authenticated with basic auth.
-	$.ajax({
-		type: "POST",
-		url : baseUrl + '/api/login',
-		contentType: "application/json",
-		dataType: 'text',
-		beforeSend : function(xhr) {
-            xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
-        },
-		success : function(res){
-			window.location.href = "../home/home.jag"
-		},
-		error : function(res){
-			console.log(res);
-			$('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');
-            $('.wr-validation-summary').show();	
-		}
-	});
+var user = $('#userName').val();
+var passwd = $('#password').val();
+var baseUrl = window.location.origin;
+var auth = user+":"+passwd;
+    var authEncoded = btoa(auth)
+// start a new login seesion and retrieve the cookie. Login must be authenticated with basic auth.
+$.ajax({
+    type: "POST",
+    url : baseUrl + '/api/login',
+    contentType: "application/json",
+    dataType: 'text',
+    beforeSend : function(xhr) {
+        xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
+    },
+    success : function(res){
+        window.location.href = "../home/home.jag"
+    },
+    error : function(res){
+        console.log(res);
+        $('.wr-validation-summary').html('<p>'+res.responseJSON.status+'</p>');
+        $('.wr-validation-summary').show();
+    }
+});
 }
 
 function validate(text){
-    if(!text || text.length == 0){
-    	return false;
-    }
-    return true;
+if(!text || text.length == 0){
+    return false;
+}
+return true;
 }
 
 </script>

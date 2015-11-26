@@ -126,6 +126,9 @@ include("../../includes/tenantAware.jag");
                             <option value="K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA">K-MEANS WITH UNLABELED DATA</option>
                             <option value="K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA">K-MEANS WITH LABELED DATA</option>
                         </optgroup>
+			<optgroup label="Deep Learning">
+                        	<option value="STACKED_AUTOENCODERS">STACKED AUTOENCODERS</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -225,7 +228,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
-
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
@@ -410,6 +413,11 @@ $( document ).ready(function() {
         $('#new-anomaly-value').attr("disabled","disabled");
     }
 
+    $(document).on('change','#algorithm-name',function() {
+        selectedAlgorithm = $('#algorithm-name').val();
+        toggleInput(selectedAlgorithm);
+    });   
+	
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
 
@@ -462,6 +470,9 @@ $( document ).ready(function() {
         }
         else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
             algorithmType = 'Anomaly_Detection';
+        }
+	else if (algorithmName == 'STACKED_AUTOENCODERS') {
+            algorithmType = 'Deeplearning';            
         }
 
         // set model configurations for this analysis        

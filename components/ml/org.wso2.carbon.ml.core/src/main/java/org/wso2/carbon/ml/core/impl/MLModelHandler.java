@@ -22,6 +22,15 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -39,29 +48,9 @@ import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.MLAnalysis;
-import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import org.wso2.carbon.ml.commons.domain.MLDataset;
-import org.wso2.carbon.ml.commons.domain.Workflow;
-import org.wso2.carbon.ml.commons.domain.MLStorage;
-import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
-import org.wso2.carbon.ml.commons.domain.MLModelData;
-import org.wso2.carbon.ml.commons.domain.MLModel;
-import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.FeatureType;
-import org.wso2.carbon.ml.commons.domain.ClusterPoint;
-import org.wso2.carbon.ml.commons.domain.MLProject;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
-
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
-import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
-import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
-import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
-import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
-
+import org.wso2.carbon.ml.core.exceptions.*;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -71,6 +60,7 @@ import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
+import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -85,12 +75,8 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.xml.sax.InputSource;
+
 import scala.Tuple2;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 
 /**
@@ -649,6 +635,14 @@ public class MLModelHandler {
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
 
+            // if this is a deeplearning model, need to set the storage location for writing
+            // then the sparkdeeplearning model will use ObjectTreeBinarySerializer to write it to the given directory
+            // the DeeplearningModel will be saved as a .bin file
+            if (MLConstants.DEEPLEARNING.equalsIgnoreCase(model.getAlgorithmClass())) {
+                MLDeeplearningModel mlDeeplearningModel = (MLDeeplearningModel) model.getModel();
+                mlDeeplearningModel.setStorageLocation(storageLocation);
+                model.setModel(mlDeeplearningModel);
+            }
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -662,6 +656,7 @@ public class MLModelHandler {
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));
+
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }
@@ -678,19 +673,28 @@ public class MLModelHandler {
     public MLModel retrieveModel(long modelId) throws MLModelHandlerException {
         InputStream in = null;
         ObjectInputStream ois = null;
+        String storageLocation = null;
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
             if (storage == null) {
                 throw new MLModelHandlerException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
-            String storageLocation = storage.getLocation();
+            storageLocation = storage.getLocation();
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
-            return (MLModel) ois.readObject();
 
+            // for the DeeplearningModel since the storageLocation is serialized
+            // so the ObjectTreeBinarySerializer will get the storageLocation and deserialize
+            MLModel model = (MLModel) ois.readObject();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved model");
+            }
+
+            return model;
         } catch (Exception e) {
             throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
         } finally {
@@ -711,7 +715,7 @@ public class MLModelHandler {
 
     /**
      * Publish a ML model to registry.
-     *
+     * 
      * @param tenantId Unique ID of the tenant.
      * @param userName Username of the user.
      * @param modelId  Unique ID of the built ML model
@@ -994,7 +998,7 @@ public class MLModelHandler {
                 // pre-process and build the model
                 MLModel model = modelBuilder.build();
                 log.info(String.format("Successfully built the model [id] %s in %s seconds.", id,
-                        (double) (System.currentTimeMillis() - t1)/1000));
+                        (double) (System.currentTimeMillis() - t1) / 1000));
 
                 persistModel(id, ctxt.getModel().getName(), model);
 

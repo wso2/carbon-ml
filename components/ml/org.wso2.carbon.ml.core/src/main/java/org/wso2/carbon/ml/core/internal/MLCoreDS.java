@@ -29,20 +29,21 @@ import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
+import org.wso2.carbon.metrics.manager.Gauge;
+import org.wso2.carbon.metrics.manager.Level;
+import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
+import org.wso2.carbon.ml.core.impl.H2OServer;
 import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
 import org.wso2.carbon.ml.core.utils.BlockingExecutor;
+import org.wso2.carbon.ml.core.utils.ComputeClasspath;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.ComputeClasspath;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
-import org.wso2.carbon.metrics.manager.Gauge;
-import org.wso2.carbon.metrics.manager.Level;
-import org.wso2.carbon.metrics.manager.MetricManager;
 
 /**
  * @scr.component name="ml.core" immediate="true"
@@ -75,7 +76,7 @@ public class MLCoreDS {
             valueHolder.setModelRegistryLocation(mlConfig.getModelRegistryLocation());
             valueHolder.setModelStorage(mlConfig.getModelStorage());
             valueHolder.setDatasetStorage(mlConfig.getDatasetStorage());
-            
+
             Properties mlProperties = valueHolder.getMlProperties();
             String poolSizeStr = mlProperties
                     .getProperty(org.wso2.carbon.ml.core.utils.MLConstants.ML_THREAD_POOL_SIZE);
@@ -114,19 +115,22 @@ public class MLCoreDS {
                 // Add extra class paths for DAS Spark cluster
                 String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
                 try {
-                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
+                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH,
+                            sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
                 } catch (NoSuchElementException e) {
                     sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, "");
                 }
 
                 try {
-                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
+                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH,
+                            sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
                 } catch (NoSuchElementException e) {
                     sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, "");
                 }
 
                 sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
-                String portOffset = System.getProperty("portOffset", ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                String portOffset = System.getProperty("portOffset",
+                        ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
                 int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
                 sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
                 valueHolder.setSparkConf(sparkConf);
@@ -164,6 +168,9 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+
+            // Starting H2O server - for deep learning algorithms
+            H2OServer.startH2O();
             
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
@@ -199,7 +206,7 @@ public class MLCoreDS {
         if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
             MLCoreServiceValueHolder.getInstance().getSparkContext().close();
         }
-        
+//        H2OServer.stopH2O();
     }
 
     protected void setDatabaseService(DatabaseService databaseService) {

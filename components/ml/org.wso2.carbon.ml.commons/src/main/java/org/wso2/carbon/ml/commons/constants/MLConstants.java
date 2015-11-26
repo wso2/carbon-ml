@@ -23,9 +23,9 @@ package org.wso2.carbon.ml.commons.constants;
 public class MLConstants {
 
     private MLConstants() {
-        
+
     }
-    
+
     public static final String ML_MODEL_TABLE_NAME = "ml_model_store";
 
     public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";
@@ -35,21 +35,21 @@ public class MLConstants {
     public static final String UPLOAD_LOCATION = "uploadLocation";
     public static final String IN_MEMORY_THRESHOLD = "inMemoryThreshold";
     public static final String UPLOAD_LIMIT = "uploadLimit";
-    
+
     // Summary statistic calculation configurations  
     public static final String SUMMARY_STATISTICS_SETTINGS = "summaryStatisticsSettings";
     public static final String HISTOGRAM_BINS = "histogramBins";
     public static final String CATEGORICAL_THRESHOLD = "categoricalThreshold";
     public static final String SAMPLE_SIZE = "sampleSize";
-    
+
     public static final String PROPERTIES = "properties";
-    
+
     // System property names
     public static final String HOME = "user.home";
     public static final String FILE_SEPARATOR = "file.separator";
     public static final String MIN_PERCENTILE_CONF = "minPercentile";
     public static final String MAX_PERCENTILE_CONF = "maxPercentile";
-    
+
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
     public static final String ML_PROJECTS = "MLProjects";
@@ -60,18 +60,18 @@ public class MLConstants {
     // Spark configuration properties
     public static final String SPARK_EXECUTOR_CLASSPATH = "spark.executor.extraClassPath";
     public static final String SPARK_DRIVER_CLASSPATH = "spark.driver.extraClassPath";
-    
+
     // Character Encodings
     public static final String UTF_8= "UTF-8";
     public static final String ISO_8859_1= "ISO-8859-1";
-    
+
     public static final String TARGET_HOME_PROP = "target.home";
 
     // I/O Adapter configs
     public static final String BAM_SERVER_URL= "BAMServerURL";
     public static final String BAM_DATA_VALUES = "values";
-    
- // user response
+
+    // user response
     public static final String SMALL = "small";
     public static final String MEDIUM = "medium";
     public static final String LARGE = "large";
@@ -96,9 +96,9 @@ public class MLConstants {
     public static final String NEW_NORMAL_LABEL = "newNormalLabel";
     public static final String NEW_ANOMALY_LABEL = "newAnomalyLabel";
     public static final String HYPER_PARAMETERS = "hyperParameters";
-    
+
     public static final String MODEL_NAME = "Model";
-    
+
     // model statuses
     public static final String MODEL_STATUS_NOT_STARTED = "Not Started";
     public static final String MODEL_STATUS_IN_PROGRESS = "In Progress";
@@ -128,6 +128,11 @@ public class MLConstants {
     public static final String PARAMETER = "parameter";
     public static final String PROPERTY = "property";
 
+    public static final String CLASSIFICATION = "Classification";
+    public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
+    public static final String CLUSTERING = "Clustering";
+    public static final String DEEPLEARNING = "Deeplearning";
+
     // file formats
     public static final String CSV = ".csv";
     public static final String TSV = ".tsv";
@@ -153,6 +158,10 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String NUM_OF_NORMAL_CLUSTERS = "Num_of_Normal_Clusters";
     public static final String LAMBDA = "Lambda";
+    public static final String BATCH_SIZE = "Batch_Size";
+    public static final String LAYER_SIZES = "Layer_Sizes";
+    public static final String EPOCHS = "Epochs";
+    public static final String ACTIVATION_TYPE = "Activation_Type";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -166,6 +175,7 @@ public class MLConstants {
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
     public static final String ANOMALY_DETECTION_MODEL_SUMMARY = "AnomalyDetectionModelSummary";
+    public static final String DEEPLEARNING_MODEL_SUMMARY = "DeeplearningModelSummary";
 
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
 
@@ -175,7 +185,7 @@ public class MLConstants {
 
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
-    
+
     // Email Sender constants
     public static final String ML_EMAIL_ADAPTER = "MLEmailAdapter";
     public static final String EMAIL_CONF_DIRECTORY = "email";
@@ -199,7 +209,7 @@ public class MLConstants {
 
     // enums
     public enum SUPERVISED_ALGORITHM {
-        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS, 
+        LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,
         SVM, DECISION_TREE, RANDOM_FOREST, NAIVE_BAYES
     }
 
@@ -209,6 +219,10 @@ public class MLConstants {
 
     public enum ANOMALY_DETECTION_ALGORITHM {
         K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
+    }
+
+    public enum DEEPLEARNING_ALGORITHM {
+        STACKED_AUTOENCODERS
     }
 
     public enum MISSING_VALUES {

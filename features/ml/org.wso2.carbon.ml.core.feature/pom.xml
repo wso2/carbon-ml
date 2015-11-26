@@ -59,6 +59,11 @@
 			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
 			<artifactId>arpack_combined</artifactId>
 		</dependency>
+		<!-- Deeplearning dependencies -->
+		<dependency>
+			<groupId>org.wso2.orbit.ai.h2o</groupId>
+			<artifactId>h2o</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -89,6 +94,7 @@
 								<bundleDef>org.wso2.orbit.github.fommil.netlib:core</bundleDef>
 								<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
 								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.core</bundleDef>
+								<bundleDef>org.wso2.orbit.ai.h2o:h2o</bundleDef>
 							</bundles>
 							<importFeatures>
 								<importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.imp.feature.version}
