@@ -86,52 +86,52 @@ public class Predictor {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
             switch (supervised_algorithm) {
-                case DECISION_TREE:
-                    DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
-                    for (Vector vector : dataToBePredicted) {
-                        Context context = startTimer(timer);
+            case DECISION_TREE:
+                DecisionTreeModel decisionTreeModel = ((MLDecisionTreeModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
-                        double predictedData = decisionTreeModel.predict(vector);
-                        predictions.add(predictedData);
+                    double predictedData = decisionTreeModel.predict(vector);
+                    predictions.add(predictedData);
 
-                        stopTimer(context);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                    stopTimer(context);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
+                }
 
-                    return decodePredictedValues(predictions);
-                case RANDOM_FOREST:
-                    RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
-                    for (Vector vector : dataToBePredicted) {
-                        Context context = startTimer(timer);
+                return decodePredictedValues(predictions);
+            case RANDOM_FOREST:
+                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
-                        double predictedData = randomForestModel.predict(vector);
-                        predictions.add(predictedData);
+                    double predictedData = randomForestModel.predict(vector);
+                    predictions.add(predictedData);
 
-                        stopTimer(context);
-                        if (log.isDebugEnabled()) {
+                    stopTimer(context);
+                    if (log.isDebugEnabled()) {
 
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
-                    return decodePredictedValues(predictions);
-                default:
-                    ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
-                    for (Vector vector : dataToBePredicted) {
-                        Context context = startTimer(timer);
+                }
+                return decodePredictedValues(predictions);
+            default:
+                ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
-                        double predictedData = classificationModel.predict(vector);
-                        predictions.add(predictedData);
+                    double predictedData = classificationModel.predict(vector);
+                    predictions.add(predictedData);
 
-                        stopTimer(context);
+                    stopTimer(context);
 
-                        if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
 
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
-                    return decodePredictedValues(predictions);
+                }
+                return decodePredictedValues(predictions);
             }
 
         } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {
@@ -155,26 +155,26 @@ public class Predictor {
         } else if (AlgorithmType.CLUSTERING == type) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
-                case K_MEANS:
-                    List<Integer> predictions = new ArrayList<Integer>();
-                    KMeansModel kMeansModel = (KMeansModel) model.getModel();
-                    for (Vector vector : dataToBePredicted) {
-                        Context context = startTimer(timer);
+            case K_MEANS:
+                List<Integer> predictions = new ArrayList<Integer>();
+                KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
-                        int predictedData = kMeansModel.predict(vector);
-                        predictions.add(predictedData);
+                    int predictedData = kMeansModel.predict(vector);
+                    predictions.add(predictedData);
 
-                        stopTimer(context);
+                    stopTimer(context);
 
-                        if (log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
 
-                            log.debug("Predicted value before decoding: " + predictedData);
-                        }
+                        log.debug("Predicted value before decoding: " + predictedData);
                     }
-                    return decodePredictedValues(predictions);
-                default:
-                    throw new AlgorithmNameException("Incorrect algorithm name: " + model.getAlgorithmName()
-                            + " for model id: " + id);
+                }
+                return decodePredictedValues(predictions);
+            default:
+                throw new AlgorithmNameException(
+                        "Incorrect algorithm name: " + model.getAlgorithmName() + " for model id: " + id);
             }
         } else if (AlgorithmType.ANOMALY_DETECTION == type) {
             ANOMALY_DETECTION_ALGORITHM anomaly_detection_algorithm = ANOMALY_DETECTION_ALGORITHM
