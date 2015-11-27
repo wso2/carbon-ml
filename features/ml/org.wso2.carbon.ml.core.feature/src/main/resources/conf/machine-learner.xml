@@ -438,7 +438,7 @@
 					an integer greater than 0.
 				</Description>
 			</Parameters>
-			</Algorithm>
+		</Algorithm>
 		<Algorithm>
 			<Name>COLLABORATIVE_FILTERING</Name>
 			<Type>Recommendation</Type>
