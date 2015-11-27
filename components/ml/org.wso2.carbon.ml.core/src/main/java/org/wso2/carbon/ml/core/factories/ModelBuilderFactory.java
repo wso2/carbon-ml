@@ -23,6 +23,7 @@ import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.AnomalyDetectionModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
+import org.wso2.carbon.ml.core.spark.recommendation.RecommendationModelBuilder;
 
 /**
  * This factory class is responsible for generating a {@link MLModelBuilder} for a given algorithm type.
@@ -35,15 +36,22 @@ public class ModelBuilderFactory {
 
         MLModelBuilder modelBuilder = null;
         switch (type) {
+
         case CLASSIFICATION:
+
         case NUMERICAL_PREDICTION:
             modelBuilder = new SupervisedSparkModelBuilder(context);
             break;
         case CLUSTERING:
             modelBuilder = new UnsupervisedSparkModelBuilder(context);
             break;
+
         case ANOMALY_DETECTION:
             modelBuilder = new AnomalyDetectionModelBuilder(context);
+            break;
+
+        case RECOMMENDATION:
+            modelBuilder = new RecommendationModelBuilder(context);
             break;
 
         default:

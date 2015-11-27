@@ -30,11 +30,15 @@ import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
+
 import org.apache.spark.mllib.pmml.PMMLExportable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
+
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
@@ -53,6 +57,7 @@ import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
 
+
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
@@ -62,6 +67,10 @@ import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 
+
+import org.wso2.carbon.ml.core.exceptions.*;
+import org.wso2.carbon.ml.core.factories.AlgorithmType;
+
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -70,6 +79,8 @@ import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
+import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
@@ -593,15 +604,16 @@ public class MLModelHandler {
             throws MLModelHandlerException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
-            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+            String msg = String.format(
+                    "Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
                     modelId, tenantId, userName);
             throw new MLModelHandlerException(msg);
         }
 
         if (!isValidModelStatus(modelId, tenantId, userName)) {
-            String msg = String
-                    .format("This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
-                            modelId, tenantId, userName);
+            String msg = String.format(
+                    "This model cannot be used for prediction. Status of the model for model id: %s for tenant: %s and user: %s is not 'Complete'",
+                    modelId, tenantId, userName);
             throw new MLModelHandlerException(msg);
         }
 
@@ -613,19 +625,21 @@ public class MLModelHandler {
 
         // Validate number of features in predict dataset
         if (builtModel.getNewToOldIndicesList().size() != data.get(0).length) {
-            String msg = String.format("Prediction failed from model [id] %s since [number of features of model]" +
-                            " %s does not match [number of features in the input data] %s",
-                    modelId, builtModel.getFeatures().size(), data.get(0).length);
+            String msg = String.format(
+                    "Prediction failed from model [id] %s since [number of features of model]" +
+                    " %s does not match [number of features in the input data] %s", modelId,
+                    builtModel.getFeatures().size(), data.get(0).length);
             throw new MLModelHandlerException(msg);
         }
 
         // Validate numerical feature type in predict dataset
-        for (Feature feature: builtModel.getFeatures()) {
+        for (Feature feature : builtModel.getFeatures()) {
             if (feature.getType().equals(FeatureType.NUMERICAL)) {
                 int actualIndex = builtModel.getNewToOldIndicesList().indexOf(feature.getIndex());
-                for (String[] dataPoint: data) {
-                    if(!NumberUtils.isNumber(dataPoint[actualIndex])) {
-                        String msg = String.format("Invalid value: %s for the feature: %s at feature index: %s",
+                for (String[] dataPoint : data) {
+                    if (!NumberUtils.isNumber(dataPoint[actualIndex])) {
+                        String msg = String.format(
+                                "Invalid value: %s for the feature: %s at feature index: %s",
                                 dataPoint[actualIndex], feature.getName(), actualIndex);
                         throw new MLModelHandlerException(msg);
                     }
@@ -640,6 +654,32 @@ public class MLModelHandler {
         return predictions;
     }
 
+    public List<?> getRecommendations(int tenantId, String userName, long modelId, int userId,
+                                      int noOfProducts) throws MLModelHandlerException {
+
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                                       modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        MLModel builtModel = retrieveModel(modelId);
+
+        //validate if retrieved model is a MatrixFactorizationModel
+        if (!(builtModel.getModel() instanceof MLMatrixFactorizationModel)) {
+            String msg =
+                    String.format("Prediction failed from model [id] %s is not a MatrixFactorizationModel", modelId);
+            throw new MLModelHandlerException(msg);
+        }
+        //get recommendations
+        MatrixFactorizationModel model = ((MLMatrixFactorizationModel) builtModel.getModel()).getModel();
+        List<?> recommendations = CollaborativeFiltering.recommendProducts(model, userId, noOfProducts);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
+
+    }
+
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
@@ -648,6 +688,11 @@ public class MLModelHandler {
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
+            String outPath = storageLocation + File.separator + modelName;
+
+            if(AlgorithmType.RECOMMENDATION.getValue().equals(model.getAlgorithmClass())) {
+                ((MLMatrixFactorizationModel) model.getModel()).setOutPath(outPath);
+            }
 
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
@@ -658,7 +703,6 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelName;
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));

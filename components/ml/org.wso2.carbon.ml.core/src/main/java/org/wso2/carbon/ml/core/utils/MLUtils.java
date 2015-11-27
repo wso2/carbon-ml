@@ -42,6 +42,7 @@ import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
@@ -468,6 +469,34 @@ public class MLUtils {
         String[] values = line.split("" + format.getDelimiter());
         return values;
     }
+
+
+    /**
+     * Applies the discard filter to a JavaRDD
+     *
+     * @param delimiter Column separator of the dataset
+     * @param headerRow Header row
+     * @param lines JavaRDD which contains the dataset
+     * @param featureIndices Indices of the features to apply filter
+     * @return filtered JavaRDD
+     */
+    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
+                                               List<Integer> featureIndices) {
+        String columnSeparator = String.valueOf(delimiter);
+        HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
+        JavaRDD<String> data = lines.filter(headerFilter).cache();
+        Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
+        LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
+        JavaRDD<String[]> tokens = data.map(lineToTokens).cache();
+
+        // get feature indices for discard imputation
+        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(featureIndices).build();
+        // Discard the row if any of the impute indices content have a missing value
+        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter).cache();
+
+        return tokensDiscardedRemoved;
+    }
+
 
     /**
      * format an error message.

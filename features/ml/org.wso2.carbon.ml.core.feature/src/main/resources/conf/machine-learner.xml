@@ -6,9 +6,9 @@
 	<DataSourceName>jdbc/WSO2ML_DB</DataSourceName>
 
 	<!-- Configurations to calculate summary statistics from a dataset. histogramBins 
-		: Number of intervals in a histogram. categoricalThreshold : threshold to 
-		determine whether a given feature is categorical or numerical based on the 
-		skewness of the distribution. sampleSize : Size of the dataset sample which 
+		: Number of intervals in a histogram. categoricalThreshold : threshold to
+		determine whether a given feature is categorical or numerical based on the
+		skewness of the distribution. sampleSize : Size of the dataset sample which
 		will be used for summary statistics calculation and visualization. -->
 	<SummaryStatisticsSettings>
 		<HistogramBins>20</HistogramBins>
@@ -51,7 +51,7 @@
 	<!-- Optional element. This element should point to a HDFS location where 
 		ML is allowed to store files. -->
 	<HdfsURL>hdfs://localhost:9000</HdfsURL>
-	
+
 	<!-- Storage Details for uploaded datasets. StorageType can be either "file" 
 		or "hdfs". Default storage type is file and location is {carbon.home}/datasets -->
 	<!-- DatasetStorage> 
@@ -437,6 +437,64 @@
 				<Description>The number of desired normal clusters. This value should be
 					an integer greater than 0.
 				</Description>
+			</Parameters>
+			</Algorithm>
+		<Algorithm>
+			<Name>COLLABORATIVE_FILTERING</Name>
+			<Type>Recommendation</Type>
+			<Parameters>
+				<Name>Rank</Name>
+				<Value>8</Value>
+				<Description>The number of features to use.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>20</Value>
+				<Description>Number of iterations of ALS.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Lambda</Name>
+				<Value>0.01</Value>
+				<Description>Regularization factor.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Blocks</Name>
+				<Value>3</Value>
+				<Description>Level of Parallelism to split computation in to.</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>COLLABORATIVE_FILTERING_IMPLICIT</Name>
+			<Type>Recommendation</Type>
+			<Parameters>
+				<Name>Rank</Name>
+				<Value>8</Value>
+				<Description>The number of features to use.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>20</Value>
+				<Description>Number of iterations of ALS.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Lambda</Name>
+				<Value>0.01</Value>
+				<Description>Regularization factor.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Blocks</Name>
+				<Value>3</Value>
+				<Description>Level of Parallelism to split computation in to.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Alpha</Name>
+				<Value>40</Value>
+				<Description>Confidence parameter.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Weights</Name>
+				<Value>30,70</Value>
+				<Description>Comma separated weights given to fields.</Description>
 			</Parameters>
 		</Algorithm>
 	</Algorithms>

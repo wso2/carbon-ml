@@ -109,7 +109,39 @@ public class MLAnalysisHandler {
     
     public String getResponseVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE);
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE_VARIABLE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public String getUserVariable(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.USER_VARIABLE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public String getProductVariable(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.PRODUCT_VARIABLE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public String getRatingVariable(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RATING_VARIABLE);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
+    public String getObservations(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.OBSERVATIONS);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }

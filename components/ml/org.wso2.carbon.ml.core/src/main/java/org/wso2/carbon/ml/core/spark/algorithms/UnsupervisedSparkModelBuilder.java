@@ -113,6 +113,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(-1);
 
+
             // build a machine learning model according to user selected algorithm
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {

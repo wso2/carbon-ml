@@ -8,12 +8,12 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <script src="../../js/respond.min.js"></script>
 
     <%
         include("../../includes/tenantAware.jag");
     %>
-    
+
 </head>
 
 <body>
@@ -23,19 +23,19 @@
 <!-- header -->
 <header>
 <div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-			<div class="dropdown-menu">
-				<div class="cu-arrow"></div>
-				<div class="dropdown-menu-content">
-					<a href="../logout/logout.jag" class="filter-item">Logout</a>
-				</div>
-			</div>			
-		</div>
-	</div>
+    <div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+    </div>
+    <div class="col-sm-4">
+        <div class="wr-auth pull-right">
+            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+            <div class="dropdown-menu">
+                <div class="cu-arrow"></div>
+                <div class="dropdown-menu-content">
+                    <a href="../logout/logout.jag" class="filter-item">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </header>
 <!-- /header -->
@@ -68,61 +68,61 @@
 
 <!-- content/body -->
 <div class="row">
-	<div class="col-lg-12 wr-secondary-bar">
-		
-		<!-- Wizard -->
-	    <ul class="nav nav-pills nav-wizard">
+    <div class="col-lg-12 wr-secondary-bar">
+
+        <!-- Wizard -->
+        <ul class="nav nav-pills nav-wizard">
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
             <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
-	    </ul>
+        </ul>
 
-		
-	</div>
+
+    </div>
 </div>
 
 
 <div class="row">
-	<div class="col-md-12">
-		
+    <div class="col-md-12">
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
 
-			<div id="notification-area"></div>
+        <!-- content -->
+        <div class="container col-md-12 col-centered wr-content">
+
+            <div id="notification-area"></div>
             <div class="wr-form col-lg-5 col-centered">
 
-				<h1 class="title">Parameters</h1>
+                <h1 class="title">Parameters</h1>
 
-	            <label class="input-label">Set Hyper-Parameters for <span id="algo-cat"></span>\ <strong id="display-name"></strong> <span class="glyphicon"></span></label>
-	            <div class="spcr-2"></div>
+                <label class="input-label">Set Hyper-Parameters for <span id="algo-cat"></span>\ <strong id="display-name"></strong> <span class="glyphicon"></span></label>
+                <div class="spcr-2"></div>
 
-	            <div id="parameter-inputs">
-					<!-- <label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-					<div class="input-control text">
-					    <input type="text" value="" placeholder="input text"/>
-					</div>
+                <div id="parameter-inputs">
+                    <!-- <label class="input-label">Iterations<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <div class="input-control text">
+                        <input type="text" value="" placeholder="input text"/>
+                    </div>
 
-					<label class="input-label">Responsive variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-					<div class="input-control text">
-					    <input type="text" value="" placeholder="input text"/> -->
-					</div>
-				</div>
+                    <label class="input-label">Responsive variable<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                    <div class="input-control text">
+                        <input type="text" value="" placeholder="input text"/> -->
+                    </div>
+                </div>
 
-			</div>
+            </div>
 
-		</div>
-		<!-- /content -->
+        </div>
+        <!-- /content -->
 
 
-	</div>
+    </div>
 </div>
 <!-- /content/body -->
 
 </div>
-    
+
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
@@ -146,20 +146,20 @@ $( document ).ready(function() {
             top: $('header').height()
           }
     });
-    
+
     /*scrollVibrateFix();
-    
+
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/ 
-    
+    });*/
+
     // for tooltip
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
-    })    
+    })
 
-	var projectName = getParameterByName('projectName');
-    var analysisName = getParameterByName('analysisName');	
+    var projectName = getParameterByName('projectName');
+    var analysisName = getParameterByName('analysisName');
     var analysisId = getParameterByName('analysisId');
     var datasetId = getParameterByName('datasetId');
     var algorithmName = getParameterByName('algorithmName');
@@ -206,7 +206,7 @@ $( document ).ready(function() {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[2].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
-                }    
+                }
                 else if (algorithmName == 'RANDOM_FOREST') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[4].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
@@ -214,7 +214,7 @@ $( document ).ready(function() {
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[4] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
-                }                
+                }
                 else if (algorithmName == 'NAIVE_BAYES') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                 }
@@ -230,6 +230,21 @@ $( document ).ready(function() {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
                 }
+                 else if (algorithmName == 'COLLABORATIVE_FILTERING') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                }
+                else if (algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[4] = sanitize(hyperParametersResponse[4].value);
+                    hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
+                }
+
             }
         },
         error: function(res) {
@@ -240,14 +255,14 @@ $( document ).ready(function() {
 
     // put path in application navigator
     $('#nav-project').text(projectName);
-    $('#nav-analysis').text(" \\ "+analysisName);    
+    $('#nav-analysis').text(" \\ "+analysisName);
 
     $('#algo-cat').text(algorithmType.replace(/_/g, " "));
     $('#display-name').text(algorithmName.replace(/_/g, " "));
 
     var inputString = '';
     var hyperParameterInputValues = [];
-    // set values for algorithm to build HTML inputs 
+    // set values for algorithm to build HTML inputs
     $.ajax({
         type: "GET",
         url: serverUrl + "/api/configs/algorithms/" + algorithmName + "/hyperParams",
@@ -255,11 +270,11 @@ $( document ).ready(function() {
         dataType: 'json',
         success: function(res) {
             for (var index = 0; index < res.length; index++) {
-    			var param = res[index];
+                var param = res[index];
                 // create display name from key value - replacing all '_' with ' '
                 var displayName = param.key.replace(/_/g, " ");
-        		hyperParameterInputValues[index] = new Array(displayName, param.key, param.value, param.description);
-    		}
+                hyperParameterInputValues[index] = new Array(displayName, param.key, param.value, param.description);
+            }
         },
         error: function(res) {
             var errorText = res.responseText
@@ -268,40 +283,49 @@ $( document ).ready(function() {
     });
 
     // build input HTML for hyper-parameters
-	for (var i = 0; i < hyperParameterInputValues.length; i++) {
-		if (fromNext) {
-	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParametersArray[i], hyperParameterInputValues[i][3]);	
-    	}
-    	else {
-	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParameterInputValues[i][2], hyperParameterInputValues[i][3]);	
-    	}
-	}
+    for (var i = 0; i < hyperParameterInputValues.length; i++) {
+        if (fromNext) {
+            inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParametersArray[i], hyperParameterInputValues[i][3]);
+        }
+        else {
+            inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParameterInputValues[i][2], hyperParameterInputValues[i][3]);
+        }
+    }
 
     // set built input HTML
-	$("#parameter-inputs").append(inputString);
+    $("#parameter-inputs").append(inputString);
 
-	// disable fields if the model is built from an existing analysis
-	if(fromAnalysis == 'true') {
-	    for (var i = 0; i < hyperParameterInputValues.length; i++) {
+    // disable fields if the model is built from an existing analysis
+    if(fromAnalysis == 'true') {
+        for (var i = 0; i < hyperParameterInputValues.length; i++) {
             $('#'+hyperParameterInputValues[i][1]).attr("disabled", "disabled");
         }
-	}
+    }
 
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
         var fromAnalysis = getParameterByName('fromAnalysis')
         window.location.href = '../algorithm/algorithm.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-    });	
+    });
 
     $('#btn-next').on('click', function(e){
-    	e.preventDefault();
-    	var algorithmName = getParameterByName('algorithmName');    	
+        e.preventDefault();
+        var algorithmName = getParameterByName('algorithmName');
         var fromAnalysis = getParameterByName('fromAnalysis')
 
-    	var jsonData= '';
-    	var hyperParameters = [];
+        if(algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+            var weights = $('#Weights').val();
+            if(validateWeights(weights) == false) {
+                var errorText = 'Observation list length and weight length is not equal. Note that every observation should have a weight.';
+                    handleNotification(errorText, '#notification-area', 'warning');
+                return;
+            }
+        }
 
-    	$.ajax({
+        var jsonData= '';
+        var hyperParameters = [];
+
+        $.ajax({
             type: "GET",
             url: serverUrl + "/api/configs/algorithms/" + algorithmName + "/hyperParams",
             async : false,
@@ -320,9 +344,9 @@ $( document ).ready(function() {
                 var errorText = res.responseText
                 handleNotification(errorText, '#notification-area', 'warning');
             }
-    	});
+        });
 
-	    $.ajax({
+        $.ajax({
             type: 'POST',
             url: serverUrl + "/api//analyses/" + analysisId + "/hyperParams?algorithmName=" + algorithmName,
             contentType: "application/json",
@@ -334,7 +358,7 @@ $( document ).ready(function() {
                 var errorText = res.responseText
                 handleNotification(errorText, '#notification-area', 'warning');
             }
-        });        
+        });
 
     });
 
@@ -361,7 +385,7 @@ $( document ).ready(function() {
                 }
             });
             // delete analysis on CANCEL only if there are no models in this analysis
-            if(noOfModels == 0) {                
+            if(noOfModels == 0) {
                 $.ajax({
                     type: 'DELETE',
                     url: serverUrl + "/api/analyses/" + analysisId,
@@ -372,41 +396,67 @@ $( document ).ready(function() {
                         var errorText = res.responseText
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
-                });                            
+                });
             }
             else {
                 window.location.href = '../project/projects.jag';
             }
-        }    
+        }
     });
 
-	$('#btn-build').on('click', function(e){
+    $('#btn-build').on('click', function(e){
 
-		$('.hyper-double').each(function(e){
+        $('.hyper-double').each(function(e){
             var value = $(this).val();
             if(!isValidDouble(value)){
-            	showErrorMessage($(this).next('.form-val-error'),'* double is required');
+                showErrorMessage($(this).next('.form-val-error'),'* double is required');
             }
-            
-		});
 
-		$('.hyper-integer').each(function(e) {
-			var value = $(this).val();
-			if(!isValidInteger(value)) {
-			    showErrorMessage($(this).next('.form-val-error'),'* integer is required');	
-			}
-		});
+        });
 
-	});
+        $('.hyper-integer').each(function(e) {
+            var value = $(this).val();
+            if(!isValidInteger(value)) {
+                showErrorMessage($(this).next('.form-val-error'),'* integer is required');
+            }
+        });
+
+    });
 });
+
+function validateWeights(weights) {
+    var observationList = '';
+    var analysisId = getParameterByName('analysisId');
+    // get previously set observation list
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/observationList",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            observationList = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
+            handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    if(observationList != '') {
+        return Boolean(observationList.trim().split(",").length == weights.trim().split(",").length);
+    }
+
+    return Boolean(false);
+}
+
 
 function buildInput(displayName, id, value, description) {
 
-	inputString = 	'<label class="input-label">' + displayName + '<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="' + description + '"></span></label>' +
-					'<div class="input-control text">' +
-					    '<input type="text" id="' + id + '" value="' + value + '" placeholder="input text"/>' +
-					'</div>';
-	return inputString;
+    inputString =   '<label class="input-label">' + displayName + '<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="' + description + '"></span></label>' +
+                    '<div class="input-control text">' +
+                        '<input type="text" id="' + id + '" value="' + value + '" placeholder="input text"/>' +
+                    '</div>';
+    return inputString;
 }
 
 function isValidDouble(number){
@@ -414,7 +464,7 @@ function isValidDouble(number){
 }
 
 function isValidInteger(number) {
-	return number.match(integerRegEx) != null;
+    return number.match(integerRegEx) != null;
 }
 
 function showErrorMessage(element, message){
@@ -422,74 +472,74 @@ function showErrorMessage(element, message){
 }
 
 function buildEvents(element){
-	$(element).on('keypress', function(e) {
+    $(element).on('keypress', function(e) {
         showErrorMessage($(this).next('.form-val-error'), '');
-	});
+    });
 }
 
 function buildHyperparametersUI(parameters){
-	
-	// update algorith's display name
-	var algoDisplayName = parameters.displayName;
+
+    // update algorith's display name
+    var algoDisplayName = parameters.displayName;
     $('#display-name').text(algoDisplayName);
-    
+
     var allHyperparameters = '';
     var hyperParameters = parameters.hyperParameters;
     for(var i=0; i < hyperParameters.length; i++){
-    	if (typeof(hyperParameters[i].type) == 'object') {
-    		allHyperparameters += buildDropdown(hyperParameters[i]);
-    	} else {
-    		allHyperparameters += buildInputbox(hyperParameters[i]); 
-    	}
+        if (typeof(hyperParameters[i].type) == 'object') {
+            allHyperparameters += buildDropdown(hyperParameters[i]);
+        } else {
+            allHyperparameters += buildInputbox(hyperParameters[i]);
+        }
     }
-    return allHyperparameters;     
+    return allHyperparameters;
 }
 
 function buildInputbox(parameter){
-    
+
     var type = parameter.type;
-    
+
     var label = buildLabel(parameter.name);
-    
+
     var controller = '<div class="input-control text">' +
                      '<input class="hyper-' + type + '"'+'type="text" value="" placeholder="input text"/>'+
-				     '<span class="form-val-error" id="file-upload-error"></span>' +
-				     '</div>';
-	return label + controller;
+                     '<span class="form-val-error" id="file-upload-error"></span>' +
+                     '</div>';
+    return label + controller;
 }
 
 function buildDropdown(parameter){
-	var label = buildLabel(parameter.name);
-	var controller = '<div class="input-control text"> <select>'
-	for(var i=0; i<parameter.type.length; i++){
+    var label = buildLabel(parameter.name);
+    var controller = '<div class="input-control text"> <select>'
+    for(var i=0; i<parameter.type.length; i++){
         var type = parameter.type[i];
         controller += '<option value="' + type.name + '">' + type.name + '</option>';
-	}
-	controller += '</select></div>';
-	
-	return label + controller;
+    }
+    controller += '</select></div>';
+
+    return label + controller;
 }
 
 /*function buildResponseSelector(workflowId, algoCategory) {
-	var controller = '<div class="input-control text"> <select>';
+    var controller = '<div class="input-control text"> <select>';
     var label = buildLabel('Response Variable');
-	$.ajax({
+    $.ajax({
         url: './ajax/GetFeatures.jag',
         data: {wfid: workflowId, algocat: algoCategory},
         async: false,
         success: function(res){
-        	var features = res.features;        	
-        	for (var i=0; i<features.length; i++) {
-        		controller += '<option value="' + features[i]+'">' + features[i] + '</option>';
-        	}
-        	controller += '</select></div>';        	
+            var features = res.features;
+            for (var i=0; i<features.length; i++) {
+                controller += '<option value="' + features[i]+'">' + features[i] + '</option>';
+            }
+            controller += '</select></div>';
         },
         error: function(res){ //TODO: error handling...
-        	console.log(res);
+            console.log(res);
         }
-	});
+    });
 
-	return label + controller;
+    return label + controller;
 }*/
 
 </script>
