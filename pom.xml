@@ -23,7 +23,7 @@
 	<groupId>org.wso2.carbon.ml</groupId>
 	<artifactId>carbon-ml</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<name>WSO2 Carbon - Machine Learner Aggregator POM</name>
 	<url>http://wso2.com/products/machine-learner</url>
 	<description>WSO2 Machine Learner (WSO2 ML)</description>
@@ -536,6 +536,13 @@
                 <artifactId>xercesImpl</artifactId>
                 <version>${xercesImpl.version}</version>
             </dependency>
+
+			<!-- Deeplearning dependencies -->
+			<dependency>
+				<groupId>org.wso2.orbit.ai.h2o</groupId>
+				<artifactId>h2o</artifactId>
+				<version>${h2o.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -618,9 +625,9 @@
 		<project.scm.id>my-scm-server</project.scm.id>
 
 		<!-- Product ML version -->
-		<ml.version>1.0.4-SNAPSHOT</ml.version>
-		<ml.exp.pkg.version>1.0.4-SNAPSHOT</ml.exp.pkg.version>
-		<ml.imp.pkg.version>[1.0.4, 1.1.0)</ml.imp.pkg.version>
+		<ml.version>1.0.5-SNAPSHOT</ml.version>
+		<ml.exp.pkg.version>1.0.5-SNAPSHOT</ml.exp.pkg.version>
+		<ml.imp.pkg.version>[1.0.5, 1.1.0)</ml.imp.pkg.version>
 
 		<carbon.integration.version>4.3.0</carbon.integration.version>
 
@@ -661,6 +668,9 @@
 		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
 		<akka.version>2.3.4-spark</akka.version>
 		<typesafe.version>1.2.0</typesafe.version>
+
+		<!-- H2O dependency versions -->
+		<h2o.version>3.2.0.wso2v1</h2o.version>
 
 		<!-- Jaggery dependency versions -->
 		<jaggery.version>0.11.0</jaggery.version>

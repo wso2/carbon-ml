@@ -56,7 +56,7 @@ public class MLUtils {
      * Generate a random sample of the dataset using Spark.
      */
     public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
-            String sourceType, int tenantId) throws MLMalformedDatasetException {
+                                         String sourceType, int tenantId) throws MLMalformedDatasetException {
 
         JavaSparkContext sparkContext = null;
         try {
@@ -90,7 +90,7 @@ public class MLUtils {
         JavaSparkContext sparkContext = MLCoreServiceValueHolder.getInstance().getSparkContext();
         return sparkContext.textFile(filePath).first();
     }
-    
+
     /**
      * Generate a random sample of the dataset using Spark.
      */
@@ -144,7 +144,7 @@ public class MLUtils {
     }
 
     private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,
-            List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
+                                                List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
         int featureSize;
         int[] missing;
         int[] stringCellCount;
@@ -289,13 +289,13 @@ public class MLUtils {
 
     /**
      * Retrieve the indices of features where discard row imputaion is applied.
-     * 
+     *
      * @param workflow Machine learning workflow
      * @param imputeOption Impute option
      * @return Returns indices of features where discard row imputaion is applied
      */
     public static List<Integer> getImputeFeatureIndices(Workflow workflow, List<Integer> newToOldIndicesList,
-            String imputeOption) {
+                                                        String imputeOption) {
         List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
         for (Feature feature : workflow.getFeatures()) {
             if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
@@ -310,7 +310,7 @@ public class MLUtils {
 
     /**
      * Retrieve the index of a feature in the dataset.
-     * 
+     *
      * @param feature Feature name
      * @param headerRow First row (header) in the data file
      * @param columnSeparator Column separator character
@@ -351,7 +351,7 @@ public class MLUtils {
      * @return A list of indices of features to be included in the model
      */
     public static SortedMap<Integer, String> getIncludedFeaturesAfterReordering(Workflow workflow,
-            List<Integer> newToOldIndicesList, int responseIndex) {
+                                                                                List<Integer> newToOldIndicesList, int responseIndex) {
         SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
         List<Feature> features = workflow.getFeatures();
         for (Feature feature : features) {
@@ -389,7 +389,7 @@ public class MLUtils {
      * @return Dataset Version Object
      */
     public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,
-            String version, String targetPath) {
+                                                      String version, String targetPath) {
         MLDatasetVersion valueSet = new MLDatasetVersion();
         valueSet.setTenantId(tenantId);
         valueSet.setDatasetId(datasetId);
@@ -411,7 +411,7 @@ public class MLUtils {
 
     /**
      * Get {@link Properties} from a list of {@link MLProperty}
-     * 
+     *
      * @param mlProperties list of {@link MLProperty}
      * @return {@link Properties}
      */
@@ -464,7 +464,7 @@ public class MLUtils {
         String[] values = line.split("" + format.getDelimiter());
         return values.length;
     }
-    
+
     public static String[] getFeatures(String line, CSVFormat format) {
         String[] values = line.split("" + format.getDelimiter());
         return values;
@@ -538,10 +538,10 @@ public class MLUtils {
         }
         return arrayString.toString();
     }
-    
+
     /**
      * Generates a pattern to represent CSV or TSV format.
-     * 
+     *
      * @param delimiter "," or "\t"
      * @return Pattern
      */

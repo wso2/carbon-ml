@@ -71,7 +71,7 @@ public class MLConstants {
     public static final String BAM_SERVER_URL= "BAMServerURL";
     public static final String BAM_DATA_VALUES = "values";
 
- // user response
+    // user response
     public static final String SMALL = "small";
     public static final String MEDIUM = "medium";
     public static final String LARGE = "large";
@@ -132,6 +132,11 @@ public class MLConstants {
     public static final String PARAMETER = "parameter";
     public static final String PROPERTY = "property";
 
+    public static final String CLASSIFICATION = "Classification";
+    public static final String NUMERICAL_PREDICTION = "Numerical_Prediction";
+    public static final String CLUSTERING = "Clustering";
+    public static final String DEEPLEARNING = "Deeplearning";
+
     // file formats
     public static final String CSV = ".csv";
     public static final String TSV = ".tsv";
@@ -157,6 +162,10 @@ public class MLConstants {
     public static final String NUM_CLUSTERS = "Num_Clusters";
     public static final String NUM_OF_NORMAL_CLUSTERS = "Num_of_Normal_Clusters";
     public static final String LAMBDA = "Lambda";
+    public static final String BATCH_SIZE = "Batch_Size";
+    public static final String LAYER_SIZES = "Layer_Sizes";
+    public static final String EPOCHS = "Epochs";
+    public static final String ACTIVATION_TYPE = "Activation_Type";
     public static final String RANK = "Rank";
     public static final String BLOCKS = "Blocks";
     public static final String ALPHA = "Alpha";
@@ -175,10 +184,8 @@ public class MLConstants {
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
 
     public static final String ANOMALY_DETECTION_MODEL_SUMMARY = "AnomalyDetectionModelSummary";
-
-
+    public static final String DEEPLEARNING_MODEL_SUMMARY = "DeeplearningModelSummary";
     public static final String RECOMMENDATION_MODEL_SUMMARY = "RecommendationModelSummary";
-
 
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
 
@@ -222,12 +229,15 @@ public class MLConstants {
 
 
     public enum ANOMALY_DETECTION_ALGORITHM {
-	    K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
+        K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
+    }
+
+    public enum DEEPLEARNING_ALGORITHM {
+        STACKED_AUTOENCODERS
     }
 
     public enum RECOMMENDATION_ALGORITHM {
         COLLABORATIVE_FILTERING, COLLABORATIVE_FILTERING_IMPLICIT
-
     }
 
     public enum MISSING_VALUES {
