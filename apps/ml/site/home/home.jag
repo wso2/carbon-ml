@@ -12,29 +12,29 @@
     <script src="../../js/respond.min.js"></script>
 
     <%
-        include("../../includes/tenantAware.jag");
-        if (session.get("requestedPage")) {
-            var requestedPage = session.get("requestedPage");
-            session.remove("requestedPage");
-            print('<script> var requestedPage = "' + requestedPage + '"; </script>');
-        }
-        print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
-    %>
-    
+include("../../includes/tenantAware.jag");
+if (session.get("requestedPage")) {
+    var requestedPage = session.get("requestedPage");
+    session.remove("requestedPage");
+    print('<script> var requestedPage = "' + requestedPage + '"; </script>');
+}
+print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
+%>
+
 </head>
 
 <body>
 
-    <div class="container col-lg-12 col-md-12 col-sm-12">
+<div class="container col-lg-12 col-md-12 col-sm-12">
 
-        <header>
-            <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo">
-                	<a href="home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-				</div>
-                <div class="col-sm-4">
-                    <div class="wr-auth pull-right">
-                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+    <header>
+        <div class="row wr-global-header">
+            <div class="col-sm-8 app-logo">
+                <a href="home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+            </div>
+            <div class="col-sm-4">
+                <div class="wr-auth pull-right">
+                    <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
                         <div class="dropdown-menu">
                             <div class="cu-arrow"></div>
                             <div class="dropdown-menu-content">

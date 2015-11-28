@@ -21,8 +21,9 @@ package org.wso2.carbon.ml.core.factories;
  * Holds all algorithm types.
  */
 public enum AlgorithmType {
-
-    CLASSIFICATION("Classification"), NUMERICAL_PREDICTION("Numerical_Prediction"), CLUSTERING("Clustering"), ANOMALY_DETECTION("Anomaly_Detection"), RECOMMENDATION("Recommendation");
+    CLASSIFICATION("Classification"), NUMERICAL_PREDICTION("Numerical_Prediction"), CLUSTERING(
+            "Clustering"), ANOMALY_DETECTION("Anomaly_Detection"), DEEPLEARNING("Deeplearning"), RECOMMENDATION(
+            "Recommendation");
 
     private String value = null;
 

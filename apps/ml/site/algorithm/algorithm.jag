@@ -13,7 +13,6 @@
     <%
 include("../../includes/tenantAware.jag");
 %>
-
 </head>
 
 <body>
@@ -33,7 +32,7 @@ include("../../includes/tenantAware.jag");
                 <div class="dropdown-menu-content">
                     <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
                 </div>
-            </div>
+            </div>          
         </div>
     </div>
 </div>
@@ -66,7 +65,7 @@ include("../../includes/tenantAware.jag");
 <!-- content/body -->
 <div class="row">
     <div class="col-lg-12 wr-secondary-bar">
-
+        
         <!-- Wizard -->
         <ul class="nav nav-pills nav-wizard">
             <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
@@ -81,6 +80,7 @@ include("../../includes/tenantAware.jag");
 
 <div class="row">
     <div class="col-md-12">
+        
 
         <!-- content -->
         <div class="container col-md-12 col-centered wr-content">
@@ -108,7 +108,7 @@ include("../../includes/tenantAware.jag");
                             <option value="LINEAR_REGRESSION">LINEAR REGRESSION</option>
                             <option value="RIDGE_REGRESSION">RIDGE REGRESSION</option>
                             <option value="LASSO_REGRESSION">LASSO REGRESSION</option>
-                        </optgroup>
+                        </optgroup>                        
                         <optgroup label="Binary Classification">
                             <option value="LOGISTIC_REGRESSION">LOGISTIC REGRESSION SGD</option>
                             <option value="SVM">SVM</option>
@@ -118,7 +118,7 @@ include("../../includes/tenantAware.jag");
                             <option value="DECISION_TREE">DECISION TREE</option>
                             <option value="RANDOM_FOREST">RANDOM FOREST</option>
                             <option value="NAIVE_BAYES">NAIVE BAYES</option>
-                        </optgroup>
+                        </optgroup>                        
                         <optgroup label="Clustering">
                             <option value="K_MEANS">K-MEANS</option>
                         </optgroup>
@@ -126,7 +126,10 @@ include("../../includes/tenantAware.jag");
                             <option value="K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA">K-MEANS WITH UNLABELED DATA</option>
                             <option value="K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA">K-MEANS WITH LABELED DATA</option>
                         </optgroup>
-                        <optgroup label="Recommendation">
+			<optgroup label="Deep Learning">
+                        	<option value="STACKED_AUTOENCODERS">STACKED AUTOENCODERS</option>
+                        </optgroup>
+			<optgroup label="Recommendation">
                             <option value="COLLABORATIVE_FILTERING">COLLABORATIVE FILTERING (Explicit Data)</option>
                             <option value="COLLABORATIVE_FILTERING_IMPLICIT">COLLABORATIVE FILTERING (Implicit Feedback Data)</option>
                         </optgroup>
@@ -143,7 +146,7 @@ include("../../includes/tenantAware.jag");
                         <select id="response-variable" class="form-control">
                         </select>
                     </div>
-                    <div class="spcr-2"></div>
+                    <div class="spcr-2"></div>                
                 </div>
 
                 <div id="normal-labels">
@@ -222,14 +225,16 @@ include("../../includes/tenantAware.jag");
                     </div>
                 </div>
             </div>
+
         </div>
+
     </div>
             <!-- /content -->
 </div>
 <!-- /content/body -->
 
 </div>
-
+    
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
@@ -260,7 +265,7 @@ var analysisId = getParameterByName('analysisId');
 var datasetId = getParameterByName('datasetId');
 var fromAnalysis = getParameterByName('fromAnalysis')
 var notificationArea = $('#notification-area');
-
+var selectedAlgorithm;
 
 $( document ).ready(function() {
 
@@ -432,9 +437,9 @@ $( document ).ready(function() {
         success: function(res) {
             var setNormalLabels = sanitize(res);
             var labelArray = setNormalLabels.split(',');
-
+            
             for(var i=0; i<labelArray.length; i++){
-
+                
                 $("input:checkbox[name=labels]").each(function(){
                     if($(this).val() == labelArray[i]) {
                     $(this).prop('checked',true);
@@ -447,7 +452,7 @@ $( document ).ready(function() {
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
-
+    
     // get previously set normalization option
     $.ajax({
         type: "GET",
@@ -532,8 +537,8 @@ $( document ).ready(function() {
     $(document).on('change','#algorithm-name',function() {
         selectedAlgorithm = $('#algorithm-name').val();
         toggleInput(selectedAlgorithm);
-    });
-
+    });   
+	
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
 
@@ -592,7 +597,10 @@ $( document ).ready(function() {
         else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
             algorithmType = 'Anomaly_Detection';
         }
-        else if (algorithmName == 'COLLABORATIVE_FILTERING' || algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+	else if (algorithmName == 'STACKED_AUTOENCODERS') {
+            algorithmType = 'Deeplearning';            
+        }
+	else if (algorithmName == 'COLLABORATIVE_FILTERING' || algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
             algorithmType = 'Recommendation';
         }
 
@@ -665,7 +673,7 @@ $( document ).ready(function() {
                 }
             });
             // delete analysis on CANCEL only if there are no models in this analysis
-            if(noOfModels == 0) {
+            if(noOfModels == 0) {                
                 $.ajax({
                     type: 'DELETE',
                     url: serverUrl + "/api/analyses/" + analysisId,
@@ -676,28 +684,28 @@ $( document ).ready(function() {
                         var errorText = res.responseText
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
-                });
+                });                            
             }
             else {
                 window.location.href = '../project/projects.jag';
             }
-        }
+        }        
     });
-});
+}); 
 
 function getNormalLabelValues() {
 
     $.ajax({
     type: "GET",
-    url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",
+    url: serverUrl + "/api/analyses/" + analysisId + "/summarizedFeatures?limit=0&offset=0",        
     async: false,
-    success : function(res){
+    success : function(res){  
         var features = res;
 
         for(var i=0; i<features.length; i++){
-
+        
             if($('#response-variable option:selected').text() == features[i].fieldName){
-
+                     
                 var jsonObj = JSON.parse(features[i]["summaryStats"]);
                 var values = jsonObj[0]["values"];
 
