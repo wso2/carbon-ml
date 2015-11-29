@@ -811,6 +811,10 @@ function fieldManipulate(algorithmName) {
 function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable) {
 
  $('#response-variable').empty();
+ $('#user-variable').empty();
+ $('#product-variable').empty();
+ $('#rating-variable').empty();
+
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/features",
