@@ -101,7 +101,6 @@ public class ConfigurationApiV11 extends MLRestAPI {
         }
         List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
         for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
-            logger.info(mlAlgorithm.getName());
             if (algorithmName.equals(mlAlgorithm.getName())) {
                 return Response.ok(mlAlgorithm.getParameters()).build();
             }

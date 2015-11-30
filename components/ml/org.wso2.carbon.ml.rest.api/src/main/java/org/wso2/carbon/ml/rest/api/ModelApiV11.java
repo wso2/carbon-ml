@@ -544,19 +544,56 @@ public class ModelApiV11 extends MLRestAPI {
         }
     }
 
+    /**
+     * Get a list of recommended products for a given user using the given model.
+     * @param modelId id of the recommendation model to be used.
+     * @param userId id of the user.
+     * @param noOfProducts number of recommendations required.
+     * @return an array of product recommendations. 
+     */
     @GET
-    @Path("/{modelId}/getRecommendations/{userId}/{noOfProducts}")
+    @Path("/{modelId}/product-recommendations")
     @Produces("application/json")
-    public Response getRecommendations(@PathParam("modelId") long modelId,
-                                       @PathParam("userId") int userId,
-                                       @PathParam("noOfProducts") int noOfProducts) {
+    public Response getProductRecommendations(@PathParam("modelId") long modelId,
+            @QueryParam("user-id") int userId,
+            @QueryParam("no-of-products") int noOfProducts) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
             List<?> recommendations =
-                    mlModelHandler.getRecommendations(tenantId, userName, modelId, userId, noOfProducts);
+                    mlModelHandler.getProductRecommendations(tenantId, userName, modelId, userId, noOfProducts);
+            return Response.ok(recommendations).build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
+                                                           modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
+        }
+    }
+    
+    /**
+     * Get a list of recommended users for a given product using the given model.
+     * @param modelId id of the recommendation model to be used.
+     * @param productId id of the product.
+     * @param noOfUsers number of recommendations required.
+     * @return an array of user recommendations. 
+     */
+    @GET
+    @Path("/{modelId}/user-recommendations")
+    @Produces("application/json")
+    public Response getUserRecommendations(@PathParam("modelId") long modelId,
+            @QueryParam("product-id") int productId,
+            @QueryParam("no-of-users") int noOfUsers) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<?> recommendations =
+                    mlModelHandler.getUserRecommendations(tenantId, userName, modelId, productId, noOfUsers);
             return Response.ok(recommendations).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",

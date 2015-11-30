@@ -52,8 +52,6 @@ import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.commons.domain.config.Storage;
 import org.wso2.carbon.ml.core.exceptions.*;
-import org.wso2.carbon.ml.core.factories.AlgorithmType;
-
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.factories.ModelBuilderFactory;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -631,9 +629,30 @@ public class MLModelHandler {
         return predictions;
     }
 
-    public List<?> getRecommendations(int tenantId, String userName, long modelId, int userId,
-                                      int noOfProducts) throws MLModelHandlerException {
+    public List<?> getProductRecommendations(int tenantId, String userName, long modelId, int userId, int noOfProducts)
+            throws MLModelHandlerException {
 
+        MatrixFactorizationModel model = getMatrixFactorizationModel(tenantId, userName, modelId);
+        List<?> recommendations = CollaborativeFiltering.recommendProducts(model, userId, noOfProducts);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
+
+    }
+
+    public List<?> getUserRecommendations(int tenantId, String userName, long modelId, int productId, int noOfUsers)
+            throws MLModelHandlerException {
+
+        MatrixFactorizationModel model = getMatrixFactorizationModel(tenantId, userName, modelId);
+        List<?> recommendations = CollaborativeFiltering.recommendUsers(model, productId, noOfUsers);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
+
+    }
+
+    private MatrixFactorizationModel getMatrixFactorizationModel(int tenantId, String userName, long modelId)
+            throws MLModelHandlerException {
         if (!isValidModelId(tenantId, userName, modelId)) {
             String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
                     modelId, tenantId, userName);
@@ -645,16 +664,13 @@ public class MLModelHandler {
         //validate if retrieved model is a MatrixFactorizationModel
         if (!(builtModel.getModel() instanceof MLMatrixFactorizationModel)) {
             String msg =
-                    String.format("Prediction failed from model [id] %s is not a MatrixFactorizationModel", modelId);
+                    String.format("Cannot get recommendations for model [id] %s , since it is not generated from a "
+                            + "Recommendation algorithm.", modelId);
             throw new MLModelHandlerException(msg);
         }
         //get recommendations
         MatrixFactorizationModel model = ((MLMatrixFactorizationModel) builtModel.getModel()).getModel();
-        List<?> recommendations = CollaborativeFiltering.recommendProducts(model, userId, noOfProducts);
-
-        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
-        return recommendations;
-
+        return model;
     }
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
@@ -674,9 +690,6 @@ public class MLModelHandler {
                 MLDeeplearningModel mlDeeplearningModel = (MLDeeplearningModel) model.getModel();
                 mlDeeplearningModel.setStorageLocation(storageLocation);
                 model.setModel(mlDeeplearningModel);
-            }
-            if (AlgorithmType.RECOMMENDATION.getValue().equals(model.getAlgorithmClass())) {
-                ((MLMatrixFactorizationModel) model.getModel()).setOutPath(outPath);
             }
 
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);

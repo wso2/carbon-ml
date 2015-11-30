@@ -20,88 +20,74 @@ package org.wso2.carbon.ml.core.spark.models;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.spark.SparkContext;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
-import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.apache.spark.rdd.RDD;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+
+import scala.Tuple2;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.List;
 
 /**
  * Wraps Spark's {@link MatrixFactorizationModel}
  */
 public class MLMatrixFactorizationModel implements Externalizable {
 
-	private static final long serialVersionUID = 186767859324000308L;
-	private static final Log log = LogFactory.getLog(MLMatrixFactorizationModel.class);
+    private static final long serialVersionUID = 186767859324000308L;
+    private static final Log log = LogFactory.getLog(MLMatrixFactorizationModel.class);
 
-	private String outPath;
-	private MatrixFactorizationModel model;
+    private MatrixFactorizationModel model;
 
-	public MLMatrixFactorizationModel() {
+    public MLMatrixFactorizationModel() {
 
-	}
+    }
 
-	public MLMatrixFactorizationModel(MatrixFactorizationModel model) {
-		this.model = model;
-	}
+    public MLMatrixFactorizationModel(MatrixFactorizationModel model) {
+        this.model = model;
+    }
 
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeObject(this.model);
-//		try {
-//			saveModel();
-//		} catch (MLModelBuilderException e) {
-//			log.error(e.getMessage(), e);
-//		}
-	}
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        // can't save the whole MatrixFactorizationModel, hence saving relevant attributes separately.
+        out.writeInt(model.rank());
+        out.writeObject(model.userFeatures().toJavaRDD().collect());
+        out.writeObject(model.productFeatures().toJavaRDD().collect());
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		model = (MatrixFactorizationModel) in.readObject();
-//		try {
-//			this.model = retrieveModel();
-//		} catch (MLModelBuilderException e) {
-//			log.error(e.getMessage(), e);
-//		}
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("Rank, user features and product features of MatrixFactorizationModel were serialized "
+                    + "successfully.");
+        }
+    }
 
-	public MatrixFactorizationModel getModel() {
-		return model;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        int rank = in.readInt();
+        List<Tuple2<Object, double[]>> userFeaturesList = (List<Tuple2<Object, double[]>>) in.readObject();
+        List<Tuple2<Object, double[]>> productFeaturesList = (List<Tuple2<Object, double[]>>) in.readObject();
 
-	public void setModel(MatrixFactorizationModel model) {
-		this.model = model;
-	}
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        RDD<Tuple2<Object, double[]>> userFeatures = valueHolder.getSparkContext().parallelize(userFeaturesList).rdd();
+        RDD<Tuple2<Object, double[]>> productFeatures = valueHolder.getSparkContext().parallelize(productFeaturesList)
+                .rdd();
+        model = new MatrixFactorizationModel(rank, userFeatures, productFeatures);
 
-	public String getOutPath() {
-		return outPath;
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("Rank, user features and product features were de-serialized successfully and loaded "
+                    + "MatrixFactorizationModel.");
+        }
+    }
 
-	public void setOutPath(String outPath) {
-		this.outPath = outPath;
-	}
+    public MatrixFactorizationModel getModel() {
+        return model;
+    }
 
-	private void saveModel() throws MLModelBuilderException {
-		if(model == null) {
-			throw new MLModelBuilderException("Error when persisting model. MatrixFactorizationModel is null.");
-		}
+    public void setModel(MatrixFactorizationModel model) {
+        this.model = model;
+    }
 
-		if(outPath == null) {
-			throw new MLModelBuilderException("Error when persisting model. Out Path cannot be null.");
-		}
-
-		model.save(MLCoreServiceValueHolder.getInstance().getSparkContext().sc(), outPath);
-	}
-
-	private MatrixFactorizationModel retrieveModel() throws MLModelBuilderException {
-		if(outPath == null) {
-			throw new MLModelBuilderException("Error when retrieving model. Out Path cannot be null.");
-		}
-
-		return MatrixFactorizationModel.load(MLCoreServiceValueHolder.getInstance().getSparkContext().sc(), outPath);
-	}
 }
