@@ -53,7 +53,6 @@ public class RecommendationUtils {
 
 		int userIndex = MLUtils.getFeatureIndex(workflow.getUserVariable(), headerRow, columnSeparator);
 		int productIndex = MLUtils.getFeatureIndex(workflow.getProductVariable(), headerRow, columnSeparator);
-		int ratingIndex = MLUtils.getFeatureIndex(workflow.getRatingVariable(), headerRow, columnSeparator);
 
 		JavaRDD<String[]> tokens = MLUtils.filterRows(columnSeparator, headerRow, lines,
 		                                              MLUtils.getImputeFeatureIndices(workflow,
@@ -67,6 +66,7 @@ public class RecommendationUtils {
 			tokens = tokens.map(new ImplicitDataToRating(userIndex, productIndex, observationList, weightList));
 			return tokens.map(new StringArrayToRating(0,1,2));
 		} else {
+			int ratingIndex = MLUtils.getFeatureIndex(workflow.getRatingVariable(), headerRow, columnSeparator);
 			return tokens.map(new StringArrayToRating(userIndex, productIndex, ratingIndex));
 		}
 	}
