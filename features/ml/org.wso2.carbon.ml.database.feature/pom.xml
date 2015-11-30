@@ -58,7 +58,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>clean-metrics-h2-database</id>
+						<id>clean-ml-h2-database</id>
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>run</goal>
@@ -70,7 +70,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>create-carbon-metrics-database</id>
+						<id>create-carbon-ml-database</id>
 						<phase>package</phase>
 						<goals>
 							<goal>run</goal>
