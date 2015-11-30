@@ -18,7 +18,10 @@
 
 package org.wso2.carbon.ml.core.spark.recommendation;
 
+import org.apache.spark.api.java.JavaDoubleRDD;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
@@ -34,6 +37,8 @@ import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
 import org.wso2.carbon.ml.core.spark.summary.RecommendationModelSummary;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+
+import scala.Tuple2;
 
 import java.util.Map;
 
@@ -128,7 +133,11 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 				recommendationModelSummary.setAlgorithm(RECOMMENDATION_ALGORITHM.COLLABORATIVE_FILTERING.toString());
 			}
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
-			recommendationModelSummary.setRank(model.rank());
+			
+			// Evaluate the model on rating data
+			double meanSquaredError = collaborativeFiltering.test(model,
+					trainingData).mean();
+			recommendationModelSummary.setMeanSquaredError(meanSquaredError);
 
 			return recommendationModelSummary;
 		} catch (Exception e) {

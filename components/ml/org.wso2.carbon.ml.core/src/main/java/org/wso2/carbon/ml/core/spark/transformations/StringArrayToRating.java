@@ -27,6 +27,7 @@ import org.apache.spark.api.java.function.Function;
  */
 public class StringArrayToRating implements Function<String[], Rating> {
 
+	private static final long serialVersionUID = 1598492149521257807L;
 	private int userIndex;
 	private int productIndex;
 	private int ratingIndex;

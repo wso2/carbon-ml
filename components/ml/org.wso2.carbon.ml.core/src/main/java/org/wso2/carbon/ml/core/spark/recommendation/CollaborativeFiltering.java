@@ -18,10 +18,15 @@
 
 package org.wso2.carbon.ml.core.spark.recommendation;
 
+import org.apache.spark.api.java.JavaDoubleRDD;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.recommendation.ALS;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
+
+import scala.Tuple2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,6 +71,52 @@ public class CollaborativeFiltering implements Serializable{
 
 		return ALS.trainImplicit(trainingDataset.rdd(), rank, noOfIterations, regularizationParameter, noOfBlocks,
 		                         confidenceParameter);
+	}
+	
+	public JavaDoubleRDD test(final MatrixFactorizationModel model, JavaRDD<Rating> testData) {
+		// Evaluate the model on rating data
+	    JavaRDD<Tuple2<Object, Object>> userProducts = testData.map(
+	      new Function<Rating, Tuple2<Object, Object>>() {
+			private static final long serialVersionUID = -3264552286094314165L;
+
+			public Tuple2<Object, Object> call(Rating r) {
+	          return new Tuple2<Object, Object>(r.user(), r.product());
+	        }
+	      }
+	    );
+	    JavaPairRDD<Tuple2<Integer, Integer>, Double> predictions = JavaPairRDD.fromJavaRDD(
+	      model.predict(JavaRDD.toRDD(userProducts)).toJavaRDD().map(
+	        new Function<Rating, Tuple2<Tuple2<Integer, Integer>, Double>>() {
+				private static final long serialVersionUID = -2499038680234103588L;
+
+			public Tuple2<Tuple2<Integer, Integer>, Double> call(Rating r){
+	            return new Tuple2<Tuple2<Integer, Integer>, Double>(
+	              new Tuple2<Integer, Integer>(r.user(), r.product()), r.rating());
+	          }
+	        }
+	    ));
+	    JavaRDD<Tuple2<Double, Double>> ratesAndPreds = 
+	      JavaPairRDD.fromJavaRDD(testData.map(
+	        new Function<Rating, Tuple2<Tuple2<Integer, Integer>, Double>>() {
+				private static final long serialVersionUID = 4113775238540885102L;
+
+			public Tuple2<Tuple2<Integer, Integer>, Double> call(Rating r){
+	            return new Tuple2<Tuple2<Integer, Integer>, Double>(
+	              new Tuple2<Integer, Integer>(r.user(), r.product()), r.rating());
+	          }
+	        }
+	    )).join(predictions).values();
+	    JavaDoubleRDD ratingsOfTestData = JavaDoubleRDD.fromRDD(ratesAndPreds.map(
+	      new Function<Tuple2<Double, Double>, Object>() {
+			private static final long serialVersionUID = -5530552459744897905L;
+
+			public Object call(Tuple2<Double, Double> pair) {
+	          Double err = pair._1() - pair._2();
+	          return err * err;
+	        }
+	      }
+	    ).rdd());
+		return ratingsOfTestData;
 	}
 
 	/**

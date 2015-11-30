@@ -18,10 +18,8 @@
 
 package org.wso2.carbon.ml.core.spark.summary;
 
-import org.apache.spark.rdd.RDD;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
-import scala.Tuple2;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,7 +29,7 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 	private static final long serialVersionUID = 5557613175001838756L;
 	private String algorithm;
 	private String[] features;
-	private int rank;
+	private double meanSquaredError;
 
 	@Override
 	public String getModelSummaryType() {
@@ -44,14 +42,6 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 
 	public void setAlgorithm(String algorithm) {
 		this.algorithm = algorithm;
-	}
-
-	public int getRank() {
-		return rank;
-	}
-
-	public void setRank(int rank) {
-		this.rank = rank;
 	}
 
 	/**
@@ -68,5 +58,13 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 	@Override
 	public String[] getFeatures() {
 		return features;
+	}
+
+	public double getMeanSquaredError() {
+		return meanSquaredError;
+	}
+
+	public void setMeanSquaredError(double meanSquaredError) {
+		this.meanSquaredError = meanSquaredError;
 	}
 }
