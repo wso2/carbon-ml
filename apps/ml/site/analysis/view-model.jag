@@ -16,13 +16,13 @@
     <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
     <!-- for threshold slider -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    
-    <script src="../../js/respond.min.js"></script>  
+
+    <script src="../../js/respond.min.js"></script>
     <script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
     <script src="../../js/nv.d3.js"></script>
     <script src="../../js/wso2.ml.graphs.js"></script>
-    
+
     <script src="../../js/jquery-1.11.1.min.js"></script>
 
     <%
@@ -49,7 +49,7 @@ include("../../includes/tenantAware.jag");
                     <div class="dropdown-menu-content">
                         <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
                     </div>
-                </div>          
+                </div>
             </div>
         </div>
     </div>
@@ -91,7 +91,7 @@ include("../../includes/tenantAware.jag");
 </div>
 <div class="row">
     <div class="col-md-12">
-        
+
 
         <!-- content -->
         <div class="container col-md-12 col-centered wr-content">
@@ -100,6 +100,7 @@ include("../../includes/tenantAware.jag");
             <h1 class="title">Model Summary<span id="model-summary-title"></span></h1>
 
             <div class="col-md-12 wr-graph-content">
+            <div id="area">
 
                 <div class="wr-graph-element gr03">
                     <h5>Percentile Value<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip"
@@ -109,7 +110,7 @@ include("../../includes/tenantAware.jag");
                         <div id="percentile">
                         <input type="range" id="myRange" min="80" max="100" step="1"><h7>
                         80<span style="float:right;">100</span></h7>
-                        </div>                            
+                        </div>
                 </div>
 
                 <div class="wr-graph-element gr03">
@@ -166,7 +167,7 @@ include("../../includes/tenantAware.jag");
                                         <div class="input-control text">
                                             <select class="form-control" id="predicted-actual-x-features"></select>
                                         </div>
-                                    </div>                              
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="filter-md">
@@ -174,8 +175,8 @@ include("../../includes/tenantAware.jag");
                                         <div class="input-control text">
                                             <select class="form-control" id="predicted-actual-y-features"></select>
                                         </div>
-                                    </div>                              
-                                </div>                              
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -200,9 +201,9 @@ include("../../includes/tenantAware.jag");
                                     <select class="form-control" id="residual-features"></select>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
-                </div> 
+                </div>
 
                 <div class="wr-graph-element gr03">
                     <h5>Cluster Diagram</h5>
@@ -218,7 +219,7 @@ include("../../includes/tenantAware.jag");
                                         <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
                                         </div>
                                     </div>
-                                
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="filter-md">
@@ -226,7 +227,7 @@ include("../../includes/tenantAware.jag");
                                         <div class="input-control text">
                                             <select class="form-control" id="cluster-independent"></select>
                                         </div>
-                                    </div>                              
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="filter-md">
@@ -234,23 +235,23 @@ include("../../includes/tenantAware.jag");
                                         <div class="input-control text">
                                             <select class="form-control" id="cluster-dependent"></select>
                                         </div>
-                                    </div>                              
-                                </div>                           
+                                    </div>
+                                </div>
                         </div>
                     </div>
             </div>
 
 	    <div class="row">
 		<div class="col-md-12">
-            		<div class="wr-graph-element gr03">				                          
-                    	<h5>Deep Network Visualization</h5>                                        
+            		<div class="wr-graph-element gr03">
+                    	<h5>Deep Network Visualization</h5>
 		            	<div class="wr-graph-img">
 		                	<div id="dl-network"></div>
 		            	</div>
             		</div>
             	</div>
             </div>
-
+            </div>
 
         </div>
         <!-- /content -->
@@ -259,7 +260,7 @@ include("../../includes/tenantAware.jag");
 </div>
 <!-- /content/body -->
 
-</div>   
+</div>
 
 
 <!--footer class="footer">
@@ -269,7 +270,7 @@ include("../../includes/tenantAware.jag");
 <div id="content-asset-types" style="display: none">
     <div>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
     </div>
 </div>
 
@@ -277,7 +278,7 @@ include("../../includes/tenantAware.jag");
 <script src="../../js/wso2.ml.util.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 <script src="../../js/jquery.dataTables.js"></script>
-    
+
 <script src="../../js/d3.parsets.js"></script>
 <script src="../../js/figue.js"></script>
 
@@ -337,25 +338,25 @@ $( document ).ready(function() {
             top: $('header').height()
           }
     });
-    
+
     /*scrollVibrateFix();
-    
+
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/ 
+    });*/
 
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-asset-type-switcher").popover({
-        html : true, 
+        html : true,
         content: function() {
             return $('#content-asset-types').html();
         }
     });
 
     predictedActualMarkerSize = $('#predicted-actual-marker-size-input').val();
-    residualMarkerSize = $('#residual-marker-size-input').val();  
-    clusterMarkerSize = $('#cluster-marker-size-input').val();  
+    residualMarkerSize = $('#residual-marker-size-input').val();
+    clusterMarkerSize = $('#cluster-marker-size-input').val();
 
     // get numerical feature names
     $.ajax({
@@ -391,7 +392,7 @@ $( document ).ready(function() {
     $('#nav-analysis').text(" \\ "+analysisName);
     $('#nav-model').text(" \\ "+modelName);
 
-    // get model summary and draw plots    
+    // get model summary and draw plots
     $.ajax({
         type: 'GET',
         url: serverUrl + "/api/models/" + modelId + "/summary",
@@ -403,9 +404,9 @@ $( document ).ready(function() {
 
             if (algorithm == 'LOGISTIC_REGRESSION' || algorithm == 'LOGISTIC_REGRESSION_LBFGS' || algorithm == 'SVM') {
                 if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
-                }                
-               
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                }
+
                 // remove not applicable charts/tables
                 $("#other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
@@ -422,7 +423,7 @@ $( document ).ready(function() {
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
-                // draw confusion matrix                
+                // draw confusion matrix
                 drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
@@ -431,11 +432,11 @@ $( document ).ready(function() {
                 if(features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
                     $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
                             value: index,
                             text : sanitize(feature)
                         }));
-                    });                    
+                    });
                     $('#predicted-actual-y-features option')[1].selected = true;
                     // draw predicted vs. actual chart
                     drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
@@ -447,12 +448,12 @@ $( document ).ready(function() {
             }
             else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST' || algorithm == 'NAIVE_BAYES') {
                 if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
-                }                
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                }
                 // remove not applicable charts/tables
                 $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
-                // draw confusion matrix                
+                // draw confusion matrix
                 drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
@@ -460,11 +461,11 @@ $( document ).ready(function() {
                 if(features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
                     $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
                             value: index,
                             text : sanitize(feature)
                         }));
-                    });                    
+                    });
                     $('#predicted-actual-y-features option')[1].selected = true;
                     // draw predicted vs. actual chart
                     drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
@@ -472,12 +473,12 @@ $( document ).ready(function() {
                 else {
                     var chartType = 'predicted vs. actual chart';
                     $('#predicted-vs-actual').html(getInfo(chartType));
-                }                    
-            }            
-            else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {                
+                }
+            }
+            else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {
                 if($.isNumeric(res.error)) {
                     $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
-                }                
+                }
                 // remove not applicable charts/tables
                 $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
@@ -492,18 +493,18 @@ $( document ).ready(function() {
                 if(displayFeatures.length > 0) {
                     $('#residual-features').empty();
                     $.each(displayFeatures,function(index, feature){
-                        $('#residual-features').append($('<option>', { 
+                        $('#residual-features').append($('<option>', {
                             value: sanitize(feature.value),
                             text : sanitize(feature.text)
                         }));
-                    });                    
+                    });
                     // draw residual plot
-                    drawResidualPlot(testResultDataPointsSample);                   
+                    drawResidualPlot(testResultDataPointsSample);
                 }
                 else {
                     var chartType = 'residual plot';
                     $('#residual').html(getInfo(chartType));
-                }                    
+                }
             }
             else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
 
@@ -533,9 +534,9 @@ $( document ).ready(function() {
                 var textbox = $('#chance');
 
                 slider.change(function() {
-                var newValue = ($(this).val());    
+                var newValue = ($(this).val());
                 textbox.val(newValue);
-                
+
                 if(res.percentileToMulticlassMetricsMap[newValue].f1Score) {
                     $("#model-summary-title").empty();
                     $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
@@ -560,7 +561,7 @@ $( document ).ready(function() {
                 // draw confusion matrix and other measures
                 drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
                 drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
-                
+
                 });
 
                 clusterData = res.clusterPoints;
@@ -569,13 +570,13 @@ $( document ).ready(function() {
             }
 	    else if (algorithm == 'STACKED_AUTOENCODERS') {
                 if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");    
-                }                
+                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                }
                 // remove not applicable charts/tables
                 $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#residual").remove();
-                // draw confusion matrix                
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                
+                // draw confusion matrix
+                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
@@ -583,11 +584,11 @@ $( document ).ready(function() {
                 if(features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
                     $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', { 
+                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
                             value: index,
                             text : sanitize(feature)
                         }));
-                    });                    
+                    });
                     $('#predicted-actual-y-features option')[1].selected = true;
 	                // draw predicted vs. actual chart
 	                drawPredictedVsActualChart(testResultDataPointsSample);
@@ -595,12 +596,14 @@ $( document ).ready(function() {
                 else {
                     var chartType = 'predicted vs. actual chart';
                     $('#predicted-vs-actual').html(getInfo(chartType));
-                }                    
+                }
             }else if(algorithm == 'COLLABORATIVE_FILTERING' || algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT'){
                 $("#roc-graph, #confusion-matrix, #weights-chart,#dl-network, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
                 $("#residual").remove();
-                 $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");    
+                $("#area").remove();
+
+                 $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
 
             }
         },
@@ -612,12 +615,12 @@ $( document ).ready(function() {
 
     if (algorithm == 'STACKED_AUTOENCODERS') {
 		loadInputFeaturesCountAndCreateDeepNetwork();
-    } else {    	
+    } else {
 		$("#dl-network").closest("div.wr-graph-element").remove();
 		//$("#col-md-12 col-centered wr-graph-content").children().remove();
     }
 
-    
+
     $('#back-link').on('click', function(e){
         e.preventDefault();
 
@@ -669,7 +672,7 @@ $( document ).ready(function() {
         residualMarkerSize = newValue;
         $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
         drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
-    }); 
+    });
 
     $(".cluster-marker-size").on("click", function (e) {
         e.preventDefault();
@@ -704,7 +707,7 @@ function drawRocGraph (data, auc, cssClass) {
     rocGraph.setLineWidth(2);
     rocGraph.setPlotingAreaWidth(600);
     rocGraph.setPlotingAreaHeight(380);
-    rocGraph.setLineColor("#f16c20"); 
+    rocGraph.setLineColor("#f16c20");
     rocGraph.plot(d3.select(cssClass),function(){
         var xLoc = xScale.invert(d3.mouse(this)[0]);
         var yLoc = yScale.invert(d3.mouse(this)[1]);
@@ -747,8 +750,8 @@ function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOf
 
     // empty data array
     predictedVsActualData = [];
-    for (var i = 0; i < testResultDataPointsSample.length; i++) {                
-        
+    for (var i = 0; i < testResultDataPointsSample.length; i++) {
+
         var predictedVsActualPoint = [];
         predictedVsActualPoint[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][xAxisFeatureIndex.toString()]);
         predictedVsActualPoint[1] = parseFloat(testResultDataPointsSample[i]['featureValues'][yAxisFeatureIndex.toString()]);
@@ -761,7 +764,7 @@ function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOf
             labeledPredicted = labelPredicted(predicted, 0.5);
         }
         else if(algorithm == 'SVM') {
-            labeledPredicted = labelPredictedSvm(predicted);            
+            labeledPredicted = labelPredictedSvm(predicted);
         }
         else {
             labeledPredicted = predicted;
@@ -786,8 +789,8 @@ function drawResidualPlot(testResultDataPointsSample) {
 
     // empty data array
     residualData = [];
-    for (var i = 0; i < testResultDataPointsSample.length; i++) {                
-        
+    for (var i = 0; i < testResultDataPointsSample.length; i++) {
+
         var residualRow = [];
         residualRow[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][featureIndex.toString()]);
         residualRow[1] = parseFloat(testResultDataPointsSample[i].predictedVsActual.actual - testResultDataPointsSample[i].predictedVsActual.predicted);
@@ -818,9 +821,9 @@ function getDisplayFeatures(features, numericalFeatureNames) {
     // remove response variable from numerical feature names if response variable is within numerical features
     var responseVariableIndex = $.inArray(responseVariable, numericalFeatureNames);
     if(responseVariableIndex > -1) {
-        numericalFeatureNames.splice(responseVariableIndex, 1); 
-    }    
-    // get corresponding index of summary object feature names for each feature name 
+        numericalFeatureNames.splice(responseVariableIndex, 1);
+    }
+    // get corresponding index of summary object feature names for each feature name
     var featureIndices = numericalFeatureNames.map(function(elem){
         var index = features.indexOf(elem);
         return index;
@@ -829,7 +832,7 @@ function getDisplayFeatures(features, numericalFeatureNames) {
     var displayFeatures = [];
     for(var i = 0; i < featureIndices.length; i++) {
         var displayFeature = {'value': featureIndices[i], 'text': numericalFeatureNames[i]};
-        displayFeatures.push(displayFeature);                    
+        displayFeatures.push(displayFeature);
     }
     return displayFeatures;
 }
@@ -843,10 +846,10 @@ function getInfo(chartType) {
 // function to shorten the label
 function shortenLabel (label) {
     if(label.length > 4) {
-        return label.substring(0, 4)+'.';        
+        return label.substring(0, 4)+'.';
     }
     else {
-        return label;                       
+        return label;
     }
 }
 
@@ -858,17 +861,17 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
                                         "<td class='header-level-1' colspan='2' rowspan='2'>Total</td><td class='header-level-1' colspan=" + labels.length + ">Predicted</td>" +
                                      "</tr>";
     multiclassConfusionMatrixHtml += "<tr>";
-    
+
     for(var i = 0; i < labels.length; i++) {
         multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
-    }    
+    }
     multiclassConfusionMatrixHtml += "</tr>";
-    
+
     for(var i = 0; i < matrix.length; i++) {
-        
+
         multiclassConfusionMatrixHtml += "<tr>";
         if (i == 0) {
-            multiclassConfusionMatrixHtml += "<td class='header-level-1 rotate' rowspan='" + labels.length + "'>Actual</td>";            
+            multiclassConfusionMatrixHtml += "<td class='header-level-1 rotate' rowspan='" + labels.length + "'>Actual</td>";
         }
         multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
 
@@ -878,34 +881,34 @@ function drawConfusionMatrix (matrix, labels, cssSelector) {
             }
             else {
                 multiclassConfusionMatrixHtml += "<td class='incorrect'>" + matrix[i][j] + "</td>";
-            }            
+            }
         }
         multiclassConfusionMatrixHtml += "</tr>";
     }
     multiclassConfusionMatrixHtml += "</table>";
 
-    $(cssSelector).html(multiclassConfusionMatrixHtml);   
+    $(cssSelector).html(multiclassConfusionMatrixHtml);
 }
 
 //function to draw other measures table
 function drawOtherMeasuresTable(percentileToMulticlassMetricsMap, cssSelector){
 
-    var otherMeasuresHtml = "<table border='1'>"; 
+    var otherMeasuresHtml = "<table border='1'>";
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value (%)</td>" +
-                        "</tr>"; 
+                        "</tr>";
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-2'>Precision</td><td>"+percentileToMulticlassMetricsMap.precision.toFixed(2) + "</td>" +
                         "</tr>";
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-2'>Recall</td><td>"+percentileToMulticlassMetricsMap.recall.toFixed(2) + "</td>" +
-                        "</tr>"; 
+                        "</tr>";
     otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-2'>Accuracy</td><td>"+percentileToMulticlassMetricsMap.accuracy.toFixed(2) + "</td>" +
-                        "</tr>";  
+                        "</tr>";
     otherMeasuresHtml += "</table>";
 
-    $(cssSelector).html(otherMeasuresHtml); 
+    $(cssSelector).html(otherMeasuresHtml);
 
 }
 
@@ -928,7 +931,7 @@ function drawClusterDiagramBase() {
 }
 
 function drawClusterDiagram() {
-    
+
     // get categorical feature list from checkbox selection
     var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
     var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
@@ -939,7 +942,7 @@ function drawClusterDiagram() {
             var dataArray = clusterData;
             // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
             var clusterDataArray = [];
-            for (var i = 0; i < dataArray.length; i++) {                
+            for (var i = 0; i < dataArray.length; i++) {
                 var dataRow = [];
                 dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
                 dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
@@ -969,7 +972,7 @@ function loadInputFeaturesCountAndCreateDeepNetwork() {
 	var classCount = -1;
 	var hidLayerArr = [];
 
-	
+
 	/*
 	$.ajax({
     	type: "GET",
@@ -978,20 +981,20 @@ function loadInputFeaturesCountAndCreateDeepNetwork() {
     	dataType: 'json',
     	success: function(res) {
         	var featuresSet = res;
-        	featuresCount = featuresSet.length;	    				    		    		    		 	            
+        	featuresCount = featuresSet.length;
     	},
     	error: function(res) {
         	var errorText = res.responseText;
         	handleNotification(errorText, '#notification-area', 'warning');
     	}
-	});*/	
+	});*/
 
 	$.ajax({
     	type: "GET",
     	url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters",
     	async : false,
     	dataType: 'json',
-    	success: function(res) {        	
+    	success: function(res) {
     		var hidLayerText = "";
         	for(var i = 0; i < res.length; i++){
 				if(res[i]["key"]=="Layer_Sizes"){
@@ -999,50 +1002,50 @@ function loadInputFeaturesCountAndCreateDeepNetwork() {
 					break;
 				}
             }
-        	
-        	var hidLayerTokens = hidLayerText.split(",");	    		
+
+        	var hidLayerTokens = hidLayerText.split(",");
         	for(var i=0; i<hidLayerTokens.length; i++){
         		hidLayerArr[i] = parseInt(hidLayerTokens[i]);
-        	}				    		    		    		 	            
+        	}
     	},
     	error: function(res) {
         	var errorText = res.responseText;
         	handleNotification(errorText, '#notification-area', 'warning');
     	}
-	});	
+	});
 
-	
+
 	$.ajax({
     	type: "GET",
     	url: serverUrl+"/api/analyses/"+analysisId+"/responseVariables",
     	async : false,
     	dataType: 'text',
     	success: function(res) {
-    		responseVariable = res;  			    	        		           
+    		responseVariable = res;
     	},
     	error: function(res) {
         	var errorText = res.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');	                	
+        	handleNotification(errorText, '#notification-area', 'warning');
     	}
 	});
-	
+
 	$.ajax({
     	type: "GET",
     	url: serverUrl+"/api/datasets/"+datasetId+"/stats?feature="+responseVariable,
     	async : false,
     	dataType: 'json',
     	success: function(res3) {
-        	classCount = res3[0]["unique"];	        	
-			drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount); 	            
+        	classCount = res3[0]["unique"];
+			drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount);
     	},
     	error: function(res3) {
         	var errorText = res3.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');	                	
+        	handleNotification(errorText, '#notification-area', 'warning');
     	}
 	});
 	drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount);
-		  
-		    
+
+
 }
 
 function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
@@ -1056,7 +1059,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	// if the height of an element is more than this,
 	// set height to this value
 	var maxHeightThreshold = 750;
-	var minHeightThreshold = 50; 
+	var minHeightThreshold = 50;
 	//to get min and max values of arrays
 	Array.prototype.min = function() {
 		  return Math.min.apply(null, this);
@@ -1081,7 +1084,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 		} else {
 			rectColors[i] = "green";
 		}
-	}	
+	}
 
 	var canvasWidth = 500;
 	var spacingY = 10;
@@ -1119,26 +1122,26 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 		  .style("font-size", "25px")
 		  .attr("dy", ".35em")
 		  .attr("text-anchor", "middle")
-		  .attr("transform", "translate(" + (currX + widthRect/2).toString() 
+		  .attr("transform", "translate(" + (currX + widthRect/2).toString()
 				  + "," + (posY + rectHeights[i]/2).toString() +") rotate(90)")
 		  .text(allCounts[i].toString());
 		currX = currX + widthRect + widthSpacing;
 	}
 
 	//to move background elements to the background
-	d3.selection.prototype.moveToBack = function() { 
-	    return this.each(function() { 
-	        var firstChild = this.parentNode.firstChild; 
-	        if (firstChild) { 
-	            this.parentNode.insertBefore(this, firstChild); 
-	        } 
-	    }); 
+	d3.selection.prototype.moveToBack = function() {
+	    return this.each(function() {
+	        var firstChild = this.parentNode.firstChild;
+	        if (firstChild) {
+	            this.parentNode.insertBefore(this, firstChild);
+	        }
+	    });
 	};
-	
+
 	//drawing the arrow which goes from inputs to outputs
 	var arrowHeadWidth = 20;
 	var arrowHeadHeight = 20;
-	
+
 	var line = canvas.append("line")
     			.attr("x1", startX + widthRect)
     			.attr("y1", canvasHeight/2)
@@ -1153,7 +1156,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight/2)).toString() + " "
 	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight/2)).toString() + " "
 	+ "L " + arrowStartX.toString() + " " + arrowStartY.toString();
-	
+
 	var arrowHead = canvas.append("svg:path")
     .attr("d",pathString)
     .style("stroke-width", 1)
@@ -1162,13 +1165,13 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 
 	line.moveToBack();
 	arrowHead.moveToBack();
-	
+
 	//add header text
 	var textPosY = rectHeights.max() + spacingY + 50;
 	var fontSize = "15px";
 	data = ["Inputs", "Hidden Layers", "Outputs"];
 
-	//added Input text as two text elements because 
+	//added Input text as two text elements because
 	//<br/> doesn't render in SVG
 	var in1Text = canvas.append("text")
 	  .attr("x", startX + widthRect/2)
@@ -1186,7 +1189,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	  .attr("text-anchor", "middle")
 	  .text("(Features)");
 
-	//added Output text as two text elements because 
+	//added Output text as two text elements because
 	//<br/> doesn't render in SVG
 	var out1Text = canvas.append("text")
 	  .attr("x", currX - widthSpacing - widthRect/2)
@@ -1204,7 +1207,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	  .attr("text-anchor", "middle")
 	  .text("(Classes)");
 
-	//hidden layer text  
+	//hidden layer text
 	var hiddenTextPosX = (startX + widthRect/2 + (currX - widthSpacing - widthRect/2 - (startX + widthRect/2)))/2;
 	var hiddenText = canvas.append("text")
 	  .attr("x", hiddenTextPosX)

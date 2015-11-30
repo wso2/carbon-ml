@@ -124,6 +124,7 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 						               Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
 				recommendationModelSummary
 						.setAlgorithm(RECOMMENDATION_ALGORITHM.COLLABORATIVE_FILTERING_IMPLICIT.toString());
+				recommendationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 			} else {
 				model = collaborativeFiltering
 						.trainExplicit(trainingData, Integer.parseInt(parameters.get(MLConstants.RANK)),
@@ -131,6 +132,7 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 						               Double.parseDouble(parameters.get(MLConstants.LAMBDA)),
 						               Integer.parseInt(parameters.get(MLConstants.BLOCKS)));
 				recommendationModelSummary.setAlgorithm(RECOMMENDATION_ALGORITHM.COLLABORATIVE_FILTERING.toString());
+				recommendationModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 			}
 			mlModel.setModel(new MLMatrixFactorizationModel(model));
 			

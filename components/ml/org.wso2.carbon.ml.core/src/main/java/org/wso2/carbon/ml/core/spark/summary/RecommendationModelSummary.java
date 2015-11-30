@@ -30,6 +30,7 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 	private String algorithm;
 	private String[] features;
 	private double meanSquaredError;
+	private String datasetVersion;
 
 	@Override
 	public String getModelSummaryType() {
@@ -66,5 +67,9 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 
 	public void setMeanSquaredError(double meanSquaredError) {
 		this.meanSquaredError = meanSquaredError;
+	}
+
+	public void setDatasetVersion(String datasetVersion) {
+		this.datasetVersion = datasetVersion;
 	}
 }
