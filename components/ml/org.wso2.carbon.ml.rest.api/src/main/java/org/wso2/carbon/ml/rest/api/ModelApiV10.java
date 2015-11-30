@@ -230,12 +230,12 @@ public class ModelApiV10 extends MLRestAPI {
             logger.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
         } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
-                    tenantId, userName), e);
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.",
+                                  modelId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
+                           .build();
         }
     }
 
@@ -333,6 +333,29 @@ public class ModelApiV10 extends MLRestAPI {
      * @param modelName Name of the model
      * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
      */
+    @GET
+    @Path("/{modelId}/getRecommendations/{userId}/{noOfProducts}")
+    @Produces("application/json")
+    public Response getRecommendations(@PathParam("modelId") long modelId,
+                                       @PathParam("userId") int userId,
+                                       @PathParam("noOfProducts") int noOfProducts) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<?> recommendations =
+                    mlModelHandler.getProductRecommendations(tenantId, userName, modelId, userId, noOfProducts);
+            return Response.ok(recommendations).build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
+                                                     modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                           .build();
+        }
+    }
+
     @GET
     @Path("/{modelName}")
     @Produces("application/json")

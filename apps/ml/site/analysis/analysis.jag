@@ -60,15 +60,15 @@ include("../../includes/tenantAware.jag");
                 <div class="wr-action-btn-bar">
                     <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
                     <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
-                </div>            
+                </div>
             </div>
 
             <div class="col-md-3">
-                <div class="wr-secondary-links pull-right">                
+                <div class="wr-secondary-links pull-right">
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
     <!-- secondary header - app bar -->
 
 
@@ -106,17 +106,17 @@ include("../../includes/tenantAware.jag");
                                     <option value='10'>10</option>
                                     <option value='25'>25</option>
                                     <option value='50'>50</option>
-                                    <option value='100'>100</option>                                
-                                </select>                           
+                                    <option value='100'>100</option>
+                                </select>
                             </td>
                         </tr>
-                        </table>            
+                        </table>
                     </div>
-                    
+
                     <div class="col-md-6 text-right">
                         <ul id="pagination-list" class="pagination"></ul>
                     </div>
-                    <!-- /pagination -->                    
+                    <!-- /pagination -->
 
                     <!-- delete model popup -->
                     <div class="popup-content" data-operation="delete-model">
@@ -126,7 +126,7 @@ include("../../includes/tenantAware.jag");
                             <a id="delete-model-no" href="#" class="btn-opr-cancel">No</a>
                         </div>
                     </div>
-                    <!-- /delete model popup -->                    
+                    <!-- /delete model popup -->
 
                     <!--download model popup -->
                       <div class="popup-content" data-operation="download-model">
@@ -163,9 +163,9 @@ include("../../includes/tenantAware.jag");
 <div id="content-asset-types" style="display: none">
     <div>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
     </div>
-</div> 
+</div>
 
 <!-- modal popup template -->
 <div class="wr-modalpopup">
@@ -195,7 +195,7 @@ include("../../includes/tenantAware.jag");
         $('#pagination-list').empty();
         panelsPerPage = parseInt($("#no-of-panels").val());
         $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
-    });    
+    });
 
     $(document).ready(function() {
 
@@ -204,17 +204,17 @@ include("../../includes/tenantAware.jag");
                 top: $('header').height()
               }
         });
-        
+
         /*scrollVibrateFix();
-        
+
         $(window).resize(function() {
             scrollVibrateFix();
-        });*/ 
+        });*/
 
         $("[data-toggle=popover]").popover();
 
         $(".ctrl-asset-type-switcher").popover({
-            html : true, 
+            html : true,
             content: function() {
                 return $('#content-asset-types').html();
             }
@@ -231,33 +231,33 @@ include("../../includes/tenantAware.jag");
         // add pagination
         panelsPerPage = parseInt($("#no-of-panels").val());
         $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
-        
+
         // events to delete a project
-        $(document).on('click', '#delete-model', function(e){ 
+        $(document).on('click', '#delete-model', function(e){
             e.preventDefault();
-            
-            deleteModelId = $(this).data('modelid');            
+
+            deleteModelId = $(this).data('modelid');
             operationSelect('delete-model');
         });
-        $(document).on('click', '#delete-model-yes', function(e){ 
+        $(document).on('click', '#delete-model-yes', function(e){
             e.preventDefault();
 
             deleteModel(deleteModelId);
             deleteModelId = null;
             hidePopup();
         });
-        $(document).on('click', '#delete-model-no', function(e){ 
+        $(document).on('click', '#delete-model-no', function(e){
             e.preventDefault();
 
             deleteModelId = null;
             hidePopup();
         });
 
-      
+
     });
-    
+
     function loadModels() {
-        
+
         $('#accordion').empty();
         $.ajax({
             type: "GET",
@@ -266,30 +266,30 @@ include("../../includes/tenantAware.jag");
             success: function(data) {
                 // order models in reverse chronological order
                 var analysisModels = data.sort(sortByTimestamp);
-                
+
                 if (analysisModels.length == 0) {
-                    var accordionPanelNoModels = 
+                    var accordionPanelNoModels =
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
                         '<h2>You do not have any models created at the moment.</h2>'+
                         '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
                     '</div>';
-                    $("#accordion").append(accordionPanelNoModels);    
+                    $("#accordion").append(accordionPanelNoModels);
                     $("#pagination-per-page").hide()
                 }
                 else {
 
-                    var createProject = '' + 
+                    var createProject = '' +
                     '<div class="ctrl-info-panel col-md-12 col-centered">'+
                         '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
                     '</div>';
 
-                    $("#accordion").append(createProject);                        
+                    $("#accordion").append(createProject);
 
                     for (var i = 0; i < analysisModels.length; i++) {
 
                         var modelId = sanitize(analysisModels[i]['id']);
                         var modelName = sanitize(analysisModels[i]['name']);
-                        var createdTime = sanitize(analysisModels[i]['createdTime']);                        
+                        var createdTime = sanitize(analysisModels[i]['createdTime']);
                         var modelStatus = sanitize(analysisModels[i]['status']);
                         // set error message if available
                         var modelError = '';
@@ -297,7 +297,7 @@ include("../../includes/tenantAware.jag");
                             modelError = buildNotification(sanitize(analysisModels[i]['error']), 'warning');
                         }
 
-                        accordionPanel = '' + 
+                        accordionPanel = '' +
                             '<div class="panel panel-default">' +
                                 '<div class="panel-heading" role="tab" id="heading' + i + '">' +
                                     '<h4 class="panel-title">' +
@@ -310,10 +310,10 @@ include("../../includes/tenantAware.jag");
                                                     // retrieve dataset version from model summary when model building is completed
                                                     if(modelStatus == 'Complete') {
                                                         var datasetVersion = sanitize(analysisModels[i]['modelSummary']['datasetVersion']);
-                                                        accordionPanel += '' + 
+                                                        accordionPanel += '' +
                                                     '<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>';
                                                     }
-                                                    accordionPanel += '' +                                              
+                                                    accordionPanel += '' +
                                                     '<span class="cu-acc-head-workflow"></span>' +
                                                     '<span class="cu-acc-head-created">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
                                                     '</a>' +
@@ -326,11 +326,12 @@ include("../../includes/tenantAware.jag");
                                                         if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                                                             accordionPanel += '' +
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
-                                                        }
-                                                        accordionPanel += '' +
+                                                         } else if(sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING'|| sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT' ){
+                                                            accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
+                                                        }
                                                     }
-                                                        accordionPanel += '' + 
+                                                        accordionPanel += '' +
                                                         '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
                                                         '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '"><span>Publish</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
@@ -347,17 +348,17 @@ include("../../includes/tenantAware.jag");
                             $("#accordion").append(accordionPanel);
                     };
                 }
-              
+
                  //events to handle downloading
                 $(document).on('click','#download-model',function(e){
                     e.preventDefault();
-                    
-                    modelId = sanitize($(this).data('modelid'));    
-                    var algorithmName = findAlgorithmName(analysisId); 
-                                       
+
+                    modelId = sanitize($(this).data('modelid'));
+                    var algorithmName = findAlgorithmName(analysisId);
+
                     if(loadPMMLAvailability(algorithmName)){
                         $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
-                    }      
+                    }
                     operationSelect('download-model');
                 });
                 $(document).on('click','#download-model-serialized',function(e){
@@ -368,12 +369,12 @@ include("../../includes/tenantAware.jag");
                 });
                 $(document).on('click','#download-model-pmml',function(e){
                 	e.preventDefault();
-                	
+
                 	window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=pmml';
                     hidePopup();
-                    
+
                 });
-              
+
 
             },
             error: function(res) {
@@ -388,43 +389,43 @@ include("../../includes/tenantAware.jag");
     function appendClass(modelStatus) {
         var classAppend = '';
         if(modelStatus != 'Complete') {
-            classAppend = 'btn-disabled';  
+            classAppend = 'btn-disabled';
         }
         return classAppend;
-    }    
+    }
 
     // function to append data-toggle disabled CSS class when model building is not failed
     function appendDataToggle(modelStatus) {
         var dataToggleAppend = '';
         if(modelStatus == 'Failed') {
-            dataToggleAppend = 'data-toggle="collapse"';  
+            dataToggleAppend = 'data-toggle="collapse"';
         }
         return dataToggleAppend;
-    }    
+    }
 
     // function to append link disabled CSS class when model building is not failed
     function appendLinkDisable(modelStatus) {
         var linkDisableAppend = '';
         if(modelStatus != 'Failed') {
-            linkDisableAppend = 'reset-hover';  
+            linkDisableAppend = 'reset-hover';
         }
         return linkDisableAppend;
-    }        
+    }
 
     // function to append link disabled CSS class when model building is not failed
     function appendStatusIcon(modelStatus) {
         var statusIconAppend = '';
         if(modelStatus == 'Not Started') {
-            statusIconAppend = 'not-started';  
+            statusIconAppend = 'not-started';
         }
         else if(modelStatus == 'In Progress') {
-            statusIconAppend = 'progressing';  
+            statusIconAppend = 'progressing';
         }
         else if(modelStatus == 'Complete') {
-            statusIconAppend = 'completed';  
+            statusIconAppend = 'completed';
         }
         else if(modelStatus == 'Failed') {
-            statusIconAppend = 'error';  
+            statusIconAppend = 'error';
         }
         return statusIconAppend;
     }
@@ -433,24 +434,24 @@ include("../../includes/tenantAware.jag");
     function appendExpandProperty(modelStatus) {
         var expandProperty = '';
         if(modelStatus == 'Failed') {
-            expandProperty = 'aria-expanded="false"';  
+            expandProperty = 'aria-expanded="false"';
         }
         return expandProperty;
-    }      
+    }
 
     // compare function for models
     function sortByTimestamp(a, b) {
         var sortStatus = 0;
         timestamp1 = new Date(a.createdTime);
         timestamp2 = new Date(b.createdTime);
-     
+
         if (timestamp1 > timestamp2) {
             sortStatus = -1;
         } else if (timestamp1 < timestamp2) {
             sortStatus = 1;
         }
         return sortStatus;
-    }    
+    }
 
     function bindEvents() {
 
@@ -460,22 +461,22 @@ include("../../includes/tenantAware.jag");
             location.reload(true);
         });
 
-        $(document).on('click', '#predict', function(e){ 
+        $(document).on('click', '#predict', function(e){
             e.preventDefault();
-            
+
             var modelId = $(this).data('modelid');
             var modelName = $(this).data('modelname');
             window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
         });
 
         var modelId ;
-        $(document).on('click', '#publish', function(e){ 
+        $(document).on('click', '#publish', function(e){
             e.preventDefault();
 
-            var algorithmName = findAlgorithmName(analysisId); 
+            var algorithmName = findAlgorithmName(analysisId);
             if(loadPMMLAvailability(algorithmName)){
                     $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
-            }    
+            }
 			modelId = $(this).data('modelid');
             operationSelect('publish-model');
         });
@@ -495,12 +496,12 @@ include("../../includes/tenantAware.jag");
                 handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
-            
+
             hidePopup();
-         });        
+         });
           $(document).on('click','#publish-model-pmml',function(e){
             e.preventDefault();
-            
+
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
@@ -514,18 +515,18 @@ include("../../includes/tenantAware.jag");
                 handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
-            
+
             hidePopup();
-         });    
-        $(document).on('click', '#view-model', function(e){ 
+         });
+        $(document).on('click', '#view-model', function(e){
             e.preventDefault();
-            
+
             var modelId = $(this).data('modelid');
             var modelName = $(this).data('modelname');
             window.location.href = 'view-model.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
-        });        
+        });
 
-        $(document).on('click', '#create-model', function(e){ 
+        $(document).on('click', '#create-model', function(e){
             e.preventDefault();
 
             var algorithmName, algorithmType;
@@ -573,20 +574,20 @@ include("../../includes/tenantAware.jag");
                     loadModels();
                     // update pagination
                     $('#pagination-list').empty();
-                    $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});                
+                    $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
                 },
                 error : function(res){
                     var errorText = JSON.parse(res.responseText)["exception"];
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
-            });        
-        }      
+            });
+        }
     }
 
     function loadPMMLAvailability(algorithmName){
         var status=false;
         if(algorithmName){
-        
+
             $.ajax({
                 type: "GET",
                 url: serverUrl+'/api/configs/algorithms/'+algorithmName+'/exportable?format=pmml',
@@ -599,7 +600,7 @@ include("../../includes/tenantAware.jag");
                 }
             });
 
-           
+
         }
          return status;
     }

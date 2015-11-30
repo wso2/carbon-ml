@@ -89,7 +89,11 @@ public class MLConstants {
     public static final String DATASET_URL = "datasetURL";
     public static final String NORMAL_LABELS = "normalLabels";
     public static final String TRAIN_DATA_FRACTION = "trainDataFraction";
-    public static final String RESPONSE = "responseVariable";
+    public static final String RESPONSE_VARIABLE = "responseVariable";
+    public static final String USER_VARIABLE = "userVariable";
+    public static final String PRODUCT_VARIABLE = "productVariable";
+    public static final String RATING_VARIABLE = "ratingVariable";
+    public static final String OBSERVATIONS = "observationList";
     public static final String ALGORITHM_NAME = "algorithmName";
     public static final String ALGORITHM_TYPE = "algorithmType";
     public static final String NORMALIZATION = "normalization";
@@ -162,6 +166,10 @@ public class MLConstants {
     public static final String LAYER_SIZES = "Layer_Sizes";
     public static final String EPOCHS = "Epochs";
     public static final String ACTIVATION_TYPE = "Activation_Type";
+    public static final String RANK = "Rank";
+    public static final String BLOCKS = "Blocks";
+    public static final String ALPHA = "Alpha";
+    public static final String WEIGHTS = "Weights";
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -174,8 +182,10 @@ public class MLConstants {
     public static final String CLASS_CLASSIFICATION_AND_REGRESSION_MODEL_SUMMARY = "ClassClassificationAndRegressionModelSummary";
     public static final String PROBABILISTIC_CLASSIFICATION_MODEL_SUMMARY = "ProbabilisticClassificationModelSummary";
     public static final String CLUSTER_MODEL_SUMMARY = "ClusterModelSummary";
+
     public static final String ANOMALY_DETECTION_MODEL_SUMMARY = "AnomalyDetectionModelSummary";
     public static final String DEEPLEARNING_MODEL_SUMMARY = "DeeplearningModelSummary";
+    public static final String RECOMMENDATION_MODEL_SUMMARY = "RecommendationModelSummary";
 
     public static final int K_MEANS_SAMPLE_SIZE = 10000;
 
@@ -217,12 +227,17 @@ public class MLConstants {
         K_MEANS
     }
 
+
     public enum ANOMALY_DETECTION_ALGORITHM {
         K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA, K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA
     }
 
     public enum DEEPLEARNING_ALGORITHM {
         STACKED_AUTOENCODERS
+    }
+
+    public enum RECOMMENDATION_ALGORITHM {
+        COLLABORATIVE_FILTERING, COLLABORATIVE_FILTERING_IMPLICIT
     }
 
     public enum MISSING_VALUES {

@@ -184,7 +184,7 @@ $( document ).ready(function() {
       $('[data-toggle="tooltip"]').tooltip()
     })    
 
-	var projectName = getParameterByName('projectName');
+    var projectName = getParameterByName('projectName');
     var analysisName = getParameterByName('analysisName');	
     var analysisId = getParameterByName('analysisId');
     var datasetId = getParameterByName('datasetId');
@@ -262,6 +262,20 @@ $( document ).ready(function() {
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[2].value);
                 }
+		else if (algorithmName == 'COLLABORATIVE_FILTERING') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                }
+                else if (algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[4] = sanitize(hyperParametersResponse[4].value);
+                    hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
+                }
             }
         },
         error: function(res) {
@@ -287,11 +301,11 @@ $( document ).ready(function() {
         dataType: 'json',
         success: function(res) {
             for (var index = 0; index < res.length; index++) {
-    			var param = res[index];
+                var param = res[index];
                 // create display name from key value - replacing all '_' with ' '
                 var displayName = param.key.replace(/_/g, " ");
-        		hyperParameterInputValues[index] = new Array(displayName, param.key, param.value, param.description);
-    		}
+                hyperParameterInputValues[index] = new Array(displayName, param.key, param.value, param.description);
+            }
         },
         error: function(res) {
             var errorText = res.responseText
@@ -310,7 +324,7 @@ $( document ).ready(function() {
 	}
 
     // set built input HTML
-	$("#parameter-inputs").append(inputString);
+    $("#parameter-inputs").append(inputString);
 
 	if (algorithmName == 'STACKED_AUTOENCODERS') {
 		loadInputFeaturesCountAndCreateDeepNetwork();
@@ -341,10 +355,19 @@ $( document ).ready(function() {
     	var algorithmName = getParameterByName('algorithmName');    	
         var fromAnalysis = getParameterByName('fromAnalysis')
 
-    	var jsonData= '';
-    	var hyperParameters = [];
+        if(algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+            var weights = $('#Weights').val();
+            if(validateWeights(weights) == false) {
+                var errorText = 'Observation list length and weight length is not equal. Note that every observation should have a weight.';
+                    handleNotification(errorText, '#notification-area', 'warning');
+                return;
+            }
+        }
 
-    	$.ajax({
+        var jsonData= '';
+        var hyperParameters = [];
+
+        $.ajax({
             type: "GET",
             url: serverUrl + "/api/configs/algorithms/" + algorithmName + "/hyperParams",
             async : false,
@@ -500,6 +523,31 @@ $( document ).ready(function() {
     		    
 	}
 });
+
+function validateWeights(weights) {
+    var observationList = '';
+    var analysisId = getParameterByName('analysisId');
+    // get previously set observation list
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/observationList",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            observationList = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
+            handleNotification(errorText, '#notification-area', 'warning');
+        }
+    });
+
+    if(observationList != '') {
+        return Boolean(observationList.trim().split(",").length == weights.trim().split(",").length);
+    }
+
+    return Boolean(false);
+}
 
 function buildInput(displayName, id, value, description) {
 

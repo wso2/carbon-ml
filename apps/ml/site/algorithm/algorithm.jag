@@ -129,6 +129,10 @@ include("../../includes/tenantAware.jag");
 			<optgroup label="Deep Learning">
                         	<option value="STACKED_AUTOENCODERS">STACKED AUTOENCODERS</option>
                         </optgroup>
+			<optgroup label="Recommendation">
+                            <option value="COLLABORATIVE_FILTERING">COLLABORATIVE FILTERING (Explicit Data)</option>
+                            <option value="COLLABORATIVE_FILTERING_IMPLICIT">COLLABORATIVE FILTERING (Implicit Feedback Data)</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -187,6 +191,39 @@ include("../../includes/tenantAware.jag");
                     <div class="spcr-2"></div>
                 </div>
 
+                <div id="user-variable-field">
+                    <label class="input-label">User variable<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <select id="user-variable" class="form-control">
+                        </select>
+                    </div>
+                    <div class="spcr-2"></div>
+                </div>
+                <div id="product-variable-field">
+                    <label class="input-label">Product variable<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <select id="product-variable" class="form-control">
+                        </select>
+                    </div>
+                    <div class="spcr-2"></div>
+                </div>
+                <div id="rating-variable-field">
+                    <label class="input-label">Rating variable<span class="glyphicon"></span></label>
+                    <span class="fld-required">*</span>
+                    <div class="input-control text">
+                        <select id="rating-variable" class="form-control">
+                        </select>
+                    </div>
+                    <div class="spcr-2"></div>
+                </div>
+                <div id="observation-list-field">
+                    <label class="input-label">Observation list<span class="glyphicon"></span></label>
+                    <div class="input-control text">
+                        <input type="text" id="observation-list" value="2,3" placeholder="input text"/>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -244,8 +281,21 @@ $( document ).ready(function() {
             scrollVibrateFix();
         });*/
 
+    /*
+    scrollVibrateFix();
+    var algorithmName = $('#algorithm-name').val();
+    fieldManipulate(algorithmName);
+
+    $(window).resize(function() {
+        scrollVibrateFix();
+    });    */
+
     // set previously selected values when navigating from next page
-    var setResponseVariable = "";    
+    var setResponseVariable = "";
+    var setUserVariable = "";
+    var setProductVariable = "";
+    var setRatingVariable = "";
+
     // get previously set response variable
     $.ajax({
         type: "GET",
@@ -256,7 +306,52 @@ $( document ).ready(function() {
             setResponseVariable = sanitize(res);
         },
         error: function(res) {
-            var errorText = res.responseText
+            var errorText = res.responseText;
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+    // get previously set user variable
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/userVariable",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            setUserVariable = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+    // get previously set product variable
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/productVariable",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            setProductVariable = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+    // get previously set rating variable
+    $.ajax({
+        type: "GET",
+        url: serverUrl + "/api/analyses/" + analysisId + "/ratingVariable",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            setRatingVariable = sanitize(res);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
@@ -290,10 +385,11 @@ $( document ).ready(function() {
             var setAlgorithmName = sanitize(res);
             if (setAlgorithmName != '') {
                 $('#algorithm-name option[value=' + setAlgorithmName + ']').attr('selected','selected');
+                fieldManipulate(setAlgorithmName);
             }
         },
         error: function(res) {
-            var errorText = res.responseText
+            var errorText = res.responseText;
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
@@ -311,7 +407,23 @@ $( document ).ready(function() {
             }
         },
         error: function(res) {
-            var errorText = res.responseText
+            var errorText = res.responseText;
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+
+    // get previously set observation list
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/observationList",
+        async : false,
+        dataType: 'text',
+        success: function(res) {
+            var setObservationList = sanitize(res);
+            $('#observation-list').val(setObservationList);
+        },
+        error: function(res) {
+            var errorText = res.responseText;
             handleNotification(errorText, notificationArea, 'warning');
         }
     });
@@ -398,6 +510,8 @@ $( document ).ready(function() {
         }
     });
 
+    loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable);
+
     // put path in application navigator
     $('#nav-project').text(projectName);
     $('#nav-analysis').text(" \\ "+analysisName);
@@ -406,12 +520,19 @@ $( document ).ready(function() {
     if(fromAnalysis == 'true') {
         $('#algorithm-name').attr("disabled","disabled");
         $('#response-variable').attr("disabled","disabled");
+        $('#user-variable').attr("disabled","disabled");
+        $('#product-variable').attr("disabled","disabled");
+        $('#rating-variable').attr("disabled","disabled");
         $('#data-fraction').attr("disabled","disabled");
         $('.normalLabel').attr("disabled","disabled");
         $('#normalization-value').attr("disabled","disabled");
         $('#new-normal-value').attr("disabled","disabled");
         $('#new-anomaly-value').attr("disabled","disabled");
+        $('#observation-list').attr("disabled","disabled");
     }
+
+    selectedAlgorithm = $('#algorithm-name').val();
+    toggleInput(selectedAlgorithm);
 
     $(document).on('change','#algorithm-name',function() {
         selectedAlgorithm = $('#algorithm-name').val();
@@ -454,6 +575,11 @@ $( document ).ready(function() {
         var newNormalLabel = $('#new-normal-value').val();
         var newAnomalyLabel = $('#new-anomaly-value').val();
 
+        var userVariable = $('#user-variable').val().replace(/"/g,"\\\"");
+        var productVariable = $('#product-variable').val().replace(/"/g,"\\\"");
+        var ratingVariable = $('#rating-variable').val().replace(/"/g,"\\\"");
+        var observationList = $('#observation-list').val();
+
         var algorithmType;
 
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION') {
@@ -474,15 +600,33 @@ $( document ).ready(function() {
 	else if (algorithmName == 'STACKED_AUTOENCODERS') {
             algorithmType = 'Deeplearning';            
         }
+	else if (algorithmName == 'COLLABORATIVE_FILTERING' || algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+            algorithmType = 'Recommendation';
+        }
 
-        // set model configurations for this analysis        
-            var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization", "value":"'+normalization+'"},{"key":"newNormalLabel","value":"'+newNormalLabel+'"},{"key":"newAnomalyLabel","value":"'+newAnomalyLabel+'"}]';
+        // set model configurations for this analysis
+            var jsonData = '[{ "key":"algorithmName","value":"'+algorithmName+'"},{"key":"algorithmType","value":"'+algorithmType+'"},{"key":"responseVariable","value":"'+responseVariable+'"},{"key":"trainDataFraction","value":"'+trainDataFraction+'"},{"key":"normalLabels","value":"'+normalLabels+'"},{"key":"normalization", "value":"'+normalization+'"},{"key":"newNormalLabel","value":"'+newNormalLabel+'"},{"key":"newAnomalyLabel","value":"'+newAnomalyLabel+'"},{"key":"userVariable","value":"'+userVariable+'"},{"key":"productVariable","value":"'+productVariable+'"},{"key":"ratingVariable","value":"'+ratingVariable+'"},{"key":"observationList","value":"'+observationList+'"}]';
 
             if((algorithmName == 'K_MEANS' && ($('#response-variable option').length > 0)) || (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' && ($('#response-variable option').length > 0)) || (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA' && ($('#response-variable option').length > 1))){
                 operationSelect('delete-project');
             }else{
                 setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId);
             }
+
+        //Additional
+        /*
+        $.ajax({
+            type: 'POST',
+            url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
+            contentType: "application/json",
+            data: jsonData,
+            success: function(res){
+                window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+            },
+            error: function(res){
+                var errorText = res.responseText
+                handleNotification(errorText, notificationArea, 'warning');
+            });*/
 
             $(document).on('click', '#delete-project-yes', function(e){
                 e.preventDefault();
@@ -660,6 +804,61 @@ function loadDatasetFeatures(setResponseVariable) {
     });
 }
 
+function fieldManipulate(algorithmName) {
+
+}
+// function that load dataset features
+function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable) {
+
+ $('#response-variable').empty();
+ $('#user-variable').empty();
+ $('#product-variable').empty();
+ $('#rating-variable').empty();
+
+    $.ajax({
+        type: "GET",
+        url: serverUrl+"/api/analyses/"+analysisId+"/features",
+        success: function(res) {
+            var datasetFeatures = res;
+            $.each(datasetFeatures,function(index, feature){
+                $('#response-variable').append($('<option>', {
+                    value: sanitize(feature),
+                    text : sanitize(feature)
+                }));
+                $('#user-variable').append($('<option>', {
+                    value: sanitize(feature),
+                    text : sanitize(feature)
+                }));
+                $('#product-variable').append($('<option>', {
+                    value: sanitize(feature),
+                    text : sanitize(feature)
+                }));
+                $('#rating-variable').append($('<option>', {
+                    value: sanitize(feature),
+                    text : sanitize(feature)
+                }));
+            });
+            // set previously selected values when navigating from next page
+            if (setResponseVariable != '') {
+                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
+            }
+            if (setUserVariable != '') {
+                $('#user-variable option[value=' + setUserVariable + ']').attr('selected','selected');
+            }
+            if (setProductVariable != '') {
+                $('#product-variable option[value=' + setProductVariable + ']').attr('selected','selected');
+            }
+            if (setRatingVariable != '') {
+                $('#rating-variable option[value=' + setRatingVariable + ']').attr('selected','selected');
+            }
+        },
+        error: function(res) {
+            var errorText = res.responseText
+            handleNotification(errorText, notificationArea, 'warning');
+        }
+    });
+}
+
 //function that only loads categorical features in response variable
 function loadCategoricalFeatures(setResponseVariable){
 
@@ -755,6 +954,43 @@ function dropCategoricalFeatures(responseVariable){
         }
     });
 }
+// function that toggles response variable input depending on the algorithm selection
+function toggleInput(selectedAlgorithm) {
+
+    if(selectedAlgorithm == 'K_MEANS') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').show();
+        $('#observation-list-field').hide();
+    }
+    else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').show();
+        $('#product-variable-field').show();
+        $('#rating-variable-field').show();
+        $('#data-fraction-field').hide();
+        $('#observation-list-field').hide();
+    }
+    else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+        $('#response-variable-field').hide();
+        $('#user-variable-field').show();
+        $('#product-variable-field').show();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').hide();
+        $('#observation-list-field').show();
+    }
+    else {
+        $('#response-variable-field').show();
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
+        $('#data-fraction-field').show();
+        $('#observation-list-field').hide();
+    }
+}
+
 
 </script>
 

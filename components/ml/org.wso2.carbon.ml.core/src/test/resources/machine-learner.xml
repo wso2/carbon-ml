@@ -28,9 +28,9 @@
 		<Property name="ml.thread.pool.size" value="100" />
 		<Property name="target.home" value="C:\tmp" />
 		<Property name="file.in"
-			value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.FileInputAdapter" />
 		<Property name="file.out"
-			value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
+				  value="org.wso2.carbon.ml.core.impl.FileOutputAdapter" />
 	</Properties>
 
 	<!-- Registry location where ML models are published. -->
@@ -238,7 +238,7 @@
 				<Name>Layer_Sizes</Name>
 				<Value>500,500,500</Value>
 				<Description>Layer_Sizes</Description>
-			</Parameters>			
+			</Parameters>
 			<Parameters>
 				<Name>Epochs</Name>
 				<Value>10</Value>
@@ -248,7 +248,31 @@
 				<Name>Learning_Rate</Name>
 				<Value>0.25</Value>
 				<Description>Learning_Rate</Description>
-			</Parameters>			
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
+			<Name>COLLABORATIVE_FILTERING</Name>
+			<Type>Recommendation</Type>
+			<Parameters>
+				<Name>Rank</Name>
+				<Value>8</Value>
+				<Description>The number of features to use.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Iterations</Name>
+				<Value>20</Value>
+				<Description>Number of iterations of ALS.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Lambda</Name>
+				<Value>0.01</Value>
+				<Description>Regularization factor.</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Blocks</Name>
+				<Value>3</Value>
+				<Description>Level of Parallelism to split computation in to.</Description>
+			</Parameters>
 		</Algorithm>
 	</Algorithms>
 

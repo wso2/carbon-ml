@@ -28,4 +28,3 @@ sonar-pom.xml
 *~
 *.em
 *.log
-components/ml/org.wso2.carbon.ml.rest.api/nb-configuration.xml

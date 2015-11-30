@@ -44,6 +44,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
@@ -59,6 +60,8 @@ import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
+import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
+import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
@@ -99,7 +102,7 @@ public class MLModelHandler {
 
     /**
      * Create a new model.
-     * 
+     *
      * @param model model to be created.
      * @throws MLModelHandlerException
      */
@@ -176,7 +179,7 @@ public class MLModelHandler {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
     }
-    
+
     public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.isValidModelStatus(modelId, tenantId, userName);
@@ -201,7 +204,7 @@ public class MLModelHandler {
 
     /**
      * Get the summary of a model
-     * 
+     *
      * @param modelId ID of the model
      * @return Model Summary
      * @throws MLModelHandlerException
@@ -216,7 +219,7 @@ public class MLModelHandler {
 
     /**
      * Build a ML model asynchronously and persist the built model in a given storage.
-     * 
+     *
      * @param modelId id of the model to be built.
      * @param tenantId tenant id
      * @param userName tenant user name
@@ -277,8 +280,8 @@ public class MLModelHandler {
     }
 
     private MLModelConfigurationContext buildMLModelConfigurationContext(long modelId, long datasetVersionId,
-            String columnSeparator, MLModelData model, Workflow facts, JavaRDD<String> lines,
-            JavaSparkContext sparkContext) throws DatabaseHandlerException {
+                                                                         String columnSeparator, MLModelData model, Workflow facts, JavaRDD<String> lines,
+                                                                         JavaSparkContext sparkContext) throws DatabaseHandlerException {
         MLModelConfigurationContext context = new MLModelConfigurationContext();
         context.setModelId(modelId);
         context.setColumnSeparator(columnSeparator);
@@ -486,7 +489,7 @@ public class MLModelHandler {
     }
 
     public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
-            String columnHeader, InputStream dataStream, double percentile) throws MLModelHandlerException {
+                                   String columnHeader, InputStream dataStream, double percentile) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         MLModel mlModel = retrieveModel(modelId);
@@ -626,6 +629,50 @@ public class MLModelHandler {
         return predictions;
     }
 
+    public List<?> getProductRecommendations(int tenantId, String userName, long modelId, int userId, int noOfProducts)
+            throws MLModelHandlerException {
+
+        MatrixFactorizationModel model = getMatrixFactorizationModel(tenantId, userName, modelId);
+        List<?> recommendations = CollaborativeFiltering.recommendProducts(model, userId, noOfProducts);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
+
+    }
+
+    public List<?> getUserRecommendations(int tenantId, String userName, long modelId, int productId, int noOfUsers)
+            throws MLModelHandlerException {
+
+        MatrixFactorizationModel model = getMatrixFactorizationModel(tenantId, userName, modelId);
+        List<?> recommendations = CollaborativeFiltering.recommendUsers(model, productId, noOfUsers);
+
+        log.info(String.format("Recommendations from model [id] %s was successful.", modelId));
+        return recommendations;
+
+    }
+
+    private MatrixFactorizationModel getMatrixFactorizationModel(int tenantId, String userName, long modelId)
+            throws MLModelHandlerException {
+        if (!isValidModelId(tenantId, userName, modelId)) {
+            String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
+                    modelId, tenantId, userName);
+            throw new MLModelHandlerException(msg);
+        }
+
+        MLModel builtModel = retrieveModel(modelId);
+
+        //validate if retrieved model is a MatrixFactorizationModel
+        if (!(builtModel.getModel() instanceof MLMatrixFactorizationModel)) {
+            String msg =
+                    String.format("Cannot get recommendations for model [id] %s , since it is not generated from a "
+                            + "Recommendation algorithm.", modelId);
+            throw new MLModelHandlerException(msg);
+        }
+        //get recommendations
+        MatrixFactorizationModel model = ((MLMatrixFactorizationModel) builtModel.getModel()).getModel();
+        return model;
+    }
+
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
             MLStorage storage = databaseService.getModelStorage(modelId);
@@ -634,6 +681,7 @@ public class MLModelHandler {
             }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
+            String outPath = storageLocation + File.separator + modelName;
 
             // if this is a deeplearning model, need to set the storage location for writing
             // then the sparkdeeplearning model will use ObjectTreeBinarySerializer to write it to the given directory
@@ -643,6 +691,7 @@ public class MLModelHandler {
                 mlDeeplearningModel.setStorageLocation(storageLocation);
                 model.setModel(mlDeeplearningModel);
             }
+
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -652,7 +701,6 @@ public class MLModelHandler {
             oos.close();
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
-            String outPath = storageLocation + File.separator + modelName;
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));
@@ -715,7 +763,7 @@ public class MLModelHandler {
 
     /**
      * Publish a ML model to registry.
-     * 
+     *
      * @param tenantId Unique ID of the tenant.
      * @param userName Username of the user.
      * @param modelId  Unique ID of the built ML model
@@ -729,75 +777,75 @@ public class MLModelHandler {
         String relativeRegistryPath = null;
 
         switch (mode) {
-        case SERIALIZED:
-            try {
-                // read model
-                MLStorage storage = databaseService.getModelStorage(modelId);
-                if (storage == null) {
-                    throw new InvalidRequestException("Invalid model [id] " + modelId);
-                }
-                String storageType = storage.getType();
-                String storageLocation = storage.getLocation();
-                MLIOFactory ioFactory = new MLIOFactory(mlProperties);
-                MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
-                in = inputAdapter.read(storageLocation);
-                if (in == null) {
-                    throw new InvalidRequestException("Invalid model [id] " + modelId);
-                }
-                // create registry path
-                MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
-                // publish to registry
-                registryOutputAdapter.write(relativeRegistryPath, in);
-            } catch (DatabaseHandlerException e) {
-                throw new MLModelPublisherException(errorMsg, e);
-            } catch (MLInputAdapterException e) {
-                throw new MLModelPublisherException(errorMsg, e);
-            } catch (MLOutputAdapterException e) {
-                throw new MLModelPublisherException(errorMsg, e);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException ignore) {
+            case SERIALIZED:
+                try {
+                    // read model
+                    MLStorage storage = databaseService.getModelStorage(modelId);
+                    if (storage == null) {
+                        throw new InvalidRequestException("Invalid model [id] " + modelId);
+                    }
+                    String storageType = storage.getType();
+                    String storageLocation = storage.getLocation();
+                    MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                    MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
+                    in = inputAdapter.read(storageLocation);
+                    if (in == null) {
+                        throw new InvalidRequestException("Invalid model [id] " + modelId);
+                    }
+                    // create registry path
+                    MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+                    String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                    relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
+                    // publish to registry
+                    registryOutputAdapter.write(relativeRegistryPath, in);
+                } catch (DatabaseHandlerException e) {
+                    throw new MLModelPublisherException(errorMsg, e);
+                } catch (MLInputAdapterException e) {
+                    throw new MLModelPublisherException(errorMsg, e);
+                } catch (MLOutputAdapterException e) {
+                    throw new MLModelPublisherException(errorMsg, e);
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException ignore) {
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case PMML:
-            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-            try {
-                String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
-                relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName + ".xml";
+            case PMML:
+                MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+                try {
+                    String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                    relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName + ".xml";
 
-                MLModel model = retrieveModel(modelId);
-                String pmmlModel = exportAsPMML(model);
-                InputStream stream = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
-                registryOutputAdapter.write(relativeRegistryPath, stream);
+                    MLModel model = retrieveModel(modelId);
+                    String pmmlModel = exportAsPMML(model);
+                    InputStream stream = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
+                    registryOutputAdapter.write(relativeRegistryPath, stream);
 
-            } catch (DatabaseHandlerException e) {
-                throw new MLModelPublisherException(errorMsg, e);
-            } catch (MLModelHandlerException e) {
-                throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
-            } catch (MLOutputAdapterException e) {
-                throw new MLModelPublisherException(errorMsg, e);
-            } catch (MLPmmlExportException e) {
-                throw new MLPmmlExportException("PMML export not supported for model type");
-            }
-            break;
+                } catch (DatabaseHandlerException e) {
+                    throw new MLModelPublisherException(errorMsg, e);
+                } catch (MLModelHandlerException e) {
+                    throw new MLModelHandlerException("Failed to retrieve the model [id] " + modelId, e);
+                } catch (MLOutputAdapterException e) {
+                    throw new MLModelPublisherException(errorMsg, e);
+                } catch (MLPmmlExportException e) {
+                    throw new MLPmmlExportException("PMML export not supported for model type");
+                }
+                break;
 
-        default:
-            throw new MLModelPublisherException(errorMsg);
+            default:
+                throw new MLModelPublisherException(errorMsg);
         }
 
-    return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
+        return RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + relativeRegistryPath;
     }
 
 
     public List<ClusterPoint> getClusterPoints(int tenantId, String userName, long datasetId, String featureListString,
-            int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
+                                               int noOfClusters) throws MLMalformedDatasetException, MLModelHandlerException {
         JavaSparkContext sparkContext = null;
         List<String> features = Arrays.asList(featureListString.split("\\s*,\\s*"));
 
@@ -861,7 +909,7 @@ public class MLModelHandler {
     }
 
     private JavaRDD<String> extractLines(int tenantId, long datasetId, JavaSparkContext sparkContext,
-            String datasetURL, String dataSourceType, String dataType) throws MLMalformedDatasetException {
+                                         String datasetURL, String dataSourceType, String dataType) throws MLMalformedDatasetException {
         JavaRDD<String> lines;
         if (DatasetType.DAS == DatasetType.getDatasetType(dataSourceType)) {
             try {

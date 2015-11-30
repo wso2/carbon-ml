@@ -30,6 +30,10 @@ public class Workflow implements Serializable {
     private String algorithmName;
     private String algorithmClass;
     private String responseVariable;
+    private String userVariable;
+    private String productVariable;
+    private String ratingVariable;
+    private String observations;
     private double trainDataFraction;
     private List<Feature> features;
     private Map<String, String> hyperParameters;
@@ -95,6 +99,62 @@ public class Workflow implements Serializable {
      */
     public void setResponseVariable(String responseVariable) {
         this.responseVariable = responseVariable;
+    }
+
+    /**
+     * @return  Returns user variable
+     */
+    public String getUserVariable() {
+        return userVariable;
+    }
+
+    /**
+     * @param userVariable  Sets user variable
+     */
+    public void setUserVariable(String userVariable) {
+        this.userVariable = userVariable;
+    }
+
+    /**
+     * @return  Returns product variable
+     */
+    public String getProductVariable() {
+        return productVariable;
+    }
+
+    /**
+     * @param productVariable   Sets product variable
+     */
+    public void setProductVariable(String productVariable) {
+        this.productVariable = productVariable;
+    }
+
+    /**
+     * @return  Returns rating variable
+     */
+    public String getRatingVariable() {
+        return ratingVariable;
+    }
+
+    /**
+     * @return  Returns observations
+     */
+    public String getObservations() {
+        return observations;
+    }
+
+    /**
+     * @param observations  Sets observations
+     */
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+
+    /**
+     * @param ratingVariable  Sets rating variable
+     */
+    public void setRatingVariable(String ratingVariable) {
+        this.ratingVariable = ratingVariable;
     }
 
     /**

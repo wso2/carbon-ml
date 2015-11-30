@@ -24,6 +24,7 @@ import org.wso2.carbon.ml.core.spark.algorithms.AnomalyDetectionModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.DeeplearningModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.SupervisedSparkModelBuilder;
 import org.wso2.carbon.ml.core.spark.algorithms.UnsupervisedSparkModelBuilder;
+import org.wso2.carbon.ml.core.spark.recommendation.RecommendationModelBuilder;
 
 /**
  * This factory class is responsible for generating a {@link MLModelBuilder} for a given algorithm type.
@@ -49,6 +50,9 @@ public class ModelBuilderFactory {
                 break;
             case DEEPLEARNING:
                 modelBuilder = new DeeplearningModelBuilder(context);
+                break;
+            case RECOMMENDATION:
+                modelBuilder = new RecommendationModelBuilder(context);
                 break;
             default:
                 throw new MLInputValidationException("Invalid algorithm type: " + type.name());
