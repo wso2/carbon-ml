@@ -445,7 +445,7 @@
 			<Parameters>
 				<Name>Rank</Name>
 				<Value>8</Value>
-				<Description>The number of features to use.</Description>
+				<Description>The number of latent factors in the model.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
@@ -455,12 +455,12 @@
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>0.01</Value>
-				<Description>Regularization factor.</Description>
+				<Description>Regularization parameter in ALS.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Blocks</Name>
-				<Value>3</Value>
-				<Description>Level of Parallelism to split computation in to.</Description>
+				<Value>-1</Value>
+				<Description>Level of Parallelism to split computation into. Set to -1 to auto-configure.</Description>
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
@@ -469,7 +469,7 @@
 			<Parameters>
 				<Name>Rank</Name>
 				<Value>8</Value>
-				<Description>The number of features to use.</Description>
+				<Description>The number of latent factors in the model.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Iterations</Name>
@@ -479,12 +479,12 @@
 			<Parameters>
 				<Name>Lambda</Name>
 				<Value>0.01</Value>
-				<Description>Regularization factor.</Description>
+				<Description>Regularization parameter in ALS.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Blocks</Name>
-				<Value>3</Value>
-				<Description>Level of Parallelism to split computation in to.</Description>
+				<Value>-1</Value>
+				<Description>Level of Parallelism to split computation into. Set to -1 to auto-configure.</Description>
 			</Parameters>
 			<Parameters>
 				<Name>Alpha</Name>
