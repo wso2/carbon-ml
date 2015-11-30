@@ -108,8 +108,8 @@ include("../../includes/tenantAware.jag");
                     the model evaluation process."></span>:&nbsp;
                     <input type="text" name="chance" id="chance" class="text no-border"></h5>
                         <div id="percentile">
-                        <input type="range" id="myRange" min="80" max="100" step="1"><h7>
-                        80<span style="float:right;">100</span></h7>
+                        <input type="range" id="myRange" step="1">
+                        <h7 id="rangeValues"></h7>
                         </div>
                 </div>
 
@@ -513,6 +513,13 @@ $( document ).ready(function() {
                 if(res.bestPercentile) {
                     $('#myRange').val(res.bestPercentile);
                     $('#chance').val(res.bestPercentile);
+                }
+
+                // setting the range of the percentile slider
+                if(res.minPercentile && res.maxPercentile){
+                    $('#myRange').attr('min', res.minPercentile);
+                    $('#myRange').attr('max', res.maxPercentile);
+                    $('#rangeValues').html(res.minPercentile + '<span style="float:right;">' + res.maxPercentile + '</span>');
                 }
 
                 var percentile = $('#myRange').val();

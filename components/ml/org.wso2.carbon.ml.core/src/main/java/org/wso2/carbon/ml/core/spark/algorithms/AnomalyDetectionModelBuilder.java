@@ -336,6 +336,8 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
                     MLConstants.ANOMALY_DETECTION_ALGORITHM.K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA.toString());
             anomalyDetectionModelSummary.setPercentileToMulticlassMetricsMap(percentileToMulticlassMetricsMap);
             anomalyDetectionModelSummary.setClusterPoints(clusterPoints);
+            anomalyDetectionModelSummary.setMinPercentile(minRange);
+            anomalyDetectionModelSummary.setMaxPercentile(maxRange);
             anomalyDetectionModelSummary.setBestPercentile(bestPercentile);
             anomalyDetectionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
             anomalyDetectionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
