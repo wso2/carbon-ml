@@ -345,7 +345,7 @@ public class ModelApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             List<?> recommendations =
-                    mlModelHandler.getRecommendations(tenantId, userName, modelId, userId, noOfProducts);
+                    mlModelHandler.getProductRecommendations(tenantId, userName, modelId, userId, noOfProducts);
             return Response.ok(recommendations).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
