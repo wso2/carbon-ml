@@ -35,6 +35,8 @@ public class AnomalyDetectionModelSummary implements ModelSummary, Serializable 
     private String[] features;
     private Map<Integer, MulticlassMetrics> percentileToMulticlassMetricsMap;
     private List<ClusterPoint> clusterPoints;
+    private int minPercentile;
+    private int maxPercentile;
     private int bestPercentile;
     private String datasetVersion;
 
@@ -82,6 +84,22 @@ public class AnomalyDetectionModelSummary implements ModelSummary, Serializable 
 
     public int getBestPercentile() {
         return bestPercentile;
+    }
+
+    public int getMinPercentile() {
+        return minPercentile;
+    }
+
+    public void setMinPercentile(int minPercentile) {
+        this.minPercentile = minPercentile;
+    }
+
+    public int getMaxPercentile() {
+        return maxPercentile;
+    }
+
+    public void setMaxPercentile(int maxPercentile) {
+        this.maxPercentile = maxPercentile;
     }
 
     public void setBestPercentile(int bestPercentile) {
