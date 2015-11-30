@@ -600,7 +600,7 @@ $( document ).ready(function() {
                 $("#roc-graph, #confusion-matrix, #weights-chart,#dl-network, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
                 $("#residual").remove();
-                 $("#model-summary-title").append(" [Rank: " + res.rank + "]");    
+                 $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");    
 
             }
         },
