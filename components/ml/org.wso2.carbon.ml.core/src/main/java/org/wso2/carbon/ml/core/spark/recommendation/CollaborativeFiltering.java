@@ -25,12 +25,14 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.recommendation.ALS;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 
 import scala.Tuple2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class CollaborativeFiltering implements Serializable{
 
@@ -126,34 +128,46 @@ public class CollaborativeFiltering implements Serializable{
 	 * @param userId            The user to recommend products to
 	 * @param numberOfProducts  Number of products to return
 	 * @return                  List of productIds recommended to a given user
+	 * @throws MLModelHandlerException 
 	 */
-	public static List<Integer> recommendProducts(final MatrixFactorizationModel model, int userId, int numberOfProducts) {
-		Rating[] recommendations = model.recommendProducts(userId, numberOfProducts);
-		List<Integer> productList = new ArrayList<Integer>();
+    public static List<Integer> recommendProducts(final MatrixFactorizationModel model, int userId, int numberOfProducts)
+            throws MLModelHandlerException {
+        try {
+            Rating[] recommendations = model.recommendProducts(userId, numberOfProducts);
+            List<Integer> productList = new ArrayList<Integer>();
 
-		for(Rating rating : recommendations) {
-			productList.add(rating.product());
-		}
+            for (Rating rating : recommendations) {
+                productList.add(rating.product());
+            }
 
-		return productList;
-	}
+            return productList;
+        } catch (NoSuchElementException e) {
+            throw new MLModelHandlerException("Invalid user id: " + userId);
+        }
+    }
 
-	/**
-	 * This method recommends users for a given product. (i.e. the users who are most likely to be interested in the given product.
-	 *
-	 * @param model         Matrix factorization model
-	 * @param productId     The product to recommend users to
-	 * @param numberOfUsers Number of users to return
-	 * @return              List of userIds recommended to a given product
-	 */
-	public static List<Integer> recommendUsers(final MatrixFactorizationModel model, int productId, int numberOfUsers) {
-		Rating[] recommendations = model.recommendUsers(productId, numberOfUsers);
-		List<Integer> userList = new ArrayList<Integer>();
+    /**
+     * This method recommends users for a given product. (i.e. the users who are most likely to be interested in the
+     * given product.
+     *
+     * @param model Matrix factorization model
+     * @param productId The product to recommend users to
+     * @param numberOfUsers Number of users to return
+     * @return List of userIds recommended to a given product
+     */
+    public static List<Integer> recommendUsers(final MatrixFactorizationModel model, int productId, int numberOfUsers)
+            throws MLModelHandlerException {
+        try {
+            List<Integer> userList = new ArrayList<Integer>();
+            Rating[] recommendations = model.recommendUsers(productId, numberOfUsers);
 
-		for(Rating rating : recommendations) {
-			userList.add(rating.user());
-		}
+            for (Rating rating : recommendations) {
+                userList.add(rating.user());
+            }
 
-		return userList;
-	}
+            return userList;
+        } catch (NoSuchElementException e) {
+            throw new MLModelHandlerException("Invalid product id: " + productId);
+        }
+    }
 }

@@ -33,6 +33,7 @@ import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.*;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.rdd.RDD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -420,5 +421,5 @@ public class SparkModelUtils {
         }
 
     }
-
+    
 }
