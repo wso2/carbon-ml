@@ -322,14 +322,16 @@ include("../../includes/tenantAware.jag");
                                                     '<div>';
                                                     // remove view and and predict links for k-means
                                                     if(modelStatus == 'Complete' && sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS') {
-                                                        //remove view from Kmeans Anomaly detection with Unlabeled data
+                                                        // remove view from Kmeans Anomaly detection with Unlabeled data
                                                         if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                                                             accordionPanel += '' +
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
-                                                         } else if(sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING'|| sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT' ){
+                                                         }
+                                                         // remove predict from Collaborative Filtering
+                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') ){
                                                             accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
-                                                        }
+                                                         }
                                                     }
                                                         accordionPanel += '' +
                                                         '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
