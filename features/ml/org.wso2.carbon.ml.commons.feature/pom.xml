@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>ml-features</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.0.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
