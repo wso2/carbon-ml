@@ -620,7 +620,12 @@
                                     }
                                     else {
                                         accordionPanels += '' + 
-                                    '<td class="c-right empty-button-panel"></td>';                                         
+                                    '<td class="c-right">' +
+                                        '<div>' +
+                                             '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
+                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
+                                        '</div>' +
+                                    '</td>';                                                
                                     }
                                     accordionPanels += '' + 
                                 '</tr>' +
