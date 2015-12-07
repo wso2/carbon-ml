@@ -705,7 +705,7 @@ function getNormalLabelValues() {
     });
 }
 
-// function that load response variable
+// function that loads response variable
 function loadResponseVariable(setResponseVariable){
 
     if($('#algorithm-name').val() == 'K_MEANS' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
@@ -717,7 +717,7 @@ function loadResponseVariable(setResponseVariable){
 
 }
 
-// function that load response variable features
+// function that loads response variable features
 function loadResponseVariableFeatures(setResponseVariable) {
 
     $('#response-variable').empty();
