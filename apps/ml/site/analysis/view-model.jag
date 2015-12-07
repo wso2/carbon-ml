@@ -956,7 +956,7 @@ function drawClusterDiagram() {
                 dataRow[2] = dataArray[i]['cluster'];
                 clusterDataArray.push(dataRow);
             }
-            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, false);
+            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, true);
 }
 
 // drawing a simple scatter graph
