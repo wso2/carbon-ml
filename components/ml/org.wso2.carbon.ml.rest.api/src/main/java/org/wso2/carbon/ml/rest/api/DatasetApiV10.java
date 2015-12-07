@@ -51,6 +51,7 @@ import org.wso2.carbon.ml.rest.api.model.MLVersionBean;
 public class DatasetApiV10 extends MLRestAPI {
 
     private static final Log logger = LogFactory.getLog(DatasetApiV10.class);
+    
     /*
      * Delegates all the dataset related operations.
      */
@@ -651,12 +652,15 @@ public class DatasetApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             datasetProcessor.deleteDataset(tenantId, userName, datasetId);
+            auditLog.info(String.format("User [name] %s of tenant [id] %s deleted a dataset [id] %s ", userName,
+                    tenantId, datasetId));
             return Response.ok().build();
         } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while deleting dataset [id] %s of tenant [id] %s and [user] %s .", datasetId,
                     tenantId, userName), e);
             logger.error(msg, e);
+            auditLog.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
         }
@@ -676,12 +680,15 @@ public class DatasetApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             datasetProcessor.deleteDatasetVersion(tenantId, userName, versionsetId);
+            auditLog.info(String.format("User [name] %s of tenant [id] %s deleted a dataset version [id] %s ", userName,
+                    tenantId, versionsetId));
             return Response.ok().build();
         } catch (MLDataProcessingException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while deleting dataset version [id] %s of tenant [id] %s and [user] %s .",
                     versionsetId, tenantId, userName), e);
             logger.error(msg, e);
+            auditLog.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
         }

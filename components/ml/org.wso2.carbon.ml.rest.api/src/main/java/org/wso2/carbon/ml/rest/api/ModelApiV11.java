@@ -436,12 +436,15 @@ public class ModelApiV11 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             mlModelHandler.deleteModel(tenantId, userName, modelId);
+            auditLog.info(String.format("User [name] %s of tenant [id] %s deleted a model [id] %s ", userName,
+                    tenantId, modelId));
             return Response.ok().build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while deleting a model [id] %s of tenant [id] %s and [user] %s .", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
+            auditLog.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
         }
