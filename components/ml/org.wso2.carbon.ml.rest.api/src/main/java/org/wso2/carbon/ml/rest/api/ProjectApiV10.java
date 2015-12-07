@@ -294,12 +294,15 @@ public class ProjectApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             mlProjectHandler.deleteProject(tenantId, userName, projectId);
+            auditLog.info(String.format("User [name] %s of tenant [id] %s deleted a project [id] %s ", userName,
+                    tenantId, projectId));
             return Response.ok().build();
         } catch (MLProjectHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while deleting a project [id]  %s of tenant [id] %s and [user] %s .", projectId,
                     tenantId, userName), e);
             logger.error(msg, e);
+            auditLog.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
         }

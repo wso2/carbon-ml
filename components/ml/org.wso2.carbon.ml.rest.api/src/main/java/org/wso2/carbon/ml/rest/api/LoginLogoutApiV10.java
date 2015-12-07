@@ -61,11 +61,16 @@ public class LoginLogoutApiV10 extends MLRestAPI {
         //create session if not found
         HttpSession httpSession = httpServletRequest.getSession();
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        httpSession.setAttribute("userName", carbonContext.getUsername());
-        httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
-        httpSession.setAttribute("tenantId", carbonContext.getTenantId());
-        //String sessionId = httpSession.getId();
-        return Response.status(Response.Status.OK).entity("User logged in: " + carbonContext.getUsername()).build();
+        String username = carbonContext.getUsername();
+        httpSession.setAttribute("userName", username);
+        String tenantDomain = carbonContext.getTenantDomain();
+        httpSession.setAttribute("tenantDomain", tenantDomain);
+        int tenantId = carbonContext.getTenantId();
+        httpSession.setAttribute("tenantId", tenantId);
+        auditLog.info(String.format(
+                "User [name] %s of tenant [id] %s [domain] %s is logged-in into WSO2 Machine Learner. "
+                        + "Granted session id is %s", username, tenantId, tenantDomain, httpSession.getId()));
+        return Response.status(Response.Status.OK).entity("User logged in: " + username).build();
     }
 
     /**
@@ -78,9 +83,15 @@ public class LoginLogoutApiV10 extends MLRestAPI {
     public Response logout() {
         HttpSession session = httpServletRequest.getSession();
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        String username = carbonContext.getUsername();
+        String tenantDomain = carbonContext.getTenantDomain();
+        int tenantId = carbonContext.getTenantId();
         if (session != null) {
             session.invalidate();
         }
+        auditLog.info(String.format(
+                "User [name] %s of tenant [id] %s [domain] %s is logged-out from WSO2 Machine Learner. "
+                        + "Granted session id is %s", username, tenantId, tenantDomain, session.getId()));
         return Response.status(Response.Status.OK).entity("User logged out: " + carbonContext.getUsername()).build();
     }
 }

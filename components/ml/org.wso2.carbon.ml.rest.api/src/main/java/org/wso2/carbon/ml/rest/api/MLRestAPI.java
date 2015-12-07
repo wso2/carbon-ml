@@ -15,9 +15,12 @@
  */
 package org.wso2.carbon.ml.rest.api;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 
 public abstract class MLRestAPI {
+    protected static final Log auditLog = LogFactory.getLog("AUDIT_LOG");
     private String tenantID = null;
 
     protected String getTenantID() {
