@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.core.impl;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
@@ -28,8 +27,6 @@ import org.wso2.carbon.ml.core.exceptions.MLInputValidationException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
-import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
-import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 
@@ -56,17 +53,9 @@ public class HdfsDatasetProcessor extends DatasetProcessor {
         InputStream inputStream = null;
         try {
             MLDataset dataset = getDataset();
-            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-            MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
-            MLInputAdapter inputAdapter = ioFactory
-                    .getInputAdapter(dataset.getDataSourceType() + MLConstants.IN_SUFFIX);
-            MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType()
-                    + MLConstants.OUT_SUFFIX);
-            inputStream = inputAdapter.read(dataset.getSourcePath());
-            setTargetPath(ioFactory.getTargetPath(dataset.getName() + "." + dataset.getTenantId() + "."
-                    + System.currentTimeMillis()));
-            outputAdapter.write(getTargetPath(), inputStream);
-            setFirstLine(getTargetPath());
+            // in hdfs case, we do not keep a copy of the file at the server side.
+            setTargetPath(dataset.getSourcePath());
+            setFirstLine(MLUtils.getFirstLine(getTargetPath()));
         } catch (Exception e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
@@ -86,7 +75,7 @@ public class HdfsDatasetProcessor extends DatasetProcessor {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         try {
             return MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings()
-                    .getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
+                    .getSampleSize(), dataset.isContainsHeader());
         } catch (MLMalformedDatasetException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }

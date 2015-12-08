@@ -184,7 +184,6 @@ public class MLDatasetProcessor {
         CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataset.getDataType());
         String[] features = MLUtils.getFeatures(firstLine, dataFormat);
         int featureSize = features.length;
-        // SamplePoints samplePoints = datasetProcessor.getSamplePoints();
         // persist dataset
         persistDataset(dataset);
 
