@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
@@ -34,6 +35,7 @@ import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.config.MLConfiguration;
+import org.wso2.carbon.ml.core.impl.H2OConfigurationParser;
 import org.wso2.carbon.ml.core.impl.H2OServer;
 import org.wso2.carbon.ml.core.impl.SparkConfigurationParser;
 import org.wso2.carbon.ml.core.utils.BlockingExecutor;
@@ -145,6 +147,21 @@ public class MLCoreDS {
                 valueHolder.setSparkContext(sparkContext);
             }
 
+            // Checks whether H2O client mode enabling JVM option is set
+            if (System.getProperty(MLConstants.H2O_CLIENT_MODE_JVM_OPT) != null) {
+                if (Boolean.parseBoolean(System.getProperty(MLConstants.H2O_CLIENT_MODE_JVM_OPT))) {
+                    valueHolder.setH2oClientModeEnabled(true);
+                    log.info("H2O Server will start in client mode.");
+                }
+            }
+
+            if (valueHolder.isH2oClientModeEnabled()) {
+                HashMap<String, String> h2oConf = new H2OConfigurationParser().getH2OConf(MLConstants.H2O_CONFIG_XML);
+                H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
+            } else {
+                H2OServer.startH2O();
+            }
+
             // Creating an email output adapter
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
             OutputEventAdapterConfiguration outputAdapterConfig = new OutputEventAdapterConfiguration();
@@ -168,9 +185,6 @@ public class MLCoreDS {
             // set the ml.url property which will be used to print in the console by the ML jaggery app.
             configContextService.getServerConfigContext().setProperty("ml.url",
                     "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
-
-            // Starting H2O server - for deep learning algorithms
-            H2OServer.startH2O();
             
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);

@@ -41,6 +41,7 @@ import hex.deeplearning.DeepLearning;
 import hex.deeplearning.DeepLearningModel;
 import hex.deeplearning.DeepLearningParameters;
 import hex.splitframe.ShuffleSplitFrame;
+import water.fvec.Vec;
 
 /**
  * Stacked Autoencoder classifier class
@@ -205,7 +206,8 @@ public class StackedAutoencodersClassifier implements Serializable {
 
         Frame testData = DeeplearningModelUtils.javaRDDToFrame(test);
         Frame testDataWithoutLabels = testData.subframe(0, testData.numCols() - 1);
-        double[] predVales = deeplearningModel.score(testDataWithoutLabels).vec(0).toDoubleArray();
+        Vec preds = deeplearningModel.score(testDataWithoutLabels).vec(0);
+        double[] predVales = preds.toDoubleArray();
         double[] labels = testData.vec(testData.numCols() - 1).toDoubleArray();
 
         Scope.exit();
