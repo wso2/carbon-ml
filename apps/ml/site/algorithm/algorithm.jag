@@ -356,25 +356,6 @@ $( document ).ready(function() {
         }
     });
 
-    //hide unnecessary fields when loading the page
-    loadFields(setResponseVariable);
-    //load response variable
-    loadResponseVariable(setResponseVariable);
-    //get normal label values
-    getNormalLabelValues();
-
-
-    // hides unnecessary fields according to algorithm
-    $(document).on('change','#algorithm-name',function() {
-        loadFields(setResponseVariable);
-        loadResponseVariable(setResponseVariable);
-        getNormalLabelValues();
-    });
-
-    $(document).on('change','#response-variable',function() {
-        getNormalLabelValues();
-    });
-
     // get previously set algorithm name
     $.ajax({
         type: "GET",
@@ -474,7 +455,7 @@ $( document ).ready(function() {
         }
     });
 
-        // get previously set new normal label
+    // get previously set new normal label
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/newNormalLabel",
@@ -492,7 +473,7 @@ $( document ).ready(function() {
         }
     });
 
-        // get previously set new anomaly label
+    // get previously set new anomaly label
     $.ajax({
         type: "GET",
         url: serverUrl+"/api/analyses/"+analysisId+"/newAnomalyLabel",
@@ -510,7 +491,7 @@ $( document ).ready(function() {
         }
     });
 
-    loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable);
+    loadDatasetFeatures(setUserVariable, setProductVariable, setRatingVariable);
 
     // put path in application navigator
     $('#nav-project').text(projectName);
@@ -531,13 +512,27 @@ $( document ).ready(function() {
         $('#observation-list').attr("disabled","disabled");
     }
 
+    // hides unnecessary fields according to algorithm
     selectedAlgorithm = $('#algorithm-name').val();
     toggleInput(selectedAlgorithm);
 
+    //load response variable
+    loadResponseVariable(setResponseVariable);
+
+    // get normal label values
+    getNormalLabelValues();
+
+    // hides unnecessary fields according to algorithm
     $(document).on('change','#algorithm-name',function() {
         selectedAlgorithm = $('#algorithm-name').val();
         toggleInput(selectedAlgorithm);
-    });   
+        loadResponseVariable(setResponseVariable);
+        getNormalLabelValues();
+    });
+
+    $(document).on('change','#response-variable',function() {
+        getNormalLabelValues();
+    });
 	
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
@@ -612,21 +607,6 @@ $( document ).ready(function() {
             }else{
                 setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId);
             }
-
-        //Additional
-        /*
-        $.ajax({
-            type: 'POST',
-            url: serverUrl + "/api/analyses/" + analysisId + "/configurations",
-            contentType: "application/json",
-            data: jsonData,
-            success: function(res){
-                window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-            },
-            error: function(res){
-                var errorText = res.responseText
-                handleNotification(errorText, notificationArea, 'warning');
-            });*/
 
             $(document).on('click', '#delete-project-yes', function(e){
                 e.preventDefault();
@@ -725,59 +705,20 @@ function getNormalLabelValues() {
     });
 }
 
-function loadFields(){
-    if($('#algorithm-name').val() == 'K_MEANS') {
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#normalization').hide();
-            $('#train-data-fraction').hide();
-            $('#custom-label-group').hide();
-            $('#response-variable-group').removeClass("algorithm-inputs-group");
-            $('#custom-label-group').removeClass("algorithm-inputs-group");
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
-            $('#response-variable-field').hide();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').hide();
-            $('#normalization').show();
-            $('#custom-label-group').show();
-            $('#response-variable-group').removeClass("algorithm-inputs-group");
-            $('#custom-label-group').addClass("algorithm-inputs-group");
-        }
-        else if($('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
-            $('#response-variable-field').show();
-            $('#normal-labels').show();
-            $('#train-data-fraction').show();
-            $('#normalization').show();
-            $('#custom-label-group').show();
-            $('#response-variable-group').addClass("algorithm-inputs-group");
-            $('#custom-label-group').addClass("algorithm-inputs-group");
-        }
-        else{
-            $('#response-variable-field').show();
-            $('#normal-labels').hide();
-            $('#train-data-fraction').show();
-            $('#normalization').hide();
-            $('#custom-label-group').hide();
-            $('#response-variable-group').removeClass("algorithm-inputs-group");
-            $('#custom-label-group').removeClass("algorithm-inputs-group");
-        }
-}
-
-//function that load response variable
+// function that loads response variable
 function loadResponseVariable(setResponseVariable){
 
     if($('#algorithm-name').val() == 'K_MEANS' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA' || $('#algorithm-name').val() == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
 
         loadCategoricalFeatures(setResponseVariable);
     }else{
-        loadDatasetFeatures(setResponseVariable);
+        loadResponseVariableFeatures(setResponseVariable);
     }
 
 }
 
-// function that load dataset features
-function loadDatasetFeatures(setResponseVariable) {
+// function that loads response variable features
+function loadResponseVariableFeatures(setResponseVariable) {
 
     $('#response-variable').empty();
 
@@ -808,9 +749,8 @@ function fieldManipulate(algorithmName) {
 
 }
 // function that load dataset features
-function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVariable, setRatingVariable) {
+function loadDatasetFeatures(setUserVariable, setProductVariable, setRatingVariable) {
 
- $('#response-variable').empty();
  $('#user-variable').empty();
  $('#product-variable').empty();
  $('#rating-variable').empty();
@@ -821,10 +761,6 @@ function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVar
         success: function(res) {
             var datasetFeatures = res;
             $.each(datasetFeatures,function(index, feature){
-                $('#response-variable').append($('<option>', {
-                    value: sanitize(feature),
-                    text : sanitize(feature)
-                }));
                 $('#user-variable').append($('<option>', {
                     value: sanitize(feature),
                     text : sanitize(feature)
@@ -839,9 +775,6 @@ function loadDatasetFeatures(setResponseVariable, setUserVariable, setProductVar
                 }));
             });
             // set previously selected values when navigating from next page
-            if (setResponseVariable != '') {
-                $('#response-variable option[value=' + setResponseVariable + ']').attr('selected','selected');
-            }
             if (setUserVariable != '') {
                 $('#user-variable option[value=' + setUserVariable + ']').attr('selected','selected');
             }
@@ -954,7 +887,7 @@ function dropCategoricalFeatures(responseVariable){
         }
     });
 }
-// function that toggles response variable input depending on the algorithm selection
+// function that toggles input fields depending on the algorithm selection
 function toggleInput(selectedAlgorithm) {
 
     if(selectedAlgorithm == 'K_MEANS') {
@@ -962,7 +895,38 @@ function toggleInput(selectedAlgorithm) {
         $('#user-variable-field').hide();
         $('#product-variable-field').hide();
         $('#rating-variable-field').hide();
-        $('#data-fraction-field').show();
+        $('#observation-list-field').hide();
+        $('#normal-labels').hide();
+        $('#normalization').hide();
+        $('#train-data-fraction').hide();
+        $('#custom-label-group').hide();
+        $('#response-variable-group').removeClass("algorithm-inputs-group");
+        $('#custom-label-group').removeClass("algorithm-inputs-group");
+    }
+    else if(selectedAlgorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+        $('#response-variable-field').hide();
+        $('#normal-labels').hide();
+        $('#train-data-fraction').hide();
+        $('#normalization').show();
+        $('#custom-label-group').show();
+        $('#response-variable-group').removeClass("algorithm-inputs-group");
+        $('#custom-label-group').addClass("algorithm-inputs-group");
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
+        $('#observation-list-field').hide();
+    }
+    else if(selectedAlgorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+        $('#response-variable-field').show();
+        $('#normal-labels').show();
+        $('#train-data-fraction').show();
+        $('#normalization').show();
+        $('#custom-label-group').show();
+        $('#response-variable-group').addClass("algorithm-inputs-group");
+        $('#custom-label-group').addClass("algorithm-inputs-group");
+        $('#user-variable-field').hide();
+        $('#product-variable-field').hide();
+        $('#rating-variable-field').hide();
         $('#observation-list-field').hide();
     }
     else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING') {
@@ -970,27 +934,41 @@ function toggleInput(selectedAlgorithm) {
         $('#user-variable-field').show();
         $('#product-variable-field').show();
         $('#rating-variable-field').show();
-        $('#data-fraction-field').hide();
         $('#observation-list-field').hide();
+        $('#normal-labels').hide();
+        $('#train-data-fraction').hide();
+        $('#normalization').hide();
+        $('#custom-label-group').hide();
+        $('#response-variable-group').removeClass("algorithm-inputs-group");
+        $('#custom-label-group').removeClass("algorithm-inputs-group");
     }
     else if(selectedAlgorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
         $('#response-variable-field').hide();
         $('#user-variable-field').show();
         $('#product-variable-field').show();
         $('#rating-variable-field').hide();
-        $('#data-fraction-field').hide();
         $('#observation-list-field').show();
+        $('#normal-labels').hide();
+        $('#train-data-fraction').hide();
+        $('#normalization').hide();
+        $('#custom-label-group').hide();
+        $('#response-variable-group').removeClass("algorithm-inputs-group");
+        $('#custom-label-group').removeClass("algorithm-inputs-group");
     }
     else {
         $('#response-variable-field').show();
+        $('#train-data-fraction').show();
         $('#user-variable-field').hide();
         $('#product-variable-field').hide();
         $('#rating-variable-field').hide();
-        $('#data-fraction-field').show();
         $('#observation-list-field').hide();
+        $('#normal-labels').hide();
+        $('#normalization').hide();
+        $('#custom-label-group').hide();
+        $('#response-variable-group').removeClass("algorithm-inputs-group");
+        $('#custom-label-group').removeClass("algorithm-inputs-group");
     }
 }
-
 
 </script>
 

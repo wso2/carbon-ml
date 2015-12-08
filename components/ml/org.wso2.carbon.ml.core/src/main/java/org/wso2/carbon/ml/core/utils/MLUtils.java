@@ -55,8 +55,8 @@ public class MLUtils {
     /**
      * Generate a random sample of the dataset using Spark.
      */
-    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader,
-                                         String sourceType, int tenantId) throws MLMalformedDatasetException {
+    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader)
+            throws MLMalformedDatasetException {
 
         JavaSparkContext sparkContext = null;
         try {
