@@ -75,6 +75,11 @@ public class MLIOFactory {
     public String getTargetPath(String fileName) {
         String targetDir = MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageDirectory();
 
+        if ("hdfs".equals(MLCoreServiceValueHolder.getInstance().getDatasetStorage().getStorageType())) {
+            // return fully qualified hdfs url
+            return MLCoreServiceValueHolder.getInstance().getHdfsUrl() + targetDir + "/" + fileName;
+        }
+
         return targetDir + File.separator + fileName;
 
     }
