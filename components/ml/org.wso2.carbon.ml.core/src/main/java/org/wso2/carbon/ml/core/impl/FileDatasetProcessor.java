@@ -89,7 +89,7 @@ public class FileDatasetProcessor extends DatasetProcessor {
         MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
         try {
             return MLUtils.getSample(getTargetPath(), dataset.getDataType(), valueHolder.getSummaryStatSettings()
-                    .getSampleSize(), dataset.isContainsHeader(), dataset.getDataSourceType(), dataset.getTenantId());
+                    .getSampleSize(), dataset.isContainsHeader());
         } catch (MLMalformedDatasetException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }
