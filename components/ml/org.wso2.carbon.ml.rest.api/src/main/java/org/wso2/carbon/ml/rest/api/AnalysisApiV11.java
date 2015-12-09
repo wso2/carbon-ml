@@ -237,6 +237,14 @@ public class AnalysisApiV11 extends MLRestAPI {
             mlAnalysisConfigsBean.setAlgorithmName(mlAnalysisHandler.getAlgorithmName(analysisId));
             mlAnalysisConfigsBean.setResponseVariable(mlAnalysisHandler.getResponseVariable(analysisId));
             mlAnalysisConfigsBean.setTrainDataFraction(mlAnalysisHandler.getTrainDataFraction(analysisId));
+            mlAnalysisConfigsBean.setNormalLabels(mlAnalysisHandler.getNormalLabels(analysisId));
+            mlAnalysisConfigsBean.setNormalization(Boolean.parseBoolean(mlAnalysisHandler.getNormalization(analysisId)));
+            mlAnalysisConfigsBean.setNewNormalLabel(mlAnalysisHandler.getNewNormalLabel(analysisId));
+            mlAnalysisConfigsBean.setNewAnomalyLabel(mlAnalysisHandler.getNewAnomalyLabel(analysisId));
+            mlAnalysisConfigsBean.setUserVariable(mlAnalysisHandler.getUserVariable(analysisId));
+            mlAnalysisConfigsBean.setProductVariable(mlAnalysisHandler.getProductVariable(analysisId));
+            mlAnalysisConfigsBean.setRatingVariable(mlAnalysisHandler.getRatingVariable(analysisId));
+            mlAnalysisConfigsBean.setObservations(mlAnalysisHandler.getObservations(analysisId));
             mlAnalysisConfigsBean.setHyperParameters(mlAnalysisHandler.getHyperParameters(analysisId, mlAnalysisHandler.getAlgorithmName(analysisId)));
             return Response.ok(mlAnalysisConfigsBean).build();
         } catch (MLAnalysisHandlerException e) {
