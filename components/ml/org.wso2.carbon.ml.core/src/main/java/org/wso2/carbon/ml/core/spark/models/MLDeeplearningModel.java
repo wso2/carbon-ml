@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.models;
 
-import hex.deeplearning.DeepLearningModel;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -32,8 +30,10 @@ import org.apache.spark.mllib.linalg.Vector;
 
 import water.Key;
 import water.fvec.Frame;
+import water.fvec.Vec;
 import water.serial.ObjectTreeBinarySerializer;
 import water.util.FileUtils;
+import hex.deeplearning.DeepLearningModel;
 
 /**
  * Wraps an H2O DeeplearningModel object
@@ -86,8 +86,14 @@ public class MLDeeplearningModel implements Externalizable {
     }
 
     public double[] predict(Frame inputs) {
-        Frame predVals = dlModel.score(inputs);
-        return predVals.vec(0).toDoubleArray();
+        Frame predsFrame = dlModel.score(inputs);
+        int numRows = (int) inputs.numRows();
+        Vec predsVector = predsFrame.vec(0);
+        double[] predVals = new double[numRows];
+        for (int i = 0; i < numRows; i++) {
+            predVals[i] = predsVector.at(i);
+        }
+        return predVals;
     }
 
     public String getURIStringForLocation(String loc) {

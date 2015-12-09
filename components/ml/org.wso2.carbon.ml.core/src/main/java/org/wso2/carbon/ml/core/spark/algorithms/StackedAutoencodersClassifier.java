@@ -37,11 +37,11 @@ import water.DKV;
 import water.Key;
 import water.Scope;
 import water.fvec.Frame;
+import water.fvec.Vec;
 import hex.deeplearning.DeepLearning;
 import hex.deeplearning.DeepLearningModel;
 import hex.deeplearning.DeepLearningParameters;
 import hex.splitframe.ShuffleSplitFrame;
-import water.fvec.Vec;
 
 /**
  * Stacked Autoencoder classifier class
@@ -93,15 +93,6 @@ public class StackedAutoencodersClassifier implements Serializable {
 
                 Frame trainFrame = splits[0];
                 Frame vframe = splits[1];
-
-                double[] trainArr = trainFrame.vec(classifColName).toDoubleArray();
-                double[] validArr = vframe.vec(classifColName).toDoubleArray();
-                for (int i = 0; i < trainFrame.numRows(); i++) {
-                    System.out.print(trainArr[i] + "\t");
-                }
-                for (int i = 0; i < vframe.numRows(); i++) {
-                    System.out.print(validArr[i] + "\t");
-                }
 
                 if (log.isDebugEnabled()) {
                     log.debug("Creating Deeplearning parameters");
@@ -206,15 +197,23 @@ public class StackedAutoencodersClassifier implements Serializable {
 
         Frame testData = DeeplearningModelUtils.javaRDDToFrame(test);
         Frame testDataWithoutLabels = testData.subframe(0, testData.numCols() - 1);
-        Vec preds = deeplearningModel.score(testDataWithoutLabels).vec(0);
-        double[] predVales = preds.toDoubleArray();
-        double[] labels = testData.vec(testData.numCols() - 1).toDoubleArray();
+        int numRows = (int) testDataWithoutLabels.numRows();
+        Vec predictionsVector = deeplearningModel.score(testDataWithoutLabels).vec(0);
+        double[] predictionValues = new double[numRows];
+        for (int i = 0; i < numRows; i++) {
+            predictionValues[i] = predictionsVector.at(i);
+        }
+        Vec labelsVector = testData.vec(testData.numCols() - 1);
+        double[] labels = new double[numRows];
+        for (int i = 0; i < numRows; i++) {
+            labels[i] = labelsVector.at(i);
+        }
 
         Scope.exit();
 
         ArrayList<Tuple2<Double, Double>> tupleList = new ArrayList<Tuple2<Double, Double>>();
         for (int i = 0; i < labels.length; i++) {
-            tupleList.add(new Tuple2<Double, Double>(predVales[i], labels[i]));
+            tupleList.add(new Tuple2<Double, Double>(predictionValues[i], labels[i]));
         }
 
         return ctxt.parallelizePairs(tupleList);
