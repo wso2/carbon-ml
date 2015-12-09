@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 import water.H2O;
 import water.H2OApp;
+import water.H2OClientApp;
 
 /**
  * H2O server for Deep Learning.
@@ -43,6 +44,25 @@ public class H2OServer {
         } else {
             log.warn("H2O Server is already Running.");
         }
+    }
+
+    /**
+     * Starts instance in a remote H2O cloud
+     * @param ip    IP address of the remote H2O cloud
+     * @param port  Port of the remote H2O cloud
+     * @param name  Name of the remote H2O cloud
+     */
+    public static void startH2O(String ip, String port, String name) {
+        String[] args = new String[7];
+        args[0] = "-port";
+        args[1] = port;
+        args[2] = "-ip";
+        args[3] = ip;
+        args[4] = "-name";
+        args[5] = name;
+        args[6] = "-md5skip";
+
+        H2OClientApp.main(args);
     }
 
     /**

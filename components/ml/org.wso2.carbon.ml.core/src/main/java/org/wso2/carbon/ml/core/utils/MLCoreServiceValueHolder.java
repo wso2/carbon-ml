@@ -46,6 +46,7 @@ public class MLCoreServiceValueHolder {
     private Storage datasetStorage;
     private BlockingExecutor threadExecutor;
     private boolean sparkContextEnabled;
+    private boolean h2oClientModeEnabled;
 
     public MLCoreServiceValueHolder() {
         sparkContextEnabled = true;
@@ -181,6 +182,14 @@ public class MLCoreServiceValueHolder {
 
     public void setSparkContextEnabled(boolean sparkContextEnabled) {
         this.sparkContextEnabled = sparkContextEnabled;
+    }
+
+    public boolean isH2oClientModeEnabled() {
+        return h2oClientModeEnabled;
+    }
+
+    public void setH2oClientModeEnabled(boolean h2oClientModeEnabled) {
+        this.h2oClientModeEnabled = h2oClientModeEnabled;
     }
 
 }
