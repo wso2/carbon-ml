@@ -70,7 +70,7 @@ public class StackedAutoencodersClassifier implements Serializable {
             String activationType, int epochs, String responseColumn, long modelID) {
         // build stacked autoencoder by training the model with training data
         
-        double trainingFraction = 0.8;
+        double trainingFraction = 1;
         try {
             Scope.enter();
             if (trainData != null) {
