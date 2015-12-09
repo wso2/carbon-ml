@@ -61,9 +61,6 @@ public class MLConstants {
     public static final String SPARK_EXECUTOR_CLASSPATH = "spark.executor.extraClassPath";
     public static final String SPARK_DRIVER_CLASSPATH = "spark.driver.extraClassPath";
 
-    // H2O client mode JVM option
-    public static final String H2O_CLIENT_MODE_JVM_OPT = "h2oClientMode";
-
     // Character Encodings
     public static final String UTF_8= "UTF-8";
     public static final String ISO_8859_1= "ISO-8859-1";

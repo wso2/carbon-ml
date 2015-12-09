@@ -147,16 +147,20 @@ public class MLCoreDS {
                 valueHolder.setSparkContext(sparkContext);
             }
 
-            // Checks whether H2O client mode enabling JVM option is set
-            if (System.getProperty(MLConstants.H2O_CLIENT_MODE_JVM_OPT) != null) {
-                if (Boolean.parseBoolean(System.getProperty(MLConstants.H2O_CLIENT_MODE_JVM_OPT))) {
-                    valueHolder.setH2oClientModeEnabled(true);
-                    log.info("H2O Server will start in client mode.");
-                }
+            // Retrieving H2O configurations
+            HashMap<String, String> h2oConf = new H2OConfigurationParser().getH2OConf(MLConstants.H2O_CONFIG_XML);
+
+            if (h2oConf.get("mode").equals("local")) {
+                valueHolder.setH2oClientModeEnabled(false);
+                log.info("H2O Server will start in local mode.");
+            } else if (h2oConf.get("mode").equals("client")) {
+                valueHolder.setH2oClientModeEnabled(true);
+                log.info("H2O Server will start in client mode.");
+            } else {
+                log.error(String.format("H2O server failed to start. Unsupported H2O mode: %s", h2oConf.get("mode")));
             }
 
             if (valueHolder.isH2oClientModeEnabled()) {
-                HashMap<String, String> h2oConf = new H2OConfigurationParser().getH2OConf(MLConstants.H2O_CONFIG_XML);
                 H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
             } else {
                 H2OServer.startH2O();
