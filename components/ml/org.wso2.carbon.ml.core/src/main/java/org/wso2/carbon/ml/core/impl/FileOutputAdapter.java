@@ -18,7 +18,6 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +44,6 @@ public class FileOutputAdapter implements MLOutputAdapter {
             File file = new File(outPath);
             out = new FileOutputStream(file);
             IOUtils.copy(in, out);
-        } catch (FileNotFoundException e) {
-            throw new MLOutputAdapterException(e);
         } catch (IOException e) {
             throw new MLOutputAdapterException(e);
         } finally {

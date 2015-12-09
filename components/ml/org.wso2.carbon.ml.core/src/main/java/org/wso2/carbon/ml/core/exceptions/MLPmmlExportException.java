@@ -18,6 +18,8 @@ package org.wso2.carbon.ml.core.exceptions;
 
 public class MLPmmlExportException extends Exception {
 
+    private static final long serialVersionUID = 5000099339103508708L;
+
     public MLPmmlExportException(String message, Throwable cause) {
         super(message, cause);
     }

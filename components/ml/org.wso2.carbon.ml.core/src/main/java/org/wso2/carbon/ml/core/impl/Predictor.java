@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.models.*;
@@ -202,9 +203,8 @@ public class Predictor {
 
                         try {
                             normalizedData = normalization.call(data);
-                        } catch (Exception MLModelBuilderException) {
-                            log.warn("Data normalization failed for data: " + data + " Cause: "
-                                    + MLModelBuilderException.getMessage());
+                        } catch (MLModelBuilderException e) {
+                            log.warn("Data normalization failed for data: " + data + " Cause: " + e.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
@@ -265,9 +265,7 @@ public class Predictor {
     }
 
     private org.wso2.carbon.metrics.manager.Timer getTimer(String algorithmName) {
-
         try {
-
             org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
                     "org.wso2.carbon.ml.prediction-time." + model.getAlgorithmName());
             return timer;
