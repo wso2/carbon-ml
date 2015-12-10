@@ -121,8 +121,9 @@ include("../../includes/tenantAware.jag");
 				<span class="fld-required">*</span>
 				<div class="input-control text" data-role="input-control">
 					<select class="form-control" id="datasets">
-					  <option>Select.. </option>
+					  <option>Select..</option>
 					</select>
+				    <span class="form-val-error" id="dataset-selection-error"></span>
 	            </div>
 
 	            <div class="btn-group-actions">
@@ -235,8 +236,9 @@ $( document ).ready(function() {
         
         var projectNameValidation = isValidProjectName(projectName);
         var descriptionValidation = isValidDescription(projectDes);
+        var datasetValidation = isValidDataset(datasetName);
 
-        if(projectNameValidation && descriptionValidation){
+        if(projectNameValidation && descriptionValidation && datasetValidation){
         	
         	var jsonData = '{"name":"' + projectName + '","description":"' + projectDes + '","datasetName":"' + datasetName + '"}';
 
@@ -256,6 +258,10 @@ $( document ).ready(function() {
 		}
 	});
 
+	$('#datasets').on('change',function(e){
+		$('#dataset-selection-error').empty();
+	});
+
 	function loadDatasets() {
 		$.ajax({
 			type: "GET",
@@ -269,7 +275,7 @@ $( document ).ready(function() {
 				});
 			},
 			error: function(res) {
-                var errorText = res.responseText
+                var errorText = res.responseText;
                 handleNotification(errorText, '#notification-area', 'warning');
 			}
 		});
@@ -299,6 +305,14 @@ $( document ).ready(function() {
 		}
 		$('#project-description-error').text('* Project description is required.');
         return false;       
+	}
+
+	function isValidDataset(text){
+		if(text && text.length > 0 && text != "Select.."){
+			return true;
+		}
+		$('#dataset-selection-error').text('* Dataset is required.');
+        return false; 
 	}
 
 });

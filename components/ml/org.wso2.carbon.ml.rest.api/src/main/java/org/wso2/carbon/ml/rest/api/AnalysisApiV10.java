@@ -647,12 +647,15 @@ public class AnalysisApiV10 extends MLRestAPI {
         String userName = carbonContext.getUsername();
         try {
             mlAnalysisHandler.deleteAnalysis(tenantId, userName, analysisId);
+            auditLog.info(String.format("User [name] %s of tenant [id] %s deleted an analysis [id] %s ", userName,
+                    tenantId, analysisId));
             return Response.ok().build();
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while deleting an analysis [id] %s of tenant [id] %s and [user] %s .", analysisId,
                     tenantId, userName), e);
             logger.error(msg, e);
+            auditLog.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                            .build();
         }

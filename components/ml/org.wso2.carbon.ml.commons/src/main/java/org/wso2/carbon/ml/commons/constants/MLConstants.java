@@ -174,6 +174,7 @@ public class MLConstants {
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
     public static final String SPARK_CONFIG_XML = "repository/conf/etc/spark-config.xml";
+    public static final String H2O_CONFIG_XML = "repository/conf/etc/h2o-config.xml";
     public static final String ML_DB = "jdbc/WSO2ML_DB";
 
     // other

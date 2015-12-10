@@ -103,7 +103,9 @@ print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
 						<div class="bg-summary-actions">
 							<!-- <label><a href="../project/projects.jag">You have (0) Projects</a></label> -->
 							<label><a href="../project/projects.jag">You have (<span id="project-count">0</span>) Projects</a></label>
-							<a href="../project/create_project.jag" class="btn-summary btn-add-new">Add Project</a>
+							<div id="t1" style="display:inline-flex"  data-toggle="tooltip">
+                                <a id="add-project" href="../project/create_project.jag" class="btn-summary btn-add-new">Add Project</a>
+                             </div>
 						</div>		
 					</div>
 
@@ -152,6 +154,12 @@ $( document ).ready(function() {
         window.location.href = requestedPage;
     }
 
+    var datasetCount = getAvailableDatasetCount();
+    if (datasetCount == 0){
+        $("#add-project").addClass('cu-level-btn-disabled');
+        $('#t1').attr('title','No datasets available to create a project');
+
+    }
 	$.ajax({
         type : 'GET',
         url: serverUrl + '/api/datasets/versions',
@@ -181,6 +189,30 @@ $( document ).ready(function() {
             //TODO: handle errors
         }
     });
+
+    function getAvailableDatasetCount(){
+        var count;
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/datasets?status=Available",
+            async: false,
+            success: function(data) {
+                if(data.length == 0){
+                    count =0;
+                }
+                else{
+                    count = data.length;
+                }
+            },
+            error: function(res) {
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+            }
+
+
+        });
+        return count;
+    }
 
 }); 
 

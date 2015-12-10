@@ -112,21 +112,21 @@ include("../../includes/tenantAware.jag");
 					        <div class="wr-filters">
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">X-Axis</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="scatter-x"></select>
 					                </div>
 					            </div>
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Y-Axis</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="scatter-y"></select>
 					                </div>
 					            </div>
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">Group By<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Group By</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="scatter-group"></select>
 					                </div>
@@ -192,7 +192,7 @@ include("../../includes/tenantAware.jag");
 					        <div class="wr-filters">
 
 					            <div>
-					                <label class="input-label-sm">Categorical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Categorical Features</label>
 					                <div id="parallel-sets-features" class="wr-filter-radio-group">
 					                </div>
 					            </div>
@@ -233,7 +233,7 @@ include("../../includes/tenantAware.jag");
 					        <div class="wr-filters">
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">Categorical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Categorical Feature</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="trellis-cat-features">
 					                    </select>
@@ -241,7 +241,7 @@ include("../../includes/tenantAware.jag");
 					            </div>
 
 					            <div>
-					                <label class="input-label-sm">Numerical Features<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Numerical Features</label>
 					                <div id="trellis-num-features" class="wr-filter-radio-group">
 					                </div>
 					            </div>      
@@ -293,7 +293,7 @@ include("../../includes/tenantAware.jag");
 					        <div class="wr-filters">
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">First Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">First Numerical Feature</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="cluster-independent">
 					                    </select>
@@ -301,7 +301,7 @@ include("../../includes/tenantAware.jag");
 					            </div>
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">Second Numerical Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Second Numerical Feature</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="cluster-dependent">
 					                    </select>
@@ -309,7 +309,7 @@ include("../../includes/tenantAware.jag");
 					            </div>
 
 					            <div class="filter-md">
-					                <label class="input-label-sm">Number of Clusters<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+					                <label class="input-label-sm">Number of Clusters</label>
 					                <div class="input-control text">
 					                    <select class="form-control" id="cluster-num-clusters">
 										    <option value='2'>2</option>
@@ -386,8 +386,8 @@ include("../../includes/tenantAware.jag");
 
 <div id="content-asset-types" style="display: none">
     <div>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
     </div>
 </div>
 
