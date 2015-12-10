@@ -33,6 +33,16 @@ public class MLAnalysisConfigsBean {
     String responseVariable;
     double trainDataFraction;
     List<MLHyperParameter> hyperParameters;
+    private String normalLabels;
+    private boolean normalization;
+    // user defined normal label
+    private String newNormalLabel;
+    // user defined anomaly label
+    private String newAnomalyLabel;
+    private String userVariable;
+    private String productVariable;
+    private String ratingVariable;
+    private String observations;
 
     public long getId() {
         return id;
@@ -72,6 +82,70 @@ public class MLAnalysisConfigsBean {
 
     public void setTrainDataFraction(double trainDataFraction) {
         this.trainDataFraction = trainDataFraction;
+    }
+
+    public String getNormalLabels() {
+        return normalLabels;
+    }
+
+    public void setNormalLabels(String normalLabels) {
+        this.normalLabels = normalLabels;
+    }
+
+    public boolean isNormalization() {
+        return normalization;
+    }
+
+    public void setNormalization(boolean normalization) {
+        this.normalization = normalization;
+    }
+
+    public String getNewNormalLabel() {
+        return newNormalLabel;
+    }
+
+    public void setNewNormalLabel(String newNormalLabel) {
+        this.newNormalLabel = newNormalLabel;
+    }
+
+    public String getNewAnomalyLabel() {
+        return newAnomalyLabel;
+    }
+
+    public void setNewAnomalyLabel(String newAnomalyLabel) {
+        this.newAnomalyLabel = newAnomalyLabel;
+    }
+
+    public String getUserVariable() {
+        return userVariable;
+    }
+
+    public void setUserVariable(String userVariable) {
+        this.userVariable = userVariable;
+    }
+
+    public String getProductVariable() {
+        return productVariable;
+    }
+
+    public void setProductVariable(String productVariable) {
+        this.productVariable = productVariable;
+    }
+
+    public String getRatingVariable() {
+        return ratingVariable;
+    }
+
+    public void setRatingVariable(String ratingVariable) {
+        this.ratingVariable = ratingVariable;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
     }
 
     public List<MLHyperParameter> getHyperParameters() {
