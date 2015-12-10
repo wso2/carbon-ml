@@ -64,60 +64,60 @@ print('<script> var authEncoded = "'+session.get("authEncoded")+'"; </script>');
 
 <!-- content/body -->
 <div class="row">
-    <div class="col-lg-12 wr-secondary-bar">        
-        <!-- Wizard -->     
-    </div>
+	<div class="col-lg-12 wr-secondary-bar">		
+		<!-- Wizard -->		
+	</div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        
+	<div class="col-md-12">
+		
 
-        <!-- content -->
-        <div class="container col-md-12 col-centered wr-content">
-
-
-            <!-- form content placeholder -->
-            <div id="master-page-blocks" class="container">
-                <div class="row row-centered">
-
-                    <div class="ctrl-summary-navigator col-centered">
-                        <a href="../data/datasets.jag" class="no-deco">
-                            <h3 class="ico-datasets">Datasets</h3>
-                            <div class="content">
-                                <p>Dataset is a collection of data organized according to a defined schema in an CSV or TSV format. Datasets can be uploaded from file system, HDFS or WSO2 DAS.</p>
-                            </div>
-                        </a>
-                        <div class="bg-summary-actions">
-                            <label><a href="../data/datasets.jag">You have (<span id="dataset-count">0</span>) Datasets</a></label>
-                            <a href="../data/createdataset.jag" class="btn-summary btn-add-new">Add Dataset</a>
-                        </div>
-                    </div>
-
-                    <div class="ctrl-summary-navigator col-centered">
-                        <a href="../project/projects.jag" class="no-deco">
-                            <h3 class="ico-projects">Projects</h3>
-                            <div class="content">
-                                <p>Project is a logical grouping of machine learning analyses, which are performed on a dataset. To analyze multiple datasets, you need to create multiple projects.</p>
-                            </div>
-                        </a>
-                        <div class="bg-summary-actions">
-                            <!-- <label><a href="../project/projects.jag">You have (0) Projects</a></label> -->
-                            <label><a href="../project/projects.jag">You have (<span id="project-count">0</span>) Projects</a></label>
-                            <div id="t1" style="display:inline-flex"  data-toggle="tooltip">
-                            <a id="add-project" href="../project/create_project.jag" class="btn-summary btn-add-new">Add Project</a>
-                            </div>
-                        </div>      
-                    </div>
-
-                </div>
-            </div>
-            
-
-        </div>
-        <!-- /content -->
+		<!-- content -->
+		<div class="container col-md-12 col-centered wr-content">
 
 
-    </div>
+			<!-- form content placeholder -->
+			<div id="master-page-blocks" class="container">
+				<div class="row row-centered">
+
+					<div class="ctrl-summary-navigator col-centered">
+						<a href="../data/datasets.jag" class="no-deco">
+							<h3 class="ico-datasets">Datasets</h3>
+							<div class="content">
+								<p>Dataset is a collection of data organized according to a defined schema in an CSV or TSV format. Datasets can be uploaded from file system, HDFS or WSO2 DAS.</p>
+							</div>
+						</a>
+						<div class="bg-summary-actions">
+							<label><a href="../data/datasets.jag">You have (<span id="dataset-count">0</span>) Datasets</a></label>
+							<a href="../data/createdataset.jag" class="btn-summary btn-add-new">Add Dataset</a>
+						</div>
+					</div>
+
+					<div class="ctrl-summary-navigator col-centered">
+						<a href="../project/projects.jag" class="no-deco">
+							<h3 class="ico-projects">Projects</h3>
+							<div class="content">
+								<p>Project is a logical grouping of machine learning analyses, which are performed on a dataset. To analyze multiple datasets, you need to create multiple projects.</p>
+							</div>
+						</a>
+						<div class="bg-summary-actions">
+							<!-- <label><a href="../project/projects.jag">You have (0) Projects</a></label> -->
+							<label><a href="../project/projects.jag">You have (<span id="project-count">0</span>) Projects</a></label>
+							<div id="t1" style="display:inline-flex"  data-toggle="tooltip">
+                                <a id="add-project" href="../project/create_project.jag" class="btn-summary btn-add-new">Add Project</a>
+                             </div>
+						</div>		
+					</div>
+
+				</div>
+			</div>
+			
+
+		</div>
+		<!-- /content -->
+
+
+	</div>
 </div>
 <!-- /content/body -->
 
@@ -160,7 +160,7 @@ $( document ).ready(function() {
         $('#t1').attr('title','No datasets available to create a project');
 
     }
-    $.ajax({
+	$.ajax({
         type : 'GET',
         url: serverUrl + '/api/datasets/versions',
         async: false,
@@ -168,12 +168,12 @@ $( document ).ready(function() {
             xhr.setRequestHeader("Authorization", "Basic " + authEncoded);
         },
         success : function(response){
-            $("#dataset-count").html(response.length);
+        	$("#dataset-count").html(response.length);
         },
         error :  function(response){
-            //TODO: handle errors
+        	//TODO: handle errors
         }
-    }); 
+	});	
 
     $.ajax({
         type: "GET",
@@ -190,31 +190,31 @@ $( document ).ready(function() {
         }
     });
 
-}); 
-
-function getAvailableDatasetCount(){
-    var count;
-    $.ajax({
-        type: "GET",
-        url: serverUrl+"/api/datasets?status=Available",
-        async: false,
-        success: function(data) {
-            if(data.length == 0){              
-                count =0;
+    function getAvailableDatasetCount(){
+        var count;
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/datasets?status=Available",
+            async: false,
+            success: function(data) {
+                if(data.length == 0){
+                    count =0;
+                }
+                else{
+                    count = data.length;
+                }
+            },
+            error: function(res) {
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
             }
-            else{
-                count = data.length;
-            } 
-        },
-        error: function(res) {
-            var errorText = JSON.parse(res.responseText)["exception"];
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
 
 
-    });
-    return count;
-}   
+        });
+        return count;
+    }
+
+}); 
 
 </script>
 
