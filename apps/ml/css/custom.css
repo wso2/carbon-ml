@@ -1120,6 +1120,11 @@ a.btn-opr-cancel {
 	opacity: 0.5; /* webkit-filter doesn't work for firefox. changing to opacity */
 }
 
+.cu-level-btn-disabled{
+	pointer-events: none;
+	opacity: 0.75;
+}
+
 .tab-link-disabled {
 	pointer-events: none;
 }
