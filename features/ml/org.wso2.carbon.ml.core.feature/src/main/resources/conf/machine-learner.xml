@@ -500,10 +500,6 @@
 		<Algorithm>
 			<Name>STACKED_AUTOENCODERS</Name>
 			<Type>Deeplearning</Type>
-			<Interpretability>1</Interpretability>
-			<Scalability>5</Scalability>
-			<Multicollinearity>5</Multicollinearity>
-			<Dimensionality>5</Dimensionality>
 			<Parameters>
 				<Name>Batch_Size</Name>
 				<Value>100</Value>
