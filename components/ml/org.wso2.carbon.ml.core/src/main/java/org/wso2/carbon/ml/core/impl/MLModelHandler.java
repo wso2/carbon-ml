@@ -462,8 +462,8 @@ public class MLModelHandler {
         return predictions;
     }
 
-    public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream, double percentile)
-            throws MLModelHandlerException {
+    public List<?> predict(int tenantId, String userName, long modelId, String dataFormat, InputStream dataStream,
+            double percentile, boolean skipDecoding) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         BufferedReader br = new BufferedReader(new InputStreamReader(dataStream, StandardCharsets.UTF_8));
@@ -473,7 +473,7 @@ public class MLModelHandler {
                 String[] dataRow = line.split(csvFormat.getDelimiter() + "");
                 data.add(dataRow);
             }
-            return predict(tenantId, userName, modelId, data, percentile);
+            return predict(tenantId, userName, modelId, data, percentile, skipDecoding);
         } catch (IOException e) {
             String msg = "Failed to read the data points for prediction for model [id] " + modelId;
             log.error(msg, e);
@@ -489,7 +489,7 @@ public class MLModelHandler {
     }
 
     public String streamingPredict(int tenantId, String userName, long modelId, String dataFormat,
-                                   String columnHeader, InputStream dataStream, double percentile) throws MLModelHandlerException {
+                                   String columnHeader, InputStream dataStream, double percentile, boolean skipDecoding) throws MLModelHandlerException {
         List<String[]> data = new ArrayList<String[]>();
         CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataFormat);
         MLModel mlModel = retrieveModel(modelId);
@@ -513,7 +513,7 @@ public class MLModelHandler {
                 for (String[] item : data) {
                     unencodedData.add(item.clone());
                 }
-                List<?> predictions = predict(tenantId, userName, modelId, data, percentile);
+                List<?> predictions = predict(tenantId, userName, modelId, data, percentile, skipDecoding);
                 for (int i = 0; i < predictions.size(); i++) {
                     predictionsWithData.append(MLUtils.arrayToCsvString(unencodedData.get(i), csvFormat.getDelimiter()))
                             .append(String.valueOf(predictions.get(i)))
@@ -546,7 +546,7 @@ public class MLModelHandler {
                     data.add(includedFeatureValues);
                 }
 
-                List<?> predictions = predict(tenantId, userName, modelId, data, percentile);
+                List<?> predictions = predict(tenantId, userName, modelId, data, percentile, skipDecoding);
                 for (int i = 0; i < predictions.size(); i++) {
                     // replace with predicted value
                     unencodedData.get(i)[responseVariableIndex] = String.valueOf(predictions.get(i));
@@ -578,8 +578,8 @@ public class MLModelHandler {
 
 
 
-    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data, double percentile)
-            throws MLModelHandlerException {
+    public List<?> predict(int tenantId, String userName, long modelId, List<String[]> data, double percentile,
+            boolean skipDecoding) throws MLModelHandlerException {
 
         if (!isValidModelId(tenantId, userName, modelId)) {
             String msg = String.format("Failed to build the model. Invalid model id: %s for tenant: %s and user: %s",
@@ -623,7 +623,7 @@ public class MLModelHandler {
         }
 
         // predict
-        Predictor predictor = new Predictor(modelId, builtModel, data, percentile);
+        Predictor predictor = new Predictor(modelId, builtModel, data, percentile, skipDecoding);
         List<?> predictions = predictor.predict();
 
         return predictions;

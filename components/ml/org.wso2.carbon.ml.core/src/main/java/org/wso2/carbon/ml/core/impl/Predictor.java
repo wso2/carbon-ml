@@ -63,6 +63,7 @@ public class Predictor {
     private List<Vector> dataToBePredicted;
     // for K means anomaly detection
     private double percentileValue;
+    private boolean skipDecoding;
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
@@ -70,11 +71,12 @@ public class Predictor {
         dataToBePredicted = getVectors(data);
     }
 
-    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile) {
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding) {
         id = modelId;
         model = mlModel;
         dataToBePredicted = getVectors(data);
         percentileValue = percentile;
+        this.skipDecoding = skipDecoding;
     }
 
     public List<?> predict() throws MLModelHandlerException {
@@ -296,6 +298,10 @@ public class Predictor {
 
     // write a method to decode the predicted value
     private List<?> decodePredictedValues(List<?> predictions) {
+        // skip decoding, if asked
+        if (skipDecoding) {
+            return predictions;
+        }
         int index = model.getResponseIndex();
         if (index == -1) {
             return predictions;
