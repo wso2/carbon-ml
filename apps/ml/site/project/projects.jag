@@ -136,8 +136,8 @@ include("../../includes/tenantAware.jag");
 
 <div id="content-asset-types" style="display: none">
     <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
     </div>
 </div>  
 
@@ -189,6 +189,9 @@ include("../../includes/tenantAware.jag");
 
         // load projects and analyses to accordion
         loadProjects();
+        
+
+  
 
         /********** event binding **********/
 
@@ -335,7 +338,7 @@ include("../../includes/tenantAware.jag");
         // compares models
         $(document).on('click', '#compare-models', function(e){ 
             e.preventDefault();
-            
+               
             var projectId = $(this).data('projectid');
             var projectName = $(this).data('projectname');
             var dataseId = $(this).data('dataseid');            
@@ -348,8 +351,8 @@ include("../../includes/tenantAware.jag");
 
     // Analysis name input validation
     function isValidAnalysisName(text, notificationArea) {
-        if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
-            var errorText = 'Empty names, special and space characters are not allowed.';
+        if (!text || /^[a-zA-Z0-9\s---_]*$/.test(text) == false) {
+            var errorText = 'Empty names and special characters are not allowed.';
             handleNotification(errorText, notificationArea, 'warning');
             return false;
         }
@@ -441,23 +444,30 @@ include("../../includes/tenantAware.jag");
     }
 
     function loadProjectsOfDataset(datasetName) {
+        var noOfDatasets = getAvailableDatasetCount();
+        var title="";
+        if(noOfDatasets == 0){
+            title= "No datasets available to create a project";
+        }
         $.ajax({
             type: "GET",
             url: serverUrl + "/api/projects/analyses?datasetName=" + datasetName,
             success: function(data) {
                 var tenantProjects = data;
-
                 if (tenantProjects.length == 0) {
                     var accordionPanelNoProjects = '';
         		    if (datasetName.length == 0) {
         		    	accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created at the moment.</h2>'+
-                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
+                                    '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '</div>'+
                             '</div>';
+
         		    } else {
         			    accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
-                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" title="hello" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                             '</div>';
         		    } 
                     $('#accordion').empty();
@@ -469,7 +479,9 @@ include("../../includes/tenantAware.jag");
         		    if (datasetName.length == 0) {
         			createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
+                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip"  data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                            '</div>'+
                             '</div>';
         		    } else {
         			createProject = '' +
@@ -500,7 +512,9 @@ include("../../includes/tenantAware.jag");
                         var description = sanitize(tenantProjects[i]['description']);                        
                         var createdTime = sanitize(tenantProjects[i]['createdTime']);                        
                         var datasetId = sanitize(tenantProjects[i]['datasetId']);
-                        var datasetStatus = sanitize(tenantProjects[i]['datasetStatus']);                        
+                        var datasetStatus = sanitize(tenantProjects[i]['datasetStatus']); 
+
+                        var noOfCompleteModels = getCompleteModelsCount(projectId);                       
 
                         accordionPanel = '' + 
                             '<div class="panel panel-default">' +
@@ -517,7 +531,7 @@ include("../../includes/tenantAware.jag");
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
-                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendDisabled(noOfAnalyses) + '" data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
+                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendDisabled(noOfAnalyses) + ' ' +appendCompareModelsDisabled(noOfCompleteModels)+ ' " data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
                                                         '<a href="#" data-projectid="' + projectId + '" id="delete-project" class="cu-reg-btn btn-delete">Delete Project</a>' +
                                                     '</div>' +
                                                 '</td>' +
@@ -595,9 +609,27 @@ include("../../includes/tenantAware.jag");
 
     // function to append button disabled CSS class when there are no analyses in a project
     function appendDisabled(noOfAnalyses) {
+
         var classAppend = '';
         if(noOfAnalyses == 0) {
             classAppend = 'btn-disabled';  
+        }
+        return classAppend;
+    }
+    // function to append button disabled CSS class when there are no complete models in a project
+    function appendCompareModelsDisabled(noOfCompleteModels) {
+        var classAppend = '';
+        if(noOfCompleteModels == 0) {
+            classAppend = 'btn-disabled';  
+        }
+        return classAppend;
+    }
+
+   // function to append button disabled CSS class when there are no datasets to create a project
+   function appendCreateprojectDisabled(noOfDatasets) {
+        var classAppend = '';
+        if(noOfDatasets == 0) {
+            classAppend = 'cu-level-btn-disabled';  
         }
         return classAppend;
     }
@@ -663,6 +695,51 @@ include("../../includes/tenantAware.jag");
         return notification;
     }
 
+    function getAvailableDatasetCount(){
+        var count;
+        $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/datasets?status=Available",
+            async: false,
+            success: function(data) {
+                if(data.length == 0){              
+                    count =0;
+                }
+                else{
+                    count = data.length;
+                } 
+            },
+            error: function(res) {
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+            }
+
+
+        });
+        return count;
+    }   
+
+    function getCompleteModelsCount(projectId){
+         var count;
+         $.ajax({
+            type: "GET",
+            url: serverUrl+"/api/projects/"+projectId+"/models",
+            async: false,
+            success: function(data) {
+              if(data.length == 0){
+                count = 0;
+              }
+              else{
+                 count = data.length;
+              }               
+            },
+            error: function(res) {
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });
+        return count;
+    }
 </script>
 
 </body>

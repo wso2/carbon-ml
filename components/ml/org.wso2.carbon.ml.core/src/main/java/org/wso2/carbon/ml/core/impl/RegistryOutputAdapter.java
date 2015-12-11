@@ -55,12 +55,9 @@ public class RegistryOutputAdapter implements MLOutputAdapter {
             resource.setContent(array);
             registry.put(outPath, resource);
 
-        } catch (RegistryException e) {
+        } catch (RegistryException | IOException e) {
             throw new MLOutputAdapterException(
                     String.format("Failed to save the model to registry %s: %s", outPath, e), e);
-        } catch (IOException e) {
-            throw new MLOutputAdapterException(
-                    String.format("Failed to read the model to registry %s: %s", outPath, e), e);
         }
     }
 }

@@ -121,8 +121,9 @@ include("../../includes/tenantAware.jag");
 				<span class="fld-required">*</span>
 				<div class="input-control text" data-role="input-control">
 					<select class="form-control" id="datasets">
-					  <option>Select.. </option>
+					  <option>Select..</option>
 					</select>
+				    <span class="form-val-error" id="dataset-selection-error"></span>
 	            </div>
 
 	            <div class="btn-group-actions">
@@ -150,8 +151,8 @@ include("../../includes/tenantAware.jag");
 
 <div id="content-asset-types" style="display: none">
     <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
     </div>
 </div> 
 
@@ -235,8 +236,9 @@ $( document ).ready(function() {
         
         var projectNameValidation = isValidProjectName(projectName);
         var descriptionValidation = isValidDescription(projectDes);
+        var datasetValidation = isValidDataset(datasetName);
 
-        if(projectNameValidation && descriptionValidation){
+        if(projectNameValidation && descriptionValidation && datasetValidation){
         	
         	var jsonData = '{"name":"' + projectName + '","description":"' + projectDes + '","datasetName":"' + datasetName + '"}';
 
@@ -256,6 +258,10 @@ $( document ).ready(function() {
 		}
 	});
 
+	$('#datasets').on('change',function(e){
+		$('#dataset-selection-error').empty();
+	});
+
 	function loadDatasets() {
 		$.ajax({
 			type: "GET",
@@ -269,7 +275,7 @@ $( document ).ready(function() {
 				});
 			},
 			error: function(res) {
-                var errorText = res.responseText
+                var errorText = res.responseText;
                 handleNotification(errorText, '#notification-area', 'warning');
 			}
 		});
@@ -281,7 +287,7 @@ $( document ).ready(function() {
             $('#project-name-error').text("* Project name is required.");
             return false;    
 		}
-		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
+		if(/^[a-zA-Z0-9\s---_]*$/.test(text) == false){
             $('#project-name-error').text('* Special characters are not allowed');
             $('#project-name').text('');
             return false;
@@ -299,6 +305,14 @@ $( document ).ready(function() {
 		}
 		$('#project-description-error').text('* Project description is required.');
         return false;       
+	}
+
+	function isValidDataset(text){
+		if(text && text.length > 0 && text != "Select.."){
+			return true;
+		}
+		$('#dataset-selection-error').text('* Dataset is required.');
+        return false; 
 	}
 
 });
