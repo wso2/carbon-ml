@@ -56,10 +56,6 @@ include("../../includes/tenantAware.jag");
 						<span class="title">DATASETS \ </span>
 					</div>
 
-		            <div class="wr-action-btn-bar">
-		                <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
-		            </div>  
-
 		        </div>
 
 		        <div class="col-md-3">
@@ -185,7 +181,7 @@ function buildAccordingHeader(collapseSection, datasetName, datasetVersions, dat
 						        '</a>' +	
 						    '</td>'+
 						    '<td class="c-right">' +			        
-						        '<div>' +
+						        '<div id="accordion-header-action-' + datasetId + '">' + 
 						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
 						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
 									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
@@ -197,16 +193,17 @@ function buildAccordingHeader(collapseSection, datasetName, datasetVersions, dat
 	return accordingHeader;
 }
 
-function version(versionNumbers) {
+function version(versionNumbers, datasetName) {
 	var versionHtml = "";
     for(var i = 0; i < versionNumbers.length; i++) {
         var version = sanitize(versionNumbers[i].version);
-        var status = sanitize(versionNumbers[i].status);    	
+        var status = sanitize(versionNumbers[i].status);
+        var versionId = sanitize(versionNumbers[i].id);    	
 
     	versionHtml +=  '<tr>' +
 			 				'<td class="c-padd">' +
 			 					'<span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span>' +
-			 					'<span class="t-proj-workflow"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
+			 					'<span class="t-proj-workflow" id="' + datasetName + '-' + versionId + '" data-status="' + status + '"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
 			 				'</td>' +
 			 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a></td>' +
 			 			'</tr>';
@@ -230,14 +227,14 @@ function accordingBody(datasetDescription, versions, datasetName) {
 											    			'<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
 											    		'</td>' +
 											    		'<td>' +
-											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription+'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
+											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
 											    		'</td>' +
 											    	'</tr>' +
 											    '</table>' +
 											'</div>' +
 										'</div>' +
 								  		'<table class="tbl-project-desc">'+
-								 			version(versions) +					 			
+								 			version(versions, datasetName) +					 			
 								 		'</table>' +
 								  	'</td>' +
 							  	'</tr>' +
@@ -349,12 +346,7 @@ $( document ).ready(function() {
 
         deleteVersionId = null;
         hidePopup();
-    });      
-    $(document).on('click', '#btn-refresh', function(e){
-        e.preventDefault();
-        // true: reload from the server
-        location.reload(true);
-    });    
+    });
 
 	bindEvents();
 });
@@ -394,6 +386,63 @@ function loadDatasets() {
 	        handleNotification(errorText, '#notification-area', 'warning');
         }
 	});	
+	// update dataset version statuses
+	updateDatasets();
+}
+
+// function to update dataset version statuses by polling
+function updateDatasets() {
+	(function poll() {
+	    setTimeout(function() {
+			$.ajax({
+		        type : 'GET',
+		        url: baseUrl + '/api/datasets/versions',
+		        async: false,
+		        success : function(res) {		
+		        	var datasets = res;
+		        	var datasetsInProgress = 0;
+		        	// iterate through dataset versions and update status
+		        	for(var i = 0; i < datasets.length; i++) {		        		
+		        		var versions = datasets[i].versions;
+		        		//var datasetVersions = dataset.versions;
+		        		var datasetName = datasets[i].name;
+		        		var datasetId = datasets[i].id;
+		        		
+		        		for(var j = 0; j < versions.length; j++) {
+		        			var versionId = versions[j].id;
+		        			var newVersionStatus = versions[j].status;
+		        			// count dataset versions in progress
+		        			if(newVersionStatus == "Processing") {
+		        				datasetsInProgress++;
+		        			}
+		        			// create the status element id
+		        			var statusElementId = "#" + datasetName + "-" + versionId;
+		        			// get current status from data attribute of status element
+		        			var currentVersionStatus = $(statusElementId).data("status");
+		        			// update status only if the status has changed
+		        			if(currentVersionStatus != newVersionStatus) {
+			        			var statusElementContent = ' &emsp;[ Status: ' + newVersionStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newVersionStatus) + '.png" /> ]';
+			        			$(statusElementId).html(statusElementContent);      				
+			        			// enable create project and explore links when disabled
+			        			if(newVersionStatus == "Processed") {
+				        			$('#accordion-header-action-' + datasetId + ' > #create-project').attr('class', 'cu-reg-btn btn-edit');			        			
+				        			$('#accordion-header-action-' + datasetId + ' > #explore-dataset').attr('class', 'cu-reg-btn btn-explore');			        			
+			        			}
+		        			}
+		        		}
+		        	}
+		        	// poll only if there are dataset versions which are in progress
+		        	if(datasetsInProgress > 0) {
+		        		poll();
+		        	}		        	
+		        },
+		        error :  function(res){
+		            var errorText = JSON.parse(res.responseText)["exception"];
+			        handleNotification(errorText, '#notification-area', 'warning');
+		        }
+			});
+	    }, 5000);
+	})();	
 }
 
 function deleteDataset(datasetId) {
