@@ -187,8 +187,6 @@ include("../../includes/tenantAware.jag");
         // load datasets into the search box
         loadDatasetsIntoSearchBox();
 
-        var queryParam = getParameterByName("projectName");
-
         // load projects and analyses to accordion
         loadProjects();
         
