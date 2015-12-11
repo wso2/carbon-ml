@@ -142,7 +142,4 @@ public class MLModelConfigurationContext {
     public void setResponseIndex(int responseIndex) {
         this.responseIndex = responseIndex;
     }
-    
-    
-    
 }

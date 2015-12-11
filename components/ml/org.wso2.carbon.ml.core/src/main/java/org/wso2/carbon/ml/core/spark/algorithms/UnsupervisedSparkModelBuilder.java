@@ -42,6 +42,7 @@ import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import java.util.Map;
 
@@ -127,7 +128,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        } catch (Exception e) {
+        } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException("An error occurred while building unsupervised machine learning model: "
                     + e.getMessage(), e);
         }

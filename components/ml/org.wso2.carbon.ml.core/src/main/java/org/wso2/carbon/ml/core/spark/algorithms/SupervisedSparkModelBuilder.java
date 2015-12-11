@@ -57,6 +57,7 @@ import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import scala.Tuple2;
 
@@ -201,7 +202,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // persist model summary
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        } catch (Exception e) {
+        } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
                     + e.getMessage(), e);
         }

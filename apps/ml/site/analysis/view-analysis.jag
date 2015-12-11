@@ -140,7 +140,39 @@ include("../../includes/tenantAware.jag");
                                 <tr>
                                     <td>Train data fraction</td>
                                     <td id="trainDataFraction">&nbsp;</td>
-                                </tr>                                
+                                </tr>
+                                <tr>
+                                    <td>Normal label(s) values</td>
+                                    <td id="normalLabelValues">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom normal label</td>
+                                    <td id="newNormalLabel">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom anomaly label</td>
+                                    <td id="newAnomalyLabel">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Normalization</td>
+                                    <td id="normalization">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>User variable</td>
+                                    <td id="userVariable">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Product variable</td>
+                                    <td id="productVariable">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Rating variable</td>
+                                    <td id="ratingVariable">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Observation list</td>
+                                    <td id="ObservationList">&nbsp;</td>
+                                </tr>
                             </tbody>
                         </table>                   
                     </div>
@@ -262,6 +294,22 @@ $( document ).ready(function() {
             $('#algorithm').html(sanitize(res.algorithmName));
             // set train data fraction
             $('#trainDataFraction').html(sanitize(res.trainDataFraction));
+            // set normal label values
+            $('#normalLabelValues').html(sanitize(res.normalLabels));
+            // set custom normal label values
+            $('#newNormalLabel').html(sanitize(res.newNormalLabel));
+            // set custom anomaly label values
+            $('#newAnomalyLabel').html(sanitize(res.newAnomalyLabel));
+            // set normalization
+            $('#normalization').html(sanitize(res.normalization));
+            // set user variable
+            $('#userVariable').html(sanitize(res.userVariable));
+            // set product variable
+            $('#productVariable').html(sanitize(res.productVariable));
+            // set user variable
+            $('#ratingVariable').html(sanitize(res.ratingVariable));
+            // set observation list
+            $('#ObservationList').html(sanitize(res.observations));
             // set hyper-parameters
             var hyperParameters = res.hyperParameters;
             var hyperParametersTableData = "";
@@ -274,9 +322,27 @@ $( document ).ready(function() {
             }
             $('#parameters-table tbody').append(hyperParametersTableData);
 
-            //remove response variable and train data fraction from unaplicable algorithms
+            // remove irrelevant fields
             if(res.algorithmName == 'K_MEANS' || res.algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                 $("#responseVariable, #trainDataFraction").closest("tr").remove();
+            }
+            if(res.algorithmName != 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA' && res.algorithmName != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                $("#newNormalLabel, #newAnomalyLabel, #normalization").closest("tr").remove();
+            }
+            if(res.algorithmName != 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA'){
+                $("#normalLabelValues").closest("tr").remove();
+            }
+            if(res.algorithmName != 'COLLABORATIVE_FILTERING' && res.algorithmName != 'COLLABORATIVE_FILTERING_IMPLICIT'){
+                $("#userVariable, #productVariable").closest("tr").remove();
+            }
+            if(res.algorithmName == 'COLLABORATIVE_FILTERING' || res.algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT'){
+                $("#responseVariable, #trainDataFraction").closest("tr").remove();
+            }
+            if(res.algorithmName != 'COLLABORATIVE_FILTERING'){
+                $("#ratingVariable").closest("tr").remove();
+            }
+            if(res.algorithmName != 'COLLABORATIVE_FILTERING_IMPLICIT'){
+                $("#ObservationList").closest("tr").remove();
             }
         },
         error : function(res){

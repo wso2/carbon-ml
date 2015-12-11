@@ -18,7 +18,6 @@
 package org.wso2.carbon.ml.core.impl;
 
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
-import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
@@ -53,8 +52,6 @@ public class DASDatasetProcessor extends DatasetProcessor {
         setTargetPath(dataset.getSourcePath());
         try {
             setFirstLine(MLUtils.extractHeaderLine(dataset.getSourcePath(), dataset.getTenantId()));
-        } catch (AnalyticsTableNotAvailableException e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
         } catch (AnalyticsException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         }

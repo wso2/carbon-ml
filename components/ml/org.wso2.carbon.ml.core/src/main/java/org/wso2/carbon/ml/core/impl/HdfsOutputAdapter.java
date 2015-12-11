@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -58,8 +57,6 @@ public class HdfsOutputAdapter implements MLOutputAdapter {
             FileSystem hdfs = FileSystem.get(uri, conf);
             out = hdfs.create(new Path(uri), true);
             IOUtils.copyBytes(in, out, conf);
-        } catch (FileNotFoundException e) {
-            throw new MLOutputAdapterException(e);
         } catch (IOException e) {
             throw new MLOutputAdapterException(e);
         } finally {

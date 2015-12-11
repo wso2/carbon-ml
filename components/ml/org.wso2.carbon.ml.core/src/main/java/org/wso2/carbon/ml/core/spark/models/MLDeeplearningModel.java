@@ -104,26 +104,21 @@ public class MLDeeplearningModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(storageLocation);
         out.writeObject(labelToH2OEnumMap);
+        @SuppressWarnings("rawtypes")
         List<Key> keys = new LinkedList<Key>();
         // cannot add published keys, gives nullpointer
         keys.add(dlModel._key);
         new ObjectTreeBinarySerializer().save(keys, FileUtils.getURI(storageLocation));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         storageLocation = (String) in.readObject();
         labelToH2OEnumMap = (HashMap<Double, Double>) in.readObject();
+        @SuppressWarnings("rawtypes")
         List<Key> keys = new ObjectTreeBinarySerializer().load(FileUtils.getURI(storageLocation));
         this.dlModel = (DeepLearningModel) keys.get(0).get();
-    }
-
-    private HashMap<Double, Double> getLabelToH2OEnumMap() {
-        return labelToH2OEnumMap;
-    }
-
-    private void setLabelToH2OEnumMap(HashMap<Double, Double> labelToH2OEnumMap) {
-        this.labelToH2OEnumMap = labelToH2OEnumMap;
     }
 
 }

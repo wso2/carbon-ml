@@ -24,7 +24,6 @@ import java.io.ObjectOutput;
 
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.pmml.PMMLExportable;
-import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 

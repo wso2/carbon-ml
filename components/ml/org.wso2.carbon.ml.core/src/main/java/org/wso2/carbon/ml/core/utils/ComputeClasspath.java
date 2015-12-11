@@ -18,9 +18,7 @@
 
 package org.wso2.carbon.ml.core.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
@@ -215,15 +213,6 @@ public class ComputeClasspath {
 
     private static String SEP = System.getProperty("os.name").toLowerCase().contains("win") ? ";" : ":";
 
-    public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
-            throw new Exception("Arguments to the main method should not be empty");
-        }
-
-        String carbonHome = args[0];
-        String sparkClasspath = "";
-    }
-
     public static String getSparkClasspath(String sparkClasspath, String carbonHome)
             throws IOException {
         String cp = createInitialSparkClasspath(sparkClasspath, carbonHome, REQUIRED_JARS, SEP);
@@ -252,11 +241,6 @@ public class ComputeClasspath {
             scp = scp + separator + jar.getAbsolutePath();
         }
         return scp;
-    }
-
-    private static boolean fileExists(String path) {
-        File tempFile = new File(path);
-        return tempFile.exists() && !tempFile.isDirectory();
     }
 
     private static File[] listJars(File dir) {

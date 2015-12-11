@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -43,6 +42,7 @@ import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
+import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 import hex.deeplearning.DeepLearningModel;
 
@@ -86,9 +86,6 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
             JavaRDD<LabeledPoint> trainingData = dataSplit[0];
             JavaRDD<LabeledPoint> testingData = dataSplit[1];
 
-            List<LabeledPoint> trpoints = trainingData.collect();
-            List<LabeledPoint> tepoints = testingData.collect();
-
             // create a deployable MLModel object
             mlModel.setAlgorithmName(workflow.getAlgorithmName());
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -114,7 +111,7 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
 
             databaseService.updateModelSummary(modelId, summaryModel);
             return mlModel;
-        } catch (Exception e) {
+        } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException(
                     "An error occurred while building supervised machine learning model: " + e.getMessage(), e);
         } finally {

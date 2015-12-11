@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -48,7 +49,7 @@ public class HdfsInputAdapter implements MLInputAdapter {
             FileSystem file = FileSystem.get(URI.create(path), conf);
             FSDataInputStream inputStream = file.open(new Path(path));
             return inputStream;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", path, e), e);
         }
     }
