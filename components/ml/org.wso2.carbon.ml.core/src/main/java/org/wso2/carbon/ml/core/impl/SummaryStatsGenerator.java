@@ -40,6 +40,7 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.SummaryStats;
 import org.wso2.carbon.ml.commons.domain.config.SummaryStatisticsSettings;
+import org.wso2.carbon.ml.core.exceptions.MLDataProcessingException;
 import org.wso2.carbon.ml.core.interfaces.DatasetProcessor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.database.DatabaseService;
@@ -131,7 +132,7 @@ public class SummaryStatsGenerator implements Runnable {
             if (logger.isDebugEnabled()) {
                 logger.debug("Summary statistics successfully generated for dataset version: " + datasetVersionId);
             }
-        } catch (Exception e) {
+        } catch (DatabaseHandlerException | MLDataProcessingException e) {
             DatabaseService dbService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
             try {
                 dbService.updateSamplePoints(datasetVersionId, samplePoints);

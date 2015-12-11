@@ -72,4 +72,8 @@ public class RecommendationModelSummary implements ModelSummary, Serializable {
 	public void setDatasetVersion(String datasetVersion) {
 		this.datasetVersion = datasetVersion;
 	}
+
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
 }

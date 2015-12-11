@@ -56,8 +56,6 @@ public class HdfsDatasetProcessor extends DatasetProcessor {
             // in hdfs case, we do not keep a copy of the file at the server side.
             setTargetPath(dataset.getSourcePath());
             setFirstLine(MLUtils.getFirstLine(getTargetPath()));
-        } catch (Exception e) {
-            throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
             if (inputStream != null) {
                 try {
