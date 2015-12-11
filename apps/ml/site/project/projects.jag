@@ -351,8 +351,8 @@ include("../../includes/tenantAware.jag");
 
     // Analysis name input validation
     function isValidAnalysisName(text, notificationArea) {
-        if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
-            var errorText = 'Empty names, special and space characters are not allowed.';
+        if (!text || /^[a-zA-Z0-9\s---_]*$/.test(text) == false) {
+            var errorText = 'Empty names and special characters are not allowed.';
             handleNotification(errorText, notificationArea, 'warning');
             return false;
         }

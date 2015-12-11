@@ -287,7 +287,7 @@ $( document ).ready(function() {
             $('#project-name-error').text("* Project name is required.");
             return false;    
 		}
-		if(/^[a-zA-Z0-9---_]*$/.test(text) == false){
+		if(/^[a-zA-Z0-9\s---_]*$/.test(text) == false){
             $('#project-name-error').text('* Special characters are not allowed');
             $('#project-name').text('');
             return false;
