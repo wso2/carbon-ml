@@ -63,7 +63,7 @@ include("../../includes/tenantAware.jag");
                 </a>
             </div>
             <div class="wr-project">
-                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span><span id="nav-model"></span>
+                <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a><span id="nav-analysis"></span><span id="nav-model"></span>
             </div>
 
             <div class="wr-action-btn-bar">
@@ -235,6 +235,7 @@ $( document ).ready(function() {
 
         window.location.href = '../project/projects.jag';
     });
+    $('#nav-project-anchor').attr('href','../project/projects.jag?projectName='+projectName);
 
     // get and set preprocess configurations
     $.ajax({

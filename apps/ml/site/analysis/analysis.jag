@@ -54,7 +54,7 @@ include("../../includes/tenantAware.jag");
                 </div>
 
                 <div class="wr-project">
-                    <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+                    <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a><span id="nav-analysis"></span>
                 </div>
 
                 <div class="wr-action-btn-bar">
@@ -223,6 +223,7 @@ include("../../includes/tenantAware.jag");
         // put path in application navigator
         $('#nav-project').text(projectName);
         $('#nav-analysis').text(" \\ "+analysisName);
+        $('#nav-project-anchor').attr('href',"../project/projects.jag?projectName="+projectName);
 
         loadModels();
 
