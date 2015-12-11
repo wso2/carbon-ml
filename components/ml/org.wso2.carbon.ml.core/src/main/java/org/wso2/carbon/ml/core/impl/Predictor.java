@@ -240,7 +240,7 @@ public class Predictor {
                 for (double pVal : predictedData) {
                     predictions.add((Double) pVal);
                 }
-                return predictions;
+                return decodePredictedValues(predictions);
             default:
                 throw new AlgorithmNameException(
                         "Incorrect algorithm name: " + model.getAlgorithmName() + " for model id: " + id);
