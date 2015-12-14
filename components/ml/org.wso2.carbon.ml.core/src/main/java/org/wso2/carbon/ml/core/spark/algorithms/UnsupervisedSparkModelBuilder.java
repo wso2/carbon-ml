@@ -183,15 +183,13 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             }
 
             // Populate cluster points list with predicted clusters and features
-            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData)
-                    .zip(sampleData).collect();
+            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData).zip(sampleData).collect();
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
 
             for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
 
                 ClusterPoint clusterPoint = new ClusterPoint();
                 clusterPoint.setCluster(kMeansPrediction._1());
-
                 double[] features = new double[includedFeatures.size()];
 
                 for (int i = 0; i < includedFeatures.size(); i++) {
@@ -201,7 +199,6 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
                 clusterPoint.setFeatures(features);
                 clusterPoints.add(clusterPoint);
             }
-
 
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
 //            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
