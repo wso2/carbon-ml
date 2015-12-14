@@ -178,18 +178,16 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
                 sampleFraction = sampleSize / (trainingData.count());
             }
             JavaRDD<Vector> sampleData = null;
+
             if (sampleFraction >= 1.0) {
                 sampleData = trainingData;
-            }
-            // Use randomly selected sample fraction of rows if number of records is > sample fraction
-            else {
+            } else { // Use randomly selected sample fraction of rows if number of records is > sample fraction
                 sampleData = trainingData.sample(false, sampleFraction);
             }
 
             trainingData.unpersist(); // since no more used
-            if (sampleData != null) {
-                sampleData.cache();
-            }
+            sampleData.cache();
+
             // Populate cluster points list with predicted clusters and features
             List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData).zip(sampleData).collect();
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
