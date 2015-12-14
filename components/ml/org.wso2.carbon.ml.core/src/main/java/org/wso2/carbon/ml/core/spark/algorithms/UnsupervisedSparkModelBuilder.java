@@ -187,7 +187,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             }
 
             trainingData.unpersist(); // since no more used
-            if(sampleData != null) {
+            if (sampleData != null) {
                 sampleData.cache();
             }
             // Populate cluster points list with predicted clusters and features
