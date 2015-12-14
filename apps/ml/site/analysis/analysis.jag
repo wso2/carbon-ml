@@ -327,7 +327,7 @@ include("../../includes/tenantAware.jag");
                                                             accordionPanel += '' +
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
                                                          }
-                                                         // remove predict from Collaborative Filtering
+                                                         // remove predict from Collaborative Filtering and K-Means
                                                         if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS')){
                                                             accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
