@@ -161,9 +161,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
-            
-            // remove from cache
-            trainingData.unpersist();
+
             // add test data to cache - test data is not used as of now
 //            if (testingData != null) {
 //                testingData.cache();
@@ -172,16 +170,26 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             // generating data for summary clusters
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
-            double sampleFraction = sampleSize / (trainingData.count() - 1);
+
+            double sampleFraction;
+            if(trainingData.count() != 1) { //avoiding division by 0
+                sampleFraction = sampleSize / (trainingData.count() - 1);
+            } else{
+                sampleFraction = sampleSize / (trainingData.count());
+            }
             JavaRDD<Vector> sampleData = null;
             if (sampleFraction >= 1.0) {
                 sampleData = trainingData;
             }
-            // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
+            // Use randomly selected sample fraction of rows if number of records is > sample fraction
             else {
                 sampleData = trainingData.sample(false, sampleFraction);
             }
 
+            trainingData.unpersist(); // since no more used
+            if(sampleData != null) {
+                sampleData.cache();
+            }
             // Populate cluster points list with predicted clusters and features
             List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData).zip(sampleData).collect();
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
