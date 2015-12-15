@@ -112,6 +112,23 @@ public class ModelHandler {
     }
 
     /**
+     * Predict the value using the feature values.
+     * @param data feature values array
+     * @param percentile percentile value for predictions
+     * @return predicted value
+     * @throws MLModelHandlerException
+     */
+    public Object predict(String[] data, String outputType, double percentile) throws MLModelHandlerException {
+        ArrayList<String[]> list = new ArrayList<String[]>();
+        list.add(data);
+        Predictor predictor = new Predictor(modelId, mlModel, list, percentile);
+        List<?> predictions = predictor.predict();
+        String predictionStr = predictions.get(0).toString();
+        Object prediction = castValue(outputType, predictionStr);
+        return prediction;
+    }
+
+    /**
      * Cast the given value to the given output type.
      * @param outputType Output data type
      * @param value value to be casted in String

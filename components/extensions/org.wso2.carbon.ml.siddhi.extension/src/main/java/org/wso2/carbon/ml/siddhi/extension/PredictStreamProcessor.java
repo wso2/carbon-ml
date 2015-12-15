@@ -45,8 +45,11 @@ public class PredictStreamProcessor extends StreamProcessor {
     private ModelHandler[] modelHandlers;
     private String[] modelStorageLocations;
     private String responseVariable;
+    private String anomalyPrediction = "prediction";
     private String algorithmClass;
     private String outputType;
+    private double percentileValue;
+    private boolean isAnomalyDetection;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap; // <feature-index, [event-array-type][attribute-index]> pairs
 
@@ -92,6 +95,12 @@ public class PredictStreamProcessor extends StreamProcessor {
                         }
                         // Gets the average value of predictions
                         predictionResult = sum / modelHandlers.length;
+                    } else if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
+                        for (int i = 0; i < modelHandlers.length; i++) {
+                            predictionResults[i] = modelHandlers[i].predict(featureValues, outputType, percentileValue);
+                        }
+                        // Gets the majority vote
+                        predictionResult = ObjectUtils.mode(predictionResults);
                     } else {
                         String msg = String.format(
                                 "Error while predicting. Prediction is not supported for the algorithm class %s. ",
@@ -159,18 +168,6 @@ public class PredictStreamProcessor extends StreamProcessor {
             }
         }
 
-        // Validate response variables
-        // All models should have the same response variable.
-        // When put into a set, the size of the set should be 1
-        HashSet<String> responseVariables = new HashSet<String>();
-        for (int i = 0; i < modelStorageLocations.length; i++) {
-            responseVariables.add(modelHandlers[i].getResponseVariable());
-        }
-        if (responseVariables.size() > 1) {
-            throw new ExecutionPlanCreationException("Response variables of models are not equal");
-        }
-        responseVariable = modelHandlers[0].getResponseVariable();
-
         // Validate algorithm classes
         // All models should have the same algorithm class.
         // When put into a set, the size of the set should be 1
@@ -192,6 +189,48 @@ public class PredictStreamProcessor extends StreamProcessor {
         }
         if (features.size() > 1) {
             throw new ExecutionPlanRuntimeException("Features in models are not equal");
+        }
+
+        if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
+            isAnomalyDetection = true;
+        } else {
+            isAnomalyDetection = false;
+        }
+
+        if (!isAnomalyDetection) {
+            // Validate response variables
+            // All models should have the same response variable.
+            // When put into a set, the size of the set should be 1
+            HashSet<String> responseVariables = new HashSet<String>();
+            for (int i = 0; i < modelStorageLocations.length; i++) {
+                responseVariables.add(modelHandlers[i].getResponseVariable());
+            }
+            if (responseVariables.size() > 1) {
+                throw new ExecutionPlanCreationException("Response variables of models are not equal");
+            }
+            responseVariable = modelHandlers[0].getResponseVariable();
+        }
+
+        // for only anomaly detection
+        if (isAnomalyDetection) {
+
+            if (attributeExpressionExecutors.length == 3) {
+                attributeSelectionAvailable = false; // model-storage-location, data-type
+            } else {
+                attributeSelectionAvailable = true; // model-storage-location, data-type, stream-attributes list
+            }
+
+            // checking the percentile value
+            if (attributeExpressionExecutors[2] instanceof ConstantExpressionExecutor) {
+                Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[2]).getValue();
+                percentileValue = (Double) constantObj;
+
+            } else {
+                throw new ExecutionPlanValidationException(
+                        "percentile value has not been defined as the third parameter");
+            }
+
+            return Arrays.asList(new Attribute(anomalyPrediction, outputDatatype));
         }
 
         return Arrays.asList(new Attribute(responseVariable, outputDatatype));

@@ -307,7 +307,7 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
             if (sampleFraction >= 1.0) {
                 sampleData = trainData;
             }
-            // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
+            // Use randomly selected sample fraction of rows if number of records is > sample fraction
             else {
                 sampleData = trainData.sample(false, sampleFraction);
             }
