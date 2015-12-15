@@ -553,7 +553,7 @@ a.t-proj-workflow {
 	padding-left:10px !important;
 }
 
-/* wizard */
+/* wizard 
 .nav-wizard {
 	width:980px;
 	margin:auto;
@@ -652,7 +652,7 @@ a.t-proj-workflow {
 .nav-pills.nav-wizard > li.disabled a {
 	background-color: #eee;
 	color:#888;
-}
+}*/
 
 .nav-wedge-step {
 	display:block;
@@ -1334,3 +1334,111 @@ a.cu-level3-btn:hover {
 	overflow-x:hidden;
 }
 
+/*---- nav-wizard---- */
+.nav-wizard-wrapper{
+	background-color: #eee;
+	margin:0 -15px;
+	text-align: center;
+	overflow: hidden;
+	height: 68px; /* TODO: Remove and fix the dynamic height */
+}
+.nav-wizard {
+	list-style: none;
+	font-size: 20px;
+	font-weight: 100;
+	background-color: #EEEEEE;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+}
+.nav-wizard:after {
+	clear: both;
+	display: block;
+	content: " ";
+	height: 0;
+}
+.nav-wizard li {
+	float: left;
+	text-align: left;
+}
+ul.nav-wizard:before{
+	content: " ";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 35px solid transparent;           /* Go big on the size, and let overflow hide */
+	border-bottom: 35px solid transparent;
+	border-left: 20px solid #eee;
+	position: absolute;
+	z-index: 1;
+}
+.nav-wizard li a {
+	text-decoration: none;
+	position: relative;
+	display: block;
+	float: left;
+	padding: 10px 40px;
+	background:#EEEEEE;
+	color: #667;
+}
+.nav-wizard li a:hover {
+	color:#fff;
+	background: #aaa;
+}
+.nav-wizard li.active a {
+	color: white;
+	background:  #6c5c76;
+}
+.nav-wizard li.active a:after {
+	content: " ";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 35px solid transparent;
+	border-bottom: 35px solid transparent;
+	border-left: 20px solid #6c5c76;
+	position: absolute;
+	top: 50%;
+	margin-top: -35px;
+	left: 100%;
+	z-index: 2;
+}
+.nav-wizard li a:after {
+	content: " ";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 35px solid transparent;
+	border-bottom: 35px solid transparent;
+	border-left: 20px solid #EEEEEE;
+	position: absolute;
+	top: 50%;
+	margin-top: -35px;
+	left: 100%;
+	z-index: 2;
+}
+.nav-wizard li a:before {
+	content: " ";
+	display: block;
+	width: 0;
+	height: 0;
+	border-top: 35px solid transparent;           /* Go big on the size, and let overflow hide */
+	border-bottom: 35px solid transparent;
+	border-left: 20px solid #fff;
+	position: absolute;
+	top: 50%;
+	margin-top: -35px;
+	margin-left: 1px;
+	left: 100%;
+	z-index: 1;
+}
+.nav-wizard > li + li:before {
+	padding:0;
+	content:" ";
+}
+.nav-wizard li.active a:hover:after {
+	border-left-color: #6c5c76;
+}
+.nav-wizard li a:hover:after {
+	border-left-color: #aaa;
+}
