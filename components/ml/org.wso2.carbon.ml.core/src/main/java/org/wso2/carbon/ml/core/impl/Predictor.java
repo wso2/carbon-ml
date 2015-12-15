@@ -18,6 +18,7 @@
 package org.wso2.carbon.ml.core.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +207,7 @@ public class Predictor {
                         try {
                             normalizedData = normalization.call(data);
                         } catch (MLModelBuilderException e) {
-                            log.warn("Data normalization failed for data: " + data + " Cause: " + e.getMessage());
+                            log.warn("Data normalization failed for data: " + Arrays.toString(data) + " Cause: " + e.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
