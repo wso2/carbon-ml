@@ -19,10 +19,12 @@
 package org.wso2.carbon.ml.core.spark.summary;
 
 import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 public class ClusterModelSummary implements ModelSummary, Serializable {
 
@@ -32,6 +34,15 @@ public class ClusterModelSummary implements ModelSummary, Serializable {
     private String algorithm;
     private String[] features;
     private String datasetVersion;
+    private List<ClusterPoint> clusterPoints;
+
+    public List<ClusterPoint> getClusterPoints() {
+        return clusterPoints;
+    }
+
+    public void setClusterPoints(List<ClusterPoint> clusterPoints) {
+        this.clusterPoints = clusterPoints;
+    }
 
     public String getAlgorithm() {
         return algorithm;

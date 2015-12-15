@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.http.HttpHeaders;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLDataset;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
@@ -112,6 +113,7 @@ public class DatasetApiV10 extends MLRestAPI {
             dataset.setTenantId(tenantId);
             dataset.setUserName(userName);
             dataset.setContainsHeader(containsHeader);
+            dataset.setStatus(MLConstants.DatasetStatus.BUSY.getValue());
 
             datasetProcessor.process(dataset, inputStream);
             return Response.ok(dataset).build();

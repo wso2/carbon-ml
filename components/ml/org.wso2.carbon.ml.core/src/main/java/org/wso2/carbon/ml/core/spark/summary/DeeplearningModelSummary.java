@@ -32,6 +32,7 @@ import org.wso2.carbon.ml.core.spark.MulticlassConfusionMatrix;
  */
 public class DeeplearningModelSummary implements ModelSummary, Serializable{
     
+    private static final long serialVersionUID = 3177874758349780888L;
     private double error;
     private List<PredictedVsActual> predictedVsActuals;
     private List<TestResultDataPoint> testResultDataPointsSample;

@@ -54,12 +54,11 @@ include("../../includes/tenantAware.jag");
                 </div>
 
                 <div class="wr-project">
-                    <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+                    <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a><span id="nav-analysis"></span>
                 </div>
 
                 <div class="wr-action-btn-bar">
                     <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
-                    <a href="#" id="btn-refresh" class="cu-btn btn-refresh">Refresh</a>
                 </div>
             </div>
 
@@ -223,6 +222,7 @@ include("../../includes/tenantAware.jag");
         // put path in application navigator
         $('#nav-project').text(projectName);
         $('#nav-analysis').text(" \\ "+analysisName);
+        $('#nav-project-anchor').attr('href',"../project/projects.jag?projectName="+projectName);
 
         loadModels();
 
@@ -304,7 +304,7 @@ include("../../includes/tenantAware.jag");
                                         '<table class="tbl-projects" projectID="' + modelId + '">' +
                                             '<tr>' +
                                                 '<td>' +
-                            '<a ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
+                                                    '<a id="accordion-header-link-' + modelId + '" ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
                                                     '<span class="cu-acc-head-title">' + modelName + '</span>' +
                                                     '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
                                                     // retrieve dataset version from model summary when model building is completed
@@ -315,20 +315,20 @@ include("../../includes/tenantAware.jag");
                                                     }
                                                     accordionPanel += '' +
                                                     '<span class="cu-acc-head-workflow"></span>' +
-                                                    '<span class="cu-acc-head-created">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
+                                                    '<span class="cu-acc-head-created" id="' + "model-" + modelId + '" data-status="' + modelStatus + '">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
                                                     '</a>' +
                                                 '</td>' +
                                                 '<td class="c-right">' +
-                                                    '<div>';
-                                                    // remove view and and predict links for k-means
-                                                    if(modelStatus == 'Complete' && sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS') {
+                                                    '<div id="accordion-header-action-' + modelId + '">';
+                                                    // remove predict links for k-means
+                                                    if(modelStatus == 'Complete') {
                                                         // remove view from Kmeans Anomaly detection with Unlabeled data
                                                         if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                                                             accordionPanel += '' +
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
                                                          }
                                                          // remove predict from Collaborative Filtering
-                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') ){
+                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS')){
                                                             accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
                                                          }
@@ -343,8 +343,8 @@ include("../../includes/tenantAware.jag");
                                         '</table>' +
                                     '</h4>' +
                                 '</div>' +
-                                '<div id="collapse'+i+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
-                                    '<div class="panel-body">' + modelError + '</div>' +
+                                '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
+                                    '<div id="accordion-error-' + modelId + '" class="panel-body">' + modelError + '</div>' +
                                 '</div>' +
                             '</div>';
                             $("#accordion").append(accordionPanel);
@@ -386,7 +386,76 @@ include("../../includes/tenantAware.jag");
         });
 
         bindEvents();
+        updateModels()
     }
+
+    // function to update model statuses by polling
+    function updateModels() {
+        (function poll() {
+            setTimeout(function() {
+                $.ajax({
+                    type : 'GET',
+                    url: serverUrl+"/api/analyses/"+analysisId+"/models",
+                    async: false,
+                    success : function(data) {
+                        var models = data;
+                        var modelsInProgress = 0;
+                        // iterate through models and update status
+                        for(var i = 0; i < models.length; i++) {                      
+                            var modelName = models[i].name;
+                            var modelId = models[i].id;
+                            var newModelStatus = models[i].status;
+                            // count models in progress
+                            if(newModelStatus == "In Progress") {
+                                modelsInProgress++;
+                            }
+                            // create the status element id
+                            var statusElementId = "#model-" + modelId;
+                            // get current status from data attribute of status element
+                            var currentModelStatus = $(statusElementId).data("status");
+                            // update status only if the status has changed
+                            if(currentModelStatus != newModelStatus) {
+                                var statusElementContent = '[ Status: ' + newModelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newModelStatus) + '.png" /> ]';
+                                $(statusElementId).html(statusElementContent);                                
+                                // update dataset version from model summary when model building is completed
+                                if(newModelStatus == 'Complete') {
+                                    var datasetVersion = models[i].modelSummary.datasetVersion;
+                                    $('<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>').insertBefore(statusElementId);
+                                    // enable download and publish links when disabled                                
+                                    $('#accordion-header-action-' + modelId + ' > #download-model').attr('class', 'cu-reg-btn btn-download');                         
+                                    $('#accordion-header-action-' + modelId + ' > #publish').attr('class', 'cu-reg-btn btn-publish');
+                  
+                                    // remove view from k-means anomaly detection with unlabeled data
+                                    if(sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                                        $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
+                                    }
+                                    // remove predict for collaborative filtering and K-Means
+                                    if( (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') && (sanitize(models[i].modelSummary.algorithm) != 'K_MEANS')  ){
+                                        $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
+                                    }                                  
+                                }
+                                // update accordion panel element when model building fails
+                                if(newModelStatus == 'Failed') {
+                                    $('#accordion-header-link-' + modelId).attr( {'class':'ctrl-exp-col', 'aria-expanded':'false', 'data-toggle':'collapse'} );
+                                    $('#accordion-error-' + modelId).html(buildNotification(sanitize(models[i].error), 'warning'));
+                                    $('#accordion-error-' + modelId).parent().closest('div').attr('aria-expanded', 'false');
+                                }                                 
+                            }                            
+                        }
+                        // poll only if there are dataset versions which are in progress
+                        if(modelsInProgress > 0) {
+                            poll();
+                        }
+                    },
+                    error: function(res) {
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+            }, 5000);
+        })();   
+    }
+
     // function to append button disabled CSS class when model building is not complete
     function appendClass(modelStatus) {
         var classAppend = '';
@@ -456,12 +525,6 @@ include("../../includes/tenantAware.jag");
     }
 
     function bindEvents() {
-
-        $(document).on('click', '#btn-refresh', function(e){
-            e.preventDefault();
-            // true: reload from the server
-            location.reload(true);
-        });
 
         $(document).on('click', '#predict', function(e){
             e.preventDefault();

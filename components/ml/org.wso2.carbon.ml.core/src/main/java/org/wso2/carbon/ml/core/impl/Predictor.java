@@ -41,6 +41,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.spark.models.*;
@@ -62,6 +63,7 @@ public class Predictor {
     private List<Vector> dataToBePredicted;
     // for K means anomaly detection
     private double percentileValue;
+    private boolean skipDecoding;
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
@@ -69,11 +71,12 @@ public class Predictor {
         dataToBePredicted = getVectors(data);
     }
 
-    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile) {
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding) {
         id = modelId;
         model = mlModel;
         dataToBePredicted = getVectors(data);
         percentileValue = percentile;
+        this.skipDecoding = skipDecoding;
     }
 
     public List<?> predict() throws MLModelHandlerException {
@@ -202,9 +205,8 @@ public class Predictor {
 
                         try {
                             normalizedData = normalization.call(data);
-                        } catch (Exception MLModelBuilderException) {
-                            log.warn("Data normalization failed for data: " + data + " Cause: "
-                                    + MLModelBuilderException.getMessage());
+                        } catch (MLModelBuilderException e) {
+                            log.warn("Data normalization failed for data: " + data + " Cause: " + e.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
@@ -240,7 +242,7 @@ public class Predictor {
                 for (double pVal : predictedData) {
                     predictions.add((Double) pVal);
                 }
-                return predictions;
+                return decodePredictedValues(predictions);
             default:
                 throw new AlgorithmNameException(
                         "Incorrect algorithm name: " + model.getAlgorithmName() + " for model id: " + id);
@@ -265,9 +267,7 @@ public class Predictor {
     }
 
     private org.wso2.carbon.metrics.manager.Timer getTimer(String algorithmName) {
-
         try {
-
             org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
                     "org.wso2.carbon.ml.prediction-time." + model.getAlgorithmName());
             return timer;
@@ -298,6 +298,10 @@ public class Predictor {
 
     // write a method to decode the predicted value
     private List<?> decodePredictedValues(List<?> predictions) {
+        // skip decoding, if asked
+        if (skipDecoding) {
+            return predictions;
+        }
         int index = model.getResponseIndex();
         if (index == -1) {
             return predictions;

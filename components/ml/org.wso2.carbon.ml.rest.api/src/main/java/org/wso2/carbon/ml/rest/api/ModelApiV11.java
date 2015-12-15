@@ -230,6 +230,7 @@ public class ModelApiV11 extends MLRestAPI {
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param inputStream File input stream generated from the file used for predictions
      * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predictions
      */
     @POST
@@ -237,7 +238,8 @@ public class ModelApiV11 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile) {
+            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile,
+            @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -253,7 +255,7 @@ public class ModelApiV11 extends MLRestAPI {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(msg)).build();
             }
             List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream,
-                    percentile);
+                    percentile, skipDecoding);
             return Response.ok(predictions).build();
         } catch (IOException e) {
             String msg = MLUtils.getErrorMsg(String.format(
@@ -279,6 +281,7 @@ public class ModelApiV11 extends MLRestAPI {
      * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
      * @param inputStream Input stream generated from the file used for predictions
      * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
      * @return A file as a {@link StreamingOutput}
      */
     @POST
@@ -287,7 +290,7 @@ public class ModelApiV11 extends MLRestAPI {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
             @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
-            @QueryParam("percentile") double percentile) {
+            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -303,7 +306,7 @@ public class ModelApiV11 extends MLRestAPI {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
-                    columnHeader, inputStream, percentile);
+                    columnHeader, inputStream, percentile, skipDecoding);
 
             StreamingOutput stream = new StreamingOutput() {
                 @Override
@@ -341,6 +344,7 @@ public class ModelApiV11 extends MLRestAPI {
      * @param modelId Unique id of the model
      * @param data List of string arrays containing the feature values used for predictions
      * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predicted values
      */
     @POST
@@ -348,14 +352,14 @@ public class ModelApiV11 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response predict(@PathParam("modelId") long modelId, List<String[]> data,
-            @QueryParam("percentile") double percentile) {
+            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
             long t1 = System.currentTimeMillis();
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data, percentile);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data, percentile, skipDecoding);
             logger.info(String.format("Prediction from model [id] %s finished in %s seconds.", modelId,
                     (System.currentTimeMillis() - t1) / 1000.0));
             return Response.ok(predictions).build();

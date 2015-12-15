@@ -27,7 +27,8 @@ import java.util.List;
  * This class infers a rating score using the given array of data and given weights.
  */
 public class ImplicitDataToRating implements Function<String[], String[]> {
-	private int userIndex;
+	private static final long serialVersionUID = 4353680091964429853L;
+    private int userIndex;
 	private int productIndex;
 	private List<Integer> observations;
 	private List<Double> weights;

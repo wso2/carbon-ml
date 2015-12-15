@@ -136,8 +136,8 @@ include("../../includes/tenantAware.jag");
 
 <div id="content-asset-types" style="display: none">
     <div>
+        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
         <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>   
     </div>
 </div>  
 
@@ -185,14 +185,12 @@ include("../../includes/tenantAware.jag");
         });
 
         // load datasets into the search box
-	    loadDatasetsIntoSearchBox();
+        loadDatasetsIntoSearchBox();
 
         // load projects and analyses to accordion
         loadProjects();
         
-
-  
-
+       
         /********** event binding **********/
 
         // events to delete a project
@@ -351,16 +349,16 @@ include("../../includes/tenantAware.jag");
 
     // Analysis name input validation
     function isValidAnalysisName(text, notificationArea) {
-        if (!text || /^[a-zA-Z0-9---_]*$/.test(text) == false) {
-            var errorText = 'Empty names, special and space characters are not allowed.';
+        if (!text || /^[a-zA-Z0-9\s---_]*$/.test(text) == false) {
+            var errorText = 'Empty names and special characters are not allowed.';
             handleNotification(errorText, notificationArea, 'warning');
             return false;
         }
         if(text.length > 100) {
-	        var errorText = 'Analysis name is too long. Max 100 characters allowed.';
+            var errorText = 'Analysis name is too long. Max 100 characters allowed.';
             handleNotification(errorText, notificationArea, 'warning');
             return false;
-	    }
+        }
         return true;
     }
     
@@ -415,32 +413,32 @@ include("../../includes/tenantAware.jag");
     }
 
     function loadDatasetsIntoSearchBox() {
-    	$.ajax({
+        $.ajax({
                 type: "GET",
                 url: serverUrl + "/api/datasets",
                 success: function(data) {
                     var options = '<option></option>';
                     for (var i = 0; i < data.length; i++) {
-                    	var datasetName = data[i]['name'];
-                    	options += '<option value="' + datasetName + '">' + datasetName + '</option>';
+                        var datasetName = data[i]['name'];
+                        options += '<option value="' + datasetName + '">' + datasetName + '</option>';
                     }
-    		        $('#search').empty();
+                    $('#search').empty();
                     $('#search').append('<select class="search-projects col-md-2">' + options + '</select>');
                     $(".search-projects").select2({
                         placeholder: "Select a dataset",
-    			        allowClear: true
-            	    });
-    		        $(".search-projects").on("change", function(e) {loadProjectsOfDataset($(".search-projects").val());});
-    	    },
-    	        error: function(res) {
+                        allowClear: true
+                    });
+                    $(".search-projects").on("change", function(e) {loadProjectsOfDataset($(".search-projects").val());});
+            },
+                error: function(res) {
                     var errorText = JSON.parse(res.responseText)["exception"];
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
-    	});
+        });
     }
 
     function loadProjects() {
-	    loadProjectsOfDataset('');
+        loadProjectsOfDataset('');
     }
 
     function loadProjectsOfDataset(datasetName) {
@@ -452,43 +450,44 @@ include("../../includes/tenantAware.jag");
         $.ajax({
             type: "GET",
             url: serverUrl + "/api/projects/analyses?datasetName=" + datasetName,
+            async:false,
             success: function(data) {
                 var tenantProjects = data;
                 if (tenantProjects.length == 0) {
                     var accordionPanelNoProjects = '';
-        		    if (datasetName.length == 0) {
-        		    	accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                    if (datasetName.length == 0) {
+                        accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created at the moment.</h2>'+
                                 '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
                                     '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                                 '</div>'+
                             '</div>';
 
-        		    } else {
-        			    accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
+                    } else {
+                        accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
                                 '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" title="hello" data-original-title="Create Project"><span>Create Project</span></a></p>'+
                             '</div>';
-        		    } 
+                    } 
                     $('#accordion').empty();
                     $("#accordion").append(accordionPanelNoProjects);    
                 }
                 else {
 
-        		    var createProject = '';
-        		    if (datasetName.length == 0) {
-        			createProject = '' +
+                    var createProject = '';
+                    if (datasetName.length == 0) {
+                    createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
                             '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
                                 '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip"  data-original-title="Create Project"><span>Create Project</span></a></p>'+
                             '</div>'+
                             '</div>';
-        		    } else {
-        			createProject = '' +
+                    } else {
+                    createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
-                            '</div>';	
-        		    }
+                            '</div>';   
+                    }
 
                     $('#accordion').empty();
                     $("#accordion").append(createProject);                        
@@ -540,7 +539,7 @@ include("../../includes/tenantAware.jag");
                                     '</h4>' +
                                 '</div>' +
                                 // first panel will be expanded on page load                                
-                                '<div id="collapse' + i + '" class="panel-collapse collapse ' + appendCollapse(i) + '" role="tabpanel" aria-labelledby="heading'+i+'">'+
+                                '<div id="collapse' + i + '" class="panel-collapse collapse ' + appendCollapse(i) + ' '+ appendNavigation(projectName)+' " role="tabpanel" aria-labelledby="heading'+i+'">'+
                                     '<div class="panel-body">';
                                 if (noOfAnalyses == 0) {
                                     accordionPanel += buildEmptyProjectDisplay(description, projectId, projectName, datasetId, datasetStatus);
@@ -665,6 +664,19 @@ include("../../includes/tenantAware.jag");
                     handleNotification(errorText, '#notification-area', 'warning');
                 }
             });
+        }
+    }
+
+    function appendNavigation(projectName){
+          // need for navigation
+        var queryParam = getParameterByName("projectName");
+
+        if(queryParam.length > 0 && projectName == queryParam){
+            $("#collapse0").removeClass('in');
+              return 'in';
+        }     
+        else{
+            return ' ';
         }
     }
 

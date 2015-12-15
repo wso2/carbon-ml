@@ -35,10 +35,8 @@ public class FileInputAdapter implements MLInputAdapter {
         try {
             FileInputStream inputStream = new FileInputStream(new File(path));
             return inputStream;
-        } catch (FileNotFoundException e) {
-            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", path,e), e);
-        } catch (IllegalArgumentException e) {
-            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", path,e), e);
+        } catch (FileNotFoundException | IllegalArgumentException e) {
+            throw new MLInputAdapterException(String.format("Failed to read the data-set from uri %s: %s", path, e), e);
         }
     }
 
