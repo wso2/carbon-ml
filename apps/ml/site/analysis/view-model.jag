@@ -622,6 +622,15 @@ $( document ).ready(function() {
                  $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
 
             }
+            else if(algorithm == 'K_MEANS'){
+                $("#roc-graph, #weights-chart, #predicted-vs-actual,#percentile,#confusion-matrix,#residual,#other-measures,#dl-network").closest("div.wr-graph-element").remove();
+
+                 features = res.features;
+                 clusterData = res.clusterPoints;
+                 drawClusterDiagramBase();
+                 drawClusterDiagram();
+
+            }
         },
         error: function(res){
             var errorText = res.responseText

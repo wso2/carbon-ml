@@ -23,6 +23,7 @@ import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
+import org.wso2.carbon.ml.commons.domain.ClusterPoint;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -41,10 +42,15 @@ import org.wso2.carbon.ml.core.spark.transformations.MeanImputation;
 import org.wso2.carbon.ml.core.spark.transformations.RemoveDiscardedFeatures;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
+import scala.Tuple2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Building unsupervised models supported by Spark.
@@ -90,6 +96,9 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
+            SortedMap<Integer, String> includedFeatures = MLUtils
+                    .getIncludedFeaturesAfterReordering(workflow, context.getNewToOldIndicesList(),
+                            context.getResponseIndex());
 
             // gets the pre-processed dataset
             JavaRDD<Vector> data = preProcess().cache();
@@ -119,7 +128,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
-                summaryModel = buildKMeansModel(modelId, trainingData, testingData, workflow, mlModel);
+                summaryModel = buildKMeansModel(modelId, trainingData, testingData, workflow, mlModel,includedFeatures);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + workflow.getAlgorithmName()
@@ -145,21 +154,58 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
      * @throws MLModelBuilderException
      */
     private ModelSummary buildKMeansModel(long modelID, JavaRDD<Vector> trainingData, JavaRDD<Vector> testingData,
-            Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+            Workflow workflow, MLModel mlModel, SortedMap<Integer, String> includedFeatures) throws MLModelBuilderException {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             KMeans kMeans = new KMeans();
             KMeansModel kMeansModel = kMeans.train(trainingData,
                     Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLUSTERS)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_ITERATIONS)));
-            
-            // remove from cache
-            trainingData.unpersist();
+
             // add test data to cache - test data is not used as of now
 //            if (testingData != null) {
 //                testingData.cache();
 //            }
-            
+
+            // generating data for summary clusters
+            double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
+                    .getSampleSize();
+
+            double sampleFraction;
+            if(trainingData.count() != 1) { //avoiding division by 0
+                sampleFraction = sampleSize / (trainingData.count() - 1);
+            } else{
+                sampleFraction = sampleSize / (trainingData.count());
+            }
+            JavaRDD<Vector> sampleData = null;
+
+            if (sampleFraction >= 1.0) {
+                sampleData = trainingData;
+            } else { // Use randomly selected sample fraction of rows if number of records is > sample fraction
+                sampleData = trainingData.sample(false, sampleFraction);
+            }
+
+            trainingData.unpersist(); // since no more used
+            sampleData.cache();
+
+            // Populate cluster points list with predicted clusters and features
+            List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData).zip(sampleData).collect();
+            List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
+
+            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
+
+                ClusterPoint clusterPoint = new ClusterPoint();
+                clusterPoint.setCluster(kMeansPrediction._1());
+                double[] features = new double[includedFeatures.size()];
+
+                for (int i = 0; i < includedFeatures.size(); i++) {
+                    double point = (kMeansPrediction._2().toArray())[i];
+                    features[i] = point;
+                }
+                clusterPoint.setFeatures(features);
+                clusterPoints.add(clusterPoint);
+            }
+
             ClusterModelSummary clusterModelSummary = new ClusterModelSummary();
 //            double trainDataComputeCost = kMeansModel.computeCost(trainingData.rdd());
 //            double testDataComputeCost = kMeansModel.computeCost(testingData.rdd());
@@ -168,6 +214,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             mlModel.setModel(new MLKMeansModel(kMeansModel));
             clusterModelSummary.setAlgorithm(UNSUPERVISED_ALGORITHM.K_MEANS.toString());
             clusterModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+            clusterModelSummary.setClusterPoints(clusterPoints);
+            clusterModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
 
             return clusterModelSummary;
         } catch (Exception e) {
