@@ -226,8 +226,6 @@ include("../../includes/tenantAware.jag");
 
         loadModels();
 
-
-
         // add pagination
         panelsPerPage = parseInt($("#no-of-panels").val());
         $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
@@ -259,6 +257,7 @@ include("../../includes/tenantAware.jag");
     function loadModels() {
 
         $('#accordion').empty();
+        var failedModels=[];
         $.ajax({
             type: "GET",
             url: serverUrl+"/api/analyses/"+analysisId+"/models",
@@ -294,6 +293,7 @@ include("../../includes/tenantAware.jag");
                         // set error message if available
                         var modelError = '';
                         if(analysisModels[i]['error'] != null) {
+                            failedModels.push(modelId);
                             modelError = buildNotification(sanitize(analysisModels[i]['error']), 'warning');
                         }
 
@@ -351,6 +351,8 @@ include("../../includes/tenantAware.jag");
                     };
                 }
 
+  
+
                  //events to handle downloading
                 $(document).on('click','#download-model',function(e){
                     e.preventDefault();
@@ -385,8 +387,10 @@ include("../../includes/tenantAware.jag");
             }
         });
 
+   
         bindEvents();
-        updateModels()
+        updateModels();
+        removeCloseButtonFromDescription(failedModels);
     }
 
     // function to update model statuses by polling
@@ -688,6 +692,14 @@ include("../../includes/tenantAware.jag");
         return algorithmName;
     }
 
+    function removeCloseButtonFromDescription(failedModels){
+
+        for(i=0; i<failedModels.length ; i++){
+            var id = failedModels[i];
+            $('#accordion-error-'+id).children("div").children("button").remove(); 
+        }
+        
+    }
 </script>
 
 </body>

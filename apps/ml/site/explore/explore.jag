@@ -551,7 +551,7 @@ $( document ).ready(function() {
     });
 
     // disable tabs based on the features
-    disableTabs();
+    removeTabs();
 
     // select the active tab on page load
     selectActiveTab();
@@ -703,27 +703,19 @@ function selectActiveTab() {
 	}
 }
 
-// disable tabs based on the features and show tooltips
-function disableTabs() {
+// remove unsupported tabs 
+function removeTabs() {
     if (!(numericalFeatureNames.length >1 & categoricalFeatureNames.length >0)) {
-        $('#scatter-plot-li').attr('class', 'disabled');
-        $('#scatter-plot-li').attr('title', 'Minimum of two numerical features and one categorical feature required to draw a scatter plot');
-        $('#scatter-plot-link').attr('data-toggle', '');
+        $('#scatter-plot-li').remove();
 	}
 	if(categoricalFeatureNames.length < 2) {
-	    $('#parallel-sets-li').attr('class', 'disabled');
-        $('#parallel-sets-li').attr('title', 'Minimum of two categorical features required for parallel sets');
-        $('#parallel-sets-link').attr('data-toggle', '');
+	    $('#parallel-sets-li').remove();
 	}
 	if(!(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0)) {
-	    $('#trellis-chart-li').attr('class', 'disabled');
-        $('#trellis-chart-li').attr('title', 'Minimum of one categorical feature required to draw trellis charts');
-        $('#trellis-chart-link').attr('data-toggle', '');
+	    $('#trellis-chart-li').remove();
 	}
 	if(numericalFeatureNames.length < 2) {
-		$('#cluster-diagram-li').attr('class', 'disabled');
-        $('#cluster-diagram-li').attr('title', 'Minimum of two numerical features required for cluster diagrams');
-        $('#cluster-diagram-link').attr('data-toggle', '');
+		$('#cluster-diagram-li').remove();
 	}
 }
 
