@@ -91,7 +91,8 @@ public class LoginLogoutApiV10 extends MLRestAPI {
         }
         auditLog.info(String.format(
                 "User [name] %s of tenant [id] %s [domain] %s is logged-out from WSO2 Machine Learner. "
-                        + "Granted session id is %s", username, tenantId, tenantDomain, session.getId()));
+                        + "Granted session id is %s", username, tenantId, tenantDomain, session == null ? null
+                        : session.getId()));
         return Response.status(Response.Status.OK).entity("User logged out: " + carbonContext.getUsername()).build();
     }
 }
