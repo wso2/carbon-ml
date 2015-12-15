@@ -46,43 +46,30 @@ public class PredictMediator extends AbstractMediator {
         OMElement mlElement = fac.createOMElement(PREDICT_QNAME);
         saveTracingState(mlElement, this);
 
-        if (modelStorageLocation != null) {
-            OMElement modelElement = fac.createOMElement(MODEL_QNAME);
-            modelElement.addAttribute(fac.createOMAttribute(STORAGE_LOCATION_ATT.getLocalPart(), nullNS, modelStorageLocation));
-            mlElement.addChild(modelElement);
-        } else {
-            throw new MediatorException("Invalid Predict mediator. Model storage-location is required");
-        }
+        OMElement modelElement = fac.createOMElement(MODEL_QNAME);
+        modelElement.addAttribute(fac.createOMAttribute(STORAGE_LOCATION_ATT.getLocalPart(), nullNS,
+                modelStorageLocation == null ? "" : modelStorageLocation));
+        mlElement.addChild(modelElement);
 
-        if(features.isEmpty()) {
-            throw new MediatorException("Invalid Predict mediator. Features required");
-        }
         OMElement featuresElement = fac.createOMElement(FEATURES_QNAME);
         for (MediatorProperty mediatorProperty : features) {
             OMElement featureElement = fac.createOMElement(FEATURE_QNAME);
-            if (mediatorProperty.getName() == null) {
-                throw new MediatorException("Invalid Predict mediator. Feature names are required.");
-            }
             featureElement.addAttribute(fac.createOMAttribute(NAME_ATT.getLocalPart(), nullNS,
-                    mediatorProperty.getName()));
-            if (mediatorProperty.getExpression() == null) {
-                throw new MediatorException("Invalid Predict mediator. Feature expressions are required.");
+                    mediatorProperty.getName() == null ? "" : mediatorProperty.getName()));
+            if (mediatorProperty.getExpression() != null) {
+                SynapseXPathSerializer.serializeXPath(mediatorProperty.getExpression(), featureElement,
+                        EXPRESSION_ATT.getLocalPart());
             }
-            SynapseXPathSerializer.serializeXPath(mediatorProperty.getExpression(), featureElement,
-                    EXPRESSION_ATT.getLocalPart());
             featuresElement.addChild(featureElement);
         }
         mlElement.addChild(featuresElement);
 
-        if(predictionPropertyName != null) {
-            OMElement predictionElement = fac.createOMElement(PREDICTION_OUTPUT_QNAME);
-            predictionElement.addAttribute(fac.createOMAttribute(PROPERTY_ATT.getLocalPart(), nullNS, predictionPropertyName));
-            mlElement.addChild(predictionElement);
-        } else {
-            throw new MediatorException("Invalid Predict mediator. PredictionOutput property name is required");
-        }
+        OMElement predictionElement = fac.createOMElement(PREDICTION_OUTPUT_QNAME);
+        predictionElement.addAttribute(fac.createOMAttribute(PROPERTY_ATT.getLocalPart(), nullNS,
+                predictionPropertyName == null ? "" : predictionPropertyName));
+        mlElement.addChild(predictionElement);
 
-        if(parent != null) {
+        if (parent != null) {
             parent.addChild(mlElement);
         }
         return mlElement;

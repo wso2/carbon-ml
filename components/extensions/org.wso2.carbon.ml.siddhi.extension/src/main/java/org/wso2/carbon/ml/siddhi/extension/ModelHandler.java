@@ -121,7 +121,7 @@ public class ModelHandler {
     public Object predict(String[] data, String outputType, double percentile) throws MLModelHandlerException {
         ArrayList<String[]> list = new ArrayList<String[]>();
         list.add(data);
-        Predictor predictor = new Predictor(modelId, mlModel, list, percentile);
+        Predictor predictor = new Predictor(modelId, mlModel, list, percentile, false);
         List<?> predictions = predictor.predict();
         String predictionStr = predictions.get(0).toString();
         Object prediction = castValue(outputType, predictionStr);
