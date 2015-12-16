@@ -238,11 +238,16 @@ public class Predictor {
                     tobePredictedList.add(vector.toArray());
                 }
                 Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(tobePredictedList);
+
+                Context context = startTimer(timer);
+
                 double[] predictedData = saeModel.predict(predFrame);
 
                 for (double pVal : predictedData) {
                     predictions.add((Double) pVal);
                 }
+
+                stopTimer(context);
                 return decodePredictedValues(predictions);
             default:
                 throw new AlgorithmNameException(
