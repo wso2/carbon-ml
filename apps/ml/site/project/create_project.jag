@@ -111,7 +111,6 @@ include("../../includes/tenantAware.jag");
 				</div>
 
 				<label class="input-label">Description<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Description on this project."></span></label>
-				<span class="fld-required">*</span>
 				<div class="input-control text">
 				    <textarea rows="3" id="project-description" name="project-description"></textarea>
 				    <span class="form-val-error" id="project-description-error"></span>
@@ -235,10 +234,9 @@ $( document ).ready(function() {
         var datasetName = $( "#datasets option:selected" ).text();
         
         var projectNameValidation = isValidProjectName(projectName);
-        var descriptionValidation = isValidDescription(projectDes);
         var datasetValidation = isValidDataset(datasetName);
 
-        if(projectNameValidation && descriptionValidation && datasetValidation){
+        if(projectNameValidation  && datasetValidation){
         	
         	var jsonData = '{"name":"' + projectName + '","description":"' + projectDes + '","datasetName":"' + datasetName + '"}';
 
@@ -299,13 +297,6 @@ $( document ).ready(function() {
 	    return true;
 	}
 
-	function isValidDescription(text){
-		if(text && text.length > 0){
-			return true;
-		}
-		$('#project-description-error').text('* Project description is required.');
-        return false;       
-	}
 
 	function isValidDataset(text){
 		if(text && text.length > 0 && text != "Select.."){
