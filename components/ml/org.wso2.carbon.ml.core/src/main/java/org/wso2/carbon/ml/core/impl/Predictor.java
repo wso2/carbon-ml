@@ -39,6 +39,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.ANOMALY_DETECTION_ALGORI
 import org.wso2.carbon.ml.commons.constants.MLConstants.DEEPLEARNING_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
@@ -236,7 +237,13 @@ public class Predictor {
                 for (Vector vector : dataToBePredicted) {
                     tobePredictedList.add(vector.toArray());
                 }
-                Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(tobePredictedList);
+                int numberOfFeatures = model.getFeatures().size();
+                List<Feature> features = model.getFeatures();
+                String[] names = new String[numberOfFeatures];
+                for (int i = 0; i < numberOfFeatures; i++) {
+                    names[i] = features.get(i).getName();
+                }
+                Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(names, tobePredictedList);
                 double[] predictedData = saeModel.predict(predFrame);
 
                 for (double pVal : predictedData) {

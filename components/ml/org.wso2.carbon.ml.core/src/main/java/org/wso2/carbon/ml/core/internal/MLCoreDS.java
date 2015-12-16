@@ -150,20 +150,23 @@ public class MLCoreDS {
             // Retrieving H2O configurations
             HashMap<String, String> h2oConf = new H2OConfigurationParser().getH2OConf(MLConstants.H2O_CONFIG_XML);
 
-            if (h2oConf.get("mode").equals("local")) {
-                valueHolder.setH2oClientModeEnabled(false);
-                log.info("H2O Server will start in local mode.");
-            } else if (h2oConf.get("mode").equals("client")) {
-                valueHolder.setH2oClientModeEnabled(true);
-                log.info("H2O Server will start in client mode.");
-            } else {
-                log.error(String.format("H2O server failed to start. Unsupported H2O mode: %s", h2oConf.get("mode")));
-            }
+            // Start H2O server only if it is enabled
+            if (h2oConf.get("enabled").equals("true")) {
+                if (h2oConf.get("mode").equals("local")) {
+                    valueHolder.setH2oClientModeEnabled(false);
+                    log.info("H2O Server will start in local mode.");
+                } else if (h2oConf.get("mode").equals("client")) {
+                    valueHolder.setH2oClientModeEnabled(true);
+                    log.info("H2O Server will start in client mode.");
+                } else {
+                    log.error(String.format("H2O server failed to start. Unsupported H2O mode: %s", h2oConf.get("mode")));
+                }
 
-            if (valueHolder.isH2oClientModeEnabled()) {
-                H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
-            } else {
-                H2OServer.startH2O();
+                if (valueHolder.isH2oClientModeEnabled()) {
+                    H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
+                } else {
+                    H2OServer.startH2O();
+                }
             }
 
             // Creating an email output adapter
