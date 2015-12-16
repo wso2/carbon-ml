@@ -694,7 +694,7 @@ include("../../includes/tenantAware.jag");
 
     function removeCloseButtonFromDescription(failedModels){
 
-        for(i=0; i<failedModels.length ; i++){
+        for(var i = 0; i < failedModels.length; i++){
             var id = failedModels[i];
             $('#accordion-error-'+id).children("div").children("button").remove(); 
         }

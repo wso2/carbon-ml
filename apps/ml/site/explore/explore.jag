@@ -705,13 +705,13 @@ function selectActiveTab() {
 
 // remove unsupported tabs 
 function removeTabs() {
-    if (!(numericalFeatureNames.length >1 & categoricalFeatureNames.length >0)) {
+    if (!(numericalFeatureNames.length >1 && categoricalFeatureNames.length >0)) {
         $('#scatter-plot-li').remove();
 	}
 	if(categoricalFeatureNames.length < 2) {
 	    $('#parallel-sets-li').remove();
 	}
-	if(!(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0)) {
+	if(!(categoricalFeatureNames.length > 0 && numericalFeatureNames.length > 0)) {
 	    $('#trellis-chart-li').remove();
 	}
 	if(numericalFeatureNames.length < 2) {
