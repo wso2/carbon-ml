@@ -20,7 +20,6 @@ package org.wso2.carbon.ml.commons.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * DTO class to store k-means cluster point
