@@ -489,7 +489,7 @@
        
 
 
-       $("li[class=disabled]").attr("class","hide"); // hide disabled tabs
+       $("li[class=disabled]").remove(); // hide disabled tabs
         
 
         // add pagination
