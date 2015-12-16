@@ -97,7 +97,8 @@ public class PredictStreamProcessor extends StreamProcessor {
                     } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
                         pojoPredictor = new POJOPredictor();
                         for (int i = 0; i < modelHandlers.length; i++) {
-                            predictionResults[i] = pojoPredictor.predict(modelHandlers[i].getMlModel(), featureValues, modelStorageLocations[i]);
+                            predictionResults[i] = pojoPredictor.predict(modelHandlers[i].getMlModel(), featureValues,
+                                    modelStorageLocations[i]);
                         }
                         // Gets the majority vote
                         predictionResult = ObjectUtils.mode(predictionResults);
