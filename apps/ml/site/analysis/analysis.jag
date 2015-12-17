@@ -130,14 +130,14 @@ include("../../includes/tenantAware.jag");
 
                     <!--download model popup -->
                       <div class="popup-content" data-operation="download-model">
-                      	<div  align="left" onclick="hidePopup();">
-				            <span style="cursor:pointer"class="fw-stack">
-				                <i class="fw fw-ring fw-stack-2x"></i>
-				                <i class="fw fw-left-arrow fw-stack-1x"></i>
-				            </span>
-				            <span style="cursor:pointer">GO BACK</span>
-				        </div>    	
-                    	<div class="content">Please select download type</div>
+                      <div  align="left" onclick="hidePopup();">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                        </div>      
+                        <div class="content">Please select download type</div>
                         <div class="buttons">
                             <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
                             <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
@@ -145,15 +145,14 @@ include("../../includes/tenantAware.jag");
                             </div>
                         </div>
                     </div>
-
                      <div class="popup-content" data-operation="publish-model">
-                    	<div  align="left" onclick="hidePopup();">
-				            <span style="cursor:pointer"class="fw-stack">
-				                <i class="fw fw-ring fw-stack-2x"></i>
-				                <i class="fw fw-left-arrow fw-stack-1x"></i>
-				            </span>
-				            <span style="cursor:pointer">GO BACK</span>
-				        </div>    	
+                     <div  align="left" onclick="hidePopup();">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                        </div>      
 			            <div class="content">Please select model type to publish</div>
 			                <div class="buttons">
 			                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
@@ -204,6 +203,7 @@ include("../../includes/tenantAware.jag");
     var datasetId = getParameterByName('datasetId');
     var deleteModelId;
     var panelsPerPage;
+    var hasDatasetVersions = true;
 
     // update pagination
     $(document).on('change','select[id="no-of-panels"]',function() {
@@ -240,7 +240,7 @@ include("../../includes/tenantAware.jag");
         $('#nav-analysis').text(" \\ "+analysisName);
         $('#nav-project-anchor').attr('href',"../project/projects.jag?projectName="+projectName);
 
-        loadModels();
+        loadModels();        
 
         // add pagination
         panelsPerPage = parseInt($("#no-of-panels").val());
@@ -270,6 +270,8 @@ include("../../includes/tenantAware.jag");
 
     function loadModels() {
 
+        checkDatasetVersions();
+
         $('#accordion').empty();
         var failedModels=[];
         $.ajax({
@@ -282,21 +284,24 @@ include("../../includes/tenantAware.jag");
 
                 if (analysisModels.length == 0) {
                     var accordionPanelNoModels =
-                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<h2>You do not have any models created at the moment.</h2>'+
-                        '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
+                    '<div class="ctrl-info-panel col-md-12 col-centered">' +                        
+                        '<h2>You do not have any models created at the moment.</h2>' +
+                        '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
+                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '"><span>Create Model</span></a></p>'+
+                        '</div>' +
                     '</div>';
                     $("#accordion").append(accordionPanelNoModels);
                     $("#pagination-per-page").hide()
                 }
                 else {
-
-                    var createProject = '' +
-                    '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                        '<p><a href="create_project.jag" id="create-model" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Model"><span>Create Model</span></a></p>'+
+                    var createModel = '' +
+                    '<div class="ctrl-info-panel col-md-12 col-centered">' +
+                        '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
+                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '"><span>Create Model</span></a></p>' +
+                        '</div>' +
                     '</div>';
 
-                    $("#accordion").append(createProject);
+                    $("#accordion").append(createModel);
 
                     for (var i = 0; i < analysisModels.length; i++) {
 
@@ -400,7 +405,6 @@ include("../../includes/tenantAware.jag");
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });
-
    
         bindEvents();
         updateModels();
@@ -474,6 +478,24 @@ include("../../includes/tenantAware.jag");
         })();   
     }
 
+    // function to check dataset version availability
+    function checkDatasetVersions() {
+        $.ajax({
+            type : 'GET',
+            url: serverUrl+"/api/datasets/" + datasetId + "/versions",
+            async: false,
+            success : function(data) {
+                if(data.length == 0) {
+                    hasDatasetVersions = false;
+                }
+            },
+            error: function(res) {
+                var errorText = res.responseText
+                handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });
+    }        
+
     // function to append button disabled CSS class when model building is not complete
     function appendClass(modelStatus) {
         var classAppend = '';
@@ -482,6 +504,25 @@ include("../../includes/tenantAware.jag");
         }
         return classAppend;
     }
+
+    // function to append button disabled CSS class when no dataset versions available
+    function appendClassDisableCreateModel() {
+        var classAppend = '';
+        if(hasDatasetVersions == false) {
+            classAppend = 'cu-level-btn-disabled';
+            $('#create-model-overlay').attr('title', 'No dataset versions available to create a model');
+        }
+        return classAppend;
+    }    
+
+    // function to append title attribute to CREATE MODEL link when no dataset versions available
+    function appendTitleDisableCreateModel() {
+        var titleAppend = '';
+        if(hasDatasetVersions == false) {
+            titleAppend = 'No dataset versions available to create a model';
+        }
+        return titleAppend;
+    }        
 
     // function to append data-toggle disabled CSS class when model building is not failed
     function appendDataToggle(modelStatus) {
