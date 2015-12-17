@@ -46,7 +46,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private ModelHandler[] modelHandlers;
     private String[] modelStorageLocations;
     private String responseVariable;
-    private String anomalyPrediction = "prediction";
+    private static final String anomalyPrediction = "prediction";
     private String algorithmClass;
     private String outputType;
     private double percentileValue;
@@ -207,8 +207,6 @@ public class PredictStreamProcessor extends StreamProcessor {
 
         if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
             isAnomalyDetection = true;
-        } else {
-            isAnomalyDetection = false;
         }
 
         if (!isAnomalyDetection) {
@@ -223,10 +221,8 @@ public class PredictStreamProcessor extends StreamProcessor {
                 throw new ExecutionPlanCreationException("Response variables of models are not equal");
             }
             responseVariable = modelHandlers[0].getResponseVariable();
-        }
 
-        // for only anomaly detection
-        if (isAnomalyDetection) {
+        } else {
 
             if (attributeExpressionExecutors.length == 3) {
                 attributeSelectionAvailable = false; // model-storage-location, data-type
@@ -246,7 +242,7 @@ public class PredictStreamProcessor extends StreamProcessor {
 
             return Arrays.asList(new Attribute(anomalyPrediction, outputDatatype));
         }
-
+        
         return Arrays.asList(new Attribute(responseVariable, outputDatatype));
     }
 

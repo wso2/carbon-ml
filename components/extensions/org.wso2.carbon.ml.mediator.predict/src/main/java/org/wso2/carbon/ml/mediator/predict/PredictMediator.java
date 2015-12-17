@@ -40,7 +40,7 @@ public class PredictMediator extends AbstractMediator {
     private String modelStorageLocation;
     private String percentile;
     private boolean isUpdated;
-    private boolean isAnomalyDetection = false;
+    private boolean isAnomalyDetection;
 
     public PredictMediator() {
         featureMappings = new HashMap<String, SynapsePath>();
