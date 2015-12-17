@@ -9,6 +9,7 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
+    <link href="../../css/font-wso2.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script>
 
     <%
@@ -376,27 +377,41 @@
 <!-- /modal popup template -->
 
 <!-- download model popup-->
-  <div class="container-fluid col-centered wr-content">
+    <div class="container-fluid col-centered wr-content">
         <div class="popup-content" data-operation="download-model">
+            <div style="cursor:pointer" align="left" onclick="hidePopup();">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                </span>
+                GO BACK
+            </div>    
             <div class="content">Please select download type</div>
                 <div class="buttons">
                     <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
                     <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
-                                 <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                        <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
                     </div>
                 </div>
         </div>
         <div class="popup-content" data-operation="publish-model">
+            <div style="cursor:pointer" align="left" onclick="hidePopup();">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                </span>
+                GO BACK
+            </div>    
             <div class="content">Please select model type to publish</div>
                 <div class="buttons">
                     <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
                     <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
-                                 <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                        <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
                     </div>
                 </div>
         </div>
 
- </div>
+    </div>
     <!-- /download model popup -->
                        
 
@@ -486,8 +501,6 @@
 
         loadModels();
   //events to handle downloading
-       
-
 
        $("li[class=disabled]").remove(); // hide disabled tabs
         
