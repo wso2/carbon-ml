@@ -22,6 +22,7 @@ import static water.util.FrameUtils.generateNumKeys;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 
@@ -63,22 +66,31 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @param layerSizes Number of neurons for each layer
      * @param epochs Number of epochs to train
      * @param responseColumn Name of the response column
-     * @param modelID Id of the model
+     * @param modelName Name of the model
      * @return DeepLearningModel
      */
     public DeepLearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize, int[] layerSizes,
-            String activationType, int epochs, String responseColumn, long modelID) {
+            String activationType, int epochs, String responseColumn, String modelName, MLModel mlModel, long modelID) {
         // build stacked autoencoder by training the model with training data
-        
+
         double trainingFraction = 1;
         try {
             Scope.enter();
             if (trainData != null) {
 
-                Frame frame = DeeplearningModelUtils.javaRDDToFrame(trainData);
+                int numberOfFeatures = mlModel.getFeatures().size();
+                List<Feature> features = mlModel.getFeatures();
+                String[] names = new String[numberOfFeatures + 1];
+                for (int i = 0; i < numberOfFeatures; i++) {
+                    names[i] = features.get(i).getName();
+                }
+                names[numberOfFeatures] = mlModel.getResponseVariable();
+
+                Frame frame = DeeplearningModelUtils.javaRDDToFrame(names, trainData);
 
                 // H2O uses default C<x> for column header
-                String classifColName = "C" + frame.numCols();
+                // String classifColName = "C" + frame.numCols();
+                String classifColName = mlModel.getResponseVariable();
 
                 // Convert response to categorical (digits 1 to <num of columns>)
                 int ci = frame.find(classifColName);
@@ -101,8 +113,11 @@ public class StackedAutoencodersClassifier implements Serializable {
 
                 DeepLearningParameters deeplearningParameters = new DeepLearningParameters();
 
+                // convert model name
+                String dlModelName = modelName.replace('.', '_').replace('-', '_');
+
                 // populate model parameters
-                deeplearningParameters._model_id = Key.make("dl_" + modelID + "_model");
+                deeplearningParameters._model_id = Key.make("dl_" + dlModelName);
                 deeplearningParameters._train = trainFrame._key;
                 deeplearningParameters._valid = vframe._key;
                 deeplearningParameters._response_column = classifColName; // last column is the response
@@ -161,24 +176,26 @@ public class StackedAutoencodersClassifier implements Serializable {
         return dlModel;
     }
 
-    private DeepLearningParameters.Activation getActivationType(String activation){
-        String[] activationTypes = {"Rectifier", "RectifierWithDropout", "Tanh", "TanhWithDropout", "Maxout", "MaxoutWithDropout"};
-        if (activation.equalsIgnoreCase(activationTypes[0])){
+    private DeepLearningParameters.Activation getActivationType(String activation) {
+        String[] activationTypes = { "Rectifier", "RectifierWithDropout", "Tanh", "TanhWithDropout", "Maxout",
+                "MaxoutWithDropout" };
+        if (activation.equalsIgnoreCase(activationTypes[0])) {
             return DeepLearningParameters.Activation.Rectifier;
-        } else if (activation.equalsIgnoreCase(activationTypes[1])){
+        } else if (activation.equalsIgnoreCase(activationTypes[1])) {
             return DeepLearningParameters.Activation.RectifierWithDropout;
-        } else if (activation.equalsIgnoreCase(activationTypes[2])){
+        } else if (activation.equalsIgnoreCase(activationTypes[2])) {
             return DeepLearningParameters.Activation.Tanh;
-        } else if (activation.equalsIgnoreCase(activationTypes[3])){
+        } else if (activation.equalsIgnoreCase(activationTypes[3])) {
             return DeepLearningParameters.Activation.TanhWithDropout;
-        } else if (activation.equalsIgnoreCase(activationTypes[4])){
+        } else if (activation.equalsIgnoreCase(activationTypes[4])) {
             return DeepLearningParameters.Activation.Maxout;
-        } else if (activation.equalsIgnoreCase(activationTypes[5])){
+        } else if (activation.equalsIgnoreCase(activationTypes[5])) {
             return DeepLearningParameters.Activation.MaxoutWithDropout;
         } else {
             return DeepLearningParameters.Activation.RectifierWithDropout;
         }
     }
+
     /**
      * This method applies a stacked autoencoders model to a given dataset and make predictions
      * 
@@ -188,7 +205,7 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @return
      */
     public JavaPairRDD<Double, Double> test(JavaSparkContext ctxt, final DeepLearningModel deeplearningModel,
-            JavaRDD<LabeledPoint> test) throws MLModelBuilderException {
+            JavaRDD<LabeledPoint> test, MLModel mlModel) throws MLModelBuilderException {
 
         Scope.enter();
 
@@ -196,7 +213,15 @@ public class StackedAutoencodersClassifier implements Serializable {
             throw new MLModelBuilderException("DeeplearningModel is Null");
         }
 
-        Frame testData = DeeplearningModelUtils.javaRDDToFrame(test);
+        int numberOfFeatures = mlModel.getFeatures().size();
+        List<Feature> features = mlModel.getFeatures();
+        String[] names = new String[numberOfFeatures + 1];
+        for (int i = 0; i < numberOfFeatures; i++) {
+            names[i] = features.get(i).getName();
+        }
+        names[numberOfFeatures] = mlModel.getResponseVariable();
+
+        Frame testData = DeeplearningModelUtils.javaRDDToFrame(names, test);
         Frame testDataWithoutLabels = testData.subframe(0, testData.numCols() - 1);
         int numRows = (int) testDataWithoutLabels.numRows();
         Vec predictionsVector = deeplearningModel.score(testDataWithoutLabels).vec(0);

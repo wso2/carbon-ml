@@ -177,6 +177,9 @@ public class MLConstants {
     public static final String H2O_CONFIG_XML = "repository/conf/etc/h2o-config.xml";
     public static final String ML_DB = "jdbc/WSO2ML_DB";
 
+    // H2O Deep learning POJO file path
+    public static final String H2O_POJO_Path = "/models/dl_models/";
+
     // other
     public static final Long RANDOM_SEED = 11L;
     public static final String DECIMAL_FORMAT = "#.00";

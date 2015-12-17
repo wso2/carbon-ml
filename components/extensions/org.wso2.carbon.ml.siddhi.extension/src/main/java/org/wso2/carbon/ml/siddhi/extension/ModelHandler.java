@@ -169,4 +169,11 @@ public class ModelHandler {
     public String getAlgorithmClass() {
         return mlModel.getAlgorithmClass();
     }
+
+    /**
+     * @return the model
+     */
+    public MLModel getMlModel() {
+        return mlModel;
+    }
 }
