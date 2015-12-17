@@ -31,6 +31,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.DatasetType;
+import org.wso2.carbon.ml.core.h2o.POJOPredictor;
 import org.wso2.carbon.ml.core.impl.MLIOFactory;
 import org.wso2.carbon.ml.core.impl.Predictor;
 import org.wso2.carbon.ml.core.interfaces.MLInputAdapter;
@@ -97,9 +98,10 @@ public class ModelHandler {
 
     /**
      * Predict the value using the feature values.
-     * @param data  feature values array
-     * @return      predicted value
-     * @throws      MLModelHandlerException
+     * @param data          feature values array
+     * @param outputType    data type of the output
+     * @return              predicted value
+     * @throws              MLModelHandlerException
      */
     public Object predict(String[] data, String outputType) throws MLModelHandlerException {
         ArrayList<String[]> list = new ArrayList<String[]>();
@@ -107,6 +109,21 @@ public class ModelHandler {
         Predictor predictor = new Predictor(modelId, mlModel, list);
         List<?> predictions = predictor.predict();
         String predictionStr = predictions.get(0).toString();
+        Object prediction = castValue(outputType, predictionStr);
+        return prediction;
+    }
+
+    /**
+     * Predict the value using the feature values with POJO predictor.
+     * @param data          feature values array
+     * @param outputType    data type of the output
+     * @param pojoPredictor POJO predictor
+     * @return              predicted value
+     * @throws              MLModelHandlerException
+     */
+    public Object predict(String[] data, String outputType, POJOPredictor pojoPredictor)
+            throws MLModelHandlerException {
+        String predictionStr = pojoPredictor.predict(data).toString();
         Object prediction = castValue(outputType, predictionStr);
         return prediction;
     }
