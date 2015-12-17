@@ -695,11 +695,33 @@ public class MLModelHandler {
                 // Write POJO if it is a Deep Learning model
                 // convert model name
                 String dlModelName = modelName.replace('.', '_').replace('-', '_');
-                File file = new File(storageLocation + "/dl_" + dlModelName + ".java");
+                File file = new File(storageLocation + "/" + dlModelName + "_dl" + ".java");
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 DeepLearningModel deepLearningModel = mlDeeplearningModel.getDlModel();
                 deepLearningModel.toJava(fileOutputStream, false, false);
                 fileOutputStream.close();
+
+                MLModel dlModel = new MLModel();
+                dlModel.setAlgorithmClass(model.getAlgorithmClass());
+                dlModel.setAlgorithmName(model.getAlgorithmName());
+                dlModel.setEncodings(model.getEncodings());
+                dlModel.setFeatures(model.getFeatures());
+                dlModel.setResponseIndex(model.getResponseIndex());
+                dlModel.setResponseVariable(model.getResponseVariable());
+                dlModel.setNewToOldIndicesList(model.getNewToOldIndicesList());
+
+                // Writing the DL model without Deep Learning logic
+                // For prediction with POJO
+                MLIOFactory ioFactoryDl = new MLIOFactory(mlProperties);
+                MLOutputAdapter outputAdapterDl = ioFactoryDl.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
+                ByteArrayOutputStream baosDl = new ByteArrayOutputStream();
+                ObjectOutputStream oosDl = new ObjectOutputStream(baosDl);
+                oosDl.writeObject(dlModel);
+                oosDl.flush();
+                oosDl.close();
+                InputStream isDl = new ByteArrayInputStream(baosDl.toByteArray());
+                // adapter will write the model and close the stream.
+                outputAdapterDl.write(outPath + "_dl", isDl);
             }
 
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
