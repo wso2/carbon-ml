@@ -23,6 +23,7 @@ import java.util.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
+import org.wso2.carbon.ml.core.h2o.POJOPredictor;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
 import org.wso2.siddhi.core.event.stream.StreamEvent;
@@ -52,6 +53,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private boolean isAnomalyDetection;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap; // <feature-index, [event-array-type][attribute-index]> pairs
+    private POJOPredictor pojoPredictor;
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
@@ -95,9 +97,16 @@ public class PredictStreamProcessor extends StreamProcessor {
                         }
                         // Gets the average value of predictions
                         predictionResult = sum / modelHandlers.length;
+
                     } else if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
                         for (int i = 0; i < modelHandlers.length; i++) {
                             predictionResults[i] = modelHandlers[i].predict(featureValues, outputType, percentileValue);
+                        }
+                    } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
+                        pojoPredictor = new POJOPredictor();
+                        for (int i = 0; i < modelHandlers.length; i++) {
+                            predictionResults[i] = pojoPredictor.predict(modelHandlers[i].getMlModel(), featureValues,
+                                    modelStorageLocations[i]);
                         }
                         // Gets the majority vote
                         predictionResult = ObjectUtils.mode(predictionResults);

@@ -98,12 +98,12 @@ public class DeeplearningModelUtils {
     }
 
     /**
-     * Convert a JavaRDD to a H2O Frame
-     * 
+     * Convert a JavaRDD to a H2O Frame with Names
+     *
      * @param data Data to be converted to a Frame
      * @return Frame with training data
      */
-    public static Frame javaRDDToFrame(JavaRDD<LabeledPoint> data) {
+    public static Frame javaRDDToFrame(String[] names, JavaRDD<LabeledPoint> data) {
         List<LabeledPoint> list = data.collect();
         Vec[] allVecs = new Vec[list.get(0).features().size() + 1];
 
@@ -123,7 +123,7 @@ public class DeeplearningModelUtils {
             }
         }
 
-        return new Frame(allVecs);
+        return new Frame(names, allVecs);
     }
 
     /**
@@ -132,7 +132,7 @@ public class DeeplearningModelUtils {
      * @param data Data to be converted to a Frame
      * @return Frame with training data
      */
-    public static Frame doubleArrayListToFrame(List<double[]> data) {
+    public static Frame doubleArrayListToFrame(String[] names, List<double[]> data) {
         Vec[] allVecs = new Vec[data.get(0).length];
 
         for (int i = 0; i < data.get(0).length; i++) {
@@ -143,6 +143,6 @@ public class DeeplearningModelUtils {
             allVecs[i] = v;
         }
 
-        return new Frame(allVecs);
+        return new Frame(names, allVecs);
     }
 }

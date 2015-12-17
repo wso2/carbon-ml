@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +36,7 @@ import org.wso2.carbon.ml.commons.constants.MLConstants.ANOMALY_DETECTION_ALGORI
 import org.wso2.carbon.ml.commons.constants.MLConstants.DEEPLEARNING_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.SUPERVISED_ALGORITHM;
 import org.wso2.carbon.ml.commons.constants.MLConstants.UNSUPERVISED_ALGORITHM;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
@@ -206,7 +204,8 @@ public class Predictor {
                         try {
                             normalizedData = normalization.call(data);
                         } catch (MLModelBuilderException e) {
-                            log.warn("Data normalization failed for data: " + data + " Cause: " + e.getMessage());
+                            log.warn("Data normalization failed for data: " + Arrays.toString(data) + " Cause: "
+                                    + e.getMessage());
                             normalizedData = data;
                         }
                         vector = new DenseVector(normalizedData);
@@ -236,12 +235,23 @@ public class Predictor {
                 for (Vector vector : dataToBePredicted) {
                     tobePredictedList.add(vector.toArray());
                 }
-                Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(tobePredictedList);
+                int numberOfFeatures = model.getFeatures().size();
+                List<Feature> features = model.getFeatures();
+                String[] names = new String[numberOfFeatures];
+                for (int i = 0; i < numberOfFeatures; i++) {
+                    names[i] = features.get(i).getName();
+                }
+                Frame predFrame = DeeplearningModelUtils.doubleArrayListToFrame(names, tobePredictedList);
+
+                Context context = startTimer(timer);
+
                 double[] predictedData = saeModel.predict(predFrame);
 
                 for (double pVal : predictedData) {
                     predictions.add((Double) pVal);
                 }
+
+                stopTimer(context);
                 return decodePredictedValues(predictions);
             default:
                 throw new AlgorithmNameException(

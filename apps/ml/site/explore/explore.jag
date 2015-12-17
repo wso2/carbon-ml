@@ -78,23 +78,18 @@ include("../../includes/tenantAware.jag");
 </div>
 <!-- secondary header - app bar -->
 
-
-<!-- content/body -->
-<div class="row">
-	<div class="col-lg-12 wr-secondary-bar">
-
-		<!-- Wizard -->
-	    <ul class="nav nav-pills nav-wizard">
-            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Preprocess</a><div class="nav-arrow"></div></li>
-            <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
-            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithms</a><div class="nav-arrow"></div></li>
-            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Model</a><div class="nav-arrow"></div></li>
-	    </ul>
-
-
-	</div>
+<!-- content/body -->		
+<!-- Wizard -->
+<div class="nav-wizard-wrapper">
+    <ul class="nav-wizard center-block">
+        <li class="tab-link-disabled"><a href="#" ><span class="nav-wedge-step">Step 1</span>Preprocess</a></li>
+        <li class="active tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 2</span>Explore</a></li>
+        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 3</span>Algorithms</a></li>
+        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 4</span>Parameters</a></li>
+        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 5</span>Model</a></li>
+    </ul>
 </div>
+
 <div class="row">
 	<div class="col-md-12">
 		<!-- content -->
@@ -551,7 +546,7 @@ $( document ).ready(function() {
     });
 
     // disable tabs based on the features
-    disableTabs();
+    removeTabs();
 
     // select the active tab on page load
     selectActiveTab();
@@ -703,27 +698,19 @@ function selectActiveTab() {
 	}
 }
 
-// disable tabs based on the features and show tooltips
-function disableTabs() {
-    if (!(numericalFeatureNames.length >1 & categoricalFeatureNames.length >0)) {
-        $('#scatter-plot-li').attr('class', 'disabled');
-        $('#scatter-plot-li').attr('title', 'Minimum of two numerical features and one categorical feature required to draw a scatter plot');
-        $('#scatter-plot-link').attr('data-toggle', '');
+// remove unsupported tabs 
+function removeTabs() {
+    if (!(numericalFeatureNames.length >1 && categoricalFeatureNames.length >0)) {
+        $('#scatter-plot-li').remove();
 	}
 	if(categoricalFeatureNames.length < 2) {
-	    $('#parallel-sets-li').attr('class', 'disabled');
-        $('#parallel-sets-li').attr('title', 'Minimum of two categorical features required for parallel sets');
-        $('#parallel-sets-link').attr('data-toggle', '');
+	    $('#parallel-sets-li').remove();
 	}
-	if(!(categoricalFeatureNames.length > 0 & numericalFeatureNames.length > 0)) {
-	    $('#trellis-chart-li').attr('class', 'disabled');
-        $('#trellis-chart-li').attr('title', 'Minimum of one categorical feature required to draw trellis charts');
-        $('#trellis-chart-link').attr('data-toggle', '');
+	if(!(categoricalFeatureNames.length > 0 && numericalFeatureNames.length > 0)) {
+	    $('#trellis-chart-li').remove();
 	}
 	if(numericalFeatureNames.length < 2) {
-		$('#cluster-diagram-li').attr('class', 'disabled');
-        $('#cluster-diagram-li').attr('title', 'Minimum of two numerical features required for cluster diagrams');
-        $('#cluster-diagram-link').attr('data-toggle', '');
+           $('#cluster-diagram-li').remove();
 	}
 }
 

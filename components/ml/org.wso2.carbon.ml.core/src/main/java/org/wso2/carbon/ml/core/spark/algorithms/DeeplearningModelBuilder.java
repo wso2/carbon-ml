@@ -61,7 +61,7 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
 
         if (log.isDebugEnabled()) {
             log.debug("Start building the Stacked Autoencoders...");
-        }       
+        }
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -153,7 +153,8 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     hyperParameters.get(MLConstants.ACTIVATION_TYPE),
-                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getResponseVariable(), modelID);
+                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getResponseVariable(),
+                    getContext().getModel().getName(), mlModel, modelID);
 
             if (deeplearningModel == null) {
                 throw new MLModelBuilderException("DeeplearningModel is Null.");
@@ -165,8 +166,8 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
             testingData.cache();
 
             // make predictions with the trained model
-            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier.test(sparkContext, deeplearningModel,
-                    testingData).cache();
+            JavaPairRDD<Double, Double> predictionsAndLabels = saeClassifier
+                    .test(sparkContext, deeplearningModel, testingData, mlModel).cache();
 
             // get model summary
             DeeplearningModelSummary deeplearningModelSummary = DeeplearningModelUtils
