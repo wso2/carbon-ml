@@ -47,7 +47,7 @@ public class POJOPredictor {
 
     public POJOPredictor(MLModel mlModel, String path) throws MLModelHandlerException {
         String dlModelName = extractModelName(path);
-        dlModelName = "dl_" + dlModelName.replace('.', '_').replace('-', '_');
+        dlModelName = dlModelName.replace('.', '_').replace('-', '_');
         String carbonHome = CarbonUtils.getCarbonHome();
         File f = new File(carbonHome + MLConstants.H2O_POJO_Path);
 
