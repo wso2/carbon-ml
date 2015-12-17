@@ -59,6 +59,15 @@ public class PredictMediatorSerializer extends AbstractMediatorSerializer {
                 nullNS, predictMediator.getModelStorageLocation()));
         predictElement.addChild(modelConfiguration);
 
+        // <percentile>
+        if (predictMediator.isAnomalyDetection()) {
+            OMElement percentileConfiguration = fac
+                    .createOMElement(PredictMediatorConstants.PERCENTILE_QNAME.getLocalPart(), synNS);
+            percentileConfiguration.addAttribute(fac.createOMAttribute(
+                    PredictMediatorConstants.VALUE_ATT.getLocalPart(), nullNS, predictMediator.getPercentile()));
+            predictElement.addChild(percentileConfiguration);
+        }
+        
         // <features>
         OMElement features = fac.createOMElement(PredictMediatorConstants.FEATURES_QNAME.getLocalPart(), synNS);
         // <feature>+

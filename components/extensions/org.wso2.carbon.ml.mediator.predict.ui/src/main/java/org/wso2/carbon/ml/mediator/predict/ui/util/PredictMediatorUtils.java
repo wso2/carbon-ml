@@ -103,7 +103,24 @@ public class PredictMediatorUtils {
      */
     public static String getResponseVariable(String modelStorageLocation) throws IOException,
             ClassNotFoundException, URISyntaxException, MLInputAdapterException {
+
         MLModel mlModel = retrieveModel(modelStorageLocation);
         return mlModel.getResponseVariable();
+    }
+
+    /**
+     * Get the algorithm class of the model
+     * @param modelStorageLocation model storage location
+     * @return algorithm class
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws URISyntaxException
+     * @throws MLInputAdapterException
+     */
+    public static String getAlgorithmClass(String modelStorageLocation)
+            throws IOException, ClassNotFoundException, URISyntaxException, MLInputAdapterException {
+
+        MLModel mlModel = retrieveModel(modelStorageLocation);
+        return mlModel.getAlgorithmClass();
     }
 }

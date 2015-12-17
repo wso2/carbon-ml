@@ -39,6 +39,7 @@ public class PredictMediator extends AbstractMediator {
     private String modelStorageLocation;
     private String predictionPropertyName;
     private List<MediatorProperty> features = new ArrayList<MediatorProperty>();
+    private String percentile;
 
     @Override
     public OMElement serialize(OMElement parent) {
@@ -48,13 +49,20 @@ public class PredictMediator extends AbstractMediator {
 
         if (modelStorageLocation != null) {
             OMElement modelElement = fac.createOMElement(MODEL_QNAME);
-            modelElement.addAttribute(fac.createOMAttribute(STORAGE_LOCATION_ATT.getLocalPart(), nullNS, modelStorageLocation));
+            modelElement.addAttribute(
+                    fac.createOMAttribute(STORAGE_LOCATION_ATT.getLocalPart(), nullNS, modelStorageLocation));
             mlElement.addChild(modelElement);
         } else {
             throw new MediatorException("Invalid Predict mediator. Model storage-location is required");
         }
 
-        if(features.isEmpty()) {
+        if (percentile != null) {
+            OMElement percentileElement = fac.createOMElement(PERCENTILE_QNAME);
+            percentileElement.addAttribute(fac.createOMAttribute(VALUE_ATT.getLocalPart(), nullNS, percentile));
+            mlElement.addChild(percentileElement);
+        }
+
+        if (features.isEmpty()) {
             throw new MediatorException("Invalid Predict mediator. Features required");
         }
         OMElement featuresElement = fac.createOMElement(FEATURES_QNAME);
@@ -63,8 +71,8 @@ public class PredictMediator extends AbstractMediator {
             if (mediatorProperty.getName() == null) {
                 throw new MediatorException("Invalid Predict mediator. Feature names are required.");
             }
-            featureElement.addAttribute(fac.createOMAttribute(NAME_ATT.getLocalPart(), nullNS,
-                    mediatorProperty.getName()));
+            featureElement
+                    .addAttribute(fac.createOMAttribute(NAME_ATT.getLocalPart(), nullNS, mediatorProperty.getName()));
             if (mediatorProperty.getExpression() == null) {
                 throw new MediatorException("Invalid Predict mediator. Feature expressions are required.");
             }
@@ -74,15 +82,16 @@ public class PredictMediator extends AbstractMediator {
         }
         mlElement.addChild(featuresElement);
 
-        if(predictionPropertyName != null) {
+        if (predictionPropertyName != null) {
             OMElement predictionElement = fac.createOMElement(PREDICTION_OUTPUT_QNAME);
-            predictionElement.addAttribute(fac.createOMAttribute(PROPERTY_ATT.getLocalPart(), nullNS, predictionPropertyName));
+            predictionElement
+                    .addAttribute(fac.createOMAttribute(PROPERTY_ATT.getLocalPart(), nullNS, predictionPropertyName));
             mlElement.addChild(predictionElement);
         } else {
             throw new MediatorException("Invalid Predict mediator. PredictionOutput property name is required");
         }
 
-        if(parent != null) {
+        if (parent != null) {
             parent.addChild(mlElement);
         }
         return mlElement;
@@ -101,6 +110,16 @@ public class PredictMediator extends AbstractMediator {
             throw new MediatorException("Model storage-location attribute is required.");
         }
         this.modelStorageLocation = modelName.getAttributeValue();
+
+        // percentile
+        OMElement percentileElement = omElement.getFirstChildWithName(PERCENTILE_QNAME);
+        if(percentileElement != null) {
+            OMAttribute percentileValue = percentileElement.getAttribute(VALUE_ATT);
+            if (percentileValue == null) {
+                this.percentile = "95.0";
+            }
+            this.percentile = percentileValue.getAttributeValue();
+        }
 
         // features
         OMElement featuresElement = omElement.getFirstChildWithName(FEATURES_QNAME);
@@ -215,5 +234,21 @@ public class PredictMediator extends AbstractMediator {
      */
     public List<MediatorProperty> getFeatures() {
         return features;
+    }
+
+    /**
+     * Get the percentile value for anomaly detection
+     * @return percentile
+     */
+    public String getPercentile() {
+        return percentile;
+    }
+
+    /**
+     * Set the percentile value
+     * @param percentile percentile value for anomaly detection
+     */
+    public void setPercentile(String percentile) {
+        this.percentile = percentile;
     }
 }
