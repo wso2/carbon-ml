@@ -39,6 +39,7 @@ public class PredictMediator extends AbstractMediator {
     private String modelStorageLocation;
     private String predictionPropertyName;
     private List<MediatorProperty> features = new ArrayList<MediatorProperty>();
+    private String percentile;
 
     @Override
     public OMElement serialize(OMElement parent) {
@@ -50,6 +51,12 @@ public class PredictMediator extends AbstractMediator {
         modelElement.addAttribute(fac.createOMAttribute(STORAGE_LOCATION_ATT.getLocalPart(), nullNS,
                 modelStorageLocation == null ? "" : modelStorageLocation));
         mlElement.addChild(modelElement);
+
+        if (percentile != null) {
+            OMElement percentileElement = fac.createOMElement(PERCENTILE_QNAME);
+            percentileElement.addAttribute(fac.createOMAttribute(VALUE_ATT.getLocalPart(), nullNS, percentile));
+            mlElement.addChild(percentileElement);
+        }
 
         OMElement featuresElement = fac.createOMElement(FEATURES_QNAME);
         for (MediatorProperty mediatorProperty : features) {
@@ -88,6 +95,16 @@ public class PredictMediator extends AbstractMediator {
             throw new MediatorException("Model storage-location attribute is required.");
         }
         this.modelStorageLocation = modelName.getAttributeValue();
+
+        // percentile
+        OMElement percentileElement = omElement.getFirstChildWithName(PERCENTILE_QNAME);
+        if(percentileElement != null) {
+            OMAttribute percentileValue = percentileElement.getAttribute(VALUE_ATT);
+            if (percentileValue == null) {
+                this.percentile = "95.0";
+            }
+            this.percentile = percentileValue.getAttributeValue();
+        }
 
         // features
         OMElement featuresElement = omElement.getFirstChildWithName(FEATURES_QNAME);
@@ -202,5 +219,13 @@ public class PredictMediator extends AbstractMediator {
      */
     public List<MediatorProperty> getFeatures() {
         return features;
+    }
+
+    public String getPercentile() {
+        return percentile;
+    }
+
+    public void setPercentile(String percentile) {
+        this.percentile = percentile;
     }
 }

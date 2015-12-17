@@ -38,7 +38,9 @@ public class PredictMediator extends AbstractMediator {
     private String resultPropertyName;
     private Map<String, SynapsePath> featureMappings;
     private String modelStorageLocation;
+    private String percentile;
     private boolean isUpdated;
+    private boolean isAnomalyDetection = false;
 
     public PredictMediator() {
         featureMappings = new HashMap<String, SynapsePath>();
@@ -57,6 +59,7 @@ public class PredictMediator extends AbstractMediator {
                 synLog.traceTrace("Message : " + messageContext.getEnvelope());
             }
         }
+
         String prediction = getPredictionFromModel(messageContext);
         messageContext.setProperty(resultPropertyName, prediction);
 
@@ -73,8 +76,15 @@ public class PredictMediator extends AbstractMediator {
      */
     private String getPredictionFromModel(MessageContext messageContext) {
 
+        String prediction;
         try {
-            String prediction = ModelHandler.getInstance(modelStorageLocation, featureMappings, isUpdated).getPrediction(messageContext);
+            if (!isAnomalyDetection) {
+                prediction = ModelHandler.getInstance(modelStorageLocation, featureMappings, isUpdated)
+                        .getPrediction(messageContext);
+            } else {
+                prediction = ModelHandler.getInstance(modelStorageLocation, featureMappings, isUpdated)
+                        .getPrediction(messageContext, percentile);
+            }
             return prediction;
         } catch (JaxenException e) {
             handleException("Error while extracting feature values ", e, messageContext);
@@ -144,5 +154,21 @@ public class PredictMediator extends AbstractMediator {
      */
     public String getModelStorageLocation() {
         return modelStorageLocation;
+    }
+
+    public String getPercentile() {
+        return percentile;
+    }
+
+    public void setPercentile(String percentile) {
+        this.percentile = percentile;
+    }
+
+    public boolean isAnomalyDetection() {
+        return isAnomalyDetection;
+    }
+
+    public void setAnomalyDetection(boolean anomalyDetection) {
+        isAnomalyDetection = anomalyDetection;
     }
 }

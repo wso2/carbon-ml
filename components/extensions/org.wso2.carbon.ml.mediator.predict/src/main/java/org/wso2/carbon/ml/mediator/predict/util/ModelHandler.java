@@ -148,6 +148,31 @@ public class ModelHandler {
     }
 
     /**
+     * Get the predicted value for the given input features using the ML-Model
+     * @param messageContext the incoming message context
+     * @param percentile percentile value
+     * @return the predicted value as String
+     */
+    public String getPrediction(MessageContext messageContext, String percentile)
+            throws MLModelBuilderException, JaxenException, MLModelHandlerException {
+
+        String data[] = new String[featureIndexMap.size()];
+        for (Map.Entry<SynapsePath, Integer> entry : featureIndexMap.entrySet()) {
+
+            SynapsePath synapsePath = entry.getKey();
+            // Extract the feature value from the message
+            String variableValue = synapsePath.stringValueOf(messageContext);
+            if (variableValue != null) {
+                // Get the mapping feature index of the ML-model
+                int featureIndex = entry.getValue();
+                data[featureIndex] = variableValue;
+            }
+        }
+        double percentileValue = Double.parseDouble(percentile);
+        return predict(data, percentileValue);
+    }
+
+    /**
      * Predict the value using the feature values
      * @param data  feature values array
      * @return      predicted value as String
@@ -158,6 +183,22 @@ public class ModelHandler {
         List<String[]> list = new ArrayList<String[]>();
         list.add(data);
         Predictor predictor = new Predictor(modelId, mlModel, list);
+        List<?> predictions = predictor.predict();
+        return predictions.get(0).toString();
+    }
+
+    /**
+     * Predict the value using the feature values (anomaly detection models)
+     * @param data feature values array
+     * @param percentile percentile value
+     * @return predicted value as String
+     * @throws MLModelHandlerException
+     */
+    private String predict(String[] data, double percentile) throws MLModelHandlerException {
+
+        List<String[]> list = new ArrayList<String[]>();
+        list.add(data);
+        Predictor predictor = new Predictor(modelId, mlModel, list, percentile, false);
         List<?> predictions = predictor.predict();
         return predictions.get(0).toString();
     }
