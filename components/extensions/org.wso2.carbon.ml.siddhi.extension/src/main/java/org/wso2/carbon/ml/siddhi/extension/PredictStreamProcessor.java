@@ -90,6 +90,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                         }
                         // Gets the majority vote
                         predictionResult = ObjectUtils.mode(predictionResults);
+
                     } else if (AlgorithmType.NUMERICAL_PREDICTION.getValue().equals(algorithmClass)) {
                         double sum = 0;
                         for (int i = 0; i < modelHandlers.length; i++) {
@@ -102,6 +103,9 @@ public class PredictStreamProcessor extends StreamProcessor {
                         for (int i = 0; i < modelHandlers.length; i++) {
                             predictionResults[i] = modelHandlers[i].predict(featureValues, outputType, percentileValue);
                         }
+                        // Gets the majority vote
+                        predictionResult = ObjectUtils.mode(predictionResults);
+
                     } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
                         pojoPredictor = new POJOPredictor();
                         for (int i = 0; i < modelHandlers.length; i++) {
@@ -110,6 +114,7 @@ public class PredictStreamProcessor extends StreamProcessor {
                         }
                         // Gets the majority vote
                         predictionResult = ObjectUtils.mode(predictionResults);
+
                     } else {
                         String msg = String.format(
                                 "Error while predicting. Prediction is not supported for the algorithm class %s. ",
