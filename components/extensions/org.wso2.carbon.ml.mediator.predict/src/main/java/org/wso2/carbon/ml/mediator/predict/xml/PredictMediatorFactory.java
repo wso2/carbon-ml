@@ -63,6 +63,19 @@ public class PredictMediatorFactory extends AbstractMediatorFactory {
 
         }
 
+        // Configure percentile
+        OMElement percentileElement = omElement.getFirstChildWithName(PredictMediatorConstants.PERCENTILE_QNAME);
+        if (percentileElement != null) {
+            String percentileValue = getAttributeValue(percentileElement, PredictMediatorConstants.VALUE_ATT);
+            if (percentileValue != null) {
+                predictMediator.setPercentile(percentileValue);
+                predictMediator.setAnomalyDetection(true);
+            } else {
+                predictMediator.setPercentile("95.0");
+                predictMediator.setAnomalyDetection(true);
+            }
+        }
+
         // Configure features
         OMElement featuresElement = omElement.getFirstChildWithName(PredictMediatorConstants.FEATURES_QNAME);
         if(featuresElement != null) {
@@ -102,6 +115,7 @@ public class PredictMediatorFactory extends AbstractMediatorFactory {
         } else {
             handleException("PredictionOutput element not defined.");
         }
+
     }
 
     /**

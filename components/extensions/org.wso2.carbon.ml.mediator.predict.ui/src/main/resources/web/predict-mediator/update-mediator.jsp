@@ -58,4 +58,7 @@
 
     String predictionXpath = request.getParameter("predictionProperty");
     predictMediator.setPredictionPropertyName(predictionXpath);
+    String percentileXpath = request.getParameter("percentileValue");
+    predictMediator.setPercentile(percentileXpath);
+
 %>
