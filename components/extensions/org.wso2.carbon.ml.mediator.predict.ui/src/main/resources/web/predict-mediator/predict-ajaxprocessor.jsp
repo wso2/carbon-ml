@@ -29,6 +29,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.wso2.carbon.ml.mediator.predict.ui.util.PredictMediatorUtils" %>
 <%@ page import="org.apache.synapse.config.xml.SynapsePath" %>
+<%@ page import="org.wso2.carbon.ml.core.factories.AlgorithmType" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <fmt:bundle basename="org.wso2.carbon.ml.mediator.predict.ui.i18n.Resources">
@@ -54,6 +55,7 @@
     boolean modelNotFound = false;
     List<Feature> features = null;
     String responseVariable = null;
+    String algorithmClass = null;
     response.setHeader("Cache-Control", "no-cache");
     String modelName = request.getParameter("mediatorInput");
     predictMediator.setModelStorageLocation(modelName);
@@ -61,11 +63,41 @@
     try {
         features = PredictMediatorUtils.getFeaturesOfModel(request.getParameter("mediatorInput"));
         responseVariable = PredictMediatorUtils.getResponseVariable(request.getParameter("mediatorInput"));
+        algorithmClass = PredictMediatorUtils.getAlgorithmClass(request.getParameter("mediatorInput"));
     } catch (Exception e) {
         modelNotFound = true;
     }
     if (features != null && features.size() > 0 && features.get(0) != null && !modelNotFound) {
 %>
+
+
+    <%
+        if(AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)){
+    %>
+    <div style="margin-top:20px;">
+        <h3 id="percentileLabel" class="mediator"><fmt:message key="mediator.predict.prediction.percentile"/></h3>
+        <table class="normal">
+            <tbody>
+            <tr>
+                <td><input type="hidden" name="response2" id="response2"
+                           value="response2"/><fmt:message key="mediator.predict.prediction.value"/></td>
+                <%
+                    String percentileExpression = ((PredictMediator) mediator).getPercentile();
+                    if(percentileExpression == null) {
+                        percentileExpression = "95.0";
+                    }
+                %>
+                <td><input type="text" name="percentileValue" id="percentileValue"
+                           value="<%=percentileExpression%>" class="esb-edit small_textbox"/></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <%
+        }
+    %>
+
     <h3 id="titleLabel" class="mediator"><fmt:message key="mediator.predict.features"/></h3>
 
     <div style="margin-top:0px;">

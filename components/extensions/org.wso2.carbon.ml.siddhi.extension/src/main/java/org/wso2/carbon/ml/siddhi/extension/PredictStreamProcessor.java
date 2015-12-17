@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.wso2.carbon.ml.core.exceptions.MLInputAdapterException;
+import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.factories.AlgorithmType;
 import org.wso2.carbon.ml.core.h2o.POJOPredictor;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
@@ -42,19 +43,21 @@ import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
 
 public class PredictStreamProcessor extends StreamProcessor {
 
-
     private ModelHandler[] modelHandlers;
     private String[] modelStorageLocations;
     private String responseVariable;
+    private static final String anomalyPrediction = "prediction";
     private String algorithmClass;
     private String outputType;
+    private double percentileValue;
+    private boolean isAnomalyDetection;
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap; // <feature-index, [event-array-type][attribute-index]> pairs
-    private POJOPredictor pojoPredictor;
+    private POJOPredictor[] pojoPredictor;
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
-            StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
+                           StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
 
         while (streamEventChunk.hasNext()) {
 
@@ -66,10 +69,10 @@ public class PredictStreamProcessor extends StreamProcessor {
                 int[] attributeIndexArray = entry.getValue();
                 Object dataValue = null;
                 switch (attributeIndexArray[2]) {
-                    case 0 :
+                    case 0:
                         dataValue = event.getBeforeWindowData()[attributeIndexArray[3]];
                         break;
-                    case 2 :
+                    case 2:
                         dataValue = event.getOutputData()[attributeIndexArray[3]];
                         break;
                 }
@@ -94,11 +97,17 @@ public class PredictStreamProcessor extends StreamProcessor {
                         }
                         // Gets the average value of predictions
                         predictionResult = sum / modelHandlers.length;
-                    } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
-                        pojoPredictor = new POJOPredictor();
+                    } else if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
                         for (int i = 0; i < modelHandlers.length; i++) {
-                            predictionResults[i] = pojoPredictor.predict(modelHandlers[i].getMlModel(), featureValues,
-                                    modelStorageLocations[i]);
+                            predictionResults[i] = modelHandlers[i].predict(featureValues, outputType, percentileValue);
+                        }
+                        // Gets the majority vote
+                        predictionResult = ObjectUtils.mode(predictionResults);
+
+                    } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
+                        for (int i = 0; i < modelHandlers.length; i++) {
+                            predictionResults[i] = modelHandlers[i].predict(featureValues, outputType,
+                                    pojoPredictor[i]);
                         }
                         // Gets the majority vote
                         predictionResult = ObjectUtils.mode(predictionResults);
@@ -122,15 +131,15 @@ public class PredictStreamProcessor extends StreamProcessor {
 
     @Override
     protected List<Attribute> init(AbstractDefinition inputDefinition,
-            ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
+                                   ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
 
-        if(attributeExpressionExecutors.length < 2) {
+        if (attributeExpressionExecutors.length < 2) {
             throw new ExecutionPlanValidationException("ML model storage locations and response variable type have not "
                     + "been defined as the first two parameters");
-        } else if(attributeExpressionExecutors.length == 2) {
-            attributeSelectionAvailable = false;    // model-storage-location, data-type
+        } else if (attributeExpressionExecutors.length == 2) {
+            attributeSelectionAvailable = false; // model-storage-location, data-type
         } else {
-            attributeSelectionAvailable = true;  // model-storage-location, data-type, stream-attributes list
+            attributeSelectionAvailable = true; // model-storage-location, data-type, stream-attributes list
         }
 
         // model-storage-location
@@ -169,18 +178,6 @@ public class PredictStreamProcessor extends StreamProcessor {
             }
         }
 
-        // Validate response variables
-        // All models should have the same response variable.
-        // When put into a set, the size of the set should be 1
-        HashSet<String> responseVariables = new HashSet<String>();
-        for (int i = 0; i < modelStorageLocations.length; i++) {
-            responseVariables.add(modelHandlers[i].getResponseVariable());
-        }
-        if (responseVariables.size() > 1) {
-            throw new ExecutionPlanCreationException("Response variables of models are not equal");
-        }
-        responseVariable = modelHandlers[0].getResponseVariable();
-
         // Validate algorithm classes
         // All models should have the same algorithm class.
         // When put into a set, the size of the set should be 1
@@ -204,6 +201,56 @@ public class PredictStreamProcessor extends StreamProcessor {
             throw new ExecutionPlanRuntimeException("Features in models are not equal");
         }
 
+        if (AlgorithmType.ANOMALY_DETECTION.getValue().equals(algorithmClass)) {
+            isAnomalyDetection = true;
+        }
+
+        if (!isAnomalyDetection) {
+            // Validate response variables
+            // All models should have the same response variable.
+            // When put into a set, the size of the set should be 1
+            HashSet<String> responseVariables = new HashSet<String>();
+            for (int i = 0; i < modelStorageLocations.length; i++) {
+                responseVariables.add(modelHandlers[i].getResponseVariable());
+            }
+            if (responseVariables.size() > 1) {
+                throw new ExecutionPlanCreationException("Response variables of models are not equal");
+            }
+            responseVariable = modelHandlers[0].getResponseVariable();
+
+        } else {
+            if (attributeExpressionExecutors.length == 3) {
+                attributeSelectionAvailable = false; // model-storage-location, data-type
+            } else {
+                attributeSelectionAvailable = true; // model-storage-location, data-type, stream-attributes list
+            }
+
+            // checking the percentile value
+            if (attributeExpressionExecutors[2] instanceof ConstantExpressionExecutor) {
+                Object constantObj = ((ConstantExpressionExecutor) attributeExpressionExecutors[2]).getValue();
+                percentileValue = (Double) constantObj;
+
+            } else {
+                throw new ExecutionPlanValidationException(
+                        "percentile value has not been defined as the third parameter");
+            }
+
+            return Arrays.asList(new Attribute(anomalyPrediction, outputDatatype));
+        }
+
+        // Get POJO Predictors if deep learning
+        if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
+            pojoPredictor = new POJOPredictor[modelHandlers.length];
+            for (int i = 0; i < modelHandlers.length; i++) {
+                try {
+                    pojoPredictor[i] = new POJOPredictor(modelHandlers[i].getMlModel(), modelStorageLocations[i]);
+                } catch (MLModelHandlerException e) {
+                    throw new ExecutionPlanRuntimeException(
+                            "Failed to initialize the POJO predictor of the model " + modelStorageLocations[i], e);
+                }
+            }
+        }
+
         return Arrays.asList(new Attribute(responseVariable, outputDatatype));
     }
 
@@ -219,7 +266,7 @@ public class PredictStreamProcessor extends StreamProcessor {
 
     /**
      * Match the attribute index values of stream with feature index value of the model.
-     * 
+     *
      * @throws ExecutionPlanCreationException
      */
     private void populateFeatureAttributeMapping() {
