@@ -39,51 +39,57 @@ import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 
 public class POJOPredictor {
+    List<Feature> featureList;
+    MLModel mlModel;
+    private hex.genmodel.GenModel rawModel;
+    private EasyPredictModelWrapper model;
+    private int numberOfFeatures;
 
-    public POJOPredictor() {
-    }
-
-    public Object predict(MLModel mlModel, String[] featureVector, String path) throws MLModelHandlerException {
+    public POJOPredictor(MLModel mlModel, String path) throws MLModelHandlerException {
         String dlModelName = extractModelName(path);
         dlModelName = "dl_" + dlModelName.replace('.', '_').replace('-', '_');
         String carbonHome = CarbonUtils.getCarbonHome();
         File f = new File(carbonHome + MLConstants.H2O_POJO_Path);
+
         try {
             URL[] cp = { f.toURI().toURL(),
                     new File(carbonHome + MLConstants.H2O_POJO_Path + "h2o-genmodel.jar").toURI().toURL() };
             URLClassLoader urlcl = new URLClassLoader(cp, this.getClass().getClassLoader());
 
-            hex.genmodel.GenModel rawModel;
             rawModel = (hex.genmodel.GenModel) urlcl.loadClass(dlModelName).newInstance();
-            EasyPredictModelWrapper model = new EasyPredictModelWrapper(rawModel);
+            model = new EasyPredictModelWrapper(rawModel);
 
-            RowData row = new RowData();
-            int numberOfFeatures = mlModel.getFeatures().size();
-            List<Feature> featureList = mlModel.getFeatures();
+            numberOfFeatures = mlModel.getFeatures().size();
+            featureList = mlModel.getFeatures();
+            this.mlModel = mlModel;
 
-            for (int i = 0; i < numberOfFeatures; i++) {
-                row.put(featureList.get(i).getName(), featureVector[i]);
-            }
-
-            if (model.getModelCategory().name().equalsIgnoreCase("multinomial")) {
-                try {
-                    MultinomialModelPrediction p = model.predictMultinomial(row);
-                    return decodePredictedValue(Double.parseDouble(p.label), mlModel);
-                } catch (AbstractPredictException abstractPredictionException) {
-                    throw new MLModelHandlerException("Error occurred while predicting.", abstractPredictionException);
-                }
-            } else if (model.getModelCategory().name().equalsIgnoreCase("binomial")) {
-                try {
-                    BinomialModelPrediction p = model.predictBinomial(row);
-                    return decodePredictedValue(Double.parseDouble(p.label), mlModel);
-                } catch (AbstractPredictException abstractPredictionException) {
-                    throw new MLModelHandlerException("Error occurred while predicting.", abstractPredictionException);
-                }
-            } else {
-                throw new MLModelHandlerException("Unsupported deep learning model:" + model.getModelCategory());
-            }
         } catch (MalformedURLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new MLModelHandlerException("Error occurred while predicting.", e);
+            throw new MLModelHandlerException("Error occurred while initializing POHOPredictor.", e);
+        }
+    }
+
+    public Object predict(String[] featureVector) throws MLModelHandlerException {
+        RowData row = new RowData();
+        for (int i = 0; i < numberOfFeatures; i++) {
+            row.put(featureList.get(i).getName(), featureVector[i]);
+        }
+
+        if (model.getModelCategory().name().equalsIgnoreCase("multinomial")) {
+            try {
+                MultinomialModelPrediction p = model.predictMultinomial(row);
+                return decodePredictedValue(Double.parseDouble(p.label), mlModel);
+            } catch (AbstractPredictException abstractPredictionException) {
+                throw new MLModelHandlerException("Error occurred while predicting.", abstractPredictionException);
+            }
+        } else if (model.getModelCategory().name().equalsIgnoreCase("binomial")) {
+            try {
+                BinomialModelPrediction p = model.predictBinomial(row);
+                return decodePredictedValue(Double.parseDouble(p.label), mlModel);
+            } catch (AbstractPredictException abstractPredictionException) {
+                throw new MLModelHandlerException("Error occurred while predicting.", abstractPredictionException);
+            }
+        } else {
+            throw new MLModelHandlerException("Unsupported deep learning model:" + model.getModelCategory());
         }
     }
 
