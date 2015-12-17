@@ -40,11 +40,11 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.pmml.PMMLExportable;
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
 import org.wso2.carbon.metrics.manager.Timer.Context;
@@ -60,10 +60,10 @@ import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
 import org.wso2.carbon.ml.core.interfaces.PMMLModelContainer;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.algorithms.KMeans;
-import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
-import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
 import org.wso2.carbon.ml.core.spark.algorithms.SparkModelUtils;
 import org.wso2.carbon.ml.core.spark.models.MLDeeplearningModel;
+import org.wso2.carbon.ml.core.spark.models.MLMatrixFactorizationModel;
+import org.wso2.carbon.ml.core.spark.recommendation.CollaborativeFiltering;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
@@ -80,6 +80,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import org.xml.sax.InputSource;
 
 import scala.Tuple2;
+import hex.deeplearning.DeepLearningModel;
 
 
 /**
@@ -690,6 +691,15 @@ public class MLModelHandler {
                 MLDeeplearningModel mlDeeplearningModel = (MLDeeplearningModel) model.getModel();
                 mlDeeplearningModel.setStorageLocation(storageLocation);
                 model.setModel(mlDeeplearningModel);
+
+                // Write POJO if it is a Deep Learning model
+                // convert model name
+                String dlModelName = modelName.replace('.', '_').replace('-', '_');
+                File file = new File(storageLocation + "/dl_" + dlModelName + ".java");
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                DeepLearningModel deepLearningModel = mlDeeplearningModel.getDlModel();
+                deepLearningModel.toJava(fileOutputStream, false, false);
+                fileOutputStream.close();
             }
 
             MLIOFactory ioFactory = new MLIOFactory(mlProperties);
@@ -704,7 +714,6 @@ public class MLModelHandler {
             outputAdapter.write(outPath, is);
             databaseService.updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));
-
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
         }

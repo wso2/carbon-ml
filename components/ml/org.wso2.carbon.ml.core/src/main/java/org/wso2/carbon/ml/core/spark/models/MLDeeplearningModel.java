@@ -57,21 +57,21 @@ public class MLDeeplearningModel implements Externalizable {
     }
 
     /**
-     * Set the model
-     * 
-     * @param model model
-     */
-    public void setDeepLearningModel(DeepLearningModel model) {
-        this.dlModel = model;
-    }
-
-    /**
      * Returns the model
-     * 
+     *
      * @return model
      */
     public DeepLearningModel getDeepLearningModel() {
         return this.dlModel;
+    }
+
+    /**
+     * Set the model
+     *
+     * @param model model
+     */
+    public void setDeepLearningModel(DeepLearningModel model) {
+        this.dlModel = model;
     }
 
     /**
@@ -119,6 +119,10 @@ public class MLDeeplearningModel implements Externalizable {
         @SuppressWarnings("rawtypes")
         List<Key> keys = new ObjectTreeBinarySerializer().load(FileUtils.getURI(storageLocation));
         this.dlModel = (DeepLearningModel) keys.get(0).get();
+    }
+
+    public DeepLearningModel getDlModel() {
+        return dlModel;
     }
 
 }
