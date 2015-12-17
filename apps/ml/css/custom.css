@@ -1442,3 +1442,7 @@ ul.nav-wizard:before{
 .nav-wizard li a:hover:after {
 	border-left-color: #aaa;
 }
+/* styling for deep learning network diagram container */
+.dl-network {
+	padding: 0px 15px !important;
+}
