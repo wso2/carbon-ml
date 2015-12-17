@@ -117,7 +117,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 String dlModelName = modelName.replace('.', '_').replace('-', '_');
 
                 // populate model parameters
-                deeplearningParameters._model_id = Key.make("dl_" + dlModelName);
+                deeplearningParameters._model_id = Key.make(dlModelName + "_dl");
                 deeplearningParameters._train = trainFrame._key;
                 deeplearningParameters._valid = vframe._key;
                 deeplearningParameters._response_column = classifColName; // last column is the response
