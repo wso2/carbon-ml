@@ -42,6 +42,7 @@ public class DeeplearningModelSummary implements ModelSummary, Serializable{
     private double modelAccuracy;
     private MulticlassConfusionMatrix multiclassConfusionMatrix;
     private double meanSquaredError;
+    private String datasetVersion;
 
     public String getAlgorithm() {
         return algorithm;
@@ -169,6 +170,20 @@ public class DeeplearningModelSummary implements ModelSummary, Serializable{
      */
     public void setMulticlassConfusionMatrix(MulticlassConfusionMatrix multiclassConfusionMatrix) {
         this.multiclassConfusionMatrix = multiclassConfusionMatrix;
+    }
+
+    /**
+     * @return Returns dataset version
+     */
+    public String getDatasetVersion() {
+        return datasetVersion;
+    }
+
+    /**
+     * @param datasetVersion Sets dataset version
+     */
+    public void setDatasetVersion(String datasetVersion) {
+        this.datasetVersion = datasetVersion;
     }
 
 }

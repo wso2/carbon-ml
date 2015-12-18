@@ -191,6 +191,7 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
                     .setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(multiclassMetrics, mlModel));
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             deeplearningModelSummary.setModelAccuracy(modelAccuracy);
+            deeplearningModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return deeplearningModelSummary;
 
