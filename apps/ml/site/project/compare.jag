@@ -379,7 +379,7 @@
 <!-- download model popup-->
     <div class="container-fluid col-centered wr-content">
         <div class="popup-content" data-operation="download-model">
-           <div  align="left" onclick="hidePopup();">
+           <div id="back-download-model" align="left">
                 <span style="cursor:pointer"class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -395,7 +395,7 @@
                 </div>
         </div>
         <div class="popup-content" data-operation="publish-model">
-           <div  align="left" onclick="hidePopup();">
+           <div id="back-publish-model" align="left">
                 <span style="cursor:pointer"class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -643,7 +643,14 @@
                 '</div>';
         };
         return accordionPanels;
-    }    
+    }  
+
+     $(document).on('click','#back-download-model, #back-publish-model',function(e){
+            e.preventDefault();
+
+            hidePopup();
+        });
+
     // function to load models
     function loadModels() {        
         $.ajax({
