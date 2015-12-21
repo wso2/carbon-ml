@@ -485,8 +485,8 @@ $( document ).ready(function() {
                 }
             }
             else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {
-                if($.isNumeric(res.error)) {
-                    $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
+                if($.isNumeric(res.meanSquaredError)) {
+                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
                 }
                 // remove not applicable charts/tables
                 $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
@@ -517,8 +517,8 @@ $( document ).ready(function() {
             }
             else if (algorithm == 'RANDOM_FOREST_REGRESSION') {
                 // This is separated from other generalized linear models because this does not have all their properties
-                if($.isNumeric(res.error)) {
-                    $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
+                if($.isNumeric(res.meanSquaredError)) {
+                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
                 }
                 // remove not applicable charts/tables
                 $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram, #weights-chart").closest("div.wr-graph-element").remove();
