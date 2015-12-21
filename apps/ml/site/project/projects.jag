@@ -428,7 +428,7 @@ include("../../includes/tenantAware.jag");
                                 '<input type="text" value="" class="analysis-name f-input-w-md" placeholder="e.g. myanalysis"/>' +
                             '</td>' +
                             '<td>' +
-                                '<a data-datasetid="' + datasetId + '" data-projectname="' + projectName + '" data-projectid="' + projectId + '"href="#" id="create-analysis" class="create-analysis cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Analysis"><span>Create Analysis</span></a> '+
+                                '<a data-datasetid="' + datasetId + '" data-projectname="' + projectName + '" data-projectid="' + projectId + '"href="#" id="create-analysis" class="create-analysis cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new analysis"><span>Create Analysis</span></a> '+
                             '</td>' +
                         '</tr>' +
                     '</table>' +
@@ -484,14 +484,14 @@ include("../../includes/tenantAware.jag");
                         accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created at the moment.</h2>'+
                                 '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
-                                    '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                    '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip" data-original-title="Create a new project"><span>Create Project</span></a></p>'+
                                 '</div>'+
                             '</div>';
 
                     } else {
                         accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
-                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" title="hello" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" title="hello" data-original-title="Create a new project"><span>Create Project</span></a></p>'+
                             '</div>';
                     } 
                     $('#accordion').empty();
@@ -504,13 +504,13 @@ include("../../includes/tenantAware.jag");
                     createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
                             '<div style="display:inline-flex"  data-toggle="tooltip" title="'+title+'">'+
-                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip"  data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag" class="cu-level2-btn btn-add-new-dark ' + appendCreateprojectDisabled(noOfDatasets) + '" data-toggle="tooltip"  data-original-title="Create a new project"><span>Create Project</span></a></p>'+
                             '</div>'+
                             '</div>';
                     } else {
                     createProject = '' +
                             '<div class="ctrl-info-panel col-md-12 col-centered">'+
-                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new project"><span>Create Project</span></a></p>'+
                             '</div>';   
                     }
 
@@ -555,7 +555,7 @@ include("../../includes/tenantAware.jag");
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div>' +
-                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendDisabled(noOfAnalyses) + ' ' +appendCompareModelsDisabled(noOfCompleteModels)+ ' " data-toggle="tooltip" data-original-title="Compare models in this project"><span>Compare models</span></a>' +
+                                                        '<a href="#" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-dataseid="' + datasetId + '" id="compare-models" class="cu-reg-btn btn-compare ' + appendDisabled(noOfAnalyses) + ' ' +appendCompareModelsDisabled(noOfCompleteModels)+ ' " data-toggle="tooltip" data-original-title="Compare models of this project"><span>Compare models</span></a>' +
                                                         '<a href="#" data-projectid="' + projectId + '" id="delete-project" class="cu-reg-btn btn-delete">Delete Project</a>' +
                                                     '</div>' +
                                                 '</td>' +
@@ -602,8 +602,8 @@ include("../../includes/tenantAware.jag");
                                                                 '<td class="c-padd"><span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span>&nbsp;&nbsp;'+analysisName+'</span>' +
                                                                 '</td>' +
                                                                 '<td>' +
-                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>View</span></a>' +
-                                                                    '<a href="#" id="view-models" class="cu-level2-btn btn-view-models-dark" data-toggle="tooltip" data-original-title="View this model" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>Models</span></a>' +
+                                                                    '<a href="#" id="view-analysis" class="cu-level2-btn btn-view-dark" data-toggle="tooltip" data-original-title="View analysis configurations" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>View</span></a>' +
+                                                                    '<a href="#" id="view-models" class="cu-level2-btn btn-view-models-dark" data-toggle="tooltip" data-original-title="View models" data-analysisid="' + analysisId + '" data-projectid="' + projectId + '" data-projectname="' + projectName + '" data-analysisname="' + analysisName + '" data-datasetid="' + datasetId + '"><span>Models</span></a>' +
                                                                     '<a href="#" id="delete-analysis" class="del-wf cu-level2-btn btn-delete-dark" data-analysisid="' + analysisId + '">Delete</a>' +
                                                                 '</td>' +
                                                             '</tr>';                                                                                                       

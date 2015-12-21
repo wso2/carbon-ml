@@ -233,6 +233,9 @@ include("../../includes/tenantAware.jag");
             scrollVibrateFix();
         });*/
 
+        $(function () { 
+            $('[data-toggle="tooltip"]').tooltip() 
+        })
         $("[data-toggle=popover]").popover();
 
         $(".ctrl-asset-type-switcher").popover({
@@ -300,7 +303,7 @@ include("../../includes/tenantAware.jag");
                     '<div class="ctrl-info-panel col-md-12 col-centered">' +                        
                         '<h2>You do not have any models created at the moment.</h2>' +
                         '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
-                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '"><span>Create Model</span></a></p>'+
+                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>'+
                         '</div>' +
                     '</div>';
                     $("#accordion").append(accordionPanelNoModels);
@@ -310,7 +313,7 @@ include("../../includes/tenantAware.jag");
                     var createModel = '' +
                     '<div class="ctrl-info-panel col-md-12 col-centered">' +
                         '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
-                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '"><span>Create Model</span></a></p>' +
+                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>' +
                         '</div>' +
                     '</div>';
 
@@ -357,17 +360,17 @@ include("../../includes/tenantAware.jag");
                                                         // remove view from Kmeans Anomaly detection with Unlabeled data
                                                         if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                                                             accordionPanel += '' +
-                                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
+                                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
                                                          }
                                                          // remove predict from Collaborative Filtering
                                                         if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')){
                                                             accordionPanel += '' +
-                                                        '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
+                                                        '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
                                                          }
                                                     }
                                                         accordionPanel += '' +
-                                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Download</span></a>' +
-                                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '"><span>Publish</span></a>' +
+                                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
+                                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
                                                         '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
                                                     '</div>' +
                                                 '</td>' +
