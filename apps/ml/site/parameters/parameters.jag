@@ -206,6 +206,14 @@ $( document ).ready(function() {
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[3].value);
                 }
+                else if (algorithmName == 'RANDOM_FOREST_REGRESSION') {
+                    hyperParametersArray[0] = sanitize(hyperParametersResponse[4].value);
+                    hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
+                    hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
+                    hyperParametersArray[3] = sanitize(hyperParametersResponse[1].value);
+                    hyperParametersArray[4] = sanitize(hyperParametersResponse[0].value);
+                    hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
+                }
                 else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'SVM') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
@@ -221,7 +229,7 @@ $( document ).ready(function() {
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
                 }
-                else if (algorithmName == 'RANDOM_FOREST') {
+                else if (algorithmName == 'RANDOM_FOREST_CLASSIFICATION') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[4].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[2].value);
