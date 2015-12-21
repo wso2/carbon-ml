@@ -97,7 +97,7 @@ include("../../includes/tenantAware.jag");
 
 			<div id="notification-area"></div>
 			<div class="ctrl-info-panel col-md-12 col-centered">
-				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create new dataset"><span>Create Dataset</span></a></p>
+				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset"><span>Create Dataset</span></a></p>
 			</div>
 			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
 
@@ -242,7 +242,7 @@ function accordingBody(datasetDescription, versions, datasetName) {
 											    			'<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
 											    		'</td>' +
 											    		'<td>' +
-											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create new version"><span>Create Version</span></a>'+
+											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset version"><span>Create Version</span></a>'+
 											    		'</td>' +
 											    	'</tr>' +
 											    '</table>' +
