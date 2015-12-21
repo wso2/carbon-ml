@@ -100,7 +100,7 @@ include("../../includes/tenantAware.jag");
 
                         <form id="prediction-form" method="POST" enctype="multipart/form-data">
 
-                            <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                            <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Source of the prediction data."></span></label>
                             <div class="input-control text">
                                 <select class="form-control" id="prediction-src" name="sourceType">
                                   <option value="file">File</option>
@@ -119,7 +119,7 @@ include("../../includes/tenantAware.jag");
                                     <input type="file" id="fileInput" name="file"/>
                                 </div>                                                                                 
 
-                                <label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                <label class="input-label">Data Format<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Format of the data to be uploaded. Data can only be in CSV (comma separated values) or TSV (tab separated values) format."></span></label>
                                 <div class="input-control text">
                                     <select class="form-control" id="data-format" name="dataFormat">
                                         <option value="csv">CSV</option>
@@ -127,7 +127,7 @@ include("../../includes/tenantAware.jag");
                                     </select>               
                                 </div>
 
-                                <label class="input-label">Column Header Available<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                <label class="input-label">Column Header Available<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Whether you have the header row as the first row of the dataset or not. If your dataset does not have a header row, WSO2 ML will generate a header row similar to V1, V2 .. Vn"></span></label>
                                 <div class="input-control text">
                                     <select class="form-control" id="column-header" name="columnHeader">
                                         <option value="yes">Yes</option>
@@ -210,7 +210,11 @@ include("../../includes/tenantAware.jag");
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/        
+    });*/
+         // for tooltip
+        $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+        })
 
         $("[data-toggle=popover]").popover();
 

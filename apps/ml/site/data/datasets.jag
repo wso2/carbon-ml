@@ -234,7 +234,7 @@ function accordingBody(datasetDescription, versions, datasetName) {
 								  	'<td>' +
 								  		'<div class="wr-analysis">' +
 								  			'<div id="inline-new-notification-area"></div>' +
-								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign"></span></label>' +
+								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="A unique version of the dataset"></span></label>' +
 											'<div class="input-control text">' +
 												'<table>' +
 													'<tr>' +
@@ -298,7 +298,11 @@ $( document ).ready(function() {
     
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/ 
+    });*/
+    // for tooltip
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
 
     $("[data-toggle=popover]").popover();
 
