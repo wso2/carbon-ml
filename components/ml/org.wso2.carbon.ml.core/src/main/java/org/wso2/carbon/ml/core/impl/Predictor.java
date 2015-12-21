@@ -102,7 +102,7 @@ public class Predictor {
                 }
 
                 return decodePredictedValues(predictions);
-            case RANDOM_FOREST:
+            case RANDOM_FOREST_CLASSIFICATION:
                 RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
                     Context context = startTimer(timer);
@@ -136,29 +136,50 @@ public class Predictor {
             }
 
         } else if (AlgorithmType.NUMERICAL_PREDICTION == type) {
-            GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel()).getModel();
+            SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             List<Double> predictions = new ArrayList<Double>();
-            for (Vector vector : dataToBePredicted) {
-                Context context = startTimer(timer);
+            switch (supervised_algorithm) {
+            case RANDOM_FOREST_REGRESSION:
+                RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
 
-                double predictedData = generalizedLinearModel.predict(vector);
-                predictions.add(predictedData);
+                    double predictedData = randomForestModel.predict(vector);
+                    predictions.add(predictedData);
 
-                stopTimer(context);
+                    stopTimer(context);
+                    if (log.isDebugEnabled()) {
 
-                if (log.isDebugEnabled()) {
-
-                    log.debug("Predicted value before decoding: " + predictedData);
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
                 }
-            }
-            return decodePredictedValues(predictions);
+                return decodePredictedValues(predictions);
+            default:
+                // Otherwise it is a linear model
+                GeneralizedLinearModel generalizedLinearModel = ((MLGeneralizedLinearModel) model.getModel())
+                        .getModel();
+                for (Vector vector : dataToBePredicted) {
+                    Context context = startTimer(timer);
+
+                    double predictedData = generalizedLinearModel.predict(vector);
+                    predictions.add(predictedData);
+
+                    stopTimer(context);
+
+                    if (log.isDebugEnabled()) {
+
+                        log.debug("Predicted value before decoding: " + predictedData);
+                    }
+                }
+                return decodePredictedValues(predictions);
+            }      
 
         } else if (AlgorithmType.CLUSTERING == type) {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
                 List<Integer> predictions = new ArrayList<Integer>();
-                KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                KMeansModel kMeansModel = ((MLKMeansModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
                     Context context = startTimer(timer);
 

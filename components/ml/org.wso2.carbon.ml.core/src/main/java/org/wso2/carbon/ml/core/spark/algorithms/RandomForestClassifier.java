@@ -29,7 +29,7 @@ import scala.Tuple2;
 import java.io.Serializable;
 import java.util.Map;
 
-public class RandomForest implements Serializable {
+public class RandomForestClassifier implements Serializable {
 
     private static final long serialVersionUID = 5725487832599918979L;
 

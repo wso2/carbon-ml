@@ -120,6 +120,13 @@ include("../../includes/tenantAware.jag");
 
                     <!-- delete model popup -->
                     <div class="popup-content" data-operation="delete-model">
+                        <div id="back-delete-model" align="left">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                        </div> 
                         <div class="content">Are you sure you want to delete this model?</div>
                         <div class="buttons">
                             <a id="delete-model-yes" href="#" class="btn-opr-default">Yes</a>
@@ -130,7 +137,7 @@ include("../../includes/tenantAware.jag");
 
                     <!--download model popup -->
                       <div class="popup-content" data-operation="download-model">
-                      <div  align="left" onclick="hidePopup();">
+                      <div id="back-download-model" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -146,7 +153,7 @@ include("../../includes/tenantAware.jag");
                         </div>
                     </div>
                      <div class="popup-content" data-operation="publish-model">
-                     <div  align="left" onclick="hidePopup();">
+                     <div id="back-publish-model" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -266,6 +273,12 @@ include("../../includes/tenantAware.jag");
             deleteModelId = null;
             hidePopup();
         });
+
+        $(document).on('click','#back-delete-model, #back-download-model, #back-publish-model',function(e){
+            e.preventDefault();
+
+            hidePopup();
+        });
     });
 
     function loadModels() {
@@ -339,7 +352,7 @@ include("../../includes/tenantAware.jag");
                                                 '</td>' +
                                                 '<td class="c-right">' +
                                                     '<div id="accordion-header-action-' + modelId + '">';
-                                                    // remove predict links for k-means
+                                                    // remove predict links
                                                     if(modelStatus == 'Complete') {
                                                         // remove view from Kmeans Anomaly detection with Unlabeled data
                                                         if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
@@ -347,7 +360,7 @@ include("../../includes/tenantAware.jag");
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>';
                                                          }
                                                          // remove predict from Collaborative Filtering
-                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS')){
+                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')){
                                                             accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '"><span>Predict</span></a>';
                                                          }
@@ -451,8 +464,8 @@ include("../../includes/tenantAware.jag");
                                     if(sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
                                         $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
                                     }
-                                    // remove predict for collaborative filtering and K-Means
-                                    if( (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') && (sanitize(models[i].modelSummary.algorithm) != 'K_MEANS')  ){
+                                    // remove predict for collaborative filtering
+                                    if( (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') ){
                                         $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
                                     }                                  
                                 }

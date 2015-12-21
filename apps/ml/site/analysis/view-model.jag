@@ -459,7 +459,7 @@ $( document ).ready(function() {
                     $('#predicted-vs-actual').html(getInfo(chartType));
                 }
             }
-            else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST' || algorithm == 'NAIVE_BAYES') {
+            else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST_CLASSIFICATION' || algorithm == 'NAIVE_BAYES') {
                 if(res.modelAccuracy) {
                     $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
                 }
@@ -489,8 +489,8 @@ $( document ).ready(function() {
                 }
             }
             else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {
-                if($.isNumeric(res.error)) {
-                    $("#model-summary-title").append(" [MSE: " + res.error.toExponential(2) + "]");
+                if($.isNumeric(res.meanSquaredError)) {
+                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
                 }
                 // remove not applicable charts/tables
                 $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
@@ -498,6 +498,35 @@ $( document ).ready(function() {
                 // create data object and draw weights chart
                 var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
                 drawWeightsChart(featureImportanceData);
+                // draw feature select
+                testResultDataPointsSample = res.testResultDataPointsSample;
+                features = res.features;
+                var displayFeatures = getDisplayFeatures(features, numericalFeatureNames);
+                // draw residual plot if at least one numerical feature exists (except response variable)
+                if(displayFeatures.length > 0) {
+                    $('#residual-features').empty();
+                    $.each(displayFeatures,function(index, feature){
+                        $('#residual-features').append($('<option>', {
+                            value: sanitize(feature.value),
+                            text : sanitize(feature.text)
+                        }));
+                    });
+                    // draw residual plot
+                    drawResidualPlot(testResultDataPointsSample);
+                }
+                else {
+                    var chartType = 'residual plot';
+                    $('#residual').html(getInfo(chartType));
+                }
+            }
+            else if (algorithm == 'RANDOM_FOREST_REGRESSION') {
+                // This is separated from other generalized linear models because this does not have all their properties
+                if($.isNumeric(res.meanSquaredError)) {
+                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+                }
+                // remove not applicable charts/tables
+                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram, #weights-chart").closest("div.wr-graph-element").remove();
+                $("#predicted-vs-actual").remove();
                 // draw feature select
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;

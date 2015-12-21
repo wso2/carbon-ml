@@ -379,7 +379,7 @@
 <!-- download model popup-->
     <div class="container-fluid col-centered wr-content">
         <div class="popup-content" data-operation="download-model">
-           <div  align="left" onclick="hidePopup();">
+           <div id="back-download-model" align="left">
                 <span style="cursor:pointer"class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -395,7 +395,7 @@
                 </div>
         </div>
         <div class="popup-content" data-operation="publish-model">
-           <div  align="left" onclick="hidePopup();">
+           <div id="back-publish-model" align="left">
                 <span style="cursor:pointer"class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -619,34 +619,20 @@
                                                 accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
                                             }                                                                        
                                     accordionPanels += '</a>' +
-                                    '</td>';
-                                    if(modelType != 'clustering') {
-                                        accordionPanels += '' + 
-                                        '<td class="c-right">' +
+                                    '</td>' +
+                                    '<td class="c-right">' +
                                         '<div>';
                                         if(modelType != 'anomaly-detection-unlabeled'){
                                             accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>';
                                         }
                                         if(modelType != 'collaborative-filtering'){
                                            accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>';
-                                       }
-                                       accordionPanels += '' +
-                                       '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
-                                       '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
-                                       '</div>' +
-                                       '</td>';
-                                    }
-                                    else {
-                                        accordionPanels += '' + 
-                                    '<td class="c-right">' +
-                                        '<div>' +
-                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>' +
-                                            '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
-                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
+                                        }
+                                        accordionPanels += '' +
+                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
+                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
                                         '</div>' +
-                                    '</td>';                                                
-                                    }
-                                    accordionPanels += '' + 
+                                    '</td>' +
                                 '</tr>' +
                             '</table>' +
                         '</h4>' +
@@ -657,7 +643,14 @@
                 '</div>';
         };
         return accordionPanels;
-    }    
+    }  
+
+     $(document).on('click','#back-download-model, #back-publish-model',function(e){
+            e.preventDefault();
+
+            hidePopup();
+        });
+
     // function to load models
     function loadModels() {        
         $.ajax({
@@ -678,10 +671,10 @@
                     var collaborativeFilteringModels = [];                    
 
                     for (var i = 0; i < projectModels.length; i++) {
-                        if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
+                        if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_CLASSIFICATION' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
                             classificationModels.push(projectModels[i]);
                         }
-                        else if(projectModels[i].modelSummary.algorithm == 'LINEAR_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RIDGE_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LASSO_REGRESSION') {
+                        else if(projectModels[i].modelSummary.algorithm == 'LINEAR_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RIDGE_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LASSO_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_REGRESSION') {
                             numPredictionModels.push(projectModels[i]);
                         }
                         else if(projectModels[i].modelSummary.algorithm == 'K_MEANS') {
