@@ -619,34 +619,20 @@
                                                 accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
                                             }                                                                        
                                     accordionPanels += '</a>' +
-                                    '</td>';
-                                    if(modelType != 'clustering') {
-                                        accordionPanels += '' + 
-                                        '<td class="c-right">' +
+                                    '</td>' +
+                                    '<td class="c-right">' +
                                         '<div>';
                                         if(modelType != 'anomaly-detection-unlabeled'){
                                             accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>';
                                         }
                                         if(modelType != 'collaborative-filtering'){
                                            accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>';
-                                       }
-                                       accordionPanels += '' +
-                                       '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
-                                       '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
-                                       '</div>' +
-                                       '</td>';
-                                    }
-                                    else {
-                                        accordionPanels += '' + 
-                                    '<td class="c-right">' +
-                                        '<div>' +
-                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>' +
-                                            '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
-                                            '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
+                                        }
+                                        accordionPanels += '' +
+                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
+                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
                                         '</div>' +
-                                    '</td>';                                                
-                                    }
-                                    accordionPanels += '' + 
+                                    '</td>' +
                                 '</tr>' +
                             '</table>' +
                         '</h4>' +

@@ -158,7 +158,7 @@ public class Predictor {
             switch (unsupervised_algorithm) {
             case K_MEANS:
                 List<Integer> predictions = new ArrayList<Integer>();
-                KMeansModel kMeansModel = (KMeansModel) model.getModel();
+                KMeansModel kMeansModel = ((MLKMeansModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
                     Context context = startTimer(timer);
 
