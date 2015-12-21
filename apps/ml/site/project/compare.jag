@@ -486,7 +486,10 @@
         $(window).resize(function() {
             scrollVibrateFix();
         });*/      
-
+         $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+         })
+        
         $("[data-toggle=popover]").popover();
 
         $(".ctrl-asset-type-switcher").popover({
@@ -623,14 +626,14 @@
                                     '<td class="c-right">' +
                                         '<div>';
                                         if(modelType != 'anomaly-detection-unlabeled'){
-                                            accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>View</span></a>';
+                                            accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
                                         }
                                         if(modelType != 'collaborative-filtering'){
-                                           accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Predict</span></a>';
+                                           accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + ' " data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
                                         }
                                         accordionPanels += '' +
-                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Download</span></a>' +
-                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '"><span>Publish</span></a>' +
+                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
+                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + ' " data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
                                         '</div>' +
                                     '</td>' +
                                 '</tr>' +

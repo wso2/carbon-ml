@@ -97,7 +97,7 @@ include("../../includes/tenantAware.jag");
 
 			<div id="notification-area"></div>
 			<div class="ctrl-info-panel col-md-12 col-centered">
-				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Dataset"><span>Create Dataset</span></a></p>
+				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create new dataset"><span>Create Dataset</span></a></p>
 			</div>
 			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
 
@@ -197,9 +197,9 @@ function buildAccordingHeader(collapseSection, datasetName, datasetVersions, dat
 						    '</td>'+
 						    '<td class="c-right">' +			        
 						        '<div id="accordion-header-action-' + datasetId + '">' + 
-						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this Dataset"><span>Create project</span></a>' +
-						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this Dataset"><span>Explore</span></a>' +
-									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete Dataset</span></a>' +
+						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this dataset"><span>Create project</span></a>' +
+						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this dataset"><span>Explore</span></a>' +
+									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip"><span>Delete Dataset</span></a>' +
 								'</div>' +
 							'</td>'+
 						'</tr>'+
@@ -220,7 +220,7 @@ function version(versionNumbers, datasetName) {
 			 					'<span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span>' +
 			 					'<span class="t-proj-workflow" id="' + datasetName + '-' + versionId + '" data-status="' + status + '"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
 			 				'</td>' +
-			 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip" data-original-title="Delete this Dataset"><span>Delete</span></a></td>' +
+			 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip"><span>Delete</span></a></td>' +
 			 			'</tr>';
     }
     return versionHtml;
@@ -242,7 +242,7 @@ function accordingBody(datasetDescription, versions, datasetName) {
 											    			'<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
 											    		'</td>' +
 											    		'<td>' +
-											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create Version"><span>Create Version</span></a>'+
+											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create new version"><span>Create Version</span></a>'+
 											    		'</td>' +
 											    	'</tr>' +
 											    '</table>' +
