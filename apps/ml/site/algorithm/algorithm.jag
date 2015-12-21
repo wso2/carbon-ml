@@ -577,7 +577,7 @@ $( document ).ready(function() {
         if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION' || algorithmName == 'RANDOM_FOREST_REGRESSION') {
             algorithmType = 'Numerical_Prediction';
         }
-        else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'RANDOM_FOREST' || algorithmName == 'NAIVE_BAYES') {
+        else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'RANDOM_FOREST_CLASSIFICATION' || algorithmName == 'NAIVE_BAYES') {
             algorithmType = 'Classification';
         }
         else if (algorithmName == 'K_MEANS') {
