@@ -578,7 +578,7 @@
 
             var modelId = sanitize(models[i].id);
             var modelName = sanitize(models[i].name);
-            var algorithm = sanitize(models[i].modelSummary.algorithm.replace("_", " "));
+            var algorithm = sanitize(models[i].modelSummary.algorithm.replace(/_/g, " "));
             var modelAccuracy = parseFloat(sanitize(models[i].modelSummary.modelAccuracy)).toFixed(2);
             var meanSquaredError = parseFloat(sanitize(models[i].modelSummary.meanSquaredError)).toExponential(2);
             if(sanitize(models[i].modelSummary.algorithm) == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
