@@ -120,6 +120,13 @@ include("../../includes/tenantAware.jag");
 
                     <!-- delete model popup -->
                     <div class="popup-content" data-operation="delete-model">
+                        <div  align="left" onclick="hidePopup();">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                        </div> 
                         <div class="content">Are you sure you want to delete this model?</div>
                         <div class="buttons">
                             <a id="delete-model-yes" href="#" class="btn-opr-default">Yes</a>
