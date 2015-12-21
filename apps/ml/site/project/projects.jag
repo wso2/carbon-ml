@@ -99,7 +99,7 @@ include("../../includes/tenantAware.jag");
 
                     <!-- delete project popup -->
                     <div class="popup-content" data-operation="delete-project">
-                    	<div  align="left" onclick="hidePopup();">
+                    	<div  id="back-delete-project" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -116,7 +116,7 @@ include("../../includes/tenantAware.jag");
 
                     <!-- delete analysis popup -->
                     <div class="popup-content" data-operation="delete-analysis">
-                    	<div  align="left" onclick="hidePopup();">
+                    	<div  id="back-delete-analysis" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -357,6 +357,12 @@ include("../../includes/tenantAware.jag");
             var dataseId = $(this).data('dataseid');            
 
             window.location.href = 'compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + dataseId;
+        });
+
+        $(document).on('click','#back-delete-project, #back-delete-analysis',function(e){
+        	e.preventDefault();
+
+        	hidePopup();
         });
 
         /********** event binding **********/

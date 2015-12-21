@@ -8,6 +8,7 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
+    <link href="../../css/font-wso2.css" rel="stylesheet">
     <script src="../../js/respond.min.js"></script> 
 
     <%
@@ -102,6 +103,13 @@ include("../../includes/tenantAware.jag");
 
             <!-- delete dataset popup -->
             <div class="popup-content" data-operation="delete-dataset">
+            	<div  id="back-delete-dataset" align="left">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                 </div>    
                 <div class="content">Are you sure you want to delete this dataset?</div>
                 <div class="buttons">
                     <a id="delete-dataset-yes" href="#" class="btn-opr-default">Yes</a>
@@ -112,6 +120,13 @@ include("../../includes/tenantAware.jag");
 
             <!-- delete dataset version popup -->
             <div class="popup-content" data-operation="delete-dataset-version">
+           		 <div  id="back-delete-dataset-version" align="left">
+                            <span style="cursor:pointer"class="fw-stack">
+                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-left-arrow fw-stack-1x"></i>
+                            </span>
+                            <span style="cursor:pointer">GO BACK</span>
+                 </div>
                 <div class="content">Are you sure you want to delete this dataset version?</div>
                 <div class="buttons">
                     <a id="delete-version-yes" href="#" class="btn-opr-default">Yes</a>
@@ -346,6 +361,11 @@ $( document ).ready(function() {
 
         deleteVersionId = null;
         hidePopup();
+    });
+    $(document).on('click','#back-delete-dataset, #back-delete-dataset-version',function(e){
+        	e.preventDefault();
+
+        	hidePopup();
     });
 
 	bindEvents();
