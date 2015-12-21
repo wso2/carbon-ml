@@ -247,22 +247,20 @@ public class PredictStreamProcessor extends StreamProcessor {
 
             return Arrays.asList(new Attribute(anomalyPrediction, outputDatatype));
         }
-
-        if (modelHandlers[0].getMlModel().getModel() != null) {
-            deeplearningWithoutH2O = false;
-        } else {
-            deeplearningWithoutH2O = true;
-        }
-
-        // Get POJO Predictors if deep learning
-        if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass) && deeplearningWithoutH2O) {
-            pojoPredictor = new POJOPredictor[modelHandlers.length];
-            for (int i = 0; i < modelHandlers.length; i++) {
-                try {
-                    pojoPredictor[i] = new POJOPredictor(modelHandlers[i].getMlModel(), modelStorageLocations[i]);
-                } catch (MLModelHandlerException e) {
-                    throw new ExecutionPlanRuntimeException(
-                            "Failed to initialize the POJO predictor of the model " + modelStorageLocations[i], e);
+        
+        if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
+            if (modelHandlers[0].getMlModel().getModel() != null) {
+                deeplearningWithoutH2O = false;
+            } else {
+                deeplearningWithoutH2O = true;
+                pojoPredictor = new POJOPredictor[modelHandlers.length];
+                for (int i = 0; i < modelHandlers.length; i++) {
+                    try {
+                        pojoPredictor[i] = new POJOPredictor(modelHandlers[i].getMlModel(), modelStorageLocations[i]);
+                    } catch (MLModelHandlerException e) {
+                        throw new ExecutionPlanRuntimeException(
+                                "Failed to initialize the POJO predictor of the model " + modelStorageLocations[i], e);
+                    }
                 }
             }
         }
