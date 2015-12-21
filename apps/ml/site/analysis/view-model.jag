@@ -282,9 +282,6 @@ include("../../includes/tenantAware.jag");
 <script src="../../js/d3.parsets.js"></script>
 <script src="../../js/figue.js"></script>
 
-<!-- for threshold slider -->
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
 <script type="text/javascript">
 
 var serverUrl = window.location.origin;
@@ -338,6 +335,13 @@ $( document ).ready(function() {
             top: $('header').height()
           }
     });
+
+    // for tooltip
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    $("[data-toggle=popover]").popover();
 
     if( fromCompare == 'true'){
          $("#nav-analysis-anchor").attr('href','../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId);

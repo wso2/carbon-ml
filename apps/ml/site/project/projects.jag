@@ -173,7 +173,11 @@ include("../../includes/tenantAware.jag");
         
         $(window).resize(function() {
             scrollVibrateFix();
-        });*/     
+        });*/
+         // for tooltip
+        $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+        })
 
         $("[data-toggle=popover]").popover();
 
