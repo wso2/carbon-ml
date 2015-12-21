@@ -505,14 +505,15 @@ $( document ).ready(function() {
         	async : false,
         	dataType: 'json',
         	success: function(res3) {
-	        	classCount = res3[0]["unique"];
-    			// featuresCount contains all varialbes we need to pass (featuresCount -1) as
-          // number of input variables
-          drawDLNetwork("#dl-network",featuresCount -1 ,hidLayerArr,classCount);
+	            classCount = res3[0]["unique"];
+    		    // featuresCount contains all varialbes we need to pass (featuresCount -1) as
+                    // number of input variables
+                    drawDLNetwork("#dl-network", featuresCount -1 , hidLayerArr, classCount);
         	},
+
         	error: function(res3) {
-            	var errorText = res3.responseText;
-            	handleNotification(errorText, '#notification-area', 'warning');
+            	   var errorText = res3.responseText;
+            	   handleNotification(errorText, '#notification-area', 'warning');
         	}
     	});
 
