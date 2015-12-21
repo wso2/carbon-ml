@@ -635,9 +635,9 @@
 		<carbon.identity.version>4.5.6</carbon.identity.version>
 		<carbon.deployment.version>4.5.2</carbon.deployment.version>
 		<carbon.multitenancy.version>4.4.3</carbon.multitenancy.version>
-		<carbon.commons.version>4.4.8</carbon.commons.version>
-		<carbon.analytics.version>1.0.4</carbon.analytics.version>
-		<carbon.analytics.common.version>5.0.6</carbon.analytics.common.version>
+		<carbon.commons.version>4.4.7</carbon.commons.version>
+		<carbon.analytics.version>1.0.3</carbon.analytics.version>
+		<carbon.analytics.common.version>5.0.2</carbon.analytics.common.version>
 		<carbon.analytics.common.imp.feature.version>5.0.1</carbon.analytics.common.imp.feature.version>
 		<carbon.metrics.version>1.1.0</carbon.metrics.version>
 		<carbon.kernel.version>4.4.3</carbon.kernel.version>

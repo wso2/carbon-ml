@@ -8,18 +8,18 @@
     <link href="../../css/bootstrap.css" rel="stylesheet">
     <link href="../../css/custom.css" rel="stylesheet">
     <link href="../../css/custom-theme.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
     <link rel="stylesheet" type="text/css" href="../../css/data.css">
     <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
     <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
-    
-    <script src="../../js/respond.min.js"></script> 
+
+    <script src="../../js/respond.min.js"></script>
 	<script src="../../js/d3.v3.min.js"></script>
     <script src="../../js/d3.js"></script>
     <script src="../../js/nv.d3.js"></script>
     <script src="../../js/wso2.ml.graphs.js"></script>
-    
+
     <script src="../../js/jquery-1.11.1.min.js"></script>
     <%
 include("../../includes/tenantAware.jag");
@@ -44,7 +44,7 @@ include("../../includes/tenantAware.jag");
 				<div class="dropdown-menu-content">
 					<a href="../logout/logout.jag" class="filter-item">Logout</a>
 				</div>
-			</div>			
+			</div>
 		</div>
 	</div>
 </div>
@@ -76,7 +76,7 @@ include("../../includes/tenantAware.jag");
 </div>
 <!-- secondary header - app bar -->
 
-<!-- content/body -->       
+<!-- content/body -->
 <!-- Wizard -->
 <div class="nav-wizard-wrapper">
     <ul class="nav-wizard center-block">
@@ -90,7 +90,7 @@ include("../../includes/tenantAware.jag");
 
 <div class="row">
 	<div class="col-md-12">
-		
+
 
 		<!-- content -->
 		<div class="container col-md-12 col-centered wr-content">
@@ -118,9 +118,9 @@ include("../../includes/tenantAware.jag");
 			</div>
 
 		</div>
-		
-		<div class="container col-md-12 col-centered wr-content dl-network">				          
-            <div class="wr-form col-lg-5 col-centered">                
+
+		<div class="container col-md-12 col-centered wr-content dl-network">
+            <div class="wr-form col-lg-5 col-centered">
                 <div id="dl-network"></div>
             </div>
         </div>
@@ -132,7 +132,7 @@ include("../../includes/tenantAware.jag");
 <!-- /content/body -->
 
 </div>
-    
+
 <!--footer class="footer">
         <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
 </footer-->
@@ -160,20 +160,20 @@ $( document ).ready(function() {
             top: $('header').height()
           }
     });
-    
+
     /*scrollVibrateFix();
-    
+
     $(window).resize(function() {
         scrollVibrateFix();
-    });*/ 
-    
+    });*/
+
     // for tooltip
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
-    })    
+    })
 
     var projectName = getParameterByName('projectName');
-    var analysisName = getParameterByName('analysisName');	
+    var analysisName = getParameterByName('analysisName');
     var analysisId = getParameterByName('analysisId');
     var datasetId = getParameterByName('datasetId');
     var algorithmName = getParameterByName('algorithmName');
@@ -220,7 +220,7 @@ $( document ).ready(function() {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[2].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[2] = sanitize(hyperParametersResponse[0].value);
-                }    
+                }
                 else if (algorithmName == 'RANDOM_FOREST') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[4].value);
                     hyperParametersArray[1] = sanitize(hyperParametersResponse[3].value);
@@ -228,7 +228,7 @@ $( document ).ready(function() {
                     hyperParametersArray[3] = sanitize(hyperParametersResponse[1].value);
                     hyperParametersArray[4] = sanitize(hyperParametersResponse[0].value);
                     hyperParametersArray[5] = sanitize(hyperParametersResponse[5].value);
-                }                
+                }
                 else if (algorithmName == 'NAIVE_BAYES') {
                     hyperParametersArray[0] = sanitize(hyperParametersResponse[0].value);
                 }
@@ -274,14 +274,14 @@ $( document ).ready(function() {
 
     // put path in application navigator
     $('#nav-project').text(projectName);
-    $('#nav-analysis').text(" \\ "+analysisName);    
+    $('#nav-analysis').text(" \\ "+analysisName);
 
     $('#algo-cat').text(algorithmType.replace(/_/g, " "));
     $('#display-name').text(algorithmName.replace(/_/g, " "));
 
     var inputString = '';
     var hyperParameterInputValues = [];
-    // set values for algorithm to build HTML inputs 
+    // set values for algorithm to build HTML inputs
     $.ajax({
         type: "GET",
         url: serverUrl + "/api/configs/algorithms/" + algorithmName + "/hyperParams",
@@ -304,10 +304,10 @@ $( document ).ready(function() {
     // build input HTML for hyper-parameters
 	for (var i = 0; i < hyperParameterInputValues.length; i++) {
 		if (fromNext) {
-	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParametersArray[i], hyperParameterInputValues[i][3]);	
+	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParametersArray[i], hyperParameterInputValues[i][3]);
     	}
     	else {
-	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParameterInputValues[i][2], hyperParameterInputValues[i][3]);	
+	    	inputString += buildInput(hyperParameterInputValues[i][0], hyperParameterInputValues[i][1], hyperParameterInputValues[i][2], hyperParameterInputValues[i][3]);
     	}
 	}
 
@@ -316,14 +316,14 @@ $( document ).ready(function() {
 
 	if (algorithmName == 'STACKED_AUTOENCODERS') {
 		loadInputFeaturesCountAndCreateDeepNetwork();
-    } else {    	
+    } else {
 		$("#dl-network").closest("div.wr-content").remove();
 		//$("#col-md-12 col-centered wr-graph-content").children().remove();
     }
-	
+
 	// disable fields if the model is built from an existing analysis
 	if(fromAnalysis == 'true') {
-	    for (var i = 0; i < hyperParameterInputValues.length; i++) {            
+	    for (var i = 0; i < hyperParameterInputValues.length; i++) {
             $('#'+hyperParameterInputValues[i][1]).attr("disabled", "disabled");
         }
 	}
@@ -334,18 +334,18 @@ $( document ).ready(function() {
         setTimeout(function(){
             loadInputFeaturesCountAndCreateDeepNetwork();
         }, 3000);
-        
+
     });
-	
+
     $('#prev-btn').on('click', function(e){
         e.preventDefault();
         var fromAnalysis = getParameterByName('fromAnalysis')
         window.location.href = '../algorithm/algorithm.jag?projectName=' + projectName + '&analysisName=' + analysisName + '&analysisId=' + analysisId + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-    });	
+    });
 
     $('#btn-next').on('click', function(e){
     	e.preventDefault();
-    	var algorithmName = getParameterByName('algorithmName');    	
+    	var algorithmName = getParameterByName('algorithmName');
         var fromAnalysis = getParameterByName('fromAnalysis')
 
         if(algorithmName == 'COLLABORATIVE_FILTERING_IMPLICIT') {
@@ -393,7 +393,7 @@ $( document ).ready(function() {
                 var errorText = res.responseText
                 handleNotification(errorText, '#notification-area', 'warning');
             }
-        });        
+        });
 
     });
 
@@ -420,7 +420,7 @@ $( document ).ready(function() {
                 }
             });
             // delete analysis on CANCEL only if there are no models in this analysis
-            if(noOfModels == 0) {                
+            if(noOfModels == 0) {
                 $.ajax({
                     type: 'DELETE',
                     url: serverUrl + "/api/analyses/" + analysisId,
@@ -431,12 +431,12 @@ $( document ).ready(function() {
                         var errorText = res.responseText
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
-                });                            
+                });
             }
             else {
                 window.location.href = '../project/projects.jag';
             }
-        }    
+        }
     });
 
 	$('#btn-build').on('click', function(e){
@@ -446,13 +446,13 @@ $( document ).ready(function() {
             if(!isValidDouble(value)){
             	showErrorMessage($(this).next('.form-val-error'),'* double is required');
             }
-            
+
 		});
 
 		$('.hyper-integer').each(function(e) {
 			var value = $(this).val();
 			if(!isValidInteger(value)) {
-			    showErrorMessage($(this).next('.form-val-error'),'* integer is required');	
+			    showErrorMessage($(this).next('.form-val-error'),'* integer is required');
 			}
 		});
 
@@ -465,11 +465,11 @@ $( document ).ready(function() {
 		var hidLayerArr = [];
 
 		var hidLayerText = document.getElementById('Layer_Sizes').value;
-		var hidLayerTokens = hidLayerText.split(",");	    		
+		var hidLayerTokens = hidLayerText.split(",");
 		for(var i=0; i<hidLayerTokens.length; i++){
 			hidLayerArr[i] = parseInt(hidLayerTokens[i]);
     	}
-    	
+
     	$.ajax({
         	type: "GET",
         	url: serverUrl+"/api/analyses/"+analysisId+"/features",
@@ -477,13 +477,13 @@ $( document ).ready(function() {
         	dataType: 'json',
         	success: function(res) {
 	        	var featuresSet = res;
-            	featuresCount = featuresSet.length;	    				    		    		    		 	            
+            	featuresCount = featuresSet.length;
         	},
         	error: function(res) {
             	var errorText = res.responseText;
             	handleNotification(errorText, '#notification-area', 'warning');
         	}
-    	});	
+    	});
 
     	$.ajax({
         	type: "GET",
@@ -491,29 +491,32 @@ $( document ).ready(function() {
         	async : false,
         	dataType: 'text',
         	success: function(res) {
-        		responseVariable = res;  			    	        		           
+        		responseVariable = res;
         	},
         	error: function(res) {
             	var errorText = res.responseText;
-            	handleNotification(errorText, '#notification-area', 'warning');	                	
+            	handleNotification(errorText, '#notification-area', 'warning');
         	}
     	});
-		
+
     	$.ajax({
         	type: "GET",
         	url: serverUrl+"/api/datasets/"+datasetId+"/stats?feature="+responseVariable,
         	async : false,
         	dataType: 'json',
         	success: function(res3) {
-	        	classCount = res3[0]["unique"];	        	
-    			drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount); 	            
+	            classCount = res3[0]["unique"];
+    		    // featuresCount contains all varialbes we need to pass (featuresCount -1) as
+                    // number of input variables
+                    drawDLNetwork("#dl-network", featuresCount -1 , hidLayerArr, classCount);
         	},
+
         	error: function(res3) {
-            	var errorText = res3.responseText;
-            	handleNotification(errorText, '#notification-area', 'warning');	                	
+            	   var errorText = res3.responseText;
+            	   handleNotification(errorText, '#notification-area', 'warning');
         	}
-    	});	  
-    		    
+    	});
+
 	}
 });
 
@@ -570,29 +573,29 @@ function buildEvents(element){
 }
 
 function buildHyperparametersUI(parameters){
-	
+
 	// update algorith's display name
 	var algoDisplayName = parameters.displayName;
     $('#display-name').text(algoDisplayName);
-    
+
     var allHyperparameters = '';
     var hyperParameters = parameters.hyperParameters;
     for(var i=0; i < hyperParameters.length; i++){
     	if (typeof(hyperParameters[i].type) == 'object') {
     		allHyperparameters += buildDropdown(hyperParameters[i]);
     	} else {
-    		allHyperparameters += buildInputbox(hyperParameters[i]); 
+    		allHyperparameters += buildInputbox(hyperParameters[i]);
     	}
     }
-    return allHyperparameters;     
+    return allHyperparameters;
 }
 
 function buildInputbox(parameter){
-    
+
     var type = parameter.type;
-    
+
     var label = buildLabel(parameter.name);
-    
+
     var controller = '<div class="input-control text">' +
                      '<input class="hyper-' + type + '"'+'type="text" value="" placeholder="input text"/>'+
 				     '<span class="form-val-error" id="file-upload-error"></span>' +
@@ -608,7 +611,7 @@ function buildDropdown(parameter){
         controller += '<option value="' + type.name + '">' + type.name + '</option>';
 	}
 	controller += '</select></div>';
-	
+
 	return label + controller;
 }
 
@@ -623,7 +626,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	// if the height of an element is more than this,
 	// set height to this value
 	var maxHeightThreshold = 750;
-	var minHeightThreshold = 50; 
+	var minHeightThreshold = 50;
 	//to get min and max values of arrays
 	Array.prototype.min = function() {
 		  return Math.min.apply(null, this);
@@ -648,7 +651,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 		} else {
 			rectColors[i] = "#eeeeee";
 		}
-	}	
+	}
 
 	var canvasWidth = 500;
 	var spacingY = 20;
@@ -686,26 +689,26 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 		  .style("font-size", "25px")
 		  .attr("dy", ".35em")
 		  .attr("text-anchor", "middle")
-		  .attr("transform", "translate(" + (currX + widthRect/2).toString() 
+		  .attr("transform", "translate(" + (currX + widthRect/2).toString()
 				  + "," + (posY + rectHeights[i]/2).toString() +") rotate(90)")
 		  .text(allCounts[i].toString());
 		currX = currX + widthRect + widthSpacing;
 	}
 
 	//to move background elements to the background
-	d3.selection.prototype.moveToBack = function() { 
-	    return this.each(function() { 
-	        var firstChild = this.parentNode.firstChild; 
-	        if (firstChild) { 
-	            this.parentNode.insertBefore(this, firstChild); 
-	        } 
-	    }); 
+	d3.selection.prototype.moveToBack = function() {
+	    return this.each(function() {
+	        var firstChild = this.parentNode.firstChild;
+	        if (firstChild) {
+	            this.parentNode.insertBefore(this, firstChild);
+	        }
+	    });
 	};
-	
+
 	//drawing the arrow which goes from inputs to outputs
 	var arrowHeadWidth = 20;
 	var arrowHeadHeight = 20;
-	
+
 	var line = canvas.append("line")
     			.attr("x1", startX + widthRect)
     			.attr("y1", canvasHeight/2)
@@ -720,7 +723,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight/2)).toString() + " "
 	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight/2)).toString() + " "
 	+ "L " + arrowStartX.toString() + " " + arrowStartY.toString();
-	
+
 	var arrowHead = canvas.append("svg:path")
     .attr("d",pathString)
     .style("stroke-width", 1)
@@ -729,13 +732,13 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 
 	line.moveToBack();
 	arrowHead.moveToBack();
-	
+
 	//add header text
 	var textPosY = rectHeights.max() + spacingY + 50;
 	var fontSize = "15px";
 	data = ["Inputs", "Hidden Layers", "Outputs"];
 
-	//added Input text as two text elements because 
+	//added Input text as two text elements because
 	//<br/> doesn't render in SVG
 	var in1Text = canvas.append("text")
 	  .attr("x", startX + widthRect/2)
@@ -753,7 +756,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	  .attr("text-anchor", "middle")
 	  .text("(Features)");
 
-	//added Output text as two text elements because 
+	//added Output text as two text elements because
 	//<br/> doesn't render in SVG
 	var out1Text = canvas.append("text")
 	  .attr("x", currX - widthSpacing - widthRect/2)
@@ -771,7 +774,7 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
 	  .attr("text-anchor", "middle")
 	  .text("(Classes)");
 
-	//hidden layer text  
+	//hidden layer text
 	var hiddenTextPosX = (startX + widthRect/2 + (currX - widthSpacing - widthRect/2 - (startX + widthRect/2)))/2;
 	var hiddenText = canvas.append("text")
 	  .attr("x", hiddenTextPosX)
@@ -792,11 +795,11 @@ function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
         data: {wfid: workflowId, algocat: algoCategory},
         async: false,
         success: function(res){
-        	var features = res.features;        	
+        	var features = res.features;
         	for (var i=0; i<features.length; i++) {
         		controller += '<option value="' + features[i]+'">' + features[i] + '</option>';
         	}
-        	controller += '</select></div>';        	
+        	controller += '</select></div>';
         },
         error: function(res){ //TODO: error handling...
         	console.log(res);
