@@ -54,6 +54,7 @@ public class PredictStreamProcessor extends StreamProcessor {
     private boolean attributeSelectionAvailable;
     private Map<Integer, int[]> attributeIndexMap; // <feature-index, [event-array-type][attribute-index]> pairs
     private POJOPredictor[] pojoPredictor;
+    private boolean deeplearningWithoutH2O;
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor,
@@ -105,12 +106,21 @@ public class PredictStreamProcessor extends StreamProcessor {
                         predictionResult = ObjectUtils.mode(predictionResults);
 
                     } else if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
-                        for (int i = 0; i < modelHandlers.length; i++) {
-                            predictionResults[i] = modelHandlers[i].predict(featureValues, outputType,
-                                    pojoPredictor[i]);
+                        // if H2O cluster is not available
+                        if (deeplearningWithoutH2O) {
+                            for (int i = 0; i < modelHandlers.length; i++) {
+                                predictionResults[i] = modelHandlers[i].predict(featureValues, outputType,
+                                        pojoPredictor[i]);
+                            }
+                            // Gets the majority vote
+                            predictionResult = ObjectUtils.mode(predictionResults);
+                        } else {
+                            for (int i = 0; i < modelHandlers.length; i++) {
+                                predictionResults[i] = modelHandlers[i].predict(featureValues, outputType);
+                            }
+                            // Gets the majority vote
+                            predictionResult = ObjectUtils.mode(predictionResults);
                         }
-                        // Gets the majority vote
-                        predictionResult = ObjectUtils.mode(predictionResults);
                     } else {
                         String msg = String.format(
                                 "Error while predicting. Prediction is not supported for the algorithm class %s. ",
@@ -238,8 +248,14 @@ public class PredictStreamProcessor extends StreamProcessor {
             return Arrays.asList(new Attribute(anomalyPrediction, outputDatatype));
         }
 
+        if (modelHandlers[0].getMlModel().getModel() != null) {
+            deeplearningWithoutH2O = false;
+        } else {
+            deeplearningWithoutH2O = true;
+        }
+
         // Get POJO Predictors if deep learning
-        if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass)) {
+        if (AlgorithmType.DEEPLEARNING.getValue().equals(algorithmClass) && deeplearningWithoutH2O) {
             pojoPredictor = new POJOPredictor[modelHandlers.length];
             for (int i = 0; i < modelHandlers.length; i++) {
                 try {
