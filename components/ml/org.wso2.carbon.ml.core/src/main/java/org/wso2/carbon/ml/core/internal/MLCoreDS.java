@@ -165,7 +165,10 @@ public class MLCoreDS {
                 if (valueHolder.isH2oClientModeEnabled()) {
                     H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
                 } else {
-                    H2OServer.startH2O();
+                    String portOffset = System.getProperty("portOffset",
+                            ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                    String port = String.valueOf(54321 + Integer.parseInt(portOffset));
+                    H2OServer.startH2O(port);
                 }
             }
 

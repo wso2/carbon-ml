@@ -35,9 +35,12 @@ public class H2OServer {
     /**
      * Starts H20 server in local mode
      */
-    public static void startH2O() {
+    public static void startH2O(String port) {
         if (!isH2OServerStarted) {
-            H2OApp.main(new String[0]);
+            String[] args = new String[2];
+            args[0] = "-port";
+            args[1] = port;
+            H2OApp.main(args);
             H2O.waitForCloudSize(1, 10 * 1000 /* ms */);
             isH2OServerStarted = true;
             log.info("H2o Server has started.");
