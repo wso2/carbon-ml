@@ -173,6 +173,64 @@
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
+			<Name>RANDOM_FOREST_REGRESSION</Name>
+			<Type>Numerical_Prediction</Type>
+			<isPMMLExportable>false</isPMMLExportable>
+			<Parameters>
+				<Name>Num_Trees</Name>
+				<Value>5</Value>
+				<Description>Number of trees in the random forest. Increasing the
+					number of trees will decrease the variance in predictions,
+					improving the model’s test-time accuracy. Also training time
+					increases roughly linearly in the number of trees. This parameter
+					value should be an integer greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Depth</Name>
+				<Value>5</Value>
+				<Description>Maximum depth of the tree. This helps you to control
+					the size of the tree to prevent overfitting. This parameter
+					value should be an integer greater than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Max_Bins</Name>
+				<Value>100</Value>
+				<Description>Number of bins used when discretizing continuous
+					features. This must be at least the maximum number of categories M
+					for any categorical feature. Increasing this allows the algorithm
+					to consider more split candidates and make fine-grained split
+					decisions. However, it also increases computation and
+					communication. This parameter value should be an integer greater
+					than 0.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Impurity</Name>
+				<Value>variance</Value>
+				<Description>Impurity is a measure of the homogeneity of
+					the labels at the node. This parameter value should be 'variance'.
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Feature_Subset_Strategy</Name>
+				<Value>auto</Value>
+				<Description>Number of features to use as candidates for splitting
+					at each tree node. The number is specified as a fraction or
+					function of the total number of features. Decreasing this number
+					will speed up training, but can sometimes impact performance if too
+					low. This parameter value can take values 'auto', 'all', 'sqrt',
+					'log2' and 'onethird' (without quotes).
+				</Description>
+			</Parameters>
+			<Parameters>
+				<Name>Seed</Name>
+				<Value>12345</Value>
+				<Description>Seed for the random number generator.</Description>
+			</Parameters>
+		</Algorithm>
+		<Algorithm>
 			<Name>LOGISTIC_REGRESSION</Name>
 			<Type>Classification</Type>
 			<isPMMLExportable>true</isPMMLExportable>
@@ -308,7 +366,7 @@
 			</Parameters>
 		</Algorithm>
 		<Algorithm>
-			<Name>RANDOM_FOREST</Name>
+			<Name>RANDOM_FOREST_CLASSIFICATION</Name>
 			<Type>Classification</Type>
 			<isPMMLExportable>false</isPMMLExportable>
 			<Parameters>
