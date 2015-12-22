@@ -626,7 +626,7 @@
 
 		<!-- Product ML version -->
 		<ml.version>1.1.2-SNAPSHOT</ml.version>
-		<ml.exp.pkg.version>1.1.0</ml.exp.pkg.version>
+		<ml.exp.pkg.version>1.1.2-SNAPSHOT</ml.exp.pkg.version>
 		<ml.imp.pkg.version>[1.0.8, 2.0.0)</ml.imp.pkg.version>
 
 		<carbon.integration.version>4.3.0</carbon.integration.version>
