@@ -131,7 +131,7 @@
                                     <a href="#collaborative-filtering-tab" id="collaborative-filtering-link" aria-controls="collaborative-filtering" role="tab" data-toggle="">Collaborative Filtering</a>
                                  </li>                                                                                               
 
-                                 <li role="presentation" class="disabled" id="deeplearning-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any deeplearning models created at the moment">
+								 <li role="presentation" class="disabled" id="deeplearning-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any deeplearning models created at the moment">
                                     <a href="#deeplearning-tab" id="deeplearning-link" aria-controls="deeplearning" role="tab" data-toggle="">Deeplearning</a>
                                  </li>
                             </ul>
@@ -223,7 +223,7 @@
                                 </div>
                                 <!-- /pagination -->
                             </div>
-                            <div role="tabpanel" class="tab-pane fade in" id="deeplearning-tab">
+							<div role="tabpanel" class="tab-pane fade in" id="deeplearning-tab">
                                 <div class="panel-group" id="deeplearning-accordion" role="tablist" aria-multiselectable="true">
                                     <div id="no-deeplearning" class="ctrl-info-panel col-md-12 col-centered">
                                         <h4>You do not have any deeplearning models created at the moment.</h4>
@@ -431,7 +431,7 @@
     var classificationPanelsPerPage;
     var numPredictionPanelsPerPage;
     var clusteringPanelsPerPage;
-    var deeplearningPanelsPerPage;
+	var deeplearningPanelsPerPage;
     var anomalyDetectionPanelsPerPage;
     var anomalyDetectionUnlabeledPanelsPerPage;    
     var collaborativeFilteringPanelsPerPage;        
@@ -452,7 +452,7 @@
         clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
         $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
     });              
-    $(document).on('change','select[id="no-of-panels-deeplearning"]',function() {
+	$(document).on('change','select[id="no-of-panels-deeplearning"]',function() {
         $('#pagination-list-deeplearning').empty();
         classificationPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
         $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
@@ -472,7 +472,7 @@
         collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());        
         $('#collaborative-filtering-accordion').pageMe({pagerSelector:'#pagination-list-collaborative-filtering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:collaborativeFilteringPanelsPerPage});
     });              
-    
+	
     $(document).ready(function() {
 
         $('#nav').affix({
@@ -518,7 +518,7 @@
         clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
         $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
 
-        deeplearningPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
+		deeplearningPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
         $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
 
         anomalyDetectionPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-labeled").val());        
@@ -529,7 +529,7 @@
 
         collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());        
         $('#collaborative-filtering-accordion').pageMe({pagerSelector:'#pagination-list-collaborative-filtering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:collaborativeFilteringPanelsPerPage});              
-        
+		
         // disabling tabs
         $("#wr-tabs-grphs > li").click(function(){
             if($(this).hasClass("disabled")) {
@@ -609,7 +609,7 @@
                                             else if(modelType == 'clustering') {
                                                 accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
                                             }
-                                            else if(modelType == 'deeplearning') {
+											else if(modelType == 'deeplearning') {
                                                 accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
                                             }
                                             else if(modelType == 'anomaly-detection-labeled') {
@@ -629,11 +629,11 @@
                                             accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
                                         }
                                         if(modelType != 'collaborative-filtering'){
-                                           accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"  data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
+                                           accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + ' " data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
                                         }
                                         accordionPanels += '' +
-                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
-                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '"  data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
+                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
+                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + ' " data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
                                         '</div>' +
                                     '</td>' +
                                 '</tr>' +
@@ -668,7 +668,7 @@
                     var classificationModels = [];
                     var numPredictionModels = [];
                     var clusteringModels = [];
-                    var deeplearningModels = [];
+					var deeplearningModels = [];
                     var anomalyDetectionModels = [];                    
                     var anomalyDetectionUnlabeledModels = [];                    
                     var collaborativeFilteringModels = [];                    
@@ -683,7 +683,7 @@
                         else if(projectModels[i].modelSummary.algorithm == 'K_MEANS') {
                             clusteringModels.push(projectModels[i]);
                         }
-                        else if(projectModels[i].modelSummary.algorithm == 'STACKED_AUTOENCODERS') {
+						else if(projectModels[i].modelSummary.algorithm == 'STACKED_AUTOENCODERS') {
                             deeplearningModels.push(projectModels[i]);
                         }
                         else if(projectModels[i].modelSummary.algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
@@ -726,7 +726,7 @@
                         $('#clustering-link').attr('data-toggle', 'tab');
                     }
 
-                    if (deeplearningModels.length > 0) {
+					if (deeplearningModels.length > 0) {
                         var deeplearningModelsSorted = deeplearningModels.sort(sortByAccuracy);
                         var deeplearningAccordionPanels = createAccordionPanels(deeplearningModelsSorted, 'deeplearning');
                         $('#no-deeplearning').remove();                              
@@ -767,7 +767,7 @@
                         $('#collaborative-filtering-tab-li').attr('title', '');
                         $('#collaborative-filtering-link').attr('data-toggle', 'tab');
                     }                                            
-                    
+					
                     // set active tab
                     if(classificationModels.length > 0) {
                         $('#classification-link').click();
@@ -922,7 +922,7 @@
             var algorithmName;
             $.ajax({
                 type: "GET",
-                url: serverUrl + "/api/analyses/" + sanitize(analysisId) + "/algorithmName",
+                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
                 async : false,
                 dataType: 'text',
                 success : function(res){
