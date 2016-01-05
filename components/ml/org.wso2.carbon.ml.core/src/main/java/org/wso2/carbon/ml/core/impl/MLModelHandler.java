@@ -143,7 +143,9 @@ public class MLModelHandler {
     /**
      * delete mddel using modelId
      *
-     * @param modelId modelId of the model to be deleted.
+     * @param tenantId  Unique ID of the tenant.
+     * @param userName  Username of the user.
+     * @param modelId   modelId of the model to be deleted.
      * @throws MLModelHandlerException
      */
     public void deleteModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
@@ -158,6 +160,8 @@ public class MLModelHandler {
     /**
      * get Model using modelName
      *
+     * @param tenantId  Unique ID of the tenant.
+     * @param userName  Username of the user.
      * @param modelName modelName of the model to be retrieved.
      * @throws MLModelHandlerException
      */
@@ -172,7 +176,9 @@ public class MLModelHandler {
     /**
      * get Model using modelId
      *
-     * @param modelId modelId of the model to be retrieved.
+     * @param tenantId  Unique ID of the tenant.
+     * @param userName  Username of the user.
+     * @param modelId   modelId of the model to be retrieved.
      * @throws MLModelHandlerException
      */
     public MLModelData getModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
@@ -186,6 +192,8 @@ public class MLModelHandler {
     /**
      * get all models
      *
+     * @param tenantId  Unique ID of the tenant.
+     * @param userName  Username of the user.
      * @throws MLModelHandlerException
      */
     public List<MLModelData> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
@@ -198,7 +206,10 @@ public class MLModelHandler {
 
     /**
      * check validity of modelId
-     * @param modelId modelId to be validated
+     *
+     * @param tenantId  Unique ID of the tenant.
+     * @param userName  Username of the user.
+     * @param modelId   modelId to be validated
      * @throws MLModelHandlerException
      */
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws MLModelHandlerException {
