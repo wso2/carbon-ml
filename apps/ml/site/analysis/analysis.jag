@@ -756,8 +756,8 @@ include("../../includes/tenantAware.jag");
                 algorithmName = sanitize(res);
             },
             error : function(res){
-            var errorText = JSON.parse(res.responseText)["exception"];
-            handleNotification(errorText, '#notification-area', 'warning');
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
             }
         });
         return algorithmName;

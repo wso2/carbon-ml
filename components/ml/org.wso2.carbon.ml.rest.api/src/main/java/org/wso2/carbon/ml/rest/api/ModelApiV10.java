@@ -171,24 +171,10 @@ public class ModelApiV10 extends MLRestAPI {
                     tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
-        } catch (MLModelPublisherException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        } catch (MLPmmlExportException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
+        } catch (MLModelPublisherException | MLModelHandlerException | MLPmmlExportException e) {
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .",
+                            modelId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
@@ -483,9 +469,9 @@ public class ModelApiV10 extends MLRestAPI {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .", modelName,
-                    tenantId, userName), e);
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .",
+                            modelName, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();

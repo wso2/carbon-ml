@@ -192,7 +192,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             List<Tuple2<Integer, Vector>> kMeansPredictions = kMeansModel.predict(sampleData).zip(sampleData).collect();
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
 
-            for (Tuple2<Integer, org.apache.spark.mllib.linalg.Vector> kMeansPrediction : kMeansPredictions) {
+            for (Tuple2<Integer, Vector> kMeansPrediction : kMeansPredictions) {
 
                 ClusterPoint clusterPoint = new ClusterPoint();
                 clusterPoint.setCluster(kMeansPrediction._1());

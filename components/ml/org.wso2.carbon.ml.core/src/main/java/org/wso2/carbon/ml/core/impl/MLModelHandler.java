@@ -140,6 +140,12 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * delete mddel using modelId
+     *
+     * @param modelId modelId of the model to be deleted.
+     * @throws MLModelHandlerException
+     */
     public void deleteModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
             databaseService.deleteModel(tenantId, userName, modelId);
@@ -149,6 +155,12 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * get Model using modelName
+     *
+     * @param modelName modelName of the model to be retrieved.
+     * @throws MLModelHandlerException
+     */
     public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelName);
@@ -157,6 +169,12 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * get Model using modelId
+     *
+     * @param modelId modelId of the model to be retrieved.
+     * @throws MLModelHandlerException
+     */
     public MLModelData getModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
             return databaseService.getModel(tenantId, userName, modelId);
@@ -165,6 +183,11 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * get all models
+     *
+     * @throws MLModelHandlerException
+     */
     public List<MLModelData> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.getAllModels(tenantId, userName);
@@ -173,6 +196,11 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * check validity of modelId
+     * @param modelId modelId to be validated
+     * @throws MLModelHandlerException
+     */
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
             return databaseService.isValidModelId(tenantId, userName, modelId);
@@ -181,6 +209,11 @@ public class MLModelHandler {
         }
     }
 
+    /**
+     * check validity of model status
+     * @param modelId modelId of the model which the status needs to be validated
+     * @throws MLModelHandlerException
+     */
     public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
         try {
             return databaseService.isValidModelStatus(modelId, tenantId, userName);
@@ -853,8 +886,8 @@ public class MLModelHandler {
 
                     MLModel model = retrieveModel(modelId);
                     String pmmlModel = exportAsPMML(model);
-                    InputStream stream = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
-                    registryOutputAdapter.write(relativeRegistryPath, stream);
+                    in = new ByteArrayInputStream(pmmlModel.getBytes(StandardCharsets.UTF_8));
+                    registryOutputAdapter.write(relativeRegistryPath, in);
 
                 } catch (DatabaseHandlerException e) {
                     throw new MLModelPublisherException(errorMsg, e);
@@ -864,6 +897,13 @@ public class MLModelHandler {
                     throw new MLModelPublisherException(errorMsg, e);
                 } catch (MLPmmlExportException e) {
                     throw new MLPmmlExportException("PMML export not supported for model type");
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException ignore) {
+                        }
+                    }
                 }
                 break;
 

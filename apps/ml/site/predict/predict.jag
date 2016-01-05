@@ -53,7 +53,7 @@ include("../../includes/tenantAware.jag");
 		            </div>
 
 		            <div class="wr-project">
-		                <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project" ></span></a><a id="nav-analysis-anchor" style="color:#f0f0f0"><span id="nav-analysis"></span></a><span id="nav-model"></span>
+		                <span class="title">PROJECTS \ </span><a id="nav-project-anchor" class="breadcumb-anchor"><span id="nav-project" ></span></a><a id="nav-analysis-anchor" class="breadcumb-anchor"><span id="nav-analysis"></span></a><span id="nav-model"></span>
 		            </div>
 
 		            <div class="wr-action-btn-bar">

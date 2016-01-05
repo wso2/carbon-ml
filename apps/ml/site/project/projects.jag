@@ -491,7 +491,7 @@ include("../../includes/tenantAware.jag");
                     } else {
                         accordionPanelNoProjects = '<div class="ctrl-info-panel col-md-12 col-centered">'+
                                 '<h2>You do not have any projects created for dataset [' + datasetName + '] at the moment.</h2>'+
-                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" title="hello" data-original-title="Create a new project"><span>Create Project</span></a></p>'+
+                                '<p><a href="create_project.jag?datasetName=' + datasetName + '" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new project"><span>Create Project</span></a></p>'+
                             '</div>';
                     } 
                     $('#accordion').empty();
