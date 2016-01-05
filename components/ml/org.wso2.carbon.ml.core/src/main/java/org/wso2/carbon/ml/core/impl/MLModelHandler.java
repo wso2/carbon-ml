@@ -222,7 +222,8 @@ public class MLModelHandler {
 
     /**
      * check validity of model status
-     * @param modelId modelId of the model which the status needs to be validated
+     *
+     * @param modelId   modelId of the model which the status needs to be validated
      * @throws MLModelHandlerException
      */
     public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
