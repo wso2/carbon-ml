@@ -103,7 +103,7 @@ include("../../includes/tenantAware.jag");
 
             <!-- delete dataset popup -->
             <div class="popup-content" data-operation="delete-dataset">
-            	<div  id="back-delete-dataset" align="left">
+            	<div id="back-delete-dataset" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -120,7 +120,7 @@ include("../../includes/tenantAware.jag");
 
             <!-- delete dataset version popup -->
             <div class="popup-content" data-operation="delete-dataset-version">
-           		 <div  id="back-delete-dataset-version" align="left">
+           		 <div id="back-delete-dataset-version" align="left">
                             <span style="cursor:pointer"class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-left-arrow fw-stack-1x"></i>

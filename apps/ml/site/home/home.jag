@@ -158,7 +158,8 @@ $( document ).ready(function() {
             $("#dataset-count").html(response.length);
         },
         error :  function(response){
-            //TODO: handle errors
+            var errorText = JSON.parse(res.responseText)["exception"];
+            handleNotification(errorText, '#notification-area', 'warning');
         }
     }); 
 
@@ -173,7 +174,8 @@ $( document ).ready(function() {
             $("#project-count").html(response.length);
         },
         error: function(response) {
-            //TODO: handle errors
+            var errorText = JSON.parse(res.responseText)["exception"];
+            handleNotification(errorText, '#notification-area', 'warning');
         }
     });
 
@@ -195,8 +197,6 @@ $( document ).ready(function() {
                 var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
             }
-
-
         });
         return count;
     }
