@@ -2701,7 +2701,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setString(3, userName);
             result = statement.executeQuery();
             if (result.first()) {
-                if (result.getString(1).equalsIgnoreCase(MLConstants.MODEL_STATUS_COMPLETE)) {
+                if (MLConstants.MODEL_STATUS_COMPLETE.equalsIgnoreCase(result.getString(1))) {
                     return true;
                 }
             } else {
@@ -2712,10 +2712,9 @@ public class MLDatabaseService implements DatabaseService {
                     "An error has occurred while fetching the status of the model for model id: " + modelId + ": "
                             + e.getMessage(), e);
         } finally {
-            // Close the database resources.
             MLDatabaseUtils.closeDatabaseResources(connection, statement, result);
         }
-        // consider anything other than "Complete" status as an invalid model.
+        // Consider anything other than "Complete" status as an invalid model.
         return false;
     }
     
