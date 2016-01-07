@@ -647,7 +647,7 @@ include("../../includes/tenantAware.jag");
         return classAppend;
     }
 
-    // function to append button disabled CSS class when there are no datasets to create a project
+    // Function to append button disabled CSS class when there are no datasets to create a project
     function appendCreateprojectDisabled(noOfDatasets) {
     	var classAppend = '';
         if(noOfDatasets == 0) {
@@ -655,7 +655,7 @@ include("../../includes/tenantAware.jag");
         }
         return classAppend;
     }
-    // function to append collapse in CSS class for first accordion panel
+    // Function to append collapse in CSS class for first accordion panel
     function appendCollapse(accordionNumber) {
         var classAppend = '';
         if(accordionNumber == 0) {
@@ -663,7 +663,7 @@ include("../../includes/tenantAware.jag");
         }
         return classAppend;
     }
-    // function to expand first accordion panel
+    // Function to expand first accordion panel
     function appendAriaExpanded(accordionNumber) {
         var ariaExpandedValue = 'false';
         if(accordionNumber == 0) {
@@ -672,7 +672,7 @@ include("../../includes/tenantAware.jag");
         return ariaExpandedValue;
     }    
 
-    // deletes a project
+    // Deletes a project
     function deleteProject(projectId) {
         if(projectId) {
             $.ajax({
