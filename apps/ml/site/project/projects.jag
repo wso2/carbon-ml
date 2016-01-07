@@ -208,8 +208,7 @@ include("../../includes/tenantAware.jag");
 
         // load projects and analyses to accordion
         loadProjects();
-        
-       
+             
         /********** event binding **********/
 
         // events to delete a project
@@ -365,7 +364,6 @@ include("../../includes/tenantAware.jag");
 
         $(document).on('click','#back-delete-project, #back-delete-analysis',function(e){
         	e.preventDefault();
-
         	hidePopup();
         });
 
@@ -468,9 +466,9 @@ include("../../includes/tenantAware.jag");
 
     function loadProjectsOfDataset(datasetName) {
         var noOfDatasets = getAvailableDatasetCount();
-        var title="";
+        var title = "";
         if(noOfDatasets == 0){
-            title= "No datasets available to create a project";
+            title = "No datasets available to create a project";
         }
         $.ajax({
             type: "GET",
@@ -631,7 +629,7 @@ include("../../includes/tenantAware.jag");
         });
     }
 
-    // function to append button disabled CSS class when there are no analyses in a project
+    // Function to append button disabled CSS class when there are no analyses in a project
     function appendDisabled(noOfAnalyses) {
 
         var classAppend = '';
@@ -640,7 +638,7 @@ include("../../includes/tenantAware.jag");
         }
         return classAppend;
     }
-    // function to append button disabled CSS class when there are no complete models in a project
+    // Function to append button disabled CSS class when there are no complete models in a project
     function appendCompareModelsDisabled(noOfCompleteModels) {
         var classAppend = '';
         if(noOfCompleteModels == 0) {
@@ -649,15 +647,15 @@ include("../../includes/tenantAware.jag");
         return classAppend;
     }
 
-   // function to append button disabled CSS class when there are no datasets to create a project
-   function appendCreateprojectDisabled(noOfDatasets) {
-        var classAppend = '';
+    // Function to append button disabled CSS class when there are no datasets to create a project
+    function appendCreateprojectDisabled(noOfDatasets) {
+    	var classAppend = '';
         if(noOfDatasets == 0) {
-            classAppend = 'cu-level-btn-disabled';  
+        	classAppend = 'cu-level-btn-disabled';  
         }
         return classAppend;
     }
-    // function to append collapse in CSS class for first accordion panel
+    // Function to append collapse in CSS class for first accordion panel
     function appendCollapse(accordionNumber) {
         var classAppend = '';
         if(accordionNumber == 0) {
@@ -665,7 +663,7 @@ include("../../includes/tenantAware.jag");
         }
         return classAppend;
     }
-    // function to expand first accordion panel
+    // Function to expand first accordion panel
     function appendAriaExpanded(accordionNumber) {
         var ariaExpandedValue = 'false';
         if(accordionNumber == 0) {
@@ -674,7 +672,7 @@ include("../../includes/tenantAware.jag");
         return ariaExpandedValue;
     }    
 
-    // deletes a project
+    // Deletes a project
     function deleteProject(projectId) {
         if(projectId) {
             $.ajax({
@@ -749,26 +747,24 @@ include("../../includes/tenantAware.jag");
             error: function(res) {
                 var errorText = JSON.parse(res.responseText)["exception"];
                 handleNotification(errorText, '#notification-area', 'warning');
-            }
-
-
+            }	
         });
         return count;
     }   
 
     function getCompleteModelsCount(projectId){
-         var count;
-         $.ajax({
-            type: "GET",
+    	var count;
+        $.ajax({
+        	type: "GET",
             url: serverUrl+"/api/projects/"+projectId+"/models",
             async: false,
             success: function(data) {
-              if(data.length == 0){
-                count = 0;
-              }
-              else{
-                 count = data.length;
-              }               
+            	if(data.length == 0){
+              		count = 0;
+              	}
+              	else{
+                	count = data.length;
+              	}               
             },
             error: function(res) {
                 var errorText = JSON.parse(res.responseText)["exception"];

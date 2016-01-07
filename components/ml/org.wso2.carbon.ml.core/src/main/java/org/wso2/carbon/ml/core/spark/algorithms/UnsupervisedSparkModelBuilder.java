@@ -96,7 +96,7 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             Workflow workflow = context.getFacts();
             long modelId = context.getModelId();
             ModelSummary summaryModel = null;
-            SortedMap<Integer, String> includedFeatures = MLUtils
+            Map<Integer, String> includedFeatures = MLUtils
                     .getIncludedFeaturesAfterReordering(workflow, context.getNewToOldIndicesList(),
                             context.getResponseIndex());
 
@@ -128,7 +128,8 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
             UNSUPERVISED_ALGORITHM unsupervised_algorithm = UNSUPERVISED_ALGORITHM.valueOf(workflow.getAlgorithmName());
             switch (unsupervised_algorithm) {
             case K_MEANS:
-                summaryModel = buildKMeansModel(modelId, trainingData, testingData, workflow, mlModel,includedFeatures);
+                summaryModel = buildKMeansModel(modelId, trainingData, testingData, workflow, mlModel,
+                        (SortedMap<Integer,String>)includedFeatures);
                 break;
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + workflow.getAlgorithmName()
@@ -167,14 +168,14 @@ public class UnsupervisedSparkModelBuilder extends MLModelBuilder {
 //                testingData.cache();
 //            }
 
-            // generating data for summary clusters
+            // Generating data for summary clusters
             double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
                     .getSampleSize();
 
             double sampleFraction;
-            if(trainingData.count() != 1) { //avoiding division by 0
+            if (trainingData.count() != 1) { //avoiding division by 0
                 sampleFraction = sampleSize / (trainingData.count() - 1);
-            } else{
+            } else {
                 sampleFraction = sampleSize / (trainingData.count());
             }
             JavaRDD<Vector> sampleData = null;
