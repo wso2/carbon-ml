@@ -610,7 +610,7 @@ include("../../includes/tenantAware.jag");
         });
 
         var modelId ;
-        $(document).on('click', '#publish', function(e){
+        $(document).on('click', '#publish', function(e) {
             e.preventDefault();
 
             var algorithmName = findAlgorithmName(analysisId);
@@ -620,7 +620,7 @@ include("../../includes/tenantAware.jag");
 			modelId = $(this).data('modelid');
             operationSelect('publish-model');
         });
-        $(document).on('click','#publish-model-serialized',function(e){
+        $(document).on('click','#publish-model-serialized',function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -639,7 +639,7 @@ include("../../includes/tenantAware.jag");
 
             hidePopup();
          });
-        $(document).on('click','#publish-model-pmml',function(e){
+        $(document).on('click','#publish-model-pmml',function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -724,7 +724,7 @@ include("../../includes/tenantAware.jag");
         }
     }
 
-    function loadPMMLAvailability(algorithmName){
+    function loadPMMLAvailability(algorithmName) {
         var status=false;
         if (algorithmName) {
 
@@ -745,7 +745,7 @@ include("../../includes/tenantAware.jag");
          return status;
     }
 
-    function findAlgorithmName(analysisId){
+    function findAlgorithmName(analysisId) {
         var algorithmName;
         $.ajax({
             type: "GET",
