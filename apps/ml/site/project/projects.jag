@@ -631,9 +631,8 @@ include("../../includes/tenantAware.jag");
 
     // Function to append button disabled CSS class when there are no analyses in a project
     function appendDisabled(noOfAnalyses) {
-
         var classAppend = '';
-        if(noOfAnalyses == 0) {
+        if (noOfAnalyses == 0) {
             classAppend = 'btn-disabled';  
         }
         return classAppend;
@@ -641,8 +640,8 @@ include("../../includes/tenantAware.jag");
     // Function to append button disabled CSS class when there are no complete models in a project
     function appendCompareModelsDisabled(noOfCompleteModels) {
         var classAppend = '';
-        if(noOfCompleteModels == 0) {
-            classAppend = 'btn-disabled';  
+        if (noOfCompleteModels == 0) {
+        	classAppend = 'btn-disabled';  
         }
         return classAppend;
     }
@@ -650,7 +649,7 @@ include("../../includes/tenantAware.jag");
     // Function to append button disabled CSS class when there are no datasets to create a project
     function appendCreateprojectDisabled(noOfDatasets) {
     	var classAppend = '';
-        if(noOfDatasets == 0) {
+        if (noOfDatasets == 0) {
         	classAppend = 'cu-level-btn-disabled';  
         }
         return classAppend;
@@ -658,7 +657,7 @@ include("../../includes/tenantAware.jag");
     // Function to append collapse in CSS class for first accordion panel
     function appendCollapse(accordionNumber) {
         var classAppend = '';
-        if(accordionNumber == 0) {
+        if (accordionNumber == 0) {
             classAppend = 'in';  
         }
         return classAppend;
@@ -666,7 +665,7 @@ include("../../includes/tenantAware.jag");
     // Function to expand first accordion panel
     function appendAriaExpanded(accordionNumber) {
         var ariaExpandedValue = 'false';
-        if(accordionNumber == 0) {
+        if (accordionNumber == 0) {
             ariaExpandedValue = 'true';  
         }
         return ariaExpandedValue;
@@ -674,7 +673,7 @@ include("../../includes/tenantAware.jag");
 
     // Deletes a project
     function deleteProject(projectId) {
-        if(projectId) {
+        if (projectId) {
             $.ajax({
                 type: "DELETE",
                 url: serverUrl+"/api/projects/"+projectId,
@@ -694,18 +693,17 @@ include("../../includes/tenantAware.jag");
           // need for navigation
         var queryParam = getParameterByName("projectName");
 
-        if(queryParam.length > 0 && projectName == queryParam){
+        if (queryParam.length > 0 && projectName == queryParam) {
             $("#collapse0").removeClass('in');
               return 'in';
-        }     
-        else{
+        } else {
             return ' ';
         }
     }
 
     // deletes an analysis
     function deleteAnalysis(analysisId, notificationArea) {
-        if(analysisId) {
+        if (analysisId) {
             $.ajax({
                 type: 'DELETE',
                 url: serverUrl+"/api/analyses/"+analysisId,
@@ -730,17 +728,16 @@ include("../../includes/tenantAware.jag");
         return notification;
     }
 
-    function getAvailableDatasetCount(){
+    function getAvailableDatasetCount() {
         var count;
         $.ajax({
             type: "GET",
             url: serverUrl+"/api/datasets?status=Available",
             async: false,
             success: function(data) {
-                if(data.length == 0){              
-                    count =0;
-                }
-                else{
+                if (data.length == 0) {              
+                    count = 0;
+                } else {
                     count = data.length;
                 } 
             },
@@ -759,10 +756,9 @@ include("../../includes/tenantAware.jag");
             url: serverUrl+"/api/projects/"+projectId+"/models",
             async: false,
             success: function(data) {
-            	if(data.length == 0){
+            	if (data.length == 0){
               		count = 0;
-              	}
-              	else{
+              	} else {
                 	count = data.length;
               	}               
             },

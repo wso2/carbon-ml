@@ -240,7 +240,7 @@ $( document ).ready(function() {
         var projectNameValidation = isValidProjectName(projectName);
         var datasetValidation = isValidDataset(datasetName);
 
-        if(projectNameValidation  && datasetValidation){
+        if (projectNameValidation  && datasetValidation) {
         	
         	var jsonData = '{"name":"' + projectName + '","description":"' + projectDes + '","datasetName":"' + datasetName + '"}';
 

@@ -230,7 +230,8 @@ public class MLModelHandler {
         try {
             return databaseService.isValidModelStatus(modelId, tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e.getMessage(), e);
+            throw new MLModelHandlerException(
+                    "Model status for model [id] " + modelId + " is invalid :" + e.getMessage(), e);
         }
     }
 

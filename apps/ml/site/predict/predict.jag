@@ -401,9 +401,9 @@ include("../../includes/tenantAware.jag");
         });
 
         //for navigation using breadcumb
-        if(fromCompare == 'true'){
+        if (fromCompare == 'true') {
         	$('#nav-analysis-anchor').attr('href','../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId);
-    	} else{
+    	} else {
     		$('#nav-analysis-anchor').attr('href','../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName);
     	}
 

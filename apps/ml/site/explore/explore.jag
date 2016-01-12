@@ -710,7 +710,7 @@ function removeTabs() {
 	    $('#trellis-chart-li').remove();
 	}
 	if(numericalFeatureNames.length < 2) {
-           $('#cluster-diagram-li').remove();
+    	$('#cluster-diagram-li').remove();
 	}
 }
 

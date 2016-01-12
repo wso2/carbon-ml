@@ -142,7 +142,7 @@ function authenticate(){
 var user = $('#userName').val();
 var passwd = $('#password').val();
 
-if(user.length >0 && passwd.length == 0){ // If user enters username but not password
+if (user.length >0 && passwd.length == 0) { // If user enters username but not password
 	$('.wr-validation-summary').html('<p>Please enter password.</p>');
 } else{
 	$('.wr-validation-summary').html('<p>Login failed, please check your user name and password.</p>');
