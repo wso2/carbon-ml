@@ -356,14 +356,14 @@ include("../../includes/tenantAware.jag");
                                                 '<td class="c-right">' +
                                                     '<div id="accordion-header-action-' + modelId + '">';
                                                     // remove predict links
-                                                    if(modelStatus == 'Complete') {
+                                                    if (modelStatus == 'Complete') {
                                                         // remove view from Kmeans Anomaly detection with Unlabeled data
-                                                        if(sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                                                        if (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
                                                             accordionPanel += '' +
                                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
                                                          }
                                                          // remove predict from Collaborative Filtering
-                                                        if( (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')){
+                                                        if ((sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
                                                             accordionPanel += '' +
                                                         '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
                                                          }
@@ -464,16 +464,16 @@ include("../../includes/tenantAware.jag");
                                     $('#accordion-header-action-' + modelId + ' > #publish').attr('class', 'cu-reg-btn btn-publish');
                   
                                     // remove view from k-means anomaly detection with unlabeled data
-                                    if(sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA'){
+                                    if (sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
                                         $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
                                     }
                                     // remove predict for collaborative filtering
-                                    if( (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT') ){
+                                    if ((sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
                                         $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
                                     }                                  
                                 }
                                 // update accordion panel element when model building fails
-                                if(newModelStatus == 'Failed') {
+                                if (newModelStatus == 'Failed') {
                                     $('#accordion-header-link-' + modelId).attr( {'class':'ctrl-exp-col', 'aria-expanded':'false', 'data-toggle':'collapse'} );
                                     $('#accordion-error-' + modelId).html(buildNotification(sanitize(models[i].error), 'warning'));
                                     $('#accordion-error-' + modelId).parent().closest('div').attr('aria-expanded', 'false');
@@ -481,7 +481,7 @@ include("../../includes/tenantAware.jag");
                             }                            
                         }
                         // poll only if there are dataset versions which are in progress
-                        if(modelsInProgress > 0) {
+                        if (modelsInProgress > 0) {
                             poll();
                         }
                     },
@@ -610,7 +610,7 @@ include("../../includes/tenantAware.jag");
         });
 
         var modelId ;
-        $(document).on('click', '#publish', function(e){
+        $(document).on('click', '#publish', function(e) {
             e.preventDefault();
 
             var algorithmName = findAlgorithmName(analysisId);
@@ -620,7 +620,7 @@ include("../../includes/tenantAware.jag");
 			modelId = $(this).data('modelid');
             operationSelect('publish-model');
         });
-        $(document).on('click','#publish-model-serialized',function(e){
+        $(document).on('click','#publish-model-serialized',function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -639,7 +639,7 @@ include("../../includes/tenantAware.jag");
 
             hidePopup();
          });
-          $(document).on('click','#publish-model-pmml',function(e){
+        $(document).on('click','#publish-model-pmml',function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -705,7 +705,7 @@ include("../../includes/tenantAware.jag");
     }
 
     function deleteModel(modelId) {
-        if(modelId) {
+        if (modelId) {
             $.ajax({
                 type: "DELETE",
                 url: serverUrl+"/api/models/"+modelId,
@@ -724,9 +724,9 @@ include("../../includes/tenantAware.jag");
         }
     }
 
-    function loadPMMLAvailability(algorithmName){
+    function loadPMMLAvailability(algorithmName) {
         var status=false;
-        if(algorithmName){
+        if (algorithmName) {
 
             $.ajax({
                 type: "GET",
@@ -745,7 +745,7 @@ include("../../includes/tenantAware.jag");
          return status;
     }
 
-    function findAlgorithmName(analysisId){
+    function findAlgorithmName(analysisId) {
         var algorithmName;
         $.ajax({
             type: "GET",
@@ -763,9 +763,9 @@ include("../../includes/tenantAware.jag");
         return algorithmName;
     }
 
-    function removeCloseButtonFromDescription(failedModels){
+    function removeCloseButtonFromDescription(failedModels) {
 
-        for(var i = 0; i < failedModels.length; i++){
+        for (var i = 0; i < failedModels.length; i++) {
             var id = failedModels[i];
             $('#accordion-error-'+id).children("div").children("button").remove(); 
         }

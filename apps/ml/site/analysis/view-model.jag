@@ -343,10 +343,9 @@ $( document ).ready(function() {
 
     $("[data-toggle=popover]").popover();
 
-    if( fromCompare == 'true'){
+    if (fromCompare == 'true') {
          $("#nav-analysis-anchor").attr('href','../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId);
-    }
-    else{
+    } else {
          $("#nav-analysis-anchor").attr('href','analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName);
     }
 
@@ -618,7 +617,7 @@ $( document ).ready(function() {
                 drawClusterDiagram();
             }
 	    else if (algorithm == 'STACKED_AUTOENCODERS') {
-                if(res.modelAccuracy) {
+                if (res.modelAccuracy) {
                     $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
                 }
                 // remove not applicable charts/tables
@@ -630,7 +629,7 @@ $( document ).ready(function() {
                 testResultDataPointsSample = res.testResultDataPointsSample;
                 features = res.features;
                 // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
-                if(features.length > 0) {
+                if (features.length > 0) {
                     $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
                     $.each(features,function(index, feature){
                         $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
@@ -641,21 +640,20 @@ $( document ).ready(function() {
                     $('#predicted-actual-y-features option')[1].selected = true;
 	                // draw predicted vs. actual chart
 	                drawPredictedVsActualChart(testResultDataPointsSample);
-                }
-                else {
+                } else {
                     var chartType = 'predicted vs. actual chart';
                     $('#predicted-vs-actual').html(getInfo(chartType));
                 }
-            }else if(algorithm == 'COLLABORATIVE_FILTERING' || algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT'){
+            } else if (algorithm == 'COLLABORATIVE_FILTERING' || algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
                 $("#roc-graph, #confusion-matrix, #weights-chart,#dl-network, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
                 $("#predicted-vs-actual").remove();
                 $("#residual").remove();
                 $("#area").remove();
 
-                 $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+                $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
 
             }
-            else if(algorithm == 'K_MEANS'){
+            else if (algorithm == 'K_MEANS') {
                 $("#roc-graph, #weights-chart, #predicted-vs-actual,#percentile,#confusion-matrix,#residual,#other-measures,#dl-network").closest("div.wr-graph-element").remove();
 
                  features = res.features;

@@ -650,7 +650,6 @@
 
      $(document).on('click','#back-download-model, #back-publish-model',function(e){
             e.preventDefault();
-
             hidePopup();
         });
 

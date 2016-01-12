@@ -230,7 +230,8 @@ public class MLModelHandler {
         try {
             return databaseService.isValidModelStatus(modelId, tenantId, userName);
         } catch (DatabaseHandlerException e) {
-            throw new MLModelHandlerException(e.getMessage(), e);
+            throw new MLModelHandlerException(
+                    "Model status for model [id] " + modelId + " is invalid :" + e.getMessage(), e);
         }
     }
 
@@ -367,7 +368,9 @@ public class MLModelHandler {
             try {
                 dataStream.close();
                 br.close();
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                String msg = "Error in closing input stream while publishing model";
+                log.error(msg, e);
             }
         }
 
@@ -528,7 +531,9 @@ public class MLModelHandler {
             try {
                 dataStream.close();
                 br.close();
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                String msg = "Error in closing input stream while publishing model";
+                log.error(msg, e);
             }
         }
 
@@ -825,13 +830,17 @@ public class MLModelHandler {
             if (in != null) {
                 try {
                     in.close();
-                } catch (IOException ignore) {
+                } catch (IOException e) {
+                    String msg = "Error in closing input stream while publishing model";
+                    log.error(msg, e);
                 }
             }
             if (ois != null) {
                 try {
                     ois.close();
-                } catch (IOException ignore) {
+                } catch (IOException e) {
+                    String msg = "Error in closing input stream while publishing model";
+                    log.error(msg, e);
                 }
             }
         }
@@ -884,7 +893,9 @@ public class MLModelHandler {
                     if (in != null) {
                         try {
                             in.close();
-                        } catch (IOException ignore) {
+                        } catch (IOException e) {
+                            String msg = "Error in closing input stream while publishing model";
+                            log.error(msg, e);
                         }
                     }
                 }
@@ -913,7 +924,9 @@ public class MLModelHandler {
                     if (in != null) {
                         try {
                             in.close();
-                        } catch (IOException ignore) {
+                        } catch (IOException e) {
+                            String msg = "Error in closing input stream while publishing model";
+                            log.error(msg, e);
                         }
                     }
                 }

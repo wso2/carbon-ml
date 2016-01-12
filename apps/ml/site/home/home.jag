@@ -142,7 +142,7 @@ $( document ).ready(function() {
     }
 
     var datasetCount = getAvailableDatasetCount();
-    if (datasetCount == 0){
+    if (datasetCount == 0) {
         $("#add-project").addClass('cu-level-btn-disabled');
         $('#t1').attr('title','No datasets available to create a project');
 
