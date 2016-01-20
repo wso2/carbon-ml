@@ -264,12 +264,8 @@ include("../../includes/tenantAware.jag");
 
         var percentile = $('#percentile').val();
         $('#prediction-form').ajaxForm({
-            
             url: serverUrl + '/api/models/predictionStreams?percentile=' + percentile,
-            beforeSubmit: function(arr, $form, options) {
-               //TODO: validate file format
-            },
-            success : function(res){
+            success : function(res) {
                 var date = new Date();
                 date = date.toLocaleString().split(',')[0] + "_" + date.toLocaleString().split(' ')[1];
                 res = res.replace(/\n/g,'%0A');
@@ -282,10 +278,8 @@ include("../../includes/tenantAware.jag");
                 a.click();
                 $("#tmp-prediction").remove();
             },
-            error :  function(res){
-
+            error :  function(res) {
                 var errorText = JSON.parse(res.responseText)["exception"];
-                //alert(errorText);
                 handleNotification(errorText, '#notification-area', 'warning');
             }
         });            
