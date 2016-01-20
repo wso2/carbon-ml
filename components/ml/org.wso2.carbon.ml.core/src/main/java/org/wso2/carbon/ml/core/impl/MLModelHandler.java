@@ -607,7 +607,7 @@ public class MLModelHandler {
                 }
             }
             return predictionsWithData.toString();
-        } catch (IOException e) {
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
             String msg = "Failed to read the data points for prediction for model [id] " + modelId;
             log.error(msg, e);
             throw new MLModelHandlerException(msg, e);
