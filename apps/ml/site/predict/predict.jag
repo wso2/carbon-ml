@@ -262,11 +262,27 @@ include("../../includes/tenantAware.jag");
             }                               
         });*/
 
-		$(document).on('click', '#file-predict', function(e){
-		    var percentile = $('#percentile').val();
-		    var actionUrl = serverUrl + '/api/models/predictionStreams?percentile=' + percentile;
-		    $('#prediction-form').attr('action', actionUrl);
-		});        
+        var percentile = $('#percentile').val();
+        $('#prediction-form').ajaxForm({
+            url: serverUrl + '/api/models/predictionStreams?percentile=' + percentile,
+            success : function(res) {
+                var date = new Date();
+                date = date.toLocaleString().split(',')[0] + "_" + date.toLocaleString().split(' ')[1];
+                res = res.replace(/\n/g,'%0A');
+                var a = document.createElement('a');
+                document.body.appendChild(a);
+                a.id = "tmp-prediction";
+                a.textContent='download';
+                a.href = "data:text/csv;charset=UTF-8" + (res);
+                a.download = "Predictions_" + modelId + "_" + date + ".csv";
+                a.click();
+                $("#tmp-prediction").remove();
+            },
+            error :  function(res) {
+                var errorText = JSON.parse(res.responseText)["exception"];
+                handleNotification(errorText, '#notification-area', 'warning');
+            }
+        });            
 
     });
 
