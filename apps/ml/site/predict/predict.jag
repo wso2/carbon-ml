@@ -273,7 +273,7 @@ include("../../includes/tenantAware.jag");
                 document.body.appendChild(a);
                 a.id = "tmp-prediction";
                 a.textContent='download';
-                a.href = "data:text/csv;charset=UTF-8" + (res);
+                a.href = "data:text/csv;charset=UTF-8," + (res);
                 a.download = "Predictions_" + modelId + "_" + date + ".csv";
                 a.click();
                 $("#tmp-prediction").remove();
