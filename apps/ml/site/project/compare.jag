@@ -834,6 +834,7 @@
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
+                contentType: 'application/json',
                 dataType: 'json',
                 success : function(res){
                     var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
@@ -852,6 +853,7 @@
             $.ajax({
                 type: "POST",
                 url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                contentType: 'application/json',
                 dataType: 'json',
                 success : function(res){
                     var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
