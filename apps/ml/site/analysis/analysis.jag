@@ -1,488 +1,500 @@
 <!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WSO2 Machine Learner</title>
+        <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+        <link href="../../css/bootstrap.css" rel="stylesheet">
+        <link href="../../css/custom.css" rel="stylesheet">
+        <link href="../../css/custom-theme.css" rel="stylesheet">
+        <link href="../../css/font-wso2.css" rel="stylesheet">
+        <script src="../../js/respond.min.js"></script>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WSO2 Machine Learner</title>
-    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
-    <link href="../../css/bootstrap.css" rel="stylesheet">
-    <link href="../../css/custom.css" rel="stylesheet">
-    <link href="../../css/custom-theme.css" rel="stylesheet">
-    <link href="../../css/font-wso2.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script>
+        <%
+        include("../../includes/tenantAware.jag");
+        %>
 
-    <%
-include("../../includes/tenantAware.jag");
-%>
+    </head>
+    
+    <body>
+        <div class="container col-lg-12 col-md-12 col-sm-12">
 
-</head>
-
-<body>
-
-<div class="container col-lg-12 col-md-12 col-sm-12">
-
-    <!-- header -->
-    <header>
-        <div class="row wr-global-header">
-            <div class="col-sm-8 app-logo">
-                <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-            </div>
-            <div class="col-sm-4">
-                <div class="wr-auth pull-right">
-                    <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-                        <div class="dropdown-menu">
-                            <div class="cu-arrow"></div>
-                            <div class="dropdown-menu-content">
-                                <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+            <!-- header -->
+            <header>
+                <div class="row wr-global-header">
+                    <div class="col-sm-8 app-logo">
+                        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="wr-auth pull-right">
+                            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                            <div class="dropdown-menu">
+                                <div class="cu-arrow"></div>
+                                <div class="dropdown-menu-content">
+                                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </header>
-        <!-- /header -->
+            </header>
+            <!-- /header -->
 
-    <!-- secondary header - app bar -->
-    <div class="navbar-wrapper">
-        <div id="nav" class="row wr-app-bar">
-            <div class="col-md-9 wr-action-container">
-                <div class="wr-asset-type-switcher">
-                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-                    <span class="btn-asset"></span>
-                    </a>
-                </div>
+            <!-- secondary header - app bar -->
+            <div class="navbar-wrapper">
+                <div id="nav" class="row wr-app-bar">
+                    <div class="col-md-9 wr-action-container">
+                        <div class="wr-asset-type-switcher">
+                            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                                <span class="btn-asset"></span>
+                            </a>
+                        </div>
 
-                <div class="wr-project">
-                    <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a><span id="nav-analysis"></span>
-                </div>
+                        <div class="wr-project">
+                            <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a><span id="nav-analysis"></span>
+                        </div>
 
-                <div class="wr-action-btn-bar">
-                    <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="wr-secondary-links pull-right">
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- secondary header - app bar -->
-
-
-        <!-- content/body -->
-        <div class="row">
-            <div class="col-lg-12 wr-secondary-bar">
-
-                <!-- Wizard -->
-                <!--ul class="nav nav-pills nav-wizard">
-        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-    </ul-->
-
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-
-                <!-- content -->
-                <div class="container-fluid col-centered wr-content">
-
-                    <div id="notification-area"></div>
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
-
-                    <!-- pagination -->
-                    <div id="pagination-per-page" class="col-md-6 text-left">
-                        <table>
-                        <tr>
-                            <td class="">Show&nbsp;&nbsp;</td>
-                            <td class="">
-                                <select class="form-control" id="no-of-panels">
-                                    <option value='10'>10</option>
-                                    <option value='25'>25</option>
-                                    <option value='50'>50</option>
-                                    <option value='100'>100</option>
-                                </select>
-                            </td>
-                        </tr>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6 text-right">
-                        <ul id="pagination-list" class="pagination"></ul>
-                    </div>
-                    <!-- /pagination -->
-
-                    <!-- delete model popup -->
-                    <div class="popup-content" data-operation="delete-model">
-                        <div id="back-delete-model" align="left">
-                            <span style="cursor:pointer"class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
-                                <i class="fw fw-left-arrow fw-stack-1x"></i>
-                            </span>
-                            <span style="cursor:pointer">GO BACK</span>
-                        </div> 
-                        <div class="content">Are you sure you want to delete this model?</div>
-                        <div class="buttons">
-                            <a id="delete-model-yes" href="#" class="btn-opr-default">Yes</a>
-                            <a id="delete-model-no" href="#" class="btn-opr-cancel">No</a>
+                        <div class="wr-action-btn-bar">
+                            <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
                         </div>
                     </div>
-                    <!-- /delete model popup -->
 
-                    <!--download model popup -->
-                      <div class="popup-content" data-operation="download-model">
-                      <div id="back-download-model" align="left">
-                            <span style="cursor:pointer"class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
-                                <i class="fw fw-left-arrow fw-stack-1x"></i>
-                            </span>
-                            <span style="cursor:pointer">GO BACK</span>
-                        </div>      
-                        <div class="content">Please select download type</div>
-                        <div class="buttons">
-                            <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
-                            <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
-                                 <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                    <div class="col-md-3">
+                        <div class="wr-secondary-links pull-right">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- secondary header - app bar -->
+
+
+            <!-- content/body -->
+            <div class="row">
+                <div class="col-lg-12 wr-secondary-bar">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!-- content -->
+                    <div class="container-fluid col-centered wr-content">
+
+                        <div id="notification-area"></div>
+                        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
+
+                        <!-- pagination -->
+                        <div id="pagination-per-page" class="col-md-6 text-left">
+                            <table>
+                                <tr>
+                                    <td class="">Show&nbsp;&nbsp;</td>
+                                    <td class="">
+                                        <select class="form-control" id="no-of-panels">
+                                            <option value='10'>10</option>
+                                            <option value='25'>25</option>
+                                            <option value='50'>50</option>
+                                            <option value='100'>100</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="col-md-6 text-right">
+                            <ul id="pagination-list" class="pagination"></ul>
+                        </div>
+                        <!-- /pagination -->
+
+                        <!-- delete model popup -->
+                        <div class="popup-content" data-operation="delete-model">
+                            <div id="back-delete-model" align="left">
+                                <span style="cursor:pointer"class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                                </span>
+                                <span style="cursor:pointer">GO BACK</span>
+                            </div> 
+                            <div class="content">Are you sure you want to delete this model?</div>
+                            <div class="buttons">
+                                <a id="delete-model-yes" href="#" class="btn-opr-default">Yes</a>
+                                <a id="delete-model-no" href="#" class="btn-opr-cancel">No</a>
                             </div>
                         </div>
+                        <!-- /delete model popup -->
+
+                        <!--download model popup -->
+                        <div class="popup-content" data-operation="download-model">
+                            <div id="back-download-model" align="left">
+                                <span style="cursor:pointer"class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                                </span>
+                                <span style="cursor:pointer">GO BACK</span>
+                            </div>      
+                            <div class="content">Please select download type</div>
+                            <div class="buttons">
+                                <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                                <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                                    <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="popup-content" data-operation="publish-model">
+                            <div id="back-publish-model" align="left">
+                                <span style="cursor:pointer"class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                                </span>
+                                <span style="cursor:pointer">GO BACK</span>
+                            </div>      
+                            <div class="content">Please select model type to publish</div>
+                            <div class="buttons">
+                                <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
+                                <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
+                                    <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /download model popup -->
                     </div>
-                     <div class="popup-content" data-operation="publish-model">
-                     <div id="back-publish-model" align="left">
-                            <span style="cursor:pointer"class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
-                                <i class="fw fw-left-arrow fw-stack-1x"></i>
-                            </span>
-                            <span style="cursor:pointer">GO BACK</span>
-                        </div>      
-			            <div class="content">Please select model type to publish</div>
-			                <div class="buttons">
-			                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
-			                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
-			                     	<a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
-			                    </div>
-			                </div>
-        			</div>
-                    <!-- /download model popup -->
+                    <!-- /content -->
                 </div>
-                <!-- /content -->
+            </div>
+            <!-- /content/body -->
+        </div>
+
+        
+        <div id="content-asset-types" style="display: none">
+            <div>
+                <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
+                <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
             </div>
         </div>
-        <!-- /content/body -->
 
-    </div>
+        <!-- modal popup template -->
+        <div class="wr-modalpopup">
+            <div class="modalpopup-content"><!-- dynamic content --></div>
+            <div class="modalpopup-bg"></div>
+        </div>
+        <!-- /modal popup template -->
 
-    <!--footer class="footer">
-    <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
-</footer-->
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/wso2.ml.util.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/operationsmenu.js"></script>
 
-<div id="content-asset-types" style="display: none">
-    <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
-        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-    </div>
-</div>
+        <script type="text/javascript">
+            var serverUrl = window.location.origin;
 
-<!-- modal popup template -->
-<div class="wr-modalpopup">
-    <div class="modalpopup-content"><!-- dynamic content --></div>
-    <div class="modalpopup-bg"></div>
-</div>
-<!-- /modal popup template -->
+            var projectName = getParameterByName('projectName');
+            var analysisName = getParameterByName('analysisName');
+            var analysisId = getParameterByName('analysisId');
+            var datasetId = getParameterByName('datasetId');
+            var deleteModelId;
+            var panelsPerPage;
+            var hasDatasetVersions = true;
 
-<script src="../../js/jquery-1.11.1.min.js"></script>
-<script src="../../js/wso2.ml.util.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/operationsmenu.js"></script>
+            // update pagination
+            $(document).on('change', 'select[id="no-of-panels"]', function() {
+                $('#pagination-list').empty();
+                panelsPerPage = parseInt($("#no-of-panels").val());
+                $('#accordion').pageMe({
+                    pagerSelector: '#pagination-list',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: panelsPerPage
+                });
+            });
 
-<script type="text/javascript">
+            $(document).ready(function() {
 
-    var serverUrl = window.location.origin;
-
-    var projectName = getParameterByName('projectName');
-    var analysisName = getParameterByName('analysisName');
-    var analysisId = getParameterByName('analysisId');
-    var datasetId = getParameterByName('datasetId');
-    var deleteModelId;
-    var panelsPerPage;
-    var hasDatasetVersions = true;
-
-    // update pagination
-    $(document).on('change','select[id="no-of-panels"]',function() {
-        $('#pagination-list').empty();
-        panelsPerPage = parseInt($("#no-of-panels").val());
-        $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
-    });
-
-    $(document).ready(function() {
-
-        $('#nav').affix({
-              offset: {
-                top: $('header').height()
-              }
-        });
-
-        /*scrollVibrateFix();
-
-        $(window).resize(function() {
-            scrollVibrateFix();
-        });*/
-
-        $(function () { 
-            $('[data-toggle="tooltip"]').tooltip() 
-        })
-        $("[data-toggle=popover]").popover();
-
-        $(".ctrl-asset-type-switcher").popover({
-            html : true,
-            content: function() {
-                return $('#content-asset-types').html();
-            }
-        });
-
-        // put path in application navigator
-        $('#nav-project').text(projectName);
-        $('#nav-analysis').text(" \\ "+analysisName);
-        $('#nav-project-anchor').attr('href',"../project/projects.jag?projectName="+projectName);
-
-        loadModels();        
-
-        // add pagination
-        panelsPerPage = parseInt($("#no-of-panels").val());
-        $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
-
-        // events to delete a project
-        $(document).on('click', '#delete-model', function(e){
-            e.preventDefault();
-
-            deleteModelId = $(this).data('modelid');
-            operationSelect('delete-model');
-        });
-        $(document).on('click', '#delete-model-yes', function(e){
-            e.preventDefault();
-
-            deleteModel(deleteModelId);
-            deleteModelId = null;
-            hidePopup();
-        });
-        $(document).on('click', '#delete-model-no', function(e){
-            e.preventDefault();
-
-            deleteModelId = null;
-            hidePopup();
-        });
-
-        $(document).on('click','#back-delete-model, #back-download-model, #back-publish-model',function(e){
-            e.preventDefault();
-
-            hidePopup();
-        });
-    });
-
-    function loadModels() {
-
-        checkDatasetVersions();
-
-        $('#accordion').empty();
-        var failedModels=[];
-        $.ajax({
-            type: "GET",
-            url: serverUrl+"/api/analyses/"+analysisId+"/models",
-            async : false,
-            success: function(data) {
-                // order models in reverse chronological order
-                var analysisModels = data.sort(sortByTimestamp);
-
-                if (analysisModels.length == 0) {
-                    var accordionPanelNoModels =
-                    '<div class="ctrl-info-panel col-md-12 col-centered">' +                        
-                        '<h2>You do not have any models created at the moment.</h2>' +
-                        '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
-                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>'+
-                        '</div>' +
-                    '</div>';
-                    $("#accordion").append(accordionPanelNoModels);
-                    $("#pagination-per-page").hide()
-                }
-                else {
-                    var createModel = '' +
-                    '<div class="ctrl-info-panel col-md-12 col-centered">' +
-                        '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
-                            '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>' +
-                        '</div>' +
-                    '</div>';
-
-                    $("#accordion").append(createModel);
-
-                    for (var i = 0; i < analysisModels.length; i++) {
-
-                        var modelId = sanitize(analysisModels[i]['id']);
-                        var modelName = sanitize(analysisModels[i]['name']);
-                        var createdTime = sanitize(analysisModels[i]['createdTime']);
-                        var modelStatus = sanitize(analysisModels[i]['status']);
-                        // set error message if available
-                        var modelError = '';
-                        if(analysisModels[i]['error'] != null) {
-                            failedModels.push(modelId);
-                            modelError = buildNotification(sanitize(analysisModels[i]['error']), 'warning');
-                        }
-
-                        accordionPanel = '' +
-                            '<div class="panel panel-default">' +
-                                '<div class="panel-heading" role="tab" id="heading' + i + '">' +
-                                    '<h4 class="panel-title">' +
-                                        '<table class="tbl-projects" projectID="' + modelId + '">' +
-                                            '<tr>' +
-                                                '<td>' +
-                                                    '<a id="accordion-header-link-' + modelId + '" ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
-                                                    '<span class="cu-acc-head-title">' + modelName + '</span>' +
-                                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
-                                                    // retrieve dataset version from model summary when model building is completed
-                                                    if(modelStatus == 'Complete') {
-                                                        var datasetVersion = sanitize(analysisModels[i]['modelSummary']['datasetVersion']);
-                                                        accordionPanel += '' +
-                                                    '<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>';
-                                                    }
-                                                    accordionPanel += '' +
-                                                    '<span class="cu-acc-head-workflow"></span>' +
-                                                    '<span class="cu-acc-head-created" id="' + "model-" + modelId + '" data-status="' + modelStatus + '">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
-                                                    '</a>' +
-                                                '</td>' +
-                                                '<td class="c-right">' +
-                                                    '<div id="accordion-header-action-' + modelId + '">';
-                                                    // remove predict links
-                                                    if (modelStatus == 'Complete') {
-                                                        // remove view from Kmeans Anomaly detection with Unlabeled data
-                                                        if (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
-                                                            accordionPanel += '' +
-                                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="'+ modelId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
-                                                         }
-                                                         // remove predict from Collaborative Filtering
-                                                        if ((sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
-                                                            accordionPanel += '' +
-                                                        '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
-                                                         }
-                                                    }
-                                                        accordionPanel += '' +
-                                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
-                                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
-                                                        '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
-                                                    '</div>' +
-                                                '</td>' +
-                                            '</tr>' +
-                                        '</table>' +
-                                    '</h4>' +
-                                '</div>' +
-                                '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+i+'">' +
-                                    '<div id="accordion-error-' + modelId + '" class="panel-body">' + modelError + '</div>' +
-                                '</div>' +
-                            '</div>';
-                            $("#accordion").append(accordionPanel);
-                    };
-                }
-
-  
-
-                 //events to handle downloading
-                $(document).on('click','#download-model',function(e){
-                    e.preventDefault();
-
-                    modelId = sanitize($(this).data('modelid'));
-                    var algorithmName = findAlgorithmName(analysisId);
-
-                    if(loadPMMLAvailability(algorithmName)){
-                        $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
+                $('#nav').affix({
+                    offset: {
+                        top: $('header').height()
                     }
-                    operationSelect('download-model');
                 });
-                $(document).on('click','#download-model-serialized',function(e){
+
+                $(function() {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+                $("[data-toggle=popover]").popover();
+
+                $(".ctrl-asset-type-switcher").popover({
+                    html: true,
+                    content: function() {
+                        return $('#content-asset-types').html();
+                    }
+                });
+
+                // put path in application navigator
+                $('#nav-project').text(projectName);
+                $('#nav-analysis').text(" \\ " + analysisName);
+                $('#nav-project-anchor').attr('href', "../project/projects.jag?projectName=" + projectName);
+
+                loadModels();
+
+                // add pagination
+                panelsPerPage = parseInt($("#no-of-panels").val());
+                $('#accordion').pageMe({
+                    pagerSelector: '#pagination-list',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: panelsPerPage
+                });
+
+                // events to delete a project
+                $(document).on('click', '#delete-model', function(e) {
                     e.preventDefault();
 
-                    window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=serialized';
+                    deleteModelId = $(this).data('modelid');
+                    operationSelect('delete-model');
+                });
+                $(document).on('click', '#delete-model-yes', function(e) {
+                    e.preventDefault();
+                    deleteModel(deleteModelId);
+                    deleteModelId = null;
                     hidePopup();
                 });
-                $(document).on('click','#download-model-pmml',function(e){
-                	e.preventDefault();
+                $(document).on('click', '#delete-model-no', function(e) {
+                    e.preventDefault();
 
-                	window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=pmml';
+                    deleteModelId = null;
                     hidePopup();
-
                 });
 
+                $(document).on('click', '#back-delete-model, #back-download-model, #back-publish-model', function(e) {
+                    e.preventDefault();
 
-            },
-            error: function(res) {
-                var errorText = res.responseText
-                handleNotification(errorText, '#notification-area', 'warning');
-            }
-        });
-   
-        bindEvents();
-        updateModels();
-        removeCloseButtonFromDescription(failedModels);
-    }
+                    hidePopup();
+                });
+            });
 
-    // function to update model statuses by polling
-    function updateModels() {
-        (function poll() {
-            setTimeout(function() {
+            function loadModels() {
+
+                checkDatasetVersions();
+
+                $('#accordion').empty();
+                var failedModels = [];
                 $.ajax({
-                    type : 'GET',
-                    url: serverUrl+"/api/analyses/"+analysisId+"/models",
+                    type: "GET",
+                    url: serverUrl + "/api/analyses/" + analysisId + "/models",
                     async: false,
-                    success : function(data) {
-                        var models = data;
-                        var modelsInProgress = 0;
-                        // iterate through models and update status
-                        for(var i = 0; i < models.length; i++) {                      
-                            var modelName = models[i].name;
-                            var modelId = models[i].id;
-                            var newModelStatus = models[i].status;
-                            // count models in progress
-                            if(newModelStatus == "In Progress") {
-                                modelsInProgress++;
-                            }
-                            // create the status element id
-                            var statusElementId = "#model-" + modelId;
-                            // get current status from data attribute of status element
-                            var currentModelStatus = $(statusElementId).data("status");
-                            // update status only if the status has changed
-                            if(currentModelStatus != newModelStatus) {
-                                var statusElementContent = '[ Status: ' + newModelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newModelStatus) + '.png" /> ]';
-                                $(statusElementId).html(statusElementContent);                                
-                                // update dataset version from model summary when model building is completed
-                                if(newModelStatus == 'Complete') {
-                                    var datasetVersion = models[i].modelSummary.datasetVersion;
-                                    $('<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>').insertBefore(statusElementId);
-                                    // enable download and publish links when disabled                                
-                                    $('#accordion-header-action-' + modelId + ' > #download-model').attr('class', 'cu-reg-btn btn-download');                         
-                                    $('#accordion-header-action-' + modelId + ' > #publish').attr('class', 'cu-reg-btn btn-publish');
-                  
-                                    // remove view from k-means anomaly detection with unlabeled data
-                                    if (sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
-                                        $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="'+ modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
-                                    }
-                                    // remove predict for collaborative filtering
-                                    if ((sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
-                                        $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
-                                    }                                  
+                    success: function(data) {
+                        // order models in reverse chronological order
+                        var analysisModels = data.sort(sortByTimestamp);
+
+                        if (analysisModels.length == 0) {
+                            var accordionPanelNoModels =
+                                '<div class="ctrl-info-panel col-md-12 col-centered">' +
+                                '<h2>You do not have any models created at the moment.</h2>' +
+                                '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
+                                '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>' +
+                                '</div>' +
+                                '</div>';
+                            $("#accordion").append(accordionPanelNoModels);
+                            $("#pagination-per-page").hide()
+                        } else {
+                            var createModel = '' +
+                                '<div class="ctrl-info-panel col-md-12 col-centered">' +
+                                '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
+                                '<p><a href="#" id="create-model" class="cu-level2-btn btn-add-new-dark ' + appendClassDisableCreateModel() + '" data-toggle="tooltip" data-original-title="Create a new model"><span>Create Model</span></a></p>' +
+                                '</div>' +
+                                '</div>';
+
+                            $("#accordion").append(createModel);
+
+                            for (var i = 0; i < analysisModels.length; i++) {
+
+                                var modelId = sanitize(analysisModels[i]['id']);
+                                var modelName = sanitize(analysisModels[i]['name']);
+                                var createdTime = sanitize(analysisModels[i]['createdTime']);
+                                var modelStatus = sanitize(analysisModels[i]['status']);
+                                // set error message if available
+                                var modelError = '';
+                                if (analysisModels[i]['error'] != null) {
+                                    failedModels.push(modelId);
+                                    modelError = buildNotification(sanitize(analysisModels[i]['error']), 'warning');
                                 }
-                                // update accordion panel element when model building fails
-                                if (newModelStatus == 'Failed') {
-                                    $('#accordion-header-link-' + modelId).attr( {'class':'ctrl-exp-col', 'aria-expanded':'false', 'data-toggle':'collapse'} );
-                                    $('#accordion-error-' + modelId).html(buildNotification(sanitize(models[i].error), 'warning'));
-                                    $('#accordion-error-' + modelId).parent().closest('div').attr('aria-expanded', 'false');
-                                }                                 
-                            }                            
+
+                                accordionPanel = '' +
+                                    '<div class="panel panel-default">' +
+                                    '<div class="panel-heading" role="tab" id="heading' + i + '">' +
+                                    '<h4 class="panel-title">' +
+                                    '<table class="tbl-projects" projectID="' + modelId + '">' +
+                                    '<tr>' +
+                                    '<td>' +
+                                    '<a id="accordion-header-link-' + modelId + '" ' + appendDataToggle(modelStatus) + ' data-parent="#accordion" href="#collapse' + i + '" ' + appendExpandProperty(modelStatus) + ' aria-' + 'controls="collapse1" class="ctrl-exp-col ' + appendLinkDisable(modelStatus) + '">' +
+                                    '<span class="cu-acc-head-title">' + modelName + '</span>' +
+                                    '<span class="cu-acc-head-created">[ Created: ' + createdTime + ' ]</span>';
+                                // retrieve dataset version from model summary when model building is completed
+                                if (modelStatus == 'Complete') {
+                                    var datasetVersion = sanitize(analysisModels[i]['modelSummary']['datasetVersion']);
+                                    accordionPanel += '' +
+                                        '<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>';
+                                }
+                                accordionPanel += '' +
+                                    '<span class="cu-acc-head-workflow"></span>' +
+                                    '<span class="cu-acc-head-created" id="' + "model-" + modelId + '" data-status="' + modelStatus + '">[ Status: ' + modelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(modelStatus) + '.png" /> ]</span>' +
+                                    '</a>' +
+                                    '</td>' +
+                                    '<td class="c-right">' +
+                                    '<div id="accordion-header-action-' + modelId + '">';
+                                // remove predict links
+                                if (modelStatus == 'Complete') {
+                                    // remove view from Kmeans Anomaly detection with Unlabeled data
+                                    if (sanitize(analysisModels[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+                                        accordionPanel += '' +
+                                            '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
+                                    }
+                                    // remove predict from Collaborative Filtering
+                                    if ((sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
+                                        accordionPanel += '' +
+                                            '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
+                                    }
+                                }
+                                accordionPanel += '' +
+                                    '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
+                                    '<a href="#" id="publish" class="cu-reg-btn btn-publish ' + appendClass(modelStatus) + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
+                                    '<a href="#" id="delete-model" class="cu-reg-btn btn-delete" data-modelid="' + modelId + '">Delete Model</a>' +
+                                    '</div>' +
+                                    '</td>' +
+                                    '</tr>' +
+                                    '</table>' +
+                                    '</h4>' +
+                                    '</div>' +
+                                    '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' + i + '">' +
+                                    '<div id="accordion-error-' + modelId + '" class="panel-body">' + modelError + '</div>' +
+                                    '</div>' +
+                                    '</div>';
+                                $("#accordion").append(accordionPanel);
+                            };
                         }
-                        // poll only if there are dataset versions which are in progress
-                        if (modelsInProgress > 0) {
-                            poll();
+
+
+
+                        //events to handle downloading
+                        $(document).on('click', '#download-model', function(e) {
+                            e.preventDefault();
+
+                            modelId = sanitize($(this).data('modelid'));
+                            var algorithmName = findAlgorithmName(analysisId);
+
+                            if (loadPMMLAvailability(algorithmName)) {
+                                $('#download-model-pmml').removeClass('btn-disabled').prop('title', "");
+                            }
+                            operationSelect('download-model');
+                        });
+                        $(document).on('click', '#download-model-serialized', function(e) {
+                            e.preventDefault();
+
+                            window.location.href = serverUrl + '/api/models/' + modelId + '/export?mode=serialized';
+                            hidePopup();
+                        });
+                        $(document).on('click', '#download-model-pmml', function(e) {
+                            e.preventDefault();
+
+                            window.location.href = serverUrl + '/api/models/' + modelId + '/export?mode=pmml';
+                            hidePopup();
+
+                        });
+
+
+                    },
+                    error: function(res) {
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+
+                bindEvents();
+                updateModels();
+                removeCloseButtonFromDescription(failedModels);
+            }
+
+            // function to update model statuses by polling
+            function updateModels() {
+                (function poll() {
+                    setTimeout(function() {
+                        $.ajax({
+                            type: 'GET',
+                            url: serverUrl + "/api/analyses/" + analysisId + "/models",
+                            async: false,
+                            success: function(data) {
+                                var models = data;
+                                var modelsInProgress = 0;
+                                // iterate through models and update status
+                                for (var i = 0; i < models.length; i++) {
+                                    var modelName = models[i].name;
+                                    var modelId = models[i].id;
+                                    var newModelStatus = models[i].status;
+                                    // count models in progress
+                                    if (newModelStatus == "In Progress") {
+                                        modelsInProgress++;
+                                    }
+                                    // create the status element id
+                                    var statusElementId = "#model-" + modelId;
+                                    // get current status from data attribute of status element
+                                    var currentModelStatus = $(statusElementId).data("status");
+                                    // update status only if the status has changed
+                                    if (currentModelStatus != newModelStatus) {
+                                        var statusElementContent = '[ Status: ' + newModelStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newModelStatus) + '.png" /> ]';
+                                        $(statusElementId).html(statusElementContent);
+                                        // update dataset version from model summary when model building is completed
+                                        if (newModelStatus == 'Complete') {
+                                            var datasetVersion = models[i].modelSummary.datasetVersion;
+                                            $('<span class="cu-acc-head-created">[ Dataset version: ' + datasetVersion + ' ]</span>').insertBefore(statusElementId);
+                                            // enable download and publish links when disabled                                
+                                            $('#accordion-header-action-' + modelId + ' > #download-model').attr('class', 'cu-reg-btn btn-download');
+                                            $('#accordion-header-action-' + modelId + ' > #publish').attr('class', 'cu-reg-btn btn-publish');
+
+                                            // remove view from k-means anomaly detection with unlabeled data
+                                            if (sanitize(models[i].modelSummary.algorithm) != 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+                                                $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
+                                            }
+                                            // remove predict for collaborative filtering
+                                            if ((sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
+                                                $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
+                                            }
+                                        }
+                                        // update accordion panel element when model building fails
+                                        if (newModelStatus == 'Failed') {
+                                            $('#accordion-header-link-' + modelId).attr({
+                                                'class': 'ctrl-exp-col',
+                                                'aria-expanded': 'false',
+                                                'data-toggle': 'collapse'
+                                            });
+                                            $('#accordion-error-' + modelId).html(buildNotification(sanitize(models[i].error), 'warning'));
+                                            $('#accordion-error-' + modelId).parent().closest('div').attr('aria-expanded', 'false');
+                                        }
+                                    }
+                                }
+                                // poll only if there are dataset versions which are in progress
+                                if (modelsInProgress > 0) {
+                                    poll();
+                                }
+                            },
+                            error: function(res) {
+                                var errorText = res.responseText
+                                handleNotification(errorText, '#notification-area', 'warning');
+                            }
+                        });
+                    }, 5000);
+                })();
+            }
+
+            // function to check dataset version availability
+            function checkDatasetVersions() {
+                $.ajax({
+                    type: 'GET',
+                    url: serverUrl + "/api/datasets/" + datasetId + "/versions",
+                    async: false,
+                    success: function(data) {
+                        if (data.length == 0) {
+                            hasDatasetVersions = false;
                         }
                     },
                     error: function(res) {
@@ -490,290 +502,265 @@ include("../../includes/tenantAware.jag");
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
                 });
-            }, 5000);
-        })();   
-    }
-
-    // function to check dataset version availability
-    function checkDatasetVersions() {
-        $.ajax({
-            type : 'GET',
-            url: serverUrl+"/api/datasets/" + datasetId + "/versions",
-            async: false,
-            success : function(data) {
-                if(data.length == 0) {
-                    hasDatasetVersions = false;
-                }
-            },
-            error: function(res) {
-                var errorText = res.responseText
-                handleNotification(errorText, '#notification-area', 'warning');
             }
-        });
-    }        
 
-    // function to append button disabled CSS class when model building is not complete
-    function appendClass(modelStatus) {
-        var classAppend = '';
-        if(modelStatus != 'Complete') {
-            classAppend = 'btn-disabled';
-        }
-        return classAppend;
-    }
-
-    // function to append button disabled CSS class when no dataset versions available
-    function appendClassDisableCreateModel() {
-        var classAppend = '';
-        if(hasDatasetVersions == false) {
-            classAppend = 'cu-level-btn-disabled';
-            $('#create-model-overlay').attr('title', 'No dataset versions available to create a model');
-        }
-        return classAppend;
-    }    
-
-    // function to append title attribute to CREATE MODEL link when no dataset versions available
-    function appendTitleDisableCreateModel() {
-        var titleAppend = '';
-        if(hasDatasetVersions == false) {
-            titleAppend = 'No dataset versions available to create a model';
-        }
-        return titleAppend;
-    }        
-
-    // function to append data-toggle disabled CSS class when model building is not failed
-    function appendDataToggle(modelStatus) {
-        var dataToggleAppend = '';
-        if(modelStatus == 'Failed') {
-            dataToggleAppend = 'data-toggle="collapse"';
-        }
-        return dataToggleAppend;
-    }
-
-    // function to append link disabled CSS class when model building is not failed
-    function appendLinkDisable(modelStatus) {
-        var linkDisableAppend = '';
-        if(modelStatus != 'Failed') {
-            linkDisableAppend = 'reset-hover';
-        }
-        return linkDisableAppend;
-    }
-
-    // function to append link disabled CSS class when model building is not failed
-    function appendStatusIcon(modelStatus) {
-        var statusIconAppend = '';
-        if(modelStatus == 'Not Started') {
-            statusIconAppend = 'not-started';
-        }
-        else if(modelStatus == 'In Progress') {
-            statusIconAppend = 'progressing';
-        }
-        else if(modelStatus == 'Complete') {
-            statusIconAppend = 'completed';
-        }
-        else if(modelStatus == 'Failed') {
-            statusIconAppend = 'error';
-        }
-        return statusIconAppend;
-    }
-
-    // function to append expand property when model building fails
-    function appendExpandProperty(modelStatus) {
-        var expandProperty = '';
-        if(modelStatus == 'Failed') {
-            expandProperty = 'aria-expanded="false"';
-        }
-        return expandProperty;
-    }
-
-    // compare function for models
-    function sortByTimestamp(a, b) {
-        var sortStatus = 0;
-        timestamp1 = new Date(a.createdTime);
-        timestamp2 = new Date(b.createdTime);
-
-        if (timestamp1 > timestamp2) {
-            sortStatus = -1;
-        } else if (timestamp1 < timestamp2) {
-            sortStatus = 1;
-        }
-        return sortStatus;
-    }
-
-    function bindEvents() {
-
-        $(document).on('click', '#predict', function(e){
-            e.preventDefault();
-
-            var modelId = $(this).data('modelid');
-            var modelName = $(this).data('modelname');
-            window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
-        });
-
-        var modelId ;
-        $(document).on('click', '#publish', function(e) {
-            e.preventDefault();
-
-            var algorithmName = findAlgorithmName(analysisId);
-            if(loadPMMLAvailability(algorithmName)){
-                    $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
+            // function to append button disabled CSS class when model building is not complete
+            function appendClass(modelStatus) {
+                var classAppend = '';
+                if (modelStatus != 'Complete') {
+                    classAppend = 'btn-disabled';
+                }
+                return classAppend;
             }
-			modelId = $(this).data('modelid');
-            operationSelect('publish-model');
-        });
-        $(document).on('click','#publish-model-serialized',function(e) {
-            e.preventDefault();
 
-            $.ajax({
-                type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
-                dataType: 'json',
-                success : function(res){
-                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
-                    handleNotification(successText, '#notification-area', 'success');
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
+            // function to append button disabled CSS class when no dataset versions available
+            function appendClassDisableCreateModel() {
+                var classAppend = '';
+                if (hasDatasetVersions == false) {
+                    classAppend = 'cu-level-btn-disabled';
+                    $('#create-model-overlay').attr('title', 'No dataset versions available to create a model');
                 }
-            });
-
-            hidePopup();
-         });
-        $(document).on('click','#publish-model-pmml',function(e) {
-            e.preventDefault();
-
-            $.ajax({
-                type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
-                dataType: 'json',
-                success : function(res){
-                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
-                    handleNotification(successText, '#notification-area', 'success');
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-
-            hidePopup();
-         });
-        $(document).on('click', '#view-model', function(e){
-            e.preventDefault();
-
-            var modelId = $(this).data('modelid');
-            var modelName = $(this).data('modelname');
-            window.location.href = 'view-model.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
-        });
-
-        $(document).on('click', '#create-model', function(e){
-            e.preventDefault();
-
-            var algorithmName, algorithmType;
-
-            $.ajax({
-                type: "GET",
-                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
-                async : false,
-                dataType: 'text',
-                success : function(res){
-                    algorithmName = sanitize(res);
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-
-            $.ajax({
-                type: "GET",
-                url: serverUrl + "/api/analyses/" + analysisId + "/algorithmType",
-                async : false,
-                dataType: 'text',
-                success : function(res){
-                    algorithmType = sanitize(res);
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-
-            window.location.href = '../model/model.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName + "&fromAnalysis=true"
-                                    +'&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType;
-        });
-    }
-
-    function deleteModel(modelId) {
-        if (modelId) {
-            $.ajax({
-                type: "DELETE",
-                url: serverUrl+"/api/models/"+modelId,
-                success : function(res){
-                    $('#accordion').empty();
-                    loadModels();
-                    // update pagination
-                    $('#pagination-list').empty();
-                    $('#accordion').pageMe({pagerSelector:'#pagination-list', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:panelsPerPage});
-                },
-                error : function(res){
-                    var errorText = JSON.parse(res.responseText)["exception"];
-                    handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-        }
-    }
-
-    function loadPMMLAvailability(algorithmName) {
-        var status=false;
-        if (algorithmName) {
-
-            $.ajax({
-                type: "GET",
-                url: serverUrl+'/api/configs/algorithms/'+algorithmName+'/exportable?format=pmml',
-                async: false,
-                success : function(res){
-                    status = true;
-                },
-                error: function(res){
-                    status = false;
-                }
-            });
-
-
-        }
-         return status;
-    }
-
-    function findAlgorithmName(analysisId) {
-        var algorithmName;
-        $.ajax({
-            type: "GET",
-            url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
-            async : false,
-            dataType: 'text',
-            success : function(res){
-                algorithmName = sanitize(res);
-            },
-            error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
+                return classAppend;
             }
-        });
-        return algorithmName;
-    }
 
-    function removeCloseButtonFromDescription(failedModels) {
+            // function to append title attribute to CREATE MODEL link when no dataset versions available
+            function appendTitleDisableCreateModel() {
+                var titleAppend = '';
+                if (hasDatasetVersions == false) {
+                    titleAppend = 'No dataset versions available to create a model';
+                }
+                return titleAppend;
+            }
 
-        for (var i = 0; i < failedModels.length; i++) {
-            var id = failedModels[i];
-            $('#accordion-error-'+id).children("div").children("button").remove(); 
-        }
-        
-    }
-</script>
+            // function to append data-toggle disabled CSS class when model building is not failed
+            function appendDataToggle(modelStatus) {
+                var dataToggleAppend = '';
+                if (modelStatus == 'Failed') {
+                    dataToggleAppend = 'data-toggle="collapse"';
+                }
+                return dataToggleAppend;
+            }
 
-</body>
+            // function to append link disabled CSS class when model building is not failed
+            function appendLinkDisable(modelStatus) {
+                var linkDisableAppend = '';
+                if (modelStatus != 'Failed') {
+                    linkDisableAppend = 'reset-hover';
+                }
+                return linkDisableAppend;
+            }
 
+            // function to append link disabled CSS class when model building is not failed
+            function appendStatusIcon(modelStatus) {
+                var statusIconAppend = '';
+                if (modelStatus == 'Not Started') {
+                    statusIconAppend = 'not-started';
+                } else if (modelStatus == 'In Progress') {
+                    statusIconAppend = 'progressing';
+                } else if (modelStatus == 'Complete') {
+                    statusIconAppend = 'completed';
+                } else if (modelStatus == 'Failed') {
+                    statusIconAppend = 'error';
+                }
+                return statusIconAppend;
+            }
+
+            // function to append expand property when model building fails
+            function appendExpandProperty(modelStatus) {
+                var expandProperty = '';
+                if (modelStatus == 'Failed') {
+                    expandProperty = 'aria-expanded="false"';
+                }
+                return expandProperty;
+            }
+
+            // compare function for models
+            function sortByTimestamp(a, b) {
+                var sortStatus = 0;
+                timestamp1 = new Date(a.createdTime);
+                timestamp2 = new Date(b.createdTime);
+
+                if (timestamp1 > timestamp2) {
+                    sortStatus = -1;
+                } else if (timestamp1 < timestamp2) {
+                    sortStatus = 1;
+                }
+                return sortStatus;
+            }
+
+            function bindEvents() {
+
+                $(document).on('click', '#predict', function(e) {
+                    e.preventDefault();
+
+                    var modelId = $(this).data('modelid');
+                    var modelName = $(this).data('modelname');
+                    window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
+                });
+
+                var modelId;
+                $(document).on('click', '#publish', function(e) {
+                    e.preventDefault();
+
+                    var algorithmName = findAlgorithmName(analysisId);
+                    if (loadPMMLAvailability(algorithmName)) {
+                        $('#publish-model-pmml').removeClass('btn-disabled').prop('title', "");
+                    }
+                    modelId = $(this).data('modelid');
+                    operationSelect('publish-model');
+                });
+                $(document).on('click', '#publish-model-serialized', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: "POST",
+                        url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
+                        dataType: 'json',
+                        success: function(res) {
+                            var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
+                            handleNotification(successText, '#notification-area', 'success');
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    hidePopup();
+                });
+                $(document).on('click', '#publish-model-pmml', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: "POST",
+                        url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                        dataType: 'json',
+                        success: function(res) {
+                            var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
+                            handleNotification(successText, '#notification-area', 'success');
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    hidePopup();
+                });
+                $(document).on('click', '#view-model', function(e) {
+                    e.preventDefault();
+                    var modelId = $(this).data('modelid');
+                    var modelName = $(this).data('modelname');
+                    window.location.href = 'view-model.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
+                });
+
+                $(document).on('click', '#create-model', function(e) {
+                    e.preventDefault();
+                    var algorithmName, algorithmType;
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+                        async: false,
+                        dataType: 'text',
+                        success: function(res) {
+                            algorithmName = sanitize(res);
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/algorithmType",
+                        async: false,
+                        dataType: 'text',
+                        success: function(res) {
+                            algorithmType = sanitize(res);
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    window.location.href = '../model/model.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName + "&fromAnalysis=true" + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType;
+                });
+            }
+
+            function deleteModel(modelId) {
+                if (modelId) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: serverUrl + "/api/models/" + modelId,
+                        success: function(res) {
+                            $('#accordion').empty();
+                            loadModels();
+                            // update pagination
+                            $('#pagination-list').empty();
+                            $('#accordion').pageMe({
+                                pagerSelector: '#pagination-list',
+                                childSelector: '.panel',
+                                showPrevNext: true,
+                                hidePageNumbers: false,
+                                perPage: panelsPerPage
+                            });
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                }
+            }
+
+            function loadPMMLAvailability(algorithmName) {
+                var status = false;
+                if (algorithmName) {
+
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + '/api/configs/algorithms/' + algorithmName + '/exportable?format=pmml',
+                        async: false,
+                        success: function(res) {
+                            status = true;
+                        },
+                        error: function(res) {
+                            status = false;
+                        }
+                    });
+
+
+                }
+                return status;
+            }
+
+            function findAlgorithmName(analysisId) {
+                var algorithmName;
+                $.ajax({
+                    type: "GET",
+                    url: serverUrl + "/api/analyses/" + analysisId + "/algorithmName",
+                    async: false,
+                    dataType: 'text',
+                    success: function(res) {
+                        algorithmName = sanitize(res);
+                    },
+                    error: function(res) {
+                        var errorText = JSON.parse(res.responseText)["exception"];
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+                return algorithmName;
+            }
+
+            function removeCloseButtonFromDescription(failedModels) {
+                for (var i = 0; i < failedModels.length; i++) {
+                    var id = failedModels[i];
+                    $('#accordion-error-' + id).children("div").children("button").remove();
+                }
+            }
+        </script>
+    </body>
 </html>
 
