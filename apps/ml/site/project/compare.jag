@@ -1,385 +1,368 @@
 <!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WSO2 Machine Learner</title>
+        <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+        <link href="../../css/bootstrap.css" rel="stylesheet">
+        <link href="../../css/custom.css" rel="stylesheet">
+        <link href="../../css/custom-theme.css" rel="stylesheet">
+        <link href="../../css/font-wso2.css" rel="stylesheet">
+        <script src="../../js/respond.min.js"></script>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WSO2 Machine Learner</title>
-    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
-    <link href="../../css/bootstrap.css" rel="stylesheet">
-    <link href="../../css/custom.css" rel="stylesheet">
-    <link href="../../css/custom-theme.css" rel="stylesheet">
-    <link href="../../css/font-wso2.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script>
+        <%
+            include("../../includes/tenantAware.jag");
+        %>
+    </head>
 
-    <%
-        include("../../includes/tenantAware.jag");
-    %>
-    
-</head>
-
-<body>
-
-    <div class="container col-lg-12 col-md-12 col-sm-12">
-
-        <!-- header -->
-        <header>
-            <div class="row wr-global-header">
-                <div class="col-sm-8 app-logo">
-                    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-                </div>
-                <div class="col-sm-4">
-                    <div class="wr-auth pull-right">
-                        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-                        <div class="dropdown-menu">
-                            <div class="cu-arrow"></div>
-                            <div class="dropdown-menu-content">
-                                <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+    <body>
+        <div class="container col-lg-12 col-md-12 col-sm-12">
+            <!-- header -->
+            <header>
+                <div class="row wr-global-header">
+                    <div class="col-sm-8 app-logo">
+                        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="wr-auth pull-right">
+                            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                            <div class="dropdown-menu">
+                                <div class="cu-arrow"></div>
+                                <div class="dropdown-menu-content">
+                                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </header>
-        <!-- /header -->
+            </header>
+            <!-- /header -->
 
-    <!-- secondary header - app bar -->
-    <div class="navbar-wrapper">
-        <div id="nav" class="row wr-app-bar">
-            <div class="col-md-9 wr-action-container">
-                <div class="wr-asset-type-switcher">
-                    <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                    <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-                    <span class="btn-asset"></span>
-                    </a>
-                </div>
-
-                <div class="wr-project">
-                    <span class="title">PROJECTS \ </span><span id="nav-project"></span>
-                </div>
-
-                <div class="wr-action-btn-bar">
-                    <!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
-                    <!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
-                    <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
-                </div>            
-            </div>
-
-            <div class="col-md-3">
-                <div class="wr-secondary-links pull-right">
-                    <!-- empty -->
-                    <!-- <a href="../project/projects.jag" id="btn-prev" class="cu-btn btn-prev">Previous</a> -->
-                    <!-- <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a> -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- secondary header - app bar -->
-
-
-        <!-- content/body -->
-        <div class="row">
-            <div class="col-lg-12 wr-secondary-bar">
- 
-                <!-- Wizard -->
-                <!--ul class="nav nav-pills nav-wizard">
-        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
-    </ul-->
-
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-
-                <!-- content -->
-                <div class="container col-md-12 col-centered wr-content">
-
-
-                    <div id="notification-area"></div>
-                    <h1 id="model-summary-title" class="title">Model Comparison</h1>                    
-
-                    <div role="tabpanel" class="wr-tabbed-container">
-
-                        <!-- Nav tabs/graphs -->
-                        <div class="wr-tabs-grphs">
-                            <ul class="nav nav-pills">
-                                 <li role="presentation" class="disabled" id="classification-tab-li" data-toggle="tooltip" title="You do not have any classification models created at the moment">
-                                    <a href="#classification-tab" id="classification-link" aria-controls="classification" role="tab" data-toggle="">Classification</a>
-                                 </li>
-
-                                 <li role="presentation" class="disabled" id="numerical-prediction-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any numerical prediction models created at the moment">
-                                    <a href="#numerical-prediction-tab" id="numerical-prediction-link" aria-controls="numerical-prediction" role="tab" data-toggle="">Numerical Prediction</a>
-                                 </li>
-
-                                 <li role="presentation" class="disabled" id="clustering-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any clustering models created at the moment">
-                                    <a href="#clustering-tab" id="clustering-link" aria-controls="clustering" role="tab" data-toggle="">Clustering</a>
-                                 </li>
-
-                                 <li role="presentation" class="disabled" id="anomaly-detection-labeled-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any anomaly detection models created at the moment">
-                                    <a href="#anomaly-detection-labeled-tab" id="anomaly-detection-labeled-link" aria-controls="anomaly-detection-labeled" role="tab" data-toggle="">Anomaly Detection Labeled</a>
-                                 </li>                                 
-
-                                 <li role="presentation" class="disabled" id="anomaly-detection-unlabeled-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any anomaly detection models created at the moment">
-                                    <a href="#anomaly-detection-unlabeled-tab" id="anomaly-detection-unlabeled-link" aria-controls="anomaly-detection-unlabeled" role="tab" data-toggle="">Anomaly Detection Unlabeled</a>
-                                 </li>        
-
-                                 <li role="presentation" class="disabled" id="collaborative-filtering-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any collaborative filtering models created at the moment">
-                                    <a href="#collaborative-filtering-tab" id="collaborative-filtering-link" aria-controls="collaborative-filtering" role="tab" data-toggle="">Collaborative Filtering</a>
-                                 </li>                                                                                               
-
-								 <li role="presentation" class="disabled" id="deeplearning-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any deeplearning models created at the moment">
-                                    <a href="#deeplearning-tab" id="deeplearning-link" aria-controls="deeplearning" role="tab" data-toggle="">Deeplearning</a>
-                                 </li>
-                            </ul>
+            <!-- secondary header - app bar -->
+            <div class="navbar-wrapper">
+                <div id="nav" class="row wr-app-bar">
+                    <div class="col-md-9 wr-action-container">
+                        <div class="wr-asset-type-switcher">
+                            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                                <span class="btn-asset"></span>
+                            </a>
                         </div>
 
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane fade in" id="classification-tab">
-                                <div class="panel-group" id="classification-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-classification" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any classification models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-classification">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-classification" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>
-                            <div role="tabpanel" class="tab-pane fade in" id="numerical-prediction-tab">
-                                <div class="panel-group" id="numerical-prediction-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-numerical-prediction" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any numerical prediction models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-numerical-prediction">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-numerical-prediction" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->                                
-                            </div>
-                            <div role="tabpanel" class="tab-pane fade in" id="clustering-tab">
-                                <div class="panel-group" id="clustering-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-clustering" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any clustering models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-clustering">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-clustering" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>
-							<div role="tabpanel" class="tab-pane fade in" id="deeplearning-tab">
-                                <div class="panel-group" id="deeplearning-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-deeplearning" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any deeplearning models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-deeplearning">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-deeplearning" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>
-                            <div role="tabpanel" class="tab-pane fade in" id="anomaly-detection-labeled-tab">
-                                <div class="panel-group" id="anomaly-detection-labeled-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-anomaly-detection-labeled" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any anomaly detection labeled models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-anomaly-detection-labeled">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-anomaly-detection-labeled" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>                            
-                            <div role="tabpanel" class="tab-pane fade in" id="anomaly-detection-unlabeled-tab">
-                                <div class="panel-group" id="anomaly-detection-unlabeled-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-anomaly-detection-unlabeled" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any anomaly detection unlabeled models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-anomaly-detection-unlabeled">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-anomaly-detection-unlabeled" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>   
-                            <div role="tabpanel" class="tab-pane fade in" id="collaborative-filtering-tab">
-                                <div class="panel-group" id="collaborative-filtering-accordion" role="tablist" aria-multiselectable="true">
-                                    <div id="no-collaborative-filtering" class="ctrl-info-panel col-md-12 col-centered">
-                                        <h4>You do not have any collaborative filtering models created at the moment.</h4>
-                                    </div>
-                                </div>
-                                <!-- pagination -->
-                                <div class="col-md-6 text-left">
-                                    <table>
-                                    <tr>
-                                        <td class="">Show&nbsp;&nbsp;</td>
-                                        <td class="">
-                                            <select class="form-control" id="no-of-panels-collaborative-filtering">
-                                                <option value='10'>10</option>
-                                                <option value='25'>25</option>
-                                                <option value='50'>50</option>
-                                                <option value='100'>100</option>                                
-                                            </select>                           
-                                        </td>
-                                    </tr>
-                                    </table>            
-                                </div>
-                                
-                                <div class="col-md-6 text-right">
-                                    <ul id="pagination-list-collaborative-filtering" class="pagination"></ul>
-                                </div>
-                                <!-- /pagination -->
-                            </div>                               
-
+                        <div class="wr-project">
+                            <span class="title">PROJECTS \ </span><span id="nav-project"></span>
                         </div>
-                     
-                    
+
+                        <div class="wr-action-btn-bar">
+                            <!--a href="#" class="cu-btn btn-add-new">Create Project</a-->
+                            <!-- <a href="#" class="cu-btn btn-save" id="save-project">Save and Create</a> -->
+                            <a href="../project/projects.jag" class="cu-btn btn-prev">Back</a>
+                        </div>            
                     </div>
-                 
-                    
+
+                    <div class="col-md-3">
+                        <div class="wr-secondary-links pull-right">
+                            <!-- empty -->
+                            <!-- <a href="../project/projects.jag" id="btn-prev" class="cu-btn btn-prev">Previous</a> -->
+                            <!-- <a href="#" id="btn-next" class="cu-btn-reverse btn-next">Next</a> -->
+                        </div>
                     </div>
- 
-    </div>
-                    
+                </div>
+            </div>
+            <!-- secondary header - app bar -->
+
+
+            <!-- content/body -->
+            <div class="row">
+                <div class="col-lg-12 wr-secondary-bar">
+                    <!-- Wizard -->
+                    <!--ul class="nav nav-pills nav-wizard">
+                        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Workflow</a><div class="nav-arrow"></div></li>
+                        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Data</a><div class="nav-arrow"></div></li>
+                        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+                        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Parameters</a><div class="nav-arrow"></div></li>
+                    </ul-->
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!-- content -->
+                    <div class="container col-md-12 col-centered wr-content">
+
+
+                        <div id="notification-area"></div>
+                        <h1 id="model-summary-title" class="title">Model Comparison</h1>                    
+
+                        <div role="tabpanel" class="wr-tabbed-container">
+
+                            <!-- Nav tabs/graphs -->
+                            <div class="wr-tabs-grphs">
+                                <ul class="nav nav-pills">
+                                    <li role="presentation" class="disabled" id="classification-tab-li" data-toggle="tooltip" title="You do not have any classification models created at the moment">
+                                        <a href="#classification-tab" id="classification-link" aria-controls="classification" role="tab" data-toggle="">Classification</a>
+                                    </li>
+
+                                    <li role="presentation" class="disabled" id="numerical-prediction-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any numerical prediction models created at the moment">
+                                        <a href="#numerical-prediction-tab" id="numerical-prediction-link" aria-controls="numerical-prediction" role="tab" data-toggle="">Numerical Prediction</a>
+                                    </li>
+
+                                    <li role="presentation" class="disabled" id="clustering-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any clustering models created at the moment">
+                                        <a href="#clustering-tab" id="clustering-link" aria-controls="clustering" role="tab" data-toggle="">Clustering</a>
+                                    </li>
+
+                                    <li role="presentation" class="disabled" id="anomaly-detection-labeled-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any anomaly detection models created at the moment">
+                                        <a href="#anomaly-detection-labeled-tab" id="anomaly-detection-labeled-link" aria-controls="anomaly-detection-labeled" role="tab" data-toggle="">Anomaly Detection Labeled</a>
+                                    </li>                                 
+
+                                    <li role="presentation" class="disabled" id="anomaly-detection-unlabeled-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any anomaly detection models created at the moment">
+                                        <a href="#anomaly-detection-unlabeled-tab" id="anomaly-detection-unlabeled-link" aria-controls="anomaly-detection-unlabeled" role="tab" data-toggle="">Anomaly Detection Unlabeled</a>
+                                    </li>        
+
+                                    <li role="presentation" class="disabled" id="collaborative-filtering-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any collaborative filtering models created at the moment">
+                                        <a href="#collaborative-filtering-tab" id="collaborative-filtering-link" aria-controls="collaborative-filtering" role="tab" data-toggle="">Collaborative Filtering</a>
+                                    </li>                                                                                               
+
+                                    <li role="presentation" class="disabled" id="deeplearning-tab-li" data-toggle="tooltip" data-placement="bottom" title="You do not have any deeplearning models created at the moment">
+                                        <a href="#deeplearning-tab" id="deeplearning-link" aria-controls="deeplearning" role="tab" data-toggle="">Deeplearning</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane fade in" id="classification-tab">
+                                    <div class="panel-group" id="classification-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-classification" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any classification models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-classification">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-classification" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade in" id="numerical-prediction-tab">
+                                    <div class="panel-group" id="numerical-prediction-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-numerical-prediction" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any numerical prediction models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-numerical-prediction">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-numerical-prediction" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->                                
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade in" id="clustering-tab">
+                                    <div class="panel-group" id="clustering-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-clustering" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any clustering models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-clustering">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-clustering" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade in" id="deeplearning-tab">
+                                    <div class="panel-group" id="deeplearning-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-deeplearning" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any deeplearning models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-deeplearning">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-deeplearning" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade in" id="anomaly-detection-labeled-tab">
+                                    <div class="panel-group" id="anomaly-detection-labeled-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-anomaly-detection-labeled" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any anomaly detection labeled models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-anomaly-detection-labeled">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-anomaly-detection-labeled" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>                            
+                                <div role="tabpanel" class="tab-pane fade in" id="anomaly-detection-unlabeled-tab">
+                                    <div class="panel-group" id="anomaly-detection-unlabeled-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-anomaly-detection-unlabeled" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any anomaly detection unlabeled models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-anomaly-detection-unlabeled">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-anomaly-detection-unlabeled" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>   
+                                <div role="tabpanel" class="tab-pane fade in" id="collaborative-filtering-tab">
+                                    <div class="panel-group" id="collaborative-filtering-accordion" role="tablist" aria-multiselectable="true">
+                                        <div id="no-collaborative-filtering" class="ctrl-info-panel col-md-12 col-centered">
+                                            <h4>You do not have any collaborative filtering models created at the moment.</h4>
+                                        </div>
+                                    </div>
+                                    <!-- pagination -->
+                                    <div class="col-md-6 text-left">
+                                        <table>
+                                            <tr>
+                                                <td class="">Show&nbsp;&nbsp;</td>
+                                                <td class="">
+                                                    <select class="form-control" id="no-of-panels-collaborative-filtering">
+                                                        <option value='10'>10</option>
+                                                        <option value='25'>25</option>
+                                                        <option value='50'>50</option>
+                                                        <option value='100'>100</option>                                
+                                                    </select>                           
+                                                </td>
+                                            </tr>
+                                        </table>            
+                                    </div>
+
+                                    <div class="col-md-6 text-right">
+                                        <ul id="pagination-list-collaborative-filtering" class="pagination"></ul>
+                                    </div>
+                                    <!-- /pagination -->
+                                </div>                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- /content -->
-
-
             </div>
-
-
         </div>
-
         <!-- /content/body -->
- 
 
 
-    <!--footer class="footer">
-    <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
-</footer-->
 
-<div id="content-asset-types" style="display: none">
-    <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
-        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-    </div>
-</div> 
+        <!--footer class="footer">
+            <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+        </footer-->
 
-<!-- modal popup template -->
-<div class="wr-modalpopup">
-    <div class="modalpopup-content"><!-- dynamic content --></div>
-    <div class="modalpopup-bg"></div>
-</div>
-<!-- /modal popup template -->
+        <div id="content-asset-types" style="display: none">
+            <div>
+                <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
+                <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+            </div>
+        </div> 
 
-<!-- download model popup-->
-    <div class="container-fluid col-centered wr-content">
-        <div class="popup-content" data-operation="download-model">
-           <div id="back-download-model" align="left">
+        <!-- modal popup template -->
+        <div class="wr-modalpopup">
+            <div class="modalpopup-content"><!-- dynamic content --></div>
+            <div class="modalpopup-bg"></div>
+        </div>
+        <!-- /modal popup template -->
+
+        <!-- download model popup-->
+        <div class="container-fluid col-centered wr-content">
+            <div class="popup-content" data-operation="download-model">
+             <div id="back-download-model" align="left">
                 <span style="cursor:pointer"class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-left-arrow fw-stack-1x"></i>
@@ -387,558 +370,604 @@
                 <span style="cursor:pointer">GO BACK</span>
             </div>      
             <div class="content">Please select download type</div>
-                <div class="buttons">
-                    <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
-                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
-                        <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
-                    </div>
+            <div class="buttons">
+                <a href="#" id="download-model-serialized" class="btn-opr-default" >Serialized</a>
+                <div style="display:inline-flex"  data-toggle="tooltip" title="PMML download not supported for this model type">
+                    <a href="#" id="download-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
                 </div>
+            </div>
         </div>
         <div class="popup-content" data-operation="publish-model">
-           <div id="back-publish-model" align="left">
-                <span style="cursor:pointer"class="fw-stack">
-                    <i class="fw fw-ring fw-stack-2x"></i>
-                    <i class="fw fw-left-arrow fw-stack-1x"></i>
-                </span>
-                <span style="cursor:pointer">GO BACK</span>
-            </div>      
-            <div class="content">Please select model type to publish</div>
-                <div class="buttons">
-                    <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
-                    <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
-                        <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
-                    </div>
-                </div>
+         <div id="back-publish-model" align="left">
+            <span style="cursor:pointer"class="fw-stack">
+                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-left-arrow fw-stack-1x"></i>
+            </span>
+            <span style="cursor:pointer">GO BACK</span>
+        </div>      
+        <div class="content">Please select model type to publish</div>
+        <div class="buttons">
+            <a href="#" id="publish-model-serialized" class="btn-opr-default" >Serialized</a>
+            <div style="display:inline-flex"  data-toggle="tooltip" title="PMML publish not supported for this model type">
+                <a href="#" id="publish-model-pmml"  class="btn-opr-default btn-disabled" disabled >PMML</a>
+            </div>
+        </div>
         </div>
 
-    </div>
-    <!-- /download model popup -->
-                       
+        </div>
+        <!-- /download model popup -->
+
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/wso2.ml.util.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/operationsmenu.js"></script>
+
+        <script type="text/javascript">
+            var serverUrl = window.location.origin;
+            var projectName = getParameterByName('projectName');
+            var projectId = getParameterByName('projectId');
+            var datasetId = getParameterByName('datasetId');
+            var classificationPanelsPerPage;
+            var numPredictionPanelsPerPage;
+            var clusteringPanelsPerPage;
+            var deeplearningPanelsPerPage;
+            var anomalyDetectionPanelsPerPage;
+            var anomalyDetectionUnlabeledPanelsPerPage;
+            var collaborativeFilteringPanelsPerPage;
+
+            // update pagination
+            $(document).on('change', 'select[id="no-of-panels-classification"]', function() {
+                $('#pagination-list-classification').empty();
+                classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());
+                $('#classification-accordion').pageMe({
+                    pagerSelector: '#pagination-list-classification',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: classificationPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-numerical-prediction"]', function() {
+                $('#pagination-list-numerical-prediction').empty();
+                numPredictionPanelsPerPage = parseInt($("#no-of-panels-numerical-prediction").val());
+                $('#numerical-prediction-accordion').pageMe({
+                    pagerSelector: '#pagination-list-numerical-prediction',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: numPredictionPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-clustering"]', function() {
+                $('#pagination-list-clustering').empty();
+                clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());
+                $('#clustering-accordion').pageMe({
+                    pagerSelector: '#pagination-list-clustering',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: clusteringPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-deeplearning"]', function() {
+                $('#pagination-list-deeplearning').empty();
+                classificationPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());
+                $('#deeplearning-accordion').pageMe({
+                    pagerSelector: '#pagination-list-deeplearning',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: deeplearningPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-anomaly-detection-labeled"]', function() {
+                $('#pagination-list-anomaly-detection-labeled').empty();
+                anomalyDetectionPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-labeled").val());
+                $('#anomaly-detection-labeled-accordion').pageMe({
+                    pagerSelector: '#pagination-list-anomaly-detection-labeled',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: anomalyDetectionPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-anomaly-detection-unlabeled"]', function() {
+                $('#pagination-list-anomaly-detection-unlabeled').empty();
+                anomalyDetectionUnlabeledPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-unlabeled").val());
+                $('#anomaly-detection-unlabeled-accordion').pageMe({
+                    pagerSelector: '#pagination-list-anomaly-detection-unlabeled',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: anomalyDetectionUnlabeledPanelsPerPage
+                });
+            });
+            $(document).on('change', 'select[id="no-of-panels-collaborative-filtering"]', function() {
+                $('#pagination-list-collaborative-filtering').empty();
+                collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());
+                $('#collaborative-filtering-accordion').pageMe({
+                    pagerSelector: '#pagination-list-collaborative-filtering',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: collaborativeFilteringPanelsPerPage
+                });
+            });
+
+            $(document).ready(function() {
+
+                $('#nav').affix({
+                    offset: {
+                        top: $('header').height()
+                    }
+                });
+
+                /*scrollVibrateFix();
+                        
+                $(window).resize(function() {
+                    scrollVibrateFix();
+                });*/
+                $(function() {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+
+                $("[data-toggle=popover]").popover();
+
+                $(".ctrl-asset-type-switcher").popover({
+                    html: true,
+                    content: function() {
+                        return $('#content-asset-types').html();
+                    }
+                });
+
+                // put path in application navigator
+                $('#nav-project').text(projectName);
+
+                loadModels();
+                //events to handle downloading
+
+                $("li[class=disabled]").remove(); // hide disabled tabs
 
 
-<script src="../../js/jquery-1.11.1.min.js"></script>
-<script src="../../js/wso2.ml.util.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/operationsmenu.js"></script>
+                // add pagination
+                classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());
+                $('#classification-accordion').pageMe({
+                    pagerSelector: '#pagination-list-classification',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: classificationPanelsPerPage
+                });
 
-<script type="text/javascript">
+                numPredictionPanelsPerPage = parseInt($("#no-of-panels-numerical-prediction").val());
+                $('#numerical-prediction-accordion').pageMe({
+                    pagerSelector: '#pagination-list-numerical-prediction',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: numPredictionPanelsPerPage
+                });
 
-    var serverUrl = window.location.origin;
+                clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());
+                $('#clustering-accordion').pageMe({
+                    pagerSelector: '#pagination-list-clustering',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: clusteringPanelsPerPage
+                });
 
-    var projectName = getParameterByName('projectName');
-    var projectId = getParameterByName('projectId');
-    var datasetId = getParameterByName('datasetId');
-    var classificationPanelsPerPage;
-    var numPredictionPanelsPerPage;
-    var clusteringPanelsPerPage;
-	var deeplearningPanelsPerPage;
-    var anomalyDetectionPanelsPerPage;
-    var anomalyDetectionUnlabeledPanelsPerPage;    
-    var collaborativeFilteringPanelsPerPage;        
+                deeplearningPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());
+                $('#deeplearning-accordion').pageMe({
+                    pagerSelector: '#pagination-list-deeplearning',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: deeplearningPanelsPerPage
+                });
 
-    // update pagination
-    $(document).on('change','select[id="no-of-panels-classification"]',function() {
-        $('#pagination-list-classification').empty();
-        classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());        
-        $('#classification-accordion').pageMe({pagerSelector:'#pagination-list-classification', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:classificationPanelsPerPage});
-    });  
-    $(document).on('change','select[id="no-of-panels-numerical-prediction"]',function() {
-        $('#pagination-list-numerical-prediction').empty();
-        numPredictionPanelsPerPage = parseInt($("#no-of-panels-numerical-prediction").val());        
-        $('#numerical-prediction-accordion').pageMe({pagerSelector:'#pagination-list-numerical-prediction', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:numPredictionPanelsPerPage});
-    });
-    $(document).on('change','select[id="no-of-panels-clustering"]',function() {
-        $('#pagination-list-clustering').empty();
-        clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
-        $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
-    });              
-	$(document).on('change','select[id="no-of-panels-deeplearning"]',function() {
-        $('#pagination-list-deeplearning').empty();
-        classificationPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
-        $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
-    });
-    $(document).on('change','select[id="no-of-panels-anomaly-detection-labeled"]',function() {
-        $('#pagination-list-anomaly-detection-labeled').empty();
-        anomalyDetectionPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-labeled").val());        
-        $('#anomaly-detection-labeled-accordion').pageMe({pagerSelector:'#pagination-list-anomaly-detection-labeled', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:anomalyDetectionPanelsPerPage});
-    });    
-    $(document).on('change','select[id="no-of-panels-anomaly-detection-unlabeled"]',function() {
-        $('#pagination-list-anomaly-detection-unlabeled').empty();
-        anomalyDetectionUnlabeledPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-unlabeled").val());        
-        $('#anomaly-detection-unlabeled-accordion').pageMe({pagerSelector:'#pagination-list-anomaly-detection-unlabeled', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:anomalyDetectionUnlabeledPanelsPerPage});
-    });  
-    $(document).on('change','select[id="no-of-panels-collaborative-filtering"]',function() {
-        $('#pagination-list-collaborative-filtering').empty();
-        collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());        
-        $('#collaborative-filtering-accordion').pageMe({pagerSelector:'#pagination-list-collaborative-filtering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:collaborativeFilteringPanelsPerPage});
-    });              
-	
-    $(document).ready(function() {
+                anomalyDetectionPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-labeled").val());
+                $('#anomaly-detection-labeled-accordion').pageMe({
+                    pagerSelector: '#pagination-list-anomaly-detection-labeled',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: anomalyDetectionPanelsPerPage
+                });
 
-        $('#nav').affix({
-              offset: {
-                top: $('header').height()
-              }
-        });
-        
-        /*scrollVibrateFix();
-        
-        $(window).resize(function() {
-            scrollVibrateFix();
-        });*/      
-         $(function () {
-          $('[data-toggle="tooltip"]').tooltip()
-         })
-        
-        $("[data-toggle=popover]").popover();
+                anomalyDetectionUnlabeledPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-unlabeled").val());
+                $('#anomaly-detection-unlabeled-accordion').pageMe({
+                    pagerSelector: '#pagination-list-anomaly-detection-unlabeled',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: anomalyDetectionUnlabeledPanelsPerPage
+                });
 
-        $(".ctrl-asset-type-switcher").popover({
-            html : true, 
-            content: function() {
-                return $('#content-asset-types').html();
+                collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());
+                $('#collaborative-filtering-accordion').pageMe({
+                    pagerSelector: '#pagination-list-collaborative-filtering',
+                    childSelector: '.panel',
+                    showPrevNext: true,
+                    hidePageNumbers: false,
+                    perPage: collaborativeFilteringPanelsPerPage
+                });
+
+                // disabling tabs
+                $("#wr-tabs-grphs > li").click(function() {
+                    if ($(this).hasClass("disabled")) {
+                        return false;
+                    }
+                });
+            });
+            // compare function for classification models
+            function sortByAccuracy(a, b) {
+                var sortStatus = 0;
+                if (a.modelSummary.modelAccuracy > b.modelSummary.modelAccuracy) {
+                    sortStatus = -1;
+                } else if (a.modelSummary.modelAccuracy < b.modelSummary.modelAccuracy) {
+                    sortStatus = 1;
+                }
+                return sortStatus;
             }
-        });
-
-        // put path in application navigator
-        $('#nav-project').text(projectName);
-
-        loadModels();
-  //events to handle downloading
-
-       $("li[class=disabled]").remove(); // hide disabled tabs
-        
-
-        // add pagination
-        classificationPanelsPerPage = parseInt($("#no-of-panels-classification").val());        
-        $('#classification-accordion').pageMe({pagerSelector:'#pagination-list-classification', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:classificationPanelsPerPage});
-        
-        numPredictionPanelsPerPage = parseInt($("#no-of-panels-numerical-prediction").val());        
-        $('#numerical-prediction-accordion').pageMe({pagerSelector:'#pagination-list-numerical-prediction', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:numPredictionPanelsPerPage});
-        
-        clusteringPanelsPerPage = parseInt($("#no-of-panels-clustering").val());        
-        $('#clustering-accordion').pageMe({pagerSelector:'#pagination-list-clustering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:clusteringPanelsPerPage});
-
-		deeplearningPanelsPerPage = parseInt($("#no-of-panels-deeplearning").val());        
-        $('#deeplearning-accordion').pageMe({pagerSelector:'#pagination-list-deeplearning', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:deeplearningPanelsPerPage});
-
-        anomalyDetectionPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-labeled").val());        
-        $('#anomaly-detection-labeled-accordion').pageMe({pagerSelector:'#pagination-list-anomaly-detection-labeled', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:anomalyDetectionPanelsPerPage});        
-
-        anomalyDetectionUnlabeledPanelsPerPage = parseInt($("#no-of-panels-anomaly-detection-unlabeled").val());        
-        $('#anomaly-detection-unlabeled-accordion').pageMe({pagerSelector:'#pagination-list-anomaly-detection-unlabeled', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:anomalyDetectionUnlabeledPanelsPerPage});        
-
-        collaborativeFilteringPanelsPerPage = parseInt($("#no-of-panels-collaborative-filtering").val());        
-        $('#collaborative-filtering-accordion').pageMe({pagerSelector:'#pagination-list-collaborative-filtering', childSelector:'.panel', showPrevNext:true, hidePageNumbers:false, perPage:collaborativeFilteringPanelsPerPage});              
-		
-        // disabling tabs
-        $("#wr-tabs-grphs > li").click(function(){
-            if($(this).hasClass("disabled")) {
-                return false;
-            }
-        });
-    });
-    // compare function for classification models
-    function sortByAccuracy(a, b) {
-        var sortStatus = 0;
-     
-        if (a.modelSummary.modelAccuracy > b.modelSummary.modelAccuracy) {
-            sortStatus = -1;
-        } else if (a.modelSummary.modelAccuracy < b.modelSummary.modelAccuracy) {
-            sortStatus = 1;
-        }
-        return sortStatus;
-    }
-    // compare function for numerical prediction models
-    function sortByError(a, b) {
-        var sortStatus = 0;
-     
-        if (a.modelSummary.meanSquaredError < b.modelSummary.meanSquaredError) {
-            sortStatus = -1;
-        } else if (a.modelSummary.meanSquaredError > b.modelSummary.meanSquaredError) {
-            sortStatus = 1;
-        }
-        return sortStatus;
-    }
-
-   // compare function for numerical prediction models
-    function sortByF1Score(a, b) {
-        var sortStatus = 0;
-        var percentileA = a.modelSummary.bestPercentile;
-        var percentileB = b.modelSummary.bestPercentile;
-     
-        if (a.modelSummary.percentileToMulticlassMetricsMap[percentileA].f1Score > b.modelSummary.percentileToMulticlassMetricsMap[percentileB].f1Score) {
-            sortStatus = -1;
-        } else if (a.modelSummary.percentileToMulticlassMetricsMap[percentileA].f1Score < b.modelSummary.percentileToMulticlassMetricsMap[percentileB].f1Score) {
-            sortStatus = 1;
-        }
-        return sortStatus;
-    }
-
-    // function to generate accordion panels
-    function createAccordionPanels(models, modelType) {
-        var accordionPanels = '';
-        for (var i = 0; i < models.length; i++) {
-
-            var modelId = sanitize(models[i].id);
-            var modelName = sanitize(models[i].name);
-            var algorithm = sanitize(models[i].modelSummary.algorithm.replace(/_/g, " "));
-            var modelAccuracy = parseFloat(sanitize(models[i].modelSummary.modelAccuracy)).toFixed(2);
-            var meanSquaredError = parseFloat(sanitize(models[i].modelSummary.meanSquaredError)).toExponential(2);
-            if(sanitize(models[i].modelSummary.algorithm) == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
-                var percentile = parseFloat(sanitize(models[i].modelSummary.bestPercentile));
-                var f1Score = parseFloat(sanitize(models[i].modelSummary.percentileToMulticlassMetricsMap[percentile].f1Score)).toFixed(4);                            
+            // compare function for numerical prediction models
+            function sortByError(a, b) {
+                var sortStatus = 0;
+                if (a.modelSummary.meanSquaredError < b.modelSummary.meanSquaredError) {
+                    sortStatus = -1;
+                } else if (a.modelSummary.meanSquaredError > b.modelSummary.meanSquaredError) {
+                    sortStatus = 1;
+                }
+                return sortStatus;
             }
 
-            accordionPanels += '' + 
-                '<div class="panel panel-default">' +
-                    '<div class="panel-heading" role="tab" id="heading' + i + '">' +
+            // compare function for numerical prediction models
+            function sortByF1Score(a, b) {
+                var sortStatus = 0;
+                var percentileA = a.modelSummary.bestPercentile;
+                var percentileB = b.modelSummary.bestPercentile;
+
+                if (a.modelSummary.percentileToMulticlassMetricsMap[percentileA].f1Score > b.modelSummary.percentileToMulticlassMetricsMap[percentileB].f1Score) {
+                    sortStatus = -1;
+                } else if (a.modelSummary.percentileToMulticlassMetricsMap[percentileA].f1Score < b.modelSummary.percentileToMulticlassMetricsMap[percentileB].f1Score) {
+                    sortStatus = 1;
+                }
+                return sortStatus;
+            }
+
+            // function to generate accordion panels
+            function createAccordionPanels(models, modelType) {
+                var accordionPanels = '';
+                for (var i = 0; i < models.length; i++) {
+                    var modelId = sanitize(models[i].id);
+                    var modelName = sanitize(models[i].name);
+                    var algorithm = sanitize(models[i].modelSummary.algorithm.replace(/_/g, " "));
+                    var modelAccuracy = parseFloat(sanitize(models[i].modelSummary.modelAccuracy)).toFixed(2);
+                    var meanSquaredError = parseFloat(sanitize(models[i].modelSummary.meanSquaredError)).toExponential(2);
+                    if (sanitize(models[i].modelSummary.algorithm) == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+                        var percentile = parseFloat(sanitize(models[i].modelSummary.bestPercentile));
+                        var f1Score = parseFloat(sanitize(models[i].modelSummary.percentileToMulticlassMetricsMap[percentile].f1Score)).toFixed(4);
+                    }
+
+                    accordionPanels += '' +
+                        '<div class="panel panel-default">' +
+                        '<div class="panel-heading" role="tab" id="heading' + i + '">' +
                         '<h4 class="panel-title">' +
-                            '<table class="tbl-projects" projectID="' + modelId + '">' +
-                                '<tr>' +
-                                    '<td>' +
-                                        '<a data-parent="#' + modelType + '-accordion" href="#collapse' + i + '" aria-controls="collapse' + i + '" class="ctrl-exp-col reset-hover">' +
-                                            '<span class="cu-acc-head-title">' + modelName + '</span>' +
-                                            '<span class="cu-acc-head-workflow"></span>' +
-                                            '<span class="cu-acc-head-created">[ Algorithm: ' + algorithm + ' ]</span>';
-                                            if(modelType == 'classification') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
-                                            }
-                                            else if(modelType == 'numerical-prediction') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
-                                            }
-                                            else if(modelType == 'clustering') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
-                                            }
-											else if(modelType == 'deeplearning') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
-                                            }
-                                            else if(modelType == 'anomaly-detection-labeled') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ F1 score: <b>' + f1Score + '</b> ]</span>';
-                                            }                                            
-                                            else if(modelType == 'anomaly-detection-unlabeled') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
-                                            }                   
-                                            else if(modelType == 'collaborative-filtering') {
-                                                accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
-                                            }                                                                        
-                                    accordionPanels += '</a>' +
-                                    '</td>' +
-                                    '<td class="c-right">' +
-                                        '<div>';
-                                        if(modelType != 'anomaly-detection-unlabeled'){
-                                            accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
-                                        }
-                                        if(modelType != 'collaborative-filtering'){
-                                           accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId +  '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
-                                        }
-                                        accordionPanels += '' +
-                                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId +  '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
-                                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
-                                        '</div>' +
-                                    '</td>' +
-                                '</tr>' +
-                            '</table>' +
+                        '<table class="tbl-projects" projectID="' + modelId + '">' +
+                        '<tr>' +
+                        '<td>' +
+                        '<a data-parent="#' + modelType + '-accordion" href="#collapse' + i + '" aria-controls="collapse' + i + '" class="ctrl-exp-col reset-hover">' +
+                        '<span class="cu-acc-head-title">' + modelName + '</span>' +
+                        '<span class="cu-acc-head-workflow"></span>' +
+                        '<span class="cu-acc-head-created">[ Algorithm: ' + algorithm + ' ]</span>';
+                    if (modelType == 'classification') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
+                    } else if (modelType == 'numerical-prediction') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
+                    } else if (modelType == 'clustering') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
+                    } else if (modelType == 'deeplearning') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Accuracy: <b>' + modelAccuracy + '%</b> ]</span>';
+                    } else if (modelType == 'anomaly-detection-labeled') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ F1 score: <b>' + f1Score + '</b> ]</span>';
+                    } else if (modelType == 'anomaly-detection-unlabeled') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Comparison not supported ]</span>';
+                    } else if (modelType == 'collaborative-filtering') {
+                        accordionPanels += '<span class="cu-acc-head-created">[ Mean squared error: <b>' + meanSquaredError + '</b> ]</span>';
+                    }
+                    accordionPanels += '</a>' +
+                        '</td>' +
+                        '<td class="c-right">' +
+                        '<div>';
+                    if (modelType != 'anomaly-detection-unlabeled') {
+                        accordionPanels += '' + '<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
+                    }
+                    if (modelType != 'collaborative-filtering') {
+                        accordionPanels += '' + '<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
+                    }
+                    accordionPanels += '' +
+                        '<a href="#" id="download-model"  class="cu-reg-btn btn-download"  data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
+                        '<a href="#" id="publish" class="cu-reg-btn btn-publish" data-modelid="' + modelId + '" data-analysisid="' + models[i].analysisId + '" data-toggle="tooltip" data-original-title="Publish the model to registry"><span>Publish</span></a>' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>' +
+                        '</table>' +
                         '</h4>' +
-                    '</div>' +
-                    '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' + i + '">' +
+                        '</div>' +
+                        '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' + i + '">' +
                         /*'<div class="panel-body">' + buildNotifications(models[i].error) + '</div>' +*/
-                    '</div>' +
-                '</div>';
-        };
-        return accordionPanels;
-    }  
-
-     $(document).on('click','#back-download-model, #back-publish-model',function(e){
-            e.preventDefault();
-            hidePopup();
-        });
-
-    // function to load models
-    function loadModels() {        
-        $.ajax({
-            type: "GET",
-            url: serverUrl+"/api/projects/" + projectId + "/models",
-            async: false,
-            success: function(data) {
-                var projectModels = data;
-                
-                if (projectModels.length > 0) {
-
-                    var classificationModels = [];
-                    var numPredictionModels = [];
-                    var clusteringModels = [];
-					var deeplearningModels = [];
-                    var anomalyDetectionModels = [];                    
-                    var anomalyDetectionUnlabeledModels = [];                    
-                    var collaborativeFilteringModels = [];                    
-
-                    for (var i = 0; i < projectModels.length; i++) {
-                        if(projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_CLASSIFICATION' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
-                            classificationModels.push(projectModels[i]);
-                        }
-                        else if(projectModels[i].modelSummary.algorithm == 'LINEAR_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RIDGE_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LASSO_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_REGRESSION') {
-                            numPredictionModels.push(projectModels[i]);
-                        }
-                        else if(projectModels[i].modelSummary.algorithm == 'K_MEANS') {
-                            clusteringModels.push(projectModels[i]);
-                        }
-						else if(projectModels[i].modelSummary.algorithm == 'STACKED_AUTOENCODERS') {
-                            deeplearningModels.push(projectModels[i]);
-                        }
-                        else if(projectModels[i].modelSummary.algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
-                            anomalyDetectionModels.push(projectModels[i]);
-                        }                        
-                        else if(projectModels[i].modelSummary.algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
-                            anomalyDetectionUnlabeledModels.push(projectModels[i]);
-                        }     
-                        else if(projectModels[i].modelSummary.algorithm == 'COLLABORATIVE_FILTERING' || projectModels[i].modelSummary.algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
-                            collaborativeFilteringModels.push(projectModels[i]);
-                        }                                                    
-                    }
-
-                    if (classificationModels.length > 0) {
-                        var classificationModelsSorted = classificationModels.sort(sortByAccuracy);
-                        var classificationAccordionPanels = createAccordionPanels(classificationModelsSorted, 'classification');
-                        $('#no-classification').remove();                              
-                        $("#classification-accordion").append(classificationAccordionPanels);
-                        $('#classification-tab-li').removeClass('disabled');
-                        $('#classification-tab-li').attr('title', '');
-                        $('#classification-link').attr('data-toggle', 'tab');
-                    }
-
-                    if (numPredictionModels.length > 0) {
-                        var numPredictionModelsSorted = numPredictionModels.sort(sortByError);
-                        var numPredictionAccordionPanels = createAccordionPanels(numPredictionModelsSorted, 'numerical-prediction');
-                        $('#no-numerical-prediction').remove();
-                        $("#numerical-prediction-accordion").append(numPredictionAccordionPanels);
-                        $('#numerical-prediction-tab-li').removeClass('disabled');
-                        $('#numerical-prediction-tab-li').attr('title', '');
-                        $('#numerical-prediction-link').attr('data-toggle', 'tab');
-                    }
-
-                    if (clusteringModels.length > 0) {
-                        var clusteringAccordionPanels = createAccordionPanels(clusteringModels, 'clustering');
-                        $('#no-clustering').remove();
-                        $("#clustering-accordion").append(clusteringAccordionPanels);
-                        $('#clustering-tab-li').removeClass('disabled');
-                        $('#clustering-tab-li').attr('title', '');
-                        $('#clustering-link').attr('data-toggle', 'tab');
-                    }
-
-					if (deeplearningModels.length > 0) {
-                        var deeplearningModelsSorted = deeplearningModels.sort(sortByAccuracy);
-                        var deeplearningAccordionPanels = createAccordionPanels(deeplearningModelsSorted, 'deeplearning');
-                        $('#no-deeplearning').remove();                              
-                        $("#deeplearning-accordion").append(deeplearningAccordionPanels);
-                        $('#deeplearning-tab-li').removeClass('disabled');
-                        $('#deeplearning-tab-li').attr('title', '');
-                        $('#deeplearning-link').attr('data-toggle', 'tab');
-                    }
-
-                    if (anomalyDetectionModels.length > 0) {
-                        var anomalyDetectionModelsSorted = anomalyDetectionModels.sort(sortByF1Score);
-                        //var anomalyDetectionModelsSorted = anomalyDetectionModels;
-                        var anomalyDetectionAccordionPanels = createAccordionPanels(anomalyDetectionModelsSorted, 'anomaly-detection-labeled');
-                        $('#no-anomaly-detection-labeled').remove();                              
-                        $("#anomaly-detection-labeled-accordion").append(anomalyDetectionAccordionPanels);
-                        $('#anomaly-detection-labeled-tab-li').removeClass('disabled');
-                        $('#anomaly-detection-labeled-tab-li').attr('title', '');
-                        $('#anomaly-detection-labeled-link').attr('data-toggle', 'tab');
-                    }   
-
-                    if (anomalyDetectionUnlabeledModels.length > 0) {
-                        //var anomalyDetectionModelsSorted = anomalyDetectionModels.sort(sortByAccuracy);
-                        //var anomalyDetectionModelsSorted = anomalyDetectionUnlabeledModels;
-                        var anomalyDetectionUnlabeledAccordionPanels = createAccordionPanels(anomalyDetectionUnlabeledModels, 'anomaly-detection-unlabeled');
-                        $('#no-anomaly-detection-unlabeled').remove();                              
-                        $("#anomaly-detection-unlabeled-accordion").append(anomalyDetectionUnlabeledAccordionPanels);
-                        $('#anomaly-detection-unlabeled-tab-li').removeClass('disabled');
-                        $('#anomaly-detection-unlabeled-tab-li').attr('title', '');
-                        $('#anomaly-detection-unlabeled-link').attr('data-toggle', 'tab');
-                    }                       
-
-                    if (collaborativeFilteringModels.length > 0) {
-                        var collaborativeFilteringModelsSorted = collaborativeFilteringModels.sort(sortByError);
-                        var anomalyDetectionAccordionPanels = createAccordionPanels(collaborativeFilteringModelsSorted, 'collaborative-filtering');
-                        $('#no-collaborative-filtering').remove();                              
-                        $("#collaborative-filtering-accordion").append(anomalyDetectionAccordionPanels);
-                        $('#collaborative-filtering-tab-li').removeClass('disabled');
-                        $('#collaborative-filtering-tab-li').attr('title', '');
-                        $('#collaborative-filtering-link').attr('data-toggle', 'tab');
-                    }                                            
-					
-                    // set active tab
-                    if(classificationModels.length > 0) {
-                        $('#classification-link').click();
-                    } else if(numPredictionModels.length > 0) {
-                        $('#numerical-prediction-link').click();
-                    } else if (clusteringModels.length > 0) {
-                        $('#clustering-link').click();
-                    } else if (deeplearningModels.length > 0) {
-                        $('#deeplearning-link').click();
-                    } else if (anomalyDetectionModels.length > 0) {
-                        $('#anomaly-detection-labeled-link').click();
-                    } else if (anomalyDetectionUnlabeledModels.length > 0) {
-                        $('#anomaly-detection-unlabeled-link').click();  
-                    } else if (collaborativeFilteringModels.length > 0) {
-                        $('#collaborative-filtering-link').click();                                                 
-                    } else {                        
-                        $('#classification-link').click();
-                    }
-                }
-            },
-            error: function(res) {
-                var errorText = res.responseText
-                handleNotification(errorText, '#notification-area', 'warning');                
+                        '</div>' +
+                        '</div>';
+                };
+                return accordionPanels;
             }
-        });
 
-        bindEvents();            
-    }
-    // function to bind events with elements
-    function bindEvents() {
-
-        $(document).on('click', '#predict', function(e){ 
-            e.preventDefault();
-            
-            var modelId = $(this).data('modelid');
-            var modelName = $(this).data('modelname');
-            var analysisId = $(this).data('analysisid');
-            var analysisName = modelName.split(".")[0];
-            window.location.href = '../predict/predict.jag?projectId='+projectId+'&analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName+'&fromCompare=true';
-        });
-
-        $(document).on('click', '#view-model', function(e){ 
-            e.preventDefault();
-            
-            var modelId = $(this).data('modelid');
-            var modelName = $(this).data('modelname');
-            var analysisId = $(this).data('analysisid');
-            var analysisName = modelName.split(".")[0];
-            window.location.href = '../analysis/view-model.jag?projectId='+projectId+'&analysisId='+analysisId+'&datasetId='+datasetId+'&modelId='+modelId+'&projectName='+projectName+'&analysisName='+analysisName+'&modelName='+modelName+'&fromCompare=true';
-        });
-
-         var modelId ;
-        $(document).on('click', '#publish', function(e){ 
-            e.preventDefault();
-            var analysisId = $(this).data('analysisid');
-            var algorithmName = findAlgorithmName(analysisId); 
-            if(loadPMMLAvailability(algorithmName)){
-                    $('#publish-model-pmml').removeClass('btn-disabled').prop('title',"");
-             } 
-            modelId = $(this).data('modelid');
-            operationSelect('publish-model');          
-        });  
-        $(document).on('click','#publish-model-serialized',function(e){
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
-                contentType: 'application/json',
-                dataType: 'json',
-                success : function(res){
-                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
-                    handleNotification(successText, '#notification-area', 'success');
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-            
-            hidePopup();
-         });        
-        $(document).on('click','#publish-model-pmml',function(e){
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
-                contentType: 'application/json',
-                dataType: 'json',
-                success : function(res){
-                    var successText = 'Model successfully published to registry location at: '+ sanitize(res["response"]);
-                    handleNotification(successText, '#notification-area', 'success');
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-            
-            hidePopup();
-         }); 
-        //events to handle downloading
-        var modeld;
-            $(document).on('click','#download-model',function(e){
+            $(document).on('click', '#back-download-model, #back-publish-model', function(e) {
                 e.preventDefault();
-                
-                modelId = $(this).data('modelid');  
-                var analysisId = $(this).data('analysisid');
-                var algorithmName = findAlgorithmName(analysisId); 
-                                   
-                if(loadPMMLAvailability(algorithmName)){
-                    $('#download-model-pmml').removeClass('btn-disabled').prop('title',"");
-                }      
-                operationSelect('download-model');
-            });
-            $(document).on('click','#download-model-serialized',function(e){
-                e.preventDefault();
-
-                window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=serialized';
                 hidePopup();
             });
-            $(document).on('click','#download-model-pmml',function(e){
-                e.preventDefault();
 
-                window.location.href = serverUrl+'/api/models/'+modelId+'/export?mode=pmml';
-                hidePopup();
-                
-            });  
+            // function to load models
+            function loadModels() {
+                $.ajax({
+                    type: "GET",
+                    url: serverUrl + "/api/projects/" + projectId + "/models",
+                    async: false,
+                    success: function(data) {
+                        var projectModels = data;
 
+                        if (projectModels.length > 0) {
+                            var classificationModels = [];
+                            var numPredictionModels = [];
+                            var clusteringModels = [];
+                            var deeplearningModels = [];
+                            var anomalyDetectionModels = [];
+                            var anomalyDetectionUnlabeledModels = [];
+                            var collaborativeFilteringModels = [];
 
-    }
+                            for (var i = 0; i < projectModels.length; i++) {
+                                if (projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LOGISTIC_REGRESSION_LBFGS' || projectModels[i].modelSummary.algorithm == 'SVM' || projectModels[i].modelSummary.algorithm == 'DECISION_TREE' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_CLASSIFICATION' || projectModels[i].modelSummary.algorithm == 'NAIVE_BAYES') {
+                                    classificationModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'LINEAR_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RIDGE_REGRESSION' || projectModels[i].modelSummary.algorithm == 'LASSO_REGRESSION' || projectModels[i].modelSummary.algorithm == 'RANDOM_FOREST_REGRESSION') {
+                                    numPredictionModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'K_MEANS') {
+                                    clusteringModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'STACKED_AUTOENCODERS') {
+                                    deeplearningModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+                                    anomalyDetectionModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+                                    anomalyDetectionUnlabeledModels.push(projectModels[i]);
+                                } else if (projectModels[i].modelSummary.algorithm == 'COLLABORATIVE_FILTERING' || projectModels[i].modelSummary.algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+                                    collaborativeFilteringModels.push(projectModels[i]);
+                                }
+                            }
 
-    function loadPMMLAvailability(algorithmName){
-            var status=false;
-        if(algorithmName){
-        
-            $.ajax({
-                type: "GET",
-                url: serverUrl+'/api/configs/algorithms/'+algorithmName+'/exportable?format=pmml',
-                async: false,
-                success : function(res){
-                    status = true;
-                },
-                error: function(res){
-                    status = false;
+                            if (classificationModels.length > 0) {
+                                var classificationModelsSorted = classificationModels.sort(sortByAccuracy);
+                                var classificationAccordionPanels = createAccordionPanels(classificationModelsSorted, 'classification');
+                                $('#no-classification').remove();
+                                $("#classification-accordion").append(classificationAccordionPanels);
+                                $('#classification-tab-li').removeClass('disabled');
+                                $('#classification-tab-li').attr('title', '');
+                                $('#classification-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (numPredictionModels.length > 0) {
+                                var numPredictionModelsSorted = numPredictionModels.sort(sortByError);
+                                var numPredictionAccordionPanels = createAccordionPanels(numPredictionModelsSorted, 'numerical-prediction');
+                                $('#no-numerical-prediction').remove();
+                                $("#numerical-prediction-accordion").append(numPredictionAccordionPanels);
+                                $('#numerical-prediction-tab-li').removeClass('disabled');
+                                $('#numerical-prediction-tab-li').attr('title', '');
+                                $('#numerical-prediction-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (clusteringModels.length > 0) {
+                                var clusteringAccordionPanels = createAccordionPanels(clusteringModels, 'clustering');
+                                $('#no-clustering').remove();
+                                $("#clustering-accordion").append(clusteringAccordionPanels);
+                                $('#clustering-tab-li').removeClass('disabled');
+                                $('#clustering-tab-li').attr('title', '');
+                                $('#clustering-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (deeplearningModels.length > 0) {
+                                var deeplearningModelsSorted = deeplearningModels.sort(sortByAccuracy);
+                                var deeplearningAccordionPanels = createAccordionPanels(deeplearningModelsSorted, 'deeplearning');
+                                $('#no-deeplearning').remove();
+                                $("#deeplearning-accordion").append(deeplearningAccordionPanels);
+                                $('#deeplearning-tab-li').removeClass('disabled');
+                                $('#deeplearning-tab-li').attr('title', '');
+                                $('#deeplearning-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (anomalyDetectionModels.length > 0) {
+                                var anomalyDetectionModelsSorted = anomalyDetectionModels.sort(sortByF1Score);
+                                //var anomalyDetectionModelsSorted = anomalyDetectionModels;
+                                var anomalyDetectionAccordionPanels = createAccordionPanels(anomalyDetectionModelsSorted, 'anomaly-detection-labeled');
+                                $('#no-anomaly-detection-labeled').remove();
+                                $("#anomaly-detection-labeled-accordion").append(anomalyDetectionAccordionPanels);
+                                $('#anomaly-detection-labeled-tab-li').removeClass('disabled');
+                                $('#anomaly-detection-labeled-tab-li').attr('title', '');
+                                $('#anomaly-detection-labeled-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (anomalyDetectionUnlabeledModels.length > 0) {
+                                //var anomalyDetectionModelsSorted = anomalyDetectionModels.sort(sortByAccuracy);
+                                //var anomalyDetectionModelsSorted = anomalyDetectionUnlabeledModels;
+                                var anomalyDetectionUnlabeledAccordionPanels = createAccordionPanels(anomalyDetectionUnlabeledModels, 'anomaly-detection-unlabeled');
+                                $('#no-anomaly-detection-unlabeled').remove();
+                                $("#anomaly-detection-unlabeled-accordion").append(anomalyDetectionUnlabeledAccordionPanels);
+                                $('#anomaly-detection-unlabeled-tab-li').removeClass('disabled');
+                                $('#anomaly-detection-unlabeled-tab-li').attr('title', '');
+                                $('#anomaly-detection-unlabeled-link').attr('data-toggle', 'tab');
+                            }
+
+                            if (collaborativeFilteringModels.length > 0) {
+                                var collaborativeFilteringModelsSorted = collaborativeFilteringModels.sort(sortByError);
+                                var anomalyDetectionAccordionPanels = createAccordionPanels(collaborativeFilteringModelsSorted, 'collaborative-filtering');
+                                $('#no-collaborative-filtering').remove();
+                                $("#collaborative-filtering-accordion").append(anomalyDetectionAccordionPanels);
+                                $('#collaborative-filtering-tab-li').removeClass('disabled');
+                                $('#collaborative-filtering-tab-li').attr('title', '');
+                                $('#collaborative-filtering-link').attr('data-toggle', 'tab');
+                            }
+
+                            // set active tab
+                            if (classificationModels.length > 0) {
+                                $('#classification-link').click();
+                            } else if (numPredictionModels.length > 0) {
+                                $('#numerical-prediction-link').click();
+                            } else if (clusteringModels.length > 0) {
+                                $('#clustering-link').click();
+                            } else if (deeplearningModels.length > 0) {
+                                $('#deeplearning-link').click();
+                            } else if (anomalyDetectionModels.length > 0) {
+                                $('#anomaly-detection-labeled-link').click();
+                            } else if (anomalyDetectionUnlabeledModels.length > 0) {
+                                $('#anomaly-detection-unlabeled-link').click();
+                            } else if (collaborativeFilteringModels.length > 0) {
+                                $('#collaborative-filtering-link').click();
+                            } else {
+                                $('#classification-link').click();
+                            }
+                        }
+                    },
+                    error: function(res) {
+                        var errorText = res.responseText
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+                bindEvents();
+            }
+            // function to bind events with elements
+            function bindEvents() {
+                $(document).on('click', '#predict', function(e) {
+                    e.preventDefault();
+                    var modelId = $(this).data('modelid');
+                    var modelName = $(this).data('modelname');
+                    var analysisId = $(this).data('analysisid');
+                    var analysisName = modelName.split(".")[0];
+                    window.location.href = '../predict/predict.jag?projectId=' + projectId + '&analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=true';
+                });
+
+                $(document).on('click', '#view-model', function(e) {
+                    e.preventDefault();
+                    var modelId = $(this).data('modelid');
+                    var modelName = $(this).data('modelname');
+                    var analysisId = $(this).data('analysisid');
+                    var analysisName = modelName.split(".")[0];
+                    window.location.href = '../analysis/view-model.jag?projectId=' + projectId + '&analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=true';
+                });
+
+                var modelId;
+                $(document).on('click', '#publish', function(e) {
+                    e.preventDefault();
+                    var analysisId = $(this).data('analysisid');
+                    var algorithmName = findAlgorithmName(analysisId);
+                    if (loadPMMLAvailability(algorithmName)) {
+                        $('#publish-model-pmml').removeClass('btn-disabled').prop('title', "");
+                    }
+                    modelId = $(this).data('modelid');
+                    operationSelect('publish-model');
+                });
+                $(document).on('click', '#publish-model-serialized', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function(res) {
+                            var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
+                            handleNotification(successText, '#notification-area', 'success');
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                    hidePopup();
+                });
+                $(document).on('click', '#publish-model-pmml', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function(res) {
+                            var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
+                            handleNotification(successText, '#notification-area', 'success');
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                    hidePopup();
+                });
+                //events to handle downloading
+                var modeld;
+                $(document).on('click', '#download-model', function(e) {
+                    e.preventDefault();
+                    modelId = $(this).data('modelid');
+                    var analysisId = $(this).data('analysisid');
+                    var algorithmName = findAlgorithmName(analysisId);
+
+                    if (loadPMMLAvailability(algorithmName)) {
+                        $('#download-model-pmml').removeClass('btn-disabled').prop('title', "");
+                    }
+                    operationSelect('download-model');
+                });
+                $(document).on('click', '#download-model-serialized', function(e) {
+                    e.preventDefault();
+                    window.location.href = serverUrl + '/api/models/' + modelId + '/export?mode=serialized';
+                    hidePopup();
+                });
+                $(document).on('click', '#download-model-pmml', function(e) {
+                    e.preventDefault();
+                    window.location.href = serverUrl + '/api/models/' + modelId + '/export?mode=pmml';
+                    hidePopup();
+                });
+            }
+
+            function loadPMMLAvailability(algorithmName) {
+                var status = false;
+                if (algorithmName) {
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + '/api/configs/algorithms/' + algorithmName + '/exportable?format=pmml',
+                        async: false,
+                        success: function(res) {
+                            status = true;
+                        },
+                        error: function(res) {
+                            status = false;
+                        }
+                    });
                 }
-            });
+                return status;
+            }
 
-           
-        }
-         return status;
-    }
-
-    function findAlgorithmName(analysisId){
-            var algorithmName;
-            $.ajax({
-                type: "GET",
-                url: serverUrl + "/api/analyses/" + sanitize(analysisId) + "/algorithmName",
-                async : false,
-                dataType: 'text',
-                success : function(res){
-                    algorithmName = sanitize(res);
-                },
-                error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-                handleNotification(errorText, '#notification-area', 'warning');
-                }
-            });
-            return algorithmName;
-    }
-
-</script>
-
-</body>
-
+            function findAlgorithmName(analysisId) {
+                var algorithmName;
+                $.ajax({
+                    type: "GET",
+                    url: serverUrl + "/api/analyses/" + sanitize(analysisId) + "/algorithmName",
+                    async: false,
+                    dataType: 'text',
+                    success: function(res) {
+                        algorithmName = sanitize(res);
+                    },
+                    error: function(res) {
+                        var errorText = JSON.parse(res.responseText)["exception"];
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+                return algorithmName;
+            }
+        </script>
+    </body>
 </html>

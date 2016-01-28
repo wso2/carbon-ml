@@ -1,278 +1,268 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WSO2 Machine Learner</title>
-    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
-    <link href="../../css/bootstrap.css" rel="stylesheet">
-    <link href="../../css/custom.css" rel="stylesheet">
-    <link href="../../css/custom-theme.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WSO2 Machine Learner</title>
+        <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+        <link href="../../css/bootstrap.css" rel="stylesheet">
+        <link href="../../css/custom.css" rel="stylesheet">
+        <link href="../../css/custom-theme.css" rel="stylesheet">
+        <script src="../../js/respond.min.js"></script>
 
-    <%
+        <%
         include("../../includes/tenantAware.jag");
-    %> 
-</head>
+        %> 
+    </head>
 
-<body>
+    <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+        <div class="container col-lg-12 col-md-12 col-sm-12">
 
-<!-- header -->
-<header>
-<div class="row wr-global-header">
-	<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
-	</div>
-	<div class="col-sm-4">
-		<div class="wr-auth pull-right">
-			<a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-			<div class="dropdown-menu">
-				<div class="cu-arrow"></div>
-				<div class="dropdown-menu-content">
-					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
-				</div>
-			</div>			
-		</div>
-	</div>
-</div>
-</header>
-<!-- /header -->
+            <!-- header -->
+            <header>
+                <div class="row wr-global-header">
+                    <div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="wr-auth pull-right">
+                            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                            <div class="dropdown-menu">
+                                <div class="cu-arrow"></div>
+                                <div class="dropdown-menu-content">
+                                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                                </div>
+                            </div>          
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- /header -->
 
-<!-- secondary header - app bar -->
-<div class="navbar-wrapper">
-    <div id="nav" class="row wr-app-bar">
-        <div class="col-md-9 wr-action-container">
-            <div class="wr-project">
-                <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
-            </div>
+            <!-- secondary header - app bar -->
+            <div class="navbar-wrapper">
+                <div id="nav" class="row wr-app-bar">
+                    <div class="col-md-9 wr-action-container">
+                        <div class="wr-project">
+                            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+                        </div>
 
-            <div class="wr-action-btn-bar">
-                <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
-            </div>
-        </div>
+                        <div class="wr-action-btn-bar">
+                            <a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+                        </div>
+                    </div>
 
-        <div class="col-md-3 wr-wiz-nav">
-            <div class="wr-secondary-links pull-right">
-                <div class="ctrl-wiz-nav">
-                    <a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
-                    <a href="#" id="btn-next" class="cu-btn-reverse btn-run">Run</a>
+                    <div class="col-md-3 wr-wiz-nav">
+                        <div class="wr-secondary-links pull-right">
+                            <div class="ctrl-wiz-nav">
+                                <a href="#" id="prev-btn" class="cu-btn btn-prev">Previous</a>
+                                <a href="#" id="btn-next" class="cu-btn-reverse btn-run">Run</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<!-- secondary header - app bar -->
+            <!-- secondary header - app bar -->
 
-<!-- content/body -->       
-<!-- Wizard -->
-<div class="nav-wizard-wrapper">
-    <ul class="nav-wizard center-block">
-        <li class="tab-link-disabled"><a href="#" ><span class="nav-wedge-step">Step 1</span>Preprocess</a></li>
-        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 2</span>Explore</a></li>
-        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 3</span>Algorithms</a></li>
-        <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 4</span>Parameters</a></li>
-        <li class="active tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 5</span>Model</a></li>
-    </ul>
-</div>  
+            <!-- content/body -->       
+            <!-- Wizard -->
+            <div class="nav-wizard-wrapper">
+                <ul class="nav-wizard center-block">
+                    <li class="tab-link-disabled"><a href="#" ><span class="nav-wedge-step">Step 1</span>Preprocess</a></li>
+                    <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 2</span>Explore</a></li>
+                    <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 3</span>Algorithms</a></li>
+                    <li class="tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 4</span>Parameters</a></li>
+                    <li class="active tab-link-disabled"><a href="#"><span class="nav-wedge-step">Step 5</span>Model</a></li>
+                </ul>
+            </div>  
 
-<div class="row">
-	<div class="col-md-12">
-		
+            <div class="row">
+                <div class="col-md-12">
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
 
-            <div id="notification-area"></div>
-			<div class="wr-form col-lg-5 col-centered">
+                    <!-- content -->
+                    <div class="container col-md-12 col-centered wr-content">
 
-				<h1 class="title">Model</h1>
+                        <div id="notification-area"></div>
+                        <div class="wr-form col-lg-5 col-centered">
 
-				<label class="input-label">Dataset version<span class="glyphicon"></span></label>
-                <div class="input-control text">
-                    <select id="dataset-version" class="form-control">
-                        <!-- <option>Select..</option> -->
-                    </select>
+                            <h1 class="title">Model</h1>
+
+                            <label class="input-label">Dataset version<span class="glyphicon"></span></label>
+                            <div class="input-control text">
+                                <select id="dataset-version" class="form-control">
+                                    <!-- <option>Select..</option> -->
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- /content -->       
+                    </div>
+
                 </div>
 
-			</div>
-			
-		<!-- /content -->		
-		</div>
+            </div>
+            <!-- /content/body -->
 
-	</div>
-	
-</div>
-<!-- /content/body -->
+        </div>
+        
+        <!--footer class="footer">
+            <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+        </footer-->
 
-</div>
-    
-<!--footer class="footer">
-        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
-</footer-->
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/wso2.ml.util.js"></script>
 
-<script src="../../js/jquery-1.11.1.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/wso2.ml.util.js"></script>
+        <script type="text/javascript">
+            var serverUrl = window.location.origin;
+            var projectName = getParameterByName('projectName');
+            var analysisName = getParameterByName('analysisName');
+            var analysisId = getParameterByName('analysisId');
+            var datasetId = getParameterByName('datasetId');
+            var algorithmName = getParameterByName('algorithmName');
+            var algorithmType = getParameterByName('algorithmType');
+            var fromAnalysis = getParameterByName('fromAnalysis');
 
-<script type="text/javascript">
+            $(document).ready(function() {
 
-var serverUrl = window.location.origin;
+                $('#nav').affix({
+                    offset: {
+                        top: $('header').height()
+                    }
+                });
 
-var projectName = getParameterByName('projectName');
-var analysisName = getParameterByName('analysisName');
-var analysisId = getParameterByName('analysisId');
-var datasetId = getParameterByName('datasetId');
-var algorithmName = getParameterByName('algorithmName');
-var algorithmType = getParameterByName('algorithmType');
-var fromAnalysis = getParameterByName('fromAnalysis');
+                /*scrollVibrateFix();
+                    
+                $(window).resize(function() {
+                    scrollVibrateFix();
+                });*/
 
-$( document ).ready(function() {
+                // put path in application navigator    
+                $('#nav-project').text(projectName);
+                $('#nav-analysis').text(" \\ " + analysisName);
 
-    $('#nav').affix({
-          offset: {
-            top: $('header').height()
-          }
-    });
-    
-    /*scrollVibrateFix();
-    
-    $(window).resize(function() {
-        scrollVibrateFix();
-    });*/    
+                $('#prev-btn').on('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+                });
 
-    // put path in application navigator    
-    $('#nav-project').text(projectName);
-    $('#nav-analysis').text(" \\ "+analysisName);    
+                loadDatasetVersions();
 
-    $('#prev-btn').on('click', function(e){
-        e.preventDefault();
-        window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-    });
+                $('#btn-next').on('click', function(e) {
+                    e.preventDefault();
+                    var modelName;
+                    var datasetVersion = $('#dataset-version').val();
+                    jsonData = '{"analysisId":"' + analysisId + '","versionSetId":"' + datasetVersion + '"}';
 
-    loadDatasetVersions();
+                    // create model
+                    $.ajax({
+                        type: 'POST',
+                        url: serverUrl + "/api/models",
+                        async: false,
+                        contentType: "application/json",
+                        data: jsonData,
+                        success: function(res) {
+                            modelName = sanitize(res['name']);
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
 
-    $('#btn-next').on('click', function(e){
-    	e.preventDefault();
-    	
-    	var modelName;
-    	var datasetVersion = $('#dataset-version').val();
+                    var modelId;
 
-    	jsonData = '{"analysisId":"' + analysisId + '","versionSetId":"' + datasetVersion + '"}';
+                    // get model ID        
+                    $.ajax({
+                        type: 'GET',
+                        url: serverUrl + "/api/models/" + modelName,
+                        async: false,
+                        success: function(res) {
+                            modelId = res['id'];
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
 
-        // create model
-	    $.ajax({
-            type: 'POST',
-            url: serverUrl + "/api/models",
-            async: false,
-            contentType: "application/json",
-            data: jsonData,
-            success: function(res){
-                modelName = sanitize(res['name']);
-            },
-            error: function(res){
-                var errorText = res.responseText;
-                handleNotification(errorText, '#notification-area', 'warning');
-            }
-        });
+                    // submit model build job
+                    $.ajax({
+                        type: 'POST',
+                        url: serverUrl + "/api/models/" + modelId,
+                        success: function(res) {
+                            console.log("Model build job successfully submitted.");
+                            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                });
 
-        var modelId;
-
-        // get model ID        
-        $.ajax({
-            type: 'GET',
-            url: serverUrl + "/api/models/" + modelName,
-            async: false,
-            success: function(res){
-                modelId = res['id'];
-            },
-            error: function(res){
-                var errorText = res.responseText;
-                handleNotification(errorText, '#notification-area', 'warning');
-            }
-        });
-
-        // submit model build job
-        $.ajax({
-            type: 'POST',
-            url: serverUrl + "/api/models/" + modelId,
-            contentType: "application/json",
-            success: function(res){
-                console.log("Model build job successfully submitted.");
-                window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
-            },
-            error: function(res){
-                var errorText = res.responseText;
-                handleNotification(errorText, '#notification-area', 'warning');
-            }
-        });
-
-    });
-
-    // function that cancels an analysis
-    $('#cancel-analysis').on('click', function(e){
-        e.preventDefault();
-        // if navigation is from analysis page do not delete the analysis
-        if (fromAnalysis == 'true') {
-            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
-        }
-        else {
-            var noOfModels;
-            // get number of models of this analysis
-            $.ajax({
-                type: 'GET',
-                url: serverUrl + "/api/analyses/" + analysisId + "/models",
-                async: false,
-                success: function(res) {
-                    noOfModels = res.length;
-                },
-                error: function(res){
-                    var errorText = res.responseText;
-                    handleNotification(errorText, '#notification-area', 'warning');
-                }
+                // function that cancels an analysis
+                $('#cancel-analysis').on('click', function(e) {
+                    e.preventDefault();
+                    // if navigation is from analysis page do not delete the analysis
+                    if (fromAnalysis == 'true') {
+                        window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
+                    } else {
+                        var noOfModels;
+                        // get number of models of this analysis
+                        $.ajax({
+                            type: 'GET',
+                            url: serverUrl + "/api/analyses/" + analysisId + "/models",
+                            async: false,
+                            success: function(res) {
+                                noOfModels = res.length;
+                            },
+                            error: function(res) {
+                                var errorText = res.responseText
+                                handleNotification(errorText, '#notification-area', 'warning');
+                            }
+                        });
+                        // delete analysis on CANCEL only if there are no models in this analysis
+                        if (noOfModels == 0) {
+                            $.ajax({
+                                type: 'DELETE',
+                                url: serverUrl + "/api/analyses/" + analysisId,
+                                success: function(res) {
+                                    window.location.href = '../project/projects.jag';
+                                },
+                                error: function(res) {
+                                    var errorText = res.responseText
+                                    handleNotification(errorText, '#notification-area', 'warning');
+                                }
+                            });
+                        } else {
+                            window.location.href = '../project/projects.jag';
+                        }
+                    }
+                });
             });
-            // delete analysis on CANCEL only if there are no models in this analysis
-            if(noOfModels == 0) {                
+
+            function loadDatasetVersions() {
                 $.ajax({
-                    type: 'DELETE',
-                    url: serverUrl + "/api/analyses/" + analysisId,
-                    success: function(res){
-                        window.location.href = '../project/projects.jag';
+                    type: "GET",
+                    url: serverUrl + "/api/datasets/" + datasetId + "/versions",
+                    success: function(res) {
+                        var datasetVersions = res;
+                        $.each(datasetVersions, function(i, item) {
+                            $('#dataset-version').append($('<option>', {
+                                value: item.id,
+                                text: item.name
+                            }));
+                        });
                     },
-                    error: function(res){
-                        var errorText = res.responseText;
+                    error: function(res) {
+                        var errorText = res.responseText
                         handleNotification(errorText, '#notification-area', 'warning');
                     }
-                });                            
+                });
             }
-            else {
-                window.location.href = '../project/projects.jag';
-            }
-        }
-    });
-});
-
-function loadDatasetVersions() {
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/datasets/" + datasetId + "/versions",
-        success: function(res) {
-            var datasetVersions = res;
-            $.each(datasetVersions, function (i, item) {
-                $('#dataset-version').append($('<option>', { 
-                    value: item.id,
-                    text : item.name
-                }));
-            });
-        },
-        error: function(res) {
-            var errorText = res.responseText;
-            handleNotification(errorText, '#notification-area', 'warning');            
-        }
-    });
-}
-	
-</script>
-
-</body>
+        </script>
+    </body>
 </html>
