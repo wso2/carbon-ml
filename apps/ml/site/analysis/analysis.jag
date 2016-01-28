@@ -616,6 +616,7 @@
                         type: "POST",
                         url: serverUrl + "/api/models/" + modelId + "/publish?mode=serialized",
                         dataType: 'json',
+                        contentType: 'application/json',
                         success: function(res) {
                             var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
                             handleNotification(successText, '#notification-area', 'success');
@@ -635,6 +636,7 @@
                         type: "POST",
                         url: serverUrl + "/api/models/" + modelId + "/publish?mode=pmml",
                         dataType: 'json',
+                        contentType: 'application/json',
                         success: function(res) {
                             var successText = 'Model successfully published to registry location at: ' + sanitize(res["response"]);
                             handleNotification(successText, '#notification-area', 'success');
