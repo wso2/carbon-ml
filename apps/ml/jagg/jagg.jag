@@ -20,9 +20,7 @@ var context = context || {
 var site = require("/site/conf/site.json");
 
 var jagg = jagg || (function () {
-
     var data;
-
     var setData = function (d) {
         data = d;
     };
@@ -42,7 +40,6 @@ var jagg = jagg || (function () {
     var getAbsoluteUrl = function (path) {
         return site.context + path;
     };
-
 
     return {
         setUser:setUser,

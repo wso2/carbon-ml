@@ -24,7 +24,7 @@
    are common to all graph classes*/
 var BasePlot = function(data) {
 
-    if(!data){
+    if (!data) {
         throw new PlottingError("The dataset is not defined");
     }
 
@@ -48,19 +48,19 @@ var BasePlot = function(data) {
     this.yLabel = '';
 
     //graph will be drawn inside the this SVG tag
-    this.svg = null;        
+    this.svg = null;
 };
 
 //following are methods of the base class
-BasePlot.prototype.setPlotingAreaWidth = function(width){
-    if(width <= 0){
+BasePlot.prototype.setPlotingAreaWidth = function(width) {
+    if (width <= 0) {
         throw new PlottingError("plotting area width should be positive");
     }
     this.width = width;
 };
 
-BasePlot.prototype.setPlotingAreaHeight = function(height){
-    if(height <= 0){
+BasePlot.prototype.setPlotingAreaHeight = function(height) {
+    if (height <= 0) {
         throw new PlottingError("plotting area height should be positive");
     }
     this.height = height;
@@ -68,22 +68,22 @@ BasePlot.prototype.setPlotingAreaHeight = function(height){
 
 /*setting the SVG container inside the 'selection' DOM
   internal method should not call from outside Plot class hierarchy*/
-BasePlot.prototype.initializeSVGContainer = function(selection){
-    if(selection){
+BasePlot.prototype.initializeSVGContainer = function(selection) {
+    if (selection) {
         this.svg = selection.append("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom)
             .append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-    }else{
-        throw new PlottingError("svg container can not be initialized");  
+    } else {
+        throw new PlottingError("svg container can not be initialized");
     }
 };
 
 /** internal method should not be called from 
     outside Plot class hierarchy*/
-BasePlot.prototype.attachXAxis = function(xAxis){
-    if(xAxis){ //
+BasePlot.prototype.attachXAxis = function(xAxis) {
+    if (xAxis) { //
         this.svg.append("g")
             .attr("class", "axis text")
             .attr("transform", "translate(0," + this.height + ")")
@@ -94,15 +94,15 @@ BasePlot.prototype.attachXAxis = function(xAxis){
             .attr("y", 30)
             .style("text-anchor", "end")
             .text(this.xLabel);
-    }else{
+    } else {
         throw new PlottingError("xAxis is null or empty");
     }
 };
 
 /** internal method should not called from 
     outside Plot class hierarchy*/
-BasePlot.prototype.attachYAxis = function(yAxis){
-    if(yAxis){
+BasePlot.prototype.attachYAxis = function(yAxis) {
+    if (yAxis) {
         this.svg.append("g")
             .attr("class", "axis text")
             .call(yAxis)
@@ -113,23 +113,23 @@ BasePlot.prototype.attachYAxis = function(yAxis){
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(this.yLabel);
-    }else{
+    } else {
         throw new PlottingError("yAxis is null or empty");
     }
 };
 
-BasePlot.prototype.setXAxisText = function(text){
-    if(text){
+BasePlot.prototype.setXAxisText = function(text) {
+    if (text) {
         this.xLabel = text;
-    }else{
+    } else {
         throw new PlottingError("Label of the X axis can't be null or empty");
     }
 };
 
-BasePlot.prototype.setYAxisText = function(text){
-    if(text){
+BasePlot.prototype.setYAxisText = function(text) {
+    if (text) {
         this.yLabel = text;
-    }else{
+    } else {
         throw new PlottingError("Label of the Y axis can't be null or empty");
     }
 };
@@ -152,7 +152,7 @@ var ScatterPlot = function(data) {
     this.legendEnabled = true;
     this.groupByValues = [];
     this.legendBoxWidth = 10;
-    this.legendBoxHeight = 10; 
+    this.legendBoxHeight = 10;
     this.legendTextXLoc = 20;
     this.legendTextYLoc = 5;
 };
@@ -162,19 +162,19 @@ ScatterPlot.prototype.constructor = ScatterPlot;
 
 /** Following method is used to set the size of each 
     point in the scatter plot*/
-ScatterPlot.prototype.setMarkerSize = function(markerSize){
+ScatterPlot.prototype.setMarkerSize = function(markerSize) {
 
-    if(markerSize <= 0){
+    if (markerSize <= 0) {
         throw new PlottingError("markerSize should be positive");
     }
-    this.markerSize = markerSize;    
+    this.markerSize = markerSize;
 };
 
 /** Following method is used to set colors used
     in the scatter plot*/
-ScatterPlot.prototype.setColors = function(colors){
+ScatterPlot.prototype.setColors = function(colors) {
 
-    if(colors.length < 1){
+    if (colors.length < 1) {
         throw new PlottingError("At least one color should be defined");
     }
     this.colors = d3.scale.ordinal().range(colors);
@@ -182,25 +182,25 @@ ScatterPlot.prototype.setColors = function(colors){
 
 /** Following method is used to set legend used
     in the scatter plot*/
-ScatterPlot.prototype.setLegend = function(legendEnabled){
+ScatterPlot.prototype.setLegend = function(legendEnabled) {
 
-    if(legendEnabled == false){
+    if (legendEnabled == false) {
         this.legendEnabled = legendEnabled;
     }
 };
 
 /** Following method is used to set group by values (values of the categorical 
     feature e.g. 'Correct', 'Incorrect') in the scatter plot*/
-ScatterPlot.prototype.setGroupByValues = function(groupByValues){
-    
+ScatterPlot.prototype.setGroupByValues = function(groupByValues) {
+
     this.groupByValues = groupByValues;
 };
 
 /**Main function of the ScatterPlot class.
    Once called graph will be drawn inside the SVG container*/
 ScatterPlot.prototype.plot = function(selection) {
-    if(!selection){
-       throw new PlottingError("DOM element can't be null or empty"); 
+    if (!selection) {
+        throw new PlottingError("DOM element can't be null or empty");
     }
 
     // setting up the SVG container
@@ -263,7 +263,7 @@ ScatterPlot.prototype.plot = function(selection) {
         .style("fill", function(d) {
             // group by values set (when both group by values and colors are set, those will be mapped in passed order)
             // e.g. 'Correct' -> '#286c4f', 'Incorrect' -> '#c02e1d'
-            if(groupByValues.length > 0) {
+            if (groupByValues.length > 0) {
                 var groupByValuesIndex = groupByValues.indexOf(d[2]);
                 return colorValues[groupByValuesIndex];
             }
@@ -272,15 +272,14 @@ ScatterPlot.prototype.plot = function(selection) {
         .style("opacity", 0.8);
 
     // setting the legend at top left corner of the graph if legend is enabled
-    if(this.legendEnabled == true) {
+    if (this.legendEnabled == true) {
 
         var colorDomain;
         // if group by values are set, use those values explicitly for legend e.g. ['Correct', 'Incorrect']
-        if(groupByValues.length > 0) {
+        if (groupByValues.length > 0) {
             colorDomain = groupByValues;
-        }
-        else {
-            colorDomain = color.domain();   
+        } else {
+            colorDomain = color.domain();
         }
 
         var legend = this.svg.selectAll(".basegraph")
@@ -304,7 +303,7 @@ ScatterPlot.prototype.plot = function(selection) {
             .style("text-anchor", "end")
             .text(function(d) {
                 return d;
-            });        
+            });
     }
 };
 /*******************end of ScatterPlot class*************/
@@ -315,8 +314,8 @@ ScatterPlot.prototype.plot = function(selection) {
 
 /** This is the abstract class of all line graphs.
     It contains a set of methods which are common to all
-    specialized line graphs such as ROC curve*/ 
-var BasicLineGraph = function(data){
+    specialized line graphs such as ROC curve*/
+var BasicLineGraph = function(data) {
     // calling the base class 
     BasePlot.call(this, data);
 
@@ -328,27 +327,27 @@ var BasicLineGraph = function(data){
 BasicLineGraph.prototype = Object.create(BasePlot.prototype);
 BasicLineGraph.prototype.constructor = BasicLineGraph;
 
-BasicLineGraph.prototype.setLegendName = function(legend){
-    if(!legend){
+BasicLineGraph.prototype.setLegendName = function(legend) {
+    if (!legend) {
         throw new PlottingError("legend can't be null or empty");
-    }    
+    }
     this.legendName = legend;
 };
 
-BasicLineGraph.prototype.setLineColor = function(color){
-    if(!color){
+BasicLineGraph.prototype.setLineColor = function(color) {
+    if (!color) {
         throw new PlottingError("Line color can't be null or empty");
-    }    
+    }
     this.lineColor = color;
 };
 
-BasicLineGraph.prototype.setLineWidth = function(lineWidth){
-    if(!lineWidth){
+BasicLineGraph.prototype.setLineWidth = function(lineWidth) {
+    if (!lineWidth) {
         throw new PlottingError(" Line width can't be null or empty");
-    }    
+    }
     this.lineWidth = lineWidth;
 };
-/*********** BasicLineGraph ends ************************/ 
+/*********** BasicLineGraph ends ************************/
 /********************************************************/
 
 /*********** ROC graph starts **************************/
@@ -356,7 +355,7 @@ BasicLineGraph.prototype.setLineWidth = function(lineWidth){
 /** This is a concrete class of BasicLineGraph and it is 
     used to generate ROC curve using an array of array of points
     such as [[0.0, 0.0], ..., [1.0, 1.0]]*/
-var ROCGraph = function(data){
+var ROCGraph = function(data) {
     // calling the base class 
     BasePlot.call(this, data);
 
@@ -374,17 +373,17 @@ ROCGraph.prototype.constructor = ROCGraph;
 
 // cutoff probability and it's X and Y coordinates 
 // will be draw on the ROC graph 
-ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
-    if(this.marker){
+ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r) {
+    if (this.marker) {
         this.marker.remove();
     }
     this.marker = this.svg.append("circle")
-            .attr("cx", xScale(cx))
-            .attr("cy", yScale(cy))
-            .attr("r", r)
-            .attr("fill", "red");
+        .attr("cx", xScale(cx))
+        .attr("cy", yScale(cy))
+        .attr("r", r)
+        .attr("fill", "red");
 
-    if(this.markerHorizontalIndicator){
+    if (this.markerHorizontalIndicator) {
         this.markerHorizontalIndicator.remove();
     }
     this.markerHorizontalIndicator = this.svg.append("line")
@@ -395,8 +394,8 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
         .attr('stroke-width', 1)
         .attr('stroke', '#ff0000')
         .attr("stroke-dasharray", ("5, 5"));
-    
-    if(this.marketVerticalIndicator){
+
+    if (this.marketVerticalIndicator) {
         this.marketVerticalIndicator.remove();
     }
     this.marketVerticalIndicator = this.svg.append("line")
@@ -409,13 +408,13 @@ ROCGraph.prototype.drawCutoffProbMarker = function(cx, cy, r){
         .attr("stroke-dasharray", ("5, 5"));
 };
 
-ROCGraph.prototype.plot = function(selection){
-    if(!selection){
-       throw new PlottingError("DOM element can't be null or empty"); 
+ROCGraph.prototype.plot = function(selection) {
+    if (!selection) {
+        throw new PlottingError("DOM element can't be null or empty");
     }
 
     //setting up the SVG container
-    this.initializeSVGContainer(selection); 
+    this.initializeSVGContainer(selection);
 
     //setting up X and Y scales appropriate to Scatter Plots 
     xScale = d3.scale.linear()
@@ -437,8 +436,8 @@ ROCGraph.prototype.plot = function(selection){
     //setting up X and Y axis, appropriate to basic line graph
     var xAxis = d3.svg.axis()
         .ticks(10)
-        .tickFormat(function(d){            
-            return d3.round(d,2);
+        .tickFormat(function(d) {
+            return d3.round(d, 2);
         })
         .scale(xScale)
         .orient("bottom");
@@ -446,7 +445,7 @@ ROCGraph.prototype.plot = function(selection){
     var yAxis = d3.svg.axis()
         .scale(yScale)
         .tickFormat(function(d) {
-            return d3.round(d,2);
+            return d3.round(d, 2);
         })
         .orient("left");
 
@@ -455,44 +454,50 @@ ROCGraph.prototype.plot = function(selection){
     this.attachYAxis(yAxis);
 
     var lineBuilder = d3.svg.line()
-                .x(function(d) { return xScale(d[0]); })
-                .y(function(d) { return yScale(d[1]); })
-                .interpolate("linear");
+        .x(function(d) {
+            return xScale(d[0]);
+        })
+        .y(function(d) {
+            return yScale(d[1]);
+        })
+        .interpolate("linear");
 
     var graph = this.svg.append("path")
-                .attr("d", lineBuilder(this.data))
-                .attr("stroke", this.lineColor)
-                .attr("stroke-width", this.lineWidth)
-                .attr("fill", "none");
-    
+        .attr("d", lineBuilder(this.data))
+        .attr("stroke", this.lineColor)
+        .attr("stroke-width", this.lineWidth)
+        .attr("fill", "none");
+
     var legend = this.svg.selectAll('.legend')
-                .data([1])
-                .enter()
-                .append('g')
-                    .attr('class', 'legend');
-    
+        .data([1])
+        .enter()
+        .append('g')
+        .attr('class', 'legend');
+
     legend.append('line')
-                .attr('x1', this.width - 200)
-                .attr('y1', 8*(this.height/10) -3)
-                .attr('x2', this.width - 175)
-                .attr('y2', 8*(this.height/10) -3)
-                .attr('stroke-width', this.lineWidth)
-                .attr('stroke', this.lineColor);
-      
-    var name = this.legendName;     
+        .attr('x1', this.width - 200)
+        .attr('y1', 8 * (this.height / 10) - 3)
+        .attr('x2', this.width - 175)
+        .attr('y2', 8 * (this.height / 10) - 3)
+        .attr('stroke-width', this.lineWidth)
+        .attr('stroke', this.lineColor);
+
+    var name = this.legendName;
     legend.append('text')
-                .attr('x', this.width - 160)
-                .attr('y', 8*(this.height/10))
-                .text(function(d){ return name; });
+        .attr('x', this.width - 160)
+        .attr('y', 8 * (this.height / 10))
+        .text(function(d) {
+            return name;
+        });
 
     var randomGuass = this.svg.append("line")
-                .attr('x2', this.width)
-                .attr('y2', 0)
-                .attr('x1', 0)
-                .attr('y1', this.height)
-                .attr('stroke-width', 1)
-                .attr('stroke', this.randomGuassingLineColor)
-                .attr("stroke-dasharray", ("10, 3"));
+        .attr('x2', this.width)
+        .attr('y2', 0)
+        .attr('x1', 0)
+        .attr('y1', this.height)
+        .attr('stroke-width', 1)
+        .attr('stroke', this.randomGuassingLineColor)
+        .attr("stroke-dasharray", ("10, 3"));
 
 };
 /*********** end of ROC graph *************************/
@@ -503,21 +508,21 @@ ROCGraph.prototype.plot = function(selection){
 /******************** BaseHistogram starts *************/
 /** This class represents properties common to 
     all histogram classes*/
-var BaseHistogram = function(data){
+var BaseHistogram = function(data) {
     //calling the base class constructor
-    BasePlot.call(this,data);
+    BasePlot.call(this, data);
 
     this.barPadding = 1;
 
     //setting the default color for bars
-    this.barColor = '#3182BF';    
+    this.barColor = '#3182BF';
 };
 
 BaseHistogram.prototype = Object.create(BasePlot.prototype);
 BaseHistogram.prototype.constructor = BaseHistogram;
 
-BaseHistogram.prototype.setBarColor = function(color){
-    if(arguments.length){
+BaseHistogram.prototype.setBarColor = function(color) {
+    if (arguments.length) {
         this.barColor = color;
     }
 };
@@ -530,19 +535,19 @@ BaseHistogram.prototype.setBarColor = function(color){
 /*****************Histogram class starts*****************/
 /**This class generates a histogram using an array of numbers
    such as [1.0, 10.3, 100.2, ....] with a given number of buckets*/
-var Histogram = function(data){
+var Histogram = function(data) {
     //calling the base class constructor
-    BaseHistogram.call(this,data);
+    BaseHistogram.call(this, data);
 
     // number of bucket in the histogram
     this.numOfBuckets = 10;
-};  
+};
 
 Histogram.prototype = Object.create(BaseHistogram.prototype);
 Histogram.prototype.constructor = Histogram;
 
-Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {    
-    if(numOfBuckets <= 0){
+Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {
+    if (numOfBuckets <= 0) {
         throw new PlottingError("numOfBuckets should be positive");
     }
     this.numOfBuckets = numOfBuckets;
@@ -551,8 +556,8 @@ Histogram.prototype.setNumOfBuckets = function(numOfBuckets) {
 //This is the main function of the Histogram class
 //Once called graph will be drawn inside the SVG container 
 Histogram.prototype.plot = function(selection) {
-    if(!selection){
-       throw new PlottingError("DOM element can't be null or empty"); 
+    if (!selection) {
+        throw new PlottingError("DOM element can't be null or empty");
     }
 
     //setting up the SVG container
@@ -574,7 +579,7 @@ Histogram.prototype.plot = function(selection) {
             return d.y;
         })])
         .range([this.height, 0]);
-    
+
     //setting up a bars chart, one bar per each bin 
     var that = this;
     var bar = this.svg.selectAll("rect")
@@ -583,7 +588,7 @@ Histogram.prototype.plot = function(selection) {
         .append("rect")
         .attr("x", this.barPadding)
         .attr("width", xScale(histogramData[0].dx) - this.barPadding)
-        .attr("height", function(d) {                             
+        .attr("height", function(d) {
             return that.height - yScale(d.y);
         })
         .attr("transform", function(d) {
@@ -616,17 +621,17 @@ Histogram.prototype.plot = function(selection) {
 /************HistogramUsingCalculatedFrequencies class starts******/
 /**This class generates a histogram using calculated frequencies
    Data format should be [[10,'Sun'],[20, 'Mon'],[30, 'Tue']]*/
-var HistogramUsingCalculatedFrequencies = function(data){
+var HistogramUsingCalculatedFrequencies = function(data) {
     //calling the base class constructor
-    BaseHistogram.call(this, data);    
+    BaseHistogram.call(this, data);
 };
 
 HistogramUsingCalculatedFrequencies.prototype = Object.create(BaseHistogram.prototype);
 HistogramUsingCalculatedFrequencies.prototype.constructor = HistogramUsingCalculatedFrequencies;
 
 HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
-    if(!selection){
-       throw new PlottingError("DOM element can't be null or empty"); 
+    if (!selection) {
+        throw new PlottingError("DOM element can't be null or empty");
     }
 
     //setting up SVG container
@@ -637,55 +642,57 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
         .domain([0, d3.max(this.data, function(d) {
             return d[0];
         })])
-       .range([0, this.height]);
-    
-    var that = this;    
+        .range([0, this.height]);
+
+    var that = this;
     //draw rectangles, each represents single bucket in the histogram
     var rect = this.svg.selectAll("rect")
-            .data(this.data)
-            .enter()
-            .append("rect")
-            .attr("x", function(d, i) {
-                return i * (that.width / that.data.length);
-            })
-            .attr("y", function(d) {                
-                return that.height - yScale(d[0]);
-            })
-            .attr("width", that.width / that.data.length - this.barPadding)
-            .attr("height", function(d) {
-                return yScale(d[0]);
-            })
-            .attr('fill', this.barColor);
+        .data(this.data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d, i) {
+            return i * (that.width / that.data.length);
+        })
+        .attr("y", function(d) {
+            return that.height - yScale(d[0]);
+        })
+        .attr("width", that.width / that.data.length - this.barPadding)
+        .attr("height", function(d) {
+            return yScale(d[0]);
+        })
+        .attr('fill', this.barColor);
 
     var scalingYAxisForDisplaying = d3.scale.linear()
         .domain([0, d3.max(this.data, function(d) {
             return d[0];
         })])
-        .range([this.height, 0]);    
+        .range([this.height, 0]);
 
     var yAxis = d3.svg.axis()
         .scale(scalingYAxisForDisplaying)
         .orient("left")
-        .tickFormat(function(d) { return (d3.format(".2s"))(d);});       
-        
+        .tickFormat(function(d) {
+            return (d3.format(".2s"))(d);
+        });
+
     var labels = [];
-    for(var i=0; i<this.data.length;i++){
+    for (var i = 0; i < this.data.length; i++) {
         labels.push(this.data[i][1]);
     }
 
     //creating xScale and updating xAxis    
     var xScale = d3.scale.ordinal()
         .domain(labels)
-        .rangeBands([0,this.width]);
+        .rangeBands([0, this.width]);
 
     var xAxis = d3.svg.axis()
         .scale(xScale)
         .orient("bottom")
         .ticks(4);
-    
+
     //updating X axis 
-    this.attachXAxis(xAxis);  
-    this.attachYAxis(yAxis);            
+    this.attachXAxis(xAxis);
+    this.attachYAxis(yAxis);
 };
 /********end of HistogramUsingCalculatedFrequencies class*****/
 /*************************************************************/
@@ -694,7 +701,7 @@ HistogramUsingCalculatedFrequencies.prototype.plot = function(selection) {
 /************************************************************/
 /*********** PlottingError**********************************/
 /**custom error class extends from Error*/
-var PlottingError = function (message) {
+var PlottingError = function(message) {
     this.name = 'PlottingError';
     this.message = message;
     this.stack = (new Error()).stack;
