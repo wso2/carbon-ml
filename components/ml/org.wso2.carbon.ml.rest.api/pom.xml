@@ -98,6 +98,11 @@
 			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.owlike</groupId>
+            <artifactId>genson</artifactId>
+            <version>0.99</version>
+        </dependency>
 	</dependencies>
 
     <profiles>
