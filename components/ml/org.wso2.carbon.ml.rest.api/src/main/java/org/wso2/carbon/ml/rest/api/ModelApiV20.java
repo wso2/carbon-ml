@@ -90,7 +90,7 @@ public class ModelApiV20 extends MLRestAPI {
             model.setUserName(userName);
             MLModelData insertedModel = mlModelHandler.createModel(model);
 
-            //hide unwanted json fields in response
+            //hide null json fields in response
             String[] fieldsToHide = { MLConstants.ML_MODEL_DATA_ID, MLConstants.ML_MODEL_DATA_CREATED_TIME,
                     MLConstants.ML_MODEL_DATA_DATASET_VERSION, MLConstants.ML_MODEL_DATA_ERROR,
                     MLConstants.ML_MODEL_DATA_MODEL_SUMMARY };
