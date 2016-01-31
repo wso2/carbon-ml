@@ -92,16 +92,16 @@
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.registry.core</artifactId>
 			<scope>provided</scope>
-		</dependency>
-        	<dependency>
+        </dependency>
+		<dependency>
 			<groupId>org.wso2.carbon.analytics</groupId>
 			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 			<scope>provided</scope>
 		</dependency>
-        	<dependency>
-		    <groupId>com.owlike</groupId>
-		    <artifactId>genson</artifactId>
-        	</dependency>
+        <dependency>
+			<groupId>com.owlike</groupId>
+			<artifactId>genson</artifactId>
+		</dependency>
 	</dependencies>
 
     <profiles>
