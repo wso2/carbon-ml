@@ -443,6 +443,11 @@
 				<artifactId>htrace-core</artifactId>
 				<version>${orbit.version.htrace}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.owlike</groupId>
+				<artifactId>genson</artifactId>
+				<version>${owlike.genson.version}</version>
+			</dependency>
 
 			<!-- Dependencies for ESB Mediator -->
 			<dependency>
@@ -744,6 +749,7 @@
 		<xml.apis.version>1.4.01</xml.apis.version>
 		<apache.httpcore.version>4.3.3.wso2v1</apache.httpcore.version>
 		<apache.httpclient.version>4.3.1.wso2v1</apache.httpclient.version>
+		<owlike.genson.version>0.99</owlike.genson.version>
 
 		<!--ESB Mediator Dependency versions -->
 		<synapse.version>2.1.3-wso2v11</synapse.version>
