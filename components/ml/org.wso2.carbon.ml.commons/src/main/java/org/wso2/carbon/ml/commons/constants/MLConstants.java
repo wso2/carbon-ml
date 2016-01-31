@@ -221,6 +221,13 @@ public class MLConstants {
     public static final String ML_MODEL_FORMAT_SERIALIZED = "serialized";
     public static final String ML_MODEL_FORMAT_PMML = "pmml";
 
+    // MLModelData fields (fields to hide in json response)
+    public static final String ML_MODEL_DATA_ID = "id";
+    public static final String ML_MODEL_DATA_MODEL_SUMMARY = "modelSummary";
+    public static final String ML_MODEL_DATA_DATASET_VERSION = "datasetVersion";
+    public static final String ML_MODEL_DATA_ERROR = "error";
+    public static final String ML_MODEL_DATA_CREATED_TIME = "createdTime";
+
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,
