@@ -167,7 +167,7 @@
                             modelName = sanitize(res['name']);
                         },
                         error: function(res) {
-                            var errorText = res.responseText
+                            var errorText = res.responseText;
                             handleNotification(errorText, '#notification-area', 'warning');
                         }
                     });
@@ -183,7 +183,7 @@
                             modelId = res['id'];
                         },
                         error: function(res) {
-                            var errorText = res.responseText
+                            var errorText = res.responseText;
                             handleNotification(errorText, '#notification-area', 'warning');
                         }
                     });
@@ -192,12 +192,13 @@
                     $.ajax({
                         type: 'POST',
                         url: serverUrl + "/api/models/" + modelId,
+                        contentType: "application/json",
                         success: function(res) {
                             console.log("Model build job successfully submitted.");
                             window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&analysisName=' + analysisName + '&projectName=' + projectName + '&datasetId=' + datasetId;
                         },
                         error: function(res) {
-                            var errorText = res.responseText
+                            var errorText = res.responseText;
                             handleNotification(errorText, '#notification-area', 'warning');
                         }
                     });
@@ -220,7 +221,7 @@
                                 noOfModels = res.length;
                             },
                             error: function(res) {
-                                var errorText = res.responseText
+                                var errorText = res.responseText;
                                 handleNotification(errorText, '#notification-area', 'warning');
                             }
                         });
@@ -233,7 +234,7 @@
                                     window.location.href = '../project/projects.jag';
                                 },
                                 error: function(res) {
-                                    var errorText = res.responseText
+                                    var errorText = res.responseText;
                                     handleNotification(errorText, '#notification-area', 'warning');
                                 }
                             });
