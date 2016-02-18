@@ -15,44 +15,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
+        results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-function getBaseUrl(fullUrl){
-	var parts = fullUrl.split('/');
-	return parts[0] + '//' + parts[2];
+function getBaseUrl(fullUrl) {
+    var parts = fullUrl.split('/');
+    return parts[0] + '//' + parts[2];
 }
 // function to build notifications
 function buildNotification(message, notificationType) {
     var builtNotification;
-    if(notificationType == 'warning') {
-        builtNotification = 
-        '<div class="alert alert-warning alert-dismissible" role="alert">' +
+    if (notificationType == 'warning') {
+        builtNotification =
+            '<div class="alert alert-warning alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<img src="../../images/icons/ico-error.png" class="indi" />' +
             message +
-        '</div>';            
-    }
-    else if(notificationType == 'info') {
-        builtNotification = 
-        '<div class="alert alert-info alert-dismissible" role="alert">' +
+            '</div>';
+    } else if (notificationType == 'info') {
+        builtNotification =
+            '<div class="alert alert-info alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<img src="../../images/icons/ico-alert.png" class="indi" />' +
             message +
-        '</div>';            
-    }
-    else if(notificationType == 'success') {
-        builtNotification = 
-        '<div class="alert alert-success alert-dismissible" role="alert">' +
+            '</div>';
+    } else if (notificationType == 'success') {
+        builtNotification =
+            '<div class="alert alert-success alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-            '<img src="../../images/icons/ico-success.png" class="indi" />' +            
+            '<img src="../../images/icons/ico-success.png" class="indi" />' +
             message +
-        '</div>';            
+            '</div>';
     }
     return builtNotification;
 }
@@ -62,7 +60,7 @@ function handleNotification(notificationText, notificationArea, notificationType
 }
 
 /* pagination plugin */
-$.fn.pageMe = function(opts){
+$.fn.pageMe = function(opts) {
     var $this = this,
         defaults = {
             perPage: 7,
@@ -77,42 +75,42 @@ $.fn.pageMe = function(opts){
     var children = listElement.children();
     var pager = $('.pagination');
 
-    if (typeof settings.childSelector!="undefined") {
+    if (typeof settings.childSelector != "undefined") {
         children = listElement.find(settings.childSelector);
     }
 
-    if (typeof settings.pagerSelector!="undefined") {
+    if (typeof settings.pagerSelector != "undefined") {
         pager = $(settings.pagerSelector);
     }
 
     var numItems = children.size();
     //alert(numItems);
-    var numPages = Math.ceil(numItems/perPage);
+    var numPages = Math.ceil(numItems / perPage);
 
     var curr = 0;
-    pager.data("curr",curr);
+    pager.data("curr", curr);
 
-    if (settings.showPrevNext){
+    if (settings.showPrevNext) {
         $('<li><a href="#" class="prev_link">«</a></li>').appendTo(pager);
     }
 
-    while(numPages > curr && (settings.hidePageNumbers==false)){
-        $('<li><a href="#" class="page_link">'+(curr+1)+'</a></li>').appendTo(pager);
+    while (numPages > curr && (settings.hidePageNumbers == false)) {
+        $('<li><a href="#" class="page_link">' + (curr + 1) + '</a></li>').appendTo(pager);
         curr++;
     }
 
-    if (settings.numbersPerPage>1) {
+    if (settings.numbersPerPage > 1) {
         $('.page_link').hide();
         $('.page_link').slice(pager.data("curr"), settings.numbersPerPage).show();
     }
 
-    if (settings.showPrevNext){
+    if (settings.showPrevNext) {
         $('<li><a href="#" class="next_link">»</a></li>').appendTo(pager);
     }
 
     pager.find('.page_link:first').addClass('active');
     pager.find('.prev_link').hide();
-    if (numPages<=1) {
+    if (numPages <= 1) {
         pager.find('.next_link').hide();
     }
     pager.children().eq(0).addClass("active");
@@ -120,60 +118,58 @@ $.fn.pageMe = function(opts){
     children.hide();
     children.slice(0, perPage).show();
 
-    pager.find('li .page_link').click(function(){
-        var clickedPage = $(this).html().valueOf()-1;
-        goTo(clickedPage,perPage);
+    pager.find('li .page_link').click(function() {
+        var clickedPage = $(this).html().valueOf() - 1;
+        goTo(clickedPage, perPage);
         return false;
     });
-    pager.find('li .prev_link').click(function(){
+    pager.find('li .prev_link').click(function() {
         previous();
         return false;
     });
-    pager.find('li .next_link').click(function(){
+    pager.find('li .next_link').click(function() {
         next();
         return false;
     });
 
 
-    function previous(){
+    function previous() {
         var goToPage = parseInt(pager.data("curr")) - 1;
         goTo(goToPage);
     }
 
-    function next(){
+    function next() {
         goToPage = parseInt(pager.data("curr")) + 1;
         goTo(goToPage);
     }
 
-    function goTo(page){
+    function goTo(page) {
         var startAt = page * perPage,
             endOn = startAt + perPage;
 
-        children.css('display','none').slice(startAt, endOn).show();
+        children.css('display', 'none').slice(startAt, endOn).show();
 
-        if (page>=1) {
+        if (page >= 1) {
             pager.find('.prev_link').show();
-        }
-        else {
+        } else {
             pager.find('.prev_link').hide();
         }
 
-        if (page<(numPages-1)) {
+        if (page < (numPages - 1)) {
             pager.find('.next_link').show();
-        }
-        else {
+        } else {
             pager.find('.next_link').hide();
         }
 
-        pager.data("curr",page);
+        pager.data("curr", page);
 
-        if (settings.numbersPerPage>1) {
+        if (settings.numbersPerPage > 1) {
             $('.page_link').hide();
-            $('.page_link').slice(page, settings.numbersPerPage+page).show();
+            $('.page_link').slice(page, settings.numbersPerPage + page).show();
         }
 
         pager.children().removeClass("active");
-        pager.children().eq(page+1).addClass("active");
+        pager.children().eq(page + 1).addClass("active");
 
     }
 };
@@ -187,25 +183,22 @@ var tagOrComment = new RegExp(
     // Comment body.
     + '!--(?:(?:-*[^->])*--+|-?)'
     // Special "raw text" elements whose content should be elided.
-    + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
-    + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+    + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*' + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
     // Regular name
-    + '|/?[a-z]'
-    + tagBody
-    + ')>',
+    + '|/?[a-z]' + tagBody + ')>',
     'gi');
 
 function sanitize(html) {
     var oldHtml;
-    if(typeof html == 'string' || html instanceof String) {        
+    if (typeof html == 'string' || html instanceof String) {
         do {
-        oldHtml = html;
-        html = html.replace(tagOrComment, '');
+            oldHtml = html;
+            html = html.replace(tagOrComment, '');
         } while (html !== oldHtml);
         return html.replace(/</g, '&lt;');
     }
     return html;
-}    
+}
 
 // fix for vibrate issue on navfix
 /*function scrollVibrateFix() {

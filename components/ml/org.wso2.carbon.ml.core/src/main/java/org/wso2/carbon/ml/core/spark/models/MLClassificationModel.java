@@ -41,7 +41,7 @@ public class MLClassificationModel implements Externalizable, PMMLModelContainer
     }
     
     /*
-     * (non-Javadoc)a
+     * (non-Javadoc)
      * 
      * @see java.io.Externalizable#writeExternal(java.io.ObjectOutput)
      */

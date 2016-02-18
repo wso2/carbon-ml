@@ -7,7 +7,7 @@
 | master      | [![Build Status](https://wso2.org/jenkins/job/carbon-ml/badge/icon)](https://wso2.org/jenkins/job/carbon-ml) |
 
 ---
-Latest Released Version v1.0.1
+Latest Released Version v1.1.0
 
 This repository contains the source code of modules belong to WSO2 Machine Learner product. Some of these modules are used by other products of the platform too.
 

@@ -26,6 +26,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A utility class to store summary information of a Clustering Model
+ */
 public class ClusterModelSummary implements ModelSummary, Serializable {
 
     private static final long serialVersionUID = -2367643384961727119L;

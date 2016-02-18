@@ -16,13 +16,17 @@
 package org.wso2.carbon.ml.rest.api;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -198,28 +202,13 @@ public class ModelApiV11 extends MLRestAPI {
                     tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
-        } catch (MLModelPublisherException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
+        } catch (MLModelPublisherException | MLModelHandlerException | MLPmmlExportException e) {
+            String msg = MLUtils.getErrorMsg(
+                    String.format("Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .",
+                            modelId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
-        } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-        } catch (MLPmmlExportException e) {
-            String msg = MLUtils.getErrorMsg(String.format(
-                    "Error occurred while publishing the pmml model [id] %s of tenant [id] %s and [user] %s .", modelId,
-                    tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
-
         }
     }
 
@@ -300,10 +289,11 @@ public class ModelApiV11 extends MLRestAPI {
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
                 String msg = String.format(
-                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .",
+                        "No file found to predict with model [id] %s of tenant [id] %s and [user] %s .",
                         modelId, tenantId, userName);
                 logger.error(msg);
-                return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg))
+                        .type(MediaType.APPLICATION_JSON).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
                     columnHeader, inputStream, percentile, skipDecoding);
@@ -319,7 +309,7 @@ public class ModelApiV11 extends MLRestAPI {
             };
             return Response
                     .ok(stream)
-                    .header("Content-disposition",
+                    .header("Content-disposition", 
                             "attachment; filename=Predictions_" + modelId + "_" + MLUtils.getDate() + MLConstants.CSV)
                     .build();
         } catch (IOException e) {
@@ -327,14 +317,15 @@ public class ModelApiV11 extends MLRestAPI {
                     "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s.",
                     modelId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage()))
+                    .type(MediaType.APPLICATION_JSON).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
+                    .type(MediaType.APPLICATION_JSON).build();
         }
     }
 

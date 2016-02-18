@@ -5,7 +5,6 @@
     var authEncoded = request.getParameter("authEncoded");
     var site = require("/site/conf/site.json");
     var carbon = require('carbon');
-
     var message = "";
     var statusCode = 200;
     response.contentType = 'application/json';
@@ -18,27 +17,21 @@
             var MultitenantUtils = Packages.org.wso2.carbon.utils.multitenancy.MultitenantUtils;
             var tenantDomain = MultitenantUtils.getTenantDomain(username);
             var tenantId = carbon.server.tenantId({'domain': tenantDomain});
-
             session.put("logged.user", username);
             session.put("tenantId", tenantId);
             session.put("authEncoded", authEncoded);
-
-            message = 'login success';            
-            
+            message = 'login success';
         } else {
             message = 'Login failed, please check your user name and password.';
             statusCode = 401;
         }   
         
     } catch(e) {
-
         var errorMessage = "An error occured while authenticating user: " + username+ " error message: "+e.message;        
         log.error(errorMessage);
-
         message = "An error occured while authenticating user " + username + ".";
         statusCode = 500;
-        
-    } finally{
+    } finally {
         response.status = statusCode;
         response.content = { status: message};
     }

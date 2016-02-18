@@ -129,11 +129,17 @@ public class MLAlgorithm {
         this.dimensionality = dimensionality;
     }
 
+    /**
+     * @return Returns true if pmml supported, false otherwise
+     */
     @XmlElement(name = "isPMMLExportable")
     public boolean getPmmlExportable() {
         return pmmlExportable;
     }
 
+    /**
+     * @param status Sets pmml exportability
+     */
     public void setPmmlExportable(boolean status) {
         this.pmmlExportable = status;
     }

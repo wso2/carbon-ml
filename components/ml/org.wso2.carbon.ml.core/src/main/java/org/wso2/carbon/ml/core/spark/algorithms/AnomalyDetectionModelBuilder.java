@@ -400,9 +400,9 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
 
             for (String normalDataPrediction : normalTestDataPredictions) {
                 if (normalDataPrediction.equals(newNormalLabel)) {
-                    truePositive++;
+                    trueNegative++;
                 } else {
-                    falseNegative++;
+                    falsePositive++;
                 }
             }
 
@@ -410,9 +410,9 @@ public class AnomalyDetectionModelBuilder extends MLModelBuilder {
 
             for (String anomalyDataPrediction : anomalyTestDataPredictions) {
                 if (anomalyDataPrediction.equals(newAnomalyLabel)) {
-                    trueNegative++;
+                    truePositive++;
                 } else {
-                    falsePositive++;
+                    falseNegative++;
                 }
             }
 

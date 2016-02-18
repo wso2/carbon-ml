@@ -1,549 +1,539 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WSO2 Machine Learner</title>
-    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />    
-    <link href="../../css/bootstrap.css" rel="stylesheet">
-    <link href="../../css/custom.css" rel="stylesheet">
-    <link href="../../css/custom-theme.css" rel="stylesheet">
-    <link href="../../css/font-wso2.css" rel="stylesheet">
-    <script src="../../js/respond.min.js"></script> 
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WSO2 Machine Learner</title>
+        <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />    
+        <link href="../../css/bootstrap.css" rel="stylesheet">
+        <link href="../../css/custom.css" rel="stylesheet">
+        <link href="../../css/custom-theme.css" rel="stylesheet">
+        <link href="../../css/font-wso2.css" rel="stylesheet">
+        <script src="../../js/respond.min.js"></script> 
 
-    <%
-include("../../includes/tenantAware.jag");
-%>
-</head>
+        <%
+            include("../../includes/tenantAware.jag");
+        %>
+    </head>
 
-<body>
+    <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+        <div class="container col-lg-12 col-md-12 col-sm-12">
 
-<!-- header -->
-<header>
-<div class="row wr-global-header">
-    <div class="col-sm-8 app-logo">
-        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-    </div>
-    <div class="col-sm-4">
-        <div class="wr-auth pull-right">
-            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-				<div class="dropdown-menu">
-					<div class="cu-arrow"></div>
-					<div class="dropdown-menu-content">
-						<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
-					</div>
-				</div>			
-			</div>
-		</div>
-	</div>
-</header>
-<!-- /header -->
+            <!-- header -->
+            <header>
+                <div class="row wr-global-header">
+                    <div class="col-sm-8 app-logo">
+                        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="wr-auth pull-right">
+                            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                            <div class="dropdown-menu">
+                                <div class="cu-arrow"></div>
+                                <div class="dropdown-menu-content">
+                                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+                                </div>
+                            </div>          
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- /header -->
 
-        <!-- secondary header - app bar -->
-		<div class="navbar-wrapper">
-		    <div id="nav" class="row wr-app-bar">
-		        <div class="col-md-9 wr-action-container">
+            <!-- secondary header - app bar -->
+            <div class="navbar-wrapper">
+                <div id="nav" class="row wr-app-bar">
+                    <div class="col-md-9 wr-action-container">
 
-		            <div class="wr-asset-type-switcher">
-		                <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-		                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
-		                <span class="btn-asset"></span>
-		                </a>
-		            </div>
+                        <div class="wr-asset-type-switcher">
+                            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                                <!--a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus"-->
+                                <span class="btn-asset"></span>
+                            </a>
+                        </div>
 
-			        <div class="wr-project">
-						<span class="title">DATASETS \ </span>
-					</div>
+                        <div class="wr-project">
+                            <span class="title">DATASETS \ </span>
+                        </div>
 
-		        </div>
+                    </div>
 
-		        <div class="col-md-3">
-		            <div class="wr-secondary-links pull-right">
-		                <!-- empty -->
-		                <!--a href="#" class="cu-btn btn-prev">Previous</a-->
-		                <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
-		            </div>
-		        </div>
-		    </div>
-		</div>        
-        <!-- secondary header - app bar -->
+                    <div class="col-md-3">
+                        <div class="wr-secondary-links pull-right">
+                            <!-- empty -->
+                            <!--a href="#" class="cu-btn btn-prev">Previous</a-->
+                            <!--a href="#" class="cu-btn-reverse btn-next">Next</a-->
+                        </div>
+                    </div>
+                </div>
+            </div>        
+            <!-- secondary header - app bar -->
 
 
-<!-- content/body -->
-<!--div class="row">
-	<div class="col-lg-12 wr-secondary-bar">
-		
-		<!-- Wizard -->
-	    <!--ul class="nav nav-pills nav-wizard">
-	        <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>XXXX</a><div class="nav-arrow"></div></li>
-	        <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Build</a><div class="nav-arrow"></div></li>
-	    </ul-->
+            <!-- content/body -->
+            <!--div class="row">
+            <div class="col-lg-12 wr-secondary-bar">
+            
+            <!-- Wizard -->
+            <!--ul class="nav nav-pills nav-wizard">
+                <li class="active"><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Analysis</a><div class="nav-arrow"></div></li>
+                <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Explore</a><div class="nav-arrow"></div></li>
+                <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Pre-Process</a><div class="nav-arrow"></div></li>
+                <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Algorithm</a><div class="nav-arrow"></div></li>
+                <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>XXXX</a><div class="nav-arrow"></div></li>
+                <li><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Build</a><div class="nav-arrow"></div></li>
+            </ul-->
 
-		
-	<!--/div-->
-<!--/div-->
-<div class="row">
-	<div class="col-md-12">
-		
+            
+            <!--/div-->
+            <!--/div-->
+            <div class="row">
+                <div class="col-md-12">
 
-		<!-- content -->
-		<div class="container col-md-12 col-centered wr-content">
 
-			<div id="notification-area"></div>
-			<div class="ctrl-info-panel col-md-12 col-centered">
-				<p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset"><span>Create Dataset</span></a></p>
-			</div>
-			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
+                    <!-- content -->
+                    <div class="container col-md-12 col-centered wr-content">
 
-            <!-- delete dataset popup -->
-            <div class="popup-content" data-operation="delete-dataset">
-            	<div  id="back-delete-dataset" align="left">
-                            <span style="cursor:pointer"class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
-                                <i class="fw fw-left-arrow fw-stack-1x"></i>
-                            </span>
-                            <span style="cursor:pointer">GO BACK</span>
-                 </div>    
-                <div class="content">Are you sure you want to delete this dataset?</div>
-                <div class="buttons">
-                    <a id="delete-dataset-yes" href="#" class="btn-opr-default">Yes</a>
-                    <a id="delete-dataset-no" href="#" class="btn-opr-cancel">No</a>
+                        <div id="notification-area"></div>
+                        <div class="ctrl-info-panel col-md-12 col-centered">
+                            <p><a href="createdataset.jag" id="create-dataset" class="cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset"><span>Create Dataset</span></a></p>
+                        </div>
+                        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
+
+                        <!-- delete dataset popup -->
+                        <div class="popup-content" data-operation="delete-dataset">
+                            <div id="back-delete-dataset" align="left">
+                                <span style="cursor:pointer"class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                                </span>
+                                <span style="cursor:pointer">GO BACK</span>
+                            </div>    
+                            <div class="content">Are you sure you want to delete this dataset?</div>
+                            <div class="buttons">
+                                <a id="delete-dataset-yes" href="#" class="btn-opr-default">Yes</a>
+                                <a id="delete-dataset-no" href="#" class="btn-opr-cancel">No</a>
+                            </div>
+                        </div>
+                        <!-- /delete dataset popup -->
+
+                        <!-- delete dataset version popup -->
+                        <div class="popup-content" data-operation="delete-dataset-version">
+                            <div id="back-delete-dataset-version" align="left">
+                                <span style="cursor:pointer"class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-left-arrow fw-stack-1x"></i>
+                                </span>
+                                <span style="cursor:pointer">GO BACK</span>
+                            </div>
+                            <div class="content">Are you sure you want to delete this dataset version?</div>
+                            <div class="buttons">
+                                <a id="delete-version-yes" href="#" class="btn-opr-default">Yes</a>
+                                <a id="delete-version-no" href="#" class="btn-opr-cancel">No</a>
+                            </div>
+                        </div>
+                        <!-- /delete dataset version popup -->            
+                    </div>
+                    <!-- /content -->
                 </div>
             </div>
-            <!-- /delete dataset popup -->
+            <!-- /content/body -->
+        </div>
 
-            <!-- delete dataset version popup -->
-            <div class="popup-content" data-operation="delete-dataset-version">
-           		 <div  id="back-delete-dataset-version" align="left">
-                            <span style="cursor:pointer"class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
-                                <i class="fw fw-left-arrow fw-stack-1x"></i>
-                            </span>
-                            <span style="cursor:pointer">GO BACK</span>
-                 </div>
-                <div class="content">Are you sure you want to delete this dataset version?</div>
-                <div class="buttons">
-                    <a id="delete-version-yes" href="#" class="btn-opr-default">Yes</a>
-                    <a id="delete-version-no" href="#" class="btn-opr-cancel">No</a>
-                </div>
+        <!--footer class="footer">
+            <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+        </footer-->
+
+        <div id="content-asset-types" style="display: none">
+            <div>
+                <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
+                <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
             </div>
-            <!-- /delete dataset version popup -->            
+        </div>
 
-		</div>
-		<!-- /content -->
-	</div>
-</div>
-<!-- /content/body -->
+        <!-- modal popup template -->
+        <div class="wr-modalpopup">
+            <div class="modalpopup-content"><!-- dynamic content --></div>
+            <div class="modalpopup-bg"></div>
+        </div>
+        <!-- /modal popup template -->
 
-</div>
-    
-<!--footer class="footer">
-        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
-</footer-->
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/operationsmenu.js"></script>
+        <script src="../../js/wso2.ml.util.js"></script>
 
-<div id="content-asset-types" style="display: none">
-    <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
-        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-    </div>
-</div>
+        <script type="text/javascript">
+            var baseUrl = getBaseUrl(window.location.href);
+            var deleteDatasetId;
+            var deleteVersionId;
 
-<!-- modal popup template -->
-<div class="wr-modalpopup">
-    <div class="modalpopup-content"><!-- dynamic content --></div>
-    <div class="modalpopup-bg"></div>
-</div>
-<!-- /modal popup template -->
+            function buildAccordingHeader(collapseSection, datasetName, datasetVersions, datasetId) {
+                var numVersions = datasetVersions.length;
 
-<script src="../../js/jquery-1.11.1.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/operationsmenu.js"></script>
-<script src="../../js/wso2.ml.util.js"></script>
+                var versionsString = '';
+                if (numVersions == 0) {
+                    versionsString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No versions available';
+                } else if (numVersions == 1) {
+                    versionsString = '<strong>1</strong> version available';
+                } else {
+                    versionsString = '<strong>' + numVersions + '</strong> versions available';
+                }
 
-<script type="text/javascript">
+                var accordingHeader = '<h4 class="panel-title">' +
+                    '<table class="tbl-projects">' +
+                    '<tr>' +
+                    '<td>' +
+                    '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="false" aria-controls="' + collapseSection + '" class="ctrl-exp-col">' +
+                    '<span class="cu-acc-head-title">' + datasetName + '</span>' +
+                    '<span class="cu-acc-head-workflow">' + versionsString + '</span>' +
+                    '</a>' +
+                    '</td>' +
+                    '<td class="c-right">' +
+                    '<div id="accordion-header-action-' + datasetId + '">' +
+                    '<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="' + datasetName + '" data-toggle="tooltip" data-original-title="Create project with this dataset"><span>Create project</span></a>' +
+                    '<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="' + datasetId + '" data-datasetname="' + datasetName + '" data-toggle="tooltip" data-original-title="Explore this dataset"><span>Explore</span></a>' +
+                    '<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="' + datasetId + '" data-toggle="tooltip"><span>Delete Dataset</span></a>' +
+                    '</div>' +
+                    '</td>' +
+                    '</tr>' +
+                    '</table>' +
+                    '</h4>';
+                return accordingHeader;
+            }
 
-var baseUrl = getBaseUrl(window.location.href);
-var deleteDatasetId;
-var deleteVersionId;
+            function version(versionNumbers, datasetName) {
+                var versionHtml = "";
+                for (var i = 0; i < versionNumbers.length; i++) {
+                    var version = sanitize(versionNumbers[i].version);
+                    var status = sanitize(versionNumbers[i].status);
+                    var versionId = sanitize(versionNumbers[i].id);
 
-function buildAccordingHeader(collapseSection, datasetName, datasetVersions, datasetId) {
-	var numVersions = datasetVersions.length;
+                    versionHtml += '<tr>' +
+                        '<td class="c-padd">' +
+                        '<span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span>' +
+                        '<span class="t-proj-workflow" id="' + datasetName + '-' + versionId + '" data-status="' + status + '"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
+                        '</td>' +
+                        '<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip"><span>Delete</span></a></td>' +
+                        '</tr>';
+                }
+                return versionHtml;
+            }
 
-    var versionsString = '';
-    if (numVersions == 0) {
-        versionsString = '<img src="../../images/icons/ico-alert.png" class="ico-align" />No versions available';
-    }
-    else if (numVersions == 1) {
-        versionsString = '<strong>1</strong> version available';
-    }
-    else {
-        versionsString = '<strong>'+numVersions+'</strong> versions available';
-    }	
+            function accordingBody(datasetDescription, versions, datasetName) {
 
-    var accordingHeader = '<h4 class="panel-title">' +
-                          '<table class="tbl-projects">' + 
-				      	  '<tr>' +
-				      		'<td>' +
-						        '<a data-toggle="collapse" data-parent="#accordion" href="#' + collapseSection + '" aria-expanded="false" aria-controls="'+collapseSection+'" class="ctrl-exp-col">'+
-						          	'<span class="cu-acc-head-title">'+ datasetName +'</span>'+
-						          	'<span class="cu-acc-head-workflow">' + versionsString + '</span>'+
-						        '</a>' +	
-						    '</td>'+
-						    '<td class="c-right">' +			        
-						        '<div id="accordion-header-action-' + datasetId + '">' + 
-						        	'<a href="#" id="create-project" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-edit" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Create project with this dataset"><span>Create project</span></a>' +
-						        	'<a href="#" id="explore-dataset" class="cu-reg-btn ' + appendClass(numVersions, datasetVersions) + ' btn-explore" data-datasetid="'+ datasetId +'" data-datasetname="'+ datasetName +'" data-toggle="tooltip" data-original-title="Explore this dataset"><span>Explore</span></a>' +
-									'<a href="#" id="delete-dataset" class="cu-reg-btn btn-delete" data-datasetid="'+ datasetId +'" data-toggle="tooltip"><span>Delete Dataset</span></a>' +
-								'</div>' +
-							'</td>'+
-						'</tr>'+
-					'</table>' +
-					'</h4>';
-	return accordingHeader;
-}
+                var accordingBodyHtml = '<table>' +
+                    '<tr>' +
+                    '<td class="c-padd project-description" valign="top">' + datasetDescription + '</td> ' +
+                    '<td>' +
+                    '<div class="wr-analysis">' +
+                    '<div id="inline-new-notification-area"></div>' +
+                    '<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="A unique version of the dataset"></span></label>' +
+                    '<div class="input-control text">' +
+                    '<table>' +
+                    '<tr>' +
+                    '<td class="f-input-w-md">' +
+                    '<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
+                    '</td>' +
+                    '<td>' +
+                    '<a data-datasetname="' + datasetName + '" data-datasetdescription="' + datasetDescription + '" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset version"><span>Create Version</span></a>' +
+                    '</td>' +
+                    '</tr>' +
+                    '</table>' +
+                    '</div>' +
+                    '</div>' +
+                    '<table class="tbl-project-desc">' +
+                    version(versions, datasetName) +
+                    '</table>' +
+                    '</td>' +
+                    '</tr>' +
+                    '</table>';
 
-function version(versionNumbers, datasetName) {
-	var versionHtml = "";
-    for(var i = 0; i < versionNumbers.length; i++) {
-        var version = sanitize(versionNumbers[i].version);
-        var status = sanitize(versionNumbers[i].status);
-        var versionId = sanitize(versionNumbers[i].id);    	
+                return accordingBodyHtml;
+            }
 
-    	versionHtml +=  '<tr>' +
-			 				'<td class="c-padd">' +
-			 					'<span class="t-proj-workflow"><span class="glyphicon glyphicon-book"></span> ' + version + '</span>' +
-			 					'<span class="t-proj-workflow" id="' + datasetName + '-' + versionId + '" data-status="' + status + '"> &emsp;[ Status: ' + status + ' <img src="../../images/icons/status-' + appendStatusIcon(status) + '.png" /> ]</span>' +
-			 				'</td>' +
-			 				'<td><a href="#" id="delete-dataset-version" class="cu-level2-btn btn-delete-dark" data-versionid="' + versionNumbers[i].id + '" data-toggle="tooltip"><span>Delete</span></a></td>' +
-			 			'</tr>';
-    }
-    return versionHtml;
-}
+            function accordiang(datasets) {
+                var allDatasetsHtml = '';
+                for (var i = 0; i < datasets.length; i++) {
+                    var dataset = datasets[i];
+                    var datasetId = dataset.id;
+                    var datasetName = sanitize(dataset.name);
+                    var datasetDescription = sanitize(dataset.comments);
+                    var datasetVersions = dataset.versions;
 
-function accordingBody(datasetDescription, versions, datasetName) {
+                    var datasetHtml = '<div class="panel panel-default">' +
+                        '<div class="panel-heading" role="tab" id="heading_' + i + '">' +
 
-	var accordingBodyHtml = '<table>' +
-							    '<tr>' +
-								  	'<td class="c-padd project-description" valign="top">' + datasetDescription +'</td> ' +
-								  	'<td>' +
-								  		'<div class="wr-analysis">' +
-								  			'<div id="inline-new-notification-area"></div>' +
-								  			'<label class="input-label">Version<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="A unique version of the dataset"></span></label>' +
-											'<div class="input-control text">' +
-												'<table>' +
-													'<tr>' +
-														'<td class="f-input-w-md">' +
-											    			'<input type="text" value="" class="dataset-version f-input-w-md" placeholder="e.g. 1.0.0"/>' +
-											    		'</td>' +
-											    		'<td>' +
-											    			'<a data-datasetname="'+ datasetName +'" data-datasetdescription="'+ datasetDescription +'" href="#" class="create-version cu-level2-btn btn-add-new-dark" data-toggle="tooltip" data-original-title="Create a new dataset version"><span>Create Version</span></a>'+
-											    		'</td>' +
-											    	'</tr>' +
-											    '</table>' +
-											'</div>' +
-										'</div>' +
-								  		'<table class="tbl-project-desc">'+
-								 			version(versions, datasetName) +					 			
-								 		'</table>' +
-								  	'</td>' +
-							  	'</tr>' +
-							'</table>';
+                        buildAccordingHeader('collapse_' + i, datasetName, datasetVersions, datasetId) +
 
-	return accordingBodyHtml;
-}
+                        '</div>' +
+                        '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
+                        '<div class="panel-body">' +
+                        accordingBody(datasetDescription, datasetVersions, datasetName) +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                    allDatasetsHtml += datasetHtml;
+                }
+                return allDatasetsHtml;
+            }
 
-function accordiang(datasets) {
-    var allDatasetsHtml = '';
-	for(var i=0; i<datasets.length; i++){
-        var dataset = datasets[i];
-        var datasetId = dataset.id;
-        var datasetName = sanitize(dataset.name);
-        var datasetDescription = sanitize(dataset.comments);
-        var datasetVersions = dataset.versions;
+            $(document).ready(function() {
 
-        var datasetHtml = '<div class="panel panel-default">' +
-			    '<div class="panel-heading" role="tab" id="heading_' + i + '">' +
-			      
-			      buildAccordingHeader('collapse_' + i, datasetName, datasetVersions, datasetId) +
-			     
-			    '</div>' +
-			    '<div id="collapse_' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_' + i + '">' +
-			      '<div class="panel-body">' +
-			      accordingBody(datasetDescription, datasetVersions, datasetName) +
-			      '</div>' +
-			    '</div>' +
-			    '</div>';
-	    allDatasetsHtml += datasetHtml;
-	}
-	return allDatasetsHtml;
-}
+                $('[data-toggle="tooltip"]').tooltip();
 
-$( document ).ready(function() {
+                $('#nav').affix({
+                    offset: {
+                        top: $('header').height()
+                    }
+                });
 
-	$('[data-toggle="tooltip"]').tooltip();
+                /*scrollVibrateFix();
+                    
+                $(window).resize(function() {
+                    scrollVibrateFix();
+                });*/
+                // for tooltip
+                $(function() {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
 
-	$('#nav').affix({
-	      offset: {
-	        top: $('header').height()
-	      }
-	});
-    
-    /*scrollVibrateFix();
-    
-    $(window).resize(function() {
-        scrollVibrateFix();
-    });*/
-    // for tooltip
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+                $("[data-toggle=popover]").popover();
 
-    $("[data-toggle=popover]").popover();
+                $(".ctrl-asset-type-switcher").popover({
+                    html: true,
+                    content: function() {
+                        return $('#content-asset-types').html();
+                    }
+                });
 
-    $(".ctrl-asset-type-switcher").popover({
-        html : true, 
-        content: function() {
-          return $('#content-asset-types').html();
-        }
-    });
+                loadDatasets();
 
-    loadDatasets();
+                $('.create-version').on('click', function(e) {
+                    e.preventDefault();
 
-	$('.create-version').on('click', function(e){
-		e.preventDefault();
+                    var datasetVersion = $(this).closest("tr").find('.dataset-version').val();
+                    var notificationArea = $(this).parents().find('#inline-new-notification-area');
+                    if (!isValidDatasetVersion(datasetVersion, notificationArea)) {
+                        return;
+                    }
+                    var datasetName = $(this).data('datasetname');
+                    window.location = baseUrl + '/ml/site/data/createversion.jag?datasetName=' + datasetName + '&datasetVersion=' + datasetVersion;
+                });
+                // events to delete a dataset
+                $(document).on('click', '#delete-dataset', function(e) {
+                    e.preventDefault();
 
-		var datasetVersion = $(this).closest("tr").find('.dataset-version').val();
-        var notificationArea = $(this).parents().find('#inline-new-notification-area');
-        if (!isValidDatasetVersion(datasetVersion, notificationArea)) {
-            return;
-        }
-        var datasetName = $(this).data('datasetname');
-        window.location = baseUrl + '/ml/site/data/createversion.jag?datasetName=' + datasetName + '&datasetVersion=' + datasetVersion;
-	});
-	// events to delete a dataset
-    $(document).on('click', '#delete-dataset', function(e){ 
-        e.preventDefault();
-        
-        deleteDatasetId = $(this).data('datasetid');        
-        operationSelect('delete-dataset');
-    });
-    $(document).on('click', '#delete-dataset-yes', function(e){ 
-        e.preventDefault();
+                    deleteDatasetId = $(this).data('datasetid');
+                    operationSelect('delete-dataset');
+                });
+                $(document).on('click', '#delete-dataset-yes', function(e) {
+                    e.preventDefault();
 
-        deleteDataset(deleteDatasetId);
-        deleteDatasetId = null;
-        hidePopup();
-    });
-    $(document).on('click', '#delete-dataset-no', function(e){ 
-        e.preventDefault();
+                    deleteDataset(deleteDatasetId);
+                    deleteDatasetId = null;
+                    hidePopup();
+                });
+                $(document).on('click', '#delete-dataset-no', function(e) {
+                    e.preventDefault();
 
-        deleteDatasetId = null;
-        hidePopup();
-    });
-	// events to delete a dataset version
-    $(document).on('click', '#delete-dataset-version', function(e){ 
-        e.preventDefault();
-        
-        deleteVersionId = $(this).data('versionid');
-        operationSelect('delete-dataset-version');
-    });
-    $(document).on('click', '#delete-version-yes', function(e){ 
-        e.preventDefault();
+                    deleteDatasetId = null;
+                    hidePopup();
+                });
+                // events to delete a dataset version
+                $(document).on('click', '#delete-dataset-version', function(e) {
+                    e.preventDefault();
 
-        deleteDatasetVersion(deleteVersionId);
-        deleteVersionId = null;
-        hidePopup();
-    });
-    $(document).on('click', '#delete-version-no', function(e){ 
-        e.preventDefault();
+                    deleteVersionId = $(this).data('versionid');
+                    operationSelect('delete-dataset-version');
+                });
+                $(document).on('click', '#delete-version-yes', function(e) {
+                    e.preventDefault();
 
-        deleteVersionId = null;
-        hidePopup();
-    });
-    $(document).on('click','#back-delete-dataset, #back-delete-dataset-version',function(e){
-        	e.preventDefault();
+                    deleteDatasetVersion(deleteVersionId);
+                    deleteVersionId = null;
+                    hidePopup();
+                });
+                $(document).on('click', '#delete-version-no', function(e) {
+                    e.preventDefault();
 
-        	hidePopup();
-    });
+                    deleteVersionId = null;
+                    hidePopup();
+                });
+                $(document).on('click', '#back-delete-dataset, #back-delete-dataset-version', function(e) {
+                    e.preventDefault();
 
-	bindEvents();
-});
+                    hidePopup();
+                });
 
-function bindEvents() {
-	
-	$(document).on('click', '#create-project', function(e){
-		e.preventDefault();
-		var datasetName = $(this).data('datasetname');
-		window.location = baseUrl + '/ml/site/project/create_project.jag?datasetName=' + datasetName + '&fromDatasets=true';
-	});
+                bindEvents();
+            });
 
-	$(document).on('click', '#explore-dataset', function(e){
-		e.preventDefault();
-		var datasetId = $(this).data('datasetid');
-		var datasetName = $(this).data('datasetname');
-		window.location = baseUrl + '/ml/site/data/explore.jag?datasetId=' + datasetId + '&datasetName=' + datasetName;
-	});
-}
+            function bindEvents() {
 
-function loadDatasets() {
-	$.ajax({
-        type : 'GET',
-        url: baseUrl + '/api/datasets/versions',
-        async: false,
-        success : function(res){
-        	if (res.length == 0) {
-        		var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
-        		$('#create-dataset').before(accordionPanelNoDatasets);
-        	}
-        	else {
-        		$('.panel-group').html(accordiang(res));
-        	}
-        },
-        error :  function(res){
-            var errorText = JSON.parse(res.responseText)["exception"];
-	        handleNotification(errorText, '#notification-area', 'warning');
-        }
-	});	
-	// update dataset version statuses
-	updateDatasets();
-}
+                $(document).on('click', '#create-project', function(e) {
+                    e.preventDefault();
+                    var datasetName = $(this).data('datasetname');
+                    window.location = baseUrl + '/ml/site/project/create_project.jag?datasetName=' + datasetName + '&fromDatasets=true';
+                });
 
-// function to update dataset version statuses by polling
-function updateDatasets() {
-	(function poll() {
-	    setTimeout(function() {
-			$.ajax({
-		        type : 'GET',
-		        url: baseUrl + '/api/datasets/versions',
-		        async: false,
-		        success : function(res) {		
-		        	var datasets = res;
-		        	var datasetsInProgress = 0;
-		        	// iterate through dataset versions and update status
-		        	for(var i = 0; i < datasets.length; i++) {		        		
-		        		var versions = datasets[i].versions;
-		        		//var datasetVersions = dataset.versions;
-		        		var datasetName = datasets[i].name;
-		        		var datasetId = datasets[i].id;
-		        		
-		        		for(var j = 0; j < versions.length; j++) {
-		        			var versionId = versions[j].id;
-		        			var newVersionStatus = versions[j].status;
-		        			// count dataset versions in progress
-		        			if(newVersionStatus == "Processing") {
-		        				datasetsInProgress++;
-		        			}
-		        			// create the status element id
-		        			var statusElementId = "#" + datasetName + "-" + versionId;
-		        			// get current status from data attribute of status element
-		        			var currentVersionStatus = $(statusElementId).data("status");
-		        			// update status only if the status has changed
-		        			if(currentVersionStatus != newVersionStatus) {
-			        			var statusElementContent = ' &emsp;[ Status: ' + newVersionStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newVersionStatus) + '.png" /> ]';
-			        			$(statusElementId).html(statusElementContent);      				
-			        			// enable create project and explore links when disabled
-			        			if(newVersionStatus == "Processed") {
-				        			$('#accordion-header-action-' + datasetId + ' > #create-project').attr('class', 'cu-reg-btn btn-edit');			        			
-				        			$('#accordion-header-action-' + datasetId + ' > #explore-dataset').attr('class', 'cu-reg-btn btn-explore');			        			
-			        			}
-		        			}
-		        		}
-		        	}
-		        	// poll only if there are dataset versions which are in progress
-		        	if(datasetsInProgress > 0) {
-		        		poll();
-		        	}		        	
-		        },
-		        error :  function(res){
-		            var errorText = JSON.parse(res.responseText)["exception"];
-			        handleNotification(errorText, '#notification-area', 'warning');
-		        }
-			});
-	    }, 5000);
-	})();	
-}
+                $(document).on('click', '#explore-dataset', function(e) {
+                    e.preventDefault();
+                    var datasetId = $(this).data('datasetid');
+                    var datasetName = $(this).data('datasetname');
+                    window.location = baseUrl + '/ml/site/data/explore.jag?datasetId=' + datasetId + '&datasetName=' + datasetName;
+                });
+            }
 
-function deleteDataset(datasetId) {
-	if(datasetId) {
-	    $.ajax({
-	        type: "DELETE",
-	        url: baseUrl + "/api/datasets/" + datasetId,
-	        success : function(res){
-	            $('.panel-group').empty();
-	            loadDatasets();
-	        },
-	        error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-	            handleNotification(errorText, '#notification-area', 'warning');
-	        }
-	    });		
-	}
-}
+            function loadDatasets() {
+                $.ajax({
+                    type: 'GET',
+                    url: baseUrl + '/api/datasets/versions',
+                    async: false,
+                    success: function(res) {
+                        if (res.length == 0) {
+                            var accordionPanelNoDatasets = '<h2>You do not have any datasets created at the moment.</h2>';
+                            $('#create-dataset').before(accordionPanelNoDatasets);
+                        } else {
+                            $('.panel-group').html(accordiang(res));
+                        }
+                    },
+                    error: function(res) {
+                        var errorText = JSON.parse(res.responseText)["exception"];
+                        handleNotification(errorText, '#notification-area', 'warning');
+                    }
+                });
+                // update dataset version statuses
+                updateDatasets();
+            }
 
-function deleteDatasetVersion(versionId) {
-	if(versionId) {
-		$.ajax({
-	        type: "DELETE",
-	        url: baseUrl + "/api/datasets/versions/" + versionId,
-	        success : function(res){
-	            $('.panel-group').empty();
-	            loadDatasets();
-	        },
-	        error : function(res){
-                var errorText = JSON.parse(res.responseText)["exception"];
-	            handleNotification(errorText, '#notification-area', 'warning');
-	        }
-	    });
-	}    
-}
+            // function to update dataset version statuses by polling
+            function updateDatasets() {
+                (function poll() {
+                    setTimeout(function() {
+                        $.ajax({
+                            type: 'GET',
+                            url: baseUrl + '/api/datasets/versions',
+                            async: false,
+                            success: function(res) {
+                                var datasets = res;
+                                var datasetsInProgress = 0;
+                                // iterate through dataset versions and update status
+                                for (var i = 0; i < datasets.length; i++) {
+                                    var versions = datasets[i].versions;
+                                    //var datasetVersions = dataset.versions;
+                                    var datasetName = datasets[i].name;
+                                    var datasetId = datasets[i].id;
 
-// function to append button disabled CSS class when there are no dataset-versions
-function appendClass(noOfVersions, datasetVersions) {
-    var classAppend = '';
-	// if there are no dataset versions or if the only (one) dataset version is not processed, disable action buttons
-	if( (noOfVersions == '0') || (noOfVersions == '1' && datasetVersions[0].status != 'Processed') ) {
-        classAppend = 'btn-disabled';
-    }
-    return classAppend;
-}
+                                    for (var j = 0; j < versions.length; j++) {
+                                        var versionId = versions[j].id;
+                                        var newVersionStatus = versions[j].status;
+                                        // count dataset versions in progress
+                                        if (newVersionStatus == "Processing") {
+                                            datasetsInProgress++;
+                                        }
+                                        // create the status element id
+                                        var statusElementId = "#" + datasetName + "-" + versionId;
+                                        // get current status from data attribute of status element
+                                        var currentVersionStatus = $(statusElementId).data("status");
+                                        // update status only if the status has changed
+                                        if (currentVersionStatus != newVersionStatus) {
+                                            var statusElementContent = ' &emsp;[ Status: ' + newVersionStatus + ' <img src="../../images/icons/status-' + appendStatusIcon(newVersionStatus) + '.png" /> ]';
+                                            $(statusElementId).html(statusElementContent);
+                                            // enable create project and explore links when disabled
+                                            if (newVersionStatus == "Processed") {
+                                                $('#accordion-header-action-' + datasetId + ' > #create-project').attr('class', 'cu-reg-btn btn-edit');
+                                                $('#accordion-header-action-' + datasetId + ' > #explore-dataset').attr('class', 'cu-reg-btn btn-explore');
+                                            }
+                                        }
+                                    }
+                                }
+                                // poll only if there are dataset versions which are in progress
+                                if (datasetsInProgress > 0) {
+                                    poll();
+                                }
+                            },
+                            error: function(res) {
+                                var errorText = JSON.parse(res.responseText)["exception"];
+                                handleNotification(errorText, '#notification-area', 'warning');
+                            }
+                        });
+                    }, 5000);
+                })();
+            }
 
-// Dataset version input validation
-function isValidDatasetVersion(text, notificationArea) {
-    if (!text || /^(?:(\d+)\.)?(?:(\d+)\.)?(\d+)$/.test(text) == false) {
-        var errorText = 'Not a valid version number.';
-        handleNotification(errorText, notificationArea, 'warning');
-        return false;
-    }
-    if(text.length > 100) {
-        var errorText = 'Version number is too long. Max 100 characters allowed.';
-        handleNotification(errorText, notificationArea, 'warning');
-        return false;
-    }
-    return true;
-}
+            function deleteDataset(datasetId) {
+                if (datasetId) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: baseUrl + "/api/datasets/" + datasetId,
+                        success: function(res) {
+                            $('.panel-group').empty();
+                            loadDatasets();
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                }
+            }
 
-// function to append status icon link
-function appendStatusIcon(modelStatus) {
-    var statusIconAppend = '';
-    if(modelStatus == 'Processing') {
-        statusIconAppend = 'progressing';  
-    }
-    else if(modelStatus == 'Processed') {
-        statusIconAppend = 'completed';  
-    }
-    else if(modelStatus == 'Failed') {
-        statusIconAppend = 'error';  
-    }
-    return statusIconAppend;
-}
+            function deleteDatasetVersion(versionId) {
+                if (versionId) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: baseUrl + "/api/datasets/versions/" + versionId,
+                        success: function(res) {
+                            $('.panel-group').empty();
+                            loadDatasets();
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                }
+            }
 
-</script>
+            // function to append button disabled CSS class when there are no dataset-versions
+            function appendClass(noOfVersions, datasetVersions) {
+                var classAppend = '';
+                // if there are no dataset versions or if the only (one) dataset version is not processed, disable action buttons
+                if ((noOfVersions == '0') || (noOfVersions == '1' && datasetVersions[0].status != 'Processed')) {
+                    classAppend = 'btn-disabled';
+                }
+                return classAppend;
+            }
 
-</body>
+            // Dataset version input validation
+            function isValidDatasetVersion(text, notificationArea) {
+                if (!text || /^(?:(\d+)\.)?(?:(\d+)\.)?(\d+)$/.test(text) == false) {
+                    var errorText = 'Not a valid version number.';
+                    handleNotification(errorText, notificationArea, 'warning');
+                    return false;
+                }
+                if (text.length > 100) {
+                    var errorText = 'Version number is too long. Max 100 characters allowed.';
+                    handleNotification(errorText, notificationArea, 'warning');
+                    return false;
+                }
+                return true;
+            }
+
+            // function to append status icon link
+            function appendStatusIcon(modelStatus) {
+                var statusIconAppend = '';
+                if (modelStatus == 'Processing') {
+                    statusIconAppend = 'progressing';
+                } else if (modelStatus == 'Processed') {
+                    statusIconAppend = 'completed';
+                } else if (modelStatus == 'Failed') {
+                    statusIconAppend = 'error';
+                }
+                return statusIconAppend;
+            }
+        </script>
+    </body>
 </html>

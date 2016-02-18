@@ -2,23 +2,25 @@
 
 var jagg = jagg || {};
 
-(function () {
+(function() {
     jagg.syncPost = function(url, data, callback, type) {
         return jQuery.ajax({
             type: "POST",
             url: url,
             data: data,
-            async:false,
+            async: false,
             success: callback,
-            dataType:"json"
+            dataType: "json"
         });
     };
 
-    jagg.isSessionOut=function(){
-        var loggedOut=false;
-        jagg.syncPost("../../session/sessionCheck.jag", { action:"sessionCheck" },
-            function (result) {
-                if(result!=null){
+    jagg.isSessionOut = function() {
+        var loggedOut = false;
+        jagg.syncPost("../../session/sessionCheck.jag", {
+                action: "sessionCheck"
+            },
+            function(result) {
+                if (result != null) {
                     if (result.message == "sessionOut") {
                         loggedOut = true;
                     }
@@ -27,8 +29,8 @@ var jagg = jagg || {};
         return loggedOut;
     };
 
-    jagg.sessionAwareJs=function() {
-        if(jagg.isSessionOut()) {
+    jagg.sessionAwareJs = function() {
+        if (jagg.isSessionOut()) {
             window.location.href = "../home/login.jag";
         }
     };

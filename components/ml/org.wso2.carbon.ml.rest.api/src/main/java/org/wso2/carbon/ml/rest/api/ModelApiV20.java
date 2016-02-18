@@ -16,14 +16,19 @@
 package org.wso2.carbon.ml.rest.api;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
+import com.owlike.genson.Genson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
@@ -38,8 +43,10 @@ import org.wso2.carbon.ml.commons.domain.ModelSummary;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.exceptions.MLModelPublisherException;
-import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
 import org.wso2.carbon.ml.core.impl.MLModelHandler;
+import org.wso2.carbon.ml.commons.domain.config.MLAlgorithm;
+import org.wso2.carbon.ml.core.exceptions.MLPmmlExportException;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 import org.wso2.carbon.ml.rest.api.model.MLResponseBean;
@@ -48,12 +55,12 @@ import org.wso2.carbon.ml.rest.api.model.MLResponseBean;
  * This class is to handle REST verbs GET , POST and DELETE.
  */
 @Path("/models")
-public class ModelApiV10 extends MLRestAPI {
+public class ModelApiV20 extends MLRestAPI {
 
-    private static final Log logger = LogFactory.getLog(ModelApiV10.class);
+    private static final Log logger = LogFactory.getLog(ModelApiV20.class);
     private MLModelHandler mlModelHandler;
 
-    public ModelApiV10() {
+    public ModelApiV20() {
         mlModelHandler = new MLModelHandler();
     }
 
@@ -64,8 +71,8 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Create a new Model.
-     * @param model {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
-     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
+     * @param model {@link MLModelData} object
+     * @return JSON of {@link MLModelData} object
      */
     @POST
     @Produces("application/json")
@@ -82,7 +89,18 @@ public class ModelApiV10 extends MLRestAPI {
             model.setTenantId(tenantId);
             model.setUserName(userName);
             MLModelData insertedModel = mlModelHandler.createModel(model);
-            return Response.ok(insertedModel).build();
+
+            //hide null json fields in response
+            String[] fieldsToHide = { MLConstants.ML_MODEL_DATA_ID, MLConstants.ML_MODEL_DATA_CREATED_TIME,
+                    MLConstants.ML_MODEL_DATA_DATASET_VERSION, MLConstants.ML_MODEL_DATA_ERROR,
+                    MLConstants.ML_MODEL_DATA_MODEL_SUMMARY };
+            Genson.Builder builder = new Genson.Builder();
+            for (int i = 0; i < fieldsToHide.length; i++) {
+                builder = builder.exclude(fieldsToHide[i], MLModelData.class);
+            }
+            Genson genson = builder.create();
+            String insertedModelJson = genson.serialize(insertedModel);
+            return Response.ok(insertedModelJson).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg("Error occurred while creating a model : " + model, e);
             logger.error(msg, e);
@@ -94,7 +112,7 @@ public class ModelApiV10 extends MLRestAPI {
     /**
      * Create a new model storage
      * @param modelId Unique id of the model
-     * @param storage {@link org.wso2.carbon.ml.commons.domain.MLStorage} object
+     * @param storage {@link MLStorage} object
      */
     @POST
     @Path("/{modelId}/storages")
@@ -152,19 +170,44 @@ public class ModelApiV10 extends MLRestAPI {
     /**
      * Publish the model to ML registry
      * @param modelId Unique id of the model to be published
-     * @return JSON of {@link org.wso2.carbon.ml.rest.api.model.MLResponseBean} containing the published location of the model
+     * @return JSON of {@link MLResponseBean} containing the published location of the model
      */
     @POST
     @Path("/{modelId}/publish")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response publishModel(@PathParam("modelId") long modelId) {
+    public Response publishModel(@PathParam("modelId") long modelId, @QueryParam("mode") String mode) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
+        boolean isPMMLSupported = false;
+
         try {
-            String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId,MLModelHandler.Format.SERIALIZED);
-            return Response.ok(new MLResponseBean(registryPath)).build();
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelId);
+            // check pmml support
+            if(model != null) {
+                final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
+                String algorithmName = generatedModel.getAlgorithmName();
+                List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+                for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
+                    if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmmlExportable()) {
+                        isPMMLSupported = true;
+                        break;
+                    }
+                }
+                if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
+                    String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.PMML);
+                    return Response.ok(new MLResponseBean(registryPath)).build();
+                }
+                else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
+                    String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.SERIALIZED);
+                    return Response.ok(new MLResponseBean(registryPath)).build();
+                } else {
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+                }
+            } else{
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } catch (InvalidRequestException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while publishing the model [id] %s of tenant [id] %s and [user] %s .", modelId,
@@ -183,9 +226,12 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Predict using a file and return as a list of predicted values.
+     *
      * @param modelId Unique id of the model
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param inputStream File input stream generated from the file used for predictions
+     * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predictions
      */
     @POST
@@ -193,7 +239,9 @@ public class ModelApiV10 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-                            @Multipart("file") InputStream inputStream) {
+            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile,
+            @QueryParam("skipDecoding") boolean skipDecoding) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -207,7 +255,8 @@ public class ModelApiV10 extends MLRestAPI {
                 logger.error(msg);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(msg)).build();
             }
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, dataFormat, inputStream,
+                    percentile, skipDecoding);
             return Response.ok(predictions).build();
         } catch (IOException e) {
             String msg = MLUtils.getErrorMsg(String.format(
@@ -216,29 +265,34 @@ public class ModelApiV10 extends MLRestAPI {
             logger.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
         } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(
-                    String.format("Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.",
-                                  modelId, tenantId, userName), e);
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
+                    tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                           .build();
+                    .build();
         }
     }
 
     /**
      * Predict using a file and return predictions as a CSV.
+     *
      * @param modelId Unique id of the model
      * @param dataFormat Data format of the file (CSV or TSV)
      * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
      * @param inputStream Input stream generated from the file used for predictions
-     * @return A file as a {@link javax.ws.rs.core.StreamingOutput}
+     * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
+     * @return A file as a {@link StreamingOutput}
      */
     @POST
     @Path("/predictionStreams")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response streamingPredict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-                                     @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream) {
+    public Response streamingPredqict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
+            @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
+            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
@@ -247,13 +301,15 @@ public class ModelApiV10 extends MLRestAPI {
             // if it is a file upload, check whether the file is sent
             if (inputStream == null || inputStream.available() == 0) {
                 String msg = String.format(
-                        "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s .",
+                        "No file found to predict with model [id] %s of tenant [id] %s and [user] %s .",
                         modelId, tenantId, userName);
                 logger.error(msg);
-                return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg))
+                        .type(MediaType.APPLICATION_JSON).build();
             }
             final String predictions = mlModelHandler.streamingPredict(tenantId, userName, modelId, dataFormat,
-                    columnHeader, inputStream);
+                    columnHeader, inputStream, percentile, skipDecoding);
+
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
@@ -273,34 +329,40 @@ public class ModelApiV10 extends MLRestAPI {
                     "Error occurred while reading the file for model [id] %s of tenant [id] %s and [user] %s.",
                     modelId, tenantId, userName), e);
             logger.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(e.getMessage()))
+                    .type(MediaType.APPLICATION_JSON).build();
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
                     "Error occurred while predicting from model [id] %s of tenant [id] %s and [user] %s.", modelId,
                     tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                    .build();
+                    .type(MediaType.APPLICATION_JSON).build();
         }
     }
 
     /**
      * Make predictions using a model
+     *
      * @param modelId Unique id of the model
      * @param data List of string arrays containing the feature values used for predictions
+     * @param percentile a threshold value used to identified cluster boundaries
+     * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predicted values
      */
     @POST
     @Path("/{modelId}/predict")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response predict(@PathParam("modelId") long modelId, List<String[]> data) {
+    public Response predict(@PathParam("modelId") long modelId, List<String[]> data,
+            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
+
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
         try {
             long t1 = System.currentTimeMillis();
-            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data);
+            List<?> predictions = mlModelHandler.predict(tenantId, userName, modelId, data, percentile, skipDecoding);
             logger.info(String.format("Prediction from model [id] %s finished in %s seconds.", modelId,
                     (System.currentTimeMillis() - t1) / 1000.0));
             return Response.ok(predictions).build();
@@ -316,32 +378,10 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Get the model data
+     *
      * @param modelName Name of the model
-     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
+     * @return JSON of {@link MLModelData} object
      */
-    @GET
-    @Path("/{modelId}/getRecommendations/{userId}/{noOfProducts}")
-    @Produces("application/json")
-    public Response getRecommendations(@PathParam("modelId") long modelId,
-                                       @PathParam("userId") int userId,
-                                       @PathParam("noOfProducts") int noOfProducts) {
-
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        int tenantId = carbonContext.getTenantId();
-        String userName = carbonContext.getUsername();
-        try {
-            List<?> recommendations =
-                    mlModelHandler.getProductRecommendations(tenantId, userName, modelId, userId, noOfProducts);
-            return Response.ok(recommendations).build();
-        } catch (MLModelHandlerException e) {
-            String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
-                                                     modelId, tenantId, userName), e);
-            logger.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
-                           .build();
-        }
-    }
-
     @GET
     @Path("/{modelName}")
     @Produces("application/json")
@@ -367,7 +407,8 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Get all models
-     * @return JSON array of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
+     *
+     * @return JSON array of {@link MLModelData} objects
      */
     @GET
     @Produces("application/json")
@@ -390,6 +431,7 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Delete a model
+     *
      * @param modelId Unique id of the model
      */
     @DELETE
@@ -417,8 +459,9 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Get the model summary
+     *
      * @param modelId Unique id of the model
-     * @return JSON of {@link org.wso2.carbon.ml.commons.domain.ModelSummary} object
+     * @return JSON of {@link ModelSummary} object
      */
     @GET
     @Path("/{modelId}/summary")
@@ -443,38 +486,132 @@ public class ModelApiV10 extends MLRestAPI {
 
     /**
      * Download the model
-     * @param modelName Name of the model
-     * @return A {@link org.wso2.carbon.ml.commons.domain.MLModel} as a {@link javax.ws.rs.core.StreamingOutput}
+     *
+     * @param modelId Name of the model
+     * @return A {@link MLModel} as a {@link StreamingOutput}
      */
     @GET
-    @Path("/{modelName}/export")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response exportModel(@PathParam("modelName") String modelName) {
-
+    @Path("/{modelId}/export")
+    public Response exportModel(@PathParam("modelId") long modelId, @QueryParam("mode") String mode) {
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();
+        boolean isPMMLSupported = false;
+
         try {
-            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelName);
+            MLModelData model = mlModelHandler.getModel(tenantId, userName, modelId);
+
             if (model != null) {
+                String modelName = model.getName();
                 final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
-                StreamingOutput stream = new StreamingOutput() {
-                    public void write(OutputStream outputStream) throws IOException {
-                        ObjectOutputStream out = new ObjectOutputStream(outputStream);
-                        out.writeObject(generatedModel);
+
+                // check pmml support
+                String algorithmName = generatedModel.getAlgorithmName();
+                List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
+                for (MLAlgorithm mlAlgorithm : mlAlgorithms) {
+                    if (algorithmName.equals(mlAlgorithm.getName()) && mlAlgorithm.getPmmlExportable()) {
+                        isPMMLSupported = true;
+                        break;
                     }
-                };
-                return Response.ok(stream).header("Content-disposition", "attachment; filename=" + modelName).build();
+                }
+
+                if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
+                    final String pmmlModel = mlModelHandler.exportAsPMML(generatedModel);
+                    logger.info(String.format("Successfully exported model [id] %s into pmml format",modelId));
+                    return Response.ok(pmmlModel)
+                            .header("Content-disposition", "attachment; filename=" + modelName + "PMML.xml").build();
+                } else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
+                    StreamingOutput stream = new StreamingOutput() {
+                        public void write(OutputStream outputStream) throws IOException {
+                            ObjectOutputStream out = new ObjectOutputStream(outputStream);
+                            out.writeObject(generatedModel);
+                        }
+                    };
+                    return Response.ok(stream).header("Content-disposition", "attachment; filename=" + modelName)
+                            .build();
+                } else {
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+                }
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (MLModelHandlerException e) {
             String msg = MLUtils.getErrorMsg(
                     String.format("Error occurred while retrieving model [name] %s of tenant [id] %s and [user] %s .",
-                            modelName, tenantId, userName), e);
+                            modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        } catch (MLPmmlExportException e) {
+
+            String msg = MLUtils.getErrorMsg(String.format(
+                    "Error occurred while exporting to pmml model [name] %s of tenant [id] %s and [user] %s .",
+                    modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+
+        }
+    }
+
+    /**
+     * Get a list of recommended products for a given user using the given model.
+     * @param modelId id of the recommendation model to be used.
+     * @param userId id of the user.
+     * @param noOfProducts number of recommendations required.
+     * @return an array of product recommendations. 
+     */
+    @GET
+    @Path("/{modelId}/product-recommendations")
+    @Produces("application/json")
+    public Response getProductRecommendations(@PathParam("modelId") long modelId,
+            @QueryParam("user-id") int userId,
+            @QueryParam("no-of-products") int noOfProducts) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<?> recommendations =
+                    mlModelHandler.getProductRecommendations(tenantId, userName, modelId, userId, noOfProducts);
+            return Response.ok(recommendations).build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
+                    modelId, tenantId, userName), e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();
         }
     }
+
+    /**
+     * Get a list of recommended users for a given product using the given model.
+     * @param modelId id of the recommendation model to be used.
+     * @param productId id of the product.
+     * @param noOfUsers number of recommendations required.
+     * @return an array of user recommendations. 
+     */
+    @GET
+    @Path("/{modelId}/user-recommendations")
+    @Produces("application/json")
+    public Response getUserRecommendations(@PathParam("modelId") long modelId,
+            @QueryParam("product-id") int productId,
+            @QueryParam("no-of-users") int noOfUsers) {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            List<?> recommendations =
+                    mlModelHandler.getUserRecommendations(tenantId, userName, modelId, productId, noOfUsers);
+            return Response.ok(recommendations).build();
+        } catch (MLModelHandlerException e) {
+            String msg = MLUtils.getErrorMsg(String.format("Error occurred while getting recommendations from model [id] %s of tenant [id] %s and [user] %s.",
+                    modelId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
 }

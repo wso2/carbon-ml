@@ -20,28 +20,28 @@
  * Setting-up global variables.
  */
 var modalPopup = '.wr-modalpopup',
-    modalPopupContent = modalPopup + ' .modalpopup-content'
+	modalPopupContent = modalPopup + ' .modalpopup-content'
 
 /*
  * On operation click function.
  * @param selection: Selected operation
  */
-function operationSelect(selection){
-    $(modalPopupContent).html($('.popup-content[data-operation='+selection+']').html());
-    showPopup();
+function operationSelect(selection) {
+	$(modalPopupContent).html($('.popup-content[data-operation=' + selection + ']').html());
+	showPopup();
 }
 
 /*
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
+	$(modalPopup).show();
 }
 
 /*
  * hide popup function.
  */
 function hidePopup() {
-    $(modalPopupContent).html('');
-    $(modalPopup).hide();
+	$(modalPopupContent).html('');
+	$(modalPopup).hide();
 }

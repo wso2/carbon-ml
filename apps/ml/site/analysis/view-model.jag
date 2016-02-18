@@ -1,1302 +1,1270 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WSO2 Machine Learner</title>
-    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
-    <link href="../../css/bootstrap.css" rel="stylesheet">
-    <link href="../../css/custom.css" rel="stylesheet">
-    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="../../css/custom-theme.css" rel="stylesheet">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WSO2 Machine Learner</title>
+        <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+        <link href="../../css/bootstrap.css" rel="stylesheet">
+        <link href="../../css/custom.css" rel="stylesheet">
+        <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+        <link href="../../css/custom-theme.css" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
-    <link rel="stylesheet" type="text/css" href="../../css/data.css">
-    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
-    <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
-    <!-- for threshold slider -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
+        <link rel="stylesheet" type="text/css" href="../../css/data.css">
+        <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+        <link rel="stylesheet" type="text/css" href="../../css/nv.d3.min.css">
+        <!-- for threshold slider -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-    <script src="../../js/respond.min.js"></script>
-    <script src="../../js/d3.v3.min.js"></script>
-    <script src="../../js/d3.js"></script>
-    <script src="../../js/nv.d3.js"></script>
-    <script src="../../js/wso2.ml.graphs.js"></script>
+        <script src="../../js/respond.min.js"></script>
+        <script src="../../js/d3.v3.min.js"></script>
+        <script src="../../js/d3.js"></script>
+        <script src="../../js/nv.d3.js"></script>
+        <script src="../../js/wso2.ml.graphs.js"></script>
 
-    <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/jquery-1.11.1.min.js"></script>
 
-    <%
-include("../../includes/tenantAware.jag");
-%>
+        <%
+            include("../../includes/tenantAware.jag");
+        %>
 
-</head>
+    </head>
 
-<body>
+    <body>
 
-<div class="container col-lg-12 col-md-12 col-sm-12">
+        <div class="container col-lg-12 col-md-12 col-sm-12">
 
-<!-- header -->
-<header>
-<div class="row wr-global-header">
-<div class="col-sm-8 app-logo">
-    <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
-</div>
-<div class="col-sm-4">
-    <div class="wr-auth pull-right">
-        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
-                <div class="dropdown-menu">
-                    <div class="cu-arrow"></div>
-                    <div class="dropdown-menu-content">
-                        <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+            <!-- header -->
+            <header>
+                <div class="row wr-global-header">
+                    <div class="col-sm-8 app-logo">
+                        <a href="../home/home.jag"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2></a>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-<!-- /header -->
-
-<!-- secondary header - app bar -->
-<div class="navbar-wrapper">
-    <div id="nav" class="row wr-app-bar">
-        <div class="col-md-9 wr-action-container">
-            <div class="wr-asset-type-switcher">
-                <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
-                <span class="btn-asset"></span>
-                </a>
-            </div>
-            <div class="wr-project">
-                <span class="title">PROJECTS \ </span><a id="nav-project-anchor" style="color:#f0f0f0"><span id="nav-project"></span></a> <span id="path-separator">\ </span><a id="nav-analysis-anchor" style="color:#f0f0f0"><span id="nav-analysis"></span></a><span id="nav-model"></span>
-            </div>
-
-            <div class="wr-action-btn-bar">
-                <a href="../project/projects.jag" class="cu-btn btn-prev" id="back-link">Back</a>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="wr-secondary-links pull-right">
-                <!-- <a href="#" class="cu-btn btn-prev" id="prev-btn">Previous</a> -->
-                <!-- <a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a> -->
-            </div>
-        </div>
-    </div>
-</div>
-<!-- secondary header - app bar -->
-
-
-<!-- content/body -->
-<div class="row">
-    <div class="col-lg-12 wr-secondary-bar"></div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-
-
-        <!-- content -->
-        <div class="container col-md-12 col-centered wr-content">
-
-            <div id="notification-area"></div>
-            <h1 class="title">Model Summary<span id="model-summary-title"></span></h1>
-
-            <div class="col-md-12 wr-graph-content">
-            <div id="area">
-
-                <div class="wr-graph-element gr03">
-                    <h5>Percentile Value<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip"
-                    data-placement="right" title="The threshold distance value used to identify cluster boundaries in
-                    the model evaluation process."></span>:&nbsp;
-                    <input type="text" name="chance" id="chance" class="text no-border"></h5>
-                        <div id="percentile">
-                        <input type="range" id="myRange" step="1">
-                        <h7 id="rangeValues"></h7>
-                        </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5>Confusion Matrix</h5>
-                    <div class="wr-graph-img">
-                        <div id="confusion-matrix"></div>
-                    </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5>Other Measures</h5>
-                    <div class="wr-graph-img">
-                        <div id="other-measures"></div>
-                    </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5>ROC Graph</h5>
-                    <div class="wr-graph-img">
-                        <div id="roc-graph"></div>
-                    </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5>Feature Importance</h5>
-                    <div class="wr-graph-img">
-                        <div id="weights-chart">
-                            <svg></svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="wr-graph-element gr03">
-                    <h5 id="predicted-actual-residual-title"></h5>
-                    <div class="wr-graph-img">
-                        <div id="predicted-vs-actual">
-                            <div id="predicted-vs-actual-chart"></div>
-                            <br>
-
-                            <div class="sp-quantity">
-                                <div class="sp-minus"> <a class="predicted-actual-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
-                                </div>
-                                <div class="sp-input">
-                                    <input type="text" id="predicted-actual-marker-size-input" class="quntity-input" value="2" disabled/>
-                                </div>
-                                <div class="sp-plus"> <a class="predicted-actual-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="filter-md">
-                                        <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                        <div class="input-control text">
-                                            <select class="form-control" id="predicted-actual-x-features"></select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="filter-md">
-                                        <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                        <div class="input-control text">
-                                            <select class="form-control" id="predicted-actual-y-features"></select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div id="residual">
-                            <div id="residual-plot"></div>
-                            <br>
-
-                            <div class="sp-quantity">
-                                <div class="sp-minus"> <a class="residual-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
-                                </div>
-                                <div class="sp-input">
-                                    <input type="text" id="residual-marker-size-input" class="quntity-input" value="2" disabled/>
-                                </div>
-                                <div class="sp-plus"> <a class="residual-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
-                                </div>
-                            </div>
-
-                            <div class="filter-md">
-                                <label class="input-label-sm">Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                <div class="input-control text">
-                                    <select class="form-control" id="residual-features"></select>
+                    <div class="col-sm-4">
+                        <div class="wr-auth pull-right">
+                            <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+                            <div class="dropdown-menu">
+                                <div class="cu-arrow"></div>
+                                <div class="dropdown-menu-content">
+                                    <a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </header>
+            <!-- /header -->
 
-                <div class="wr-graph-element gr03">
-                    <h5>Cluster Diagram</h5>
-                    <div class="wr-graph-img">
-                            <div id='clusterDiagram'>Loading chart...</div>
+            <!-- secondary header - app bar -->
+            <div class="navbar-wrapper">
+                <div id="nav" class="row wr-app-bar">
+                    <div class="col-md-9 wr-action-container">
+                        <div class="wr-asset-type-switcher">
+                            <a href="#" class="ctrl-asset-type-switcher" data-placement="bottom" data-trigger="focus">
+                                <span class="btn-asset"></span>
+                            </a>
+                        </div>
+                        <div class="wr-project">
+                            <span class="title">PROJECTS \ </span><a id="nav-project-anchor" class="breadcumb-anchor"><span id="nav-project"></span></a> <span id="path-separator">\ </span><a id="nav-analysis-anchor" class="breadcumb-anchor"><span id="nav-analysis"></span></a><span id="nav-model"></span>
+                        </div>
 
-                                    <div class="sp-quantity">
-                                        <div class="sp-minus"> <a class="cluster-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
-                                        </div>
-                                        <div class="sp-input">
-                                            <input type="text" id="cluster-marker-size-input" class="quntity-input" value="2" disabled/>
-                                        </div>
-                                        <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
-                                        </div>
-                                    </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="filter-md">
-                                        <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                        <div class="input-control text">
-                                            <select class="form-control" id="cluster-independent"></select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="filter-md">
-                                        <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
-                                        <div class="input-control text">
-                                            <select class="form-control" id="cluster-dependent"></select>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="wr-action-btn-bar">
+                            <a href="../project/projects.jag" class="cu-btn btn-prev" id="back-link">Back</a>
                         </div>
                     </div>
+
+                    <div class="col-md-3">
+                        <div class="wr-secondary-links pull-right">
+                            <!-- <a href="#" class="cu-btn btn-prev" id="prev-btn">Previous</a> -->
+                            <!-- <a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- secondary header - app bar -->
+
+
+            <!-- content/body -->
+            <div class="row">
+                <div class="col-lg-12 wr-secondary-bar"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!-- content -->
+                    <div class="container col-md-12 col-centered wr-content">
+
+                        <div id="notification-area"></div>
+                        <h1 class="title">Model Summary<span id="model-summary-title"></span></h1>
+
+                        <div class="col-md-12 wr-graph-content">
+                            <div id="area">
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>Percentile Value<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                                        data-placement="right" title="The threshold distance value used to identify cluster boundaries in
+                                        the model evaluation process."></span>:&nbsp;
+                                        <input type="text" name="chance" id="chance" class="text no-border"/>
+                                    </h5>
+                                    <div id="percentile">
+                                        <input type="range" id="myRange" step="1"/>
+                                        <h7 id="rangeValues"></h7>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>Confusion Matrix</h5>
+                                    <div class="wr-graph-img">
+                                        <div id="confusion-matrix"></div>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>Other Measures</h5>
+                                    <div class="wr-graph-img">
+                                        <div id="other-measures"></div>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>ROC Graph</h5>
+                                    <div class="wr-graph-img">
+                                        <div id="roc-graph"></div>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>Feature Importance</h5>
+                                    <div class="wr-graph-img">
+                                        <div id="weights-chart">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5 id="predicted-actual-residual-title"></h5>
+                                    <div class="wr-graph-img">
+                                        <div id="predicted-vs-actual">
+                                            <div id="predicted-vs-actual-chart"></div>
+                                            <br>
+
+                                            <div class="sp-quantity">
+                                                <div class="sp-minus"> <a class="predicted-actual-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+                                                </div>
+                                                <div class="sp-input">
+                                                    <input type="text" id="predicted-actual-marker-size-input" class="quntity-input" value="2" disabled/>
+                                                </div>
+                                                <div class="sp-plus"> <a class="predicted-actual-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="filter-md">
+                                                        <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                                        <div class="input-control text">
+                                                            <select class="form-control" id="predicted-actual-x-features"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="filter-md">
+                                                        <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                                        <div class="input-control text">
+                                                            <select class="form-control" id="predicted-actual-y-features"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div id="residual">
+                                            <div id="residual-plot"></div>
+                                            <br>
+
+                                            <div class="sp-quantity">
+                                                <div class="sp-minus"> <a class="residual-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+                                                </div>
+                                                <div class="sp-input">
+                                                    <input type="text" id="residual-marker-size-input" class="quntity-input" value="2" disabled/>
+                                                </div>
+                                                <div class="sp-plus"> <a class="residual-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+                                                </div>
+                                            </div>
+
+                                            <div class="filter-md">
+                                                <label class="input-label-sm">Feature<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                                <div class="input-control text">
+                                                    <select class="form-control" id="residual-features"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="wr-graph-element gr03">
+                                    <h5>Cluster Diagram</h5>
+                                    <div class="wr-graph-img">
+                                        <div id='clusterDiagram'>Loading chart...</div>
+
+                                        <div class="sp-quantity">
+                                            <div class="sp-minus"> <a class="cluster-marker-size" data-operator="-" href="#"><span class="glyphicon glyphicon-minus"></span></a>
+                                            </div>
+                                            <div class="sp-input">
+                                                <input type="text" id="cluster-marker-size-input" class="quntity-input" value="2" disabled/>
+                                            </div>
+                                            <div class="sp-plus"> <a class="cluster-marker-size" data-operator="+" href="#"><span class="glyphicon glyphicon-plus"></span></a>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="filter-md">
+                                                    <label class="input-label-sm">X-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                                    <div class="input-control text">
+                                                        <select class="form-control" id="cluster-independent"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="filter-md">
+                                                    <label class="input-label-sm">Y-Axis<span class="help-tip glyphicon glyphicon-question-sign"></span></label>
+                                                    <div class="input-control text">
+                                                        <select class="form-control" id="cluster-dependent"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="wr-graph-element gr03">
+                                            <h5>Deep Network Visualization</h5>
+                                            <div class="wr-graph-img">
+                                                <div id="dl-network"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- /content -->
+
+                    </div>
+                </div>
+                 <!-- /content/body -->
             </div>
 
-	    <div class="row">
-		<div class="col-md-12">
-            		<div class="wr-graph-element gr03">
-                    	<h5>Deep Network Visualization</h5>
-		            	<div class="wr-graph-img">
-		                	<div id="dl-network"></div>
-		            	</div>
-            		</div>
-            	</div>
+
+            <!--footer class="footer">
+                <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
+            </footer-->
+
+            <div id="content-asset-types" style="display: none">
+                <div>
+                    <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
+                    <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
+                </div>
             </div>
-            </div>
 
-        </div>
-        <!-- /content -->
+            <script src="../../js/d3.v3.min.js" charset="utf-8"></script>
+            <script src="../../js/wso2.ml.util.js"></script>
+            <script src="../../js/bootstrap.min.js"></script>
+            <script src="../../js/jquery.dataTables.js"></script>
 
-    </div>
-</div>
-<!-- /content/body -->
+            <script src="../../js/d3.parsets.js"></script>
+            <script src="../../js/figue.js"></script>
 
-</div>
+            <script type="text/javascript">
+                var serverUrl = window.location.origin;
+                var datasetId = getParameterByName('datasetId');
+                var projectId = getParameterByName('projectId');
+                var projectName = getParameterByName('projectName');
+                var analysisName = getParameterByName('analysisName');
+                var analysisId = getParameterByName('analysisId');
+                var modelName = getParameterByName('modelName');
+                var modelId = getParameterByName('modelId');
+                var fromCompare = getParameterByName('fromCompare');
+                var predictedVsActuals;
+                var numericalFeatureNames;
+                var responseVariable;
 
+                var algorithm;
+                var numOfClasses;
+                var testResultDataPointsSample;
+                var features;
+                var rank;
 
-<!--footer class="footer">
-        <p>&copy; 2014 WSO2 Inc. All Rights Reserved</p>
-</footer-->
+                // variables for chart marker sizes
+                var predictedActualMarkerSize;
+                var residualMarkerSize;
+                var clusterMarkerSize;
+                // variables for predicted vs. actual chart (for redrawing on marker size change)
+                var predictedVsActualData = [];
+                var xAxisFeatureName;
+                var yAxisFeatureName;
+                // variables for residual chart (for redrawing on marker size change)
+                var residualData = [];
+                var featureName;
+                // variables for cluster diagram
+                var clusterData;
 
-<div id="content-asset-types" style="display: none">
-    <div>
-        <a class="ast-type-item" href="../data/datasets.jag"><img src="../../images/icons/ico-datasets.png" /><span>Datasets</span></a>
-        <a class="ast-type-item" href="../project/projects.jag"><img src="../../images/icons/ico-projects.png" /><span>Projects</span></a>
-    </div>
-</div>
-
-<script src="../../js/d3.v3.min.js" charset="utf-8"></script>
-<script src="../../js/wso2.ml.util.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/jquery.dataTables.js"></script>
-
-<script src="../../js/d3.parsets.js"></script>
-<script src="../../js/figue.js"></script>
-
-<script type="text/javascript">
-
-var serverUrl = window.location.origin;
-var datasetId = getParameterByName('datasetId');
-var projectId = getParameterByName('projectId');
-var projectName = getParameterByName('projectName');
-var analysisName = getParameterByName('analysisName');
-var analysisId = getParameterByName('analysisId');
-var modelName = getParameterByName('modelName');
-var modelId = getParameterByName('modelId');
-var fromCompare = getParameterByName('fromCompare');
-var predictedVsActuals;
-var numericalFeatureNames;
-var responseVariable;
-
-var algorithm;
-var numOfClasses;
-var testResultDataPointsSample;
-var features;
-var rank;
-
-// variables for chart marker sizes
-var predictedActualMarkerSize;
-var residualMarkerSize;
-var clusterMarkerSize;
-// variables for predicted vs. actual chart (for redrawing on marker size change)
-var predictedVsActualData = [];
-var xAxisFeatureName;
-var yAxisFeatureName;
-// variables for residual chart (for redrawing on marker size change)
-var residualData = [];
-var featureName;
-// variables for cluster diagram
-var clusterData;
-
-// redraw charts upon changes in selections
-$(document).on('change','select[id="predicted-actual-x-features"], select[id="predicted-actual-y-features"]',function() {
-    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
-});
-$(document).on('change','select[id="residual-features"]',function() {
-    drawResidualPlot(testResultDataPointsSample);
-});
-$(document).on('change','select[id="cluster-independent"], select[id="cluster-dependent"]',function() {
-    drawClusterDiagram();
-});
-
-$( document ).ready(function() {
-
-    $('#nav').affix({
-          offset: {
-            top: $('header').height()
-          }
-    });
-
-    // for tooltip
-    $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-    })
-
-    $("[data-toggle=popover]").popover();
-
-    if( fromCompare == 'true'){
-         $("#nav-analysis-anchor").attr('href','../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId);
-    }
-    else{
-         $("#nav-analysis-anchor").attr('href','analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName);
-    }
-
-    $('#nav-project-anchor').attr('href','../project/projects.jag?projectName='+projectName);
-
-    /*scrollVibrateFix();
-
-    $(window).resize(function() {
-        scrollVibrateFix();
-    });*/
-
-    $("[data-toggle=popover]").popover();
-
-    $(".ctrl-asset-type-switcher").popover({
-        html : true,
-        content: function() {
-            return $('#content-asset-types').html();
-        }
-    });
-
-    predictedActualMarkerSize = $('#predicted-actual-marker-size-input').val();
-    residualMarkerSize = $('#residual-marker-size-input').val();
-    clusterMarkerSize = $('#cluster-marker-size-input').val();
-
-    // get numerical feature names
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/filteredFeatures?featureType=NUMERICAL",
-        async: false,
-        success : function(res){
-            numericalFeatureNames = res;
-        },
-        error : function(res){
-                var errorText = res.responseText
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
-    });
-
-    // get response variable
-    $.ajax({
-        type: "GET",
-        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
-        async: false,
-        dataType: "text",
-        success : function(res){
-            responseVariable = res;
-        },
-        error : function(res){
-                var errorText = res.responseText
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
-    });
-
-    // put path in application navigator
-    $('#nav-project').text(projectName);
-    $('#nav-analysis').text(analysisName);
-    $('#nav-model').text(" \\ "+modelName);
-
-    // get model summary and draw plots
-    $.ajax({
-        type: 'GET',
-        url: serverUrl + "/api/models/" + modelId + "/summary",
-        async : false,
-        success: function(res) {
-
-            algorithm = sanitize(res.algorithm);
-            rank = sanitize(res.rate);
-
-            if (algorithm == 'LOGISTIC_REGRESSION' || algorithm == 'LOGISTIC_REGRESSION_LBFGS' || algorithm == 'SVM') {
-                if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
-                }
-
-                // remove not applicable charts/tables
-                $("#other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
-                $("#residual").remove();
-                // format data and draw ROC graph
-                var rocData  = JSON.parse(res.roc);
-                var auc  = parseFloat(res.auc).toFixed(3);
-                // draw ROC curve only for binary classification models (applies for LOGISTIC_REGRESSION_LBFGS)
-                if(res.multiclassConfusionMatrix.size == 2) {
-                    drawRocGraph(rocData, auc, "#roc-graph");
-                }
-                else {
-                    $("#roc-graph").closest("div.wr-graph-element").remove();
-                }
-                // create data object and draw weights chart
-                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
-                drawWeightsChart(featureImportanceData);
-                // draw confusion matrix
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
-                testResultDataPointsSample = res.testResultDataPointsSample;
-                features = res.features;
-                numOfClasses = res.multiclassConfusionMatrix.size;
-                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
-                if(features.length > 0) {
-                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
-                    $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
-                            value: index,
-                            text : sanitize(feature)
-                        }));
-                    });
-                    $('#predicted-actual-y-features option')[1].selected = true;
-                    // draw predicted vs. actual chart
+                // redraw charts upon changes in selections
+                $(document).on('change', 'select[id="predicted-actual-x-features"], select[id="predicted-actual-y-features"]', function() {
                     drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
-                }
-                else {
-                    var chartType = 'predicted vs. actual chart';
-                    $('#predicted-vs-actual').html(getInfo(chartType));
-                }
-            }
-            else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST_CLASSIFICATION' || algorithm == 'NAIVE_BAYES') {
-                if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
-                }
-                // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
-                $("#residual").remove();
-                // draw confusion matrix
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");                 // draw feature select
-                testResultDataPointsSample = res.testResultDataPointsSample;
-                features = res.features;
-                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
-                if(features.length > 0) {
-                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
-                    $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
-                            value: index,
-                            text : sanitize(feature)
-                        }));
-                    });
-                    $('#predicted-actual-y-features option')[1].selected = true;
-                    // draw predicted vs. actual chart
-                    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
-                }
-                else {
-                    var chartType = 'predicted vs. actual chart';
-                    $('#predicted-vs-actual').html(getInfo(chartType));
-                }
-            }
-            else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {
-                if($.isNumeric(res.meanSquaredError)) {
-                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
-                }
-                // remove not applicable charts/tables
-                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
-                $("#predicted-vs-actual").remove();
-                // create data object and draw weights chart
-                var featureImportanceData = [ {'key':'featureImportanceData', 'values': res.featureImportance}];
-                drawWeightsChart(featureImportanceData);
-                // draw feature select
-                testResultDataPointsSample = res.testResultDataPointsSample;
-                features = res.features;
-                var displayFeatures = getDisplayFeatures(features, numericalFeatureNames);
-                // draw residual plot if at least one numerical feature exists (except response variable)
-                if(displayFeatures.length > 0) {
-                    $('#residual-features').empty();
-                    $.each(displayFeatures,function(index, feature){
-                        $('#residual-features').append($('<option>', {
-                            value: sanitize(feature.value),
-                            text : sanitize(feature.text)
-                        }));
-                    });
-                    // draw residual plot
+                });
+                $(document).on('change', 'select[id="residual-features"]', function() {
                     drawResidualPlot(testResultDataPointsSample);
-                }
-                else {
-                    var chartType = 'residual plot';
-                    $('#residual').html(getInfo(chartType));
-                }
-            }
-            else if (algorithm == 'RANDOM_FOREST_REGRESSION') {
-                // This is separated from other generalized linear models because this does not have all their properties
-                if($.isNumeric(res.meanSquaredError)) {
-                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
-                }
-                // remove not applicable charts/tables
-                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram, #weights-chart").closest("div.wr-graph-element").remove();
-                $("#predicted-vs-actual").remove();
-                // draw feature select
-                testResultDataPointsSample = res.testResultDataPointsSample;
-                features = res.features;
-                var displayFeatures = getDisplayFeatures(features, numericalFeatureNames);
-                // draw residual plot if at least one numerical feature exists (except response variable)
-                if(displayFeatures.length > 0) {
-                    $('#residual-features').empty();
-                    $.each(displayFeatures,function(index, feature){
-                        $('#residual-features').append($('<option>', {
-                            value: sanitize(feature.value),
-                            text : sanitize(feature.text)
-                        }));
+                });
+                $(document).on('change', 'select[id="cluster-independent"], select[id="cluster-dependent"]', function() {
+                    drawClusterDiagram();
+                });
+
+                $(document).ready(function() {
+
+                    $('#nav').affix({
+                        offset: {
+                            top: $('header').height()
+                        }
                     });
-                    // draw residual plot
-                    drawResidualPlot(testResultDataPointsSample);
-                }
-                else {
-                    var chartType = 'residual plot';
-                    $('#residual').html(getInfo(chartType));
-                }
-            }
-            else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
 
-                features = res.features;
+                    // for tooltip
+                    $(function() {
+                        $('[data-toggle="tooltip"]').tooltip()
+                    })
 
-                if(res.bestPercentile) {
-                    $('#myRange').val(res.bestPercentile);
-                    $('#chance').val(res.bestPercentile);
-                }
+                    $("[data-toggle=popover]").popover();
 
-                // setting the range of the percentile slider
-                if(res.minPercentile && res.maxPercentile){
-                    $('#myRange').attr('min', res.minPercentile);
-                    $('#myRange').attr('max', res.maxPercentile);
-                    $('#rangeValues').html(res.minPercentile + '<span style="float:right;">' + res.maxPercentile + '</span>');
-                }
+                    if (fromCompare == 'true') {
+                        $("#nav-analysis-anchor").attr('href', '../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId);
+                    } else {
+                        $("#nav-analysis-anchor").attr('href', 'analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName);
+                    }
 
-                var percentile = $('#myRange').val();
-                if(res.percentileToMulticlassMetricsMap[percentile].f1Score) {
-                    $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[percentile].f1Score.toFixed(4)  + "]");
-                }
-                // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart, #predicted-vs-actual").closest("div.wr-graph-element").remove();
-                $("#residual").remove();
-                $("#predicted-vs-actual").remove();
+                    $('#nav-project-anchor').attr('href', '../project/projects.jag?projectName=' + projectName);
 
-                // draw confusion matrix
-                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.labels, "#confusion-matrix");
-                // draw other measures table
-                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[percentile], "#other-measures");
+                    $("[data-toggle=popover]").popover();
 
-                var slider = $('#myRange');
-                var textbox = $('#chance');
+                    $(".ctrl-asset-type-switcher").popover({
+                        html: true,
+                        content: function() {
+                            return $('#content-asset-types').html();
+                        }
+                    });
 
-                slider.change(function() {
-                var newValue = ($(this).val());
-                textbox.val(newValue);
+                    predictedActualMarkerSize = $('#predicted-actual-marker-size-input').val();
+                    residualMarkerSize = $('#residual-marker-size-input').val();
+                    clusterMarkerSize = $('#cluster-marker-size-input').val();
 
-                if(res.percentileToMulticlassMetricsMap[newValue].f1Score) {
-                    $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
-                }
+                    // get numerical feature names
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/filteredFeatures?featureType=NUMERICAL",
+                        async: false,
+                        success: function(res) {
+                            numericalFeatureNames = res;
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
 
-                // draw confusion matrix and other measures
-                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
+                    // get response variable
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
+                        async: false,
+                        dataType: "text",
+                        success: function(res) {
+                            responseVariable = res;
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    // put path in application navigator
+                    $('#nav-project').text(projectName);
+                    $('#nav-analysis').text(analysisName);
+                    $('#nav-model').text(" \\ " + modelName);
+
+                    // get model summary and draw plots
+                    $.ajax({
+                        type: 'GET',
+                        url: serverUrl + "/api/models/" + modelId + "/summary",
+                        async: false,
+                        success: function(res) {
+
+                            algorithm = sanitize(res.algorithm);
+                            rank = sanitize(res.rate);
+
+                            if (algorithm == 'LOGISTIC_REGRESSION' || algorithm == 'LOGISTIC_REGRESSION_LBFGS' || algorithm == 'SVM') {
+                                if (res.modelAccuracy) {
+                                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                                }
+
+                                // remove not applicable charts/tables
+                                $("#other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                                $("#residual").remove();
+
+                                // format data and draw ROC graph
+                                var rocData = JSON.parse(res.roc);
+                                var auc = parseFloat(res.auc).toFixed(3);
+
+                                // draw ROC curve only for binary classification models (applies for LOGISTIC_REGRESSION_LBFGS)
+                                if (res.multiclassConfusionMatrix.size == 2) {
+                                    drawRocGraph(rocData, auc, "#roc-graph");
+                                } else {
+                                    $("#roc-graph").closest("div.wr-graph-element").remove();
+                                }
+
+                                // create data object and draw weights chart
+                                var featureImportanceData = [{
+                                    'key': 'featureImportanceData',
+                                    'values': res.featureImportance
+                                }];
+                                drawWeightsChart(featureImportanceData);
+
+                                // draw confusion matrix
+                                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix"); // draw feature select
+                                testResultDataPointsSample = res.testResultDataPointsSample;
+                                features = res.features;
+                                numOfClasses = res.multiclassConfusionMatrix.size;
+
+                                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
+                                if (features.length > 0) {
+                                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                                    $.each(features, function(index, feature) {
+                                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
+                                            value: index,
+                                            text: sanitize(feature)
+                                        }));
+                                    });
+                                    $('#predicted-actual-y-features option')[1].selected = true;
+
+                                    // draw predicted vs. actual chart
+                                    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
+                                } else {
+                                    var chartType = 'predicted vs. actual chart';
+                                    $('#predicted-vs-actual').html(getInfo(chartType));
+                                }
+                            } else if (algorithm == 'DECISION_TREE' || algorithm == 'RANDOM_FOREST_CLASSIFICATION' || algorithm == 'NAIVE_BAYES') {
+                                if (res.modelAccuracy) {
+                                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                                }
+                                // remove not applicable charts/tables
+                                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                                $("#residual").remove();
+
+                                // draw confusion matrix
+                                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix"); // draw feature select
+                                testResultDataPointsSample = res.testResultDataPointsSample;
+                                features = res.features;
+
+                                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
+                                if (features.length > 0) {
+                                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                                    $.each(features, function(index, feature) {
+                                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
+                                            value: index,
+                                            text: sanitize(feature)
+                                        }));
+                                    });
+                                    $('#predicted-actual-y-features option')[1].selected = true;
+                                    // draw predicted vs. actual chart
+                                    drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses);
+                                } else {
+                                    var chartType = 'predicted vs. actual chart';
+                                    $('#predicted-vs-actual').html(getInfo(chartType));
+                                }
+                            } else if (algorithm == 'LINEAR_REGRESSION' || algorithm == 'RIDGE_REGRESSION' || algorithm == 'LASSO_REGRESSION') {
+                                if ($.isNumeric(res.meanSquaredError)) {
+                                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+                                }
+
+                                // remove not applicable charts/tables
+                                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                                $("#predicted-vs-actual").remove();
+
+                                // create data object and draw weights chart
+                                var featureImportanceData = [{
+                                    'key': 'featureImportanceData',
+                                    'values': res.featureImportance
+                                }];
+                                drawWeightsChart(featureImportanceData);
+
+                                // draw feature select
+                                testResultDataPointsSample = res.testResultDataPointsSample;
+                                features = res.features;
+                                var displayFeatures = getDisplayFeatures(features, numericalFeatureNames);
+
+                                // draw residual plot if at least one numerical feature exists (except response variable)
+                                if (displayFeatures.length > 0) {
+                                    $('#residual-features').empty();
+                                    $.each(displayFeatures, function(index, feature) {
+                                        $('#residual-features').append($('<option>', {
+                                            value: sanitize(feature.value),
+                                            text: sanitize(feature.text)
+                                        }));
+                                    });
+                                    // draw residual plot
+                                    drawResidualPlot(testResultDataPointsSample);
+                                } else {
+                                    var chartType = 'residual plot';
+                                    $('#residual').html(getInfo(chartType));
+                                }
+                            } else if (algorithm == 'RANDOM_FOREST_REGRESSION') {
+                                // This is separated from other generalized linear models because this does not have all their properties
+                                if ($.isNumeric(res.meanSquaredError)) {
+                                    $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+                                }
+
+                                // remove not applicable charts/tables
+                                $("#roc-graph, #confusion-matrix, #other-measures, #percentile, #clusterDiagram, #weights-chart").closest("div.wr-graph-element").remove();
+                                $("#predicted-vs-actual").remove();
+
+                                // draw feature select
+                                testResultDataPointsSample = res.testResultDataPointsSample;
+                                features = res.features;
+                                var displayFeatures = getDisplayFeatures(features, numericalFeatureNames);
+
+                                // draw residual plot if at least one numerical feature exists (except response variable)
+                                if (displayFeatures.length > 0) {
+                                    $('#residual-features').empty();
+                                    $.each(displayFeatures, function(index, feature) {
+                                        $('#residual-features').append($('<option>', {
+                                            value: sanitize(feature.value),
+                                            text: sanitize(feature.text)
+                                        }));
+                                    });
+                                    // draw residual plot
+                                    drawResidualPlot(testResultDataPointsSample);
+                                } else {
+                                    var chartType = 'residual plot';
+                                    $('#residual').html(getInfo(chartType));
+                                }
+                            } else if (algorithm == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+
+                                features = res.features;
+
+                                if (res.bestPercentile) {
+                                    $('#myRange').val(res.bestPercentile);
+                                    $('#chance').val(res.bestPercentile);
+                                }
+
+                                // setting the range of the percentile slider
+                                if (res.minPercentile && res.maxPercentile) {
+                                    $('#myRange').attr('min', res.minPercentile);
+                                    $('#myRange').attr('max', res.maxPercentile);
+                                    $('#rangeValues').html(res.minPercentile + '<span style="float:right;">' + res.maxPercentile + '</span>');
+                                }
+
+                                var percentile = $('#myRange').val();
+                                if (res.percentileToMulticlassMetricsMap[percentile].f1Score) {
+                                    $("#model-summary-title").empty();
+                                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[percentile].f1Score.toFixed(4) + "]");
+                                }
+                                // remove not applicable charts/tables
+                                $("#roc-graph, #weights-chart, #predicted-vs-actual").closest("div.wr-graph-element").remove();
+                                $("#residual").remove();
+                                $("#predicted-vs-actual").remove();
+
+                                // draw confusion matrix
+                                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[percentile].multiclassConfusionMatrix.labels, "#confusion-matrix");
+
+                                // draw other measures table
+                                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[percentile], "#other-measures");
+
+                                var slider = $('#myRange');
+                                var textbox = $('#chance');
+
+                                slider.change(function() {
+                                    var newValue = ($(this).val());
+                                    textbox.val(newValue);
+
+                                    if (res.percentileToMulticlassMetricsMap[newValue].f1Score) {
+                                        $("#model-summary-title").empty();
+                                        $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
+                                    }
+
+                                    // draw confusion matrix and other measures
+                                    drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
+                                    drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
+
+                                });
+
+                                textbox.change(function() {
+
+                                    var newValue = parseInt($(this).val());
+                                    slider.val(newValue);
+
+                                    if (res.percentileToMulticlassMetricsMap[newValue].f1Score) {
+                                        $("#model-summary-title").empty();
+                                        $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
+                                    }
+
+                                    // draw confusion matrix and other measures
+                                    drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
+                                    drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
+
+                                });
+
+                                clusterData = res.clusterPoints;
+                                drawClusterDiagramBase();
+                                drawClusterDiagram();
+                            } else if (algorithm == 'STACKED_AUTOENCODERS') {
+                                if (res.modelAccuracy) {
+                                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
+                                }
+
+                                // remove not applicable charts/tables
+                                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                                $("#residual").remove();
+
+                                // draw confusion matrix
+                                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");
+
+                                // draw feature select
+                                testResultDataPointsSample = res.testResultDataPointsSample;
+                                features = res.features;
+
+                                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
+                                if (features.length > 0) {
+                                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
+                                    $.each(features, function(index, feature) {
+                                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
+                                            value: index,
+                                            text: sanitize(feature)
+                                        }));
+                                    });
+                                    $('#predicted-actual-y-features option')[1].selected = true;
+                                    // draw predicted vs. actual chart
+                                    drawPredictedVsActualChart(testResultDataPointsSample);
+                                } else {
+                                    var chartType = 'predicted vs. actual chart';
+                                    $('#predicted-vs-actual').html(getInfo(chartType));
+                                }
+                            } else if (algorithm == 'COLLABORATIVE_FILTERING' || algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT') {
+                                $("#roc-graph, #confusion-matrix, #weights-chart,#dl-network, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
+                                $("#predicted-vs-actual").remove();
+                                $("#residual").remove();
+                                $("#area").remove();
+
+                                $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+
+                            } else if (algorithm == 'K_MEANS') {
+                                $("#roc-graph, #weights-chart, #predicted-vs-actual,#percentile,#confusion-matrix,#residual,#other-measures,#dl-network").closest("div.wr-graph-element").remove();
+
+                                features = res.features;
+                                clusterData = res.clusterPoints;
+                                drawClusterDiagramBase();
+                                drawClusterDiagram();
+
+                            }
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+
+                    if (algorithm == 'STACKED_AUTOENCODERS') {
+                        loadInputFeaturesCountAndCreateDeepNetwork();
+                    } else {
+                        $("#dl-network").closest("div.wr-graph-element").remove();
+                        //$("#col-md-12 col-centered wr-graph-content").children().remove();
+                    }
+
+                    $('#back-link').on('click', function(e) {
+                        e.preventDefault();
+                        if (fromCompare == 'true') {
+                            window.location.href = '../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId;
+                        } else {
+                            window.location.href = 'analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
+                        }
+                    });
+
+                    // functions for chart marker size changes
+                    $(".predicted-actual-marker-size").on("click", function(e) {
+                        e.preventDefault();
+
+                        var $button = $(this);
+                        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+                        if ($button.data('operator') == "+") {
+                            var newValue = parseFloat(oldValue) + 1;
+                        } else {
+                            // Don't allow decrementing below 1
+                            if (oldValue > 1) {
+                                var newValue = parseFloat(oldValue) - 1;
+                            } else {
+                                newValue = 1;
+                            }
+                        }
+                        predictedActualMarkerSize = newValue;
+                        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                        drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
+                    });
+
+                    $(".residual-marker-size").on("click", function(e) {
+                        e.preventDefault();
+                        var $button = $(this);
+                        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+                        if ($button.data('operator') == "+") {
+                            var newValue = parseFloat(oldValue) + 1;
+                        } else {
+                            // Don't allow decrementing below 1
+                            if (oldValue > 1) {
+                                var newValue = parseFloat(oldValue) - 1;
+                            } else {
+                                newValue = 1;
+                            }
+                        }
+                        residualMarkerSize = newValue;
+                        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                        drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
+                    });
+
+                    $(".cluster-marker-size").on("click", function(e) {
+                        e.preventDefault();
+                        var $button = $(this);
+                        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+                        if ($button.data('operator') == "+") {
+                            var newValue = parseFloat(oldValue) + 1;
+                        } else {
+                            // Don't allow decrementing below 1
+                            if (oldValue > 1) {
+                                var newValue = parseFloat(oldValue) - 1;
+                            } else {
+                                newValue = 1;
+                            }
+                        }
+                        clusterMarkerSize = newValue;
+                        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                        $("#clusterDiagram").html("Loading chart...");
+                        drawClusterDiagram();
+                    });
 
                 });
 
-                textbox.change(function() {
-
-                var newValue = parseInt($(this).val());
-                slider.val(newValue);
-
-                if(res.percentileToMulticlassMetricsMap[newValue].f1Score) {
-                    $("#model-summary-title").empty();
-                    $("#model-summary-title").append(" [F1 Score: " + res.percentileToMulticlassMetricsMap[newValue].f1Score.toFixed(4) + "]");
-                }
-
-                // draw confusion matrix and other measures
-                drawConfusionMatrix(res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.matrix, res.percentileToMulticlassMetricsMap[newValue].multiclassConfusionMatrix.labels, "#confusion-matrix");
-                drawOtherMeasuresTable(res.percentileToMulticlassMetricsMap[newValue], "#other-measures");
-
-                });
-
-                clusterData = res.clusterPoints;
-                drawClusterDiagramBase();
-                drawClusterDiagram();
-            }
-	    else if (algorithm == 'STACKED_AUTOENCODERS') {
-                if(res.modelAccuracy) {
-                    $("#model-summary-title").append(" [Accuracy: " + res.modelAccuracy.toFixed(2) + "%]");
-                }
-                // remove not applicable charts/tables
-                $("#roc-graph, #weights-chart, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
-                $("#residual").remove();
-                // draw confusion matrix
-                drawConfusionMatrix(res.multiclassConfusionMatrix.matrix, res.multiclassConfusionMatrix.labels, "#confusion-matrix");
-                // draw feature select
-                testResultDataPointsSample = res.testResultDataPointsSample;
-                features = res.features;
-                // draw predicted vs. actual chart if at least one numerical feature exists (except response variable)
-                if(features.length > 0) {
-                    $('#predicted-actual-x-features, #predicted-actual-y-features').empty();
-                    $.each(features,function(index, feature){
-                        $('#predicted-actual-x-features, #predicted-actual-y-features').append($('<option>', {
-                            value: index,
-                            text : sanitize(feature)
-                        }));
+                // function to draw ROC graph
+                function drawRocGraph(data, auc, cssClass) {
+                    var rocGraph = new ROCGraph(data);
+                    rocGraph.setXAxisText("False positive rate");
+                    rocGraph.setYAxisText("True positive rate");
+                    rocGraph.setLegendName("ROC curve (AUC = " + auc + ")");
+                    rocGraph.setLineWidth(2);
+                    rocGraph.setPlotingAreaWidth(600);
+                    rocGraph.setPlotingAreaHeight(380);
+                    rocGraph.setLineColor("#f16c20");
+                    rocGraph.plot(d3.select(cssClass), function() {
+                        var xLoc = xScale.invert(d3.mouse(this)[0]);
+                        var yLoc = yScale.invert(d3.mouse(this)[1]);
                     });
-                    $('#predicted-actual-y-features option')[1].selected = true;
-	                // draw predicted vs. actual chart
-	                drawPredictedVsActualChart(testResultDataPointsSample);
+                };
+
+                // function to draw weights chart
+                function drawWeightsChart(data) {
+
+                    nv.addGraph(function() {
+                        var chart = nv.models.discreteBarChart()
+                            .x(function(d) {
+                                return d.label
+                            })
+                            .y(function(d) {
+                                return d.value
+                            })
+                            .staggerLabels(true)
+                            .tooltips(false)
+                            .showValues(false)
+                            .color(["#1395ba", "#117899", "#0f5b78", "#0d3c55", "#c02e1d", "#d94e1f", "#f16c20", "#ef8b2c", "#ecaa38", "#ebc844", "a2b86c", "5ca793"]);
+
+                        chart.yAxis.tickFormat(d3.format(".2e")).showMaxMin(false);
+                        chart.xAxis.axisLabel('Features');
+                        chart.margin({
+                            bottom: 60
+                        });
+
+                        d3.select('#weights-chart svg')
+                            .datum(data)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+                        return chart;
+                    });
                 }
-                else {
-                    var chartType = 'predicted vs. actual chart';
-                    $('#predicted-vs-actual').html(getInfo(chartType));
+
+                // function to draw predicted vs. actual chart
+                function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses) {
+
+                    var xAxisFeatureIndex = $("#predicted-actual-x-features").val();
+                    var yAxisFeatureIndex = $("#predicted-actual-y-features").val();
+                    xAxisFeatureName = $("#predicted-actual-x-features option:selected").text();
+                    yAxisFeatureName = $("#predicted-actual-y-features option:selected").text();
+                    $('#predicted-actual-residual-title').html('Predicted vs. Actual');
+
+                    // empty data array
+                    predictedVsActualData = [];
+                    for (var i = 0; i < testResultDataPointsSample.length; i++) {
+
+                        var predictedVsActualPoint = [];
+                        predictedVsActualPoint[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][xAxisFeatureIndex.toString()]);
+                        predictedVsActualPoint[1] = parseFloat(testResultDataPointsSample[i]['featureValues'][yAxisFeatureIndex.toString()]);
+
+                        var actual = testResultDataPointsSample[i].predictedVsActual.actual;
+                        var predicted = testResultDataPointsSample[i].predictedVsActual.predicted;
+
+                        // set predicted class label according to algorithm type
+                        if ((algorithm == 'LOGISTIC_REGRESSION') || (algorithm == 'LOGISTIC_REGRESSION_LBFGS' && numOfClasses == 2)) {
+                            labeledPredicted = labelPredicted(predicted, 0.5);
+                        } else if (algorithm == 'SVM') {
+                            labeledPredicted = labelPredictedSvm(predicted);
+                        } else {
+                            labeledPredicted = predicted;
+                        }
+                        if (actual == labeledPredicted) {
+                            predictedVsActualPoint[2] = 'Correct';
+                        } else {
+                            predictedVsActualPoint[2] = 'Incorrect';
+                        }
+                        predictedVsActualData.push(predictedVsActualPoint);
+                    }
+                    drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
                 }
-            }else if(algorithm == 'COLLABORATIVE_FILTERING' || algorithm == 'COLLABORATIVE_FILTERING_IMPLICIT'){
-                $("#roc-graph, #confusion-matrix, #weights-chart,#dl-network, #other-measures, #percentile, #clusterDiagram").closest("div.wr-graph-element").remove();
-                $("#predicted-vs-actual").remove();
-                $("#residual").remove();
-                $("#area").remove();
 
-                 $("#model-summary-title").append(" [MSE: " + res.meanSquaredError.toExponential(2) + "]");
+                // function to draw residual plot
+                function drawResidualPlot(testResultDataPointsSample) {
 
-            }
-            else if(algorithm == 'K_MEANS'){
-                $("#roc-graph, #weights-chart, #predicted-vs-actual,#percentile,#confusion-matrix,#residual,#other-measures,#dl-network").closest("div.wr-graph-element").remove();
+                    var featureIndex = $("#residual-features").val();
+                    featureName = $("#residual-features option:selected").text();
+                    $('#predicted-actual-residual-title').html('Residual Plot');
 
-                 features = res.features;
-                 clusterData = res.clusterPoints;
-                 drawClusterDiagramBase();
-                 drawClusterDiagram();
+                    // empty data array
+                    residualData = [];
+                    for (var i = 0; i < testResultDataPointsSample.length; i++) {
 
-            }
-        },
-        error: function(res){
-            var errorText = res.responseText
-            handleNotification(errorText, '#notification-area', 'warning');
-        }
-    });
+                        var residualRow = [];
+                        residualRow[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][featureIndex.toString()]);
+                        residualRow[1] = parseFloat(testResultDataPointsSample[i].predictedVsActual.actual - testResultDataPointsSample[i].predictedVsActual.predicted);
+                        residualRow[2] = 'Residual';
+                        residualData.push(residualRow);
+                    }
+                    drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
+                }
 
-    if (algorithm == 'STACKED_AUTOENCODERS') {
-		loadInputFeaturesCountAndCreateDeepNetwork();
-    } else {
-		$("#dl-network").closest("div.wr-graph-element").remove();
-		//$("#col-md-12 col-centered wr-graph-content").children().remove();
-    }
+                // drawing a simple scatter graph
+                function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, colors, groupByValues) {
+                    $(cssClass).empty();
+                    var scatter = new ScatterPlot(data);
+                    scatter.setPlotingAreaWidth(600);
+                    scatter.setPlotingAreaHeight(400);
+                    scatter.setMarkerSize(markerSize);
+                    scatter.setColors(colors);
+                    scatter.setGroupByValues(groupByValues);
+                    scatter.setXAxisText(xLabel);
+                    scatter.setYAxisText(yLabel);
+                    scatter.plot(d3.select(cssClass));
+                };
 
+                // function that returns JSON containing feature names (numerical except reponse variable)
+                // with mapped index of summary object feature names
+                function getDisplayFeatures(features, numericalFeatureNames) {
+                    // remove response variable from numerical feature names if response variable is within numerical features
+                    var responseVariableIndex = $.inArray(responseVariable, numericalFeatureNames);
+                    if (responseVariableIndex > -1) {
+                        numericalFeatureNames.splice(responseVariableIndex, 1);
+                    }
+                    // get corresponding index of summary object feature names for each feature name
+                    var featureIndices = numericalFeatureNames.map(function(elem) {
+                        var index = features.indexOf(elem);
+                        return index;
+                    });
+                    // create object array with feature name and mapped index
+                    var displayFeatures = [];
+                    for (var i = 0; i < featureIndices.length; i++) {
+                        var displayFeature = {
+                            'value': featureIndices[i],
+                            'text': numericalFeatureNames[i]
+                        };
+                        displayFeatures.push(displayFeature);
+                    }
+                    return displayFeatures;
+                }
 
-    $('#back-link').on('click', function(e){
-        e.preventDefault();
+                function getInfo(chartType) {
+                    var minNumFeaturesInfoText = 'Minimum of one numerical feature required for ' + chartType + '.';
+                    var minNumFeaturesInfo = buildNotification(minNumFeaturesInfoText, 'info');
+                    return minNumFeaturesInfo;
+                }
 
-        if(fromCompare == 'true') {
-            window.location.href = '../project/compare.jag?projectId=' + projectId + '&projectName=' + projectName + '&dataseId=' + datasetId;
-        } else {
-            window.location.href = 'analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
-        }
-    });
+                // function to shorten the label
+                function shortenLabel(label) {
+                    if (label.length > 4) {
+                        return label.substring(0, 4) + '.';
+                    } else {
+                        return label;
+                    }
+                }
 
-    // functions for chart marker size changes
-    $(".predicted-actual-marker-size").on("click", function (e) {
-        e.preventDefault();
+                // function to draw multiclass confusion matrix
+                function drawConfusionMatrix(matrix, labels, cssSelector) {
+                    var multiclassConfusionMatrixHtml = "<table border='1'>";
+                    multiclassConfusionMatrixHtml += "<tr>" +
+                        "<td class='header-level-1' colspan='2' rowspan='2'>Total</td><td class='header-level-1' colspan=" + labels.length + ">Predicted</td>" +
+                        "</tr>";
+                    multiclassConfusionMatrixHtml += "<tr>";
+                    for (var i = 0; i < labels.length; i++) {
+                        multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
+                    }
+                    multiclassConfusionMatrixHtml += "</tr>";
 
-        var $button = $(this);
-        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+                    for (var i = 0; i < matrix.length; i++) {
+                        multiclassConfusionMatrixHtml += "<tr>";
+                        if (i == 0) {
+                            multiclassConfusionMatrixHtml += "<td class='header-level-1 rotate' rowspan='" + labels.length + "'>Actual</td>";
+                        }
+                        multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
+                        for (var j = 0; j < matrix[i].length; j++) {
+                            if (i == j) {
+                                multiclassConfusionMatrixHtml += "<td class='correct'>" + matrix[i][j] + "</td>";
+                            } else {
+                                multiclassConfusionMatrixHtml += "<td class='incorrect'>" + matrix[i][j] + "</td>";
+                            }
+                        }
+                        multiclassConfusionMatrixHtml += "</tr>";
+                    }
+                    multiclassConfusionMatrixHtml += "</table>";
+                    $(cssSelector).html(multiclassConfusionMatrixHtml);
+                }
 
-        if ($button.data('operator') == "+") {
-            var newValue = parseFloat(oldValue) + 1;
-        } else {
-            // Don't allow decrementing below 1
-            if (oldValue > 1) {
-                var newValue = parseFloat(oldValue) - 1;
-            } else {
-                newValue = 1;
-            }
-        }
-        predictedActualMarkerSize = newValue;
-        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-        drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
-    });
-
-    $(".residual-marker-size").on("click", function (e) {
-        e.preventDefault();
-
-        var $button = $(this);
-        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-        if ($button.data('operator') == "+") {
-            var newValue = parseFloat(oldValue) + 1;
-        } else {
-            // Don't allow decrementing below 1
-            if (oldValue > 1) {
-                var newValue = parseFloat(oldValue) - 1;
-            } else {
-                newValue = 1;
-            }
-        }
-        residualMarkerSize = newValue;
-        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-        drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
-    });
-
-    $(".cluster-marker-size").on("click", function (e) {
-        e.preventDefault();
-
-        var $button = $(this);
-        var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-        if ($button.data('operator') == "+") {
-            var newValue = parseFloat(oldValue) + 1;
-        } else {
-            // Don't allow decrementing below 1
-            if (oldValue > 1) {
-                var newValue = parseFloat(oldValue) - 1;
-            } else {
-                newValue = 1;
-            }
-        }
-        clusterMarkerSize = newValue;
-        $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-        $("#clusterDiagram").html("Loading chart...");
-        drawClusterDiagram();
-    });
-
-});
-
-// function to draw ROC graph
-function drawRocGraph (data, auc, cssClass) {
-    var rocGraph = new ROCGraph(data);
-    rocGraph.setXAxisText("False positive rate");
-    rocGraph.setYAxisText("True positive rate");
-    rocGraph.setLegendName("ROC curve (AUC = "+auc+")");
-    rocGraph.setLineWidth(2);
-    rocGraph.setPlotingAreaWidth(600);
-    rocGraph.setPlotingAreaHeight(380);
-    rocGraph.setLineColor("#f16c20");
-    rocGraph.plot(d3.select(cssClass),function(){
-        var xLoc = xScale.invert(d3.mouse(this)[0]);
-        var yLoc = yScale.invert(d3.mouse(this)[1]);
-    });
-};
-
-// function to draw weights chart
-function drawWeightsChart (data) {
-
-    nv.addGraph(function() {
-        var chart = nv.models.discreteBarChart()
-                        .x(function(d) { return d.label })
-                        .y(function(d) { return d.value })
-                        .staggerLabels(true)
-                        .tooltips(false)
-                        .showValues(false)
-                        .color(["#1395ba", "#117899", "#0f5b78", "#0d3c55", "#c02e1d", "#d94e1f", "#f16c20", "#ef8b2c", "#ecaa38", "#ebc844", "a2b86c", "5ca793"]);
-
-        chart.yAxis.tickFormat(d3.format(".2e")).showMaxMin(false);
-        chart.xAxis.axisLabel('Features');
-        chart.margin({ bottom: 60 });
-
-        d3.select('#weights-chart svg')
-            .datum(data)
-            .call(chart);
-
-        nv.utils.windowResize(chart.update);
-        return chart;
-    });
-}
-
-// function to draw predicted vs. actual chart
-function drawPredictedVsActualChart(testResultDataPointsSample, algorithm, numOfClasses) {
-
-    var xAxisFeatureIndex = $("#predicted-actual-x-features").val();
-    var yAxisFeatureIndex = $("#predicted-actual-y-features").val();
-    xAxisFeatureName = $("#predicted-actual-x-features option:selected").text();
-    yAxisFeatureName = $("#predicted-actual-y-features option:selected").text();
-    $('#predicted-actual-residual-title').html('Predicted vs. Actual');
-
-    // empty data array
-    predictedVsActualData = [];
-    for (var i = 0; i < testResultDataPointsSample.length; i++) {
-
-        var predictedVsActualPoint = [];
-        predictedVsActualPoint[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][xAxisFeatureIndex.toString()]);
-        predictedVsActualPoint[1] = parseFloat(testResultDataPointsSample[i]['featureValues'][yAxisFeatureIndex.toString()]);
-
-        var actual = testResultDataPointsSample[i].predictedVsActual.actual;
-        var predicted = testResultDataPointsSample[i].predictedVsActual.predicted;
-
-        // set predicted class label according to algorithm type
-        if((algorithm == 'LOGISTIC_REGRESSION') || (algorithm == 'LOGISTIC_REGRESSION_LBFGS' && numOfClasses == 2)) {
-            labeledPredicted = labelPredicted(predicted, 0.5);
-        }
-        else if(algorithm == 'SVM') {
-            labeledPredicted = labelPredictedSvm(predicted);
-        }
-        else {
-            labeledPredicted = predicted;
-        }
-        if(actual == labeledPredicted) {
-            predictedVsActualPoint[2] = 'Correct';
-        }
-        else {
-            predictedVsActualPoint[2] = 'Incorrect';
-        }
-        predictedVsActualData.push(predictedVsActualPoint);
-    }
-    drawScatterPlot(predictedVsActualData, '#predicted-vs-actual-chart', xAxisFeatureName, yAxisFeatureName, predictedActualMarkerSize, ["#286c4f", "#c02e1d"], ['Correct', 'Incorrect']);
-}
-
-// function to draw residual plot
-function drawResidualPlot(testResultDataPointsSample) {
-
-    var featureIndex = $("#residual-features").val();
-    featureName = $("#residual-features option:selected").text();
-    $('#predicted-actual-residual-title').html('Residual Plot');
-
-    // empty data array
-    residualData = [];
-    for (var i = 0; i < testResultDataPointsSample.length; i++) {
-
-        var residualRow = [];
-        residualRow[0] = parseFloat(testResultDataPointsSample[i]['featureValues'][featureIndex.toString()]);
-        residualRow[1] = parseFloat(testResultDataPointsSample[i].predictedVsActual.actual - testResultDataPointsSample[i].predictedVsActual.predicted);
-        residualRow[2] = 'Residual';
-        residualData.push(residualRow);
-    }
-    drawScatterPlot(residualData, '#residual-plot', featureName, 'Residual', residualMarkerSize, ["#c02e1d"], []);
-}
-
-// drawing a simple scatter graph
-function drawScatterPlot(data, cssClass, xLabel, yLabel, markerSize, colors, groupByValues) {
-    $(cssClass).empty();
-    var scatter = new ScatterPlot(data);
-
-    scatter.setPlotingAreaWidth(600);
-    scatter.setPlotingAreaHeight(400);
-    scatter.setMarkerSize(markerSize);
-    scatter.setColors(colors);
-    scatter.setGroupByValues(groupByValues);
-    scatter.setXAxisText(xLabel);
-    scatter.setYAxisText(yLabel);
-    scatter.plot(d3.select(cssClass));
-};
-
-// function that returns JSON containing feature names (numerical except reponse variable)
-// with mapped index of summary object feature names
-function getDisplayFeatures(features, numericalFeatureNames) {
-    // remove response variable from numerical feature names if response variable is within numerical features
-    var responseVariableIndex = $.inArray(responseVariable, numericalFeatureNames);
-    if(responseVariableIndex > -1) {
-        numericalFeatureNames.splice(responseVariableIndex, 1);
-    }
-    // get corresponding index of summary object feature names for each feature name
-    var featureIndices = numericalFeatureNames.map(function(elem){
-        var index = features.indexOf(elem);
-        return index;
-    });
-    // create object array with feature name and mapped index
-    var displayFeatures = [];
-    for(var i = 0; i < featureIndices.length; i++) {
-        var displayFeature = {'value': featureIndices[i], 'text': numericalFeatureNames[i]};
-        displayFeatures.push(displayFeature);
-    }
-    return displayFeatures;
-}
-
-function getInfo(chartType) {
-    var minNumFeaturesInfoText = 'Minimum of one numerical feature required for ' + chartType + '.';
-    var minNumFeaturesInfo = buildNotification(minNumFeaturesInfoText, 'info');
-    return minNumFeaturesInfo;
-}
-
-// function to shorten the label
-function shortenLabel (label) {
-    if(label.length > 4) {
-        return label.substring(0, 4)+'.';
-    }
-    else {
-        return label;
-    }
-}
-
-// function to draw multiclass confusion matrix
-function drawConfusionMatrix (matrix, labels, cssSelector) {
-
-    var multiclassConfusionMatrixHtml = "<table border='1'>";
-    multiclassConfusionMatrixHtml += "<tr>" +
-                                        "<td class='header-level-1' colspan='2' rowspan='2'>Total</td><td class='header-level-1' colspan=" + labels.length + ">Predicted</td>" +
-                                     "</tr>";
-    multiclassConfusionMatrixHtml += "<tr>";
-
-    for(var i = 0; i < labels.length; i++) {
-        multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
-    }
-    multiclassConfusionMatrixHtml += "</tr>";
-
-    for(var i = 0; i < matrix.length; i++) {
-
-        multiclassConfusionMatrixHtml += "<tr>";
-        if (i == 0) {
-            multiclassConfusionMatrixHtml += "<td class='header-level-1 rotate' rowspan='" + labels.length + "'>Actual</td>";
-        }
-        multiclassConfusionMatrixHtml += "<td class='header-level-2'>" + labels[i] + "</td>";
-
-        for(var j = 0; j < matrix[i].length; j++){
-            if (i == j) {
-                multiclassConfusionMatrixHtml += "<td class='correct'>" + matrix[i][j] + "</td>";
-            }
-            else {
-                multiclassConfusionMatrixHtml += "<td class='incorrect'>" + matrix[i][j] + "</td>";
-            }
-        }
-        multiclassConfusionMatrixHtml += "</tr>";
-    }
-    multiclassConfusionMatrixHtml += "</table>";
-
-    $(cssSelector).html(multiclassConfusionMatrixHtml);
-}
-
-//function to draw other measures table
-function drawOtherMeasuresTable(percentileToMulticlassMetricsMap, cssSelector){
-
-    var otherMeasuresHtml = "<table border='1'>";
-    otherMeasuresHtml += "<tr>" +
+                //function to draw other measures table
+                function drawOtherMeasuresTable(percentileToMulticlassMetricsMap, cssSelector) {
+                    var otherMeasuresHtml = "<table border='1'>";
+                    otherMeasuresHtml += "<tr>" +
                         "<td class='header-level-1'>Measure</td><td class='header-level-1'>Value (%)</td>" +
                         "</tr>";
-    otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Precision</td><td>"+percentileToMulticlassMetricsMap.precision.toFixed(2) + "</td>" +
+                    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Precision</td><td>" + percentileToMulticlassMetricsMap.precision.toFixed(2) + "</td>" +
                         "</tr>";
-    otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Recall</td><td>"+percentileToMulticlassMetricsMap.recall.toFixed(2) + "</td>" +
+                    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Recall</td><td>" + percentileToMulticlassMetricsMap.recall.toFixed(2) + "</td>" +
                         "</tr>";
-    otherMeasuresHtml += "<tr>" +
-                        "<td class='header-level-2'>Accuracy</td><td>"+percentileToMulticlassMetricsMap.accuracy.toFixed(2) + "</td>" +
+                    otherMeasuresHtml += "<tr>" +
+                        "<td class='header-level-2'>Accuracy</td><td>" + percentileToMulticlassMetricsMap.accuracy.toFixed(2) + "</td>" +
                         "</tr>";
-    otherMeasuresHtml += "</table>";
+                    otherMeasuresHtml += "</table>";
+                    $(cssSelector).html(otherMeasuresHtml);
+                }
 
-    $(cssSelector).html(otherMeasuresHtml);
+                function drawClusterDiagramBase() {
 
-}
+                    if (features.length > 1) {
+                        $('#cluster-independent, #cluster-dependent').empty();
+                        $.each(features, function(index, feature) {
+                            $('#cluster-independent, #cluster-dependent').append($('<option>', {
+                                value: sanitize(feature),
+                                text: sanitize(feature)
+                            }));
+                        });
+                        // make second option selected by default
+                        $('#cluster-dependent option')[1].selected = true;
 
+                        drawClusterDiagram();
+                    }
+                }
 
-function drawClusterDiagramBase() {
+                function drawClusterDiagram() {
 
-    if(features.length > 1) {
-        $('#cluster-independent, #cluster-dependent').empty();
-        $.each(features,function(index, feature){
-            $('#cluster-independent, #cluster-dependent').append($('<option>', {
-                value: sanitize(feature),
-                text : sanitize(feature)
-            }));
-        });
-        // make second option selected by default
-        $('#cluster-dependent option')[1].selected = true;
+                    // get categorical feature list from checkbox selection
+                    var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
+                    var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
 
-        drawClusterDiagram();
-    }
-}
+                    var featureIndependentIndex = $.inArray(featureIndependent, features);
+                    var featureDependenttIndex = $.inArray(featureDependent, features);
 
-function drawClusterDiagram() {
+                    var dataArray = clusterData;
+                    // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+                    var clusterDataArray = [];
+                    for (var i = 0; i < dataArray.length; i++) {
+                        var dataRow = [];
+                        dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
+                        dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
+                        dataRow[2] = dataArray[i]['cluster'];
+                        clusterDataArray.push(dataRow);
+                    }
+                    drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, true);
+                }
 
-    // get categorical feature list from checkbox selection
-    var featureIndependent = $("#cluster-independent").val().replace(/^\s+|\s+$/g, '');
-    var featureDependent = $("#cluster-dependent").val().replace(/^\s+|\s+$/g, '');
+                // drawing a simple scatter graph
+                function drawClusters(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
+                    $(cssClass).empty();
+                    var scatter = new ScatterPlot(data);
 
-    var featureIndependentIndex = $.inArray(featureIndependent, features);
-    var featureDependenttIndex = $.inArray(featureDependent, features);
+                    scatter.setPlotingAreaWidth(600);
+                    scatter.setPlotingAreaHeight(400);
+                    scatter.setMarkerSize(markerSize);
+                    scatter.setLegend(legendEnabled);
+                    scatter.setXAxisText(xLabel);
+                    scatter.setYAxisText(yLabel);
+                    scatter.plot(d3.select(cssClass));
+                }
 
-            var dataArray = clusterData;
-            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
-            var clusterDataArray = [];
-            for (var i = 0; i < dataArray.length; i++) {
-                var dataRow = [];
-                dataRow[0] = parseFloat(dataArray[i]['features'][featureIndependentIndex]);
-                dataRow[1] = parseFloat(dataArray[i]['features'][featureDependenttIndex]);
-                dataRow[2] = dataArray[i]['cluster'];
-                clusterDataArray.push(dataRow);
-            }
-            drawClusters(clusterDataArray, "#clusterDiagram", featureIndependent, featureDependent, clusterMarkerSize, true);
-}
+                function loadInputFeaturesCountAndCreateDeepNetwork() {
+                    var featuresCount = features.length;
+                    var responseVariable = "";
+                    var classCount = -1;
+                    var hidLayerArr = [];
 
-// drawing a simple scatter graph
-function drawClusters(data, cssClass, xLabel, yLabel, markerSize, legendEnabled) {
-    $(cssClass).empty();
-    var scatter = new ScatterPlot(data);
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/hyperParameters",
+                        async: false,
+                        dataType: 'json',
+                        success: function(res) {
+                            var hidLayerText = "";
+                            for (var i = 0; i < res.length; i++) {
+                                if (res[i]["key"] == "Layer_Sizes") {
+                                    hidLayerText = res[i]["value"];
+                                    break;
+                                }
+                            }
+                            var hidLayerTokens = hidLayerText.split(",");
+                            for (var i = 0; i < hidLayerTokens.length; i++) {
+                                hidLayerArr[i] = parseInt(hidLayerTokens[i]);
+                            }
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText;
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
 
-    scatter.setPlotingAreaWidth(600);
-    scatter.setPlotingAreaHeight(400);
-    scatter.setMarkerSize(markerSize);
-    scatter.setLegend(legendEnabled);
-    scatter.setXAxisText(xLabel);
-    scatter.setYAxisText(yLabel);
-    scatter.plot(d3.select(cssClass));
-}
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
+                        async: false,
+                        dataType: 'text',
+                        success: function(res) {
+                            responseVariable = res;
+                        },
+                        error: function(res) {
+                            var errorText = res.responseText;
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
 
-function loadInputFeaturesCountAndCreateDeepNetwork() {
-	var featuresCount = features.length;
-	var responseVariable = "";
-	var classCount = -1;
-	var hidLayerArr = [];
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/datasets/" + datasetId + "/stats?feature=" + responseVariable,
+                        async: false,
+                        dataType: 'json',
+                        success: function(res3) {
+                            classCount = res3[0]["unique"];
+                            drawDLNetwork("#dl-network", featuresCount, hidLayerArr, classCount);
+                        },
+                        error: function(res3) {
+                            var errorText = res3.responseText;
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                    drawDLNetwork("#dl-network", featuresCount, hidLayerArr, classCount);
+                }
 
+                function drawDLNetwork(cssClass, inCount, hiddenCounts, outCount) {
+                    d3.select(cssClass).attr("align", "center");
+                    $(cssClass).empty();
+                    //allCounts keep the node counts of all layers
+                    var allCounts = [inCount];
+                    var allCounts = allCounts.concat(hiddenCounts);
+                    allCounts.push(outCount);
 
-	/*
-	$.ajax({
-    	type: "GET",
-    	url: serverUrl+"/api/analyses/"+analysisId+"/features",
-    	async : false,
-    	dataType: 'json',
-    	success: function(res) {
-        	var featuresSet = res;
-        	featuresCount = featuresSet.length;
-    	},
-    	error: function(res) {
-        	var errorText = res.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');
-    	}
-	});*/
+                    // if the height of an element is more than this,
+                    // set height to this value
+                    var maxHeightThreshold = 750;
+                    var minHeightThreshold = 50;
+                    //to get min and max values of arrays
+                    Array.prototype.min = function() {
+                        return Math.min.apply(null, this);
+                    };
+                    Array.prototype.max = function() {
+                        return Math.max.apply(null, this);
+                    };
 
-	$.ajax({
-    	type: "GET",
-    	url: serverUrl+"/api/analyses/"+analysisId+"/hyperParameters",
-    	async : false,
-    	dataType: 'json',
-    	success: function(res) {
-    		var hidLayerText = "";
-        	for(var i = 0; i < res.length; i++){
-				if(res[i]["key"]=="Layer_Sizes"){
-					hidLayerText = res[i]["value"];
-					break;
-				}
-            }
+                    var rectHeights = [];
+                    var rectColors = [];
+                    var minCount = allCounts.slice(1, allCounts.length - 1).min();
+                    for (var i = 0; i < allCounts.length; i++) {
+                        rectHeights[i] = parseInt(allCounts[i] * 100 / minCount);
+                        if (rectHeights[i] > maxHeightThreshold) {
+                            rectHeights[i] = maxHeightThreshold;
+                        }
+                        if (rectHeights[i] < minHeightThreshold) {
+                            rectHeights[i] = minHeightThreshold;
+                        }
+                        if (i == 0 || i == allCounts.length - 1) {
+                            rectColors[i] = "#e1b3ff";
+                        } else {
+                            rectColors[i] = "#eeeeee";
+                        }
+                    }
 
-        	var hidLayerTokens = hidLayerText.split(",");
-        	for(var i=0; i<hidLayerTokens.length; i++){
-        		hidLayerArr[i] = parseInt(hidLayerTokens[i]);
-        	}
-    	},
-    	error: function(res) {
-        	var errorText = res.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');
-    	}
-	});
+                    var canvasWidth = 500;
+                    var spacingY = 30;
 
+                    //set the canvas size accordingly
+                    var canvasHeight;
+                    if (rectHeights.max() < maxHeightThreshold) {
+                        canvasHeight = rectHeights.max() + (spacingY * 2);
+                    } else {
+                        canvasHeight = maxHeightThreshold;
+                    }
 
-	$.ajax({
-    	type: "GET",
-    	url: serverUrl+"/api/analyses/"+analysisId+"/responseVariables",
-    	async : false,
-    	dataType: 'text',
-    	success: function(res) {
-    		responseVariable = res;
-    	},
-    	error: function(res) {
-        	var errorText = res.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');
-    	}
-	});
+                    //create the canvas
+                    var canvas = d3.select(cssClass)
+                        .append("svg")
+                        .attr("width", canvasWidth)
+                        .attr("height", canvasHeight);
 
-	$.ajax({
-    	type: "GET",
-    	url: serverUrl+"/api/datasets/"+datasetId+"/stats?feature="+responseVariable,
-    	async : false,
-    	dataType: 'json',
-    	success: function(res3) {
-        	classCount = res3[0]["unique"];
-			drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount);
-    	},
-    	error: function(res3) {
-        	var errorText = res3.responseText;
-        	handleNotification(errorText, '#notification-area', 'warning');
-    	}
-	});
-	drawDLNetwork("#dl-network",featuresCount,hidLayerArr,classCount);
+                    //creating shape elements (rectangles) to represent different layers
+                    var startX = 10;
+                    var widthRect = 50;
+                    var widthSpacing = 50;
+                    var currX = startX;
+                    for (var i = 0; i < allCounts.length; i++) {
+                        var posY = (canvasHeight - rectHeights[i]) / 2;
+                        var rect = canvas.append("rect")
+                            .attr("x", currX)
+                            .attr("y", posY)
+                            .attr("width", 50)
+                            .attr("height", rectHeights[i])
+                            .attr("fill", rectColors[i]);
 
+                        canvas.append("text")
+                            .style("fill", "#666666")
+                            .style("font-size", "25px")
+                            .attr("dy", ".35em")
+                            .attr("text-anchor", "middle")
+                            .attr("transform", "translate(" + (currX + widthRect / 2).toString() + "," + (posY + rectHeights[i] / 2).toString() + ") rotate(90)")
+                            .text(allCounts[i].toString());
+                        currX = currX + widthRect + widthSpacing;
+                    }
 
-}
+                    //to move background elements to the background
+                    d3.selection.prototype.moveToBack = function() {
+                        return this.each(function() {
+                            var firstChild = this.parentNode.firstChild;
+                            if (firstChild) {
+                                this.parentNode.insertBefore(this, firstChild);
+                            }
+                        });
+                    };
 
-function drawDLNetwork (cssClass, inCount, hiddenCounts, outCount) {
-	d3.select(cssClass).attr("align","center");
-	$(cssClass).empty();
-	//allCounts keep the node counts of all layers
-	var allCounts = [inCount];
-	var allCounts = allCounts.concat(hiddenCounts);
-	allCounts.push(outCount);
+                    //drawing the arrow which goes from inputs to outputs
+                    var arrowHeadWidth = 20;
+                    var arrowHeadHeight = 20;
 
-	// if the height of an element is more than this,
-	// set height to this value
-	var maxHeightThreshold = 750;
-	var minHeightThreshold = 50;
-	//to get min and max values of arrays
-	Array.prototype.min = function() {
-		  return Math.min.apply(null, this);
-	};
-	Array.prototype.max = function() {
-		  return Math.max.apply(null, this);
-	};
+                    var line = canvas.append("line")
+                        .attr("x1", startX + widthRect)
+                        .attr("y1", canvasHeight / 2)
+                        .attr("x2", currX - widthRect - widthSpacing - arrowHeadWidth)
+                        .attr("y2", canvasHeight / 2)
+                        .attr("stroke-width", 6)
+                        .attr("stroke", "#666666");
 
-	var rectHeights = [];
-	var rectColors = [];
-	var minCount = allCounts.slice(1,allCounts.length-1).min();
-	for(var i=0; i<allCounts.length; i++){
-		rectHeights[i] = parseInt(allCounts[i]*100/minCount);
-		if(rectHeights[i] > maxHeightThreshold){
-			rectHeights[i] = maxHeightThreshold;
-		}
-		if(rectHeights[i] < minHeightThreshold){
-			rectHeights[i] = minHeightThreshold;
-		}
-		if(i==0 || i == allCounts.length-1){
-			rectColors[i] = "#e1b3ff";
-		} else {
-			rectColors[i] = "#eeeeee";
-		}
-	}
+                    var arrowStartX = currX - widthRect - widthSpacing;
+                    var arrowStartY = canvasHeight / 2;
+                    var pathString = "M " + arrowStartX.toString() + " " + arrowStartY.toString() + " " + "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight / 2)).toString() + " " + "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight / 2)).toString() + " " + "L " + arrowStartX.toString() + " " + arrowStartY.toString();
 
-	var canvasWidth = 500;
-	var spacingY = 30;
+                    var arrowHead = canvas.append("svg:path")
+                        .attr("d", pathString)
+                        .style("stroke-width", 1)
+                        .style("stroke", "#666666")
+                        .style("fill", "#666666");
 
-	//set the canvas size accordingly
-	var canvasHeight;
-	if(rectHeights.max()<maxHeightThreshold){
-		canvasHeight = rectHeights.max() + (spacingY * 2);
-	} else {
-		canvasHeight = maxHeightThreshold;
-	}
+                    line.moveToBack();
+                    arrowHead.moveToBack();
 
-	//create the canvas
-	var canvas = d3.select(cssClass)
-					.append("svg")
-					.attr("width", canvasWidth)
-					.attr("height", canvasHeight);
+                    //add header text
+                    var textPosY = rectHeights.max() + spacingY + 50;
+                    var fontSize = "15px";
+                    data = ["Inputs", "Hidden Layers", "Outputs"];
 
-	//creating shape elements (rectangles) to represent different layers
-	var startX = 10;
-	var widthRect = 50;
-	var widthSpacing = 50;
-	var currX = startX;
-	for(var i=0; i<allCounts.length; i++){
-		var posY = (canvasHeight - rectHeights[i])/2;
-		var rect = canvas.append("rect")
-				.attr("x", currX)
-				.attr("y", posY)
-				.attr("width", 50)
-				.attr("height", rectHeights[i])
-				.attr("fill", rectColors[i]);
+                    //added Input text as two text elements because
+                    //<br/> doesn't render in SVG
+                    var in1Text = canvas.append("text")
+                        .attr("x", startX + widthRect / 2)
+                        .attr("y", textPosY)
+                        .style("fill", "#666666")
+                        .style("font-size", fontSize)
+                        .attr("text-anchor", "middle")
+                        .text(data[0]);
 
-		canvas.append("text")
-		  .style("fill", "#666666")
-		  .style("font-size", "25px")
-		  .attr("dy", ".35em")
-		  .attr("text-anchor", "middle")
-		  .attr("transform", "translate(" + (currX + widthRect/2).toString()
-				  + "," + (posY + rectHeights[i]/2).toString() +") rotate(90)")
-		  .text(allCounts[i].toString());
-		currX = currX + widthRect + widthSpacing;
-	}
+                    var in2Text = canvas.append("text")
+                        .attr("x", startX + widthRect / 2)
+                        .attr("y", textPosY + 20)
+                        .style("fill", "#666666")
+                        .style("font-size", fontSize)
+                        .attr("text-anchor", "middle")
+                        .text("(Features)");
 
-	//to move background elements to the background
-	d3.selection.prototype.moveToBack = function() {
-	    return this.each(function() {
-	        var firstChild = this.parentNode.firstChild;
-	        if (firstChild) {
-	            this.parentNode.insertBefore(this, firstChild);
-	        }
-	    });
-	};
+                    //added Output text as two text elements because
+                    //<br/> doesn't render in SVG
+                    var out1Text = canvas.append("text")
+                        .attr("x", currX - widthSpacing - widthRect / 2)
+                        .attr("y", textPosY)
+                        .style("fill", "#666666")
+                        .style("font-size", fontSize)
+                        .attr("text-anchor", "middle")
+                        .text(data[2]);
 
-	//drawing the arrow which goes from inputs to outputs
-	var arrowHeadWidth = 20;
-	var arrowHeadHeight = 20;
+                    var out2Text = canvas.append("text")
+                        .attr("x", currX - widthSpacing - widthRect / 2)
+                        .attr("y", textPosY + 20)
+                        .style("fill", "#666666")
+                        .style("font-size", fontSize)
+                        .attr("text-anchor", "middle")
+                        .text("(Classes)");
 
-	var line = canvas.append("line")
-    			.attr("x1", startX + widthRect)
-    			.attr("y1", canvasHeight/2)
-    			.attr("x2", currX - widthRect - widthSpacing - arrowHeadWidth)
-    			.attr("y2", canvasHeight/2)
-    			.attr("stroke-width", 6)
-    			.attr("stroke", "#666666");
+                    //hidden layer text
+                    var hiddenTextPosX = (startX + widthRect / 2 + (currX - widthSpacing - widthRect / 2 - (startX + widthRect / 2))) / 2;
+                    var hiddenText = canvas.append("text")
+                        .attr("x", hiddenTextPosX)
+                        .attr("y", textPosY)
+                        .style("fill", "#666666")
+                        .style("font-size", fontSize)
+                        .attr("text-anchor", "middle")
+                        .text(data[1]);
+                }
 
-	var arrowStartX = currX - widthRect - widthSpacing;
-	var arrowStartY = canvasHeight/2;
-	var pathString = "M " + arrowStartX.toString() + " " + arrowStartY.toString() + " "
-	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY - (arrowHeadHeight/2)).toString() + " "
-	+ "L " + (arrowStartX - arrowHeadWidth).toString() + " " + (arrowStartY + (arrowHeadHeight/2)).toString() + " "
-	+ "L " + arrowStartX.toString() + " " + arrowStartY.toString();
+                // functions for chart marker size changes
 
-	var arrowHead = canvas.append("svg:path")
-    .attr("d",pathString)
-    .style("stroke-width", 1)
-    .style("stroke", "#666666")
-    .style("fill", "#666666");
+                // function to get the binary class label of a predicted value for given threshold
+                function labelPredicted(actualValue, threshold) {
+                    var actual = 0;
+                    if (actualValue >= threshold) {
+                        actual = 1;
+                    }
+                    return actual;
+                }
 
-	line.moveToBack();
-	arrowHead.moveToBack();
-
-	//add header text
-	var textPosY = rectHeights.max() + spacingY + 50;
-	var fontSize = "15px";
-	data = ["Inputs", "Hidden Layers", "Outputs"];
-
-	//added Input text as two text elements because
-	//<br/> doesn't render in SVG
-	var in1Text = canvas.append("text")
-	  .attr("x", startX + widthRect/2)
-	  .attr("y", textPosY)
-	  .style("fill", "#666666")
-	  .style("font-size", fontSize)
-	  .attr("text-anchor", "middle")
-	  .text(data[0]);
-
-	var in2Text = canvas.append("text")
-	  .attr("x", startX + widthRect/2)
-	  .attr("y", textPosY + 20)
-	  .style("fill", "#666666")
-	  .style("font-size", fontSize)
-	  .attr("text-anchor", "middle")
-	  .text("(Features)");
-
-	//added Output text as two text elements because
-	//<br/> doesn't render in SVG
-	var out1Text = canvas.append("text")
-	  .attr("x", currX - widthSpacing - widthRect/2)
-	  .attr("y", textPosY)
-	  .style("fill", "#666666")
-	  .style("font-size", fontSize)
-	  .attr("text-anchor", "middle")
-	  .text(data[2]);
-
-	var out2Text = canvas.append("text")
-	  .attr("x", currX - widthSpacing - widthRect/2)
-	  .attr("y", textPosY + 20)
-	  .style("fill", "#666666")
-	  .style("font-size", fontSize)
-	  .attr("text-anchor", "middle")
-	  .text("(Classes)");
-
-	//hidden layer text
-	var hiddenTextPosX = (startX + widthRect/2 + (currX - widthSpacing - widthRect/2 - (startX + widthRect/2)))/2;
-	var hiddenText = canvas.append("text")
-	  .attr("x", hiddenTextPosX)
-	  .attr("y", textPosY)
-	  .style("fill", "#666666")
-	  .style("font-size", fontSize)
-	  .attr("text-anchor", "middle")
-	  .text(data[1]);
-}
-
-// functions for chart marker size changes
-
-// function to get the binary class label of a predicted value for given threshold
-function labelPredicted(actualValue, threshold) {
-    var actual = 0;
-    if (actualValue >= threshold) {
-        actual = 1;
-    }
-    return actual;
-}
-
-// function to get the binary class label of a predicted value
-function labelPredictedSvm(actualValue) {
-    var actual = 0;
-    if (actualValue >= 0) {
-        actual = 1;
-    }
-    return actual;
-}
-
-</script>
-</div>
-</body>
+                // function to get the binary class label of a predicted value
+                function labelPredictedSvm(actualValue) {
+                    var actual = 0;
+                    if (actualValue >= 0) {
+                        actual = 1;
+                    }
+                    return actual;
+                }
+            </script>
+        </div>
+    </body>
 </html>
