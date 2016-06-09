@@ -17,14 +17,11 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
-import java.util.HashMap;
-import java.util.Properties;
-
-import org.wso2.carbon.analytics.spark.core.interfaces.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.analytics.spark.core.interfaces.SparkContextService;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
@@ -43,6 +40,11 @@ import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
+
+import java.util.HashMap;
+import java.util.Properties;
+
+nfigurationParser;
 
 /**
  * @scr.component name="ml.core" immediate="true"
@@ -74,7 +76,7 @@ public class MLCoreDS {
             log.info("Machine learner functionality has been disabled.");
             return;
         }
-        
+
         try {
             MLConfiguration mlConfig = valueHolder.getDatabaseService().getMlConfiguration();
 
@@ -110,7 +112,7 @@ public class MLCoreDS {
                 }
             }
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
-            
+
             JavaSparkContext sparkContext = sparkContextService.getJavaSparkContext();
             sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
                     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -231,7 +233,7 @@ public class MLCoreDS {
     protected void setSparkContextService(SparkContextService scs) {
         this.sparkContextService = scs;
     }
-    
+
     protected void unsetSparkContextService(SparkContextService scs) {
         this.sparkContextService = null;
     }
