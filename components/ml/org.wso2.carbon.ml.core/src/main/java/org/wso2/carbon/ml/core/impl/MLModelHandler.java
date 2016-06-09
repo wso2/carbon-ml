@@ -68,12 +68,10 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
-import org.wso2.carbon.ml.core.utils.BlockingExecutor;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.core.utils.MLUtils.ColumnSeparatorFactory;
 import org.wso2.carbon.ml.core.utils.MLUtils.DataTypeFactory;
-import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -88,17 +86,12 @@ import hex.deeplearning.DeepLearningModel;
  */
 public class MLModelHandler {
     private static final Log log = LogFactory.getLog(MLModelHandler.class);
-    private DatabaseService databaseService;
-    private Properties mlProperties;
-    private BlockingExecutor threadExecutor;
+    private MLCoreServiceValueHolder valueHolder;
 
     public enum Format {SERIALIZED, PMML}
 
     public MLModelHandler() {
-        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-        databaseService = valueHolder.getDatabaseService();
-        mlProperties = valueHolder.getMlProperties();
-        threadExecutor = valueHolder.getThreadExecutor();
+        valueHolder = MLCoreServiceValueHolder.getInstance();
     }
 
     /**
@@ -116,12 +109,12 @@ public class MLModelHandler {
 
             int tenantId = model.getTenantId();
             String userName = model.getUserName();
-            MLAnalysis analysis = databaseService.getAnalysis(tenantId, userName, model.getAnalysisId());
+            MLAnalysis analysis = valueHolder.getDatabaseService().getAnalysis(tenantId, userName, model.getAnalysisId());
             if (analysis == null) {
                 throw new MLModelHandlerException("Invalid analysis [id] " + model.getAnalysisId());
             }
 
-            MLDatasetVersion versionSet = databaseService.getVersionset(tenantId, userName, model.getVersionSetId());
+            MLDatasetVersion versionSet = valueHolder.getDatabaseService().getVersionset(tenantId, userName, model.getVersionSetId());
             if (versionSet == null) {
                 throw new MLModelHandlerException("Invalid version set [id] " + model.getVersionSetId());
 
@@ -132,7 +125,7 @@ public class MLModelHandler {
             model.setName(modelName);
             model.setStatus(MLConstants.MODEL_STATUS_NOT_STARTED);
 
-            databaseService.insertModel(model);
+            valueHolder.getDatabaseService().insertModel(model);
             log.info(String.format("[Created] %s", model));
             return model;
         } catch (DatabaseHandlerException e) {
@@ -150,7 +143,7 @@ public class MLModelHandler {
      */
     public void deleteModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
-            databaseService.deleteModel(tenantId, userName, modelId);
+            valueHolder.getDatabaseService().deleteModel(tenantId, userName, modelId);
             log.info(String.format("[Deleted] Model [id] %s", modelId));
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
@@ -167,7 +160,7 @@ public class MLModelHandler {
      */
     public MLModelData getModel(int tenantId, String userName, String modelName) throws MLModelHandlerException {
         try {
-            return databaseService.getModel(tenantId, userName, modelName);
+            return valueHolder.getDatabaseService().getModel(tenantId, userName, modelName);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -183,7 +176,7 @@ public class MLModelHandler {
      */
     public MLModelData getModel(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
-            return databaseService.getModel(tenantId, userName, modelId);
+            return valueHolder.getDatabaseService().getModel(tenantId, userName, modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -198,7 +191,7 @@ public class MLModelHandler {
      */
     public List<MLModelData> getAllModels(int tenantId, String userName) throws MLModelHandlerException {
         try {
-            return databaseService.getAllModels(tenantId, userName);
+            return valueHolder.getDatabaseService().getAllModels(tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -214,7 +207,7 @@ public class MLModelHandler {
      */
     public boolean isValidModelId(int tenantId, String userName, long modelId) throws MLModelHandlerException {
         try {
-            return databaseService.isValidModelId(tenantId, userName, modelId);
+            return valueHolder.getDatabaseService().isValidModelId(tenantId, userName, modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -228,7 +221,7 @@ public class MLModelHandler {
      */
     public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws MLModelHandlerException {
         try {
-            return databaseService.isValidModelStatus(modelId, tenantId, userName);
+            return valueHolder.getDatabaseService().isValidModelStatus(modelId, tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(
                     "Model status for model [id] " + modelId + " is invalid :" + e.getMessage(), e);
@@ -243,7 +236,7 @@ public class MLModelHandler {
      */
     public void addStorage(long modelId, MLStorage storage) throws MLModelHandlerException {
         try {
-            databaseService.updateModelStorage(modelId, storage.getType(), storage.getLocation());
+            valueHolder.getDatabaseService().updateModelStorage(modelId, storage.getType(), storage.getLocation());
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -258,7 +251,7 @@ public class MLModelHandler {
      */
     public ModelSummary getModelSummary(long modelId) throws MLModelHandlerException {
         try {
-            return databaseService.getModelSummary(modelId);
+            return valueHolder.getDatabaseService().getModelSummary(modelId);
         } catch (DatabaseHandlerException e) {
             throw new MLModelHandlerException(e.getMessage(), e);
         }
@@ -283,17 +276,17 @@ public class MLModelHandler {
         }
 
         try {
-            long datasetVersionId = databaseService.getDatasetVersionIdOfModel(modelId);
-            long datasetId = databaseService.getDatasetId(datasetVersionId);
-            MLDataset dataset = databaseService.getDataset(tenantId, userName, datasetId);
+            long datasetVersionId = valueHolder.getDatabaseService().getDatasetVersionIdOfModel(modelId);
+            long datasetId = valueHolder.getDatabaseService().getDatasetId(datasetVersionId);
+            MLDataset dataset = valueHolder.getDatabaseService().getDataset(tenantId, userName, datasetId);
             String dataSourceType = dataset.getDataSourceType();
-            String dataType = databaseService.getDataTypeOfModel(modelId);
+            String dataType = valueHolder.getDatabaseService().getDataTypeOfModel(modelId);
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
-            String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
+            String dataUrl = valueHolder.getDatabaseService().getDatasetVersionUri(datasetVersionId);
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
-            MLModelData model = databaseService.getModel(tenantId, userName, modelId);
-            Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
-            facts.setDatasetVersion(databaseService.getVersionset(tenantId, userName, datasetVersionId).getName());
+            MLModelData model = valueHolder.getDatabaseService().getModel(tenantId, userName, modelId);
+            Workflow facts = valueHolder.getDatabaseService().getWorkflow(model.getAnalysisId());
+            facts.setDatasetVersion(valueHolder.getDatabaseService().getVersionset(tenantId, userName, datasetVersionId).getName());
             facts.setDatasetURL(dataUrl);
 
             JavaRDD<String> lines;
@@ -313,10 +306,10 @@ public class MLModelHandler {
 
             // build the model asynchronously
             ModelBuilder task = new ModelBuilder(modelId, context);
-            threadExecutor.execute(task);
-            threadExecutor.afterExecute(task, null);
+            valueHolder.getThreadExecutor().execute(task);
+            valueHolder.getThreadExecutor().afterExecute(task, null);
 
-            databaseService.updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
+            valueHolder.getDatabaseService().updateModelStatus(modelId, MLConstants.MODEL_STATUS_IN_PROGRESS);
             log.info(String.format("Build model [id] %s job is successfully submitted to Spark.", modelId));
 
             return facts;
@@ -334,7 +327,7 @@ public class MLModelHandler {
         context.setColumnSeparator(columnSeparator);
         context.setFacts(facts);
         context.setModel(model);
-        Map<String, String> summaryStatsOfFeatures = databaseService.getSummaryStats(datasetVersionId);
+        Map<String, String> summaryStatsOfFeatures = valueHolder.getDatabaseService().getSummaryStats(datasetVersionId);
         context.setSummaryStatsOfFeatures(summaryStatsOfFeatures);
         int responseIndex = MLUtils.getFeatureIndex(facts.getResponseVariable(), facts.getFeatures());
         context.setIncludedFeaturesMap(MLUtils.getIncludedFeatures(facts, responseIndex));
@@ -343,7 +336,7 @@ public class MLModelHandler {
         context.setSparkContext(sparkContext);
         context.setLines(lines);
         // get header line
-        String headerRow = databaseService.getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
+        String headerRow = valueHolder.getDatabaseService().getFeatureNamesInOrderUsingDatasetVersion(datasetVersionId, columnSeparator);
         context.setHeaderRow(headerRow);
         return context;
     }
@@ -726,7 +719,7 @@ public class MLModelHandler {
 
     private void persistModel(long modelId, String modelName, MLModel model) throws MLModelBuilderException {
         try {
-            MLStorage storage = databaseService.getModelStorage(modelId);
+            MLStorage storage = valueHolder.getDatabaseService().getModelStorage(modelId);
             if (storage == null) {
                 throw new MLModelBuilderException("Invalid model ID: " + modelId);
             }
@@ -762,7 +755,7 @@ public class MLModelHandler {
 
                 // Writing the DL model without Deep Learning logic
                 // For prediction with POJO
-                MLIOFactory ioFactoryDl = new MLIOFactory(mlProperties);
+                MLIOFactory ioFactoryDl = new MLIOFactory(valueHolder.getMlProperties());
                 MLOutputAdapter outputAdapterDl = ioFactoryDl.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
                 ByteArrayOutputStream baosDl = new ByteArrayOutputStream();
                 ObjectOutputStream oosDl = new ObjectOutputStream(baosDl);
@@ -774,7 +767,7 @@ public class MLModelHandler {
                 outputAdapterDl.write(outPath + "_dl", isDl);
             }
 
-            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+            MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(storageType + MLConstants.OUT_SUFFIX);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -784,7 +777,7 @@ public class MLModelHandler {
             InputStream is = new ByteArrayInputStream(baos.toByteArray());
             // adapter will write the model and close the stream.
             outputAdapter.write(outPath, is);
-            databaseService.updateModelStorage(modelId, storageType, outPath);
+            valueHolder.getDatabaseService().updateModelStorage(modelId, storageType, outPath);
             log.info(String.format("Successfully persisted the model [id] %s", modelId));
         } catch (Exception e) {
             throw new MLModelBuilderException("Failed to persist the model [id] " + modelId + ". " + e.getMessage(), e);
@@ -804,13 +797,13 @@ public class MLModelHandler {
         ObjectInputStream ois = null;
         String storageLocation = null;
         try {
-            MLStorage storage = databaseService.getModelStorage(modelId);
+            MLStorage storage = valueHolder.getDatabaseService().getModelStorage(modelId);
             if (storage == null) {
                 throw new MLModelHandlerException("Invalid model ID: " + modelId);
             }
             String storageType = storage.getType();
             storageLocation = storage.getLocation();
-            MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+            MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
             MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
             in = inputAdapter.read(storageLocation);
             ois = new ObjectInputStream(in);
@@ -865,13 +858,13 @@ public class MLModelHandler {
             case SERIALIZED:
                 try {
                     // read model
-                    MLStorage storage = databaseService.getModelStorage(modelId);
+                    MLStorage storage = valueHolder.getDatabaseService().getModelStorage(modelId);
                     if (storage == null) {
                         throw new InvalidRequestException("Invalid model [id] " + modelId);
                     }
                     String storageType = storage.getType();
                     String storageLocation = storage.getLocation();
-                    MLIOFactory ioFactory = new MLIOFactory(mlProperties);
+                    MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
                     MLInputAdapter inputAdapter = ioFactory.getInputAdapter(storageType + MLConstants.IN_SUFFIX);
                     in = inputAdapter.read(storageLocation);
                     if (in == null) {
@@ -879,7 +872,7 @@ public class MLModelHandler {
                     }
                     // create registry path
                     MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-                    String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                    String modelName = valueHolder.getDatabaseService().getModel(tenantId, userName, modelId).getName();
                     relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName;
                     // publish to registry
                     registryOutputAdapter.write(relativeRegistryPath, in);
@@ -904,7 +897,7 @@ public class MLModelHandler {
             case PMML:
                 MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
                 try {
-                    String modelName = databaseService.getModel(tenantId, userName, modelId).getName();
+                    String modelName = valueHolder.getDatabaseService().getModel(tenantId, userName, modelId).getName();
                     relativeRegistryPath = "/" + valueHolder.getModelRegistryLocation() + "/" + modelName + ".xml";
 
                     MLModel model = retrieveModel(modelId);
@@ -948,8 +941,8 @@ public class MLModelHandler {
         try {
             List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
 
-            String datasetURL = databaseService.getDatasetUri(datasetId);
-            MLDataset dataset = databaseService.getDataset(tenantId, userName, datasetId);
+            String datasetURL = valueHolder.getDatabaseService().getDatasetUri(datasetId);
+            MLDataset dataset = valueHolder.getDatabaseService().getDataset(tenantId, userName, datasetId);
             String dataSourceType = dataset.getDataSourceType();
             String dataType = dataset.getDataType();
             // java spark context
@@ -960,7 +953,7 @@ public class MLModelHandler {
             // get column separator
             String columnSeparator = ColumnSeparatorFactory.getColumnSeparator(dataType);
             // get header line
-            String headerRow = databaseService.getFeatureNamesInOrder(datasetId, columnSeparator);
+            String headerRow = valueHolder.getDatabaseService().getFeatureNamesInOrder(datasetId, columnSeparator);
             Pattern pattern = MLUtils.getPatternFromDelimiter(columnSeparator);
             // get selected feature indices
             List<Integer> featureIndices = new ArrayList<Integer>();
@@ -1155,8 +1148,8 @@ public class MLModelHandler {
             } catch (MLInputValidationException e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
-                    databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
-                    databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
+                    valueHolder.getDatabaseService().updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
+                    valueHolder.getDatabaseService().updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                     emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_FAILED);
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e1);
@@ -1166,8 +1159,8 @@ public class MLModelHandler {
             } catch (MLModelBuilderException e) {
                 log.error(String.format("Failed to build the model [id] %s ", id), e);
                 try {
-                    databaseService.updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
-                    databaseService.updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
+                    valueHolder.getDatabaseService().updateModelStatus(id, MLConstants.MODEL_STATUS_FAILED);
+                    valueHolder.getDatabaseService().updateModelError(id, e.getMessage() + "\n" + ctxt.getFacts().toString());
                     emailTemplateParameters[1] = getLink(ctxt, MLConstants.MODEL_STATUS_FAILED);
                 } catch (DatabaseHandlerException e1) {
                     log.error(String.format("Failed to update the status of model [id] %s ", id), e1);
@@ -1208,14 +1201,13 @@ public class MLModelHandler {
         MLProject mlProject;
         String projectName;
         long datasetId;
-        DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
 
         try {
-            analysis = databaseService.getAnalysis(tenantId, userName, analysisId);
+            analysis = valueHolder.getDatabaseService().getAnalysis(tenantId, userName, analysisId);
             analysisName = analysis.getName();
             long projectId = analysis.getProjectId();
 
-            mlProject = databaseService.getProject(tenantId, userName, projectId);
+            mlProject = valueHolder.getDatabaseService().getProject(tenantId, userName, projectId);
             projectName = mlProject.getName();
             datasetId = mlProject.getDatasetId();
         } catch (DatabaseHandlerException e) {
