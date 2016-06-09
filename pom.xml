@@ -332,6 +332,11 @@
 				<version>${carbon.analytics.version}</version>
 			</dependency>
 			<dependency>
+                                <groupId>org.wso2.carbon.analytics</groupId>
+                                <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
+                                <version>${carbon.analytics.version}</version>
+                        </dependency>
+			<dependency>
 				<groupId>org.wso2.carbon.analytics</groupId>
 				<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 				<version>${carbon.analytics.version}</version>
@@ -520,6 +525,12 @@
 				<version>${carbon.analytics.common.version}</version>
 				<type>zip</type>
 			</dependency>
+			<dependency>
+                                <groupId>org.wso2.carbon.analytics</groupId>
+                                <artifactId>org.wso2.carbon.analytics.spark.server.feature</artifactId>
+                                <version>${carbon.analytics.version}</version>
+                                <type>zip</type>
+                        </dependency>
 
 			<dependency>
 				<groupId>org.wso2.siddhi</groupId>
@@ -641,17 +652,18 @@
 		<carbon.deployment.version>4.5.2</carbon.deployment.version>
 		<carbon.multitenancy.version>4.4.3</carbon.multitenancy.version>
 		<carbon.commons.version>4.4.7</carbon.commons.version>
-		<carbon.analytics.version>1.0.3</carbon.analytics.version>
-		<carbon.analytics.common.version>5.0.2</carbon.analytics.common.version>
-		<carbon.analytics.common.imp.feature.version>5.0.1</carbon.analytics.common.imp.feature.version>
+		<carbon.analytics.version>1.0.6-SNAPSHOT</carbon.analytics.version>
+		<carbon.analytics.imp.feature.version>1.0.6-SNAPSHOT</carbon.analytics.imp.feature.version>
+		<carbon.analytics.common.version>5.0.12-SNAPSHOT</carbon.analytics.common.version>
+		<carbon.analytics.common.imp.feature.version>5.0.12-SNAPSHOT</carbon.analytics.common.imp.feature.version>
 		<carbon.metrics.version>1.1.0</carbon.metrics.version>
-		<carbon.kernel.version>4.4.3</carbon.kernel.version>
+		<carbon.kernel.version>4.4.5</carbon.kernel.version>
 		<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
 		<!-- Spark dependency versions -->
-		<spark.version>1.4.1.wso2v1</spark.version>
+		<spark.version>1.4.2.wso2v1</spark.version>
 		<spark.imp.pkg.version>[1.4.1,1.5.0)</spark.imp.pkg.version>
-		<spark.core.version>1.4.1.wso2v1</spark.core.version>
+		<spark.core.version>1.4.2.wso2v1</spark.core.version>
 		<spark.mllib.version>1.4.1.wso2v2</spark.mllib.version>
 		<hadoop.client.version>2.6.0.wso2v1</hadoop.client.version>
 		<breeze.version>0.11.1.wso2v1</breeze.version>
@@ -669,7 +681,7 @@
 		<objenesis.version>2.1</objenesis.version>
 		<minlog.version>1.2.wso2v1</minlog.version>
 		<kyro.version>2.24.0</kyro.version>
-		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j.version>1.7.13</slf4j.version>
 		<spark.protobuf.version>2.5.0-spark</spark.protobuf.version>
 		<akka.version>2.3.4-spark</akka.version>
 		<typesafe.version>1.2.0</typesafe.version>
