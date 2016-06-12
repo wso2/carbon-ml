@@ -170,6 +170,14 @@ public class MLConstants {
     public static final String BLOCKS = "Blocks";
     public static final String ALPHA = "Alpha";
     public static final String WEIGHTS = "Weights";
+    public static final String FOLDS = "Folds";
+    public static final String NAME_BASE_ALGORITHM = "Name_of_Base_Algorithm";
+    public static final String NUM_BASE_ALGORITHMS = "Num_Base_Algorithms";
+    public static final String PARAMS_BASE_ALGORITHMS = "Parameters_of_Base_Algorithms";
+    public static final String NAME_META_ALGORITHM = "Name_of_Meta_Algorithm";
+    public static final String PARAMS_META_ALGORITHM = "Parameters_of_Meta_Algorithm";
+
+
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -231,7 +239,7 @@ public class MLConstants {
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,
-        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION
+        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION, STACKING
     }
 
     public enum UNSUPERVISED_ALGORITHM {
@@ -255,7 +263,7 @@ public class MLConstants {
         EMPTY(""), NA("NA"), QUESTION("?");
 
         private final String value;
-        private MISSING_VALUES(final String str) {
+        MISSING_VALUES(final String str) {
             this.value = str;
         }
 
@@ -278,7 +286,7 @@ public class MLConstants {
         IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
 
         private String value;
-        private DatasetVersionStatus(String value) {
+        DatasetVersionStatus(String value) {
             this.value = value;
         }
 
@@ -296,7 +304,7 @@ public class MLConstants {
         AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
 
         private String value;
-        private DatasetStatus(String value) {
+        DatasetStatus(String value) {
             this.value = value;
         }
 
