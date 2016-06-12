@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
-import java.text.DecimalFormat;
-import java.util.*;
-
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -56,10 +53,13 @@ import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSum
 import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
+import org.wso2.carbon.ml.core.utils.Util;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
-
 import scala.Tuple2;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Build supervised models supported by Spark.
@@ -200,6 +200,15 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 summaryModel = buildRandomForestRegressionModel(sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
+            case STACKING:
+                summaryModel = buildStackingModel(sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel, includedFeatures);
+                break;
+
+
+
+
+
             default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
@@ -331,6 +340,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         int responseIndex = mlModel.getEncodings().size() - 1;
         return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size()
                 : -1;
+
     }
 
     /**
@@ -805,6 +815,88 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                     e);
         }
     }
+    /**
+     * This method builds ensemble method Stacking
+     * @param sparkContext JavaSparkContext initialized with the application
+     * @param modelID Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData Testing data as a JavaRDD of LabeledPoints
+     * @param workflow Machine learning workflow
+     * @param mlModel Deployable machine learning model
+
+
+    */
+    private ModelSummary buildStackingModel(JavaSparkContext sparkContext, long modelID,
+            JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+            SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
+
+        try{
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            int numBaseModels = Integer.parseInt(hyperParameters.get(MLConstants.NUM_BASE_ALGORITHMS));
+            ArrayList<String> listBaseAlgorithms = new ArrayList<>();
+            ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
+            String paramsMetaMap = hyperParameters.get(MLConstants.PARAMS_META_ALGORITHM);
+            Map<String , String> paramsMetaAlgorithm = (Map<String, String>) Util.deserializeObjectFromString(paramsMetaMap);
+
+
+            for(int i = 0; i < numBaseModels; i++){
+                String algoName = hyperParameters.get(MLConstants.NAME_BASE_ALGORITHM + i);
+                listBaseAlgorithms.add(algoName);
+                String paramsMap = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
+                Map<String, String> params = (Map<String, String>) Util.deserializeObjectFromString(paramsMap);
+                paramsBaseAlgorithms.add(params);
+            }
+
+            Stacking stackedModel = new Stacking();
+
+            stackedModel.train(modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+                    hyperParameters.get(MLConstants.NAME_META_ALGORITHM),
+                    paramsMetaAlgorithm,
+                    Integer.parseInt(hyperParameters.get(MLConstants.FOLDS)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+
+            mlModel.setModel(new MLClassificationModel(stackedModel));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+
+            JavaPairRDD<Double, Double> predictionsAndLabels = stackedModel.test(modelID, testingData).cache();
+            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
+
+            // remove from cache
+            testingData.unpersist();
+
+
+            classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.STACKING.toString());
+
+            MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
+
+            predictionsAndLabels.unpersist();
+
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
+                    multiclassMetrics, mlModel));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
+            classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+
+            return classClassificationAndRegressionModelSummary;
+
+
+
+        }catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building stacking model: " + e.getMessage(),
+                    e);
+        }
+
+
+    }
+
+
+
 
     /**
      * @param features Array of names of features
