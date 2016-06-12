@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by pekasa on 12.06.16.
- */
 
 /**
  * Created by pekasa on 01.06.16.
@@ -50,7 +47,7 @@ public class Stacking implements Serializable, ClassificationModel {
     public void train(long modelId, JavaRDD<LabeledPoint> trainDataset, ArrayList<String> baseModels,
                       ArrayList<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
                       Map<String, String> paramsMetaAlgorithm,
-            Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
+                      Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
             MLModelBuilderException {
 
         // Step1. train list of level0models on cvdata - DONE
@@ -58,9 +55,8 @@ public class Stacking implements Serializable, ClassificationModel {
         // Step3. train level1model on level1 dataset
         // Step4. train level0models on whole dataset and store list of models
 
-        //TODO: Find a way to call this two statements from a central place maybe constructor?
         Util convert = new Util();
-        BaseModelsBuilder build = new BaseModelsBuilder();
+        BaseModelsBuilder build = new BaseModelsBuilder(null);//TODO: Need to refactor
 
 
         RDD<LabeledPoint> r = trainDataset.rdd();
@@ -83,13 +79,10 @@ public class Stacking implements Serializable, ClassificationModel {
             for (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>> fold : folds) {
                 List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(fold._2().toJavaRDD());
                 System.out.println("SIZES: " + fold._1().count() + ", " + fold._2().count());
-                // TODO: make sure that the RDD we train on is larger than the RDD we test on
                 MLModel baseModel = build.buildBaseModels(model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt));
                 Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted);
                 List<?> predictions = predictor.predict();
                 double[] doubleArrayPredictions = convert.listTodoubleArray(predictions);
-
-                //TODO: check which argument for matrix[][model?]
 
                 for (int i = 0; i < doubleArrayPredictions.length; i++) {
                     matrix[idx][cnt] = doubleArrayPredictions[i];
@@ -112,7 +105,6 @@ public class Stacking implements Serializable, ClassificationModel {
 
 
     }
-
 
 
     public JavaPairRDD<Double, Double> test(long modelId, JavaRDD<LabeledPoint> testDataset)
@@ -155,7 +147,6 @@ public class Stacking implements Serializable, ClassificationModel {
         return Parallelize.parallelizeList().parallelizePairs(list);
 
     }
-
 
 
     public JavaRDD<LabeledPoint> blend() {
