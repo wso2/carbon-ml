@@ -3,6 +3,7 @@ package org.wso2.carbon.ml.core.spark.algorithms;
 import com.google.common.primitives.Doubles;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.ClassificationModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.regression.LabeledPoint;
@@ -12,7 +13,6 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
 import org.wso2.carbon.ml.core.impl.Predictor;
-import org.wso2.carbon.ml.core.utils.Parallelize;
 import org.wso2.carbon.ml.core.utils.Util;
 import scala.Tuple2;
 
@@ -44,7 +44,7 @@ public class Stacking implements Serializable, ClassificationModel {
      * @return
      */
 
-    public void train(long modelId, JavaRDD<LabeledPoint> trainDataset, ArrayList<String> baseModels,
+    public void train(JavaSparkContext sparkContext,long modelId, JavaRDD<LabeledPoint> trainDataset, ArrayList<String> baseModels,
                       ArrayList<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
                       Map<String, String> paramsMetaAlgorithm,
                       Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
@@ -81,11 +81,10 @@ public class Stacking implements Serializable, ClassificationModel {
                 System.out.println("SIZES: " + fold._1().count() + ", " + fold._2().count());
                 MLModel baseModel = build.buildBaseModels(model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt));
                 Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted);
-                List<?> predictions = predictor.predict();
-                double[] doubleArrayPredictions = convert.listTodoubleArray(predictions);
+                List<Double> predictions = (List<Double>) predictor.predict();
 
-                for (int i = 0; i < doubleArrayPredictions.length; i++) {
-                    matrix[idx][cnt] = doubleArrayPredictions[i];
+                for (int i = 0; i < predictions.size(); i++) {
+                    matrix[idx][cnt] = predictions.get(i);
                     idx++;
                 }
             }
@@ -98,7 +97,7 @@ public class Stacking implements Serializable, ClassificationModel {
         List<LabeledPoint> levelOneDataset = convert.matrixtoLabeledPoint(matrix, convert.getLabelsFolds(folds,
                 (int) trainDataset.count()));
 
-        JavaRDD<LabeledPoint> levelOneDistData = Parallelize.convertToJavaRDD(levelOneDataset);
+        JavaRDD<LabeledPoint> levelOneDistData = sparkContext.parallelize(levelOneDataset);
 
         // Train Meta-Algorithm  using Level-One-Dataset
         levelOneModel = build.buildBaseModels(metaAlgorithm, levelOneDistData, paramsMetaAlgorithm);
@@ -107,7 +106,7 @@ public class Stacking implements Serializable, ClassificationModel {
     }
 
 
-    public JavaPairRDD<Double, Double> test(long modelId, JavaRDD<LabeledPoint> testDataset)
+    public JavaPairRDD<Double, Double> test(JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
             throws MLModelHandlerException {
 
         // Predict on levelZeroTestDataset to get levelOneTestDataset
@@ -132,7 +131,7 @@ public class Stacking implements Serializable, ClassificationModel {
         List<LabeledPoint> levelOneTestDataset = convert.matrixtoLabeledPoint(matrix, convert.getLabels(testDataset));
 
 
-        JavaRDD<LabeledPoint> levelOneDistTestData = Parallelize.convertToJavaRDD(levelOneTestDataset);
+        JavaRDD<LabeledPoint> levelOneDistTestData = sparkContext.parallelize(levelOneTestDataset);
         List<String[]> LevelOneTestDatasetList = convert.LabeledpointToListStringArray(levelOneDistTestData);
         Predictor predictor = new Predictor(modelId, levelOneModel, LevelOneTestDatasetList);
 
@@ -144,7 +143,7 @@ public class Stacking implements Serializable, ClassificationModel {
             list.add(new Tuple2<Double, Double>(levelOnePredictions.get(j), labelsList.get(j)));
 
         }
-        return Parallelize.parallelizeList().parallelizePairs(list);
+        return sparkContext.parallelizePairs(list);
 
     }
 

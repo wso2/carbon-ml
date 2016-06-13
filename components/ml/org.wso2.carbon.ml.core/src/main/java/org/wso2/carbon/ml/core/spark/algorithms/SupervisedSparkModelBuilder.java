@@ -849,7 +849,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
             Stacking stackedModel = new Stacking();
 
-            stackedModel.train(modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+            stackedModel.train(sparkContext,modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
                     hyperParameters.get(MLConstants.NAME_META_ALGORITHM),
                     paramsMetaAlgorithm,
                     Integer.parseInt(hyperParameters.get(MLConstants.FOLDS)),
@@ -862,7 +862,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // add test data to cache
             testingData.cache();
 
-            JavaPairRDD<Double, Double> predictionsAndLabels = stackedModel.test(modelID, testingData).cache();
+            JavaPairRDD<Double, Double> predictionsAndLabels = stackedModel.test(sparkContext,modelID, testingData).cache();
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
 
