@@ -35,36 +35,49 @@ public class Stacking implements Serializable, ClassificationModel {
     }
 
     /**
-     * This method trains an ComputeWeightsQPSt ensemble model
-     *
+     * This method trains an Stacking ensemble model
+     * @param sparkContext JavaSparkContext initialized with the application
+     * @param modelId Model ID
      * @param trainDataset Training dataset as a JavaRDD of labeled points
-     * @param baseModels   List of basemodels selected for ensembling using ComputeWeightsQPSt
-     * @param numFolds
-     * @param seed
+     * @param baseModels   List of basemodels selected for ensembling using Stacking
+     * @param paramsBaseAlgorithms Hyperparameters of Base-Algorithms
+     * @param metaAlgorithm    Name of Meta-Algorithm
+     * @param paramsMetaAlgorithm Hyperparameters of Meta-Algorithm
+     * @param numFolds Number of folds for cross-validation
+     * @param seed seed
      * @return
      */
 
-    public void train(JavaSparkContext sparkContext,long modelId, JavaRDD<LabeledPoint> trainDataset, ArrayList<String> baseModels,
-                      ArrayList<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
+    public void train(JavaSparkContext sparkContext,long modelId, JavaRDD<LabeledPoint> trainDataset, List<String> baseModels,
+                      List<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
                       Map<String, String> paramsMetaAlgorithm,
                       Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
             MLModelBuilderException {
 
-        // Step1. train list of level0models on cvdata - DONE
-        // Step2. get predictions of each List<?> and combine predictions to get level1 dataset -DONE
+        // Step1. train list of level0models on cvdata
+        // Step2. get predictions of each List<?> and combine predictions to get level1 dataset
         // Step3. train level1model on level1 dataset
         // Step4. train level0models on whole dataset and store list of models
 
         Util convert = new Util();
-        BaseModelsBuilder build = new BaseModelsBuilder(null);//TODO: Need to refactor
+        BaseModelsBuilder build = new BaseModelsBuilder();
 
 
         RDD<LabeledPoint> r = trainDataset.rdd();
+        Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[] folds = null;
 
-        // create a map from feature vector to some index. use this index in folds to track which datapoint is being predicted.
+        if (numFolds > 1){
+            // create a map from feature vector to some index. use this index in folds to track predicted datapoint.
 
-        Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[] folds = MLUtils.kFold(r, numFolds, seed,
-                trainDataset.classTag());
+            folds = MLUtils.kFold(r, numFolds, seed,
+                    trainDataset.classTag());
+
+        } else{
+            folds = (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[])new Object[1];
+            folds[0] = new Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>(r, r);
+        }
+
+
         double[][] matrix = new double[(int) trainDataset.count()][baseModels.size()];
 
 

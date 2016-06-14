@@ -9,11 +9,10 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
-import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +20,8 @@ import java.util.Map;
 /**
  * Created by pekasa on 07.06.16.
  */
-public class BaseModelsBuilder extends MLModelBuilder {
+public class BaseModelsBuilder {
 
-    public BaseModelsBuilder(MLModelConfigurationContext context) {
-        super(context);
-    }
-
-    @Override
-    public MLModel build() throws MLModelBuilderException {
-        return null;
-    }
 
     /**
 
@@ -41,33 +32,39 @@ public class BaseModelsBuilder extends MLModelBuilder {
         public MLModel buildBaseModels(String algorithmName, JavaRDD<LabeledPoint> trainingData,
                Map<String, String> algorithmParameters) throws MLModelBuilderException {
 
-        MLModelConfigurationContext context = getContext();
+
         MLModel mlModel = new MLModel();
         try {
-            Workflow workflow = context.getFacts();
+           // Workflow workflow = context.getFacts();
+            Workflow workflow = new Workflow();
+            workflow.setHyperParameters(algorithmParameters);
+            List<Map<String, Integer>> encodings = new ArrayList<>();
+            Map<String, Integer> mappings = new HashMap<String, Integer>();
+            encodings.add(mappings);
 
             // remove from cache
             // create a deployable MLModel object
-            mlModel.setAlgorithmName(workflow.getAlgorithmName());
-            mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
-            mlModel.setFeatures(workflow.getIncludedFeatures());
-            mlModel.setResponseVariable(workflow.getResponseVariable());
-            mlModel.setEncodings(context.getEncodings());
-            mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
+            mlModel.setAlgorithmName(algorithmName);
+            mlModel.setAlgorithmClass(MLConstants.CLASSIFICATION);
+           // mlModel.setFeatures(workflow.getIncludedFeatures());
+            //mlModel.setResponseVariable(workflow.getResponseVariable());
+            mlModel.setEncodings(encodings);
+            //mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
 
             Map<Integer, Integer> categoricalFeatureInfo;
+
 
             // build a machine learning model according to user selected algorithm
             MLConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLConstants.SUPERVISED_ALGORITHM.valueOf(algorithmName);
              switch (supervisedAlgorithm) {
 
                 case DECISION_TREE:
-                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                    categoricalFeatureInfo = getCategoricalFeatureInfo(encodings);
                     mlModel = buildDecisionTreeModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo);
                     break;
                 case RANDOM_FOREST_CLASSIFICATION:
-                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                    categoricalFeatureInfo = getCategoricalFeatureInfo(encodings);
                     mlModel = buildRandomForestClassificationModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo);
                     break;
@@ -122,7 +119,8 @@ public class BaseModelsBuilder extends MLModelBuilder {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
-            DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData, getNoOfClasses(mlModel),
+            DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
+                    Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLASSES)),
                     categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
@@ -146,7 +144,8 @@ public class BaseModelsBuilder extends MLModelBuilder {
         try {
             Map<String, String> hyperParameters = workflow.getHyperParameters();
             RandomForestClassifier randomForestClassifier = new RandomForestClassifier();
-            final RandomForestModel randomForestModel = randomForestClassifier.train(trainingData, getNoOfClasses(mlModel),
+            final RandomForestModel randomForestModel = randomForestClassifier.train(trainingData,
+                    Integer.parseInt(hyperParameters.get(MLConstants.NUM_CLASSES)),
                     categoricalFeatureInfo, Integer.parseInt(hyperParameters.get(MLConstants.NUM_TREES)),
                     hyperParameters.get(MLConstants.FEATURE_SUBSET_STRATEGY),
                     hyperParameters.get(MLConstants.IMPURITY),
