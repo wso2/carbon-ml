@@ -26,6 +26,9 @@ public class BaseModelsBuilder {
     /**
 
      create a switch statement for methods which call sparkmllibrary libraries and return models of MLModel type
+     @param algorithmName Name of algorithm to build
+     @param trainingData Training dataset
+     @param  algorithmParameters Hyperparameters of algorithm
       */
 
 
@@ -94,15 +97,6 @@ public class BaseModelsBuilder {
     }
 
 
-    private int getNoOfClasses(MLModel mlModel) {
-        if (mlModel.getEncodings() == null) {
-            return -1;
-        }
-        int responseIndex = mlModel.getEncodings().size() - 1;
-        return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size()
-                : -1;
-
-    }
     /**
      * This method builds a decision tree model
      *

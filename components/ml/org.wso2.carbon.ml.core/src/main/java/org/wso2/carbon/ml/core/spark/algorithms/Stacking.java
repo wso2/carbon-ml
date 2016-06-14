@@ -38,7 +38,7 @@ public class Stacking implements Serializable, ClassificationModel {
      * This method trains an Stacking ensemble model
      * @param sparkContext JavaSparkContext initialized with the application
      * @param modelId Model ID
-     * @param trainDataset Training dataset as a JavaRDD of labeled points
+     * @param trainData Training dataset as a JavaRDD of labeled points
      * @param baseModels   List of basemodels selected for ensembling using Stacking
      * @param paramsBaseAlgorithms Hyperparameters of Base-Algorithms
      * @param metaAlgorithm    Name of Meta-Algorithm
@@ -48,7 +48,7 @@ public class Stacking implements Serializable, ClassificationModel {
      * @return
      */
 
-    public void train(JavaSparkContext sparkContext,long modelId, JavaRDD<LabeledPoint> trainDataset, List<String> baseModels,
+    public void train(JavaSparkContext sparkContext,long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
                       List<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
                       Map<String, String> paramsMetaAlgorithm,
                       Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
@@ -63,22 +63,23 @@ public class Stacking implements Serializable, ClassificationModel {
         BaseModelsBuilder build = new BaseModelsBuilder();
 
 
-        RDD<LabeledPoint> r = trainDataset.rdd();
+        RDD<LabeledPoint> r = trainData.rdd();
         Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[] folds = null;
 
         if (numFolds > 1){
             // create a map from feature vector to some index. use this index in folds to track predicted datapoint.
 
             folds = MLUtils.kFold(r, numFolds, seed,
-                    trainDataset.classTag());
+                    trainData.classTag());
 
         } else{
-            folds = (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[])new Object[1];
-            folds[0] = new Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>(r, r);
+            throw new RuntimeException("not working yet: use folds > 1"); // TODO: Resolve casting problem
+            //folds = (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[])new Object[1];
+            //folds[0] = new Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>(r, r);
         }
 
 
-        double[][] matrix = new double[(int) trainDataset.count()][baseModels.size()];
+        double[][] matrix = new double[(int) trainData.count()][baseModels.size()];
 
 
         // JavaRDD<LabeledPoint> validationData
@@ -87,7 +88,7 @@ public class Stacking implements Serializable, ClassificationModel {
 
             int idx = 0;
             // train basemodels on whole Dataset
-            MLModel noCVbaseModel = build.buildBaseModels(model, trainDataset, paramsBaseAlgorithms.get(cnt));
+            MLModel noCVbaseModel = build.buildBaseModels(model, trainData, paramsBaseAlgorithms.get(cnt));
             // train basemodels on cross-validated Dataset
             for (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>> fold : folds) {
                 List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(fold._2().toJavaRDD());
@@ -108,7 +109,7 @@ public class Stacking implements Serializable, ClassificationModel {
 
         // Level-One-Dataset
         List<LabeledPoint> levelOneDataset = convert.matrixtoLabeledPoint(matrix, convert.getLabelsFolds(folds,
-                (int) trainDataset.count()));
+                (int) trainData.count()));
 
         JavaRDD<LabeledPoint> levelOneDistData = sparkContext.parallelize(levelOneDataset);
 
