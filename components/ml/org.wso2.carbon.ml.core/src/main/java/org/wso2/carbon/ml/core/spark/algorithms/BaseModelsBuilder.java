@@ -1,0 +1,176 @@
+package org.wso2.carbon.ml.core.spark.algorithms;
+
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.mllib.tree.model.DecisionTreeModel;
+import org.apache.spark.mllib.tree.model.RandomForestModel;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
+import org.wso2.carbon.ml.commons.domain.MLModel;
+import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
+import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
+import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
+import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
+import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by pekasa on 07.06.16.
+ */
+public class BaseModelsBuilder extends MLModelBuilder {
+
+    public BaseModelsBuilder(MLModelConfigurationContext context) {
+        super(context);
+    }
+
+    @Override
+    public MLModel build() throws MLModelBuilderException {
+        return null;
+    }
+
+    /**
+
+     create a switch statement for methods which call sparkmllibrary libraries and return models of MLModel type
+      */
+
+
+        public MLModel buildBaseModels(String algorithmName, JavaRDD<LabeledPoint> trainingData,
+               Map<String, String> algorithmParameters) throws MLModelBuilderException {
+
+        MLModelConfigurationContext context = getContext();
+        MLModel mlModel = new MLModel();
+        try {
+            Workflow workflow = context.getFacts();
+
+            // remove from cache
+            // create a deployable MLModel object
+            mlModel.setAlgorithmName(workflow.getAlgorithmName());
+            mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
+            mlModel.setFeatures(workflow.getIncludedFeatures());
+            mlModel.setResponseVariable(workflow.getResponseVariable());
+            mlModel.setEncodings(context.getEncodings());
+            mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
+
+            Map<Integer, Integer> categoricalFeatureInfo;
+
+            // build a machine learning model according to user selected algorithm
+            MLConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLConstants.SUPERVISED_ALGORITHM.valueOf(algorithmName);
+             switch (supervisedAlgorithm) {
+
+                case DECISION_TREE:
+                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                    mlModel = buildDecisionTreeModel(trainingData, workflow,
+                            mlModel, categoricalFeatureInfo);
+                    break;
+                case RANDOM_FOREST_CLASSIFICATION:
+                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+                    mlModel = buildRandomForestClassificationModel(trainingData, workflow,
+                            mlModel, categoricalFeatureInfo);
+                    break;
+
+
+                default:
+                    throw new AlgorithmNameException("Incorrect algorithm name");
+            }
+
+            return mlModel;
+        } catch (Exception e) {
+            throw new MLModelBuilderException(
+                    "An error occurred while building decision tree model: " + e.getMessage(), e);
+        }
+    }
+
+
+    private Map<Integer, Integer> getCategoricalFeatureInfo(List<Map<String, Integer>> encodings) {
+        Map<Integer, Integer> info = new HashMap<Integer, Integer>();
+        // skip the response variable which is at last
+        for (int i = 0; i < encodings.size() - 1; i++) {
+            if (encodings.get(i).size() > 0) {
+                info.put(i, encodings.get(i).size());
+            }
+        }
+        return info;
+    }
+
+
+    private int getNoOfClasses(MLModel mlModel) {
+        if (mlModel.getEncodings() == null) {
+            return -1;
+        }
+        int responseIndex = mlModel.getEncodings().size() - 1;
+        return mlModel.getEncodings().get(responseIndex) != null ? mlModel.getEncodings().get(responseIndex).size()
+                : -1;
+
+    }
+    /**
+     * This method builds a decision tree model
+     *
+
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param workflow Machine learning workflow
+     * @param mlModel Deployable machine learning model
+     * @throws MLModelBuilderException
+     */
+    private MLModel buildDecisionTreeModel(
+            JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
+             Map<Integer, Integer> categoricalFeatureInfo)
+            throws MLModelBuilderException {
+        try {
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            DecisionTree decisionTree = new DecisionTree();
+            DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData, getNoOfClasses(mlModel),
+                    categoricalFeatureInfo, hyperParameters.get(MLConstants.IMPURITY),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+
+            mlModel.setModel(new MLDecisionTreeModel(decisionTreeModel));
+
+
+            return mlModel;
+        } catch (Exception e) {
+            throw new MLModelBuilderException(
+                    "An error occurred while building decision tree model: " + e.getMessage(), e);
+        }
+
+    }
+    private MLModel buildRandomForestClassificationModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
+             Map<Integer, Integer> categoricalFeatureInfo) throws MLModelBuilderException {
+        try {
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            RandomForestClassifier randomForestClassifier = new RandomForestClassifier();
+            final RandomForestModel randomForestModel = randomForestClassifier.train(trainingData, getNoOfClasses(mlModel),
+                    categoricalFeatureInfo, Integer.parseInt(hyperParameters.get(MLConstants.NUM_TREES)),
+                    hyperParameters.get(MLConstants.FEATURE_SUBSET_STRATEGY),
+                    hyperParameters.get(MLConstants.IMPURITY),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_DEPTH)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.MAX_BINS)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+
+            // remove from cache
+
+            mlModel.setModel(new MLRandomForestModel(randomForestModel));
+
+
+            return mlModel;
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building random forest classification model: "
+                    + e.getMessage(), e);
+        }
+
+    }
+
+
+
+}
