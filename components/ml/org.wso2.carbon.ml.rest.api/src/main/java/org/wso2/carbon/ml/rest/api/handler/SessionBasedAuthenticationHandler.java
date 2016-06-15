@@ -11,6 +11,7 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.rest.api.RestAPIConstants;
 
 public class SessionBasedAuthenticationHandler implements RequestHandler {
@@ -22,6 +23,15 @@ public class SessionBasedAuthenticationHandler implements RequestHandler {
         // if the request is already authenticated, then skip this handler and continue
         if (AuthenticationContext.isAthenticated()) {
             return null;
+        }
+        
+        if (System.getProperty(MLConstants.DISABLE_ML) != null) {
+            if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML))) {
+                logger.error("Machine Learner API has been disabled. Set -D" + MLConstants.DISABLE_ML
+                        + "=false JVM argument to enable it back.");
+                return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON)
+                        .entity("Machine Learner API has been disabled.").build();
+            }
         }
         
         HttpServletRequest httpServletRequest = (HttpServletRequest) message.get(RestAPIConstants.HTTP_REQUEST_HEADER);
