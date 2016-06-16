@@ -54,10 +54,10 @@ public class Stacking implements Serializable, ClassificationModel {
                       Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
             MLModelBuilderException {
 
-        // Step1. train list of level0models on cvdata
-        // Step2. get predictions of each List<?> and combine predictions to get level1 dataset
-        // Step3. train level1model on level1 dataset
-        // Step4. train level0models on whole dataset and store list of models
+        // Step1. train list of level0models on cross-validated data
+        // Step2. get predictions of each List<?> and combine predictions to get level1 data
+        // Step3. train level1model on level1 data
+        // Step4. train level0models on whole data and store list of models
 
         Util convert = new Util();
         BaseModelsBuilder build = new BaseModelsBuilder();
@@ -67,7 +67,7 @@ public class Stacking implements Serializable, ClassificationModel {
         Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[] folds = null;
 
         if (numFolds > 1){
-            // create a map from feature vector to some index. use this index in folds to track predicted datapoint.
+            // create a map from feature vector to some index. use this index in folds to track predicted datapoints.
 
             folds = MLUtils.kFold(r, numFolds, seed,
                     trainData.classTag());
@@ -82,7 +82,6 @@ public class Stacking implements Serializable, ClassificationModel {
         double[][] matrix = new double[(int) trainData.count()][baseModels.size()];
 
 
-        // JavaRDD<LabeledPoint> validationData
         int cnt = 0;
         for (String model : baseModels) {
 
@@ -92,7 +91,6 @@ public class Stacking implements Serializable, ClassificationModel {
             // train basemodels on cross-validated Dataset
             for (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>> fold : folds) {
                 List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(fold._2().toJavaRDD());
-                System.out.println("SIZES: " + fold._1().count() + ", " + fold._2().count());
                 MLModel baseModel = build.buildBaseModels(model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt));
                 Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted);
                 List<Double> predictions = (List<Double>) predictor.predict();

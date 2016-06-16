@@ -53,7 +53,6 @@ import org.wso2.carbon.ml.core.spark.summary.ProbabilisticClassificationModelSum
 import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-import org.wso2.carbon.ml.core.utils.Util;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import scala.Tuple2;
@@ -836,14 +835,14 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             ArrayList<String> listBaseAlgorithms = new ArrayList<>();
             ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
             String paramsMetaMap = hyperParameters.get(MLConstants.PARAMS_META_ALGORITHM);
-            Map<String , String> paramsMetaAlgorithm = (Map<String, String>) Util.deserializeObjectFromString(paramsMetaMap);
+            Map<String , String> paramsMetaAlgorithm = (Map<String, String>) SerializeParameter.fromString(paramsMetaMap);
 
 
             for(int i = 0; i < numBaseModels; i++){
                 String algoName = hyperParameters.get(MLConstants.NAME_BASE_ALGORITHM + i);
                 listBaseAlgorithms.add(algoName);
                 String paramsMap = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
-                Map<String, String> params = (Map<String, String>) Util.deserializeObjectFromString(paramsMap);
+                Map<String, String> params = (Map<String, String>) SerializeParameter.fromString(paramsMap);
                 paramsBaseAlgorithms.add(params);
             }
 
