@@ -97,7 +97,10 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     /**
      * Build a supervised model.
      */
-    public MLModel build() throws MLModelBuilderException {
+
+
+
+        public MLModel build() throws MLModelBuilderException {
         MLModelConfigurationContext context = getContext();
         JavaSparkContext sparkContext = null;
         DatabaseService databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
@@ -836,7 +839,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
             String paramsMetaMap = hyperParameters.get(MLConstants.PARAMS_META_ALGORITHM);
             Map<String , String> paramsMetaAlgorithm = (Map<String, String>) SerializeParameter.fromString(paramsMetaMap);
-
 
             for(int i = 0; i < numBaseModels; i++){
                 String algoName = hyperParameters.get(MLConstants.NAME_BASE_ALGORITHM + i);

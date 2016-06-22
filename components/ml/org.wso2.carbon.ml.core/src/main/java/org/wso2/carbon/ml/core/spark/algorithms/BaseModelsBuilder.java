@@ -1,6 +1,7 @@
 package org.wso2.carbon.ml.core.spark.algorithms;
 
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.classification.NaiveBayesModel;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.tree.model.DecisionTreeModel;
 import org.apache.spark.mllib.tree.model.RandomForestModel;
@@ -9,6 +10,7 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
+import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 
@@ -37,6 +39,7 @@ public class BaseModelsBuilder {
 
 
         MLModel mlModel = new MLModel();
+
         try {
            // Workflow workflow = context.getFacts();
             Workflow workflow = new Workflow();
@@ -71,6 +74,9 @@ public class BaseModelsBuilder {
                     mlModel = buildRandomForestClassificationModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo);
                     break;
+                 case NAIVE_BAYES:
+                     mlModel = buildNaiveBayesModel(trainingData,workflow ,mlModel);
+                     break;
 
 
                 default:
@@ -164,6 +170,33 @@ public class BaseModelsBuilder {
 
     }
 
+    /**
+     * This method builds a naive bayes model
+     *
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param workflow Machine learning workflow
+     * @param mlModel Deployable machine learning model
+     * @throws MLModelBuilderException
+     */
+    private MLModel buildNaiveBayesModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel) throws MLModelBuilderException {
+        try {
+            Map<String, String> hyperParameters = workflow.getHyperParameters();
+            NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
+            NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData,
+                    Double.parseDouble(hyperParameters.get(MLConstants.LAMBDA)));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+
+            mlModel.setModel(new MLClassificationModel(naiveBayesModel));
+
+            return mlModel;
+        } catch (Exception e) {
+            throw new MLModelBuilderException("An error occurred while building naive bayes model: " + e.getMessage(),
+                    e);
+        }
+    }
 
 
 }
