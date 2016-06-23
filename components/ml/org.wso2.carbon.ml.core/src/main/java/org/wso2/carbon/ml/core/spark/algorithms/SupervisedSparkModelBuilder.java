@@ -883,8 +883,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
 
             return classClassificationAndRegressionModelSummary;
-
-
+            
 
         }catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building stacking model: " + e.getMessage(),
