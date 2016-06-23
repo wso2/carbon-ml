@@ -206,12 +206,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 summaryModel = buildStackingModel(sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures);
                 break;
-
-
-
-
-
-            default:
+           default:
                 throw new AlgorithmNameException("Incorrect algorithm name");
             }
 
@@ -833,28 +828,31 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
         try{
-            Map<String, String> hyperParameters = workflow.getHyperParameters();
-            int numBaseModels = Integer.parseInt(hyperParameters.get(MLConstants.NUM_BASE_ALGORITHMS));
+            Map<String, Map<String, String>> hyperParameters = workflow.getAllHyperParameters();
+           // Map<String, String> hyperParameters = workflow.getHyperParameters();
+            int numBaseModels = hyperParameters.keySet().size();
             ArrayList<String> listBaseAlgorithms = new ArrayList<>();
             ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
-            String paramsMetaMap = hyperParameters.get(MLConstants.PARAMS_META_ALGORITHM);
-            Map<String , String> paramsMetaAlgorithm = (Map<String, String>) SerializeParameter.fromString(paramsMetaMap);
+            Map<String , String> paramsMetaAlgorithm = hyperParameters.get(MLConstants.NAME_META_ALGORITHM);
 
+            Set<String> keys = hyperParameters.keySet();
+            Iterator<String> it = keys.iterator();
             for(int i = 0; i < numBaseModels; i++){
-                String algoName = hyperParameters.get(MLConstants.NAME_BASE_ALGORITHM + i);
+                String algoName = it.next() + i;
                 listBaseAlgorithms.add(algoName);
-                String paramsMap = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
-                Map<String, String> params = (Map<String, String>) SerializeParameter.fromString(paramsMap);
+               // String paramsMap = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
+                //Map<String, String> params = (Map<String, String>) SerializeParameter.fromString(paramsMap);
+                Map<String, String> params = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
                 paramsBaseAlgorithms.add(params);
             }
 
             Stacking stackedModel = new Stacking();
 
             stackedModel.train(sparkContext,modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
-                    hyperParameters.get(MLConstants.NAME_META_ALGORITHM),
+                    MLConstants.NAME_META_ALGORITHM,
                     paramsMetaAlgorithm,
-                    Integer.parseInt(hyperParameters.get(MLConstants.FOLDS)),
-                    Integer.parseInt(hyperParameters.get(MLConstants.SEED)));
+                    Integer.parseInt(hyperParameters.get("STACKING").get(MLConstants.FOLDS)),
+                    Integer.parseInt(hyperParameters.get("STACKING").get(MLConstants.SEED)));
 
             mlModel.setModel(new MLClassificationModel(stackedModel));
 
