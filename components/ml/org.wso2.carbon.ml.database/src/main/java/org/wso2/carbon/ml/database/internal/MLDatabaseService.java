@@ -1976,11 +1976,7 @@ public class MLDatabaseService implements DatabaseService {
             statement.setInt(2, tenantId);
             statement.setString(3, userName);
             result = statement.executeQuery();
-            if (result.first()) {
-                return true;
-            } else {
-                return false;
-            }
+            return result.first();
         } catch (SQLException e) {
             throw new DatabaseHandlerException(" An error has occurred while extracting model name for model id: "
                     + modelId, e);
@@ -2154,7 +2150,7 @@ public class MLDatabaseService implements DatabaseService {
                 getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS_WITH_ALGORITHM);
                 getFeatues.setLong(1, analysisId);
                 getFeatues.setString(2, algorithmName);
-            }
+                 }
             result = getFeatues.executeQuery();
             while (result.next()) {
                 MLHyperParameter param = new MLHyperParameter();
@@ -2173,8 +2169,10 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Map<String, String> getHyperParametersOfModelAsMap(long analysisId) throws DatabaseHandlerException {
-        Map<String, String> hyperParams = new HashMap<String, String>();
+
+    public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId) throws DatabaseHandlerException {
+        Map<String, Map<String, String>> hyperParams = new HashMap<>();
+        Map<String, String> hyperParamsModel = new HashMap<>();
         Connection connection = null;
         PreparedStatement getFeatues = null;
         ResultSet result = null;
@@ -2182,12 +2180,48 @@ public class MLDatabaseService implements DatabaseService {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
+            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS_WITH_ALGORITHM);
+            getFeatues.setLong(1, analysisId);
+           // getFeatues.setString(2, algorithmName);
+            result = getFeatues.executeQuery();
+            System.out.println("Result" + result);
+            while (result.next()) {
+                hyperParamsModel.put(result.getString(1), result.getString(2));
+                hyperParams.put(result.getString(2),hyperParamsModel);
+            }
+            return hyperParams;
+        } catch (SQLException e) {
+            throw new DatabaseHandlerException("An error occurred while retrieving hyper parameters of "
+                    + "the analysis: " + analysisId + ": " + e.getMessage(), e);
+        } finally {
+            // Close the database resources.
+            MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
+        }
+    }
+
+
+    @Override
+    public Map<String, String> getHyperParametersOfModelAsMap(long analysisId) throws DatabaseHandlerException {
+        Map<String,  String> hyperParams = new HashMap<>();
+        Connection connection = null;
+        PreparedStatement getFeatues = null;
+        ResultSet result = null;
+        try {
+            // Create a prepared statement and retrieve data-set configurations.
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(true);
+            System.out.print("CONNECTION" +connection.toString());
             getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
             getFeatues.setLong(1, analysisId);
             result = getFeatues.executeQuery();
+            System.out.println("RESULT_1"+result.getString(1));
+            System.out.println("RESULT_2"+result.getString(2));
+
             while (result.next()) {
                 hyperParams.put(result.getString(1), result.getString(2));
             }
+            System.out.println("Hyperparameters "+hyperParams);
+
             return hyperParams;
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving hyper parameters of "
@@ -2468,7 +2502,8 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setNewAnomalyLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL));
 
             // set hyper parameters
-            mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
+            //mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
+            mlWorkflow.setAllHyperParameters(getHyperParametersOfModelWithNameAsMap(analysisId));
             // result = getStatement.executeQuery();
             // if (result.first()) {
             // mlWorkflow.setAlgorithmClass(result.getString(1));
@@ -2478,6 +2513,7 @@ public class MLDatabaseService implements DatabaseService {
             // List<HyperParameter> hyperParameters = (List<HyperParameter>) result.getObject(5);
             // mlWorkflow.setHyperParameters(MLDatabaseUtils.getHyperParamsAsAMap(hyperParameters));
             // }
+            System.out.println("Workflow" +mlWorkflow);
             return mlWorkflow;
         } catch (SQLException e) {
             throw new DatabaseHandlerException(e.getMessage(), e);
