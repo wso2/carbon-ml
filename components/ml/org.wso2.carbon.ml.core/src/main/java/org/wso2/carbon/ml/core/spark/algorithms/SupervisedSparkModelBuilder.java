@@ -208,7 +208,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 MLModelConfigurationContext cxt = context;
                 summaryModel = buildStackingModel(cxt, sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures);
-                //throw new RuntimeException("testing exception!");
                 break;
            default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + supervisedAlgorithm.toString());
