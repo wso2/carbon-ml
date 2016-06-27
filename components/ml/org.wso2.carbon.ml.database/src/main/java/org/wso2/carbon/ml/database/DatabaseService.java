@@ -29,7 +29,7 @@ public interface DatabaseService {
     /**
      * Returns ML Configuration.
      */
-    public MLConfiguration getMlConfiguration();
+    MLConfiguration getMlConfiguration();
 
     /**
      * Insert a new dataset-schema into the database.
@@ -37,7 +37,7 @@ public interface DatabaseService {
      * @param dataset MLDataset to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
+    void insertDatasetSchema(MLDataset dataset) throws DatabaseHandlerException;
 
     /**
      * Insert a new dataset-version into the database.
@@ -45,7 +45,7 @@ public interface DatabaseService {
      * @param datasetVersion MLDatasetVersion to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertDatasetVersion(MLDatasetVersion datasetVersion) throws DatabaseHandlerException;
+    void insertDatasetVersion(MLDatasetVersion datasetVersion) throws DatabaseHandlerException;
 
     /**
      * Insert a new project to the database.
@@ -53,7 +53,7 @@ public interface DatabaseService {
      * @param project MLProject to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertProject(MLProject project) throws DatabaseHandlerException;
+    void insertProject(MLProject project) throws DatabaseHandlerException;
 
     /**
      * Insert a new analysis into the database.
@@ -61,7 +61,7 @@ public interface DatabaseService {
      * @param analysis MLAnalysis to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException;
+    void insertAnalysis(MLAnalysis analysis) throws DatabaseHandlerException;
 
     /**
      * Insert a new model into the database.
@@ -69,7 +69,7 @@ public interface DatabaseService {
      * @param model MLModelNew to be inserted
      * @throws DatabaseHandlerException
      */
-    public void insertModel(MLModelData model) throws DatabaseHandlerException;
+    void insertModel(MLModelData model) throws DatabaseHandlerException;
 
     /**
      * Retrieves the path of the value-set having the given ID, from the
@@ -79,7 +79,7 @@ public interface DatabaseService {
      * @return Absolute path of a given dataset-version
      * @throws DatabaseHandlerException
      */
-    public String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
+    String getDatasetVersionUri(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Retrieves the path of the value-set having the given ID, from the
@@ -89,7 +89,7 @@ public interface DatabaseService {
      * @return Absolute path of a given dataset
      * @throws DatabaseHandlerException
      */
-    public String getDatasetUri(long datasetId) throws DatabaseHandlerException;
+    String getDatasetUri(long datasetId) throws DatabaseHandlerException;
 
     /**
      * Get the dataset id.
@@ -100,7 +100,7 @@ public interface DatabaseService {
      * @return Unique Id of the data-set
      * @throws DatabaseHandlerException
      */
-    public long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
+    long getDatasetId(String datasetName, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get the dataset-version id.
@@ -111,7 +111,7 @@ public interface DatabaseService {
      * @return ID of the dataset version
      * @throws DatabaseHandlerException
      */
-    public long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException;
+    long getVersionsetId(String datasetVersionName, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Returns data points of the selected sample as coordinates of three
@@ -121,7 +121,7 @@ public interface DatabaseService {
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
+    List<Object> getScatterPlotPoints(ScatterPlotPoints scatterPlotPoints) throws DatabaseHandlerException;
 
     /**
      * Returns sample data for selected features.
@@ -133,7 +133,7 @@ public interface DatabaseService {
      * @return A JSON array of data points
      * @throws DatabaseHandlerException
      */
-    public List<Object> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
+    List<Object> getChartSamplePoints(int tenantId, String user, long versionsetId, String featureListString)
             throws DatabaseHandlerException;
 
     /**
@@ -148,8 +148,8 @@ public interface DatabaseService {
      * @return A list of Feature objects
      * @throws DatabaseHandlerException
      */
-    public List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
-                                            int numberOfFeatures) throws DatabaseHandlerException;
+    List<FeatureSummary> getFeatures(int tenantId, String userName, long analysisId, int startIndex,
+                                     int numberOfFeatures) throws DatabaseHandlerException;
 
     /**
      * Returns the customized set of features of an analysis in a given range, from the alphabetically ordered set
@@ -163,8 +163,8 @@ public interface DatabaseService {
      * @return A list of Feature objects
      * @throws DatabaseHandlerException
      */
-    public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int startIndex,
-                                            int numberOfFeatures) throws DatabaseHandlerException;
+    List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int startIndex,
+                                                    int numberOfFeatures) throws DatabaseHandlerException;
 
     /**
      * Returns the names of the features, belongs to a particular type
@@ -175,7 +175,7 @@ public interface DatabaseService {
      * @return A list of feature names
      * @throws DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String analysisId, String featureType) throws DatabaseHandlerException;
+    List<String> getFeatureNames(String analysisId, String featureType) throws DatabaseHandlerException;
 
     /**
      * Returns all the feature names of an analysis.
@@ -184,7 +184,7 @@ public interface DatabaseService {
      * @return A list of feature names
      * @throws DatabaseHandlerException
      */
-    public List<String> getFeatureNames(String analysisId) throws DatabaseHandlerException;
+    List<String> getFeatureNames(String analysisId) throws DatabaseHandlerException;
 
     /**
      * Returns the names of the features, belongs to a particular type
@@ -195,7 +195,7 @@ public interface DatabaseService {
      * @return A list of feature names
      * @throws DatabaseHandlerException
      */
-    public List<String> getFeatureNames(long datasetId, String featureType) throws DatabaseHandlerException;
+    List<String> getFeatureNames(long datasetId, String featureType) throws DatabaseHandlerException;
 
     /**
      * Retrieve and returns the Summary statistics for a given feature of a
@@ -208,7 +208,7 @@ public interface DatabaseService {
      * @return JSON string containing the summary statistics
      * @throws DatabaseHandlerException
      */
-    public String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException;
+    String getSummaryStats(int tenantId, String user, long analysisId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Retrieve and returns summary statistics for a given feature of a given dataset.
@@ -218,7 +218,7 @@ public interface DatabaseService {
      * @return JSON string containing summary statistics
      * @throws DatabaseHandlerException
      */
-    public String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException;
+    String getSummaryStats(long datasetId, String featureName) throws DatabaseHandlerException;
 
     /**
      * Retrieve the SamplePoints object for a given version-set.
@@ -229,7 +229,7 @@ public interface DatabaseService {
      * @return {@link SamplePoints} object of the dataset version
      * @throws DatabaseHandlerException
      */
-    public SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException;
+    SamplePoints getVersionsetSample(int tenantId, String user, long versionsetId) throws DatabaseHandlerException;
 
     /**
      * Returns the number of features of a given data-set version.
@@ -238,7 +238,7 @@ public interface DatabaseService {
      * @return Number of features in the dataset version
      * @throws DatabaseHandlerException
      */
-    public int getFeatureCount(long datasetVersionId) throws DatabaseHandlerException;
+    int getFeatureCount(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Update the database with the summary stats of data-set-version.
@@ -248,7 +248,7 @@ public interface DatabaseService {
      * @param summaryStats     Summary stats
      * @throws DatabaseHandlerException
      */
-    public void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats) 
+    void updateSummaryStatistics(long datasetSchemaId, long datasetVersionId, SummaryStats summaryStats)
             throws DatabaseHandlerException;
 
     /**
@@ -258,7 +258,7 @@ public interface DatabaseService {
      * @param samplePoints     Sample points of this dataset version
      * @throws DatabaseHandlerException
      */
-    public void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException;
+    void updateSamplePoints(long datasetVersionId, SamplePoints samplePoints) throws DatabaseHandlerException;
 
     /**
      * Delete the project.
@@ -268,7 +268,7 @@ public interface DatabaseService {
      * @param projectId ID of the project
      * @throws DatabaseHandlerException
      */
-    public void deleteProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+    void deleteProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
 
     /**
      * Insert a list of Customized-Features into the database.
@@ -279,8 +279,8 @@ public interface DatabaseService {
      * @param userName           Username
      * @throws DatabaseHandlerException
      */
-    public void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures,int tenantId,
-            String userName) throws DatabaseHandlerException;
+    void insertFeatureCustomized(long analysisId, List<MLCustomizedFeature> customizedFeatures, int tenantId,
+                                 String userName) throws DatabaseHandlerException;
 
     /**
      * Insert a list of ModelConfiguration into the database.
@@ -289,7 +289,7 @@ public interface DatabaseService {
      * @param modelConfigs MLModelConfiguration list
      * @throws DatabaseHandlerException
      */
-    public void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
+    void insertModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws DatabaseHandlerException;
 
     /**
@@ -300,7 +300,7 @@ public interface DatabaseService {
      * @param algorithmName   Algorithm name
      * @throws DatabaseHandlerException
      */
-    public void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName)
+    void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName)
             throws DatabaseHandlerException;
 
     /**
@@ -310,7 +310,7 @@ public interface DatabaseService {
      * @param modelSummary ModelSummary
      * @throws DatabaseHandlerException
      */
-    public void updateModelSummary(long modelId, ModelSummary modelSummary) throws DatabaseHandlerException;
+    void updateModelSummary(long modelId, ModelSummary modelSummary) throws DatabaseHandlerException;
 
     /**
      * Update the storage details of a model.
@@ -320,7 +320,7 @@ public interface DatabaseService {
      * @param location    Storage location
      * @throws DatabaseHandlerException
      */
-    public void updateModelStorage(long modelId, String storageType, String location) throws DatabaseHandlerException;
+    void updateModelStorage(long modelId, String storageType, String location) throws DatabaseHandlerException;
 
     /**
      * Check whether the given modelId is valid.
@@ -331,7 +331,7 @@ public interface DatabaseService {
      * @return Validity of the model ID
      * @throws DatabaseHandlerException
      */
-    public boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+    boolean isValidModelId(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
      * Check whether the model is in a valid state.
@@ -342,7 +342,7 @@ public interface DatabaseService {
      * @return Validity of the model status
      * @throws DatabaseHandlerException
      */
-    public boolean isValidModelStatus(long modelId, int tenantId, String userName) throws DatabaseHandlerException;
+    boolean isValidModelStatus(long modelId, int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get the ID of the dataset version used to generate the model.
@@ -351,7 +351,7 @@ public interface DatabaseService {
      * @return Dataset version ID
      * @throws DatabaseHandlerException
      */
-    public long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
+    long getDatasetVersionIdOfModel(long modelId) throws DatabaseHandlerException;
 
     /**
      * Get the dataset schema ID of the dataset version.
@@ -360,7 +360,7 @@ public interface DatabaseService {
      * @return Dataset ID
      * @throws DatabaseHandlerException
      */
-    public long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
+    long getDatasetId(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Get the data type of the model.
@@ -369,7 +369,7 @@ public interface DatabaseService {
      * @return Data type of the model
      * @throws DatabaseHandlerException
      */
-    public String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
+    String getDataTypeOfModel(long modelId) throws DatabaseHandlerException;
 
     /**
      * Get a string value of model configuration.
@@ -379,7 +379,7 @@ public interface DatabaseService {
      * @return Model configuration as a string
      * @throws DatabaseHandlerException
      */
-    public String getAStringModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
+    String getAStringModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
     /**
      * Get a double value of model configuration.
@@ -389,7 +389,7 @@ public interface DatabaseService {
      * @return Model configuration as a double
      * @throws DatabaseHandlerException
      */
-    public double getADoubleModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
+    double getADoubleModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
     /**
      * Get a boolean value of model configuration.
@@ -399,7 +399,7 @@ public interface DatabaseService {
      * @return Model configuration as a double
      * @throws DatabaseHandlerException
      */
-    public boolean getABooleanModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
+    boolean getABooleanModelConfiguration(long analysisId, String configKey) throws DatabaseHandlerException;
 
     /**
      * Get the list of Hyper-parameters of the model.
@@ -409,7 +409,17 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLHyperParameter} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLHyperParameter> getHyperParametersOfModel(long analysisId, String algorithmName) throws DatabaseHandlerException;
+    List<MLHyperParameter> getHyperParametersOfModel(long analysisId, String algorithmName) throws DatabaseHandlerException;
+
+    /**
+     * Get the Hyper-parameters of the model as a Map.
+     *
+     * @param modelId unique id of the model
+
+     * @return String map of model hyper-parameters
+     * @throws DatabaseHandlerException
+     */
+    Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long modelId) throws DatabaseHandlerException;
 
     /**
      * Get the Hyper-parameters of the model as a Map.
@@ -418,7 +428,7 @@ public interface DatabaseService {
      * @return String map of model hyper-parameters
      * @throws DatabaseHandlerException
      */
-    public Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
+    Map<String, String> getHyperParametersOfModelAsMap(long modelId) throws DatabaseHandlerException;
 
     /**
      * Get the workflow of the analysis.
@@ -427,7 +437,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.Workflow} object
      * @throws DatabaseHandlerException
      */
-    public Workflow getWorkflow(long analysisId) throws DatabaseHandlerException;
+    Workflow getWorkflow(long analysisId) throws DatabaseHandlerException;
 
     /**
      * Get the Model storage of the model.
@@ -436,7 +446,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLStorage} object
      * @throws DatabaseHandlerException
      */
-    public MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
+    MLStorage getModelStorage(long modelId) throws DatabaseHandlerException;
 
     /**
      * Get the project having the given project name.
@@ -447,7 +457,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLProject} object
      * @throws DatabaseHandlerException
      */
-    public MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
+    MLProject getProject(int tenantId, String userName, String projectName) throws DatabaseHandlerException;
 
     /**
      * Returns project object for a given project ID from the database.
@@ -458,7 +468,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLProject} object
      * @throws DatabaseHandlerException
      */
-    public MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+    MLProject getProject(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
 
     /**
      * Get all the projects of the given tenant and username.
@@ -468,7 +478,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLProject} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
+    List<MLProject> getAllProjects(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get all models of a given project.
@@ -479,7 +489,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
+    List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws DatabaseHandlerException;
 
     /**
      * Get all the analyses of the given tenant and username.
@@ -489,7 +499,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
+    List<MLAnalysis> getAllAnalyses(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get the Model having the given model name.
@@ -500,7 +510,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
      * @throws DatabaseHandlerException
      */
-    public MLModelData getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
+    MLModelData getModel(int tenantId, String userName, String modelName) throws DatabaseHandlerException;
 
     /**
      * Get the model name identified by the given model id.
@@ -511,7 +521,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLModelData} object
      * @throws DatabaseHandlerException
      */
-    public MLModelData getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+    MLModelData getModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
      * Get all models of the given tenant and username.
@@ -521,7 +531,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLModelData> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
+    List<MLModelData> getAllModels(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get all the dataset-versions of the given dataset schema.
@@ -532,7 +542,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLDatasetVersion> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
+    List<MLDatasetVersion> getAllVersionsetsOfDataset(int tenantId, String userName, long datasetId)
             throws DatabaseHandlerException;
 
     /**
@@ -543,7 +553,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLDataset} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
+    List<MLDataset> getAllDatasets(int tenantId, String userName) throws DatabaseHandlerException;
 
     /**
      * Get the dataset schema identified by the given dataset schema id.
@@ -554,7 +564,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLDataset} object
      * @throws DatabaseHandlerException
      */
-    public MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
+    MLDataset getDataset(int tenantId, String userName, long datasetId) throws DatabaseHandlerException;
 
     /**
      * Get the dataset-version identified by the given dataset-version id.
@@ -565,7 +575,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} object
      * @throws DatabaseHandlerException
      */
-    public MLDatasetVersion getVersionset(int tenantId, String userName, long datasetVersionId) throws DatabaseHandlerException;
+    MLDatasetVersion getVersionset(int tenantId, String userName, long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Get the unique identifier of the dataset version given the dataset schema and the version.
@@ -577,7 +587,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLDatasetVersion} object
      * @throws DatabaseHandlerException
      */
-    public MLDatasetVersion getVersionSetWithVersion(long datasetId, String version, int tenantId, String userName)
+    MLDatasetVersion getVersionSetWithVersion(long datasetId, String version, int tenantId, String userName)
             throws DatabaseHandlerException;
 
     /**
@@ -587,7 +597,7 @@ public interface DatabaseService {
      * @param customizedValues customized feature
      * @throws DatabaseHandlerException
      */
-    public void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues)
+    void insertDefaultsIntoFeatureCustomized(long analysisId, MLCustomizedFeature customizedValues)
             throws DatabaseHandlerException;
 
     /**
@@ -597,7 +607,7 @@ public interface DatabaseService {
      * @return ID of the dataset schema
      * @throws DatabaseHandlerException
      */
-    public long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException;
+    long getDatasetSchemaIdFromAnalysisId(long analysisId) throws DatabaseHandlerException;
 
     /**
      * Delete the model from the database.
@@ -607,7 +617,7 @@ public interface DatabaseService {
      * @param modelId  model id
      * @throws DatabaseHandlerException
      */
-    public void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
+    void deleteModel(int tenantId, String userName, long modelId) throws DatabaseHandlerException;
 
     /**
      * Get all the analyses of a project.
@@ -618,7 +628,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
+    List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId)
             throws DatabaseHandlerException;
 
     /**
@@ -630,7 +640,7 @@ public interface DatabaseService {
      * @return List of {@link org.wso2.carbon.ml.commons.domain.MLModelData} objects
      * @throws DatabaseHandlerException
      */
-    public List<MLModelData> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
+    List<MLModelData> getAllModels(int tenantId, String userName, long analysisId) throws DatabaseHandlerException;
 
     /**
      * Retrieve summary of the model.
@@ -639,7 +649,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.ModelSummary} object
      * @throws DatabaseHandlerException
      */
-    public ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
+    ModelSummary getModelSummary(long modelId) throws DatabaseHandlerException;
 
     /**
      * Update model status.
@@ -667,7 +677,7 @@ public interface DatabaseService {
      * @param datasetId unique id of dataset schema
      * @throws DatabaseHandlerException
      */
-    public void deleteDataset(long datasetId) throws DatabaseHandlerException;
+    void deleteDataset(long datasetId) throws DatabaseHandlerException;
 
     /**
      * Delete the dataset version.
@@ -675,7 +685,7 @@ public interface DatabaseService {
      * @param datasetVersionId unique id of dataset version
      * @throws DatabaseHandlerException
      */
-    public void deleteDatasetVersion(long datasetVersionId) throws DatabaseHandlerException;
+    void deleteDatasetVersion(long datasetVersionId) throws DatabaseHandlerException;
 
     /**
      * Returns an analysis of a given name in a given project.
@@ -687,7 +697,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.MLAnalysis} object
      * @throws DatabaseHandlerException
      */
-    public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws DatabaseHandlerException;
+    MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws DatabaseHandlerException;
 
     /**
      * Delete an analysis.

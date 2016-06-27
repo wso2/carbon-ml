@@ -68,7 +68,9 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
-    
+    private MLModelConfiguration context;
+
+
     public JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
         JavaRDD<String> lines = null;
         try {
@@ -203,11 +205,13 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case STACKING:
-                summaryModel = buildStackingModel(sparkContext, modelId, trainingData, testingData, workflow,
+                MLModelConfigurationContext cxt = context;
+                summaryModel = buildStackingModel(cxt, sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures);
+                //throw new RuntimeException("testing exception!");
                 break;
            default:
-                throw new AlgorithmNameException("Incorrect algorithm name");
+                throw new AlgorithmNameException("Incorrect algorithm name: " + supervisedAlgorithm.toString());
             }
 
             // persist model summary
@@ -823,7 +827,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
     */
-    private ModelSummary buildStackingModel(JavaSparkContext sparkContext, long modelID,
+    public ModelSummary buildStackingModel(MLModelConfigurationContext cxt, JavaSparkContext sparkContext, long modelID,
             JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
@@ -845,6 +849,8 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                 Map<String, String> params = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
                 paramsBaseAlgorithms.add(params);
             }
+            System.out.println("PBA" + paramsBaseAlgorithms);
+            System.out.println("PMA" + paramsMetaAlgorithm);
 
             Stacking stackedModel = new Stacking();
 
@@ -881,9 +887,10 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
             classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+            System.out.println("MODEL_SUMMARY"+classClassificationAndRegressionModelSummary);
 
             return classClassificationAndRegressionModelSummary;
-            
+
 
         }catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building stacking model: " + e.getMessage(),
