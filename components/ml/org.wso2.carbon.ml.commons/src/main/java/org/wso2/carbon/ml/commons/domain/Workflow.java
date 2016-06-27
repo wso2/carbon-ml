@@ -263,6 +263,9 @@ public class Workflow implements Serializable {
 
         return  hyperParameters;
     }
+        /**
+     * @return Returns hyper parameters and name of model
+     */
     public Map<String, Map<String, String>> getAllHyperParameters(){
         return allHyperParameters;
     }
