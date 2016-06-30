@@ -2113,6 +2113,7 @@ public class MLDatabaseService implements DatabaseService {
                 insertStatement.execute();
             }
 
+
             connection.commit();
             if (logger.isDebugEnabled()) {
                 logger.debug("Successfully inserted the hyper parameter");
@@ -2170,7 +2171,7 @@ public class MLDatabaseService implements DatabaseService {
 
     @Override
 
-    public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId) throws DatabaseHandlerException {
+    public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId, String algorithmName) throws DatabaseHandlerException {
         Map<String, Map<String, String>> hyperParams = new HashMap<>();
         Map<String, String> hyperParamsModel = new HashMap<>();
         Connection connection = null;
@@ -2182,7 +2183,7 @@ public class MLDatabaseService implements DatabaseService {
             connection.setAutoCommit(true);
             getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS_WITH_ALGORITHM);
             getFeatues.setLong(1, analysisId);
-           // getFeatues.setString(2, algorithmName);
+            getFeatues.setString(2, algorithmName);
             result = getFeatues.executeQuery();
             System.out.println("Result" + result);
             while (result.next()) {
@@ -2503,7 +2504,7 @@ public class MLDatabaseService implements DatabaseService {
 
             // set hyper parameters
             //mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
-            mlWorkflow.setAllHyperParameters(getHyperParametersOfModelWithNameAsMap(analysisId));
+            mlWorkflow.setAllHyperParameters(getHyperParametersOfModelWithNameAsMap(analysisId, MLConstants.ALGORITHM_NAME));
             // result = getStatement.executeQuery();
             // if (result.first()) {
             // mlWorkflow.setAlgorithmClass(result.getString(1));
