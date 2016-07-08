@@ -26,6 +26,8 @@ public class MLConstants {
 
     }
 
+    public static final String DISABLE_ML = "disableMl";
+    
     public static final String ML_MODEL_TABLE_NAME = "ml_model_store";
 
     public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";

@@ -26,7 +26,6 @@ import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.commons.domain.MLProject;
 import org.wso2.carbon.ml.core.exceptions.MLProjectHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
@@ -34,21 +33,21 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
  */
 public class MLProjectHandler {
     private static final Log log = LogFactory.getLog(MLProjectHandler.class);
-    private DatabaseService databaseService;
+    private MLCoreServiceValueHolder valueHolder;
 
     public MLProjectHandler() {
-        databaseService = MLCoreServiceValueHolder.getInstance().getDatabaseService();
+        valueHolder = MLCoreServiceValueHolder.getInstance();
     }
     
     public void createProject(MLProject project) throws MLProjectHandlerException {
         try {
-            long datasetId = databaseService.getDatasetId(project.getDatasetName(), project.getTenantId(),
+            long datasetId = valueHolder.getDatabaseService().getDatasetId(project.getDatasetName(), project.getTenantId(),
                     project.getUserName());
             if (datasetId == -1) {
                 throw new MLProjectHandlerException("Invalid dataset [name] " + project.getDatasetName());
             }
             project.setDatasetId(datasetId);
-            databaseService.insertProject(project);
+            valueHolder.getDatabaseService().insertProject(project);
             log.info(String.format("[Created] %s", project));
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
@@ -57,7 +56,7 @@ public class MLProjectHandler {
     
     public void deleteProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
-            databaseService.deleteProject(tenantId, userName, projectId);
+            valueHolder.getDatabaseService().deleteProject(tenantId, userName, projectId);
             log.info(String.format("[Deleted] [project] %s of [user] %s of [tenant] %s", projectId, userName, tenantId));
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
@@ -66,7 +65,7 @@ public class MLProjectHandler {
     
     public MLProject getProject(int tenantId, String userName, String projectName) throws MLProjectHandlerException {
         try {
-            return databaseService.getProject(tenantId, userName, projectName);
+            return valueHolder.getDatabaseService().getProject(tenantId, userName, projectName);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
@@ -74,7 +73,7 @@ public class MLProjectHandler {
 
     public MLProject getProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
-            return databaseService.getProject(tenantId, userName, projectId);
+            return valueHolder.getDatabaseService().getProject(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
@@ -82,7 +81,7 @@ public class MLProjectHandler {
     
     public List<MLProject> getAllProjects(int tenantId, String userName) throws MLProjectHandlerException {
         try {
-            return databaseService.getAllProjects(tenantId, userName);
+            return valueHolder.getDatabaseService().getAllProjects(tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
@@ -90,7 +89,7 @@ public class MLProjectHandler {
 
     public List<MLModelData> getProjectModels(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
-            return databaseService.getProjectModels(tenantId, userName, projectId);
+            return valueHolder.getDatabaseService().getProjectModels(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
@@ -98,7 +97,7 @@ public class MLProjectHandler {
     
     public List<MLAnalysis> getAllAnalysesOfProject(int tenantId, String userName, long projectId) throws MLProjectHandlerException {
         try {
-            return databaseService.getAllAnalysesOfProject(tenantId, userName, projectId);
+            return valueHolder.getDatabaseService().getAllAnalysesOfProject(tenantId, userName, projectId);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }
@@ -106,7 +105,7 @@ public class MLProjectHandler {
 
     public MLAnalysis getAnalysisOfProject(int tenantId, String userName, long projectId, String analysisName) throws MLProjectHandlerException {
         try {
-            return databaseService.getAnalysisOfProject(tenantId, userName, projectId, analysisName);
+            return valueHolder.getDatabaseService().getAnalysisOfProject(tenantId, userName, projectId, analysisName);
         } catch (DatabaseHandlerException e) {
             throw new MLProjectHandlerException(e.getMessage(), e);
         }

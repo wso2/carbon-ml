@@ -59,6 +59,10 @@
 			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
 			<artifactId>arpack_combined</artifactId>
 		</dependency>
+		<dependency>
+            		<groupId>org.slf4j</groupId>
+            		<artifactId>slf4j-api</artifactId>
+        	</dependency>
 		<!-- Deeplearning dependencies -->
 		<dependency>
 			<groupId>org.wso2.orbit.ai.h2o</groupId>
@@ -95,9 +99,12 @@
 								<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
 								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.core</bundleDef>
 								<bundleDef>org.wso2.orbit.ai.h2o:h2o</bundleDef>
+								<bundleDef>org.slf4j:slf4j-api</bundleDef>
 							</bundles>
 							<importFeatures>
 								<importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.imp.feature.version}
+								</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.analytics.spark.server:${carbon.analytics.imp.feature.version}
 								</importFeatureDef>
 								<importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.imp.feature.version}
 								</importFeatureDef>
