@@ -31,7 +31,6 @@ import org.wso2.carbon.ml.commons.domain.MLModelConfiguration;
 import org.wso2.carbon.ml.commons.domain.MLModelData;
 import org.wso2.carbon.ml.core.exceptions.MLAnalysisHandlerException;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
@@ -39,18 +38,15 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
  */
 public class MLAnalysisHandler {
     private static final Log log = LogFactory.getLog(MLAnalysisHandler.class);
-    private DatabaseService databaseService;
-    private List<MLAlgorithm> algorithms;
+    private MLCoreServiceValueHolder valueHolder;
 
     public MLAnalysisHandler() {
-        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
-        databaseService = valueHolder.getDatabaseService();
-        algorithms = valueHolder.getAlgorithms();
+        valueHolder = MLCoreServiceValueHolder.getInstance();
     }
     
     public void createAnalysis(MLAnalysis analysis) throws MLAnalysisHandlerException {
         try {
-            databaseService.insertAnalysis(analysis);
+            valueHolder.getDatabaseService().insertAnalysis(analysis);
             log.info(String.format("[Created] %s", analysis));
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
@@ -60,7 +56,7 @@ public class MLAnalysisHandler {
     public void addCustomizedFeatures(long analysisId, List<MLCustomizedFeature> customizedFeatures, int tenantId, String userName)
             throws MLAnalysisHandlerException {
         try {
-            databaseService.insertFeatureCustomized(analysisId, customizedFeatures, tenantId, userName);
+            valueHolder.getDatabaseService().insertFeatureCustomized(analysisId, customizedFeatures, tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -69,7 +65,7 @@ public class MLAnalysisHandler {
     public void addDefaultsIntoCustomizedFeatures(long analysisId, MLCustomizedFeature customizedValues)
             throws MLAnalysisHandlerException {
         try {
-            databaseService.insertDefaultsIntoFeatureCustomized(analysisId, customizedValues);
+            valueHolder.getDatabaseService().insertDefaultsIntoFeatureCustomized(analysisId, customizedValues);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -77,7 +73,7 @@ public class MLAnalysisHandler {
 
     public List<FeatureSummary> getSummarizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getFeatures(tenantId, userName, analysisId, offset, limit);
+            return valueHolder.getDatabaseService().getFeatures(tenantId, userName, analysisId, offset, limit);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -85,7 +81,7 @@ public class MLAnalysisHandler {
 
     public List<MLCustomizedFeature> getCustomizedFeatures(int tenantId, String userName, long analysisId, int limit, int offset) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getCustomizedFeatures(tenantId, userName, analysisId, offset, limit);
+            return valueHolder.getDatabaseService().getCustomizedFeatures(tenantId, userName, analysisId, offset, limit);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -93,7 +89,7 @@ public class MLAnalysisHandler {
 
     public List<String> getFeatureNames(String analysisId, String featureType) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getFeatureNames(analysisId, featureType);
+            return valueHolder.getDatabaseService().getFeatureNames(analysisId, featureType);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -101,7 +97,7 @@ public class MLAnalysisHandler {
 
     public List<String> getFeatureNames(String analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getFeatureNames(analysisId);
+            return valueHolder.getDatabaseService().getFeatureNames(analysisId);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -109,7 +105,7 @@ public class MLAnalysisHandler {
     
     public String getResponseVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RESPONSE_VARIABLE);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.RESPONSE_VARIABLE);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -117,7 +113,7 @@ public class MLAnalysisHandler {
 
     public String getUserVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.USER_VARIABLE);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.USER_VARIABLE);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -125,7 +121,7 @@ public class MLAnalysisHandler {
 
     public String getProductVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.PRODUCT_VARIABLE);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.PRODUCT_VARIABLE);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -133,7 +129,7 @@ public class MLAnalysisHandler {
 
     public String getRatingVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.RATING_VARIABLE);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.RATING_VARIABLE);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -141,7 +137,7 @@ public class MLAnalysisHandler {
 
     public String getObservations(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.OBSERVATIONS);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.OBSERVATIONS);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -149,7 +145,7 @@ public class MLAnalysisHandler {
 
     public String getAlgorithmName(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -157,7 +153,7 @@ public class MLAnalysisHandler {
 
     public String getAlgorithmType(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_TYPE);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_TYPE);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -165,7 +161,7 @@ public class MLAnalysisHandler {
     
     public String getNormalLabels(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.NORMAL_LABELS);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -173,7 +169,7 @@ public class MLAnalysisHandler {
 
     public double getTrainDataFraction(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);
+            return valueHolder.getDatabaseService().getADoubleModelConfiguration(analysisId, MLConstants.TRAIN_DATA_FRACTION);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -181,7 +177,7 @@ public class MLAnalysisHandler {
     
     public String getNormalization(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.NORMALIZATION);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -189,7 +185,7 @@ public class MLAnalysisHandler {
 
     public String getNewNormalLabel(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -197,7 +193,7 @@ public class MLAnalysisHandler {
 
     public String getNewAnomalyLabel(long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL);
+            return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -205,7 +201,7 @@ public class MLAnalysisHandler {
     
     public String getSummaryStats(int tenantId, String userName, long analysisId, String featureName) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getSummaryStats(tenantId, userName, analysisId, featureName);
+            return valueHolder.getDatabaseService().getSummaryStats(tenantId, userName, analysisId, featureName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -214,7 +210,7 @@ public class MLAnalysisHandler {
     public void addModelConfigurations(long analysisId, List<MLModelConfiguration> modelConfigs)
             throws MLAnalysisHandlerException {
         try {
-            databaseService.insertModelConfigurations(analysisId, modelConfigs);
+            valueHolder.getDatabaseService().insertModelConfigurations(analysisId, modelConfigs);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -222,7 +218,7 @@ public class MLAnalysisHandler {
 
     public void addHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName) throws MLAnalysisHandlerException {
         try {
-            databaseService.insertHyperParameters(analysisId, hyperParameters, algorithmName);
+            valueHolder.getDatabaseService().insertHyperParameters(analysisId, hyperParameters, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -230,7 +226,7 @@ public class MLAnalysisHandler {
 
     public List<MLHyperParameter> getHyperParameters(long analysisId,String algorithmName) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getHyperParametersOfModel(analysisId, algorithmName);
+            return valueHolder.getDatabaseService().getHyperParametersOfModel(analysisId, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -239,13 +235,13 @@ public class MLAnalysisHandler {
     public void addDefaultsIntoHyperParameters(long analysisId) throws MLAnalysisHandlerException {
         try {
             // read the algorithm name of this model
-            String algorithmName = databaseService.getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
+            String algorithmName = valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME);
             if (algorithmName == null) {
                 throw new MLAnalysisHandlerException("You have to set the model configurations (algorithm name) before loading default hyper parameters for model [id] "+analysisId);
             }
             // get the MLAlgorithm and then the hyper params of the model's algorithm
             List<MLHyperParameter> hyperParameters = null;
-            for (MLAlgorithm mlAlgorithm : algorithms) {
+            for (MLAlgorithm mlAlgorithm : valueHolder.getAlgorithms()) {
                 if (algorithmName.equalsIgnoreCase(mlAlgorithm.getName())) {
                     hyperParameters = mlAlgorithm.getParameters();
                     break;
@@ -255,7 +251,7 @@ public class MLAnalysisHandler {
                 throw new MLAnalysisHandlerException("Cannot find the default hyper parameters for algorithm [name] "+algorithmName);
             }
             // add default hyper params
-            databaseService.insertHyperParameters(analysisId, hyperParameters, algorithmName);
+            valueHolder.getDatabaseService().insertHyperParameters(analysisId, hyperParameters, algorithmName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -263,7 +259,7 @@ public class MLAnalysisHandler {
     
     public void deleteAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
         try {
-            databaseService.deleteAnalysis(tenantId, userName, analysisId);
+            valueHolder.getDatabaseService().deleteAnalysis(tenantId, userName, analysisId);
             log.info(String.format("[Deleted] [analysis id] %s of [user] %s of [tenant] %s", analysisId, userName, tenantId));
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
@@ -272,7 +268,7 @@ public class MLAnalysisHandler {
     
     public List<MLAnalysis> getAnalyses(int tenantId, String userName) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAllAnalyses(tenantId, userName);
+            return valueHolder.getDatabaseService().getAllAnalyses(tenantId, userName);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }
@@ -280,7 +276,7 @@ public class MLAnalysisHandler {
     
     public List<MLModelData> getAllModelsOfAnalysis(int tenantId, String userName, long analysisId) throws MLAnalysisHandlerException {
         try {
-            return databaseService.getAllModels(tenantId, userName, analysisId);
+            return valueHolder.getDatabaseService().getAllModels(tenantId, userName, analysisId);
         } catch (DatabaseHandlerException e) {
             throw new MLAnalysisHandlerException(e.getMessage(), e);
         }

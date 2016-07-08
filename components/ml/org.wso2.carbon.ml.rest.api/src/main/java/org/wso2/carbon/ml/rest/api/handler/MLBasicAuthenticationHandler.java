@@ -29,6 +29,7 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.AnonymousSessionUtil;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.rest.api.RestAPIConstants;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.UserRealm;
@@ -46,6 +47,15 @@ public class MLBasicAuthenticationHandler implements RequestHandler {
 	  */
 	@Override
     public Response handleRequest(Message message, ClassResourceInfo resourceInfo) {
+        if (System.getProperty(MLConstants.DISABLE_ML) != null) {
+            if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML))) {
+                logger.error("Machine Learner API has been disabled. Set -D" + MLConstants.DISABLE_ML
+                        + "=false JVM argument to enable it back.");
+                return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON)
+                        .entity("Machine Learner API has been disabled.").build();
+            }
+        }
+	    
 	    if(logger.isDebugEnabled()) {
 	        logger.debug(String.format("Authenticating request: " + message.getId()));
         }
