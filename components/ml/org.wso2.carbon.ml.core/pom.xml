@@ -209,7 +209,7 @@
 							org.apache.commons.logging,
 							org.wso2.carbon.ml.commons.*;version="${ml.imp.pkg.version}",
 							org.wso2.carbon.ml.database.*;version="${ml.imp.pkg.version}",
-							org.apache.spark.mllib.*;version="${spark.imp.pkg.version}",
+							org.apache.spark.mllib.*;version="${spark.mllib.imp.pkg.version}",
 							org.apache.commons.io;version="${commons.io.imp.pkg.version}",
 							*;resolution:=optional
 						</Import-Package>
