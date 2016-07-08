@@ -663,6 +663,7 @@
 		<!-- Spark dependency versions -->
 		<spark.version>1.4.3.wso2v1</spark.version>
 		<spark.imp.pkg.version>[1.4.3,1.5.0)</spark.imp.pkg.version>
+		<spark.mllib.imp.pkg.version>[1.4.1,1.5.0)</spark.mllib.imp.pkg.version>
 		<spark.core.version>1.4.3.wso2v1</spark.core.version>
 		<spark.mllib.version>1.4.1.wso2v2</spark.mllib.version>
 		<hadoop.client.version>2.7.2.wso2v1</hadoop.client.version>
