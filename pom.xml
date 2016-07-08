@@ -647,23 +647,23 @@
 
 		<carbon.integration.version>4.3.0</carbon.integration.version>
 
-		<carbon.registry.version>4.4.8</carbon.registry.version>
-		<carbon.identity.version>4.5.6</carbon.identity.version>
-		<carbon.deployment.version>4.5.2</carbon.deployment.version>
-		<carbon.multitenancy.version>4.4.3</carbon.multitenancy.version>
-		<carbon.commons.version>4.4.7</carbon.commons.version>
+		<carbon.registry.version>4.5.5</carbon.registry.version>
+		<carbon.identity.version>5.1.1-SNAPSHOT</carbon.identity.version>
+		<carbon.deployment.version>4.7.0</carbon.deployment.version>
+		<carbon.multitenancy.version>4.5.3-SNAPSHOT</carbon.multitenancy.version>
+		<carbon.commons.version>4.5.4</carbon.commons.version>
 		<carbon.analytics.version>1.0.6-SNAPSHOT</carbon.analytics.version>
 		<carbon.analytics.imp.feature.version>1.0.6-SNAPSHOT</carbon.analytics.imp.feature.version>
-		<carbon.analytics.common.version>5.0.12-SNAPSHOT</carbon.analytics.common.version>
-		<carbon.analytics.common.imp.feature.version>5.0.12-SNAPSHOT</carbon.analytics.common.imp.feature.version>
-		<carbon.metrics.version>1.1.0</carbon.metrics.version>
-		<carbon.kernel.version>4.4.5</carbon.kernel.version>
+		<carbon.analytics.common.version>5.1.0-SNAPSHOT</carbon.analytics.common.version>
+		<carbon.analytics.common.imp.feature.version>5.1.0-SNAPSHOT</carbon.analytics.common.imp.feature.version>
+		<carbon.metrics.version>1.2.2-SNAPSHOT</carbon.metrics.version>
+		<carbon.kernel.version>4.4.6</carbon.kernel.version>
 		<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
 		<!-- Spark dependency versions -->
-		<spark.version>1.4.2.wso2v1</spark.version>
-		<spark.imp.pkg.version>[1.4.1,1.5.0)</spark.imp.pkg.version>
-		<spark.core.version>1.4.2.wso2v1</spark.core.version>
+		<spark.version>1.4.3.wso2v1</spark.version>
+		<spark.imp.pkg.version>[1.4.3,1.5.0)</spark.imp.pkg.version>
+		<spark.core.version>1.4.3.wso2v1</spark.core.version>
 		<spark.mllib.version>1.4.1.wso2v2</spark.mllib.version>
 		<hadoop.client.version>2.7.2.wso2v1</hadoop.client.version>
 		<breeze.version>0.11.1.wso2v1</breeze.version>
