@@ -65,8 +65,17 @@ public class MLCoreDS {
 
     protected void activate(ComponentContext context) {
 
+        MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
+        if (System.getProperty(MLConstants.DISABLE_ML) != null) {
+            valueHolder.setMlDisabled(Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML)));
+        }
+
+        if (valueHolder.isMlDisabled()) {
+            log.info("Machine learner functionality has been disabled.");
+            return;
+        }
+        
         try {
-            MLCoreServiceValueHolder valueHolder = MLCoreServiceValueHolder.getInstance();
             MLConfiguration mlConfig = valueHolder.getDatabaseService().getMlConfiguration();
 
             valueHolder.setSummaryStatSettings(mlConfig.getSummaryStatisticsSettings());
@@ -108,50 +117,6 @@ public class MLCoreDS {
             sparkContext.hadoopConfiguration()
                     .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
             valueHolder.setSparkContext(sparkContext);
-
-//            // Checks whether ML spark context disabling JVM option is set
-//            if (System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT) != null) {
-//                if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML_SPARK_CONTEXT_JVM_OPT))) {
-//                    valueHolder.setSparkContextEnabled(false);
-//                    log.info("ML Spark context will not be initialized.");
-//                }
-//            }
-//
-//            if (valueHolder.isSparkContextEnabled()) {
-//                SparkConf sparkConf = mlConfigParser.getSparkConf(MLConstants.SPARK_CONFIG_XML);
-//
-//                // Add extra class paths for DAS Spark cluster
-//                String sparkClassPath = ComputeClasspath.getSparkClasspath("", CarbonUtils.getCarbonHome());
-//                try {
-//                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH,
-//                            sparkConf.get(MLConstants.SPARK_EXECUTOR_CLASSPATH) + ":" + sparkClassPath);
-//                } catch (NoSuchElementException e) {
-//                    sparkConf.set(MLConstants.SPARK_EXECUTOR_CLASSPATH, "");
-//                }
-//
-//                try {
-//                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH,
-//                            sparkConf.get(MLConstants.SPARK_DRIVER_CLASSPATH) + ":" + sparkClassPath);
-//                } catch (NoSuchElementException e) {
-//                    sparkConf.set(MLConstants.SPARK_DRIVER_CLASSPATH, "");
-//                }
-//
-//                sparkConf.setAppName("ML-SPARK-APPLICATION-" + Math.random());
-//                String portOffset = System.getProperty("portOffset",
-//                        ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
-//                int sparkUIPort = Integer.parseInt(portOffset) + Integer.parseInt(sparkConf.get("spark.ui.port"));
-//                sparkConf.set("spark.ui.port", String.valueOf(sparkUIPort));
-//                valueHolder.setSparkConf(sparkConf);
-//
-//                // create a new java spark context
-//                JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-//                sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
-//                        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-//                sparkContext.hadoopConfiguration()
-//                        .set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-//
-//                valueHolder.setSparkContext(sparkContext);
-//            }
 
             // Retrieving H2O configurations
             HashMap<String, String> h2oConf = new H2OConfigurationParser().getH2OConf(MLConstants.H2O_CONFIG_XML);

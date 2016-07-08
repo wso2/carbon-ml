@@ -62,7 +62,6 @@ public class RandomForestClassifier implements Serializable {
             test) {
         return test.mapToPair(new PairFunction<LabeledPoint, Double, Double>() {
             private static final long serialVersionUID = -7078534438332774197L;
-
             @Override
             public Tuple2<Double, Double> call(LabeledPoint labeledPoint) {
                 return new Tuple2<Double, Double>(model.predict(labeledPoint.features()), labeledPoint.label());

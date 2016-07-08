@@ -20,6 +20,7 @@ package org.wso2.carbon.ml.database.internal.ds;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.database.DatabaseService;
 import org.wso2.carbon.ml.database.internal.MLDatabaseService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -35,6 +36,12 @@ public class MLDatabaseServiceDS {
     private static final Log log = LogFactory.getLog(MLDatabaseServiceDS.class);
 
     protected void activate(ComponentContext context) {
+        
+        if (System.getProperty(MLConstants.DISABLE_ML) != null) {
+            if (Boolean.parseBoolean(System.getProperty(MLConstants.DISABLE_ML))) {
+                return;
+            }
+        }
         try {
             DatabaseService databaseService = new MLDatabaseService();
             MLDatabaseServiceValueHolder.registerDatabaseService(databaseService);
