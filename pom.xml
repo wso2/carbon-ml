@@ -665,7 +665,7 @@
 		<spark.imp.pkg.version>[1.4.1,1.5.0)</spark.imp.pkg.version>
 		<spark.core.version>1.4.2.wso2v1</spark.core.version>
 		<spark.mllib.version>1.4.1.wso2v2</spark.mllib.version>
-		<hadoop.client.version>2.6.0.wso2v1</hadoop.client.version>
+		<hadoop.client.version>2.7.2.wso2v1</hadoop.client.version>
 		<breeze.version>0.11.1.wso2v1</breeze.version>
 		<spire.version>0.7.4.wso2v1</spire.version>
 		<jblas.version>1.2.3.wso2v1</jblas.version>
@@ -744,7 +744,7 @@
 		<version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<javax.transaction.version>1.1.1.v201105210645</javax.transaction.version>
-		<guava.version>14.0.1</guava.version>
+		<guava.version>19.0</guava.version>
 		<zookeeper.version>3.4.5</zookeeper.version>
 		<selenium.version>2.45.0</selenium.version>
 		<orbit.version.asm>3.1.wso2v1</orbit.version.asm>
