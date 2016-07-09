@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSO2 Machine Learner</title>
+    <link rel="icon" href="../../images/favicon.png" type="image/x-icon" />
+    <link href="../../css/bootstrap.css" rel="stylesheet">
+    <link href="../../css/custom.css" rel="stylesheet">
+    <link href="../../css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../../css/custom-theme.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="../../css/d3.parsets.css">
+    <link rel="stylesheet" type="text/css" href="../../css/data.css">
+    <link rel="stylesheet" type="text/css" href="../../css/wso2.ml.graphs.css">
+
+    <script src="../../js/respond.min.js"></script>
+
+    <script src="../../js/d3.v3.min.js"></script>
+    <script src="../../js/d3.js"></script>
+    <script src="../../js/nv.d3.js"></script>
+    <script src="../../js/wso2.ml.graphs.js"></script>
+
+
+
+<style type="text/css" title="currentStyle">
+    @import "../../wrangler/style/layout.css";
+    @import "../../wrangler/style/table.css";
+    @import "../../wrangler/style/editor.css";
+    @import "../../wrangler/style/wrangler.css";
+</style>
+
+<script type="text/javascript" src="../../wrangler/lib/ThemeRoller/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+var jQuery_1_4_2 = $.noConflict(true);
+</script>
+
+<script type="text/javascript" src="../../wrangler/lib/Highlight/highlight.js" ></script>  
+<script type="text/javascript" src="../../wrangler/lib/layout/jquery.layout.min.js"></script>
+<script type="text/javascript" src="../../wrangler/lib/hoverIntent/hoverIntent.js"></script>
+
+<script type="text/javascript" language="javascript" src="../../wrangler/lib/DataTable/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="../../wrangler/lib/d3/d3.min.js">  </script>
+<script type="text/javascript" src="../../wrangler/lib/datavore/datavore-r0.1.js">  </script>
+<script type="text/javascript" src="../../wrangler/dw.js">  </script>
+<script type="text/javascript" src="../../wrangler/test/crime.js">  </script>
+
+
+<script type="text/javascript">  
+
+var w = dw.wrangle()
+
+var scriptToML;
+
+jQuery_1_4_2(document).ready(function() {
+
+    var browserName=navigator.appName;
+    
+    var isSupported = navigator.userAgent.match(/Chrome|Safari|Firefox/);
+
+    if(isSupported===null) alert('Data Wrangler has only been tested in Chrome, Safari and Firefox.  For best performance, we recommend you use Chrome or Safari.')
+    
+    var container = jQuery_1_4_2('#table')
+    
+    var previewContainer = jQuery_1_4_2('#preview')
+
+    var initial_transforms = [];
+
+    var startWrangler = function(dt){
+
+        return dw.wrangler({
+            tableContainer:container,
+            table:dt,
+            transformContainer:jQuery_1_4_2('#transformEditor'),
+            previewContainer:previewContainer,
+            dashboardContainer:jQuery_1_4_2("#wranglerDashboard"),
+            initial_transforms:initial_transforms
+        })
+
+    }        
+
+    //Set initial transfroms
+    //Initial transforms should be changed based on the input file 
+    initial_transforms = [
+                    dw.filter(dw.empty()),
+                    dw.split().column(["data"]).status("active").drop(true).result("row").insert_position("right").on("\n").which(1).max(0),
+                    dw.split().column(["data"]).drop(true).result("column").insert_position("right").on(",").which(1).max(0)
+                ];
+        
+    //input data should be added as a string
+    var data = "1 3 3\n3 4 5\n8 6 1"
+    var dt = dv.table(data);
+    startWrangler(dt);
+
+});
+</script>
+
+    <%
+include("../../includes/tenantAware.jag");
+%>
+
+</head>
+
+<body>
+
+<div class="container col-lg-12 col-md-12 col-sm-12">
+
+<!-- header -->
+<header>
+<div class="row wr-global-header">
+<div class="col-sm-8 app-logo"><img src="../../images/logo.png" /><h2 class="app-title">Machine Learner</h2>
+</div>
+<div class="col-sm-4">
+    <div class="wr-auth pull-right">
+        <a href="#" data-toggle="dropdown" class="cu-ico-right-button cu-ico-button-user"><% print(session.get("logged.user")); %></a>
+			<div class="dropdown-menu">
+				<div class="cu-arrow"></div>
+				<div class="dropdown-menu-content">
+					<a href="../logout/logout.jag" id="log-out" class="filter-item">Logout</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</header>
+<!-- /header -->
+
+<!-- secondary header - app bar -->
+<div id="nav" class="row wr-app-bar">
+	<div class="col-md-9 wr-action-container">
+        <div class="wr-project">
+            <span class="title">PROJECTS \ </span><span id="nav-project"></span><span id="nav-analysis"></span>
+        </div>
+
+		<div class="wr-action-btn-bar">
+			<a href="#" class="cu-btn btn-cancel" id="cancel-analysis">Cancel</a>
+		</div>
+	</div>
+
+	<div class="col-md-3 wr-wiz-nav">
+		<div class="wr-secondary-links pull-right">
+            <div class="ctrl-wiz-nav">
+    			<a href="#" id="next-btn" class="cu-btn-reverse btn-next">Next</a>
+    		</div>
+        </div>
+	</div>
+</div>
+<!-- secondary header - app bar -->
+
+
+<!-- content/body -->
+<div class="row">
+	<div class="col-lg-12 wr-secondary-bar">
+
+		<!-- Wizard -->
+	    <ul class="nav nav-pills nav-wizard">
+            <li class="active tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 1</span>Clean</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 2</span>Preprocess</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 3</span>Explore</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 4</span>Algorithms</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 5</span>Parameters</a><div class="nav-arrow"></div></li>
+            <li class="tab-link-disabled"><div class="nav-wedge"></div><a href="#" data-toggle="tab"><span class="nav-wedge-step">Step 6</span>Model</a><div class="nav-arrow"></div></li>
+	    </ul>
+
+
+	</div>
+</div>
+<div class="row">
+		<!-- content -->
+        <div class="container col-md-12 col-centered wr-content">
+            <div id="notification-area"></div>
+        </div>
+        <div class="ui-layout-north col-lg-12" id='wranglerNorthPanel'>
+            <div id='wranglerDashboard'>
+            </div>
+        </div>
+        <div class="ui-layout-west col-lg-3" style='padding-right:0px; padding-left:0px' id='profilerWestPanel'>
+
+                    <div id="transformEditor" class='transformEditor'>
+
+                    </div>
+
+        </div>
+        <div class="ui-layout-center col-lg-9" style='padding-right:0px; padding-left:0px' id='profilerCenterPanel'>
+            
+                <div id="table"></div>
+                <div id="preview"></div>
+                <div class="spacer"></div>
+        </div>  
+        <div class="ui-layout-south col-lg-12">
+        </div>
+
+
+		<!-- /content -->
+</div>
+<!-- /content/body -->
+
+</div>
+
+<!--footer class="footer">
+        <p>&copy; 2015 WSO2 Inc. All Rights Reserved</p>
+</footer-->
+
+<script src="../../js/jquery-1.11.1.min.js"></script>
+<script src="../../js/d3.v3.min.js" charset="utf-8"></script>
+<script src="../../js/wso2.ml.util.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.dataTables.js"></script>
+
+<script src="../../js/d3.parsets.js"></script>
+<script src="../../js/figue.js"></script>
+
+<script type="text/javascript">
+
+var serverUrl = window.location.origin;
+var datasetId = getParameterByName('datasetId');
+var analysisName = getParameterByName('analysisName');
+var analysisId = getParameterByName('analysisId');
+var fromAnalysis = getParameterByName('fromAnalysis');
+var fromAnalysis = getParameterByName('fromAnalysis');
+
+$( document ).ready(function() {    
+	$('#nav').affix({
+	      offset: {
+	        top: $('header').height()
+	      }
+	});
+
+    // put path in application navigator
+    var projectName = getParameterByName('projectName');
+    $('#nav-project').text(projectName);
+    $('#nav-analysis').text(" \\ "+analysisName);
+
+    $('#next-btn').on('click', function(e) {
+        e.preventDefault();
+        //post the wrangler script to api
+        $.ajax({
+                type: "POST",
+                url: serverUrl + "/api/wrangler/"+analysisId+"/add",
+                headers: {
+                    "Accept" : "application/json",         
+                    "Content-Type":"text/plain"   
+                },
+                data: scriptToML,
+                success : function(res){
+                    var successText = 'All operations successfully added.';
+                    handleNotification(successText, '#notification-area', 'success');
+                },
+                error : function(res){
+                    var errorText = res.responseText
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+
+    });
+
+    // function that cancels a clean operation
+    $('#cancel-analysis').on('click', function(e){
+        e.preventDefault();
+        // if navigation is from analysis page do not delete the analysis
+        if (fromAnalysis == 'true') {
+            window.location.href = '../analysis/analysis.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&projectName=' + projectName + '&analysisName=' + analysisName;
+        }
+        else {
+            $.ajax({
+                type: 'DELETE',
+                url: serverUrl + "/api/analyses/" + analysisId,
+                success: function(res){
+                    window.location.href = '../project/projects.jag';
+                },
+                error: function(res){
+                    var errorText = res.responseText
+                    handleNotification(errorText, '#notification-area', 'warning');
+                }
+            });
+        }
+    });
+
+	
+    // Preserve pagination when refreshing datatable
+    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+        if(oSettings.oFeatures.bServerSide === false){
+            var before = oSettings._iDisplayStart;
+            oSettings.oApi._fnReDraw(oSettings);
+            oSettings._iDisplayStart = before;
+            oSettings.oApi._fnCalculateEnd(oSettings);
+        }
+        //draw the 'current' page
+        oSettings.oApi._fnDraw(oSettings);
+    };
+});
+
+
+
+</script>
+
+</body>
+</html>
