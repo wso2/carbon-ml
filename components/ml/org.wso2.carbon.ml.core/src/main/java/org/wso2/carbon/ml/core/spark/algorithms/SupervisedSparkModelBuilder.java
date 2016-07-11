@@ -205,8 +205,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case STACKING:
-                MLModelConfigurationContext cxt = context;
-                summaryModel = buildStackingModel(cxt, sparkContext, modelId, trainingData, testingData, workflow,
+                summaryModel = buildStackingModel(sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures);
                 break;
            default:
@@ -827,43 +826,40 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     */
 
-    public ModelSummary buildStackingModel(MLModelConfigurationContext cxt, JavaSparkContext sparkContext, long modelID,
+    public ModelSummary buildStackingModel(JavaSparkContext sparkContext, long modelID,
             JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
         try{
             Map<String, Map<String, String>> hyperParameters = workflow.getAllHyperParameters();
-           // Map<String, String> hyperParameters = workflow.getHyperParameters();
-            //int numBaseModels = hyperParameters.keySet().size();
-
             int numBaseModels = Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.NUM_BASE_ALGORITHMS));
             ArrayList<String> listBaseAlgorithms = new ArrayList<>();
             ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
             Map<String , String> paramsMetaAlgorithm = hyperParameters.get(MLConstants.NAME_META_ALGORITHM);
             String metaAlgorithmName = null;
+            int folds = Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.FOLDS));
+
 
             Set<String> keys = hyperParameters.keySet();
             Iterator<String> it = keys.iterator();
 
 
-                while(it.hasNext()) {
-                    String name = it.next();
-                    if(name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
-                        String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
-                        hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
-                        listBaseAlgorithms.add(baseAlgorithmName);
-                        paramsBaseAlgorithms.add(hyperParameters.get(name));
+            while(it.hasNext()) {
+                String name = it.next();
+                if(name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                    String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                    hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+                    listBaseAlgorithms.add(baseAlgorithmName);
+                    paramsBaseAlgorithms.add(hyperParameters.get(name));
 
 
-                    }
-                    if(name.contains(MLConstants.NAME_META_ALGORITHM)) {
-                        metaAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
-                        hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
-
-
-
-                    }
                 }
+                if(name.contains(MLConstants.NAME_META_ALGORITHM)) {
+                    metaAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                    hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+                }
+
+            }
 
             Stacking stackedModel = new Stacking();
 
