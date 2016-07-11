@@ -826,6 +826,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
     */
+
     public ModelSummary buildStackingModel(MLModelConfigurationContext cxt, JavaSparkContext sparkContext, long modelID,
             JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
@@ -833,31 +834,44 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         try{
             Map<String, Map<String, String>> hyperParameters = workflow.getAllHyperParameters();
            // Map<String, String> hyperParameters = workflow.getHyperParameters();
-            int numBaseModels = hyperParameters.keySet().size();
+            //int numBaseModels = hyperParameters.keySet().size();
+
+            int numBaseModels = Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.NUM_BASE_ALGORITHMS));
             ArrayList<String> listBaseAlgorithms = new ArrayList<>();
             ArrayList<Map<String, String>> paramsBaseAlgorithms= new ArrayList<>();
             Map<String , String> paramsMetaAlgorithm = hyperParameters.get(MLConstants.NAME_META_ALGORITHM);
+            String metaAlgorithmName = null;
 
             Set<String> keys = hyperParameters.keySet();
             Iterator<String> it = keys.iterator();
-            for(int i = 0; i < numBaseModels; i++){
-                String algoName = it.next() + i;
-                listBaseAlgorithms.add(algoName);
-               // String paramsMap = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
-                //Map<String, String> params = (Map<String, String>) SerializeParameter.fromString(paramsMap);
-                Map<String, String> params = hyperParameters.get(MLConstants.PARAMS_BASE_ALGORITHMS + i);
-                paramsBaseAlgorithms.add(params);
-            }
-            System.out.println("PBA" + paramsBaseAlgorithms);
-            System.out.println("PMA" + paramsMetaAlgorithm);
+
+
+                while(it.hasNext()) {
+                    String name = it.next();
+                    if(name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                        String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                        hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+                        listBaseAlgorithms.add(baseAlgorithmName);
+                        paramsBaseAlgorithms.add(hyperParameters.get(name));
+
+
+                    }
+                    if(name.contains(MLConstants.NAME_META_ALGORITHM)) {
+                        metaAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                        hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+
+
+
+                    }
+                }
 
             Stacking stackedModel = new Stacking();
 
             stackedModel.train(sparkContext,modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
-                    MLConstants.NAME_META_ALGORITHM,
+                    metaAlgorithmName,
                     paramsMetaAlgorithm,
-                    Integer.parseInt(hyperParameters.get("STACKING").get(MLConstants.FOLDS)),
-                    Integer.parseInt(hyperParameters.get("STACKING").get(MLConstants.SEED)));
+                    Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.FOLDS)),
+                    Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.SEED)));
 
             mlModel.setModel(new MLClassificationModel(stackedModel));
 
