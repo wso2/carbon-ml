@@ -81,7 +81,7 @@ public class BaseModelsBuilder extends MLModelBuilder {
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException(
-                    "An error occurred while building decision tree model: " + e.getMessage(), e);
+                    "An error occurred while building baseModel: " + e.getMessage(), e);
         }
     }
 
