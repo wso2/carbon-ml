@@ -31,6 +31,8 @@ public class MLConstants {
     public static final String ML_MODEL_TABLE_NAME = "ml_model_store";
 
     public static final String MACHINE_LEARNER_XML = "repository/conf/machine-learner.xml";
+    
+    public static final String ML_UI_CONTEXT= "/ml";
 
     // Data-set upload configurations    
     public static final String UPLOAD_SETTINGS = "dataUploadSettings";
@@ -51,6 +53,7 @@ public class MLConstants {
     public static final String FILE_SEPARATOR = "file.separator";
     public static final String MIN_PERCENTILE_CONF = "minPercentile";
     public static final String MAX_PERCENTILE_CONF = "maxPercentile";
+    public static final String ML_UI_URL = "ml.ui.url";
 
     public static final String USER_HOME= "USER_HOME";
     public static final String DATABASE= "database";
