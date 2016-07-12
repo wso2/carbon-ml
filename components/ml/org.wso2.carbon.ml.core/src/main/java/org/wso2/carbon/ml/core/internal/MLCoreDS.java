@@ -158,14 +158,16 @@ public class MLCoreDS {
 
             // HTTPS port
             String mgtConsoleTransport = CarbonUtils.getManagementTransport();
-            ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
-                    .getConfigurationContextService();
+            ConfigurationContextService configContextService = valueHolder.getConfigurationContextService();
             int httpsPort = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
             int httpsProxyPort = CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
                     mgtConsoleTransport);
-            // set the ml.url property which will be used to print in the console by the ML jaggery app.
-            configContextService.getServerConfigContext().setProperty("ml.url",
-                    "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + "/ml");
+            
+            // set the ml.ui.url property which will be used to navigate from Mgt Console.
+            String mlUiUrl = "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + 
+                    MLConstants.ML_UI_CONTEXT;
+            System.setProperty(MLConstants.ML_UI_URL, mlUiUrl);
+            log.info("Machine Learner Wizard URL : " + mlUiUrl);
             
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
