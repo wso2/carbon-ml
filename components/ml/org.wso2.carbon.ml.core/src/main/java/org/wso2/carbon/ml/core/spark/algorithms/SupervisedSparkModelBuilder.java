@@ -913,7 +913,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     }
     /**
-     * This method builds ensemble method Stacking
+     * This method builds ensemble method Bagging
      * @param sparkContext JavaSparkContext initialized with the application
      * @param modelID Model ID
      * @param trainingData Training data as a JavaRDD of LabeledPoints
@@ -978,17 +978,16 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
             classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
-            System.out.println("MODEL_SUMMARY"+classClassificationAndRegressionModelSummary);
-
+            
             return classClassificationAndRegressionModelSummary;
 
 
 
         }catch(Exception e){
-                throw new MLModelBuilderException("An error occurred while building stacking model: " + e.getMessage(),
+                throw new MLModelBuilderException("An error occurred while building bagging model: " + e.getMessage(),
                         e);
             }
-           
+
 
         }
 
