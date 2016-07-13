@@ -40,6 +40,13 @@ public class BaseModelsBuilder {
                 //MLModelConfigurationContext context = getContext();
                 mlModel.setEncodings(context.getEncodings());
                 mlModel.setAlgorithmName(algorithmName);
+                mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
+                mlModel.setFeatures(workflow.getIncludedFeatures());
+                mlModel.setResponseVariable(workflow.getResponseVariable());
+                mlModel.setEncodings(context.getEncodings());
+                mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
+                mlModel.setResponseIndex(context.getResponseIndex());
+
 
 
 
