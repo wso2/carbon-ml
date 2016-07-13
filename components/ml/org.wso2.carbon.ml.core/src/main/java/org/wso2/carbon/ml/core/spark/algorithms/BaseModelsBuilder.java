@@ -10,7 +10,6 @@ import org.wso2.carbon.ml.commons.domain.MLModel;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.core.exceptions.AlgorithmNameException;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
-import org.wso2.carbon.ml.core.interfaces.MLModelBuilder;
 import org.wso2.carbon.ml.core.internal.MLModelConfigurationContext;
 import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
@@ -23,17 +22,7 @@ import java.util.Map;
 /**
  * Created by pekasa on 07.06.16.
  */
-public class BaseModelsBuilder extends MLModelBuilder {
-    public BaseModelsBuilder(MLModelConfigurationContext context) {
-        super(context);
-    }
-
-
-    @Override
-    public MLModel build() throws MLModelBuilderException {
-        return null;
-    }
-
+public class BaseModelsBuilder {
 
     /**
 
@@ -44,11 +33,11 @@ public class BaseModelsBuilder extends MLModelBuilder {
       */
 
 
-        public MLModel buildBaseModels(Workflow workflow, MLModel mlModel, String algorithmName, JavaRDD<LabeledPoint> trainingData,
+        public MLModel buildBaseModels(MLModelConfigurationContext context, Workflow workflow, MLModel mlModel, String algorithmName, JavaRDD<LabeledPoint> trainingData,
                                        Map<String, String> algorithmParameters) throws MLModelBuilderException {
 
             try {
-                MLModelConfigurationContext context = getContext();
+                //MLModelConfigurationContext context = getContext();
                 mlModel.setEncodings(context.getEncodings());
                 mlModel.setAlgorithmName(algorithmName);
 
