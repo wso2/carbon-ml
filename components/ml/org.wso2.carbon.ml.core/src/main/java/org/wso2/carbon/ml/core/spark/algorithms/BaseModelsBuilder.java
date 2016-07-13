@@ -37,7 +37,6 @@ public class BaseModelsBuilder {
                                        Map<String, String> algorithmParameters) throws MLModelBuilderException {
 
             try {
-                //MLModelConfigurationContext context = getContext();
                 mlModel.setEncodings(context.getEncodings());
                 mlModel.setAlgorithmName(algorithmName);
                 mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -98,7 +97,6 @@ public class BaseModelsBuilder {
              Map<Integer, Integer> categoricalFeatureInfo,Map<String, String> algorithmParameters)
             throws MLModelBuilderException {
         try {
-            Map<String, String> hyperParameters = workflow.getHyperParameters();
             DecisionTree decisionTree = new DecisionTree();
             DecisionTreeModel decisionTreeModel = decisionTree.train(trainingData,
                     getNoOfClasses(mlModel),
@@ -123,7 +121,7 @@ public class BaseModelsBuilder {
     private MLModel buildRandomForestClassificationModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
              Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters) throws MLModelBuilderException {
         try {
-            //Map<String, String> hyperParameters = workflow.getHyperParameters();
+
             RandomForestClassifier randomForestClassifier = new RandomForestClassifier();
             final RandomForestModel randomForestModel = randomForestClassifier.train(trainingData,
                     getNoOfClasses(mlModel),
