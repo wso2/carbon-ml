@@ -50,28 +50,28 @@ public class Bagging {
         List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));
         List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(testDataset);
 
-        List<Double> result_predictions = new ArrayList<Double>();
+        List<Double> resultPredictions = new ArrayList<Double>();
         for (String[] datapoint : dataTobePredicted) {
-            List<String[]> datapoint_list = new ArrayList<String[]>();
-            datapoint_list.add(datapoint);
-            List<Double> datapoint_predictions = new ArrayList<Double>();
+            List<String[]> datapointList = new ArrayList<String[]>();
+            datapointList.add(datapoint);
+            List<Double> datapointPredictions = new ArrayList<Double>();
             for (MLModel model : levelZeroModels) {
-                Predictor predictor = new Predictor(modelId, model, datapoint_list);
+                Predictor predictor = new Predictor(modelId, model, datapointList);
                 List<?> predictions = predictor.predict();
-                datapoint_predictions.add(Double.valueOf(predictions.get(0).toString()));
+                datapointPredictions.add(Double.valueOf(predictions.get(0).toString()));
             }
-            Map<Double, Integer> cardinalityMap = CollectionUtils.getCardinalityMap(datapoint_predictions);
+            Map<Double, Integer> cardinalityMap = CollectionUtils.getCardinalityMap(datapointPredictions);
             Integer maxCardinality = Collections.max(cardinalityMap.values());
             for(final Map.Entry<Double, Integer> entry : cardinalityMap.entrySet()) {
                 if (maxCardinality == entry.getValue()) {
-                    result_predictions.add(entry.getKey());
+                    resultPredictions.add(entry.getKey());
                     break;
                 }
             }
         }
         List<Tuple2<Double, Double>> list = new ArrayList<Tuple2<Double, Double>>();
-        for (int j = 0; j < result_predictions.size(); j++) {
-            list.add(new Tuple2<Double, Double>(result_predictions.get(j), labelsList.get(j)));
+        for (int j = 0; j < resultPredictions.size(); j++) {
+            list.add(new Tuple2<Double, Double>(resultPredictions.get(j), labelsList.get(j)));
 
         }
         return sparkContext.parallelizePairs(list);
