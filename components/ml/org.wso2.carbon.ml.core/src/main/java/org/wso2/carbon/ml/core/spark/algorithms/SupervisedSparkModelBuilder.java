@@ -205,10 +205,13 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
                         mlModel, includedFeatures, categoricalFeatureInfo);
                 break;
             case STACKING:
-                MLModelConfigurationContext modelConfContext = context;
-                summaryModel = buildStackingModel(modelConfContext,sparkContext, modelId, trainingData, testingData, workflow,
+                summaryModel = buildStackingModel(context,sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel, includedFeatures);
                 break;
+            case BAGGING:
+                summaryModel = buildBaggingModel(context, sparkContext, modelId, trainingData, testingData, workflow,
+                        mlModel,includedFeatures);
+
            default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + supervisedAlgorithm.toString());
             }
@@ -827,7 +830,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     */
 
-    public ModelSummary buildStackingModel(MLModelConfigurationContext modelConfContext, JavaSparkContext sparkContext, long modelID,
+    public ModelSummary buildStackingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
             JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
@@ -864,7 +867,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
             Stacking stackedModel = new Stacking();
 
-            stackedModel.train(modelConfContext, sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+            stackedModel.train(context, sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
                     metaAlgorithmName,
                     paramsMetaAlgorithm,
                     Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.FOLDS)),
@@ -909,6 +912,85 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
     }
+    /**
+     * This method builds ensemble method Stacking
+     * @param sparkContext JavaSparkContext initialized with the application
+     * @param modelID Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData Testing data as a JavaRDD of LabeledPoints
+     * @param workflow Machine learning workflow
+     * @param mlModel Deployable machine learning model
+
+
+     */
+
+    public ModelSummary buildBaggingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
+                                           JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+                                           SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
+
+        try {
+            Map<String, Map<String, String>> hyperParameters = workflow.getAllHyperParameters();
+            ArrayList<String> listBaseAlgorithms = new ArrayList<>();
+            ArrayList<Map<String, String>> paramsBaseAlgorithms = new ArrayList<>();
+            Set<String> keys = hyperParameters.keySet();
+            Iterator<String> it = keys.iterator();
+
+
+            while (it.hasNext()) {
+                String name = it.next();
+                if (name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                    String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                    hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+                    listBaseAlgorithms.add(baseAlgorithmName);
+                    paramsBaseAlgorithms.add(hyperParameters.get(name));
+
+                }
+            }
+            Bagging baggedModel = new Bagging();
+
+            baggedModel.train(context,sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+                                        Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.SEED)));
+
+            mlModel.setModel(new MLClassificationModel(baggedModel));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+
+            JavaPairRDD<Double, Double> predictionsAndLabels = baggedModel.test(sparkContext,modelID, testingData).cache();
+            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
+
+            // remove from cache
+            testingData.unpersist();
+
+
+            classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.STACKING.toString());
+
+            MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
+
+            predictionsAndLabels.unpersist();
+
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
+                    multiclassMetrics, mlModel));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
+            classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+            System.out.println("MODEL_SUMMARY"+classClassificationAndRegressionModelSummary);
+
+            return classClassificationAndRegressionModelSummary;
+
+
+
+        }catch(Exception e){
+                throw new MLModelBuilderException("An error occurred while building stacking model: " + e.getMessage(),
+                        e);
+            }
+           
+
+        }
 
 
 
