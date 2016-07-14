@@ -1115,7 +1115,7 @@ public class MLModelHandler {
         @Override
         public void run() {
             org.wso2.carbon.metrics.manager.Timer timer = MetricManager.timer(Level.INFO,
-                    "org.wso2.carbon.ml.model-building-time."+ctxt.getFacts().getAlgorithmName());
+                    "org.wso2.carbon.ml.model-building-time." + ctxt.getFacts().getAlgorithmName());
             Context context = timer.start();
             String[] emailTemplateParameters = new String[2];
             try {
@@ -1215,9 +1215,7 @@ public class MLModelHandler {
             return "[Failed to generate link for model ID: " + modelId + "]";
         }
 
-        ConfigurationContextService configContextService = MLCoreServiceValueHolder.getInstance()
-                .getConfigurationContextService();
-        String mlUrl = configContextService.getServerConfigContext().getProperty("ml.url").toString();
+        String mlUrl = System.getProperty(MLConstants.ML_UI_URL);
         String link = mlUrl + "/site/analysis/analysis.jag?analysisId=" + analysisId + "&analysisName=" + analysisName + "&datasetId=" + datasetId;
         if(status.equals(MLConstants.MODEL_STATUS_COMPLETE)) {
             link = mlUrl + "/site/analysis/view-model.jag?analysisId=" + analysisId + "&datasetId=" + datasetId + "&modelId=" + modelId + "&projectName=" + projectName + "&" +
