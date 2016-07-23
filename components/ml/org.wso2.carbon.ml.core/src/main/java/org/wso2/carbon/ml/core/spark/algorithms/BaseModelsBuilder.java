@@ -15,6 +15,7 @@ import org.wso2.carbon.ml.core.spark.models.MLClassificationModel;
 import org.wso2.carbon.ml.core.spark.models.MLDecisionTreeModel;
 import org.wso2.carbon.ml.core.spark.models.MLRandomForestModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,48 +26,54 @@ import java.util.Map;
 public class BaseModelsBuilder {
 
     /**
-
-     create a switch statement for methods which call sparkmllibrary libraries and return models of MLModel type
-     @param algorithmName Name of algorithm to build
-     @param trainingData Training dataset
-     @param  algorithmParameters Hyperparameters of algorithm
-      */
-
-
-        public MLModel buildBaseModels(MLModelConfigurationContext context, Workflow workflow, MLModel mlModel, String algorithmName, JavaRDD<LabeledPoint> trainingData,
-                                       Map<String, String> algorithmParameters) throws MLModelBuilderException {
-
-            try {
-                mlModel.setEncodings(context.getEncodings());
-                mlModel.setAlgorithmName(algorithmName);
-                mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
-                mlModel.setFeatures(workflow.getIncludedFeatures());
-                mlModel.setResponseVariable(workflow.getResponseVariable());
-                mlModel.setEncodings(context.getEncodings());
-                mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
-                mlModel.setResponseIndex(context.getResponseIndex());
+     * create a switch statement for methods which call sparkmllibrary libraries and return models of MLModel type
+     *
+     * @param algorithmName       Name of algorithm to build
+     * @param trainingData        Training dataset
+     * @param algorithmParameters Hyperparameters of algorithm
+     */
 
 
+    public MLModel buildBaseModels(MLModelConfigurationContext context, Workflow workflow, String algorithmName, JavaRDD<LabeledPoint> trainingData,
+                                   Map<String, String> algorithmParameters, Boolean isMetaAlgorithm) throws MLModelBuilderException {
+
+
+        try {
+            Map<Integer, Integer> categoricalFeatureInfo;
+
+            MLModel mlModel = new MLModel();
+            mlModel.setAlgorithmName(algorithmName);
+            mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
+            mlModel.setEncodings(context.getEncodings());
+            mlModel.setFeatures(workflow.getIncludedFeatures());
+            mlModel.setResponseVariable(workflow.getResponseVariable());
+            mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
+            mlModel.setResponseIndex(context.getResponseIndex());
+
+            if (isMetaAlgorithm) {
+                categoricalFeatureInfo = getCategoricalFeatureInfo(getMetaModelEncodings());
+                } else {
+                categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
+
+            }
 
 
             // build a machine learning model according to user selected algorithm
-            Map<Integer, Integer> categoricalFeatureInfo;
+
             MLConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLConstants.SUPERVISED_ALGORITHM.valueOf(algorithmName);
-             switch (supervisedAlgorithm) {
+            switch (supervisedAlgorithm) {
 
                 case DECISION_TREE:
-                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
                     mlModel = buildDecisionTreeModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo, algorithmParameters);
                     break;
                 case RANDOM_FOREST_CLASSIFICATION:
-                    categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
                     mlModel = buildRandomForestClassificationModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo, algorithmParameters);
                     break;
-                 case NAIVE_BAYES:
-                     mlModel = buildNaiveBayesModel(trainingData,workflow ,mlModel, algorithmParameters);
-                     break;
+                case NAIVE_BAYES:
+                    mlModel = buildNaiveBayesModel(trainingData, workflow, mlModel, algorithmParameters);
+                    break;
 
 
                 default:
@@ -81,20 +88,17 @@ public class BaseModelsBuilder {
     }
 
 
-
-
     /**
      * This method builds a decision tree model
      *
-
      * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param workflow Machine learning workflow
-     * @param mlModel Deployable machine learning model
+     * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws MLModelBuilderException
      */
     private MLModel buildDecisionTreeModel(
             JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
-             Map<Integer, Integer> categoricalFeatureInfo,Map<String, String> algorithmParameters)
+            Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters)
             throws MLModelBuilderException {
         try {
             DecisionTree decisionTree = new DecisionTree();
@@ -118,8 +122,9 @@ public class BaseModelsBuilder {
         }
 
     }
+
     private MLModel buildRandomForestClassificationModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
-             Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters) throws MLModelBuilderException {
+                                                         Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters) throws MLModelBuilderException {
         try {
 
             RandomForestClassifier randomForestClassifier = new RandomForestClassifier();
@@ -153,8 +158,8 @@ public class BaseModelsBuilder {
      * This method builds a naive bayes model
      *
      * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param workflow Machine learning workflow
-     * @param mlModel Deployable machine learning model
+     * @param workflow     Machine learning workflow
+     * @param mlModel      Deployable machine learning model
      * @throws MLModelBuilderException
      */
     private MLModel buildNaiveBayesModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel, Map<String, String> algorithmParameters) throws MLModelBuilderException {
@@ -196,6 +201,13 @@ public class BaseModelsBuilder {
                 : -1;
 
     }
+
+    public List<Map<String, Integer>> getMetaModelEncodings(){
+        List<Map<String, Integer>> encodings = new ArrayList<Map<String, Integer>>();
+        return  encodings;
+    }
+
+
 
 
 }
