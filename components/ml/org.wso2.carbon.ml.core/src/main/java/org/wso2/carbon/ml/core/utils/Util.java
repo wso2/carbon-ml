@@ -1,7 +1,6 @@
 package org.wso2.carbon.ml.core.utils;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
+
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -9,13 +8,12 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.rdd.RDD;
 import scala.Tuple2;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.lang.Integer;
+
 
 import static org.apache.spark.mllib.linalg.Vectors.dense;
 
@@ -23,28 +21,9 @@ import static org.apache.spark.mllib.linalg.Vectors.dense;
  * Created by pekasa on 09.06.16.
  */
 public class Util {
-    static final Base64 base64 = new Base64();
 
-    public static String serializeObjectToString(Object object) throws IOException {
-        try (
-                ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(arrayOutputStream);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(gzipOutputStream);) {
-            objectOutputStream.writeObject(object);
-            objectOutputStream.flush();
-            return new String(base64.encode(arrayOutputStream.toByteArray()));
-        }
-    }
 
-    public static Object deserializeObjectFromString(String objectString) throws IOException,
-            ClassNotFoundException, DecoderException {
-        try (
-                ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(base64.decode(objectString.getBytes()));
-                GZIPInputStream gzipInputStream = new GZIPInputStream(arrayInputStream);
-                ObjectInputStream objectInputStream = new ObjectInputStream(gzipInputStream)) {
-            return objectInputStream.readObject();
-        }
-    }
+
 
 
     public double[][] arrayListdoubleArray(ArrayList<ArrayList<Double>> matrix, int numOfModels, int trainDataSetSize){
@@ -96,7 +75,6 @@ public class Util {
         for(LabeledPoint item : list ){
 
             labels[i] = item.label();
-            // System.out.println("LABELSONEBYONE"+labels[i]);
             i++;
 
 
@@ -128,29 +106,69 @@ public class Util {
         return  labeledList;
     }
 
+    public List<Map<Integer, String>> reverse(List<Map<String, Integer>> encodings){
+        List<Map<Integer, String>> reversedEncodingsList  = new ArrayList<>();
 
-    public List<String[]> LabeledpointToListStringArray( JavaRDD<LabeledPoint> rddata) {
+        for(Map<String, Integer> map : encodings){
+
+            Map<Integer, String> reversedEncoding = new HashMap<>();
+            for(Map.Entry<String, Integer> entry : map.entrySet()){
+                reversedEncoding.put(entry.getValue(), entry.getKey());
+            }
+            reversedEncodingsList.add(reversedEncoding);
+
+        }
+        return reversedEncodingsList;
+
+    }
+
+
+    public List<String[]> labeledpointToListStringArray(List<Map<String, Integer>> encodings, JavaRDD<LabeledPoint> rddata) {
         List<String[]> dataToBePredicted = new ArrayList<String[]>();
         List<LabeledPoint> list = rddata.collect();
+        List<Map<Integer, String>> reversedEncodingsList = reverse(encodings);
 
 
         for(LabeledPoint item : list ){
-            String[] labeledPointFeatures = new String[item.features().size()];
+            String[] labeledPointFeatures;
             double[] vector = item.features().toArray();
+            labeledPointFeatures = decoder(vector, reversedEncodingsList);
 
 
-            for(int k= 0; k<vector.length; k++){
-                labeledPointFeatures[k] = (Double.toString(vector[k]));
-
-
-            }
             dataToBePredicted.add(labeledPointFeatures);
 
         }
 
-
         return dataToBePredicted;
 
+    }
+    public String[] decoder(double[] tokens, List<Map<Integer, String>> reversedEncodingsList) {
+        String[] stringTokens = new String[tokens.length];
+        if (reversedEncodingsList.isEmpty() || reversedEncodingsList == null) {
+
+            for(int k = 0; k< tokens.length; k++){
+
+                stringTokens[k] = Double.toString(tokens[k]);
+            }
+            return stringTokens;
+        }
+        for (int i = 0; i < tokens.length; i++) {
+            if (reversedEncodingsList.size() <= i) {
+                continue;
+            }
+            Map<Integer, String> encoding = reversedEncodingsList.get(i);
+            if (encoding != null && !encoding.isEmpty()) {
+                // if we found an unknown string, we encode it from 0th mapping.
+                String code = encoding.get((int)tokens[i]) == null ? encoding.values().iterator().next()
+                        : encoding.get((int)tokens[i]);
+                // replace the value with the encoded value
+                stringTokens[i] = code;
+            }
+            else{
+                stringTokens[i] = Double.toString(tokens[i]);
+            }
+        }
+        return stringTokens;
     }
 
 
