@@ -32,6 +32,7 @@ public class Stacking implements Serializable, ClassificationModel {
     private MLModel levelOneModel;
     private List<MLModel> levelZeroModels = new ArrayList<MLModel>();
 
+
     public Stacking() {
 
     }
@@ -50,7 +51,7 @@ public class Stacking implements Serializable, ClassificationModel {
      * @return
      */
 
-    public void train(MLModelConfigurationContext context, JavaSparkContext sparkContext, Workflow workflow, MLModel mlModel, long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
+    public void train(MLModelConfigurationContext context, JavaSparkContext sparkContext, Workflow workflow, long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
                       List<Map<String, String>> paramsBaseAlgorithms, String metaAlgorithm,
                       Map<String, String> paramsMetaAlgorithm,
                       Integer numFolds, Integer seed) throws NullPointerException, MLModelHandlerException,
@@ -63,6 +64,7 @@ public class Stacking implements Serializable, ClassificationModel {
 
         Util convert = new Util();
         BaseModelsBuilder build = new BaseModelsBuilder();
+        List<Map<String, Integer>> encodings = context.getEncodings();
 
 
         RDD<LabeledPoint> r = trainData.rdd();
@@ -88,13 +90,17 @@ public class Stacking implements Serializable, ClassificationModel {
         for (String model : baseModels) {
 
             int idx = 0;
+
             // train basemodels on whole Dataset
-            MLModel noCVbaseModel = build.buildBaseModels(context, workflow,mlModel, model, trainData, paramsBaseAlgorithms.get(cnt));
+            MLModel noCVbaseModel = build.buildBaseModels(context, workflow, model, trainData, paramsBaseAlgorithms.get(cnt),
+                    false);
             // train basemodels on cross-validated Dataset
             for (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>> fold : folds) {
-                List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(fold._2().toJavaRDD());
-                MLModel baseModel = build.buildBaseModels(context, workflow,mlModel, model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt));
-                Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted);
+                MLModel baseModel = new MLModel();
+                List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, fold._2().toJavaRDD());
+                baseModel = build.buildBaseModels(context, workflow, model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt),
+                        false);
+                Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted, 0.0, true);
                 List<?> predictions =  predictor.predict();
 
                 for (int i = 0; i < predictions.size(); i++) {
@@ -112,27 +118,31 @@ public class Stacking implements Serializable, ClassificationModel {
                 (int) trainData.count()));
 
         JavaRDD<LabeledPoint> levelOneDistData = sparkContext.parallelize(levelOneDataset);
-        mlModel.getModel();
+
+
+
 
         // Train Meta-Algorithm  using Level-One-Dataset
-        levelOneModel = build.buildBaseModels(context, workflow,mlModel, metaAlgorithm, levelOneDistData, paramsMetaAlgorithm);
+        levelOneModel = build.buildBaseModels(context, workflow, metaAlgorithm, levelOneDistData, paramsMetaAlgorithm,
+                true);
 
 
     }
 
 
-    public JavaPairRDD<Double, Double> test(JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
+    public JavaPairRDD<Double, Double> test(MLModelConfigurationContext context,JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
             throws MLModelHandlerException {
 
         // Predict on levelZeroTestDataset to get levelOneTestDataset
         Util convert = new Util();
+        List<Map<String, Integer>> encodings = context.getEncodings();
         double[][] matrix = new double[(int) testDataset.count()][levelZeroModels.size()];
 
-        List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(testDataset);
+        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, testDataset);
         int cnt = 0;
         for (MLModel model : levelZeroModels) {
             int idx = 0;
-            Predictor predictor = new Predictor(modelId, model, dataTobePredicted);
+            Predictor predictor = new Predictor(modelId, model, dataTobePredicted, 0.0, true);
             List<?> predictions =  predictor.predict();
 
             for (int i = 0; i < predictions.size(); i++) {
@@ -146,15 +156,15 @@ public class Stacking implements Serializable, ClassificationModel {
 
 
         JavaRDD<LabeledPoint> levelOneDistTestData = sparkContext.parallelize(levelOneTestDataset);
-        List<String[]> LevelOneTestDatasetList = convert.LabeledpointToListStringArray(levelOneDistTestData);
-        Predictor predictor = new Predictor(modelId, levelOneModel, LevelOneTestDatasetList);
+        List<String[]> LevelOneTestDatasetList = convert.labeledpointToListStringArray(encodings, levelOneDistTestData);
+        Predictor predictor = new Predictor(modelId, levelOneModel, LevelOneTestDatasetList, 0.0, true);
 
-        List<Double> levelOnePredictions = (List<Double>) predictor.predict();
+        List<?> levelOnePredictions = predictor.predict();
         List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));
 
         List<Tuple2<Double, Double>> list = new ArrayList<Tuple2<Double, Double>>();
         for (int j = 0; j < levelOnePredictions.size(); j++) {
-            list.add(new Tuple2<Double, Double>(levelOnePredictions.get(j), labelsList.get(j)));
+            list.add(new Tuple2<Double, Double>(Double.valueOf(levelOnePredictions.get(j).toString()), labelsList.get(j)));
 
         }
         return sparkContext.parallelizePairs(list);
