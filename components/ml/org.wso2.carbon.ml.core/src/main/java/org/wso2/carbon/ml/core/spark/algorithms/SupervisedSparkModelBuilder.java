@@ -68,7 +68,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
     }
-    private MLModelConfiguration context;
+
 
 
     public JavaRDD<LabeledPoint> preProcess() throws MLModelBuilderException {
@@ -78,8 +78,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             HeaderFilter headerFilter = new HeaderFilter.Builder().init(context).build();
             LineToTokens lineToTokens = new LineToTokens.Builder().init(context).build();
             DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(context).build();
-            RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context)
-                    .build();
+            RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(context).build();
             BasicEncoder basicEncoder = new BasicEncoder.Builder().init(context).build();
             MeanImputation meanImputation = new MeanImputation.Builder().init(context).build();
             StringArrayToDoubleArray stringArrayToDoubleArray = new StringArrayToDoubleArray.Builder().build();
@@ -211,6 +210,13 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             case BAGGING:
                 summaryModel = buildBaggingModel(context, sparkContext, modelId, trainingData, testingData, workflow,
                         mlModel,includedFeatures);
+                break;
+            /*
+            case BOOSTING:
+                    summaryModel = buildBoostingModel(context, sparkContext, modelId, trainingData, testingData, workflow,
+                            mlModel,includedFeatures);
+                    break;
+                    */
 
            default:
                 throw new AlgorithmNameException("Incorrect algorithm name: " + supervisedAlgorithm.toString());
@@ -867,7 +873,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
             Stacking stackedModel = new Stacking();
 
-            stackedModel.train(context, sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+            stackedModel.train(context, sparkContext,workflow, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
                     metaAlgorithmName,
                     paramsMetaAlgorithm,
                     Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.FOLDS)),
@@ -880,7 +886,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // add test data to cache
             testingData.cache();
 
-            JavaPairRDD<Double, Double> predictionsAndLabels = stackedModel.test(sparkContext,modelID, testingData).cache();
+            JavaPairRDD<Double, Double> predictionsAndLabels = stackedModel.test(context, sparkContext,modelID, testingData).cache();
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
 
@@ -900,7 +906,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
             classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
-            System.out.println("MODEL_SUMMARY"+classClassificationAndRegressionModelSummary);
 
             return classClassificationAndRegressionModelSummary;
 
@@ -948,7 +953,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             }
             Bagging baggedModel = new Bagging();
 
-            baggedModel.train(context,sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+            baggedModel.train(context,sparkContext,workflow, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
                                         Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.SEED)));
 
             mlModel.setModel(new MLClassificationModel(baggedModel));
@@ -958,7 +963,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // add test data to cache
             testingData.cache();
 
-            JavaPairRDD<Double, Double> predictionsAndLabels = baggedModel.test(sparkContext,modelID, testingData).cache();
+            JavaPairRDD<Double, Double> predictionsAndLabels = baggedModel.test(context, sparkContext,modelID, testingData).cache();
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
 
@@ -967,7 +972,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
             classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
-            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.STACKING.toString());
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.BAGGING.toString());
 
             MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
 
@@ -978,7 +983,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             Double modelAccuracy = getModelAccuracy(multiclassMetrics);
             classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
             classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
-            
+
             return classClassificationAndRegressionModelSummary;
 
 
@@ -990,6 +995,87 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
         }
+
+    /**
+     * This method builds ensemble method Bagging
+     * @param sparkContext JavaSparkContext initialized with the application
+     * @param modelID Model ID
+     * @param trainingData Training data as a JavaRDD of LabeledPoints
+     * @param testingData Testing data as a JavaRDD of LabeledPoints
+     * @param workflow Machine learning workflow
+     * @param mlModel Deployable machine learning model
+
+
+     */
+    /*
+
+    public ModelSummary buildBoostingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
+                                          JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
+                                          SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
+
+        try {
+            Map<String, Map<String, String>> hyperParameters = workflow.getAllHyperParameters();
+            ArrayList<String> listBaseAlgorithms = new ArrayList<>();
+            ArrayList<Map<String, String>> paramsBaseAlgorithms = new ArrayList<>();
+            Set<String> keys = hyperParameters.keySet();
+            Iterator<String> it = keys.iterator();
+
+
+            while (it.hasNext()) {
+                String name = it.next();
+                if (name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                    String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
+                    hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
+                    listBaseAlgorithms.add(baseAlgorithmName);
+                    paramsBaseAlgorithms.add(hyperParameters.get(name));
+
+                }
+            }
+            Boosting boostedModel = new Boosting();
+
+            boostedModel.train(context,sparkContext,workflow, mlModel, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+                    Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.SEED)));
+
+            mlModel.setModel(new MLClassificationModel(boostedModel));
+
+            // remove from cache
+            trainingData.unpersist();
+            // add test data to cache
+            testingData.cache();
+
+            JavaPairRDD<Double, Double> predictionsAndLabels = boostedModel.test(sparkContext,modelID, testingData).cache();
+            ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
+                    .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
+
+            // remove from cache
+            testingData.unpersist();
+
+
+            classClassificationAndRegressionModelSummary.setFeatures(includedFeatures.values().toArray(new String[0]));
+            classClassificationAndRegressionModelSummary.setAlgorithm(SUPERVISED_ALGORITHM.BOOSTING.toString());
+
+            MulticlassMetrics multiclassMetrics = getMulticlassMetrics(sparkContext, predictionsAndLabels);
+
+            predictionsAndLabels.unpersist();
+
+            classClassificationAndRegressionModelSummary.setMulticlassConfusionMatrix(getMulticlassConfusionMatrix(
+                    multiclassMetrics, mlModel));
+            Double modelAccuracy = getModelAccuracy(multiclassMetrics);
+            classClassificationAndRegressionModelSummary.setModelAccuracy(modelAccuracy);
+            classClassificationAndRegressionModelSummary.setDatasetVersion(workflow.getDatasetVersion());
+
+            return classClassificationAndRegressionModelSummary;
+
+
+
+        }catch(Exception e){
+            throw new MLModelBuilderException("An error occurred while building bagging model: " + e.getMessage(),
+                    e);
+        }
+
+
+    }
+    */
 
 
 

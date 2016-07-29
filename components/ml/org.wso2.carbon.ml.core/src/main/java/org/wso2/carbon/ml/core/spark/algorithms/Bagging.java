@@ -31,17 +31,19 @@ public class Bagging implements Serializable, ClassificationModel {
 
     private List<MLModel> levelZeroModels = new ArrayList<MLModel>();
 
-   public void train(MLModelConfigurationContext context, JavaSparkContext sparkContext, Workflow workflow, MLModel mlModel, long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
-          List<Map<String, String>> paramsBaseAlgorithms, Integer seed) throws NullPointerException, MLModelHandlerException,
+   public void train(MLModelConfigurationContext context, JavaSparkContext sparkContext, Workflow workflow, long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
+          List<Map<String, String>> paramsBaseAlgorithms, Integer seed) throws NullPointerException,
             MLModelBuilderException {
 
        BaseModelsBuilder build = new BaseModelsBuilder();
+
        int cnt = 0;
        for (String model : baseModels) {
            MLModel baseModel = new MLModel();
            JavaRDD<LabeledPoint> bootstrapSample = trainData.sample(true, 1.0);
 
-           baseModel = build.buildBaseModels(context, workflow, new MLModel(), model, bootstrapSample, paramsBaseAlgorithms.get(cnt));
+           baseModel = build.buildBaseModels(context, workflow, model, bootstrapSample, paramsBaseAlgorithms.get(cnt),
+                   false);
            cnt++;
            // get list of models trained on whole Dataset
            levelZeroModels.add(baseModel);
@@ -51,11 +53,12 @@ public class Bagging implements Serializable, ClassificationModel {
 
 
     }
-    public JavaPairRDD<Double, Double> test(JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
+    public JavaPairRDD<Double, Double> test(MLModelConfigurationContext context,JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
             throws MLModelHandlerException {
         Util convert = new Util();
+        List<Map<String, Integer>> encodings = context.getEncodings();
         List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));
-        List<String[]> dataTobePredicted = convert.LabeledpointToListStringArray(testDataset);
+        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, testDataset);
 
         List<Double> resultPredictions = new ArrayList<Double>();
         for (String[] datapoint : dataTobePredicted) {
