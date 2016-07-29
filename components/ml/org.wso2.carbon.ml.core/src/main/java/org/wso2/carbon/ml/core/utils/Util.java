@@ -106,21 +106,6 @@ public class Util {
         return  labeledList;
     }
 
-    public List<Map<Integer, String>> reverse(List<Map<String, Integer>> encodings){
-        List<Map<Integer, String>> reversedEncodingsList  = new ArrayList<>();
-
-        for(Map<String, Integer> map : encodings){
-
-            Map<Integer, String> reversedEncoding = new HashMap<>();
-            for(Map.Entry<String, Integer> entry : map.entrySet()){
-                reversedEncoding.put(entry.getValue(), entry.getKey());
-            }
-            reversedEncodingsList.add(reversedEncoding);
-
-        }
-        return reversedEncodingsList;
-
-    }
 
 
     public List<String[]> labeledpointToListStringArray(List<Map<String, Integer>> encodings, JavaRDD<LabeledPoint> rddata) {
@@ -142,6 +127,23 @@ public class Util {
         return dataToBePredicted;
 
     }
+
+    public List<Map<Integer, String>> reverse(List<Map<String, Integer>> encodings){
+        List<Map<Integer, String>> reversedEncodingsList  = new ArrayList<>();
+
+        for(Map<String, Integer> map : encodings){
+
+            Map<Integer, String> reversedEncoding = new HashMap<>();
+            for(Map.Entry<String, Integer> entry : map.entrySet()){
+                reversedEncoding.put(entry.getValue(), entry.getKey());
+            }
+            reversedEncodingsList.add(reversedEncoding);
+
+        }
+        return reversedEncodingsList;
+
+    }
+
     public String[] decoder(double[] tokens, List<Map<Integer, String>> reversedEncodingsList) {
         String[] stringTokens = new String[tokens.length];
         if (reversedEncodingsList.isEmpty() || reversedEncodingsList == null) {
