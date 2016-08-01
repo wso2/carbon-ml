@@ -97,10 +97,10 @@ public class Stacking implements Serializable, ClassificationModel {
             // train basemodels on cross-validated Dataset
             for (Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>> fold : folds) {
                 MLModel baseModel = new MLModel();
-                List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, fold._2().toJavaRDD());
+                List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(fold._2().toJavaRDD());
                 baseModel = build.buildBaseModels(context, workflow, model, fold._1.toJavaRDD(), paramsBaseAlgorithms.get(cnt),
                         false);
-                Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted, 0.0, true);
+                Predictor predictor = new Predictor(modelId, baseModel, dataTobePredicted, 0.0, true, true);
                 List<?> predictions =  predictor.predict();
 
                 for (int i = 0; i < predictions.size(); i++) {
@@ -138,11 +138,11 @@ public class Stacking implements Serializable, ClassificationModel {
         List<Map<String, Integer>> encodings = context.getEncodings();
         double[][] matrix = new double[(int) testDataset.count()][levelZeroModels.size()];
 
-        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, testDataset);
+        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(testDataset);
         int cnt = 0;
         for (MLModel model : levelZeroModels) {
             int idx = 0;
-            Predictor predictor = new Predictor(modelId, model, dataTobePredicted, 0.0, true);
+            Predictor predictor = new Predictor(modelId, model, dataTobePredicted, 0.0, true, true);
             List<?> predictions =  predictor.predict();
 
             for (int i = 0; i < predictions.size(); i++) {
@@ -156,8 +156,8 @@ public class Stacking implements Serializable, ClassificationModel {
 
 
         JavaRDD<LabeledPoint> levelOneDistTestData = sparkContext.parallelize(levelOneTestDataset);
-        List<String[]> LevelOneTestDatasetList = convert.labeledpointToListStringArray(encodings, levelOneDistTestData);
-        Predictor predictor = new Predictor(modelId, levelOneModel, LevelOneTestDatasetList, 0.0, true);
+        List<String[]> LevelOneTestDatasetList = convert.labeledpointToListStringArray(levelOneDistTestData);
+        Predictor predictor = new Predictor(modelId, levelOneModel, LevelOneTestDatasetList, 0.0, true, true);
 
         List<?> levelOnePredictions = predictor.predict();
         List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));

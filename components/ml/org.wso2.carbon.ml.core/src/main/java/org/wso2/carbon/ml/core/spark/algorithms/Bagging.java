@@ -58,7 +58,7 @@ public class Bagging implements Serializable, ClassificationModel {
         Util convert = new Util();
         List<Map<String, Integer>> encodings = context.getEncodings();
         List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));
-        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(encodings, testDataset);
+        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(testDataset);
 
         List<Double> resultPredictions = new ArrayList<Double>();
         for (String[] datapoint : dataTobePredicted) {
