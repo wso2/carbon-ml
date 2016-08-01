@@ -108,16 +108,19 @@ public class Util {
 
 
 
-    public List<String[]> labeledpointToListStringArray(List<Map<String, Integer>> encodings, JavaRDD<LabeledPoint> rddata) {
+    public List<String[]> labeledpointToListStringArray(JavaRDD<LabeledPoint> rddata) {
         List<String[]> dataToBePredicted = new ArrayList<String[]>();
         List<LabeledPoint> list = rddata.collect();
-        List<Map<Integer, String>> reversedEncodingsList = reverse(encodings);
+        //List<Map<Integer, String>> reversedEncodingsList = reverse(encodings);
 
 
         for(LabeledPoint item : list ){
-            String[] labeledPointFeatures;
+            String[] labeledPointFeatures = new String[item.features().size()];
             double[] vector = item.features().toArray();
-            labeledPointFeatures = decoder(vector, reversedEncodingsList);
+            for(int k= 0; k<vector.length; k++){
+                labeledPointFeatures[k] = (Double.toString(vector[k]));
+       }
+           // labeledPointFeatures = decoder(vector, reversedEncodingsList);
 
 
             dataToBePredicted.add(labeledPointFeatures);
