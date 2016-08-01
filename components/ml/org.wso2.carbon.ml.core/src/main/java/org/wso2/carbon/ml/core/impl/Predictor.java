@@ -62,14 +62,22 @@ public class Predictor {
     private double percentileValue;
     private boolean skipDecoding;
 
-    public Predictor(long modelId, MLModel mlModel, List<String[]> data, Boolean skipEncoding) {
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
         model = mlModel;
-        dataToBePredicted = getVectors(data, skipEncoding);
+        dataToBePredicted = getVectors(data, false);
+    }
+
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding) {
+        id = modelId;
+        model = mlModel;
+        dataToBePredicted = getVectors(data, false);
+        percentileValue = percentile;
+        this.skipDecoding = skipDecoding;
     }
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding,
-                     boolean skipEncoding) {
+                     Boolean skipEncoding) {
         id = modelId;
         model = mlModel;
         dataToBePredicted = getVectors(data, skipEncoding);
@@ -308,18 +316,18 @@ public class Predictor {
         return null;
     }
 
-    private List<Vector> getVectors(List<String[]> data, Boolean encodeData) {
+    private List<Vector> getVectors(List<String[]> data, boolean skipEncoding) {
         List<Vector> vectors = new ArrayList<Vector>();
         List<Map<String, Integer>> encodings = model.getEncodings();
         BasicEncoder encoder = new BasicEncoder.Builder().encodings(encodings).build();
         for (String[] dataEntry : data) {
             String[] encodedEntry;
             try {
-                if(encodeData) {
-                    encodedEntry = encoder.call(dataEntry);
-                }
-                else{
+                if(skipEncoding){
                     encodedEntry = dataEntry;
+                }
+                else {
+                    encodedEntry = encoder.call(dataEntry);
                 }
             } catch (Exception e) {
                 log.warn("Data encoding failed. Cause: " + e.getMessage());
@@ -331,6 +339,7 @@ public class Predictor {
         }
         return vectors;
     }
+
 
     // write a method to decode the predicted value
     private List<?> decodePredictedValues(List<?> predictions) {
