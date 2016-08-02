@@ -17,17 +17,24 @@
   -->
 
 <%@ page import="java.lang.*"%>
-<script type="text/javascript">
-    jQuery(document).ready(function(){
-        var origin = window.location.origin;
-        var mlDisabled = "<%= System.getProperty("disableMl") %>";
-        if (mlDisabled == "false") {
-        	var url = "<%= System.getProperty("ml.ui.url") %>";
-            var mlui = window.open(url, '_blank');
-            window.location.href = origin;
-            mlui.focus();
-        } else {
-        	window.location.href = origin;
-        }
-  });
-</script>
+<html>
+  <head>
+    <script type="text/javascript" src="../carbon/admin/js/main.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      jQuery(document).ready(function(){
+          var origin = window.location.origin;
+          var mlDisabled = "<%= System.getProperty("disableMl") %>";
+          if (mlDisabled != "true") {
+            var url = "<%= System.getProperty("ml.ui.url") %>";
+              var mlui = window.open(url, '_blank');
+              window.location.href = origin;
+              mlui.focus();
+          } else {
+            CARBON.showErrorDialog('Machine Learner has been disabled. Restart the server with \"-DdisableMl=false\" to enable the Machine Learner Wizard.');
+          }
+      });
+    </script>
+  </body>
+</html>
