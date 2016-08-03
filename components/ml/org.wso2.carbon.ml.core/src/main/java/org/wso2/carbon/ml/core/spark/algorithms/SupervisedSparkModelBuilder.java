@@ -832,7 +832,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
     */
 
-    public ModelSummary buildStackingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
+    private ModelSummary buildStackingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
             JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
             SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
@@ -922,10 +922,9 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
      * @param mlModel Deployable machine learning model
      * @throws MLModelBuilderException
 
-
      */
 
-    public ModelSummary buildBaggingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
+    private ModelSummary buildBaggingModel(MLModelConfigurationContext context, JavaSparkContext sparkContext, long modelID,
                                            JavaRDD<LabeledPoint> trainingData, JavaRDD<LabeledPoint> testingData, Workflow workflow, MLModel mlModel,
                                            SortedMap<Integer, String> includedFeatures)throws MLModelBuilderException {
 
@@ -936,7 +935,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             Set<String> keys = hyperParameters.keySet();
             Iterator<String> it = keys.iterator();
 
-            // get name and hyperparameters of base
+            // get name and hyperparameters of base learners
             while (it.hasNext()) {
                 String name = it.next();
                 if (name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
@@ -949,7 +948,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             }
             Bagging baggedModel = new Bagging();
 
-            baggedModel.train(context,sparkContext,workflow, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
+            baggedModel.train(context,workflow, modelID, trainingData, listBaseAlgorithms, paramsBaseAlgorithms,
                                         Integer.parseInt(hyperParameters.get(workflow.getAlgorithmName()).get(MLConstants.SEED)));
 
             mlModel.setModel(new MLClassificationModel(baggedModel));
@@ -959,7 +958,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // add test data to cache
             testingData.cache();
 
-            JavaPairRDD<Double, Double> predictionsAndLabels = baggedModel.test(context, sparkContext,modelID, testingData).cache();
+            JavaPairRDD<Double, Double> predictionsAndLabels = baggedModel.test(sparkContext,modelID, testingData).cache();
             ClassClassificationAndRegressionModelSummary classClassificationAndRegressionModelSummary = SparkModelUtils
                     .getClassClassificationModelSummary(sparkContext, testingData, predictionsAndLabels);
 
@@ -992,17 +991,6 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
         }
 
-    /**
-     * This method builds ensemble method Bagging
-     * @param sparkContext JavaSparkContext initialized with the application
-     * @param modelID Model ID
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param testingData Testing data as a JavaRDD of LabeledPoints
-     * @param workflow Machine learning workflow
-     * @param mlModel Deployable machine learning model
-
-
-     */
 
 
 
