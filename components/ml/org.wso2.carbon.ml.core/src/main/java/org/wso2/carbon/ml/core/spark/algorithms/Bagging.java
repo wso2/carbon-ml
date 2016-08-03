@@ -25,13 +25,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by pekasa on 29.06.16.
+ * Created by Misgana on 29.06.16.
  */
+
+
 public class Bagging implements Serializable, ClassificationModel {
 
-    private List<MLModel> levelZeroModels = new ArrayList<MLModel>();
+    private static final long serialVersionUID = 690837690937129469L;
+    private List<MLModel> baseModelsList = new ArrayList<MLModel>();
 
-   public void train(MLModelConfigurationContext context, JavaSparkContext sparkContext, Workflow workflow, long modelId, JavaRDD<LabeledPoint> trainData, List<String> baseModels,
+    /**
+     * This method trains an Stacking ensemble model
+     * @param context MLModelConfigurationContext initialized with the application
+     * @param modelId Model ID
+     * @param trainingData Training data-set as a JavaRDD of labeled points
+     * @param baseModels   List of base-learners selected for ensemble
+     * @param paramsBaseAlgorithms Hyper-parameters of Base-learners
+     * @param seed seed
+     * @return
+     * @throws MLModelBuilderException
+     */
+
+   public void train(MLModelConfigurationContext context, Workflow workflow, long modelId, JavaRDD<LabeledPoint> trainingData, List<String> baseModels,
           List<Map<String, String>> paramsBaseAlgorithms, Integer seed) throws NullPointerException,
             MLModelBuilderException {
 
@@ -40,40 +55,51 @@ public class Bagging implements Serializable, ClassificationModel {
        int cnt = 0;
        for (String model : baseModels) {
            MLModel baseModel = new MLModel();
-           JavaRDD<LabeledPoint> bootstrapSample = trainData.sample(true, 1.0);
+           JavaRDD<LabeledPoint> bootstrapSample = trainingData.sample(true, 1.0, seed);
 
            baseModel = build.buildBaseModels(context, workflow, model, bootstrapSample, paramsBaseAlgorithms.get(cnt),
                    false);
            cnt++;
            // get list of models trained on whole Dataset
-           levelZeroModels.add(baseModel);
+           baseModelsList.add(baseModel);
 
        }
 
 
 
     }
-    public JavaPairRDD<Double, Double> test(MLModelConfigurationContext context,JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testDataset)
+
+    /**
+     * This method applies bagging for ensembling predictions of multiple models using majority vote
+     * @param sparkContext JavaSparkContext initialized with the application
+     * @param modelId Model ID
+     * @param testingData Testing dataset as a JavaRDD of labeled points
+     * @return JavaPairRDD of predicted labels and actual labels
+     *@throws MLModelHandlerException
+     */
+
+    public JavaPairRDD<Double, Double> test(JavaSparkContext sparkContext, long modelId, JavaRDD<LabeledPoint> testingData)
             throws MLModelHandlerException {
         Util convert = new Util();
-        List<Map<String, Integer>> encodings = context.getEncodings();
-        List<Double> labelsList = Doubles.asList(convert.getLabels(testDataset));
-        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(testDataset);
+        List<Double> labelsList = Doubles.asList(convert.getLabels(testingData));
+        List<String[]> dataTobePredicted = convert.labeledpointToListStringArray(testingData);
 
         List<Double> resultPredictions = new ArrayList<Double>();
         for (String[] datapoint : dataTobePredicted) {
             List<String[]> datapointList = new ArrayList<String[]>();
             datapointList.add(datapoint);
             List<Double> datapointPredictions = new ArrayList<Double>();
-            for (MLModel model : levelZeroModels) {
+            for (MLModel model : baseModelsList) {
                 List<?> predictions = new ArrayList<>();
-                Predictor predictor = new Predictor(modelId, model, datapointList, 0.0,true);
+                Predictor predictor = new Predictor(modelId, model, datapointList, 0.0,true, true);
                 predictions = predictor.predict();
                 datapointPredictions.add(Double.valueOf(predictions.get(0).toString()));
             }
+            //Map to store number of occurences of a prediction to be used for voting
             Map<Double, Integer> cardinalityMap = CollectionUtils.getCardinalityMap(datapointPredictions);
             Integer maxCardinality = Collections.max(cardinalityMap.values());
             for(final Map.Entry<Double, Integer> entry : cardinalityMap.entrySet()) {
+                // return the most voted class
                 if (maxCardinality == entry.getValue()) {
                     resultPredictions.add(entry.getKey());
                     break;
