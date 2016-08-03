@@ -25,10 +25,11 @@ import java.util.Map;
 
 
 /**
- * Created by pekasa on 01.06.16.
+ * Created by Misgana on 01.06.16.
  */
 public class Stacking implements Serializable, ClassificationModel {
 
+    private static final long serialVersionUID = 3766705804606553680L;
     private MLModel metaModel;
     private List<MLModel> baseModelsList = new ArrayList<MLModel>();
 
@@ -64,8 +65,7 @@ public class Stacking implements Serializable, ClassificationModel {
         RDD<LabeledPoint> r = trainingData.rdd();
         Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[] folds;
 
-        // create a map from feature vector to some index. use this index in folds to track predicted datapoints.
-
+       // create folds for cross-validating data
         folds = MLUtils.kFold(r, numFolds, seed,trainingData.classTag());
 
         double[][] matrix = new double[(int) trainingData.count()][baseModels.size()];
@@ -115,11 +115,12 @@ public class Stacking implements Serializable, ClassificationModel {
 
 
     /**
-     * This method trains an Stacking ensemble model
+     * This method applies Stacking using a given list of basemodels and a dataset
      * @param sparkContext JavaSparkContext initialized with the application
      * @param modelId Model ID
      * @param testingData Training data-set as a JavaRDD of labeled points
      * @return JavaPairRDD of predicted labels and actual labels
+     * @throws MLModelHandlerException
      */
 
 
