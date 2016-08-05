@@ -17,14 +17,11 @@
  */
 package org.wso2.carbon.ml.core.internal;
 
-import java.util.HashMap;
-import java.util.Properties;
-
-import org.wso2.carbon.analytics.spark.core.interfaces.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.analytics.spark.core.interfaces.SparkContextService;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
@@ -44,18 +41,21 @@ import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
 
+import java.util.HashMap;
+import java.util.Properties;
+
 /**
  * @scr.component name="ml.core" immediate="true"
  * @scr.reference name="databaseService" interface="org.wso2.carbon.ml.database.DatabaseService" cardinality="1..1"
- *                policy="dynamic" bind="setDatabaseService" unbind="unsetDatabaseService"
+ * policy="dynamic" bind="setDatabaseService" unbind="unsetDatabaseService"
  * @scr.reference name="configurationcontext.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
- *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService"
- *                unbind="unsetConfigurationContextService"
+ * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  * @scr.reference name="outputEventAdapterService"
- *                interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService" cardinality="1..1"
- *                policy="dynamic" bind="setOutputEventAdapterService" unbind="unsetOutputEventAdapterService"
+ * interface="org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService" cardinality="1..1"
+ * policy="dynamic" bind="setOutputEventAdapterService" unbind="unsetOutputEventAdapterService"
  * @scr.reference name="analytics.core" interface="org.wso2.carbon.analytics.spark.core.interfaces.SparkContextService"
- *                cardinality="1..1" policy="dynamic" bind="setSparkContextService" unbind="unsetSparkContextService"
+ * cardinality="1..1" policy="dynamic" bind="setSparkContextService" unbind="unsetSparkContextService"
  */
 public class MLCoreDS {
 
@@ -74,7 +74,7 @@ public class MLCoreDS {
             log.info("Machine learner functionality has been disabled.");
             return;
         }
-        
+
         try {
             MLConfiguration mlConfig = valueHolder.getDatabaseService().getMlConfiguration();
 
@@ -110,10 +110,8 @@ public class MLCoreDS {
                 }
             }
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
-            
             JavaSparkContext sparkContext = sparkContextService.getJavaSparkContext();
-
-            if (sparkContext == null){
+            if (sparkContext == null) {
                 String msg = "sparkContext is not available. Please check the cluster initialization!";
                 log.error(msg);
                 throw new RuntimeException(msg);
@@ -144,7 +142,7 @@ public class MLCoreDS {
                     H2OServer.startH2O(h2oConf.get("ip"), h2oConf.get("port"), h2oConf.get("name"));
                 } else {
                     String portOffset = System.getProperty("portOffset",
-                            ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
+                                                           ServerConfiguration.getInstance().getFirstProperty("Ports.Offset"));
                     String port = String.valueOf(54321 + Integer.parseInt(portOffset));
                     H2OServer.startH2O(port);
                 }
@@ -168,24 +166,24 @@ public class MLCoreDS {
             ConfigurationContextService configContextService = valueHolder.getConfigurationContextService();
             int httpsPort = CarbonUtils.getTransportPort(configContextService, mgtConsoleTransport);
             int httpsProxyPort = CarbonUtils.getTransportProxyPort(configContextService.getServerConfigContext(),
-                    mgtConsoleTransport);
-            
+                                                                   mgtConsoleTransport);
+
             // set the ml.ui.url property which will be used to navigate from Mgt Console.
-            String mlUiUrl = "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) + 
-                    MLConstants.ML_UI_CONTEXT;
+            String mlUiUrl = "https://" + hostName + ":" + (httpsProxyPort != -1 ? httpsProxyPort : httpsPort) +
+                             MLConstants.ML_UI_CONTEXT;
             System.setProperty(MLConstants.ML_UI_URL, mlUiUrl);
             log.info("Machine Learner Wizard URL : " + mlUiUrl);
-            
+
             // ML metrices
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-active-count", activeCountGauge);
             MetricManager.gauge(Level.INFO, "org.wso2.carbon.ml.thread-pool-queue-size", queueSizeGauge);
-            
+
             log.info("ML core bundle activated successfully.");
         } catch (Throwable e) {
             log.error("Could not create ModelService: " + e.getMessage(), e);
         }
     }
-    
+
     Gauge<Integer> activeCountGauge = new Gauge<Integer>() {
         @Override
         public Integer getValue() {
@@ -240,7 +238,7 @@ public class MLCoreDS {
     protected void setSparkContextService(SparkContextService scs) {
         this.sparkContextService = scs;
     }
-    
+
     protected void unsetSparkContextService(SparkContextService scs) {
         this.sparkContextService = null;
     }
