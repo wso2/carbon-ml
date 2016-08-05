@@ -98,11 +98,16 @@ public class DatasetApiV10 extends MLRestAPI {
         try {
             // validate input parameters
             if (sourceType == null || sourceType.isEmpty()) {
-                String msg = "Required parameters are missing.";
+                String msg = "Source type is null.";
                 logger.error(msg);
                 return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
             }
-
+            if (datasetName == null || datasetName.isEmpty() || !MLUtils.isValidName(datasetName)) {
+                String msg = "Empty names and invalid characters are not allowed for the dataset name: " + datasetName;
+                logger.error(msg);
+                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON)
+                        .entity(new MLErrorBean(msg)).build();
+            }
             dataset.setName(datasetName);
             dataset.setVersion(version);
             dataset.setSourcePath(sourcePath);
