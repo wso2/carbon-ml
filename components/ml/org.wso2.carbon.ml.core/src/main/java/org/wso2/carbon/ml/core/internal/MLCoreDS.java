@@ -112,6 +112,13 @@ public class MLCoreDS {
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
             
             JavaSparkContext sparkContext = sparkContextService.getJavaSparkContext();
+
+            if (sparkContext == null){
+                String msg = "sparkContext is not available. Please check the cluster initialization!";
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
             sparkContext.hadoopConfiguration().set("fs.hdfs.impl",
                     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             sparkContext.hadoopConfiguration()
