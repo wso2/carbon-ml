@@ -112,7 +112,7 @@ public class MLCoreDS {
             valueHolder.setThreadExecutor(new BlockingExecutor(poolSize, poolQueueSize));
             JavaSparkContext sparkContext = sparkContextService.getJavaSparkContext();
             if (sparkContext == null) {
-                String msg = "sparkContext is not available. Please check the cluster initialization!";
+                String msg = "sparkContext is not available. Please check the Spark initialization!";
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
