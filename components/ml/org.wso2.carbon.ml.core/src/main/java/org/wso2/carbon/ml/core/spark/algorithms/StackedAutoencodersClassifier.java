@@ -70,7 +70,7 @@ public class StackedAutoencodersClassifier implements Serializable {
      * @return DeepLearningModel
      */
     public DeepLearningModel train(JavaRDD<LabeledPoint> trainData, int batchSize, int[] layerSizes,
-            String activationType, int epochs, String responseColumn, String modelName, MLModel mlModel, long modelID) {
+            String activationType, int epochs, int seed, String responseColumn, String modelName, MLModel mlModel, long modelID) {
         // build stacked autoencoder by training the model with training data
 
         double trainingFraction = 1;
@@ -130,6 +130,7 @@ public class StackedAutoencodersClassifier implements Serializable {
                 deeplearningParameters._l1 = 1e-5;
                 deeplearningParameters._max_w2 = 10;
                 deeplearningParameters._epochs = epochs;
+                deeplearningParameters._seed = seed;
 
                 // speed up training
                 deeplearningParameters._adaptive_rate = true; // disable adaptive per-weight learning rate -> default

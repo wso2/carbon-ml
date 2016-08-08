@@ -153,7 +153,9 @@ public class DeeplearningModelBuilder extends SupervisedSparkModelBuilder {
                     Integer.parseInt(hyperParameters.get(MLConstants.BATCH_SIZE)),
                     stringArrToIntArr(hyperParameters.get(MLConstants.LAYER_SIZES)),
                     hyperParameters.get(MLConstants.ACTIVATION_TYPE),
-                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)), workflow.getResponseVariable(),
+                    Integer.parseInt(hyperParameters.get(MLConstants.EPOCHS)),
+                    Integer.parseInt(hyperParameters.get(MLConstants.SEED)),
+                    workflow.getResponseVariable(),
                     getContext().getModel().getName(), mlModel, modelID);
 
             if (deeplearningModel == null) {
