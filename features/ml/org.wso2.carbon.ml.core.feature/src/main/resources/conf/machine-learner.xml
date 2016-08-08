@@ -587,6 +587,11 @@
 					It is important to have a suitable number of epochs, as a high number can lead
 					to over-fitting.</Description>
 			</Parameters>
+            <Parameters>
+                <Name>Seed</Name>
+                <Value>12345</Value>
+                <Description>Seed for the random number generator.</Description>
+            </Parameters>
 		</Algorithm>
 	</Algorithms>
 </MachineLearner>
