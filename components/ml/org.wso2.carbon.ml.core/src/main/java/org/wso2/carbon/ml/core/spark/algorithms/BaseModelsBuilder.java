@@ -21,26 +21,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by pekasa on 07.06.16.
+ * Build supervised base-models supported by Spark for ensemble methods.
  */
 public class BaseModelsBuilder {
 
     /**
-     * create a switch statement for methods which call sparkmllibrary libraries and return models of MLModel type
-     *
+     * @param context             Configuration objects require to build a model
+     * @param workflow            Machine learning workflow
      * @param algorithmName       Name of algorithm to build
      * @param trainingData        Training dataset
      * @param algorithmParameters Hyperparameters of algorithm
+     * @param isMetaAlgorithm     Flag to check if meta-learner is passed
+     * @return Machine learning model
      */
 
 
     public MLModel buildBaseModels(MLModelConfigurationContext context, Workflow workflow, String algorithmName, JavaRDD<LabeledPoint> trainingData,
                                    Map<String, String> algorithmParameters, Boolean isMetaAlgorithm) throws MLModelBuilderException {
 
-
         try {
             Map<Integer, Integer> categoricalFeatureInfo;
-
             MLModel mlModel = new MLModel();
             mlModel.setAlgorithmName(algorithmName);
             mlModel.setAlgorithmClass(workflow.getAlgorithmClass());
@@ -50,16 +50,14 @@ public class BaseModelsBuilder {
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(context.getResponseIndex());
 
+            // Assign for meta-learner empty CategoricalFeatureInfo
             if (isMetaAlgorithm) {
                 categoricalFeatureInfo = getCategoricalFeatureInfo(getMetaModelEncodings());
-                } else {
+            } else {
                 categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
 
             }
-
-
             // build a machine learning model according to user selected algorithm
-
             MLConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLConstants.SUPERVISED_ALGORITHM.valueOf(algorithmName);
             switch (supervisedAlgorithm) {
 
@@ -79,7 +77,6 @@ public class BaseModelsBuilder {
                 default:
                     throw new AlgorithmNameException("Incorrect algorithm name");
             }
-
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException(
@@ -87,13 +84,14 @@ public class BaseModelsBuilder {
         }
     }
 
-
     /**
-     * This method builds a decision tree model
+     * This method builds a decision tree model as base-model
      *
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @param mlModel      Deployable machine learning model
+     * @param trainingData           Training data as a JavaRDD of LabeledPoints
+     * @param workflow               Machine learning workflow
+     * @param mlModel                Deployable machine learning model
+     * @param categoricalFeatureInfo Map containing categorical feature indices and number of categories for each feature
+     * @param algorithmParameters    Map containing hyperparameters of model
      * @throws MLModelBuilderException
      */
     private MLModel buildDecisionTreeModel(
@@ -122,6 +120,17 @@ public class BaseModelsBuilder {
         }
 
     }
+
+    /**
+     * This method builds a Random Forest Classification model as base-model
+     *
+     * @param trainingData           Training data as a JavaRDD of LabeledPoints
+     * @param workflow               Machine learning workflow
+     * @param mlModel                Deployable machine learning model
+     * @param categoricalFeatureInfo Map containing categorical feature indices and number of categories for each feature
+     * @param algorithmParameters    Map containing hyperparameters of model
+     * @throws MLModelBuilderException
+     */
 
     private MLModel buildRandomForestClassificationModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
                                                          Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters) throws MLModelBuilderException {
@@ -155,11 +164,12 @@ public class BaseModelsBuilder {
     }
 
     /**
-     * This method builds a naive bayes model
+     * This method builds a naive bayes model as base-model
      *
-     * @param trainingData Training data as a JavaRDD of LabeledPoints
-     * @param workflow     Machine learning workflow
-     * @param mlModel      Deployable machine learning model
+     * @param trainingData        Training data as a JavaRDD of LabeledPoints
+     * @param workflow            Machine learning workflow
+     * @param mlModel             Deployable machine learning model
+     * @param algorithmParameters Map containing hyperparameters of model
      * @throws MLModelBuilderException
      */
     private MLModel buildNaiveBayesModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel, Map<String, String> algorithmParameters) throws MLModelBuilderException {
@@ -202,12 +212,10 @@ public class BaseModelsBuilder {
 
     }
 
-    public List<Map<String, Integer>> getMetaModelEncodings(){
+    public List<Map<String, Integer>> getMetaModelEncodings() {
         List<Map<String, Integer>> encodings = new ArrayList<Map<String, Integer>>();
-        return  encodings;
+        return encodings;
     }
-
-
 
 
 }
