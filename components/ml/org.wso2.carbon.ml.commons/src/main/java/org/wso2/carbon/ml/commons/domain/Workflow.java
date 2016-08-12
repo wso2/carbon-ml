@@ -264,7 +264,7 @@ public class Workflow implements Serializable {
         return  hyperParameters;
     }
         /**
-     * @return Returns hyper parameters and name of model
+     * @return Returns  hyper parameters and name of model
      */
     public Map<String, Map<String, String>> getAllHyperParameters(){
         return allHyperParameters;
@@ -278,10 +278,12 @@ public class Workflow implements Serializable {
         this.hyperParameters = hyperParameters;
     }
     /**
-     * @param allHyperParameters Sets hyper parameters
+     * @param allHyperParameters Sets hyper parameters of multiple models
      */
     public void setAllHyperParameters(Map<String, Map<String, String>> allHyperParameters) {
         this.allHyperParameters = allHyperParameters;
+        // set hyper parameters of meta algorithm
+        this.hyperParameters = allHyperParameters.values().iterator().next();
     }
     /**
      * @return Returns dataset version
