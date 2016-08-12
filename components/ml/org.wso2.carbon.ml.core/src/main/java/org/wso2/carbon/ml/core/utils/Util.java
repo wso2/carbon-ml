@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by pekasa on 09.06.16.
- */
+ * Util Class with helper methods primarily used in ensemble methods.
+ * */
 public class Util {
 
-
+    // get labels of labeledPoint data
     public double[] getLabels(JavaRDD<LabeledPoint> rddata){
         List<LabeledPoint> list = rddata.collect();
-        // System.out.println("LEVEL0DATASET"+list);
         double[] labels = new double[list.size()];
         int i= 0;
         for(LabeledPoint item : list ){
@@ -31,7 +30,7 @@ public class Util {
 
         return labels;
     }
-
+ // get labels of each fold which makes sure each labeled is assigned to correct datapoint after cross-validation.
     public double[] getLabelsFolds( Tuple2<RDD<LabeledPoint>, RDD<LabeledPoint>>[]  folds, int numOfDatapoints){
         double[] labels = new double[numOfDatapoints];
         int idx = 0;
@@ -43,7 +42,7 @@ public class Util {
         }
         return labels;
     }
-
+// convert matrix datapoint to labeledPoint
     public List<LabeledPoint> matrixtoLabeledPoint(double[][] matrix, double[] labels){
         List<LabeledPoint> labeledList = new ArrayList<LabeledPoint>();
         LabeledPoint labeledRecord;
@@ -56,7 +55,7 @@ public class Util {
     }
 
 
-
+// converts list of JavaRDD Labeledpoint to List of string array
     public List<String[]> labeledpointToListStringArray(JavaRDD<LabeledPoint> rddata) {
         List<String[]> dataToBePredicted = new ArrayList<String[]>();
         List<LabeledPoint> list = rddata.collect();
@@ -74,6 +73,7 @@ public class Util {
         return dataToBePredicted;
 
     }
+    // converts list of Labeledpoint to List of string array
     public List<String[]> labeledpointToStringArray(List<LabeledPoint> list) {
         List<String[]> dataToBePredicted = new ArrayList<String[]>();
 

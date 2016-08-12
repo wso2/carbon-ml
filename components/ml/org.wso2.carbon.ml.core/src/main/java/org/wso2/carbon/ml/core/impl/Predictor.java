@@ -62,6 +62,7 @@ public class Predictor {
     private double percentileValue;
     private boolean skipDecoding;
 
+
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
         model = mlModel;
@@ -75,7 +76,7 @@ public class Predictor {
         percentileValue = percentile;
         this.skipDecoding = skipDecoding;
     }
-
+    // constructor with option, not to encode data
     public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding,
                      Boolean skipEncoding) {
         id = modelId;
@@ -83,6 +84,7 @@ public class Predictor {
         dataToBePredicted = getVectors(data, skipEncoding);
         percentileValue = percentile;
         this.skipDecoding = skipDecoding;
+
     }
 
     public List<?> predict() throws MLModelHandlerException {
@@ -320,6 +322,7 @@ public class Predictor {
         List<Vector> vectors = new ArrayList<Vector>();
         List<Map<String, Integer>> encodings = model.getEncodings();
         BasicEncoder encoder = new BasicEncoder.Builder().encodings(encodings).build();
+        // skip encoding, if data already encoded
         for (String[] dataEntry : data) {
             String[] encodedEntry;
             try {

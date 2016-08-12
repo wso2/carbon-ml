@@ -25,7 +25,7 @@ import java.util.Map;
 
 
 /**
- * Created by Misgana on 01.06.16.
+ * Implements Stacking ensemble method.
  */
 public class Stacking implements Serializable, ClassificationModel {
 
@@ -35,7 +35,10 @@ public class Stacking implements Serializable, ClassificationModel {
 
 
     /**
-     * This method trains an Stacking ensemble model
+     * This method trains base-learners on cross-validated trainingData
+     * and combines their predictions to form another data-set(levelOneDataset)
+     * which in turn is used as training-data to a meta-learner.
+     * The method also trains each base-learner on whole training data.
      *
      * @param sparkContext        JavaSparkContext initialized with the application
      * @param modelId             Model ID
@@ -100,7 +103,8 @@ public class Stacking implements Serializable, ClassificationModel {
     }
 
     /**
-     * This method applies Stacking using a given list of basemodels and a dataset
+     * This method gets a list of baseModels and predicts on the levelOneData to get levelOneTestData
+     * and uses the metaModel to predict on this levelOneTestData to get final predictions.
      *
      * @param sparkContext JavaSparkContext initialized with the application
      * @param modelId      Model ID
@@ -148,11 +152,9 @@ public class Stacking implements Serializable, ClassificationModel {
 
     }
 
+    // methods implemented since this class inherits interface class:ClassificationModel
     @Override
-    public RDD<Object> predict(RDD<Vector> rdd) {
-
-        return null;
-    }
+    public RDD<Object> predict(RDD<Vector> rdd) {return null;}
 
     @Override
     public double predict(Vector vector) {
