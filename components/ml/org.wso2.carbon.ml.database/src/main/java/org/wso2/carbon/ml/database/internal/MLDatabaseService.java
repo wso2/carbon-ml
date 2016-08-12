@@ -34,13 +34,12 @@ import org.wso2.carbon.ml.database.internal.constants.SQLQueries;
 import org.wso2.carbon.ml.database.internal.ds.LocalDatabaseCreator;
 import org.wso2.carbon.ml.database.util.MLDBUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 public class MLDatabaseService implements DatabaseService {
 
@@ -2082,11 +2081,13 @@ public class MLDatabaseService implements DatabaseService {
 
             getStatement = connection.prepareStatement(SQLQueries.GET_EXISTING_ALGORITHM);
             getStatement.setLong(1, analysisId);
+            getStatement.setString(2, algorithmName);
             result = getStatement.executeQuery();
 
             if (result.first() && algorithmName != null && !algorithmName.equals(result.getString(1))) {
                 deleteStatement = connection.prepareStatement(SQLQueries.DELETE_HYPER_PARAMETERS);
                 deleteStatement.setLong(1, analysisId);
+                deleteStatement.setString(2, algorithmName);
                 deleteStatement.execute();
             }
 
@@ -2096,6 +2097,8 @@ public class MLDatabaseService implements DatabaseService {
                 getStatement = connection.prepareStatement(SQLQueries.GET_EXISTING_HYPER_PARAMETER);
                 getStatement.setLong(1, analysisId);
                 getStatement.setString(2, name);
+                getStatement.setString(3, algorithmName);
+
                 result = getStatement.executeQuery();
                 if (result.first()) {
                     insertStatement = connection.prepareStatement(SQLQueries.UPDATE_HYPER_PARAMETER);
@@ -2103,6 +2106,8 @@ public class MLDatabaseService implements DatabaseService {
                     insertStatement.setString(2, value);
                     insertStatement.setLong(3, analysisId);
                     insertStatement.setString(4, name);
+                    insertStatement.setString(5, algorithmName);
+
                 } else {
                     insertStatement = connection.prepareStatement(SQLQueries.INSERT_HYPER_PARAMETER);
                     insertStatement.setLong(1, analysisId);
@@ -2170,25 +2175,27 @@ public class MLDatabaseService implements DatabaseService {
     }
 
     @Override
-
-    public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId, String algorithmName) throws DatabaseHandlerException {
+    public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId) throws DatabaseHandlerException {
         Map<String, Map<String, String>> hyperParams = new HashMap<>();
-        Map<String, String> hyperParamsModel = new HashMap<>();
+
         Connection connection = null;
         PreparedStatement getFeatues = null;
         ResultSet result = null;
+        Map<String, String> hyperParamsModel = null;
         try {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS_WITH_ALGORITHM);
+            getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_AND_ALGORITHM_OF_ANALYSIS);
             getFeatues.setLong(1, analysisId);
-            getFeatues.setString(2, algorithmName);
             result = getFeatues.executeQuery();
-            System.out.println("Result" + result);
             while (result.next()) {
-                hyperParamsModel.put(result.getString(1), result.getString(2));
-                hyperParams.put(result.getString(2),hyperParamsModel);
+                hyperParamsModel = hyperParams.get(result.getString(1));
+                if(hyperParamsModel == null){
+                     hyperParamsModel = new  HashMap<>();
+                     hyperParams.put(result.getString(1), hyperParamsModel);
+                }
+                hyperParamsModel.put(result.getString(2), result.getString(3));
             }
             return hyperParams;
         } catch (SQLException e) {
@@ -2211,18 +2218,13 @@ public class MLDatabaseService implements DatabaseService {
             // Create a prepared statement and retrieve data-set configurations.
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            System.out.print("CONNECTION" +connection.toString());
             getFeatues = connection.prepareStatement(SQLQueries.GET_HYPER_PARAMETERS_OF_ANALYSIS);
             getFeatues.setLong(1, analysisId);
             result = getFeatues.executeQuery();
-            System.out.println("RESULT_1"+result.getString(1));
-            System.out.println("RESULT_2"+result.getString(2));
 
             while (result.next()) {
                 hyperParams.put(result.getString(1), result.getString(2));
             }
-            System.out.println("Hyperparameters "+hyperParams);
-
             return hyperParams;
         } catch (SQLException e) {
             throw new DatabaseHandlerException("An error occurred while retrieving hyper parameters of "
@@ -2456,8 +2458,27 @@ public class MLDatabaseService implements DatabaseService {
         return summaryStatArray;
     }
 
-    @Override
-    public Workflow getWorkflow(long analysisId) throws DatabaseHandlerException {
+    public List<MLModel> getAllModels(long analysisId) {
+        Connection connection = null;
+        ResultSet result = null;
+        PreparedStatement getStatement = null;
+        try {
+
+            connection = dbh.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            List<MLModel> mlModels = new ArrayList<MLModel>();
+            getStatement = connection.prepareStatement(SQLQueries.GET_ALL_ML_MODELS);
+            getStatement.setLong(1, analysisId);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+        @Override
+    public Workflow getWorkflow(long analysisId, String algorithmName) throws DatabaseHandlerException {
         Connection connection = null;
         ResultSet result = null;
         PreparedStatement getStatement = null;
@@ -2487,6 +2508,7 @@ public class MLDatabaseService implements DatabaseService {
                 }
             }
             mlWorkflow.setFeatures(mlFeatures);
+
             
             // set model configs
             mlWorkflow.setAlgorithmName(getAStringModelConfiguration(analysisId, MLConstants.ALGORITHM_NAME));
@@ -2502,9 +2524,9 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setNewNormalLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL));
             mlWorkflow.setNewAnomalyLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL));
 
-            // set hyper parameters
+            // set hyper parameters of all models with their algorithm names
+            mlWorkflow.setAllHyperParameters(getHyperParametersOfModelWithNameAsMap(analysisId));
             //mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
-            mlWorkflow.setAllHyperParameters(getHyperParametersOfModelWithNameAsMap(analysisId, MLConstants.ALGORITHM_NAME));
             // result = getStatement.executeQuery();
             // if (result.first()) {
             // mlWorkflow.setAlgorithmClass(result.getString(1));
