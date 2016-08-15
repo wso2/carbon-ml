@@ -171,8 +171,8 @@ public class MLConstants {
     public static final String ALPHA = "Alpha";
     public static final String WEIGHTS = "Weights";
     public static final String FOLDS = "Folds";
-    public static final String BASE_ALGORITHM_NAME = "Base_Algorithm_Name";
-    public static final String META_ALGORITHM_NAME = "Meta_Algorithm_Name";
+    public static final String NAME_BASE_ALGORITHM = "Name_of_Base_Algorithm_";
+    public static final String NAME_META_ALGORITHM = "Name_of_Meta_Algorithm";
 
 
 
