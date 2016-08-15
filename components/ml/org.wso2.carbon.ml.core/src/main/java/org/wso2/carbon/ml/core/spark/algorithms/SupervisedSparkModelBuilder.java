@@ -848,7 +848,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // get name and hyper-parameters of base and meta-learner
             while (it.hasNext()) {
                 String name = it.next();
-                if (name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                if (name.contains(MLConstants.BASE_ALGORITHM_NAME)) {
                     String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
                     hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
                     listBaseAlgorithms.add(baseAlgorithmName);
@@ -856,10 +856,10 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
 
                 }
-                if (name.contains(MLConstants.NAME_META_ALGORITHM)) {
+                if (name.contains(MLConstants.META_ALGORITHM_NAME)) {
                     metaAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
                     hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
-                    paramsMetaAlgorithm = hyperParameters.get(MLConstants.NAME_META_ALGORITHM);
+                    paramsMetaAlgorithm = hyperParameters.get(MLConstants.META_ALGORITHM_NAME);
                 }
 
             }
@@ -937,7 +937,7 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
             // get name and hyperparameters of base learners
             while (it.hasNext()) {
                 String name = it.next();
-                if (name.contains(MLConstants.NAME_BASE_ALGORITHM)) {
+                if (name.contains(MLConstants.BASE_ALGORITHM_NAME)) {
                     String baseAlgorithmName = hyperParameters.get(name).get(MLConstants.ALGORITHM_NAME);
                     hyperParameters.get(name).remove(MLConstants.ALGORITHM_NAME);
                     listBaseAlgorithms.add(baseAlgorithmName);
