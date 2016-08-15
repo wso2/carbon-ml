@@ -171,11 +171,11 @@ public class MLConstants {
     public static final String ALPHA = "Alpha";
     public static final String WEIGHTS = "Weights";
     public static final String FOLDS = "Folds";
-    public static final String NAME_BASE_ALGORITHM = "Name_of_Base_Algorithm";
-    public static final String NUM_BASE_ALGORITHMS = "Num_Base_Algorithms";
-    public static final String PARAMS_BASE_ALGORITHMS = "Parameters_of_Base_Algorithms";
-    public static final String NAME_META_ALGORITHM = "Name_of_Meta_Algorithm";
-    public static final String PARAMS_META_ALGORITHM = "Parameters_of_Meta_Algorithm";
+    public static final String BASE_ALGORITHM_NAME = "Base_Algorithm_Name";
+    public static final String META_ALGORITHM_NAME = "Meta_Algorithm_Name";
+
+
+
 
 
 
@@ -239,7 +239,8 @@ public class MLConstants {
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,
-        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION, STACKING
+        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION, STACKING, BAGGING,
+        BOOSTING
     }
 
     public enum UNSUPERVISED_ALGORITHM {
