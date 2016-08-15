@@ -23,10 +23,10 @@ public interface ModelSummary {
     /**
      * @return Model summary type
      */
-    public String getModelSummaryType();
+    String getModelSummaryType();
     
     /**
      * @return Array of features associated with the Model
      */
-    public String[] getFeatures();
+    String[] getFeatures();
 }
