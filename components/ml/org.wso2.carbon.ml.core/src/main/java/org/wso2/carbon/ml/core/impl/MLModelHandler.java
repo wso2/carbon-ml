@@ -18,19 +18,7 @@
 package org.wso2.carbon.ml.core.impl;
 
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import hex.deeplearning.DeepLearningModel;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -78,9 +66,19 @@ import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.xml.sax.InputSource;
-
 import scala.Tuple2;
-import hex.deeplearning.DeepLearningModel;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Pattern;
 
 
 /**
@@ -292,7 +290,7 @@ public class MLModelHandler {
             String dataUrl = databaseService.getDatasetVersionUri(datasetVersionId);
             handleNull(dataUrl, "Target path is null for dataset version [id]: " + datasetVersionId);
             MLModelData model = databaseService.getModel(tenantId, userName, modelId);
-            Workflow facts = databaseService.getWorkflow(model.getAnalysisId());
+            Workflow facts = databaseService.getWorkflow(model.getAnalysisId(), model.getName());
             facts.setDatasetVersion(databaseService.getVersionset(tenantId, userName, datasetVersionId).getName());
             facts.setDatasetURL(dataUrl);
 
