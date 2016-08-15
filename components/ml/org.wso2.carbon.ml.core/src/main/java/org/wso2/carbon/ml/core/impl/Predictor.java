@@ -17,8 +17,6 @@
  */
 package org.wso2.carbon.ml.core.impl;
 
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.spark.mllib.classification.ClassificationModel;
@@ -47,8 +45,9 @@ import org.wso2.carbon.ml.core.spark.transformations.BasicEncoder;
 import org.wso2.carbon.ml.core.spark.transformations.Normalization;
 import org.wso2.carbon.ml.core.utils.DeeplearningModelUtils;
 import org.wso2.carbon.ml.core.utils.MLUtils;
-
 import water.fvec.Frame;
+
+import java.util.*;
 
 /**
  * Predict using input data rows.
@@ -63,25 +62,36 @@ public class Predictor {
     private double percentileValue;
     private boolean skipDecoding;
 
+
     public Predictor(long modelId, MLModel mlModel, List<String[]> data) {
         id = modelId;
         model = mlModel;
-        dataToBePredicted = getVectors(data);
+        dataToBePredicted = getVectors(data, false);
     }
 
     public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding) {
         id = modelId;
         model = mlModel;
-        dataToBePredicted = getVectors(data);
+        dataToBePredicted = getVectors(data, false);
         percentileValue = percentile;
         this.skipDecoding = skipDecoding;
+    }
+    // constructor with option, not to encode data
+    public Predictor(long modelId, MLModel mlModel, List<String[]> data, double percentile, boolean skipDecoding,
+                     Boolean skipEncoding) {
+        id = modelId;
+        model = mlModel;
+        dataToBePredicted = getVectors(data, skipEncoding);
+        percentileValue = percentile;
+        this.skipDecoding = skipDecoding;
+
     }
 
     public List<?> predict() throws MLModelHandlerException {
         String algorithmType = model.getAlgorithmClass();
         AlgorithmType type = AlgorithmType.getAlgorithmType(algorithmType);
 
-        org.wso2.carbon.metrics.manager.Timer timer = getTimer(model.getAlgorithmName());
+       org.wso2.carbon.metrics.manager.Timer timer = getTimer(model.getAlgorithmName());
 
         if (AlgorithmType.CLASSIFICATION == type) {
             SUPERVISED_ALGORITHM supervised_algorithm = SUPERVISED_ALGORITHM.valueOf(model.getAlgorithmName());
@@ -106,7 +116,6 @@ public class Predictor {
                 RandomForestModel randomForestModel = ((MLRandomForestModel) model.getModel()).getModel();
                 for (Vector vector : dataToBePredicted) {
                     Context context = startTimer(timer);
-
                     double predictedData = randomForestModel.predict(vector);
                     predictions.add(predictedData);
 
@@ -116,6 +125,7 @@ public class Predictor {
                         log.debug("Predicted value before decoding: " + predictedData);
                     }
                 }
+
                 return decodePredictedValues(predictions);
             default:
                 ClassificationModel classificationModel = ((MLClassificationModel) model.getModel()).getModel();
@@ -269,7 +279,7 @@ public class Predictor {
                 double[] predictedData = saeModel.predict(predFrame);
 
                 for (double pVal : predictedData) {
-                    predictions.add((Double) pVal);
+                    predictions.add(pVal);
                 }
 
                 stopTimer(context);
@@ -308,14 +318,20 @@ public class Predictor {
         return null;
     }
 
-    private List<Vector> getVectors(List<String[]> data) {
+    private List<Vector> getVectors(List<String[]> data, boolean skipEncoding) {
         List<Vector> vectors = new ArrayList<Vector>();
         List<Map<String, Integer>> encodings = model.getEncodings();
         BasicEncoder encoder = new BasicEncoder.Builder().encodings(encodings).build();
+        // skip encoding, if data already encoded
         for (String[] dataEntry : data) {
             String[] encodedEntry;
             try {
-                encodedEntry = encoder.call(dataEntry);
+                if(skipEncoding){
+                    encodedEntry = dataEntry;
+                }
+                else {
+                    encodedEntry = encoder.call(dataEntry);
+                }
             } catch (Exception e) {
                 log.warn("Data encoding failed. Cause: " + e.getMessage());
                 encodedEntry = dataEntry;
@@ -327,23 +343,32 @@ public class Predictor {
         return vectors;
     }
 
+
     // write a method to decode the predicted value
     private List<?> decodePredictedValues(List<?> predictions) {
         // skip decoding, if asked
         if (skipDecoding) {
+
             return predictions;
         }
+
         int index = model.getResponseIndex();
+
         if (index == -1) {
             return predictions;
         }
         List<Map<String, Integer>> encodings = model.getEncodings();
         // last index is response variable encoding
+
         Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
+
+
         if (encodingMap == null || encodingMap.isEmpty()) {
             // no change
+
             return predictions;
         } else {
+
             List<String> decodedPredictions = new ArrayList<String>();
             for (Object val : predictions) {
                 int roundedValue;

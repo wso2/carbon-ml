@@ -175,6 +175,14 @@ public class MLConstants {
     public static final String BLOCKS = "Blocks";
     public static final String ALPHA = "Alpha";
     public static final String WEIGHTS = "Weights";
+    public static final String FOLDS = "Folds";
+    public static final String BASE_ALGORITHM_NAME = "Base_Algorithm_Name";
+    public static final String META_ALGORITHM_NAME = "Meta_Algorithm_Name";
+
+
+
+
+
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
@@ -236,7 +244,8 @@ public class MLConstants {
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,
-        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION
+        SVM, DECISION_TREE, RANDOM_FOREST_CLASSIFICATION, NAIVE_BAYES, RANDOM_FOREST_REGRESSION, STACKING, BAGGING,
+        BOOSTING
     }
 
     public enum UNSUPERVISED_ALGORITHM {
@@ -260,7 +269,7 @@ public class MLConstants {
         EMPTY(""), NA("NA"), QUESTION("?");
 
         private final String value;
-        private MISSING_VALUES(final String str) {
+        MISSING_VALUES(final String str) {
             this.value = str;
         }
 
@@ -283,7 +292,7 @@ public class MLConstants {
         IN_PROGRESS("Processing"), COMPLETE("Processed"), FAILED("Failed");
 
         private String value;
-        private DatasetVersionStatus(String value) {
+        DatasetVersionStatus(String value) {
             this.value = value;
         }
 
@@ -301,7 +310,7 @@ public class MLConstants {
         AVAILABLE("Available"), BUSY("Busy"), FAILED("Failed");
 
         private String value;
-        private DatasetStatus(String value) {
+        DatasetStatus(String value) {
             this.value = value;
         }
 

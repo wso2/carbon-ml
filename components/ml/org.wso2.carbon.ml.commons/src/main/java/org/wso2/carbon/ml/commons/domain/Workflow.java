@@ -36,8 +36,9 @@ public class Workflow implements Serializable {
     private String observations;
     private double trainDataFraction;
     private List<Feature> features;
+    private Map<String, Map<String, String>> allHyperParameters;
     private Map<String, String> hyperParameters;
-    private String datasetVersion;
+     private String datasetVersion;
     private String normalLabels;
     private boolean normalization;
     // user defined normal label
@@ -258,9 +259,17 @@ public class Workflow implements Serializable {
     /**
      * @return Returns hyper parameters
      */
-    public Map<String, String> getHyperParameters() {
-        return hyperParameters;
+    public Map<String,String> getHyperParameters() {
+
+        return  hyperParameters;
     }
+        /**
+     * @return Returns  hyper parameters and name of model
+     */
+    public Map<String, Map<String, String>> getAllHyperParameters(){
+        return allHyperParameters;
+    }
+
 
     /**
      * @param hyperParameters Sets hyper parameters
@@ -268,7 +277,14 @@ public class Workflow implements Serializable {
     public void setHyperParameters(Map<String, String> hyperParameters) {
         this.hyperParameters = hyperParameters;
     }
-
+    /**
+     * @param allHyperParameters Sets hyper parameters of multiple models
+     */
+    public void setAllHyperParameters(Map<String, Map<String, String>> allHyperParameters) {
+        this.allHyperParameters = allHyperParameters;
+        // set hyper parameters of meta algorithm
+        this.hyperParameters = allHyperParameters.values().iterator().next();
+    }
     /**
      * @return Returns dataset version
      */
