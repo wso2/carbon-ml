@@ -303,6 +303,7 @@ public interface DatabaseService {
     void insertHyperParameters(long analysisId, List<MLHyperParameter> hyperParameters, String algorithmName)
             throws DatabaseHandlerException;
 
+
     /**
      * Update the model summary of a given model.
      *
@@ -411,7 +412,8 @@ public interface DatabaseService {
      */
     List<MLHyperParameter> getHyperParametersOfModel(long analysisId, String algorithmName) throws DatabaseHandlerException;
 
-    /**
+
+     /**
      * Get the Hyper-parameters of the model as a Map.
      *
      * @param modelId unique id of the model
@@ -437,7 +439,7 @@ public interface DatabaseService {
      * @return {@link org.wso2.carbon.ml.commons.domain.Workflow} object
      * @throws DatabaseHandlerException
      */
-    Workflow getWorkflow(long analysisId) throws DatabaseHandlerException;
+    Workflow getWorkflow(long analysisId, String algorithmName) throws DatabaseHandlerException;
 
     /**
      * Get the Model storage of the model.
