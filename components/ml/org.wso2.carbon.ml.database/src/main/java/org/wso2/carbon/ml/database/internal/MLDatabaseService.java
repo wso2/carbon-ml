@@ -2173,7 +2173,7 @@ public class MLDatabaseService implements DatabaseService {
             MLDatabaseUtils.closeDatabaseResources(connection, getFeatues, result);
         }
     }
-
+    // returns map of algorithm name with hyperpamaeters
     @Override
     public Map<String, Map<String, String>> getHyperParametersOfModelWithNameAsMap(long analysisId) throws DatabaseHandlerException {
         Map<String, Map<String, String>> hyperParams = new HashMap<>();
