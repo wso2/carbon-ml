@@ -1,1 +1,2 @@
 predict=org.wso2.carbon.ml.siddhi.extension.PredictStreamProcessor
+streamclusteringsamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingClusteringWithSamoaStreamProcessor
