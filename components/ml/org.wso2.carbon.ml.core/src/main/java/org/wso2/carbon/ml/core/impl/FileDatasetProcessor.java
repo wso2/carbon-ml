@@ -66,11 +66,17 @@ public class FileDatasetProcessor extends DatasetProcessor {
             MLIOFactory ioFactory = new MLIOFactory(valueHolder.getMlProperties());
             MLOutputAdapter outputAdapter = ioFactory.getOutputAdapter(dataset.getDataTargetType()
                     + MLConstants.OUT_SUFFIX);
-            setTargetPath(ioFactory.getTargetPath(dataset.getName() + "." + dataset.getTenantId() + "."
+            String datasetName = dataset.getName();
+            if (!MLUtils.isValidName(datasetName)) {
+                handleValidationException("Dataset name: " + datasetName + " contains restricted path elements.");
+            }
+            setTargetPath(ioFactory.getTargetPath(datasetName + "." + dataset.getTenantId() + "."
                     + System.currentTimeMillis()));
             outputAdapter.write(getTargetPath(), inputStream);
             setFirstLine(MLUtils.getFirstLine(getTargetPath()));
         } catch (MLOutputAdapterException e) {
+            throw new MLDataProcessingException(e.getMessage(), e);
+        } catch (MLInputValidationException e) {
             throw new MLDataProcessingException(e.getMessage(), e);
         } finally {
             if (inputStream != null) {

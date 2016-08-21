@@ -41,10 +41,6 @@ public class FileOutputAdapter implements MLOutputAdapter {
                     "Null argument values detected. Input stream: %s Out Path: %s", in, outPath));
         }
 
-        if (!MLUtils.isValidName(outPath)) {
-            throw new MLOutputAdapterException("File path: " + outPath + " contains restricted path elements.");
-        }
-
         OutputStream out = null;
         try {
             File file = new File(outPath);

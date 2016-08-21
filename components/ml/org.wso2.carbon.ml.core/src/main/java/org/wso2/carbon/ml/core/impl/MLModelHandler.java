@@ -723,6 +723,9 @@ public class MLModelHandler {
             if (storage == null) {
                 throw new MLModelBuilderException("Invalid model ID: " + modelId);
             }
+            if (!MLUtils.isValidName(modelName)) {
+                throw new MLModelBuilderException("Model name: " + modelName + " contains restricted path elements.");
+            }
             String storageType = storage.getType();
             String storageLocation = storage.getLocation();
             String outPath = storageLocation + File.separator + modelName;
