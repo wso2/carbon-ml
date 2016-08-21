@@ -16,24 +16,22 @@
 package org.wso2.carbon.ml.rest.api;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriInfo;
-
 import com.owlike.genson.Genson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.hadoop.fs.InvalidRequestException;
 import org.apache.http.HttpHeaders;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.commons.domain.MLModel;
@@ -50,6 +48,9 @@ import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.ml.core.utils.MLUtils;
 import org.wso2.carbon.ml.rest.api.model.MLErrorBean;
 import org.wso2.carbon.ml.rest.api.model.MLResponseBean;
+import org.wso2.carbon.ml.rest.api.neuralNetworks.FeedForwardNetwork;
+import org.wso2.carbon.ml.rest.api.neuralNetworks.HiddenLayerDetails;
+import org.wso2.carbon.ml.rest.api.neuralNetworks.OutputLayerDetails;
 
 /**
  * This class is to handle REST verbs GET , POST and DELETE.
@@ -71,6 +72,7 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Create a new Model.
+     *
      * @param model {@link MLModelData} object
      * @return JSON of {@link MLModelData} object
      */
@@ -91,9 +93,9 @@ public class ModelApiV20 extends MLRestAPI {
             MLModelData insertedModel = mlModelHandler.createModel(model);
 
             //hide null json fields in response
-            String[] fieldsToHide = { MLConstants.ML_MODEL_DATA_ID, MLConstants.ML_MODEL_DATA_CREATED_TIME,
+            String[] fieldsToHide = {MLConstants.ML_MODEL_DATA_ID, MLConstants.ML_MODEL_DATA_CREATED_TIME,
                     MLConstants.ML_MODEL_DATA_DATASET_VERSION, MLConstants.ML_MODEL_DATA_ERROR,
-                    MLConstants.ML_MODEL_DATA_MODEL_SUMMARY };
+                    MLConstants.ML_MODEL_DATA_MODEL_SUMMARY};
             Genson.Builder builder = new Genson.Builder();
             for (int i = 0; i < fieldsToHide.length; i++) {
                 builder = builder.exclude(fieldsToHide[i], MLModelData.class);
@@ -111,6 +113,7 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Create a new model storage
+     *
      * @param modelId Unique id of the model
      * @param storage {@link MLStorage} object
      */
@@ -137,6 +140,7 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Build the model
+     *
      * @param modelId Unique id of the model to be built.
      */
     @POST
@@ -169,6 +173,7 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Publish the model to ML registry
+     *
      * @param modelId Unique id of the model to be published
      * @return JSON of {@link MLResponseBean} containing the published location of the model
      */
@@ -185,7 +190,7 @@ public class ModelApiV20 extends MLRestAPI {
         try {
             MLModelData model = mlModelHandler.getModel(tenantId, userName, modelId);
             // check pmml support
-            if(model != null) {
+            if (model != null) {
                 final MLModel generatedModel = mlModelHandler.retrieveModel(model.getId());
                 String algorithmName = generatedModel.getAlgorithmName();
                 List<MLAlgorithm> mlAlgorithms = MLCoreServiceValueHolder.getInstance().getAlgorithms();
@@ -198,14 +203,13 @@ public class ModelApiV20 extends MLRestAPI {
                 if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
                     String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.PMML);
                     return Response.ok(new MLResponseBean(registryPath)).build();
-                }
-                else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
+                } else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
                     String registryPath = mlModelHandler.publishModel(tenantId, userName, modelId, MLModelHandler.Format.SERIALIZED);
                     return Response.ok(new MLResponseBean(registryPath)).build();
                 } else {
                     return Response.status(Response.Status.BAD_REQUEST).build();
                 }
-            } else{
+            } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (InvalidRequestException e) {
@@ -227,10 +231,10 @@ public class ModelApiV20 extends MLRestAPI {
     /**
      * Predict using a file and return as a list of predicted values.
      *
-     * @param modelId Unique id of the model
-     * @param dataFormat Data format of the file (CSV or TSV)
-     * @param inputStream File input stream generated from the file used for predictions
-     * @param percentile a threshold value used to identified cluster boundaries
+     * @param modelId      Unique id of the model
+     * @param dataFormat   Data format of the file (CSV or TSV)
+     * @param inputStream  File input stream generated from the file used for predictions
+     * @param percentile   a threshold value used to identified cluster boundaries
      * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predictions
      */
@@ -239,8 +243,8 @@ public class ModelApiV20 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response predict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile,
-            @QueryParam("skipDecoding") boolean skipDecoding) {
+                            @Multipart("file") InputStream inputStream, @QueryParam("percentile") double percentile,
+                            @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -277,11 +281,11 @@ public class ModelApiV20 extends MLRestAPI {
     /**
      * Predict using a file and return predictions as a CSV.
      *
-     * @param modelId Unique id of the model
-     * @param dataFormat Data format of the file (CSV or TSV)
+     * @param modelId      Unique id of the model
+     * @param dataFormat   Data format of the file (CSV or TSV)
      * @param columnHeader Whether the file contains the column header as the first row (YES or NO)
-     * @param inputStream Input stream generated from the file used for predictions
-     * @param percentile a threshold value used to identified cluster boundaries
+     * @param inputStream  Input stream generated from the file used for predictions
+     * @param percentile   a threshold value used to identified cluster boundaries
      * @param skipDecoding whether the decoding should not be done (true or false)
      * @return A file as a {@link StreamingOutput}
      */
@@ -290,8 +294,8 @@ public class ModelApiV20 extends MLRestAPI {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response streamingPredqict(@Multipart("modelId") long modelId, @Multipart("dataFormat") String dataFormat,
-            @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
-            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
+                                      @Multipart("columnHeader") String columnHeader, @Multipart("file") InputStream inputStream,
+                                      @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -344,9 +348,9 @@ public class ModelApiV20 extends MLRestAPI {
     /**
      * Make predictions using a model
      *
-     * @param modelId Unique id of the model
-     * @param data List of string arrays containing the feature values used for predictions
-     * @param percentile a threshold value used to identified cluster boundaries
+     * @param modelId      Unique id of the model
+     * @param data         List of string arrays containing the feature values used for predictions
+     * @param percentile   a threshold value used to identified cluster boundaries
      * @param skipDecoding whether the decoding should not be done (true or false)
      * @return JSON array of predicted values
      */
@@ -355,7 +359,7 @@ public class ModelApiV20 extends MLRestAPI {
     @Produces("application/json")
     @Consumes("application/json")
     public Response predict(@PathParam("modelId") long modelId, List<String[]> data,
-            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
+                            @QueryParam("percentile") double percentile, @QueryParam("skipDecoding") boolean skipDecoding) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -517,7 +521,7 @@ public class ModelApiV20 extends MLRestAPI {
 
                 if (isPMMLSupported && (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_PMML))) {
                     final String pmmlModel = mlModelHandler.exportAsPMML(generatedModel);
-                    logger.info(String.format("Successfully exported model [id] %s into pmml format",modelId));
+                    logger.info(String.format("Successfully exported model [id] %s into pmml format", modelId));
                     return Response.ok(pmmlModel)
                             .header("Content-disposition", "attachment; filename=" + modelName + "PMML.xml").build();
                 } else if (mode == null || mode.equals(MLConstants.ML_MODEL_FORMAT_SERIALIZED)) {
@@ -556,17 +560,18 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Get a list of recommended products for a given user using the given model.
-     * @param modelId id of the recommendation model to be used.
-     * @param userId id of the user.
+     *
+     * @param modelId      id of the recommendation model to be used.
+     * @param userId       id of the user.
      * @param noOfProducts number of recommendations required.
-     * @return an array of product recommendations. 
+     * @return an array of product recommendations.
      */
     @GET
     @Path("/{modelId}/product-recommendations")
     @Produces("application/json")
     public Response getProductRecommendations(@PathParam("modelId") long modelId,
-            @QueryParam("user-id") int userId,
-            @QueryParam("no-of-products") int noOfProducts) {
+                                              @QueryParam("user-id") int userId,
+                                              @QueryParam("no-of-products") int noOfProducts) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -586,17 +591,18 @@ public class ModelApiV20 extends MLRestAPI {
 
     /**
      * Get a list of recommended users for a given product using the given model.
-     * @param modelId id of the recommendation model to be used.
+     *
+     * @param modelId   id of the recommendation model to be used.
      * @param productId id of the product.
      * @param noOfUsers number of recommendations required.
-     * @return an array of user recommendations. 
+     * @return an array of user recommendations.
      */
     @GET
     @Path("/{modelId}/user-recommendations")
     @Produces("application/json")
     public Response getUserRecommendations(@PathParam("modelId") long modelId,
-            @QueryParam("product-id") int productId,
-            @QueryParam("no-of-users") int noOfUsers) {
+                                           @QueryParam("product-id") int productId,
+                                           @QueryParam("no-of-users") int noOfUsers) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
@@ -614,4 +620,78 @@ public class ModelApiV20 extends MLRestAPI {
         }
     }
 
+    /**
+     * Create a model for Neural networks.
+     *
+     * @return JSON of the performance/evaluation statistics of the trained model
+     */
+    @POST
+    @Path("/neural-network")
+    @Consumes("application/json")
+    @Produces("application/json")
+
+    public Response getNeuralNetwork(String networkDetails) {
+        try {
+            String statistics = "";
+            //read json object
+            JSONObject networkDetail = new JSONObject(networkDetails);
+
+            //convert the json data to pass to the respective neyral network class
+            String networkName = networkDetail.getString("networkName");
+            long seed = networkDetail.getLong("seed");
+            double learningRate = networkDetail.getDouble("learningRate");
+            int bachSize = networkDetail.getInt("batchSize");
+            double nepoches = networkDetail.getDouble("nepoches");
+            int iterations = networkDetail.getInt("iteration");
+            String optimizationAlgorithms = networkDetail.getString("optimizationAlgorithms");
+            String updater = networkDetail.getString("updater");
+            double momentum = networkDetail.getDouble("momentum");
+            boolean pretrain = networkDetail.getBoolean("pretrain");
+            boolean backprop = networkDetail.getBoolean("backprop");
+            int noHiddenLayers = networkDetail.getInt("hiddenlayerno");
+            int inputLayerNodes = networkDetail.getInt("inputlayernodes");
+            int datasetId = networkDetail.getInt("datasetId");
+            int versionId = networkDetail.getInt("versionID");
+            int analysisId = networkDetail.getInt("analysisID");
+            JSONArray jsonArrayHiddenDetails = networkDetail.getJSONArray("hiddenlayerDetails");
+            JSONArray jsonArrayOutputDetails = networkDetail.getJSONArray("outputlayerDetails");
+
+            List<HiddenLayerDetails> hiddenLayerList = new ArrayList<>();
+            List<OutputLayerDetails> outputLayerList = new ArrayList<>();
+
+            for (int i = 0; i < jsonArrayHiddenDetails.length(); i++) {
+                JSONObject hiddenJSONObject = jsonArrayHiddenDetails.getJSONObject(i);
+                int hiddenNodes = hiddenJSONObject.getInt("hiddenlayernodes");
+                String hiddenWeightInit = hiddenJSONObject.getString("hiddenlayerweightinit");
+                String hiddenActivation = hiddenJSONObject.getString("hiddenlayeractivation");
+                hiddenLayerList.add(new HiddenLayerDetails(hiddenNodes, hiddenWeightInit, hiddenActivation));
+            }
+
+            for (int j = 0; j < jsonArrayOutputDetails.length(); j++) {
+                JSONObject outputJSONObject = jsonArrayOutputDetails.getJSONObject(j);
+                int outputNodes = outputJSONObject.getInt("outputlayernodes");
+                String outputWeightInit = outputJSONObject.getString("outputlayerweightinit");
+                String outputActivation = outputJSONObject.getString("outputlayeractivation");
+                String outputLossFunction = outputJSONObject.getString("outputlaterlossfunction");
+                outputLayerList.add(new OutputLayerDetails(outputNodes, outputWeightInit, outputActivation, outputLossFunction));
+            }
+
+            //make FeedForwardNetwork class object
+            FeedForwardNetwork net = new FeedForwardNetwork();
+            //Call createFeedForwardNetwork method
+            statistics = net.createFeedForwardNetwork(seed, learningRate, bachSize, nepoches, iterations, optimizationAlgorithms, updater, momentum, pretrain, backprop, noHiddenLayers, inputLayerNodes, datasetId, versionId, analysisId, hiddenLayerList, outputLayerList);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Object statJson = objectMapper.readValue(objectMapper.writeValueAsString(statistics), Object.class);
+            logger.info("API Response " + statJson.toString());
+
+            return Response.ok(statJson).build();
+
+        } catch (Exception e) {
+            String msg = MLUtils.getErrorMsg("Error occurred in the server side!!!", e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
 }

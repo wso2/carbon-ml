@@ -569,6 +569,49 @@
                 <artifactId>h2o</artifactId>
                 <version>${h2o.version}</version>
             </dependency>
+
+            <!--DL4J-->
+            <dependency>
+                <groupId>org.deeplearning4j</groupId>
+                <artifactId>deeplearning4j-core</artifactId>
+                <version>${dl4j.core.version}</version>
+            </dependency>
+
+            <!-- ND4J-->
+            <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-api -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-api</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+
+            <!--Canova-->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-api</artifactId>
+                <version>0.0.0.17</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-native -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-native</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-image -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-nd4j-image</artifactId>
+                <version>0.0.0.16</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-codec -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-nd4j-codec</artifactId>
+                <version>0.0.0.16</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -785,6 +828,7 @@
         <!--Siddhi Extension Dependency versions -->
         <siddhi.version>3.0.1</siddhi.version>
 
+        <dl4j.core.version>0.4-rc3.10</dl4j.core.version>
     </properties>
 
     <organization>

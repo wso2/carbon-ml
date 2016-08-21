@@ -1,0 +1,247 @@
+/*
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+html, body {
+	height: 768px;
+	margin: 1px;
+}
+
+/* #top-css stylings for the top of the page */
+#top {
+	padding: 15px;
+	border: 1px solid red;
+	min-height: 70px;
+	background-color: white;
+	border-radius: 3px;
+	border: 1px solid #867979;
+}
+
+/* #down-css stylings for the workspace and setting parts of the page */
+#down {
+	padding: 15px;
+	height: 682px;
+	background-color: #e7e7e4;
+	border-radius: 10px;
+	border: 1px solid #867979;
+	color: black;
+}
+
+/* .draggableInput-css stylings for the Input layers */
+.draggableInput {
+	width: 25%;
+	height: 225px;
+	padding: 1em;
+	float: left;
+	margin: 10px 10px 10px 0;
+	background-color: #cc66ff;
+	border-radius: 10px;
+	border: 1px solid #cc66ff;
+	writing-mode: tb-rl;
+	font-size: 150%;
+}
+
+/* .draggableInputHelper-css stylings for the Input helper(cloned) layers */
+.draggableInputHelper {
+	width: 6%;
+	height: 65vh;
+	padding: 0.5em;
+	margin: 10px 10px 10px 0;
+	background-color: #cc66ff;
+	border-radius: 10px;
+	border: 1px solid #cc66ff;
+}
+
+/* .draggableHidden-css stylings for the Hidden layers */
+.draggableHidden {
+	width: 25%;
+	height: 225px;
+	padding: 0.5em;
+	float: left;
+	margin: 10px 10px 10px 0;
+	background-color: #9900cc;
+	border-radius: 10px;
+	border: 1px solid #9900cc;
+	writing-mode: tb-rl;
+	font-size: 150%;
+}
+
+/* .draggableHiddenHelper-css stylings for the Hidden helper(cloned) layers */
+.draggableHiddenHelper {
+	width: 6%;
+	height: 65vh;
+	padding: 0.5em;
+	margin: 10px 10px 10px 0;
+	background-color: #9900cc;
+	border-radius: 10px;
+	border: 1px solid #9900cc;
+}
+
+/* .draggableOutput-css stylings for the Outputlayers */
+.draggableOutput {
+	width: 25%;
+	height: 225px;
+	padding: 0.5em;
+	float: left;
+	margin: 10px 10px 10px 0;
+	background-color: #0000ff;
+	border-radius: 10px;
+	border: 1px solid #0000ff;
+	writing-mode: tb-rl;
+	font-size: 150%;
+}
+
+/* .draggableOutputHelper-css stylings for the Output helper(cloned) layers */
+.draggableOutputHelper {
+	width: 6%;
+	height: 65vh;
+	padding: 0.5em;
+	margin: 10px 10px 10px 0;
+	background-color: #0000ff;
+	border-radius: 10px;
+	border: 1px solid #0000ff;
+}
+
+/* #droppable -css stylings for the droppable container */
+#droppable {
+	width: 100%;
+	height: 100%;
+	padding: 0.5em;
+	margin: 10px;
+	float: left;
+	border: 1px solid #867979;
+	border-radius: 4px;
+	background-color: white;
+}
+
+/* #NameDiagram -css stylings for the text styles */
+#NameDiagram {
+	font-size: 20px;
+}
+
+/* css stylings for the input */
+input[type=text], select {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 5px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	height: 10px;
+}
+
+/* css stylings for the submit buttons */
+input[type=submit] {
+	width: 100%;
+	background-color: #4CAF50;
+	color: white;
+	padding: 10px 20px;
+	margin: 4px 0;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+input[type=setting], select {
+	width: 50%;
+	padding: 8px 8px;
+	margin: 8px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	height: 35px;
+	float: right;
+}
+
+input[type=submit]:hover {
+	background-color: #45a049;
+}
+
+/* css stylings for rotating texts */
+.rotate {
+	transform: rotate(180deg);
+}
+
+/* css stylings for left side divs of the workspace */
+.left {
+	height: 50%;
+	width: 100%;
+	border: 1px solid #867979;
+	border-radius: 4px;
+	background-color: #bfbfbf;
+	margin: 4px 0;
+	padding: 15px;
+}
+
+/* css stylings for setting element-layer div */
+#settings {
+	height: 100%;
+	width: 25%;
+	float: left;
+}
+/* css stylings for workspace */
+#workspace {
+	height: 100%;
+	width: 75%;
+	float: left;
+}
+/* css stylings for dialog boxes which appears when layers taken to the workspace */
+fieldset {
+	padding: 0;
+	border: 0;
+	margin-top: 25px;
+}
+
+/* css stylings for dialog form for hidden layers */
+#dialog-form-hidden {
+	float: left;
+}
+
+/* css stylings for dialog form for input layer */
+#dialog-form-input {
+	float: left;
+}
+
+/* css stylings for labels in dialog forms */
+#setting_labels {
+	float: left;
+	width: 50%;
+	height: 46px;
+	padding: 8px 8px;
+}
+
+/* css stylings for dropdowns in dialog forms */
+.setting_dropdown {
+	float: left;
+	width: 50%;
+	padding: 8px 8px;
+}
+
+/* css stylings for labels in the common NN seetings div */
+.label_setting {
+	width: 50%;
+	padding: 8px 8px;
+	margin: 8px 0;
+	display: inline-block;
+	height: 35px;
+	float: left;
+}
+
+/* css stylings for dropdowns of left div of workspace */
+.dropdown {
+	width: 100%
+}

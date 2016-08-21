@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WSO2 Neural Network Builder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../../css/jquery-ui.css">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/neuralNetworkStyles.css">
+<link rel="stylesheet" href="../../css/pace.css">
+<script src="../../js/jquery.js"></script>
+<script src="../../js/jquery-ui.js"></script>
+<script src="../../js/bootstrap.js"></script>
+<script src="../../js/neuralNetworkScript.js"></script>
+<script src="../../js/jsPlumb-2.1.2-min.js"></script>
+<script src="../../js/pace.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div id="top" class="col-md-1 col-sm-1 col-lg-1">
+				<img src="../../images/WSO2.png" class="img-responsive" alt="WSO2">
+			</div>
+			<div id="top" class="col-md-11 col-sm-11 col-lg-11">
+				<label id="NameDiagram">Untitled Diagram</label>
+			</div>
+		</div>
+		
+		<!-- Working area-->
+		<div class="row">
+			<div id="down" class="col-md-9 col-sm-9 col-lg-9">
+				<!-- Draggable layers-Input Layers,Hidden Layers,Output Layers -->
+				<div id="settings">
+					<div class="left">
+						<h3 style="text-align: center">Layers</h3>
+						<div id="draggableInput"
+							class="draggable ui-widget-content draggableInput">
+							<center class="rotate">Input Layer</center>
+						</div>
+						<div id="draggableHidden"
+							class="ui-widget-content draggableHidden">
+							<center class="rotate">Hidden Layer</center>
+						</div>
+						<div id="draggableOutput"
+							class="ui-widget-content draggableOutput">
+							<center class="rotate">Output Layer</center>
+						</div>
+					</div>
+					<!-- Select dataset version by User -->
+					<div class="left">
+						<div>
+							<label>Select Data Version</label>
+							<select class="dropdown"
+								id="data_version"></select>
+						</div>					
+					</div>
+				</div>
+				
+				<!-- Droppable Area -->
+				<div id="workspace">
+					<div id="droppable" class="ui-widget-header"></div>
+					
+					<!-- Dialog box for input layers-->
+					<div id="inputsettingModel" class="modal fade">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">x</button>
+									<h4 class="modal-title">Settings</h4>
+								</div>
+								<div class="modal-body">
+									<form>
+										<fieldset>
+											<label id="setting_labels">No of Input nodes</label> 
+											<input
+												type="setting" class="form-control"
+												id="inputNodes_inputlayer">									
+										</fieldset>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary"
+										id="saveInputLayer">Save</button>
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Dialog box for the Hidden layer -->
+					<div id="hiddensettingModel" class="modal fade">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">x</button>
+									<h4 class="modal-title">Settings</h4>
+								</div>
+								<div class="modal-body">
+									<form>
+										<fieldset>
+											<label id="setting_labels">No of Hidden nodes</label> <input
+												type="setting" class="form-control"
+												id="hiddenNodes_hiddenlayer"> <label id="setting_labels"
+												for="weightInit_hiddenlayer">WeightInit</label> <select
+												class="setting_dropdown" id="weightInit_hiddenlayer"
+												name="weightInit">
+													<option value="Distribution">Distribution</option>
+													<option value="Normalized">Normalized</option>
+													<option value="Size">Size</option>
+													<option value="Uniform">Uniform</option>
+													<option value="Vi">Vi</option>
+													<option value="Zero">Zero</option>
+													<option value="Xavier">Xavier</option>
+													<option value="RELU">RELU</option>
+											</select> <label id="setting_labels"
+												for="activation_hiddenlayer">Activation</label> <select
+												class="setting_dropdown" id="activation_hiddenlayer"
+												name="activation">
+													<option value="relu">RELU</option>
+													<option value="softmax">Softmax</option>
+											</select>
+										</fieldset>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary"
+										id="saveHiddenLayer">Save</button>
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Dialog Box for Output Layer -->
+					<div id="outputsettingModel" class="modal fade">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">x</button>
+									<h4 class="modal-title">Settings</h4>
+								</div>
+								<div class="modal-body">
+									<form>
+										<fieldset>
+											<label id="setting_labels">No of Output nodes</label> <input
+												type="setting" class="form-control"
+												id="outputNodes_outputlayer"> <label id="setting_labels"
+												for="weightInit_outputlayer">WeightInit</label> <select
+												class="setting_dropdown" id="weightInit_outputlayer"
+												name="weightInit">
+													<option value="Distribution">Distribution</option>
+													<option value="Normalized">Normalized</option>
+													<option value="Size">Size</option>
+													<option value="Uniform">Uniform</option>
+													<option value="Vi">Vi</option>
+													<option value="Zero">Zero</option>
+													<option value="Xavier">Xavier</option>
+													<option value="RELU">RELU</option>
+											</select> <label id="setting_labels"
+												for="activation_outputlayer">Activation</label> <select
+												class="setting_dropdown" id="activation_outputlayer"
+												name="activation">
+													<option value="relu">RELU</option>
+													<option value="softmax">Softmax</option>
+											</select> <label id="setting_labels"
+												for="lossFunction_outputlayer">Loss Function</label> <select
+												class="setting_dropdown" id="lossFunction_outputlayer"
+												name="lossFunction">
+													<option value="mse">MSE</option>
+													<option value="expll">EXPLL</option>
+													<option value="xent">XENT</option>
+													<option value="mcxent">MCXENT</option>
+													<option value="rmsexent">RMSE-XENT</option>
+													<option value="sqauredloss">SQUARED-LOSS</option>
+													<option value="reconstructioncrossentropy">RECONSTRUCTION-CROSS
+														ENTROPY</option>
+													<option value="negetiveloglilelihood">NEGTEIVE LOG
+														LIKELIHOOD</option>
+													<option value="custom">CUSTOM</option>
+											</select>
+										</fieldset>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary"
+										id="saveOutputLayer">Save</button>
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Neural Network Performance details/Evaluation details -->
+					<div id="model_evaluation" class="modal fade" role="dialog">
+						<div class="modal-dialog">
+
+							<!-- Neural Network Performance Model content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Neural Network Evaluation Details</h4>
+								</div>
+								<div class="modal-body">
+									<form>
+										<fieldset>
+											<label id="setting_labels">Accuracy</label> <input
+												type="setting" class="form-control" id="accuracy"> <label
+												id="setting_labels">Precision</label> <input type="setting"
+												class="form-control" id="precision"> <label
+													id="setting_labels">Recall</label> <input type="setting"
+													class="form-control" id="recall"> <label
+														id="setting_labels">F1 Score</label> <input type="setting"
+														class="form-control" id="f1score">	
+										</fieldset>
+									</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Error handling Model -->
+					<div id="model_errorHandling" class="modal fade">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true">x</button>
+									<h4 style="color:red;" class="modal-title">Error Report</h4>
+								</div>
+								<div class="modal-body">
+									<div>
+										<p style="color:red;font-size: 200%;text-align: center;" id="error"></p>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Common Neural Network Settings-->
+			<div id="down" class="col-md-3 col-sm-3 col-lg-3">
+				<h4>
+					<center>Settings</center>
+				</h4>
+				<div class="form-horizontal">
+					<form class="form-horizontal">
+						<label class="label_setting" for="networkType">Neural Network type</label>
+						<select id="networkType" name="networkType">
+							<option value="Feed_Forward_NN">Feed Forward NN</option>
+						</select>
+						<label class="label_setting">Seed</label>
+						<input type="setting" class="form-control" id="seed"> <label
+							class="label_setting">Learning Rate</label> <input type="setting"
+							class="form-control" id="learningRate"> <label
+								class="label_setting">Batch Size</label> <input type="setting"
+								class="form-control" id="batchSize"> <label
+									class="label_setting">nEpoches</label> <input type="setting"
+									class="form-control" id="nepoches"> <label
+										class="label_setting">Iteration</label> <input type="setting"
+										class="form-control" id="iteration"> <label
+											class="label_setting" for="optimizationAlgorithms">Optimization
+												Algorithm</label> <select id="optimizationAlgorithms"
+											name="optimizationAlgorithms">
+												<option value="Line_Gradient_Descent">Line Gradient Descent</option>
+												<option value="Conjugate_Gradient">Conjugate Gradient</option>
+												<option value="Hessian_Free">Hessian Free</option>
+												<option value="LBFGS">LBFGS</option>
+												<option value="Stochastic_Gradient_Descent">Stochastic
+													Gradient Descent</option>
+										</select> <label class="label_setting" for="updater">Updater</label>
+											<select id="updater" name="updater">
+												<option value="sgd">SGD</option>
+												<option value="adam">ADAM</option>
+												<option value="adadelta">ADADELTA</option>
+												<option value="nesterovs">NESTEROVS</option>
+												<option value="adagrad">ADAGRAD</option>
+												<option value="rmsprop">RMSPROP</option>
+												<option value="none">NONE</option>
+												<option value="custom">CUSTOM</option>
+										</select> <label class="label_setting">Momentum</label> <input
+											type="setting" class="form-control" id="momentum"> <label
+												class="label_setting" for="pretrain">Pretrain</label> <select
+												id="pretrain" name="pretrain">
+													<option value="true">True</option>
+													<option value="false">False</option>
+											</select> <label class="label_setting" for="backprop">Back
+													Propagation</label> <select id="backprop" name="backprop"
+												class="button_NN">
+													<option value="true">True</option>
+													<option value="false">False</option>
+											</select> 
+											<button id="btn1" type="button">Run Neural Network</button>
+					
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	
+$(document).ready(function(e){
+		var serverUrl = window.location.origin;
+		var datasetId = getParameterByName('datasetId');
+
+			  $(function() {				   
+				     //var analysisID = this.value;
+
+						$selectversion = $('#data_version');
+						 $.ajax({
+						     url:serverUrl+'/api/datasets/'+datasetId+'/versions',
+						     dataType: 'json',
+						     timeout: 1000,
+						     async:false,
+						     headers: {
+						     	"Authorization": "Basic YWRtaW46YWRtaW4="
+						     },
+						     success: function (data, status, jqXhr) {
+						    	$selectversion.empty();
+						  	    $.each(data,function(i,version){
+						  	    	$selectversion.append('<option value="'+version.id+'">'+version.name+'</option>');
+						  			});
+						  			console.log(jqXhr.responseText);
+						         },
+						     error:function (jqXhr, textStatus, errorMessage) {
+						 	   console.log('Error: ' + errorMessage);
+						     }
+						 });
+									   
+			  });
+			  
+
+			  //Call backend API when user click the Run NN Button
+			  $("#btn1").click(function(){
+				  var neuralNetwork = $( "#networkType" ).val();
+				  var seed = $( "#seed" ).val();
+				  var learningRate = $( "#learningRate" ).val();
+				  var batchSize = $( "#batchSize" ).val();
+				  var nepoches = $( "#nepoches" ).val();
+				  var iteration = $( "#iteration" ).val();
+				  var optimizationAlgorithms = $("#optimizationAlgorithms" ).val();
+				  var updater = $( "#updater" ).val();
+				  var momentum = $( "#momentum" ).val();
+				  var pretrain = $( "#pretrain" ).val();
+				  var backprop = $( "#backprop" ).val();
+				  var versionID = $("#data_version").val();
+				  var analysisID = getParameterByName('analysisId');
+				  var listNo = draggableHiddenNo;
+				  var inputNodes = localStorage.getItem("InputLayerNodes");
+				  var HiddenlayerDetails = '"hiddenlayerDetails" : [';
+	 			  var i;
+	 			  for (i = 1; i <= draggableHiddenNo; i++) {
+	
+						if(i==draggableHiddenNo){
+							HiddenlayerDetails += '{ "hiddenlayernodes":"'+localStorage.getItem("HiddenLayerNodes"+i)+'","hiddenlayerweightinit":"'+localStorage.getItem("HiddenLayerWeightInit"+i)+'","hiddenlayeractivation":"'+localStorage.getItem("HiddenLayerActivation"+i)+'"}';
+						}
+	
+						else{
+							localStorage.getItem("lastname");
+							HiddenlayerDetails += '{ "hiddenlayernodes":"'+localStorage.getItem("HiddenLayerNodes"+i)+'","hiddenlayerweightinit":"'+localStorage.getItem("HiddenLayerWeightInit"+i)+'","hiddenlayeractivation":"'+localStorage.getItem("HiddenLayerActivation"+i)+'"},';
+							}
+	 	 			}
+ 				HiddenlayerDetails += ']';
+
+ 				var OutputlayerDetails = '"outputlayerDetails" : [{"outputlayernodes":"'+localStorage.getItem("OutputLayerNodes")+'","outputlayerweightinit":"'+localStorage.getItem("OutputLayerWeightInit")+'","outputlayeractivation":"'+localStorage.getItem("OutputLayerActivation")+'","outputlaterlossfunction":"'+localStorage.getItem("OutputLayerLossfunction")+'"}]';
+ 				jsonData = '{"networkName":"'+neuralNetwork+'","datasetId":"'+datasetId+'","versionID":"'+versionID+'","analysisID":"'+analysisID+'","seed":"'+seed+'","learningRate":"'+learningRate+'","batchSize":"'+batchSize+'","nepoches":"'+nepoches+'","iteration":"'+iteration+'","optimizationAlgorithms":"'+optimizationAlgorithms+'","updater":"'+updater+'","momentum":"'+momentum+'","pretrain":"'+pretrain+'","backprop":"'+backprop+'","hiddenlayerno":"'+listNo+'","inputlayernodes":"'+inputNodes+'",'+HiddenlayerDetails+','+OutputlayerDetails+'}';
+
+ 				if((seed != "")&&(learningRate != "")&&(batchSize != "")&&(nepoches != "")&&(iteration != "")&&(optimizationAlgorithms != "")&&(updater != "")&&(momentum != "")&&(pretrain != "")&&(backprop != "")&&(versionID != ""))
+ 				{
+ 					Pace.start;
+ 					  $.ajax({				     
+ 						  	 type: 'POST',
+ 						     url:serverUrl+'/api/models/neural-network',
+ 						     dataType: 'json',
+ 						     timeout: 60000,
+ 						     contentType:"application/json",
+ 						     data: jsonData,
+ 						     async:false,
+ 						     headers: {
+ 						     	"Authorization": "Basic YWRtaW46YWRtaW4="
+ 						     },
+ 						     success:function (data, status, jqXhr) {
+ 							     	var jsondetails = data;
+ 							     	console.log("jsondetails\n");
+ 							     	console.log(jsondetails);
+ 						    	 	$("#model_evaluation").modal('show')
+ 	 					    	 	document.getElementById("accuracy").value=data.Accuracy;
+ 	 					    	 	document.getElementById("precision").value=data.Pecision;
+ 	 					    	 	document.getElementById("recall").value=data.Recall;
+ 						    	 	document.getElementById("f1score").value=data.F1Score;
+ 					  				console.log(data);
+ 						         },
+ 						     error:function (jqXhr, textStatus, errorMessage) {
+ 						    	$("#model_errorHandling").modal('show')
+ 					    	 	document.getElementById("error").innerHTML = "Error from the Server.\n Check your input values and run again";
+ 						 	   console.log('Error: ' + errorMessage);
+ 						     }
+ 					   });
+ 					  Pace.stop;
+ 	 				}
+
+ 				else{
+ 						$("#model_errorHandling").modal('show')
+						if((seed == "")){
+							document.getElementById("error").innerHTML = "Seed value cannot be null!!";
+						}
+			    	 	else if((learningRate == "")){
+							document.getElementById("error").innerHTML = "Learning rate cannot be null!!";
+						}
+						else if((batchSize == "")){
+							document.getElementById("error").innerHTML = "Batch size cannot be null!!";
+						}
+						else if((nepoches == "")){
+							document.getElementById("error").innerHTML = "Number of epoches cannot be null!!";
+						}
+						else if((iteration == "")){
+							document.getElementById("error").innerHTML = "Iteration value cannot be null!!";
+						}
+						else if((optimizationAlgorithms == "")){
+							document.getElementById("error").innerHTML = "Optimization Algorithm cannot be null!!";
+						}
+						else if((updater == "")){
+							document.getElementById("error").innerHTML = "Updater Algorithm cannot be null!!";
+						}
+						else if((momentum == "")){
+							document.getElementById("error").innerHTML = "Momentum value cannot be null!!";
+						}
+						else if((pretrain == "")){
+							document.getElementById("error").innerHTML = "Pretrain value cannot be null!!";
+						}
+						else if((backprop == "")){
+							document.getElementById("error").innerHTML = "Back propergation cannot be null!!";
+						}
+						else if((versionID == "")){
+							document.getElementById("error").innerHTML = "Data version cannot be null!!";
+						}	
+ 	 				}
+			  });
+			 
+
+			  //Save details to the HTML5 Seeion local storage
+			  $("#saveInputLayer").click(function(){
+			  	var inputNodes = $( "#inputNodes_inputlayer" ).val();
+
+             if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('InputLayerNodes', inputNodes);
+              } else {
+                document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+             }
+
+			  });
+
+
+			$("#saveHiddenLayer").click(function(){
+			var hiddenNodes = $( "#hiddenNodes_hiddenlayer" ).val();
+            var weightInit = $( "#weightInit_hiddenlayer" ).val();
+            var activation = $( "#activation_hiddenlayer" ).val();
+
+            if(typeof(Storage) !== "undefined") {
+                             localStorage.setItem('HiddenLayerNodes'+draggableHiddenNo, hiddenNodes);
+                             localStorage.setItem('HiddenLayerWeightInit'+draggableHiddenNo, weightInit);
+                             localStorage.setItem('HiddenLayerActivation'+ draggableHiddenNo, activation);
+                        } else {
+                            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+                        }
+
+			  });
+
+		    $("#saveOutputLayer").click(function(){
+			var outputNodes = $( "#outputNodes_outputlayer" ).val();
+            var weightInit = $( "#weightInit_outputlayer" ).val();
+            var activation = $( "#activation_outputlayer" ).val();
+            var lossFunction = $( "#lossFunction_outputlayer" ).val();
+
+              if(typeof(Storage) !== "undefined") {
+                            localStorage.setItem('OutputLayerNodes', outputNodes);
+                            localStorage.setItem('OutputLayerWeightInit', weightInit);
+                            localStorage.setItem('OutputLayerActivation', activation);
+                            localStorage.setItem('OutputLayerLossfunction', lossFunction);
+                        } else {
+                            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+                        }
+			  });
+			  
+			/*
+			*get parametre by ID
+			*/
+			function getParameterByName(name, url) {
+			if (!url) url = window.location.href;
+			name = name.replace(/[\[\]]/g, "\\$&");
+			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+				results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, " "));
+			}
+
+		});	
+
+	</script>
+</body>
+<% %>
+</html>
+

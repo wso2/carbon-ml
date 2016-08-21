@@ -102,6 +102,36 @@
 			<groupId>com.owlike</groupId>
 			<artifactId>genson</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>canova-api</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-native -->
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-image -->
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>canova-nd4j-image</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-codec -->
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>canova-nd4j-codec</artifactId>
+        </dependency>
 	</dependencies>
 
     <profiles>
