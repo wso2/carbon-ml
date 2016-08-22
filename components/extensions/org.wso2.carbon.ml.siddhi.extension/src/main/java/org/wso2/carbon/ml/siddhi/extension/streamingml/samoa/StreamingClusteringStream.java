@@ -116,7 +116,6 @@ public class StreamingClusteringStream  extends ClusteringStream {
     private void addInstance(Instance instance) {
         DataPoint point = new DataPoint(instance, numGeneratedInstances);
         points.add(point);
-
     }
 
     protected void generateHeader() { // 2013/06/02: Noise label
@@ -134,7 +133,6 @@ public class StreamingClusteringStream  extends ClusteringStream {
         streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
-
 
     public void setCepEvents(ConcurrentLinkedQueue<double[]>cepEvents){
         this.cepEvents = cepEvents;

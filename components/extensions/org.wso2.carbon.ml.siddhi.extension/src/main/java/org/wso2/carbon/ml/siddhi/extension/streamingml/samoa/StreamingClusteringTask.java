@@ -116,7 +116,6 @@ public class StreamingClusteringTask implements Task, Configurable {
             logger.info("Check Stream: Stream is not a StreamingClusteringStream");
         }
 
-
         source.setStreamSource(streamTrain);
         builder.addEntranceProcessor(source);
         source.setSamplingThreshold(samplingThresholdOption.getValue());

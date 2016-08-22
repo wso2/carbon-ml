@@ -67,8 +67,6 @@ public class StreamingClusteringTaskBuilder {
             cliString.append(" ").append(arg);
         }
         logger.debug("Command line string = {}"+cliString.toString());
-        System.out.println("Command line string = " + cliString.toString());
-
 
         Task task;
         try {
@@ -76,7 +74,6 @@ public class StreamingClusteringTaskBuilder {
             logger.info("Successfully instantiating {}"+task.getClass().getCanonicalName());
         } catch (Exception e) {
             logger.error("Fail to initialize the task", e);
-            logger.info("Fail to initialize the task" + e);
             return;
         }
 

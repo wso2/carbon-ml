@@ -105,13 +105,9 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
                     cepEvent[i - paramPosition] = (double)value;
                 }
 
-
                 Object[] outputData = null;
 
-
-
                 outputData = streamingClusteringWithSamoa.cluster(cepEvent);
-
 
                 if (outputData == null) {
                     streamEventChunk.remove();
@@ -121,7 +117,6 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
             }
         }
         nextProcessor.process(streamEventChunk);
-
     }
 
     @Override
