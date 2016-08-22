@@ -89,7 +89,7 @@ public class StreamingClusteringTaskBuilder {
     public void initTask(int numAttributes, int numClusters, int batchSize, int maxNumEvents){
         String query="";
         query ="org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.StreamingClusteringTask -f "+batchSize+" -i "+maxNumEvents+" -s  (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.StreamingClusteringStream -K "+numClusters+" -a "+numAttributes+") -l (org.apache.samoa.learners.clusterers.simple.DistributedClusterer -l (org.apache.samoa.learners.clusterers.ClustreamClustererAdapter -l (org.apache.samoa.moa.clusterers.clustream.WithKmeans  -m 100 -k "+numClusters+")))";
-        logger.info("QUERY: "+query);
+        logger.debug("QUERY: "+query);
         String args[]={query};
         this.initClusteringTask(args);
     }
