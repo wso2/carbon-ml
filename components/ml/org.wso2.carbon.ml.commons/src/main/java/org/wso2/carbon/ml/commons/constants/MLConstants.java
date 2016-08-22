@@ -171,13 +171,8 @@ public class MLConstants {
     public static final String ALPHA = "Alpha";
     public static final String WEIGHTS = "Weights";
     public static final String FOLDS = "Folds";
-    public static final String BASE_ALGORITHM_NAME = "Base_Algorithm_Name_";
+    public static final String BASE_ALGORITHM_NAME = "Base_Algorithm_Name";
     public static final String META_ALGORITHM_NAME = "Meta_Algorithm_Name";
-
-
-
-
-
 
     // configuration file names
     public static final String ML_ALGORITHMS_CONFIG_XML = "repository/conf/etc/ml-algorithms.xml";
