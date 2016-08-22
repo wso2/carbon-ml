@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,14 +108,12 @@ public class FeedForwardNetwork {
         int labelIndex = 0;
         int numClasses = 0;
         int fraction = 0;
-
         //Initialize RecordReader
         RecordReader rr = new CSVRecordReader(numLinesToSkip,delimiter);
         //read the dataset
         rr.initialize(new FileSplit(new File(mlDataSet)));
         labelIndex = responseIndex;
         numClasses = outputList.get(0).outputNodes;
-
         //Get the fraction to do the spliting data to training and testing
         FileReader fr = new FileReader(mlDataSet);
         LineNumberReader lineNumberReader=new LineNumberReader(fr);
@@ -130,7 +128,6 @@ public class FeedForwardNetwork {
 
         //Take floor value to set the numHold of training data
         fraction = ((int) Math.floor(lines * analysisFraction));
-
         org.nd4j.linalg.dataset.api.iterator.DataSetIterator trainIter = new RecordReaderDataSetIterator(rr,lines,labelIndex,numClasses);
 
         //Create NeuralNetConfiguration object having basic settings.
@@ -205,7 +202,6 @@ public class FeedForwardNetwork {
      * @param optimizationAlgorithms
      * @return an OptimizationAlgorithm object.
      */
-
     OptimizationAlgorithm mapOptimizationAlgorithm(String optimizationAlgorithms){
 
         OptimizationAlgorithm optimizationAlgo = null;
@@ -214,28 +210,22 @@ public class FeedForwardNetwork {
             case "Line_Gradient_Descent":
                 optimizationAlgo = OptimizationAlgorithm.LINE_GRADIENT_DESCENT;
                 break;
-
             case "Conjugate_Gradient":
                 optimizationAlgo = OptimizationAlgorithm.CONJUGATE_GRADIENT;
                 break;
-
             case "Hessian_Free":
                 optimizationAlgo = OptimizationAlgorithm.HESSIAN_FREE;
                 break;
-
             case "LBFGS":
                 optimizationAlgo = OptimizationAlgorithm.LBFGS;
                 break;
-
             case "Stochastic_Gradient_Descent":
                 optimizationAlgo = OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT;
                 break;
-
             default:
                 optimizationAlgo = null;
                 break;
         }
-
         return optimizationAlgo;
     }
 
@@ -249,39 +239,30 @@ public class FeedForwardNetwork {
         Updater updaterAlgo = null;
 
         switch (updater) {
-
             case "sgd":
                 updaterAlgo = Updater.SGD;
                 break;
-
             case "adam":
                 updaterAlgo = Updater.ADAM;
                 break;
-
             case "adadelta":
                 updaterAlgo = Updater.ADADELTA;
                 break;
-
             case "nesterovs":
                 updaterAlgo = Updater.NESTEROVS;
                 break;
-
             case "adagrad":
                 updaterAlgo = Updater.ADAGRAD;
                 break;
-
             case "rmsprop":
                 updaterAlgo = Updater.RMSPROP;
                 break;
-
             case "none":
                 updaterAlgo = Updater.NONE;
                 break;
-
             case "custom":
                 updaterAlgo = Updater.CUSTOM;
                 break;
-
             default:
                 updaterAlgo = null;
                 break;
@@ -302,39 +283,30 @@ public class FeedForwardNetwork {
             case "mse":
                 lossfunctionAlgo = LossFunction.MSE;
                 break;
-
             case "expll":
                 lossfunctionAlgo = LossFunction.EXPLL;
                 break;
-
             case "xent":
                 lossfunctionAlgo = LossFunction.XENT;
                 break;
-
             case "mcxent":
                 lossfunctionAlgo = LossFunction.MCXENT;
                 break;
-
             case "rmsexent":
                 lossfunctionAlgo = LossFunction.RMSE_XENT;
                 break;
-
             case "sqauredloss":
                 lossfunctionAlgo = LossFunction.SQUARED_LOSS;
                 break;
-
             case "reconstructioncrossentropy":
                 lossfunctionAlgo = LossFunction.RECONSTRUCTION_CROSSENTROPY;
                 break;
-
             case "negetiveloglilelihood":
                 lossfunctionAlgo = LossFunction.NEGATIVELOGLIKELIHOOD;
                 break;
-
             case "custom":
                 lossfunctionAlgo = LossFunction.CUSTOM;
                 break;
-
             default:
                 lossfunctionAlgo = null;
         }
@@ -355,40 +327,31 @@ public class FeedForwardNetwork {
             case "Distribution":
                 weightInitAlgo = WeightInit.DISTRIBUTION;
                 break;
-
             case "Normalized":
                 weightInitAlgo = WeightInit.NORMALIZED;
                 break;
-
             case "Size":
                 weightInitAlgo = WeightInit.SIZE;
                 break;
-
             case "Uniform":
                 weightInitAlgo = WeightInit.UNIFORM;
                 break;
-
             case "Vi":
                 weightInitAlgo = WeightInit.VI;
                 break;
-
             case "Zero":
                 weightInitAlgo = WeightInit.ZERO;
                 break;
-
             case "Xavier":
                 weightInitAlgo = WeightInit.XAVIER;
                 break;
-
             case "RELU":
                 weightInitAlgo = WeightInit.RELU;
                 break;
-
             default:
                 weightInitAlgo = null;
                 break;
         }
-
         return weightInitAlgo;
     }
 
@@ -466,7 +429,6 @@ public class FeedForwardNetwork {
         //to get the version
         try {
             List<MLDatasetVersion> versionSets = datasetProcessor.getAllDatasetVersions(tenantId, userName, datasetId);
-
             Iterator<MLDatasetVersion> versionsetIterator = versionSets.iterator();
 
             while (versionsetIterator.hasNext()) {

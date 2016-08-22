@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -635,7 +635,6 @@ public class ModelApiV20 extends MLRestAPI {
             String statistics = "";
             //read json object
             JSONObject networkDetail = new JSONObject(networkDetails);
-
             //convert the json data to pass to the respective neyral network class
             String networkName = networkDetail.getString("networkName");
             long seed = networkDetail.getLong("seed");
@@ -655,7 +654,6 @@ public class ModelApiV20 extends MLRestAPI {
             int analysisId = networkDetail.getInt("analysisID");
             JSONArray jsonArrayHiddenDetails = networkDetail.getJSONArray("hiddenlayerDetails");
             JSONArray jsonArrayOutputDetails = networkDetail.getJSONArray("outputlayerDetails");
-
             List<HiddenLayerDetails> hiddenLayerList = new ArrayList<>();
             List<OutputLayerDetails> outputLayerList = new ArrayList<>();
 
@@ -680,11 +678,9 @@ public class ModelApiV20 extends MLRestAPI {
             FeedForwardNetwork net = new FeedForwardNetwork();
             //Call createFeedForwardNetwork method
             statistics = net.createFeedForwardNetwork(seed, learningRate, bachSize, nepoches, iterations, optimizationAlgorithms, updater, momentum, pretrain, backprop, noHiddenLayers, inputLayerNodes, datasetId, versionId, analysisId, hiddenLayerList, outputLayerList);
-
             ObjectMapper objectMapper = new ObjectMapper();
             Object statJson = objectMapper.readValue(objectMapper.writeValueAsString(statistics), Object.class);
             logger.info("API Response " + statJson.toString());
-
             return Response.ok(statJson).build();
 
         } catch (Exception e) {
