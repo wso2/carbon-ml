@@ -138,7 +138,6 @@ public class StreamingClusteringTask implements Task, Configurable {
         evaluationStream = builder.createStream(distributor);
         distributor.setEvaluationStream(evaluationStream); // passes evaluation events along
         logger.debug("Successfully instantiated Distributor");
-        logger.info("Successfully instantiated Distributor");
 
 
         // instantiate learner and connect it to distributorStream
@@ -146,7 +145,6 @@ public class StreamingClusteringTask implements Task, Configurable {
         learner.init(builder, source.getDataset(), 1);
         builder.connectInputShuffleStream(distributorStream, learner.getInputProcessor());
         logger.debug("Successfully instantiated Learner");
-        logger.info("Successfully instantiated Learner");
 
 
         StreamingClusteringEvaluationProcessor resultCheckPoint = new StreamingClusteringEvaluationProcessor("Result Check Point ");
@@ -159,11 +157,10 @@ public class StreamingClusteringTask implements Task, Configurable {
         }
 
         logger.debug("Successfully instantiated EvaluatocrProessor");
-        logger.info("Successfully instantiated EvaluatocrProessor");
 
         topology = builder.build();
         logger.debug("Successfully built the topology");
-        logger.info("Successfully built the topology");
+
     }
 
     @Override
