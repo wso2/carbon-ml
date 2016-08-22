@@ -22,8 +22,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
     private static final Log logger = LogFactory.getLog(StreamingClusteringEvaluationProcessor.class);
 
     String evalPoint;
-    //public LinkedList<Clustering>samoaClusters;
-    //public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int numClusters=0;
 
@@ -41,10 +39,7 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
             Instance inst = e.getInstance();
 
             int numAttributes=inst.numAttributes();
-            //  logger.info("Attribute Size: "+numAttributes);
-           /* for(int i=0;i<numAttributes;i++){
-                logger.info(inst.attribute(i).toString()+""+inst.value(i)+"");
-            }*/
+
         }
 
         else if(event instanceof ClusteringResultContentEvent){
@@ -61,16 +56,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
 
             int numClusters = clustering.size();
             logger.info("Number of Kernal Clusters : "+numClusters+" Number of KMeans Clusters :"+kmeansClustering.size());
-          /*  for(int i=0;i<numClusters;i++){
-                Cluster cluster = clustering.get(i);
-                logger.info("++++++Cluster"+i+"+++++");
-                double []clusterCenter=cluster.getCenter();
-                for(int j=0;j<clusterCenter.length;j++){
-                    logger.info("Dim: "+j+":"+clusterCenter[j]);
-                }
-                logger.info("Cluster End\n");
-            }
-            logger.info("Clustering End\n\n\n");*/
 
         }
 
@@ -80,8 +65,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
         else{
             logger.info(event.getKey()+""+evalPoint+"ContentEvent\n");
         }
-
-
 
         return true;
     }

@@ -81,8 +81,6 @@ public class StreamingClusteringTask implements Task, Configurable {
     private Topology topology;
     private TopologyBuilder builder;
 
-    //public LinkedList<double[]> cepEvents;
-    //public LinkedList<Clustering> samoaClusters;
     public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int numClusters=0;

@@ -86,13 +86,9 @@ public class StreamingClusteringStream  extends ClusteringStream {
 
         }else {
             numGeneratedInstances++;
-           // logger.info("Sending Samoa Instance :"+numGeneratedInstances);
             double[] values_new = new double[numAttsOption.getValue()]; // +1
-            //logger.info("I am here");
-
             //while(cepEvents == null);
             while (cepEvents.isEmpty()) ;
-            //logger.info("Cep Events Not Empty");
             double[] values = cepEvents.poll();
             int clusterChoice = -1;
             System.arraycopy(values, 0, values_new, 0, values.length);

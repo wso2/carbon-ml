@@ -48,14 +48,9 @@ public class StreamingClustering extends Thread{
         this.alpha = alpha;
         this.isBuiltModel = false;
         type= MODEL_TYPE.BATCH_PROCESS;
-        // System.out.println("A");
-        ///cepEvents = new LinkedList<double[]>();
-        //  System.out.println("B");
-        // samoaClusters = new LinkedList<Clustering>();
-        // System.out.println("C");
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
-        //StreamingClusteringStream.cepEvents = this.cepEvents;
+
         this.samoaClusters = new  ConcurrentLinkedQueue<Clustering>();
         this.maxNumEvents = 1000000;
         try {
@@ -73,16 +68,16 @@ public class StreamingClustering extends Thread{
     }
 
     public Object[] cluster(double[] eventData) {
-        // System.out.println("Events Added to the CEP Events");
+
         numEventsReceived++;
-        //logger.info("CEP Event Received : "+numEventsReceived);
+
         cepEvents.add(eventData);
         Object[] output;
         if(!samoaClusters.isEmpty()){
             logger.info("Micro Clustering Done : Update the Model");
             output = new Object[numClusters +1];
             output[0] = 0.0;
-            //System.out.println("++++ We got a hit ++++");
+
             Clustering clusters = samoaClusters.poll();
             int dim = clusters.dimension();
             logger.info("Number of KMeans Clusters : "+ clusters.size());
@@ -97,8 +92,6 @@ public class StreamingClustering extends Thread{
                 output[i+1]= centerStr;
                 logger.info("Center :"+i+": "+centerStr);
             }
-            //for(int i=0;i<dim;i++){
-            //  output[i+1] = ""      }
 
         }else{
             output=null;
