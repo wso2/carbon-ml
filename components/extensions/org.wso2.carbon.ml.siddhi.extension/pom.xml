@@ -69,6 +69,21 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.samoa</groupId>
+			<artifactId>samoa-api</artifactId>
+			<version>0.4.0-incubating-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.samoa</groupId>
+			<artifactId>samoa-local</artifactId>
+			<version>0.4.0-incubating-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.javacliparser</groupId>
+			<artifactId>javacliparser</artifactId>
+			<version>0.5.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
