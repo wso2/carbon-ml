@@ -351,9 +351,7 @@ public class Predictor {
 
             return predictions;
         }
-
         int index = model.getResponseIndex();
-
         if (index == -1) {
             return predictions;
         }
@@ -361,11 +359,8 @@ public class Predictor {
         // last index is response variable encoding
 
         Map<String, Integer> encodingMap = encodings.get(encodings.size() - 1);
-
-
         if (encodingMap == null || encodingMap.isEmpty()) {
             // no change
-
             return predictions;
         } else {
 
