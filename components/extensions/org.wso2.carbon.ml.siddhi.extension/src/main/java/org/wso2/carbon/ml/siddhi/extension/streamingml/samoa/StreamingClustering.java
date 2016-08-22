@@ -28,9 +28,6 @@ public class StreamingClustering extends Thread{
     private MODEL_TYPE type;
     public enum MODEL_TYPE {BATCH_PROCESS, MOVING_WINDOW,TIME_BASED }
 
-    //public  LinkedList<double[]> cepEvents;
-    // public LinkedList<Clustering>samoaClusters;
-
     public ConcurrentLinkedQueue<double[]>cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int maxNumEvents=1000000;

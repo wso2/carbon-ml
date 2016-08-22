@@ -62,22 +62,12 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
                 throw new ExecutionPlanCreationException("learn type, windowShift, batchSize and number of Iterations should be of type int");
             }
 
-            /*try{
-                stepSize = ((Double) attributeExpressionExecutors[4].execute(null));
-                miniBatchFraction = ((Double) attributeExpressionExecutors[5].execute(null));
-
-            }catch(ClassCastException c){
-                throw new ExecutionPlanCreationException("Step Size, Mini Batch Fraction should be in double format");
-            }*/
-
             try {
                 ci = ((Double) attributeExpressionExecutors[6].execute(null));
             } catch (ClassCastException c) {
                 throw new ExecutionPlanCreationException("Confidence interval should be of type double and a value between 0 and 1");
             }
         }
-        //System.out.println("Streaming Clustering  Parameters: "+" "+batchSize+" "+" "+ci+"\n");
-        // Pick the appropriate regression calculator
 
         streamingClusteringWithSamoa = new StreamingClustering(learnType,paramCount, batchSize, ci,numClusters, numIterations,alpha);
         try {
@@ -115,14 +105,14 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
                     cepEvent[i - paramPosition] = (double)value;
                 }
 
-                //Object[] outputData = regressionCalculator.calculateLinearRegression(inputData);
+
                 Object[] outputData = null;
 
-                // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
-                //Calling the regress function
+
+
                 outputData = streamingClusteringWithSamoa.cluster(cepEvent);
 
-                // Skip processing if user has specified calculation interval
+
                 if (outputData == null) {
                     streamEventChunk.remove();
                 } else {
