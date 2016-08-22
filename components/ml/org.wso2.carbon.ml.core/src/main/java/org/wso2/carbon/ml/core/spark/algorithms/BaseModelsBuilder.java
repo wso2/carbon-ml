@@ -24,7 +24,6 @@ import java.util.Map;
  * Build supervised base-models supported by Spark for ensemble methods.
  */
 public class BaseModelsBuilder {
-
     /**
      * @param context             Configuration objects require to build a model
      * @param workflow            Machine learning workflow
@@ -34,11 +33,8 @@ public class BaseModelsBuilder {
      * @param isMetaAlgorithm     Flag to check if meta-learner is passed
      * @return Machine learning model
      */
-
-
     public MLModel buildBaseModels(MLModelConfigurationContext context, Workflow workflow, String algorithmName, JavaRDD<LabeledPoint> trainingData,
                                    Map<String, String> algorithmParameters, Boolean isMetaAlgorithm) throws MLModelBuilderException {
-
         try {
             Map<Integer, Integer> categoricalFeatureInfo;
             MLModel mlModel = new MLModel();
@@ -49,18 +45,15 @@ public class BaseModelsBuilder {
             mlModel.setResponseVariable(workflow.getResponseVariable());
             mlModel.setNewToOldIndicesList(context.getNewToOldIndicesList());
             mlModel.setResponseIndex(context.getResponseIndex());
-
             // Assign for meta-learner empty CategoricalFeatureInfo
             if (isMetaAlgorithm) {
                 categoricalFeatureInfo = getCategoricalFeatureInfo(getMetaModelEncodings());
             } else {
                 categoricalFeatureInfo = getCategoricalFeatureInfo(context.getEncodings());
-
             }
             // build a machine learning model according to user selected algorithm
             MLConstants.SUPERVISED_ALGORITHM supervisedAlgorithm = MLConstants.SUPERVISED_ALGORITHM.valueOf(algorithmName);
             switch (supervisedAlgorithm) {
-
                 case DECISION_TREE:
                     mlModel = buildDecisionTreeModel(trainingData, workflow,
                             mlModel, categoricalFeatureInfo, algorithmParameters);
@@ -72,8 +65,6 @@ public class BaseModelsBuilder {
                 case NAIVE_BAYES:
                     mlModel = buildNaiveBayesModel(trainingData, workflow, mlModel, algorithmParameters);
                     break;
-
-
                 default:
                     throw new AlgorithmNameException("Incorrect algorithm name");
             }
@@ -105,14 +96,9 @@ public class BaseModelsBuilder {
                     categoricalFeatureInfo, algorithmParameters.get(MLConstants.IMPURITY),
                     Integer.parseInt(algorithmParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(algorithmParameters.get(MLConstants.MAX_BINS)));
-
             // remove from cache
             trainingData.unpersist();
-            // add test data to cache
-
             mlModel.setModel(new MLDecisionTreeModel(decisionTreeModel));
-
-
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException(
@@ -131,7 +117,6 @@ public class BaseModelsBuilder {
      * @param algorithmParameters    Map containing hyperparameters of model
      * @throws MLModelBuilderException
      */
-
     private MLModel buildRandomForestClassificationModel(JavaRDD<LabeledPoint> trainingData, Workflow workflow, MLModel mlModel,
                                                          Map<Integer, Integer> categoricalFeatureInfo, Map<String, String> algorithmParameters) throws MLModelBuilderException {
         try {
@@ -145,16 +130,9 @@ public class BaseModelsBuilder {
                     Integer.parseInt(algorithmParameters.get(MLConstants.MAX_DEPTH)),
                     Integer.parseInt(algorithmParameters.get(MLConstants.MAX_BINS)),
                     Integer.parseInt(algorithmParameters.get(MLConstants.SEED)));
-
             // remove from cache
             trainingData.unpersist();
-            // add test data to cache
-
-            // remove from cache
-
             mlModel.setModel(new MLRandomForestModel(randomForestModel));
-
-
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building random forest classification model: "
@@ -162,7 +140,6 @@ public class BaseModelsBuilder {
         }
 
     }
-
     /**
      * This method builds a naive bayes model as base-model
      *
@@ -177,13 +154,9 @@ public class BaseModelsBuilder {
             NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
             NaiveBayesModel naiveBayesModel = naiveBayesClassifier.train(trainingData,
                     Double.parseDouble(algorithmParameters.get(MLConstants.LAMBDA)));
-
             // remove from cache
             trainingData.unpersist();
-            // add test data to cache
-
             mlModel.setModel(new MLClassificationModel(naiveBayesModel));
-
             return mlModel;
         } catch (Exception e) {
             throw new MLModelBuilderException("An error occurred while building naive bayes model: " + e.getMessage(),
