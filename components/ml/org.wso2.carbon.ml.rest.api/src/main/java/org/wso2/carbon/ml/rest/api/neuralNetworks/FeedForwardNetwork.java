@@ -66,6 +66,27 @@ public class FeedForwardNetwork {
     int tenantId = carbonContext.getTenantId();
     String userName = carbonContext.getUsername();
     private static final Log log = LogFactory.getLog(FeedForwardNetwork.class);
+    //Enum for optimiation Algorithm
+    public enum OptimizationAlgorithmEnum {
+        LINE_GRADIENT_DESCENT,CONJUGATE_GRADIENT,HESSIAN_FREE,LBFGS,STOCHASTIC_GRADIENT_DESCENT
+    }
+    //Enum for weight Init
+    public enum WeightInitEnum {
+        DISTRIBUTION,NORMALIZED,SIZE,UNIFORM,VI,ZERO,XAVIER,RELU
+    }
+    //Enum for Updater algorithm
+    public enum UpdaterAlgorithmEnum {
+        SGD,ADAM,ADADELTA,NESTEROVS,ADAGRAD,RMSPROP,NONE,CUSTOM
+    }
+    //Enum for Loss Function algorithm
+    public enum LossFunctionEnum {
+        MSE,EXPLL,XENT,MCXENT,RMSE_XENT,SQUARED_LOSS,RECONSTRUCTION_CROSSENTROPY,NEGATIVELOGLIKELIHOOD,CUSTOM
+    }
+
+    OptimizationAlgorithmEnum optimizationAlgorithmEnum;
+    WeightInitEnum weightInitEnum;
+    UpdaterAlgorithmEnum updaterAlgorithmEnum;
+    LossFunctionEnum lossFunctionEnum;
 
     /**
      * method to createFeedForwardNetwork.
@@ -93,6 +114,8 @@ public class FeedForwardNetwork {
         String evaluationDetails = null;
         int numLinesToSkip = 0;
         String delimiter = ",";
+        optimizationAlgorithmEnum = OptimizationAlgorithmEnum.valueOf(optimizationAlgorithms);
+        updaterAlgorithmEnum = UpdaterAlgorithmEnum.valueOf(updater);
         mlDataSet = getDatasetPath(datasetId,versionID);
         analysisFraction = getAnalysisFraction(analysisID);
         analysisResponceVariable = getAnalysisResponseVariable(analysisID);
@@ -134,9 +157,9 @@ public class FeedForwardNetwork {
         NeuralNetConfiguration.ListBuilder neuralNetConfiguration = new NeuralNetConfiguration.Builder()
                 .seed(seed)
                 .iterations(iterations)
-                .optimizationAlgo(mapOptimizationAlgorithm(optimizationAlgorithms))
+                .optimizationAlgo(mapOptimizationAlgorithm())
                 .learningRate(learningRate)
-                .updater(mapUpdater(updater))
+                .updater(mapUpdater())
                 .momentum(momentum)
                 .list(noHiddenLayers+1);
 
@@ -149,19 +172,21 @@ public class FeedForwardNetwork {
             else{
                 nInput=hiddenList.get(i-1).hiddenNodes;
             }
-
+            weightInitEnum = WeightInitEnum.valueOf(hiddenList.get(i).weightInit);
             neuralNetConfiguration.layer(i,new DenseLayer.Builder().nIn(nInput)
                     .nOut(hiddenList.get(i).hiddenNodes)
-                    .weightInit(mapWeightInit(hiddenList.get(i).weightInit))
+                    .weightInit(mapWeightInit())
                     .activation(hiddenList.get(i).activationAlgo)
                     .build());
         }
 
         //Add Output Layers to the network with unique settings
-        neuralNetConfiguration.layer(noHiddenLayers, new OutputLayer.Builder(mapLossFunction(outputList.get(0).lossFunction))
+        weightInitEnum = WeightInitEnum.valueOf(outputList.get(0).weightInit);
+        lossFunctionEnum = LossFunctionEnum.valueOf(outputList.get(0).lossFunction);
+        neuralNetConfiguration.layer(noHiddenLayers, new OutputLayer.Builder(mapLossFunction())
                 .nIn(hiddenList.get(noHiddenLayers-1).hiddenNodes)
                 .nOut(outputList.get(0).outputNodes)
-                .weightInit(mapWeightInit(outputList.get(0).weightInit))
+                .weightInit(mapWeightInit())
                 .activation(outputList.get(0).activationAlgo)
                 .build());
 
@@ -204,24 +229,24 @@ public class FeedForwardNetwork {
      * @param optimizationAlgorithms
      * @return an OptimizationAlgorithm object.
      */
-    OptimizationAlgorithm mapOptimizationAlgorithm(String optimizationAlgorithms){
+    OptimizationAlgorithm mapOptimizationAlgorithm(){
 
         OptimizationAlgorithm optimizationAlgo = null;
 
-        switch (optimizationAlgorithms){
-            case "LINE_GRADIENT_DESCENT":
+        switch (optimizationAlgorithmEnum){
+            case LINE_GRADIENT_DESCENT:
                 optimizationAlgo = OptimizationAlgorithm.LINE_GRADIENT_DESCENT;
                 break;
-            case "CONJUGATE_GRADIENT":
+            case CONJUGATE_GRADIENT:
                 optimizationAlgo = OptimizationAlgorithm.CONJUGATE_GRADIENT;
                 break;
-            case "HESSIAN_FREE":
+            case HESSIAN_FREE:
                 optimizationAlgo = OptimizationAlgorithm.HESSIAN_FREE;
                 break;
-            case "LBFGS":
+            case LBFGS:
                 optimizationAlgo = OptimizationAlgorithm.LBFGS;
                 break;
-            case "STOCHASTIC_GRADIENT_DESCENT":
+            case STOCHASTIC_GRADIENT_DESCENT:
                 optimizationAlgo = OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT;
                 break;
             default:
@@ -236,33 +261,33 @@ public class FeedForwardNetwork {
      * @param updater
      * @return an Updater object .
      */
-    Updater mapUpdater(String updater) {
+    Updater mapUpdater() {
 
         Updater updaterAlgo = null;
 
-        switch (updater) {
-            case "SGD":
+        switch (updaterAlgorithmEnum) {
+            case SGD:
                 updaterAlgo = Updater.SGD;
                 break;
-            case "ADAM":
+            case ADAM:
                 updaterAlgo = Updater.ADAM;
                 break;
-            case "ADADELTA":
+            case ADADELTA:
                 updaterAlgo = Updater.ADADELTA;
                 break;
-            case "NESTEROVS":
+            case NESTEROVS:
                 updaterAlgo = Updater.NESTEROVS;
                 break;
-            case "ADAGRAD":
+            case ADAGRAD:
                 updaterAlgo = Updater.ADAGRAD;
                 break;
-            case "RMSPROP":
+            case RMSPROP:
                 updaterAlgo = Updater.RMSPROP;
                 break;
-            case "NONE":
+            case NONE:
                 updaterAlgo = Updater.NONE;
                 break;
-            case "CUSTOM":
+            case CUSTOM:
                 updaterAlgo = Updater.CUSTOM;
                 break;
             default:
@@ -277,36 +302,36 @@ public class FeedForwardNetwork {
      * @param lossFunction
      * @return an LossFunction object .
      */
-    LossFunction mapLossFunction(String lossFunction){
+    LossFunction mapLossFunction(){
 
         LossFunction lossfunctionAlgo = null;
 
-        switch (lossFunction){
-            case "MSE":
+        switch (lossFunctionEnum){
+            case MSE:
                 lossfunctionAlgo = LossFunction.MSE;
                 break;
-            case "EXPLL":
+            case EXPLL:
                 lossfunctionAlgo = LossFunction.EXPLL;
                 break;
-            case "XENT":
+            case XENT:
                 lossfunctionAlgo = LossFunction.XENT;
                 break;
-            case "MCXENT":
+            case MCXENT:
                 lossfunctionAlgo = LossFunction.MCXENT;
                 break;
-            case "RMSE_XENT":
+            case RMSE_XENT:
                 lossfunctionAlgo = LossFunction.RMSE_XENT;
                 break;
-            case "SQUARED_LOSS":
+            case SQUARED_LOSS:
                 lossfunctionAlgo = LossFunction.SQUARED_LOSS;
                 break;
-            case "RECONSTRUCTION_CROSSENTROPY":
+            case RECONSTRUCTION_CROSSENTROPY:
                 lossfunctionAlgo = LossFunction.RECONSTRUCTION_CROSSENTROPY;
                 break;
-            case "NEGATIVELOGLIKELIHOOD":
+            case NEGATIVELOGLIKELIHOOD:
                 lossfunctionAlgo = LossFunction.NEGATIVELOGLIKELIHOOD;
                 break;
-            case "CUSTOM":
+            case CUSTOM:
                 lossfunctionAlgo = LossFunction.CUSTOM;
                 break;
             default:
@@ -320,34 +345,34 @@ public class FeedForwardNetwork {
      * @param weightinit
      * @return an WeightInit object .
      */
-    WeightInit mapWeightInit(String weightinit){
+    WeightInit mapWeightInit(){
 
         WeightInit weightInitAlgo = null;
 
-        switch (weightinit){
+        switch (weightInitEnum){
 
-            case "DISTRIBUTION":
+            case DISTRIBUTION:
                 weightInitAlgo = WeightInit.DISTRIBUTION;
                 break;
-            case "NORMALIZED":
+            case NORMALIZED:
                 weightInitAlgo = WeightInit.NORMALIZED;
                 break;
-            case "SIZE":
+            case SIZE:
                 weightInitAlgo = WeightInit.SIZE;
                 break;
-            case "UNIFORM":
+            case UNIFORM:
                 weightInitAlgo = WeightInit.UNIFORM;
                 break;
-            case "VI":
+            case VI:
                 weightInitAlgo = WeightInit.VI;
                 break;
-            case "ZERO":
+            case ZERO:
                 weightInitAlgo = WeightInit.ZERO;
                 break;
-            case "XAVIER":
+            case XAVIER:
                 weightInitAlgo = WeightInit.XAVIER;
                 break;
-            case "RELU":
+            case RELU:
                 weightInitAlgo = WeightInit.RELU;
                 break;
             default:
