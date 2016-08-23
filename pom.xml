@@ -352,6 +352,48 @@
                 <version>${ml.version}</version>
                 <type>war</type>
             </dependency>
+
+            <!--Dependencies for DL4J Library-->
+            <dependency>
+                <groupId>org.deeplearning4j</groupId>
+                <artifactId>deeplearning4j-core</artifactId>
+                <version>${dl4j.core.version}</version>
+            </dependency>
+
+            <!-- Dependency for ND4J Library-->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-api</artifactId>
+                <version>${nd4j.core.version}</version>
+            </dependency>
+
+            <!-- Dependency for Canova Library-->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-api</artifactId>
+                <version>${canova.core.version}</version>
+            </dependency>
+
+            <!-- Dependency for nd4j-native Library -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-native</artifactId>
+                <version>${nd4j.native.version}</version>
+            </dependency>
+
+            <!-- Dependency for canova-nd4j-image-->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-nd4j-image</artifactId>
+                <version>${canova.nd4j.image.version}</version>
+            </dependency>
+
+            <!-- Dependency for canova-nd4j-codec -->
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>canova-nd4j-codec</artifactId>
+                <version>${canova.nd4j.codec.version}</version>
+            </dependency>
             <!-- End of depencencies on WSO2 Carbon ML components -->
 
             <!-- Dependencies for Email Notification Sender -->
@@ -569,49 +611,6 @@
                 <artifactId>h2o</artifactId>
                 <version>${h2o.version}</version>
             </dependency>
-
-            <!--DL4J-->
-            <dependency>
-                <groupId>org.deeplearning4j</groupId>
-                <artifactId>deeplearning4j-core</artifactId>
-                <version>${dl4j.core.version}</version>
-            </dependency>
-
-            <!-- ND4J-->
-            <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-api -->
-            <dependency>
-                <groupId>org.nd4j</groupId>
-                <artifactId>nd4j-api</artifactId>
-                <version>0.4.0</version>
-            </dependency>
-
-            <!--Canova-->
-            <dependency>
-                <groupId>org.nd4j</groupId>
-                <artifactId>canova-api</artifactId>
-                <version>0.0.0.17</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-native -->
-            <dependency>
-                <groupId>org.nd4j</groupId>
-                <artifactId>nd4j-native</artifactId>
-                <version>0.4.0</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-image -->
-            <dependency>
-                <groupId>org.nd4j</groupId>
-                <artifactId>canova-nd4j-image</artifactId>
-                <version>0.0.0.16</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.nd4j/canova-nd4j-codec -->
-            <dependency>
-                <groupId>org.nd4j</groupId>
-                <artifactId>canova-nd4j-codec</artifactId>
-                <version>0.0.0.16</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -712,6 +711,12 @@
         <carbon.metrics.version>1.2.2</carbon.metrics.version>
         <carbon.kernel.version>4.4.7</carbon.kernel.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+        <dl4j.core.version>0.4-rc3.10</dl4j.core.version>
+        <nd4j.core.version>0.4.0</nd4j.core.version>
+        <canova.core.version>0.0.0.17</canova.core.version>
+        <nd4j.native.version>0.4.0</nd4j.native.version>
+        <canova.nd4j.image.version>0.0.0.16</canova.nd4j.image.version>
+        <canova.nd4j.codec.version>0.0.0.16</canova.nd4j.codec.version>
 
         <!-- Spark dependency versions -->
         <spark.version>1.4.3.wso2v1</spark.version>
@@ -828,7 +833,6 @@
         <!--Siddhi Extension Dependency versions -->
         <siddhi.version>3.0.1</siddhi.version>
 
-        <dl4j.core.version>0.4-rc3.10</dl4j.core.version>
     </properties>
 
     <organization>

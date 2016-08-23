@@ -143,10 +143,12 @@ public class FeedForwardNetwork {
         //Add Hidden Layers to the network with unique settings
         for(int i = 0;i< noHiddenLayers;i++){
             int nInput = 0;
-            if(i == 0)
+            if(i == 0){
                 nInput=inputLayerNodes;
-            else
+            }
+            else{
                 nInput=hiddenList.get(i-1).hiddenNodes;
+            }
 
             neuralNetConfiguration.layer(i,new DenseLayer.Builder().nIn(nInput)
                     .nOut(hiddenList.get(i).hiddenNodes)
@@ -157,11 +159,11 @@ public class FeedForwardNetwork {
 
         //Add Output Layers to the network with unique settings
         neuralNetConfiguration.layer(noHiddenLayers, new OutputLayer.Builder(mapLossFunction(outputList.get(0).lossFunction))
-                    .nIn(hiddenList.get(noHiddenLayers-1).hiddenNodes)
-                    .nOut(outputList.get(0).outputNodes)
-                    .weightInit(mapWeightInit(outputList.get(0).weightInit))
-                    .activation(outputList.get(0).activationAlgo)
-                    .build());
+                .nIn(hiddenList.get(noHiddenLayers-1).hiddenNodes)
+                .nOut(outputList.get(0).outputNodes)
+                .weightInit(mapWeightInit(outputList.get(0).weightInit))
+                .activation(outputList.get(0).activationAlgo)
+                .build());
 
         //Create MultiLayerConfiguration network
         MultiLayerConfiguration conf = neuralNetConfiguration.pretrain(pretrain)
@@ -207,19 +209,19 @@ public class FeedForwardNetwork {
         OptimizationAlgorithm optimizationAlgo = null;
 
         switch (optimizationAlgorithms){
-            case "Line_Gradient_Descent":
+            case "LINE_GRADIENT_DESCENT":
                 optimizationAlgo = OptimizationAlgorithm.LINE_GRADIENT_DESCENT;
                 break;
-            case "Conjugate_Gradient":
+            case "CONJUGATE_GRADIENT":
                 optimizationAlgo = OptimizationAlgorithm.CONJUGATE_GRADIENT;
                 break;
-            case "Hessian_Free":
+            case "HESSIAN_FREE":
                 optimizationAlgo = OptimizationAlgorithm.HESSIAN_FREE;
                 break;
             case "LBFGS":
                 optimizationAlgo = OptimizationAlgorithm.LBFGS;
                 break;
-            case "Stochastic_Gradient_Descent":
+            case "STOCHASTIC_GRADIENT_DESCENT":
                 optimizationAlgo = OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT;
                 break;
             default:
@@ -239,28 +241,28 @@ public class FeedForwardNetwork {
         Updater updaterAlgo = null;
 
         switch (updater) {
-            case "sgd":
+            case "SGD":
                 updaterAlgo = Updater.SGD;
                 break;
-            case "adam":
+            case "ADAM":
                 updaterAlgo = Updater.ADAM;
                 break;
-            case "adadelta":
+            case "ADADELTA":
                 updaterAlgo = Updater.ADADELTA;
                 break;
-            case "nesterovs":
+            case "NESTEROVS":
                 updaterAlgo = Updater.NESTEROVS;
                 break;
-            case "adagrad":
+            case "ADAGRAD":
                 updaterAlgo = Updater.ADAGRAD;
                 break;
-            case "rmsprop":
+            case "RMSPROP":
                 updaterAlgo = Updater.RMSPROP;
                 break;
-            case "none":
+            case "NONE":
                 updaterAlgo = Updater.NONE;
                 break;
-            case "custom":
+            case "CUSTOM":
                 updaterAlgo = Updater.CUSTOM;
                 break;
             default:
@@ -280,31 +282,31 @@ public class FeedForwardNetwork {
         LossFunction lossfunctionAlgo = null;
 
         switch (lossFunction){
-            case "mse":
+            case "MSE":
                 lossfunctionAlgo = LossFunction.MSE;
                 break;
-            case "expll":
+            case "EXPLL":
                 lossfunctionAlgo = LossFunction.EXPLL;
                 break;
-            case "xent":
+            case "XENT":
                 lossfunctionAlgo = LossFunction.XENT;
                 break;
-            case "mcxent":
+            case "MCXENT":
                 lossfunctionAlgo = LossFunction.MCXENT;
                 break;
-            case "rmsexent":
+            case "RMSE_XENT":
                 lossfunctionAlgo = LossFunction.RMSE_XENT;
                 break;
-            case "sqauredloss":
+            case "SQUARED_LOSS":
                 lossfunctionAlgo = LossFunction.SQUARED_LOSS;
                 break;
-            case "reconstructioncrossentropy":
+            case "RECONSTRUCTION_CROSSENTROPY":
                 lossfunctionAlgo = LossFunction.RECONSTRUCTION_CROSSENTROPY;
                 break;
-            case "negetiveloglilelihood":
+            case "NEGATIVELOGLIKELIHOOD":
                 lossfunctionAlgo = LossFunction.NEGATIVELOGLIKELIHOOD;
                 break;
-            case "custom":
+            case "CUSTOM":
                 lossfunctionAlgo = LossFunction.CUSTOM;
                 break;
             default:
@@ -324,25 +326,25 @@ public class FeedForwardNetwork {
 
         switch (weightinit){
 
-            case "Distribution":
+            case "DISTRIBUTION":
                 weightInitAlgo = WeightInit.DISTRIBUTION;
                 break;
-            case "Normalized":
+            case "NORMALIZED":
                 weightInitAlgo = WeightInit.NORMALIZED;
                 break;
-            case "Size":
+            case "SIZE":
                 weightInitAlgo = WeightInit.SIZE;
                 break;
-            case "Uniform":
+            case "UNIFORM":
                 weightInitAlgo = WeightInit.UNIFORM;
                 break;
-            case "Vi":
+            case "VI":
                 weightInitAlgo = WeightInit.VI;
                 break;
-            case "Zero":
+            case "ZERO":
                 weightInitAlgo = WeightInit.ZERO;
                 break;
-            case "Xavier":
+            case "XAVIER":
                 weightInitAlgo = WeightInit.XAVIER;
                 break;
             case "RELU":
@@ -367,8 +369,8 @@ public class FeedForwardNetwork {
 
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
-                  "Error occurred while retrieving train data fraction for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                   analysisId, tenantId, userName), e);
+                    "Error occurred while retrieving train data fraction for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                    analysisId, tenantId, userName), e);
             log.info(msg, e);
             return 0.0;
         }
@@ -385,7 +387,7 @@ public class FeedForwardNetwork {
             return  responseVariable;
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
-                   "Error occurred while retrieving train data fraction for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                    "Error occurred while retrieving train data fraction for the analysis [id] %s of tenant [id] %s and [user] %s .",
                     analysisId, tenantId, userName), e);
             log.error(msg, e);
             return null;
@@ -404,8 +406,8 @@ public class FeedForwardNetwork {
             return  index;
         } catch (MLAnalysisHandlerException e) {
             String msg = MLUtils.getErrorMsg(String.format(
-                   "Error occurred while retrieving index of the current response feature for the analysis [id] %s of tenant [id] %s and [user] %s .",
-                   analysisId, tenantId, userName), e);
+                    "Error occurred while retrieving index of the current response feature for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                    analysisId, tenantId, userName), e);
             log.error(msg, e);
             return -1;
         }
@@ -435,7 +437,7 @@ public class FeedForwardNetwork {
                 MLDatasetVersion mlDatasetVersion= versionsetIterator.next();
 
                 if (mlDatasetVersion.getId()== versionId) {
-                   version = mlDatasetVersion.getVersion();
+                    version = mlDatasetVersion.getVersion();
                 }
                 else{
                     version = null;

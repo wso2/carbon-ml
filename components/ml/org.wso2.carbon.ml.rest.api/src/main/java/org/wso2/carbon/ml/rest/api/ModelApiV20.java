@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -635,14 +635,14 @@ public class ModelApiV20 extends MLRestAPI {
             String statistics = "";
             //read json object
             JSONObject networkDetail = new JSONObject(networkDetails);
-            //convert the json data to pass to the respective neyral network class
+            //convert the json data to pass to the respective neural network class
             String networkName = networkDetail.getString("networkName");
             long seed = networkDetail.getLong("seed");
             double learningRate = networkDetail.getDouble("learningRate");
             int bachSize = networkDetail.getInt("batchSize");
             double nepoches = networkDetail.getDouble("nepoches");
             int iterations = networkDetail.getInt("iteration");
-            String optimizationAlgorithms = networkDetail.getString("optimizationAlgorithms");
+            String optimizationAlgorithm = networkDetail.getString("optimizationAlgorithms");
             String updater = networkDetail.getString("updater");
             double momentum = networkDetail.getDouble("momentum");
             boolean pretrain = networkDetail.getBoolean("pretrain");
@@ -677,14 +677,31 @@ public class ModelApiV20 extends MLRestAPI {
             //make FeedForwardNetwork class object
             FeedForwardNetwork net = new FeedForwardNetwork();
             //Call createFeedForwardNetwork method
-            statistics = net.createFeedForwardNetwork(seed, learningRate, bachSize, nepoches, iterations, optimizationAlgorithms, updater, momentum, pretrain, backprop, noHiddenLayers, inputLayerNodes, datasetId, versionId, analysisId, hiddenLayerList, outputLayerList);
+            statistics = net.createFeedForwardNetwork(seed, learningRate, bachSize, nepoches, iterations, optimizationAlgorithm, updater, momentum, pretrain, backprop, noHiddenLayers, inputLayerNodes, datasetId, versionId, analysisId, hiddenLayerList, outputLayerList);
             ObjectMapper objectMapper = new ObjectMapper();
             Object statJson = objectMapper.readValue(objectMapper.writeValueAsString(statistics), Object.class);
             logger.info("API Response " + statJson.toString());
             return Response.ok(statJson).build();
 
-        } catch (Exception e) {
-            String msg = MLUtils.getErrorMsg("Error occurred in the server side!!!", e);
+        }
+
+        //Catch IOException
+        catch (IOException e){
+            String msg = MLUtils.getErrorMsg("IO exception has been fired in the server side!!!", e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+        //catch InterruptedException
+        catch(InterruptedException e){
+            String msg = MLUtils.getErrorMsg("Interrupted exception has been fired in the server side!!!", e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+        //catch all exceptions
+        catch(Exception e){
+            String msg = MLUtils.getErrorMsg("Error has been fired in the server side!!!", e);
             logger.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
                     .build();

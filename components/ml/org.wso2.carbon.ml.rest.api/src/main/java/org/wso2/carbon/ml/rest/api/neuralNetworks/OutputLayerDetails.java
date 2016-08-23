@@ -27,7 +27,6 @@ public class OutputLayerDetails {
 
     /**
      * Constructor of the OutputLayerDetails class.
-     *
      */
     public OutputLayerDetails(int outputNodes, String weightInit, String activationAlgo, String lossFunction) {
         this.outputNodes = outputNodes;

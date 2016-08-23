@@ -27,7 +27,7 @@
 				<label id="NameDiagram">Untitled Diagram</label>
 			</div>
 		</div>
-		
+
 		<!-- Working area-->
 		<div class="row">
 			<div id="down" class="col-md-9 col-sm-9 col-lg-9">
@@ -54,14 +54,14 @@
 							<label>Select Data Version</label>
 							<select class="dropdown"
 								id="data_version"></select>
-						</div>					
+						</div>
 					</div>
 				</div>
-				
+
 				<!-- Droppable Area -->
 				<div id="workspace">
 					<div id="droppable" class="ui-widget-header"></div>
-					
+
 					<!-- Dialog box for input layers-->
 					<div id="inputsettingModel" class="modal fade">
 						<div class="modal-dialog">
@@ -74,10 +74,10 @@
 								<div class="modal-body">
 									<form>
 										<fieldset>
-											<label id="setting_labels">No of Input nodes</label> 
+											<label id="setting_labels">No of Input nodes</label>
 											<input
 												type="setting" class="form-control"
-												id="inputNodes_inputlayer">									
+												id="inputNodes_inputlayer">
 										</fieldset>
 									</form>
 								</div>
@@ -109,13 +109,13 @@
 												for="weightInit_hiddenlayer">WeightInit</label> <select
 												class="setting_dropdown" id="weightInit_hiddenlayer"
 												name="weightInit">
-													<option value="Distribution">Distribution</option>
-													<option value="Normalized">Normalized</option>
-													<option value="Size">Size</option>
-													<option value="Uniform">Uniform</option>
-													<option value="Vi">Vi</option>
-													<option value="Zero">Zero</option>
-													<option value="Xavier">Xavier</option>
+													<option value="DISTRIBUTION">Distribution</option>
+													<option value="NORMALIZED">Normalized</option>
+													<option value="SIZE">Size</option>
+													<option value="UNIFORM">Uniform</option>
+													<option value="VI">Vi</option>
+													<option value="ZERO">Zero</option>
+													<option value="XAVIER">Xavier</option>
 													<option value="RELU">RELU</option>
 											</select> <label id="setting_labels"
 												for="activation_hiddenlayer">Activation</label> <select
@@ -155,13 +155,13 @@
 												for="weightInit_outputlayer">WeightInit</label> <select
 												class="setting_dropdown" id="weightInit_outputlayer"
 												name="weightInit">
-													<option value="Distribution">Distribution</option>
-													<option value="Normalized">Normalized</option>
-													<option value="Size">Size</option>
-													<option value="Uniform">Uniform</option>
-													<option value="Vi">Vi</option>
-													<option value="Zero">Zero</option>
-													<option value="Xavier">Xavier</option>
+													<option value="DISTRIBUTION">Distribution</option>
+													<option value="NORMALIZED">Normalized</option>
+													<option value="SIZE">Size</option>
+													<option value="UNIFORM">Uniform</option>
+													<option value="VI">Vi</option>
+													<option value="ZERO">Zero</option>
+													<option value="XAVIER">Xavier</option>
 													<option value="RELU">RELU</option>
 											</select> <label id="setting_labels"
 												for="activation_outputlayer">Activation</label> <select
@@ -173,17 +173,17 @@
 												for="lossFunction_outputlayer">Loss Function</label> <select
 												class="setting_dropdown" id="lossFunction_outputlayer"
 												name="lossFunction">
-													<option value="mse">MSE</option>
-													<option value="expll">EXPLL</option>
-													<option value="xent">XENT</option>
-													<option value="mcxent">MCXENT</option>
-													<option value="rmsexent">RMSE-XENT</option>
-													<option value="sqauredloss">SQUARED-LOSS</option>
-													<option value="reconstructioncrossentropy">RECONSTRUCTION-CROSS
+													<option value="MSE">MSE</option>
+													<option value="EXPLL">EXPLL</option>
+													<option value="XENT">XENT</option>
+													<option value="MCXENT">MCXENT</option>
+													<option value="RMSE_XENT">RMSE-XENT</option>
+													<option value="SQUARED_LOSS">SQUARED-LOSS</option>
+													<option value="RECONSTRUCTION_CROSSENTROPY">RECONSTRUCTION-CROSS
 														ENTROPY</option>
-													<option value="negetiveloglilelihood">NEGTEIVE LOG
+													<option value="NEGATIVELOGLIKELIHOOD">NEGTEIVE LOG
 														LIKELIHOOD</option>
-													<option value="custom">CUSTOM</option>
+													<option value="CUSTOM">CUSTOM</option>
 											</select>
 										</fieldset>
 									</form>
@@ -217,7 +217,7 @@
 													id="setting_labels">Recall</label> <input type="setting"
 													class="form-control" id="recall"> <label
 														id="setting_labels">F1 Score</label> <input type="setting"
-														class="form-control" id="f1score">	
+														class="form-control" id="f1score">
 										</fieldset>
 									</form>
 								</div>
@@ -228,7 +228,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<!-- Error handling Model -->
 					<div id="model_errorHandling" class="modal fade">
 						<div class="modal-dialog">
@@ -252,7 +252,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<!-- Common Neural Network Settings-->
 			<div id="down" class="col-md-3 col-sm-3 col-lg-3">
 				<h4>
@@ -277,22 +277,22 @@
 											class="label_setting" for="optimizationAlgorithms">Optimization
 												Algorithm</label> <select id="optimizationAlgorithms"
 											name="optimizationAlgorithms">
-												<option value="Line_Gradient_Descent">Line Gradient Descent</option>
-												<option value="Conjugate_Gradient">Conjugate Gradient</option>
-												<option value="Hessian_Free">Hessian Free</option>
+												<option value="LINE_GRADIENT_DESCENT">Line Gradient Descent</option>
+												<option value="CONJUGATE_GRADIENT">Conjugate Gradient</option>
+												<option value="HESSIAN_FREE">Hessian Free</option>
 												<option value="LBFGS">LBFGS</option>
-												<option value="Stochastic_Gradient_Descent">Stochastic
+												<option value="STOCHASTIC_GRADIENT_DESCENT">Stochastic
 													Gradient Descent</option>
 										</select> <label class="label_setting" for="updater">Updater</label>
 											<select id="updater" name="updater">
-												<option value="sgd">SGD</option>
-												<option value="adam">ADAM</option>
-												<option value="adadelta">ADADELTA</option>
-												<option value="nesterovs">NESTEROVS</option>
-												<option value="adagrad">ADAGRAD</option>
-												<option value="rmsprop">RMSPROP</option>
-												<option value="none">NONE</option>
-												<option value="custom">CUSTOM</option>
+												<option value="SGD">SGD</option>
+												<option value="ADAM">ADAM</option>
+												<option value="ADADELTA">ADADELTA</option>
+												<option value="NESTEROVS">NESTEROVS</option>
+												<option value="ADAGRAD">ADAGRAD</option>
+												<option value="RMSPROP">RMSPROP</option>
+												<option value="NONE">NONE</option>
+												<option value="CUSTOM">CUSTOM</option>
 										</select> <label class="label_setting">Momentum</label> <input
 											type="setting" class="form-control" id="momentum"> <label
 												class="label_setting" for="pretrain">Pretrain</label> <select
@@ -304,21 +304,21 @@
 												class="button_NN">
 													<option value="true">True</option>
 													<option value="false">False</option>
-											</select> 
+											</select>
 											<button id="btn1" type="button">Run Neural Network</button>
-					
+
 					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
-	
+
 $(document).ready(function(e){
 		var serverUrl = window.location.origin;
 		var datasetId = getParameterByName('datasetId');
 
-			  $(function() {				   
+			  $(function() {
 				     //var analysisID = this.value;
 
 						$selectversion = $('#data_version');
@@ -341,9 +341,9 @@ $(document).ready(function(e){
 						 	   console.log('Error: ' + errorMessage);
 						     }
 						 });
-									   
+
 			  });
-			  
+
 
 			  //Call backend API when user click the Run NN Button
 			  $("#btn1").click(function(){
@@ -365,11 +365,11 @@ $(document).ready(function(e){
 				  var HiddenlayerDetails = '"hiddenlayerDetails" : [';
 	 			  var i;
 	 			  for (i = 1; i <= draggableHiddenNo; i++) {
-	
+
 						if(i==draggableHiddenNo){
 							HiddenlayerDetails += '{ "hiddenlayernodes":"'+localStorage.getItem("HiddenLayerNodes"+i)+'","hiddenlayerweightinit":"'+localStorage.getItem("HiddenLayerWeightInit"+i)+'","hiddenlayeractivation":"'+localStorage.getItem("HiddenLayerActivation"+i)+'"}';
 						}
-	
+
 						else{
 							localStorage.getItem("lastname");
 							HiddenlayerDetails += '{ "hiddenlayernodes":"'+localStorage.getItem("HiddenLayerNodes"+i)+'","hiddenlayerweightinit":"'+localStorage.getItem("HiddenLayerWeightInit"+i)+'","hiddenlayeractivation":"'+localStorage.getItem("HiddenLayerActivation"+i)+'"},';
@@ -383,7 +383,7 @@ $(document).ready(function(e){
  				if((seed != "")&&(learningRate != "")&&(batchSize != "")&&(nepoches != "")&&(iteration != "")&&(optimizationAlgorithms != "")&&(updater != "")&&(momentum != "")&&(pretrain != "")&&(backprop != "")&&(versionID != ""))
  				{
  					Pace.start;
- 					  $.ajax({				     
+ 					  $.ajax({
  						  	 type: 'POST',
  						     url:serverUrl+'/api/models/neural-network',
  						     dataType: 'json',
@@ -448,10 +448,10 @@ $(document).ready(function(e){
 						}
 						else if((versionID == "")){
 							document.getElementById("error").innerHTML = "Data version cannot be null!!";
-						}	
+						}
  	 				}
 			  });
-			 
+
 
 			  //Save details to the HTML5 Seeion local storage
 			  $("#saveInputLayer").click(function(){
@@ -496,7 +496,7 @@ $(document).ready(function(e){
                             document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
                         }
 			  });
-			  
+
 			/*
 			*get parametre by ID
 			*/
@@ -510,7 +510,7 @@ $(document).ready(function(e){
 			return decodeURIComponent(results[2].replace(/\+/g, " "));
 			}
 
-		});	
+		});
 
 	</script>
 </body>

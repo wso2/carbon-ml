@@ -26,7 +26,6 @@ public class HiddenLayerDetails {
 
     /**
      * Constructor of the HiddenLayerDetails class.
-     *
      */
     public HiddenLayerDetails(int hiddenNodes, String weightInit, String activationAlgo) {
         this.hiddenNodes = hiddenNodes;
