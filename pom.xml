@@ -671,15 +671,15 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <!-- Spark dependency versions -->
-        <spark.version>1.4.3.wso2v1</spark.version>
-        <spark.imp.pkg.version>[1.4.3,1.5.0)</spark.imp.pkg.version>
-        <spark.mllib.imp.pkg.version>[1.4.1,1.5.0)</spark.mllib.imp.pkg.version>
-        <spark.core.version>1.4.3.wso2v1</spark.core.version>
-        <spark.mllib.version>1.4.1.wso2v3</spark.mllib.version>
+        <spark.version>1.6.2.wso2v1</spark.version>
+        <spark.imp.pkg.version>[1.6.0, 2.0.0)</spark.imp.pkg.version>
+        <spark.mllib.imp.pkg.version>[1.6.0, 2.0.0)</spark.mllib.imp.pkg.version>
+        <spark.core.version>1.6.2.wso2v1</spark.core.version>
+        <spark.mllib.version>1.6.2.wso2v1</spark.mllib.version>
         <hadoop.client.version>2.7.2.wso2v1</hadoop.client.version>
-        <breeze.version>0.11.1.wso2v1</breeze.version>
+        <breeze.version>0.11.2.wso2v1</breeze.version>
         <spire.version>0.7.4.wso2v1</spire.version>
-        <jblas.version>1.2.3.wso2v1</jblas.version>
+        <jblas.version>1.2.4.wso2v1</jblas.version>
         <uncommons.maths.version>1.2.2.wso2v1</uncommons.maths.version>
         <json4s.jackson.version>3.2.10.wso2v1</json4s.jackson.version>
         <twitter.chill.version>0.5.0.wso2v1</twitter.chill.version>
