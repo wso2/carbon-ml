@@ -76,7 +76,7 @@
 			<artifactId>breeze_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.jblas</groupId>
+			<groupId>org.wso2.orbit.org.jblas</groupId>
 			<artifactId>jblas</artifactId>
 		</dependency>
 		<dependency>
@@ -100,11 +100,11 @@
 			<artifactId>chill_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.clearspring.analytics</groupId>
+			<groupId>org.wso2.orbit.com.clearspring.analytics</groupId>
 			<artifactId>stream</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.netty.wso2</groupId>
+			<groupId>org.wso2.orbit.io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 		</dependency>
 		<dependency>
