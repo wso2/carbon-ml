@@ -204,6 +204,8 @@ public class MLConstants {
 
     public static final String STORAGE_TYPE = "storageType";
     public static final String STORAGE_LOCATION = "storageLocation";
+    
+    public static final String CHECKPOINTING_DIR = "./tmp";
 
     // Email Sender constants
     public static final String ML_EMAIL_ADAPTER = "MLEmailAdapter";

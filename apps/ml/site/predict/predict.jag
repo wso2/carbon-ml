@@ -93,12 +93,14 @@
 
                             <form id="prediction-form" method="POST" enctype="multipart/form-data">
 
-                                <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Source of the prediction data."></span></label>
-                                <div class="input-control text">
-                                    <select class="form-control" id="prediction-src" name="sourceType">
-                                        <option value="file">File</option>
-                                        <option value="features">Feature values</option>
-                                    </select>               
+                                <div id="prediction-src-parent">
+                                    <label class="input-label">Prediction Source<span class="help-tip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="Source of the prediction data."></span></label>
+                                    <div class="input-control text">
+                                        <select class="form-control" id="prediction-src" name="sourceType">
+                                            <option value="file">File</option>
+                                            <option value="features">Feature values</option>
+                                        </select>               
+                                    </div>   
                                 </div>             
 
                               <!-- inputs for file upload prediction -->
@@ -181,6 +183,10 @@
             var analysisName = getParameterByName('analysisName');
             var modelName = getParameterByName('modelName');
             var fromCompare = getParameterByName('fromCompare');
+            var algorithm = getParameterByName('algorithm');
+            var colloborativeFilteringImplicit = "COLLABORATIVE_FILTERING";
+            var colloborativeFilteringExplicit = "COLLABORATIVE_FILTERING_IMPLICIT";
+
 
             $(document).ready(function() {
 
@@ -214,8 +220,23 @@
                 $('#nav-analysis').text(" \\ " + analysisName);
                 $('#nav-model').text(" \\ " + modelName);
 
+                if (sanitize(algorithm) == colloborativeFilteringImplicit || sanitize(algorithm) == colloborativeFilteringExplicit) {
+                    inputString = '<label class="input-label">Prediction Type</label>' +
+                                '<span class="fld-required">*</span>' +
+                                '<div class="input-control text">' +
+                                '<select class="form-control" id="prediction-type" value="" placeholder="">' +
+                                '<option value="product-recommendation">Product Recommendation</option>' + 
+                                '<option value="user-recommendation">User Recommendation</option></select>'
+                                '<span class="form-val-error" id="feature-1-error"></span>' +
+                                '</div>';
+
+                    $("#prediction-form").prepend(inputString);
+                    $('#prediction-src>option:eq(1)').attr('selected', true);
+                    $('#prediction-src-parent').hide();
+                }
                 // load feature input prediction features
                 loadFeatures();
+                bindEvents();
                 // display inputs for prediction type selection
                 displayPredictionSource();
 
@@ -255,72 +276,109 @@
             }
 
             function loadFeatures() {
-                var responseVariable;
-                // get response variable of this model
-                $.ajax({
-                    type: "GET",
-                    url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
-                    async: false,
-                    dataType: 'text',
-                    success: function(data) {
-                        responseVariable = sanitize(data);
-                    },
-                    error: function(res) {
-                        var errorText = JSON.parse(res.responseText)["exception"];
-                        handleNotification(errorText, '#notification-area', 'warning');
-                    }
-                });
+                $("#parameter-inputs").empty();
 
-                // get feature names of this model
-                $.ajax({
-                    type: "GET",
-                    url: serverUrl + "/api/models/" + modelId + "/summary",
-                    async: false,
-                    success: function(data) {
-                        var modelFeatures = data['features'];
-
-                        for (var i = 0; i < modelFeatures.length; i++) {
-                            if (modelFeatures[i] == responseVariable) {
-                                continue;
-                            }
-                            inputString = '<label class="input-label">' + sanitize(modelFeatures[i]) + '</label>' +
-                                '<span class="fld-required">*</span>' +
-                                '<div class="input-control text">' +
-                                '<input type="text" id="sgd-data-fraction-' + i + '" value="" placeholder=""/>' +
-                                '<span class="form-val-error" id="feature-' + i + '-error"></span>' +
-                                '</div>';
-
-                            $("#parameter-inputs").append(inputString);
-
-                            $(document).on('click', '#sgd-data-fraction-' + i, function() {
-                                $(this).next('span').empty();
-                            });
-
-                            $(document).on('keydown', '#sgd-data-fraction-' + i, function(e) {
-                                if (e.which == 9) { // tab key
-                                    $(this).next('span').empty();
-                                }
-                            });
-                        };
-
-                        var algorithmName = data['algorithm'];
-                        if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
-                            $('#percentile-value').show();
-                            if (data.bestPercentile) {
-                                $('#percentile').val(data.bestPercentile);
-                            }
-                        } else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
-                            $('#percentile-value').show();
-                        } else {
-                            $('#percentile-value').hide();
+                /* If it is NOT a recommendation prediction */
+                if (sanitize(algorithm) != colloborativeFilteringImplicit && sanitize(algorithm) != colloborativeFilteringExplicit) {
+                    var responseVariable;
+                    // get response variable of this model
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/analyses/" + analysisId + "/responseVariables",
+                        async: false,
+                        dataType: 'text',
+                        success: function(data) {
+                            responseVariable = sanitize(data);
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
                         }
-                    },
-                    error: function(res) {
-                        var errorText = JSON.parse(res.responseText)["exception"];
-                        handleNotification(errorText, '#notification-area', 'warning');
+                    });
+
+                    // get feature names of this model
+                    $.ajax({
+                        type: "GET",
+                        url: serverUrl + "/api/models/" + modelId + "/summary",
+                        async: false,
+                        success: function(data) {
+                            var modelFeatures = data['features'];
+
+                            for (var i = 0; i < modelFeatures.length; i++) {
+                                if (modelFeatures[i] == responseVariable) {
+                                    continue;
+                                }
+                                inputString = '<label class="input-label">' + sanitize(modelFeatures[i]) + '</label>' +
+                                    '<span class="fld-required">*</span>' +
+                                    '<div class="input-control text">' +
+                                    '<input type="text" id="sgd-data-fraction-' + i + '" value="" placeholder=""/>' +
+                                    '<span class="form-val-error" id="feature-' + i + '-error"></span>' +
+                                    '</div>';
+
+                                $("#parameter-inputs").append(inputString);
+
+                                $(document).on('click', '#sgd-data-fraction-' + i, function() {
+                                    $(this).next('span').empty();
+                                });
+
+                                $(document).on('keydown', '#sgd-data-fraction-' + i, function(e) {
+                                    if (e.which == 9) { // tab key
+                                        $(this).next('span').empty();
+                                    }
+                                });
+                            };
+
+                            var algorithmName = data['algorithm'];
+                            if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_LABELED_DATA') {
+                                $('#percentile-value').show();
+                                if (data.bestPercentile) {
+                                    $('#percentile').val(data.bestPercentile);
+                                }
+                            } else if (algorithmName == 'K_MEANS_ANOMALY_DETECTION_WITH_UNLABELED_DATA') {
+                                $('#percentile-value').show();
+                            } else {
+                                $('#percentile-value').hide();
+                            }
+                        },
+                        error: function(res) {
+                            var errorText = JSON.parse(res.responseText)["exception"];
+                            handleNotification(errorText, '#notification-area', 'warning');
+                        }
+                    });
+                } else {
+                    /* If it is a recommendation prediction */
+                    var predictionType = $('#prediction-type option:selected').val();
+                    if (predictionType == 'product-recommendation') {
+                        inputString = '<label class="input-label">User ID</label>' +
+                                    '<span class="fld-required">*</span>' +
+                                    '<div class="input-control text">' +
+                                    '<input type="text" id="user-id" value="" placeholder=""/>' +
+                                    '<span class="form-val-error" id="feature-0-error"></span>' +
+                                    '</div>' + 
+                                    '<label class="input-label">Number of Products</label>' +
+                                    '<span class="fld-required">*</span>' +
+                                    '<div class="input-control text">' +
+                                    '<input type="text" id="no-of-products" value="" placeholder=""/>' +
+                                    '<span class="form-val-error" id="feature-1-error"></span>' +
+                                    '</div>';
+
+                                
+                    } else {
+                        inputString = '<label class="input-label">Product ID</label>' +
+                                    '<span class="fld-required">*</span>' +
+                                    '<div class="input-control text">' +
+                                    '<input type="text" id="product-id" value="" placeholder=""/>' +
+                                    '<span class="form-val-error" id="feature-0-error"></span>' +
+                                    '</div>' + 
+                                    '<label class="input-label">Number of Users</label>' +
+                                    '<span class="fld-required">*</span>' +
+                                    '<div class="input-control text">' +
+                                    '<input type="text" id="no-of-users" value="" placeholder=""/>' +
+                                    '<span class="form-val-error" id="feature-1-error"></span>' +
+                                    '</div>';
                     }
-                });
-                bindEvents();
+                    $("#parameter-inputs").append(inputString);
+                }
             }
 
             function bindEvents() {
@@ -343,23 +401,56 @@
                         jsonData = JSON.stringify(inputArray);
                         jsonData = "[".concat(jsonData, "]");
 
-                        $.ajax({
-                            type: "POST",
-                            url: serverUrl + "/api/models/" + modelId + "/predict?percentile=" + percentile,
-                            contentType: "application/json",
-                            data: jsonData,
-                            success: function(res) {
-                                var predictionNotification = '<div class="wr-instant-response">' +
-                                    '<label>Predicted Value:</label><br>' +
-                                    '<label><span>' + res + '</span></label>' +
-                                    '</div>';
-                                $("#prediction").html(predictionNotification);
-                            },
-                            error: function(res) {
-                                var errorText = JSON.parse(res.responseText)["exception"];
-                                handleNotification(errorText, '#notification-area', 'warning');
+                        /* If it is NOT a recommendation prediction */
+                        if (sanitize(algorithm) != colloborativeFilteringImplicit && sanitize(algorithm) != colloborativeFilteringExplicit) {
+                            $.ajax({
+                                type: "POST",
+                                url: serverUrl + "/api/models/" + modelId + "/predict?percentile=" + percentile,
+                                contentType: "application/json",
+                                data: jsonData,
+                                success: function(res) {
+                                    var predictionNotification = '<div class="wr-instant-response">' +
+                                        '<label>Predicted Value:</label><br>' +
+                                        '<label><span>' + res + '</span></label>' +
+                                        '</div>';
+                                    $("#prediction").html(predictionNotification);
+                                },
+                                error: function(res) {
+                                    var errorText = JSON.parse(res.responseText)["exception"];
+                                    handleNotification(errorText, '#notification-area', 'warning');
+                                }
+                            });
+                        } else {
+                            /* If it is a recommendation prediction */
+                            var recommendationUrl = null;
+                            var predictionType = $('#prediction-type option:selected').val();
+                            if (predictionType == 'product-recommendation') {
+                                var userId = $('#user-id').val();
+                                var productCount = $('#no-of-products').val();
+                                recommendationUrl = serverUrl + "/api/models/" + modelId + "/product-recommendations?user-id=" + userId + "&no-of-products=" + productCount;
+                            } else {
+                                var productId = $('#product-id').val();
+                                var userCount = $('#no-of-users').val();
+                                recommendationUrl = serverUrl + "/api/models/" + modelId + "/user-recommendations?product-id=" + productId + "&no-of-users=" + userCount;
                             }
-                        });
+                            $.ajax({
+                                type: "GET",
+                                url: recommendationUrl,
+                                contentType: "application/json",
+                                data: jsonData,
+                                success: function(res) {
+                                    var predictionNotification = '<div class="wr-instant-response">' +
+                                        '<label>Predicted Value:</label><br>' +
+                                        '<label><span>' + res + '</span></label>' +
+                                        '</div>';
+                                    $("#prediction").html(predictionNotification);
+                                },
+                                error: function(res) {
+                                    var errorText = JSON.parse(res.responseText)["exception"];
+                                    handleNotification(errorText, '#notification-area', 'warning');
+                                }
+                            });
+                        }
                     }
                 });
 
@@ -381,8 +472,15 @@
 
                 $('#nav-project-anchor').attr('href', '../project/projects.jag?projectName=' + projectName);
 
-                // change input fields according to prediction type selection
+                // change input fields according to prediction source selection
                 $('#prediction-src').on('change', function(e) {
+                    displayPredictionSource();
+                    $("#prediction").empty();
+                });
+
+                // change input fields according to prediction type selection
+                $('#prediction-type').on('change', function(e) {
+                    loadFeatures();
                     displayPredictionSource();
                     $("#prediction").empty();
                 });
