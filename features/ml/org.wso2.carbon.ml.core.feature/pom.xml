@@ -44,7 +44,7 @@
 			<artifactId>breeze_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.jblas</groupId>
+			<groupId>org.wso2.orbit.org.jblas</groupId>
 			<artifactId>jblas</artifactId>
 		</dependency>
 		<dependency>
@@ -93,7 +93,7 @@
 							<bundles>
 								<bundleDef>org.wso2.orbit.org.apache.spark:spark-mllib_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.org.scalanlp:breeze_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
+								<bundleDef>org.wso2.orbit.org.jblas:jblas</bundleDef>
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.github.fommil.netlib:core</bundleDef>
 								<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
