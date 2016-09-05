@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.ml.core.spark.recommendation;
 
+import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel;
 import org.apache.spark.mllib.recommendation.Rating;
@@ -106,6 +107,10 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 	                                                                  MLModel mlModel, boolean trainImplicit) throws MLModelBuilderException {
 
 		try {
+		    // Set checkpointing to avoid stack overflow, during model training
+		    SparkContext sc = trainingData.rdd().sparkContext();
+		    sc.setCheckpointDir(MLConstants.CHECKPOINTING_DIR);
+		    
 			Map<String, String> parameters = workflow.getHyperParameters();
 			CollaborativeFiltering collaborativeFiltering = new CollaborativeFiltering();
 			RecommendationModelSummary recommendationModelSummary = new RecommendationModelSummary();
@@ -135,7 +140,10 @@ public class RecommendationModelBuilder extends MLModelBuilder {
 			double meanSquaredError = collaborativeFiltering.test(model,
 					trainingData).mean();
 			recommendationModelSummary.setMeanSquaredError(meanSquaredError);
-
+			
+			// Un-set checkpointing
+			sc.setCheckpointDir(null);
+			
 			return recommendationModelSummary;
 		} catch (Exception e) {
 			throw new MLModelBuilderException(
