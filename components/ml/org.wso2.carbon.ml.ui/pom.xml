@@ -20,11 +20,11 @@
     <parent>
         <artifactId>ml</artifactId>
         <groupId>org.wso2.carbon.ml</groupId>
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.ml.ui</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Machine Learner UI Component</name>
     <build>
