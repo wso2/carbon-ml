@@ -1007,8 +1007,9 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
             getFeatues.setLong(4, datasetSchemaId);
-            getFeatues.setInt(5, numberOfFeatures);
-            getFeatues.setInt(6, startIndex);
+            
+            // startIndex and numberOfFeatures are not used. This change is required by kernel 4.4.9
+            
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
