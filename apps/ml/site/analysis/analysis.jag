@@ -299,7 +299,6 @@
                             $("#accordion").append(accordionPanelNoModels);
                             $("#pagination-per-page").hide()
                         } else {
-                            algorithm = analysisModels[0].modelSummary.algorithm;
                             var createModel = '' +
                                 '<div class="ctrl-info-panel col-md-12 col-centered">' +
                                 '<div id="create-model-overlay" style="display:inline-flex;" data-toggle="tooltip" title="' + appendTitleDisableCreateModel() + '">' +
@@ -767,4 +766,3 @@
         </script>
     </body>
 </html>
-
