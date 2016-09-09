@@ -29,3 +29,5 @@ sonar-pom.xml
 *.em
 *.log
 *.db
+components/ml/*/bin/*
+components/extensions/*/bin/*

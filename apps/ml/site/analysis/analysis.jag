@@ -195,6 +195,7 @@
             var deleteModelId;
             var panelsPerPage;
             var hasDatasetVersions = true;
+            var algorithm = null;
 
             // update pagination
             $(document).on('change', 'select[id="no-of-panels"]', function() {
@@ -351,10 +352,10 @@
                                             '<a href="#" id="view-model" class="cu-reg-btn btn-view ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="View the model summary"><span>View</span></a>';
                                     }
                                     // remove predict from Collaborative Filtering
-                                    if ((sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
+                                    //if ((sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(analysisModels[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
                                         accordionPanel += '' +
                                             '<a href="#" id="predict" class="cu-reg-btn btn-predict ' + appendClass(modelStatus) + '" data-modelname="' + analysisModels[i]['name'] + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Predict using the model"><span>Predict</span></a>';
-                                    }
+                                    //}
                                 }
                                 accordionPanel += '' +
                                     '<a href="#" id="download-model"  class="cu-reg-btn btn-download ' + appendClass(modelStatus) + '" data-modelname="' + modelName + '" data-modelid="' + modelId + '" data-toggle="tooltip" data-original-title="Download the model"><span>Download</span></a>' +
@@ -456,9 +457,9 @@
                                                 $('<a href="#" id="view-model" class="cu-reg-btn btn-view" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>View</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
                                             }
                                             // remove predict for collaborative filtering
-                                            if ((sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
+                                            //if ((sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING') && (sanitize(models[i].modelSummary.algorithm) != 'COLLABORATIVE_FILTERING_IMPLICIT')) {
                                                 $('<a href="#" id="predict" class="cu-reg-btn btn-predict" data-modelname="' + modelName + '" data-modelid="' + modelId + '"><span>Predict</span></a>').insertBefore('#accordion-header-action-' + modelId + ' > #download-model');
-                                            }
+                                            //}
                                         }
                                         // update accordion panel element when model building fails
                                         if (newModelStatus == 'Failed') {
@@ -595,7 +596,7 @@
 
                     var modelId = $(this).data('modelid');
                     var modelName = $(this).data('modelname');
-                    window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&fromCompare=false';
+                    window.location.href = '../predict/predict.jag?analysisId=' + analysisId + '&datasetId=' + datasetId + '&modelId=' + modelId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&modelName=' + modelName + '&algorithm=' + algorithm + '&fromCompare=false';
                 });
 
                 var modelId;
@@ -765,4 +766,3 @@
         </script>
     </body>
 </html>
-

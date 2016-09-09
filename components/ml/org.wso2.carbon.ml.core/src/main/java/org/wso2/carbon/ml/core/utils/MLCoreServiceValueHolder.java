@@ -31,6 +31,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class MLCoreServiceValueHolder {
     private static volatile MLCoreServiceValueHolder instance;
+    private boolean mlDisabled = false;
     private DatabaseService databaseService;
     private SummaryStatisticsSettings summaryStatSettings;
     private Properties mlProperties;
@@ -190,6 +191,16 @@ public class MLCoreServiceValueHolder {
 
     public void setH2oClientModeEnabled(boolean h2oClientModeEnabled) {
         this.h2oClientModeEnabled = h2oClientModeEnabled;
+    }
+
+
+    public boolean isMlDisabled() {
+        return mlDisabled;
+    }
+
+
+    public void setMlDisabled(boolean mlDisabled) {
+        this.mlDisabled = mlDisabled;
     }
 
 }

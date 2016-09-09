@@ -18,6 +18,7 @@ package org.wso2.carbon.ml.rest.api;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
@@ -64,11 +65,18 @@ public class AnalysisApiV11 extends MLRestAPI {
     @POST
     @Produces("application/json")
     public Response createAnalysis(MLAnalysis analysis) {
-        if (analysis.getName() == null || analysis.getName().isEmpty() || analysis.getProjectId() == 0) {
-            String msg = "Required parameters are missing: " + analysis;
+        String analysisName = analysis.getName();
+        if (analysisName == null || analysisName.isEmpty() || analysis.getProjectId() == 0) {
+            String msg = "Analysis name or project Id is missing: " + analysis;
             logger.error(msg);
             return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
         }
+        if (!MLUtils.isValidName(analysisName)) {
+            String msg = "analysis name: " + analysisName + " contains invalid characters.";
+            logger.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(new MLErrorBean(msg)).build();
+        }
+        
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         int tenantId = carbonContext.getTenantId();
         String userName = carbonContext.getUsername();

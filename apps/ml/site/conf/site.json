@@ -3,12 +3,11 @@
     "hostname" : "localhost",
     "httpsport" : "9443",
     "request_url":"READ_FROM_REQUEST",
-    "showPublicStoreURL":true,
     "tagWiseMode" :"false",
     "tagGroupKey" :"-group",
     "ssoConfiguration" : {
         "enabled" : "false",
-        "issuer" : "API_STORE",
+        "issuer" : "ML",
         "identityProviderURL" : "https://localhost:9443/samlsso",
         "keyStorePassword" : "",
         "identityAlias" : "",

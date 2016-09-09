@@ -42,6 +42,7 @@ import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
+import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
 import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
@@ -547,5 +548,13 @@ public class MLUtils {
      */
     public static Pattern getPatternFromDelimiter(String delimiter) {
         return Pattern.compile(delimiter + "(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+    }
+    
+    /**
+     * Check for restricted characters in a given name
+     * @param file
+     */
+    public static boolean isValidName(String file) {
+        return (!file.contains("../") && !file.contains("..\\"));
     }
 }

@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.wso2.carbon.ml.core.exceptions.MLOutputAdapterException;
 import org.wso2.carbon.ml.core.interfaces.MLOutputAdapter;
+import org.wso2.carbon.ml.core.utils.MLUtils;
 
 /**
  * Responsible for writing a given input stream to a specified path in local file system.
@@ -39,6 +40,7 @@ public class FileOutputAdapter implements MLOutputAdapter {
             throw new MLOutputAdapterException(String.format(
                     "Null argument values detected. Input stream: %s Out Path: %s", in, outPath));
         }
+
         OutputStream out = null;
         try {
             File file = new File(outPath);
@@ -63,5 +65,4 @@ public class FileOutputAdapter implements MLOutputAdapter {
             }
         }
     }
-
 }

@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>ml-features</artifactId>
 		<groupId>org.wso2.carbon.ml</groupId>
-		<version>1.1.2-SNAPSHOT</version>
+		<version>1.2.3-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -44,7 +44,7 @@
 			<artifactId>breeze_2.10</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.wso2.orbit.jblas</groupId>
+			<groupId>org.wso2.orbit.org.jblas</groupId>
 			<artifactId>jblas</artifactId>
 		</dependency>
 		<dependency>
@@ -59,6 +59,10 @@
 			<groupId>org.wso2.orbit.sourceforge.f2j</groupId>
 			<artifactId>arpack_combined</artifactId>
 		</dependency>
+		<dependency>
+            		<groupId>org.slf4j</groupId>
+            		<artifactId>slf4j-api</artifactId>
+        	</dependency>
 		<!-- Deeplearning dependencies -->
 		<dependency>
 			<groupId>org.wso2.orbit.ai.h2o</groupId>
@@ -89,21 +93,19 @@
 							<bundles>
 								<bundleDef>org.wso2.orbit.org.apache.spark:spark-mllib_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.org.scalanlp:breeze_2.10</bundleDef>
-								<bundleDef>org.wso2.orbit.jblas:jblas</bundleDef>
+								<bundleDef>org.wso2.orbit.org.jblas:jblas</bundleDef>
 								<bundleDef>org.wso2.orbit.spire-math:spire_2.10</bundleDef>
 								<bundleDef>org.wso2.orbit.github.fommil.netlib:core</bundleDef>
 								<bundleDef>org.wso2.orbit.sourceforge.f2j:arpack_combined</bundleDef>
 								<bundleDef>org.wso2.carbon.ml:org.wso2.carbon.ml.core</bundleDef>
 								<bundleDef>org.wso2.orbit.ai.h2o:h2o</bundleDef>
+								<bundleDef>org.slf4j:slf4j-api</bundleDef>
 							</bundles>
 							<importFeatures>
-								<importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.imp.feature.version}
-								</importFeatureDef>
-								<importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.imp.feature.version}
-								</importFeatureDef>
-								<importFeatureDef>
-									org.wso2.carbon.event.output.adapter.server:${carbon.analytics.common.imp.feature.version}
-								</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.spark.commons:${carbon.analytics.common.imp.feature.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.analytics.spark.server:${carbon.analytics.imp.feature.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.event.output.adapter.email.server:${carbon.analytics.common.imp.feature.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.event.output.adapter.server:${carbon.analytics.common.imp.feature.version}</importFeatureDef>
 							</importFeatures>
 						</configuration>
 					</execution>

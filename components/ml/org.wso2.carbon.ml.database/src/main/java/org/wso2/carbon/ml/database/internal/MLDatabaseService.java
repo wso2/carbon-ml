@@ -1007,8 +1007,9 @@ public class MLDatabaseService implements DatabaseService {
             getFeatues.setInt(2, tenantId);
             getFeatues.setString(3, userName);
             getFeatues.setLong(4, datasetSchemaId);
-            getFeatues.setInt(5, numberOfFeatures);
-            getFeatues.setInt(6, startIndex);
+            
+            // startIndex and numberOfFeatures are not used. This change is required by kernel 4.4.9
+            
             result = getFeatues.executeQuery();
             while (result.next()) {
                 String featureType = FeatureType.NUMERICAL;
@@ -2433,11 +2434,8 @@ public class MLDatabaseService implements DatabaseService {
             connection = dbh.getDataSource().getConnection();
             connection.setAutoCommit(false);
             List<Feature> mlFeatures = new ArrayList<Feature>();
-            getStatement = connection.prepareStatement(SQLQueries.GET_CUSTOMIZED_FEATURES);
+            getStatement = connection.prepareStatement(SQLQueries.GET_ALL_CUSTOMIZED_FEATURES);
             getStatement.setLong(1, analysisId);
-            // set LIMIT and OFFSET parameter values to 0 to retrieve all the rows
-            getStatement.setInt(2, 0);
-            getStatement.setInt(3, 0);
             result = getStatement.executeQuery();
             while (result.next()) {
                 // check whether to include the feature or not
