@@ -115,6 +115,7 @@
                                 <option value="DECISION_TREE">DECISION TREE</option>
                                 <option value="RANDOM_FOREST_CLASSIFICATION">RANDOM FOREST CLASSIFICATION</option>
                                 <option value="NAIVE_BAYES">NAIVE BAYES</option>
+								<option value="NEURAL_NETWORK">NEURAL NETWORK</option>
                             </optgroup>                        
                             <optgroup label="Clustering">
                                 <option value="K_MEANS">K-MEANS</option>
@@ -271,6 +272,10 @@
                     top: $('header').height()
                 }
             });
+			
+			
+			
+			
 
             // set previously selected values when navigating from next page
             var setResponseVariable = "";
@@ -507,8 +512,10 @@
             $(document).on('change', '#algorithm-name', function() {
                 selectedAlgorithm = $('#algorithm-name').val();
                 toggleInput(selectedAlgorithm);
-                loadResponseVariable(setResponseVariable);
-                getNormalLabelValues();
+				loadResponseVariable(setResponseVariable);
+				getNormalLabelValues();
+				
+				
             });
 
             $(document).on('change', '#response-variable', function() {
@@ -557,9 +564,9 @@
 
                 var algorithmType;
 
-                if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION' || algorithmName == 'RANDOM_FOREST_REGRESSION') {
+                if (algorithmName == 'LINEAR_REGRESSION' || algorithmName == 'RIDGE_REGRESSION' || algorithmName == 'LASSO_REGRESSION' || algorithmName == 'RANDOM_FOREST_REGRESSION' ) {
                     algorithmType = 'Numerical_Prediction';
-                } else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'RANDOM_FOREST_CLASSIFICATION' || algorithmName == 'NAIVE_BAYES') {
+                } else if (algorithmName == 'LOGISTIC_REGRESSION' || algorithmName == 'LOGISTIC_REGRESSION_LBFGS' || algorithmName == 'SVM' || algorithmName == 'DECISION_TREE' || algorithmName == 'RANDOM_FOREST_CLASSIFICATION' || algorithmName == 'NAIVE_BAYES' || algorithmName == 'NEURAL_NETWORK') {
                     algorithmType = 'Classification';
                 } else if (algorithmName == 'K_MEANS') {
                     algorithmType = 'Clustering';
@@ -774,7 +781,7 @@
             });
 
         }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function setConfigurations(jsonData, analysisId, projectName, analysisName, algorithmName, algorithmType, datasetId) {
             $.ajax({
                 type: 'POST',
@@ -782,8 +789,11 @@
                 contentType: "application/json",
                 data: jsonData,
                 success: function(res) {
-                    window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
-                },
+					if(algorithmName != "NEURAL_NETWORK")
+						window.location.href = '../parameters/parameters.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+					else
+						window.location.href = '../neuralnetworks/neuralnetwork.jag?analysisId=' + analysisId + '&projectName=' + projectName + '&analysisName=' + analysisName + '&algorithmName=' + algorithmName + '&algorithmType=' + algorithmType + '&datasetId=' + datasetId + '&fromAnalysis=' + fromAnalysis;
+				},
                 error: function(res) {
                     var errorText = res.responseText
                     handleNotification(errorText, notificationArea, 'warning');
@@ -902,7 +912,8 @@
                 $('#custom-label-group').hide();
                 $('#response-variable-group').removeClass("algorithm-inputs-group");
                 $('#custom-label-group').removeClass("algorithm-inputs-group");
-            } else {
+            } 
+			else {
                 $('#response-variable-field').show();
                 $('#train-data-fraction').show();
                 $('#user-variable-field').hide();
@@ -915,6 +926,7 @@
                 $('#response-variable-group').removeClass("algorithm-inputs-group");
                 $('#custom-label-group').removeClass("algorithm-inputs-group");
             }
+			
         }
     </script>
 </body>
