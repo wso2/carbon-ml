@@ -272,6 +272,9 @@ public class MLConstants {
         }
 
         public static boolean contains(String s) {
+            if (s == null) {
+                return true;
+            }
             for (MISSING_VALUES val : values()) {
                 if (val.toString().equals(s)) {
                     return true;
