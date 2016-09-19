@@ -65,15 +65,17 @@ public class MeanImputation implements Function<String[], String[]> {
         public Builder init(MLModelConfigurationContext ctx) {
             meanImputation = new HashMap<Integer, Double>();
             // get feature indices for mean imputation
+            List<Integer> oldIndices = ctx.getNewToOldIndicesList();
             List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(ctx.getFacts(),
                     ctx.getNewToOldIndicesList(), MLConstants.MEAN_IMPUTATION);
             List<Feature> features = ctx.getFacts().getFeatures();
             Map<String, String> stats = ctx.getSummaryStatsOfFeatures();
             for (Feature feature : features) {
-                if (meanImputeIndices.indexOf(feature.getIndex()) != -1) {
+                int newIndex = oldIndices.indexOf(feature.getIndex());
+                if (meanImputeIndices.indexOf(newIndex) != -1) {
                     String featureStat = stats.get(feature.getName());
                     double mean = SparkModelUtils.getMean(featureStat);
-                    meanImputation.put(feature.getIndex(), mean);
+                    meanImputation.put(newIndex, mean);
                 }
             }
             return this;
