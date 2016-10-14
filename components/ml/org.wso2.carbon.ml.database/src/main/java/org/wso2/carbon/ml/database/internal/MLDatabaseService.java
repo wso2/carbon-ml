@@ -2464,6 +2464,7 @@ public class MLDatabaseService implements DatabaseService {
             mlWorkflow.setNormalization(getABooleanModelConfiguration(analysisId, MLConstants.NORMALIZATION));
             mlWorkflow.setNewNormalLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_NORMAL_LABEL));
             mlWorkflow.setNewAnomalyLabel(getAStringModelConfiguration(analysisId, MLConstants.NEW_ANOMALY_LABEL));
+	    mlWorkflow.setTimeSeriesDataset(getABooleanModelConfiguration(analysisId, MLConstants.TIME_SERIES_DATASET));
 
             // set hyper parameters
             mlWorkflow.setHyperParameters(getHyperParametersOfModelAsMap(analysisId));
