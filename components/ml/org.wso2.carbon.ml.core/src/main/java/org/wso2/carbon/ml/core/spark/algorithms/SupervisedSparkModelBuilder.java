@@ -18,15 +18,15 @@
 
 package org.wso2.carbon.ml.core.spark.algorithms;
 
+import java.lang.Exception;
 import java.text.DecimalFormat;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -84,8 +84,6 @@ import scala.Tuple2;
  * Build supervised models supported by Spark.
  */
 public class SupervisedSparkModelBuilder extends MLModelBuilder {
-
-    private static final Log logger = LogFactory.getLog(SupervisedSparkModelBuilder.class);
 
     public SupervisedSparkModelBuilder(MLModelConfigurationContext context) {
         super(context);
@@ -156,39 +154,15 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
 
             JavaRDD<LabeledPoint> trainingData = null;
             JavaRDD<LabeledPoint> testingData = null;
-            if (!workflow.isTimeSeriesDataset()) {
-                JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
-                        new double[] { workflow.getTrainDataFraction(), 1 - workflow.getTrainDataFraction() },
-                        MLConstants.RANDOM_SEED);
 
-                trainingData = dataSplit[0].cache();
-                testingData = dataSplit[1];
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Time series dataset, train/test will be devided in sequential order.");
-                }
+            double trainDataFraction = workflow.getTrainDataFraction();
+            boolean isTimeSeriesDataset = workflow.isTimeSeriesDataset();
 
-                long numOfExamples = labeledPoints.count();
-                long trainingStartIndex = 0;
-                long trainingEndIndex = (long) (numOfExamples * workflow.getTrainDataFraction())-1;
-                long testingStartIndex = trainingEndIndex + 1;
-                long testingEndIndex = numOfExamples - 1;
+            ArrayList<JavaRDD<LabeledPoint>> dataSplit = getSplittedData(isTimeSeriesDataset,labeledPoints,trainDataFraction  );
 
-                trainingData = labeledPoints
-                        .zipWithIndex()
-                        .filter(new SubDatasetFilter.Builder().startIndex(trainingStartIndex)
-                                .endIndex(trainingEndIndex).build()).map(new SubDatasetMapper());
 
-                testingData = labeledPoints
-                        .zipWithIndex()
-                        .filter(new SubDatasetFilter.Builder().startIndex(testingStartIndex).endIndex(testingEndIndex)
-                                .build()).map(new SubDatasetMapper());
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Size of the training dataset: " + trainingData.count());
-                    logger.debug("Size of the testing dataset: " + testingData.count());
-                }
-            }
+            trainingData = dataSplit.get(0).cache();
+            testingData = dataSplit.get(1);
 
             // remove from cache
             labeledPoints.unpersist();
@@ -261,6 +235,36 @@ public class SupervisedSparkModelBuilder extends MLModelBuilder {
         } catch (DatabaseHandlerException e) {
             throw new MLModelBuilderException("An error occurred while building supervised machine learning model: "
                     + e.getMessage(), e);
+        }
+    }
+
+    protected  ArrayList<JavaRDD<LabeledPoint>> getSplittedData(boolean isTimeSeriesDataset, JavaRDD<LabeledPoint> labeledPoints, double trainDataFraction){
+        if (!isTimeSeriesDataset) {
+            JavaRDD<LabeledPoint>[] dataSplit = labeledPoints.randomSplit(
+                    new double[] { trainDataFraction, 1 - trainDataFraction },
+                    MLConstants.RANDOM_SEED);
+            ArrayList<JavaRDD<LabeledPoint>> dataSplitArrayList = new ArrayList<JavaRDD<LabeledPoint>>(Arrays.asList(dataSplit[0], dataSplit[1]));
+            return dataSplitArrayList;
+
+        } else {
+
+            long numOfExamples = labeledPoints.count();
+            long trainingStartIndex = 0;
+            long trainingEndIndex = (long) (numOfExamples * trainDataFraction) - 1;
+            long testingStartIndex = trainingEndIndex + 1;
+            long testingEndIndex = numOfExamples - 1;
+
+            JavaRDD<LabeledPoint> trainingData = labeledPoints
+                    .zipWithIndex()
+                    .filter(new SubDatasetFilter.Builder().startIndex(trainingStartIndex)
+                            .endIndex(trainingEndIndex).build()).map(new SubDatasetMapper());
+
+            JavaRDD<LabeledPoint> testingData = labeledPoints
+                    .zipWithIndex()
+                    .filter(new SubDatasetFilter.Builder().startIndex(testingStartIndex).endIndex(testingEndIndex)
+                            .build()).map(new SubDatasetMapper());
+
+            return new ArrayList<JavaRDD<LabeledPoint>>(Arrays.asList(trainingData, testingData));
         }
     }
 
