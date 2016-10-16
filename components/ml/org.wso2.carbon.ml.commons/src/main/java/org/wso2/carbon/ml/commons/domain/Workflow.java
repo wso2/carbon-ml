@@ -40,6 +40,7 @@ public class Workflow implements Serializable {
     private String datasetVersion;
     private String normalLabels;
     private boolean normalization;
+    private boolean timeseriesDataset;
     // user defined normal label
     private String newNormalLabel;
     // user defined anomaly label
@@ -193,6 +194,20 @@ public class Workflow implements Serializable {
     }
 
     /**
+     * @return A boolean flag which indicates whether this dataset is a time series or not
+     */
+    public boolean isTimeSeriesDataset() {
+        return timeseriesDataset;
+    }
+
+    /**
+     * @param timeSeriesDataset
+     */
+    public void setTimeSeriesDataset(boolean timeSeriesDataset) {
+        this.timeseriesDataset = timeSeriesDataset;
+    }
+
+    /**
      * @param normalLabels Sets normal labels
      */
     public void setNormalLabels(String normalLabels) {
@@ -297,6 +312,7 @@ public class Workflow implements Serializable {
     public String toString() {
         return "Model Configuration [algorithmName=" + algorithmName + ", algorithmClass="
                 + algorithmClass + ", responseVariable=" + responseVariable + ", trainDataFraction="
-                + trainDataFraction + ", hyperParameters=" + hyperParameters + ", features=" + features + "]";
+                + trainDataFraction + ", timeSeriesDataset="+timeseriesDataset + ", hyperParameters="
+                + hyperParameters + ", features=" + features + "]";
     }
 }

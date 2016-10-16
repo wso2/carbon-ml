@@ -161,6 +161,36 @@ public class AnalysisApiV10 extends MLRestAPI {
     }
 
     /**
+     * Get whether the current dataset is a time series or not.
+     *
+     * @param analysisId Unique id of the analysis
+     * @return A boolean flag which indicates whether this dataset is a time series or not
+     */
+    @GET
+    @Path("/{analysisId}/isTimeSeriesDataset")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response isTimeSeriesDataset(@PathParam("analysisId") long analysisId) {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        int tenantId = carbonContext.getTenantId();
+        String userName = carbonContext.getUsername();
+        try {
+            boolean isTimeSeriesDataset = mlAnalysisHandler.isTimeSeriesDataset(analysisId);
+            return Response.ok(isTimeSeriesDataset).build();
+        } catch (MLAnalysisHandlerException e) {
+            String msg = MLUtils
+                    .getErrorMsg(
+                            String.format(
+                                    "Error occurred while retrieving the flag which indicates whether the dataset is time series or not for the analysis [id] %s of tenant [id] %s and [user] %s .",
+                                    analysisId, tenantId, userName), e);
+            logger.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new MLErrorBean(e.getMessage()))
+                    .build();
+        }
+    }
+
+
+    /**
      * Get summarized features of an analysis.
      * @param analysisId Unique id of the analysis
      * @param limit Number of features need to retrieve, from the starting index

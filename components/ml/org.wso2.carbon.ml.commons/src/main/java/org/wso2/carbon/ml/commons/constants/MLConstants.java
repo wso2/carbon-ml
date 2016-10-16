@@ -105,6 +105,7 @@ public class MLConstants {
     public static final String NEW_NORMAL_LABEL = "newNormalLabel";
     public static final String NEW_ANOMALY_LABEL = "newAnomalyLabel";
     public static final String HYPER_PARAMETERS = "hyperParameters";
+    public static final String TIME_SERIES_DATASET = "timeSeriesDataset";
 
     public static final String MODEL_NAME = "Model";
 

@@ -127,6 +127,14 @@ public class MLAnalysisHandler {
         }
     }
 
+    public boolean isTimeSeriesDataset(long analysisId) throws MLAnalysisHandlerException {
+        try {
+            return valueHolder.getDatabaseService().getABooleanModelConfiguration(analysisId, MLConstants.TIME_SERIES_DATASET);
+        } catch (DatabaseHandlerException e) {
+            throw new MLAnalysisHandlerException(e.getMessage(), e);
+        }
+    }
+
     public String getRatingVariable(long analysisId) throws MLAnalysisHandlerException {
         try {
             return valueHolder.getDatabaseService().getAStringModelConfiguration(analysisId, MLConstants.RATING_VARIABLE);
