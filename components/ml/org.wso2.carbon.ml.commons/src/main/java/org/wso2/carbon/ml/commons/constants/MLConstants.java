@@ -260,7 +260,7 @@ public class MLConstants {
     }
 
     public enum MISSING_VALUES {
-        EMPTY(""), NA("NA"), QUESTION("?");
+        EMPTY(""), NA("NA"), QUESTION("?"), NAN("NaN");
 
         private final String value;
         private MISSING_VALUES(final String str) {
