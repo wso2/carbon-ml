@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.database.internal.constants;
+
+/**
+ * A utility class to store SQL prepared statements
+ */
+public class MSSQLQueries extends SQLQueries {
+    public static String MSSQL_SERVER_NAME = "Microsoft SQL Server";
+
+    public MSSQLQueries () {
+
+        INSERT_DATA_SOURCE = "INSERT INTO ML_DATA_SOURCE(VALUE_SET_ID, TENANT_ID, USERNAME," +
+                " [KEY], VALUE) VALUES (?,?,?,?,?)";
+
+        GET_FEATURE_NAMES = "SELECT FEATURE_NAME FROM ML_FEATURE_CUSTOMIZED WHERE MODEL_ID=? AND "
+                + "INCLUSION=1";
+
+        GET_ALL_FEATURE_NAMES = "SELECT FEATURE_NAME FROM ML_FEATURE_CUSTOMIZED WHERE " +
+                "ANALYSIS_ID = ? AND INCLUSION=1";
+
+        GET_FILTERED_FEATURE_NAMES = "SELECT FEATURE_NAME FROM ML_FEATURE_CUSTOMIZED WHERE " +
+                "ANALYSIS_ID = ? AND FEATURE_TYPE = ? AND INCLUSION=1";
+
+        INSERT_MODEL = "INSERT INTO ML_MODEL(NAME, ANALYSIS_ID, DATASET_VERSION_ID, TENANT_ID," +
+                " USERNAME, CREATED_TIME, STORAGE_TYPE, STORAGE_LOCATION, STATUS) "
+                + "VALUES(?,?,?,?,?, CURRENT_TIMESTAMP,?,?,?)";
+
+        INSERT_MODEL_CONFIGURATION = "INSERT INTO ML_MODEL_CONFIGURATION(ANALYSIS_ID, [KEY]," +
+                " VALUE) VALUES(?,?,?)";
+
+        UPDATE_MODEL_CONFIGURATION = "UPDATE ML_MODEL_CONFIGURATION SET VALUE=? WHERE " +
+                "ANALYSIS_ID=? AND [KEY]=?";
+
+        GET_A_MODEL_CONFIGURATION = "SELECT VALUE FROM ML_MODEL_CONFIGURATION WHERE " +
+                "ANALYSIS_ID = ? AND [KEY] = ?";
+
+        DELETE_HYPER_PARAMETERS = "DELETE FROM ML_HYPER_PARAMETER WHERE ANALYSIS_ID = ?";
+
+        GET_EXISTING_ALGORITHM =
+                "SELECT TOP 1 ALGORITHM_NAME FROM ML_HYPER_PARAMETER WHERE ANALYSIS_ID = ?";
+
+        INSERT_HYPER_PARAMETER = "INSERT INTO ML_HYPER_PARAMETER(ANALYSIS_ID, ALGORITHM_NAME," +
+                " NAME, VALUE, LAST_MODIFIED_TIME) VALUES(?,?,?,?, CURRENT_TIMESTAMP)";
+
+        UPDATE_HYPER_PARAMETER = "UPDATE ML_HYPER_PARAMETER SET ALGORITHM_NAME=?, VALUE=?, " +
+                "LAST_MODIFIED_TIME=CURRENT_TIMESTAMP WHERE ANALYSIS_ID=? AND NAME=?";
+
+        INSERT_FEATURE_CUSTOMIZED = "INSERT INTO ML_FEATURE_CUSTOMIZED(ANALYSIS_ID, TENANT_ID, " +
+                "FEATURE_NAME, FEATURE_TYPE, IMPUTE_OPTION, INCLUSION, LAST_MODIFIED_USER, USERNAME, LAST_MODIFIED_TIME) " +
+                "VALUES(?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)";
+
+        UPDATE_FEATURE_CUSTOMIZED = "UPDATE ML_FEATURE_CUSTOMIZED SET FEATURE_TYPE=?, " +
+                "IMPUTE_OPTION=?, INCLUSION=?, LAST_MODIFIED_USER=?, USERNAME=?, LAST_MODIFIED_TIME=CURRENT_TIMESTAMP " +
+                "WHERE ANALYSIS_ID=? AND FEATURE_NAME=?";
+
+        INSERT_DEFAULTS_INTO_FEATURE_CUSTOMIZED =
+                "INSERT INTO ML_FEATURE_CUSTOMIZED(ANALYSIS_ID, TENANT_ID, FEATURE_NAME, FEATURE_INDEX, FEATURE_TYPE, " +
+                "IMPUTE_OPTION, INCLUSION, LAST_MODIFIED_USER, USERNAME, LAST_MODIFIED_TIME, FEATURE_ID) SELECT ?, ?, " +
+                "FEATURE_NAME, FEATURE_INDEX, TYPE, ?, ?, ?, ?, CURRENT_TIMESTAMP, FEATURE_ID FROM ML_FEATURE_DEFAULTS " +
+                "WHERE DATASET_SCHEMA_ID = ? ";
+        INSERT_PROJECT = "INSERT INTO ML_PROJECT(NAME, DESCRIPTION, DATASET_SCHEMA_ID, TENANT_ID,"
+                + " USERNAME, CREATED_TIME) VALUES(?,?,?,?,?, CURRENT_TIMESTAMP)";
+
+        GET_DATASET_LOCATION = "SELECT TOP 1 URI FROM ML_DATASET_VERSION WHERE DATASET_SCHEMA_ID = ? "
+                + "ORDER BY DATASET_VERSION_ID ASC";
+
+        GET_CUSTOMIZED_FEATURES = "SELECT TOP ? FEATURE_NAME,FEATURE_INDEX,FEATURE_TYPE, IMPUTE_OPTION, " +
+                "INCLUSION, LAST_MODIFIED_USER FROM ML_FEATURE_CUSTOMIZED WHERE ANALYSIS_ID=? " +
+                "ORDER BY FEATURE_NAME OFFSET ? ROWS";
+    }
+}
