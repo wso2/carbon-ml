@@ -18,7 +18,9 @@
 
 package org.wso2.carbon.ml.commons.domain;
 
-public interface ModelSummary {
+import java.io.Serializable;
+
+public interface ModelSummary extends Serializable {
     
     /**
      * @return Model summary type
