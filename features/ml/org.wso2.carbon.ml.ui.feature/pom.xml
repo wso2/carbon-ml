@@ -21,12 +21,12 @@
     <parent>
         <artifactId>ml-features</artifactId>
         <groupId>org.wso2.carbon.ml</groupId>
-        <version>1.2.4-SNAPSHOT</version>
+        <version>1.2.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.ml</groupId>
     <artifactId>org.wso2.carbon.ml.ui.feature</artifactId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.4</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Machine Learner UI Feature</name>
     <dependencies>
