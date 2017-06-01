@@ -1,12 +1,12 @@
 # carbon-ml
 
 ---
-
-|  Branch | Build Status |
-| :------------ |:-------------
-| master      | [![Build Status](https://wso2.org/jenkins/job/carbon-ml/badge/icon)](https://wso2.org/jenkins/job/carbon-ml) |
-
+## Note
+  
+We have discontinued WSO2 Machine Learner Product and as a result this repository has been deprecated. We still support machine learning model integration with WSO2 Data Analytics Server (https://github.com/wso2/product-das).
+  
 ---
+
 Latest Released Version v1.1.0
 
 This repository contains the source code of modules belong to WSO2 Machine Learner product. Some of these modules are used by other products of the platform too.
