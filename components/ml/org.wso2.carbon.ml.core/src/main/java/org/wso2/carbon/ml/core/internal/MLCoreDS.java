@@ -25,7 +25,6 @@ import org.wso2.carbon.analytics.spark.core.interfaces.SparkContextService;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
-import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
 import org.wso2.carbon.metrics.manager.Gauge;
 import org.wso2.carbon.metrics.manager.Level;
 import org.wso2.carbon.metrics.manager.MetricManager;
@@ -153,7 +152,7 @@ public class MLCoreDS {
             this.emailAdapterService = valueHolder.getOutputEventAdapterService();
             OutputEventAdapterConfiguration outputAdapterConfig = new OutputEventAdapterConfiguration();
             outputAdapterConfig.setName(MLConstants.ML_EMAIL_ADAPTER);
-            outputAdapterConfig.setType(EmailEventAdapterConstants.ADAPTER_TYPE_EMAIL);
+            outputAdapterConfig.setType(MLConstants.ADAPTER_TYPE_EMAIL);
             this.emailAdapterService.create(outputAdapterConfig);
             // Hostname
             String hostName = "localhost";
