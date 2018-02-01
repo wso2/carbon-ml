@@ -236,6 +236,12 @@ public class MLConstants {
     public static final String ML_MODEL_DATA_ERROR = "error";
     public static final String ML_MODEL_DATA_CREATED_TIME = "createdTime";
 
+    //email adaptor constants
+    public static final String ADAPTER_TYPE_EMAIL = "email";
+    public static final String ADAPTER_MESSAGE_EMAIL_ADDRESS = "email.address";
+    public static final String ADAPTER_MESSAGE_EMAIL_SUBJECT = "email.subject";
+    public static final String APAPTER_MESSAGE_EMAIL_TYPE = "email.type";
+
     // enums
     public enum SUPERVISED_ALGORITHM {
         LINEAR_REGRESSION, RIDGE_REGRESSION, LASSO_REGRESSION, LOGISTIC_REGRESSION, LOGISTIC_REGRESSION_LBFGS,

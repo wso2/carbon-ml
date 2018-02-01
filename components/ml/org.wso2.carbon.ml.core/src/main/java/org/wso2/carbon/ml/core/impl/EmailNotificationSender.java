@@ -18,24 +18,22 @@
 
 package org.wso2.carbon.ml.core.impl;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
-import org.wso2.carbon.event.output.adapter.email.internal.util.EmailEventAdapterConstants;
+import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.core.exceptions.MLEmailNotificationSenderException;
 import org.wso2.carbon.ml.core.internal.EmailTemplate;
 import org.wso2.carbon.ml.core.internal.EmailTemplates;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
 import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * This class is used to send email notifications.
@@ -96,9 +94,9 @@ public class EmailNotificationSender {
             
                 OutputEventAdapterService emailAdapterService = MLCoreServiceValueHolder.getInstance().getOutputEventAdapterService();
                 Map<String,String> dynamicProperties = new HashMap<String,String>();
-                dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_ADDRESS, emailAddress);
-                dynamicProperties.put(EmailEventAdapterConstants.ADAPTER_MESSAGE_EMAIL_SUBJECT, emailTemplate.getSubject());
-                dynamicProperties.put(EmailEventAdapterConstants.APAPTER_MESSAGE_EMAIL_TYPE, MLConstants.TEXT_PLAIN);
+                dynamicProperties.put(MLConstants.ADAPTER_MESSAGE_EMAIL_ADDRESS, emailAddress);
+                dynamicProperties.put(MLConstants.ADAPTER_MESSAGE_EMAIL_SUBJECT, emailTemplate.getSubject());
+                dynamicProperties.put(MLConstants.APAPTER_MESSAGE_EMAIL_TYPE, MLConstants.TEXT_PLAIN);
                 emailAdapterService.publish(MLConstants.ML_EMAIL_ADAPTER, dynamicProperties, message);
                 logger.info("Model building status email sent to: " + emailAddress);
             }
