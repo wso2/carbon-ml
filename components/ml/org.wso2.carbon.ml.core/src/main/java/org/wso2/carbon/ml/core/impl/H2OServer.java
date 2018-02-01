@@ -20,6 +20,9 @@ package org.wso2.carbon.ml.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import water.H2O;
 import water.H2OApp;
 import water.H2OClientApp;
@@ -37,10 +40,13 @@ public class H2OServer {
      */
     public static void startH2O(String port) {
         if (!isH2OServerStarted) {
-            String[] args = new String[2];
-            args[0] = "-port";
-            args[1] = port;
-            H2OApp.main(args);
+            List<String> args = new ArrayList<>();
+            args.add("-port");
+            args.add(port);
+            if (!log.isDebugEnabled()) {
+                args.add("-quiet");
+            }
+            H2OApp.main(args.toArray(new String[args.size()]));
             H2O.waitForCloudSize(1, 10 * 1000 /* ms */);
             isH2OServerStarted = true;
             log.info("H2o Server has started.");
