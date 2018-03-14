@@ -17,13 +17,11 @@
  */
 package org.wso2.carbon.ml.rest.api.handler;
 
-import java.util.concurrent.TimeUnit;
+import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
 
+import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
-import org.wso2.carbon.ml.database.exceptions.DatabaseHandlerException;
 
 /**
  * This shutdown hook will make the REST API to wait till the resources it used, clean up.
@@ -32,24 +30,17 @@ public class ShutdownListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
-        try {
-            if (MLCoreServiceValueHolder.getInstance().getDatabaseService() != null) {
-                MLCoreServiceValueHolder.getInstance().getDatabaseService().shutdown();
+        if (MLCoreServiceValueHolder.getInstance().getThreadExecutor() != null) {
+            try {
+                MLCoreServiceValueHolder.getInstance().getThreadExecutor()
+                        .awaitTermination(1000, TimeUnit.MILLISECONDS);
+                MLCoreServiceValueHolder.getInstance().getThreadExecutor().shutdown();
+            } catch (InterruptedException ignore) {
             }
+        }
 
-            if (MLCoreServiceValueHolder.getInstance().getThreadExecutor() != null) {
-                try {
-                    MLCoreServiceValueHolder.getInstance().getThreadExecutor()
-                            .awaitTermination(1000, TimeUnit.MILLISECONDS);
-                    MLCoreServiceValueHolder.getInstance().getThreadExecutor().shutdown();
-                } catch (InterruptedException ignore) {
-                }
-            }
-
-            if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
-                MLCoreServiceValueHolder.getInstance().getSparkContext().close();
-            }
-        } catch (DatabaseHandlerException e) {
+        if (MLCoreServiceValueHolder.getInstance().getSparkContext() != null) {
+            MLCoreServiceValueHolder.getInstance().getSparkContext().close();
         }
     }
 
