@@ -145,6 +145,7 @@
                     var authEncoded = btoa(auth)
 
                     $.ajax({
+                        type: "POST",
                         url: './ajax/authenticate.jag',
                         data: {
                             userName: user,
