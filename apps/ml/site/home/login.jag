@@ -157,7 +157,8 @@
                         },
                         error: function(res) {
                             console.log(res);
-                            $('.wr-validation-summary').html('<p>' + res.responseJSON.status + '</p>');
+                            $('.wr-validation-summary').html('<p></p>');
+                            $('.wr-validation-summary > p').text(res.responseJSON.status);
                             $('.wr-validation-summary').show();
                         }
                     });
